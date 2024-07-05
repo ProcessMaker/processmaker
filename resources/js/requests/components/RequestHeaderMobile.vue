@@ -14,18 +14,22 @@
         class="status-header-class"
         @click="toggleCollapse"
       >
-        <tr>
+      <tr>
           <th class="d-flex align-items-center pl-3 border-0">
-            <h4 style="margin: 0; padding: 0; line-height: 1">
-              {{ $t(statusLabel) }}
-            </h4>
+            <div class="d-flex flex-column ml-2">
+              <h4
+                class="status-class-text"
+                :style="textColorClass"
+                style="margin-top: 5%; padding: 0; line-height: 1"
+              >
+                {{ $t(statusLabel) }}
+              </h4>
+              <p class="small mb-1 detail-header-class">{{ $t("Start") }}: {{ moment(startDate).format() }}</p>
+            </div>
           </th>
-          <th class="border-0">
-            <div>
-              <p class="small mb-1">
-                {{ $t("Start") }}:
-                {{ moment(startDate).format() }}
-              </p>
+          <th class="border-0 text-right pr-3 align-middle">
+            <div class="icon-class">
+              <i :class="iconClass"></i>
             </div>
           </th>
         </tr>
@@ -170,17 +174,6 @@ Vue.component("AvatarImage", AvatarImage);
 
 export default {
   props: ["request", "values"],
-  // props: {
-  //   values: null,
-  //   statusLabel: String,
-  //   statusDateLabel: String,
-  //   startDate: String,
-  //   statusDate: String,
-  //   request: {
-  //     type: Object,
-  //     required: true
-  //   }
-  // },
   data() {
     const authValues = JSON.parse(this.values);
     return {
@@ -196,6 +189,20 @@ export default {
     };
   },
   computed: {
+    textColorClass() {
+      const colors = {
+        ACTIVE: "#4EA075",
+        COMPLETED: "#556271",
+        CANCELED: "#ED4858",
+        ERROR: "#ED4858",
+      };
+      return {
+        color: colors[this.request.status.toUpperCase()] || "black",
+      };
+    },
+    iconClass() {
+      return this.collapsed ? "fas fa-caret-right" : "fas fa-caret-down";
+    },
     /**
      * Get the list of participants in the request.
      *
@@ -410,5 +417,27 @@ export default {
 }
 .status-header-class {
   cursor: pointer;
+}
+.detail-header-class {
+  margin-top: 5%; 
+  padding: 0; 
+  line-height: 1;
+  font-family: 'Open', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 21px;
+  letter-spacing: -0.02%;
+  color: #4C545C;
+}
+.status-class-text {
+  font-family: 'Open', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 29.96px;
+  letter-spacing: -0.02%;
+}
+.icon-class {
+  color: #6A7888;
+  font-size: 20px;
 }
 </style>
