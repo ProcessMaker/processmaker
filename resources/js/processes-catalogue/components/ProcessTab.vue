@@ -176,6 +176,9 @@
         removalMessage: ""
       };
     },
+    mounted() {
+      this.requestTabConfiguration();
+    },
     methods: {
       onTabsInput(activeTabIndex) {
         this.$nextTick(() => {
@@ -198,11 +201,11 @@
         this.selectTab = "last";
         this.$refs.tabCreate.$emit("close");
         this.tabsList.push(tab);
-        console.log("save to database new savedsearch")
+        this.saveTabConfiguration();
       },
       onOkTabSetting(tab) {
         this.$set(this.tabsList, this.activeTab, tab);
-        console.log("save to database setting")
+        this.editTabConfiguration();
       },
       onTabSettings() {
         this.$refs.tabSetting.show();
@@ -218,6 +221,7 @@
       onOkDelete() {
         if (this.tabsList.length > 1) {
           this.tabsList.splice(this.activeTab, 1);
+          this.editTabConfiguration();
         }
       },
       setInOverdueMessage() {
@@ -267,6 +271,15 @@
         this.$nextTick(() => {
           this.setDragDrop();
         });
+      },
+      requestTabConfiguration() {
+        console.log("requestTabConfiguration", this.tabsList);
+      },
+      saveTabConfiguration() {
+        console.log("saveTabConfiguration", this.tabsList);
+      },
+      editTabConfiguration() {
+        console.log("editTabConfiguration", this.tabsList);
       }
     }
   };
