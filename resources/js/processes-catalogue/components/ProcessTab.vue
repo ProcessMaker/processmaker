@@ -205,7 +205,7 @@
       },
       onOkTabSetting(tab) {
         this.$set(this.tabsList, this.activeTab, tab);
-        this.editTabConfiguration();
+        this.saveTabConfiguration();
       },
       onTabSettings() {
         this.$refs.tabSetting.show();
@@ -221,7 +221,7 @@
       onOkDelete() {
         if (this.tabsList.length > 1) {
           this.tabsList.splice(this.activeTab, 1);
-          this.editTabConfiguration();
+          this.saveTabConfiguration();
         }
       },
       setInOverdueMessage() {
@@ -273,13 +273,23 @@
         });
       },
       requestTabConfiguration() {
-        console.log("requestTabConfiguration", this.tabsList);
+        let properties = JSON.parse(this.process.launchpad.properties);
+        if ("tabs" in properties) {
+          this.tabsList = properties.tabs;
+        }
       },
       saveTabConfiguration() {
-        console.log("saveTabConfiguration", this.tabsList);
-      },
-      editTabConfiguration() {
-        console.log("editTabConfiguration", this.tabsList);
+        this.process.properties.tabs = this.tabsList;
+        ProcessMaker.apiClient
+                .put(`process_launchpad/${this.process.id}`, {
+                  properties: this.process.properties
+                })
+                .then((response) => {
+                  ProcessMaker.alert(this.$t("The launchpad settings were saved."), "success");
+                })
+                .catch((error) => {
+                  ProcessMaker.alert(this.$t("The launchpad settings could not be saved due to an error."), "danger");
+                });
       }
     }
   };
