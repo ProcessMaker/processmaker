@@ -86,7 +86,7 @@
              :ok-variant="'danger'"
              :cancel-title="$t('Cancel')"
              @ok="onOkDelete">
-      <span v-html="$t('Do you want to delete the tab <b>{{nameItem}}</b>?', {nameItem: ''})"></span>
+      {{ removalMessage }}
     </b-modal>
   </div>
 </template>
@@ -172,7 +172,8 @@
           }
         ],
         activeTab: 0,
-        selectTab: ""
+        selectTab: "",
+        removalMessage: ""
       };
     },
     methods: {
@@ -210,6 +211,8 @@
         });
       },
       onDelete() {
+        let tabName = {name: this.tabsList[this.activeTab].name};
+        this.removalMessage = this.$t("Do you want to delete the tab {{name}}?", tabName);
         this.$refs.tabDeletion.show();
       },
       onOkDelete() {

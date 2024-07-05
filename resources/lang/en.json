@@ -2295,5 +2295,7 @@
   "Please select a Saved Search": "Please select a Saved Search",
   "Search using natural language or PMQL": "Search using natural language or PMQL",
   "Enable Notifications": "Enable Notifications",
-  "Tab Settings": "Tab Settings"
+  "Tab Settings": "Tab Settings",
+  "Do you want to delete the tab {{name}}?": "Do you want to delete the tab {{name}}?",
+  "See this tab on mobile devices": "See this tab on mobile devices"
 }
