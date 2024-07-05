@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [opened, reopened, synchronize, edited, closed]
   schedule:
-    - cron: '30 2 * * *'  # every day at midnight
+    - cron: '30 2 * * *'  # run daily
   workflow_dispatch:
   workflow_call:
 env:
@@ -148,7 +148,7 @@ jobs:
   runAPITest:
     name: Run API Tests
     needs: [deployEKS]
-    if: always() && contains(github.event.pull_request.body, 'ci:api-test')
+    if: contains(github.event.pull_request.body, 'ci:api-test')
     runs-on: self-hosted
     steps:
       - name: Clone private repository
