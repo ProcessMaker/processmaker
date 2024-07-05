@@ -109,11 +109,11 @@
     },
     props: {
       currentUser: {
-        type: Object,
+        type: Object
       },
       process: {
-        type: Object,
-      },
+        type: Object
+      }
     },
     data() {
       return {
@@ -171,7 +171,8 @@
             columns: window.Processmaker.defaultColumns || null
           }
         ],
-        activeTab: 0
+        activeTab: 0,
+        selectTab: ""
       };
     },
     methods: {
@@ -184,13 +185,16 @@
         });
       },
       onTabsChanged() {
-        let index = this.$refs.bTabs.getTabs().length;
-        this.activeTab = index - 1;
+        if (this.selectTab === "last") {
+          let index = this.$refs.bTabs.getTabs().length;
+          this.activeTab = index - 1;
+        }
       },
       onCancelCreateSavedSerchTab() {
         this.$refs.tabCreate.$emit("close");
       },
       onOkCreateSavedSerchTab(tab) {
+        this.selectTab = "last";
         this.$refs.tabCreate.$emit("close");
         this.tabsList.push(tab);
         console.log("save to database new savedsearch")
@@ -241,11 +245,18 @@
           el.ondrop = (event) => {
             event.preventDefault();
             let fromIndex = event.dataTransfer.getData("text/plain");
-            if (!/^\d+$/.test(fromIndex) || fromIndex === index) {
+            if (!/^\d+$/.test(fromIndex)) {
+              return;
+            }
+            fromIndex = parseInt(fromIndex);
+            if (fromIndex === index) {
               return;
             }
             let movedTab = this.tabsList.splice(fromIndex, 1)[0];
             this.tabsList.splice(index, 0, movedTab);
+            this.$nextTick(() => {
+              this.activeTab = index;
+            });
           };
         });
       },
