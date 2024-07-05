@@ -4,6 +4,7 @@
       <card
         :key="index"
         :item="item"
+        :fields="fields"
         type="tasks"
       />
     </template>
@@ -44,7 +45,22 @@ export default {
           direction: "DESC",
         },
       ],
-      fields: [],
+      fields: [
+        {
+          label: "Task",
+          field: "element_name",
+        },
+        {
+          label: "Due",
+          field: "due_at",
+          format: "dateTime",
+        },
+        {
+          label: "Completed",
+          field: "completed_at",
+          format: "dateTime",
+        },
+      ],
       previousFilter: "",
       previousPmql: "",
       endpoint: "tasks",

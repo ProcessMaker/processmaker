@@ -83,28 +83,32 @@
           class="dropdown"
         >
           <button
-            id="tasksDropdown"
-            class="btn btn-secondary dropdown-toggle"
+            id="requestsDropdown"
+            class="btn dropdown-toggle dropdown-requests-style"
             type="button"
             data-toggle="dropdown"
             aria-haspopup="true"
             aria-expanded="false"
           >
-            <i class="fas fa-list" />
-            <i class="fas fa-caret-down" />
+            <img
+              src="/img/sort-down-icon.svg"
+              alt="sort-down"
+            >
           </button>
           <div
-            class="dropdown-menu"
+            class="dropdown-menu mobile-dropdown-menu"
             aria-labelledby="tasksDropdown"
           >
             <a
               class="dropdown-item"
+              :class="{ 'dropdown-item-selected': selectedOrderBy === 'due_at' }"
               @click="selectOption('due_at', 'orderBy')"
             >
               {{ $t('By Due Date') }}
             </a>
             <a
               class="dropdown-item"
+              :class="{ 'dropdown-item-selected': selectedOrderBy === 'created_at' }"
               @click="selectOption('created_at', 'orderBy')"
             >
               {{ $t('By Creation Date') }}
@@ -155,6 +159,7 @@ export default {
       searchCriteria: "",
       selectedOptionStatus: "In Progress",
       selectedIconStatus: "",
+      selectedOrderBy: "",
       selectedIconFilter: "fas fa-user",
       apiData: [],
       showInput: false,
@@ -213,6 +218,7 @@ export default {
         return this.buildPmql();
       }
       if (controlName === "orderBy") {
+        this.selectedOrderBy = option;
         return `order_by=${option}`;
       }
       if (controlName === "search") {
@@ -312,7 +318,7 @@ export default {
     border: none;
   }
   .dropdown-status-style {
-    background-color: white !important;
+    background-color: transparent !important;
     color: #4C545C !important;
     border: none;
     text-transform: none;
