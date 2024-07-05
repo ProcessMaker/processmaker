@@ -181,7 +181,7 @@ class TokenRepository implements TokenRepositoryInterface
                 $configEmail = json_decode($activity->getProperty('configEmail'), true);
                 if (!empty($configEmail)) {
                     // Send Email
-                    return (new TaskActionByEmail())->sendAbeEmail($configEmail, 'luciana.nunez@processmaker.com', $token->getInstance()->getDataStore()->getData());
+                    return (new TaskActionByEmail())->sendAbeEmail($configEmail, $to, $token->getInstance()->getDataStore()->getData());
                 }
             }
         } catch (\Exception $e) {
