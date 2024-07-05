@@ -15,12 +15,12 @@
         @click="toggleCollapse"
       >
       <tr>
-          <th class="d-flex align-items-center pl-3 border-0">
+          <th class="d-flex align-items-center pl-3 border-0 mt-1">
             <div class="d-flex flex-column ml-2">
               <h4
                 class="status-class-text"
                 :style="textColorClass"
-                style="margin-top: 5%; padding: 0; line-height: 1"
+                style="padding: 0; line-height: 1"
               >
                 {{ $t(statusLabel) }}
               </h4>
@@ -45,19 +45,56 @@
           <td colspan="2">
             <table class="table m-0 border-0">
               <tbody>
+                <tr v-if="request.case_number">
+                  <td
+                    aria-colindex="1"
+                    role="cell"
+                    class="pl-3"
+                  >
+                    <span class="custom-font-subject">
+                      {{ $t("CASE #") }}
+                    </span>
+                  </td>
+                  <td
+                    aria-colindex="2"
+                    role="cell"
+                    class="custom-font-text"
+                  >
+                    <span>{{ request.case_number}}</span>
+                  </td>
+                </tr>
+                <tr v-if="request.case_title" class="row-class">
+                  <td
+                    aria-colindex="1"
+                    role="cell"
+                    class="pl-3"
+                  >
+                    <span class="custom-font-subject">
+                      {{ $t("CASE NAME") }}
+                    </span>
+                  </td>
+                  <td
+                    aria-colindex="2"
+                    role="cell"
+                    class="custom-font-text"
+                  >
+                    <span>{{ request.case_title}}</span>
+                  </td>
+                </tr>
                 <tr v-if="request.user_id">
                   <td
                     aria-colindex="1"
                     role="cell"
                     class="pl-3"
                   >
-                    <span class="font-weight-normal">
-                      {{ $t("Requested By") }}:
+                    <span class="custom-font-subject">
+                      {{ $t("REQUESTED BY") }}:
                     </span>
                   </td>
                   <td
                     aria-colindex="2"
                     role="cell"
+                    class="custom-font-text"
                   >
                     <avatar-image
                       v-if="userRequested"
@@ -69,19 +106,20 @@
                     <span v-else>{{ $t("Web Entry") }}</span>
                   </td>
                 </tr>
-                <tr v-if="request.participants.length">
+                <tr v-if="request.participants.length" class="row-class">
                   <td
                     aria-colindex="1"
                     role="cell"
                     class="pl-3"
                   >
-                    <span class="font-weight-normal">
+                    <span class="custom-font-subject">
                       {{ $t("Participants") }}:
                     </span>
                   </td>
                   <td
                     aria-colindex="2"
                     role="cell"
+                    class="custom-font-text"
                   >
                     <avatar-image
                       size="25"
@@ -91,6 +129,42 @@
                     />
                   </td>
                 </tr>
+                <tr v-if="request.created_at">
+                  <td
+                    aria-colindex="1"
+                    role="cell"
+                    class="pl-3"
+                  >
+                    <span class="custom-font-subject">
+                      {{ $t("STARTED") }}
+                    </span>
+                  </td>
+                  <td
+                    aria-colindex="2"
+                    role="cell"
+                    class="custom-font-text"
+                  >
+                    <span>{{ moment(startDate).format() }}</span>
+                  </td>
+                </tr>
+                <tr class="row-class">
+                  <td
+                    aria-colindex="1"
+                    role="cell"
+                    class="pl-3"
+                  >
+                    <span class="custom-font-subject">
+                      {{ $t("COMPLETED") }}
+                    </span>
+                  </td>
+                  <td
+                    aria-colindex="2"
+                    role="cell"
+                    class="custom-font-text"
+                  >
+                    <span>{{ completedDate ? moment(completedDate).format() : '-' }}</span>
+                  </td>
+                </tr>
               </tbody>
             </table>
             <ul class="list-group list-group-flush w-100">
@@ -98,12 +172,12 @@
                 <li class="list-group-item">
                   <button
                     type="button"
-                    class="btn btn-outline-danger btn-block"
+                    class="btn btn-outline-danger btn-block cancel-class-text"
                     aria-haspopup="dialog"
                     @click="onCancel"
                   >
-                    <i class="fas fa-stop-circle" />
-                    {{ $t("Cancel") }}
+                    <i class="fas fa-ban" />
+                    {{ $t("Cancel Case") }}
                   </button>
                 </li>
               </template>
@@ -187,6 +261,10 @@ export default {
       disabled: false,
       collapsed: false,
     };
+  },
+  mounted () {
+    console.log("request: ", this.request);
+    console.log("values: ", this.values);
   },
   computed: {
     textColorClass() {
@@ -275,6 +353,10 @@ export default {
      */
     startDate() {
       return this.request.created_at;
+    },
+
+    completedDate() {
+      return this.request.completed_at;
     },
   },
   methods: {
@@ -419,7 +501,6 @@ export default {
   cursor: pointer;
 }
 .detail-header-class {
-  margin-top: 5%; 
   padding: 0; 
   line-height: 1;
   font-family: 'Open', sans-serif;
@@ -439,5 +520,32 @@ export default {
 .icon-class {
   color: #6A7888;
   font-size: 20px;
+}
+.row-class {
+  background-color: #F7F9FB;
+}
+
+.custom-font-subject {
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 19.5px;
+  letter-spacing: -0.02%;
+  color: #556271;
+  text-transform: uppercase;
+}
+
+.custom-font-text {
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 20.43px;
+  letter-spacing: -0.02%;
+  color: #4C545C;
+}
+
+.cancel-class-text {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.02%;
 }
 </style>
