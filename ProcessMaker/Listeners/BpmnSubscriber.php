@@ -126,8 +126,9 @@ class BpmnSubscriber
         if ($token->user_id) {
             $token->sendActivityActivatedNotifications();
         }
-
-        event(new ActivityAssigned($event->token));
+        if ($event->token->element_type === 'task') {
+            event(new ActivityAssigned($event->token));
+        }
     }
 
     /**
