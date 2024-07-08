@@ -32,11 +32,9 @@ class DefaultColumns
                     $type
                 );
             } else {
-                dump('Null 1');
                 $defaultColumns = null;
             }
         } else {
-            dump('Null 2');
             $defaultColumns = null;
         }
 
