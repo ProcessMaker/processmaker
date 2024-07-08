@@ -262,10 +262,6 @@ export default {
       collapsed: false,
     };
   },
-  mounted () {
-    console.log("request: ", this.request);
-    console.log("values: ", this.values);
-  },
   computed: {
     textColorClass() {
       const colors = {
