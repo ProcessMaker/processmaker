@@ -111,7 +111,7 @@ class ImportV2 implements ShouldQueue
 
     public static function isRunning()
     {
-        return (bool) Cache::lockConnection()->client()->get(Cache::getPrefix() . 'import_running');
+        return (bool) false;
     }
 
     private function checkHash()

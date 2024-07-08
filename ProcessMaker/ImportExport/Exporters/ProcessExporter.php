@@ -513,7 +513,8 @@ class ProcessExporter extends ExporterBase
                 $data = json_decode($elementDestination, true);
 
                 // Check for JSON errors and if the type is customDashboard
-                if (json_last_error() === JSON_ERROR_NONE && isset($data['type']) && $data['type'] === 'customDashboard') {
+                if (json_last_error() === JSON_ERROR_NONE && isset($data['type'])
+                    && $data['type'] === 'customDashboard') {
                     // Create a new JSON string with updated values
                     $newElementDestination = json_encode([
                         'type' => 'summaryScreen',
@@ -521,7 +522,10 @@ class ProcessExporter extends ExporterBase
                     ]);
 
                     // Set the new attribute value at the specified XPath
-                    Utils::setAttributeAtXPath($this->model, $path, 'pm:elementDestination', htmlspecialchars($newElementDestination, ENT_QUOTES));
+                    Utils::setAttributeAtXPath(
+                        $this->model, $path, 'pm:elementDestination',
+                        htmlspecialchars($newElementDestination, ENT_QUOTES)
+                    );
                 }
             }
         }
