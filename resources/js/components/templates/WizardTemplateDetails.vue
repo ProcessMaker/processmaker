@@ -7,7 +7,7 @@
       :hide-footer="true"
       @close="close"
     >
-      <b-row v-if="!showHelperProcess">
+      <b-row v-if="!showHelperProcess" align-v="center">
         <b-col class="wizard-template-carousel col-5">
           <b-carousel fade :interval="slideInterval">
             <b-carousel-slide v-for="(image, index) in templateSlides" :key="index" :img-src="image"/>
