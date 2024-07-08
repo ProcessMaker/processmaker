@@ -21,6 +21,10 @@ class ProcessExporter extends ExporterBase
 
     public static $fallbackMatchColumn = 'name';
 
+    const BPMN_TASK = 'bpmn:task';
+
+    const BPMN_MANUAL_TASK = 'bpmn:manualTask';
+
     public function export() : void
     {
         $process = $this->model;
@@ -263,8 +267,8 @@ class ProcessExporter extends ExporterBase
     private function exportAssignments()
     {
         $tags = [
-            'bpmn:task',
-            'bpmn:manualTask',
+            self::BPMN_TASK,
+            self::BPMN_MANUAL_TASK,
             'bpmn:callActivity',
         ];
 
@@ -491,8 +495,8 @@ class ProcessExporter extends ExporterBase
     {
         // Tags to search for in the model definitions
         $tags = [
-            'bpmn:task',
-            'bpmn:manualTask',
+            self::BPMN_TASK,
+            self::BPMN_MANUAL_TASK,
             'bpmn:endEvent',
         ];
 
