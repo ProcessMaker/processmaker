@@ -36,10 +36,16 @@
       </div>
       <div class="processes-info">
           <div class="mobile-menu-control" v-show="showMobileMenuControl">
-            <span @click="showMenu = !showMenu">
+            <div class="menu-button" @click="showMenu = !showMenu">
               <i class="fa fa-bars"></i>
               {{ category?.name || '' }}
-            </span>
+            </div>
+            <div class="bookmark-button" @click="showBookmarks">
+              <i class="fas fa-bookmark"></i>
+            </div>
+            <div class="search-button" @click="$root.mobileSearchVisible = !$root.mobileSearchVisible">
+              <i class="fas fa-search"></i>
+            </div>
           </div>
         
           <router-view @goBackCategory="goBackCategory"></router-view>
@@ -234,6 +240,13 @@ export default {
     hasTemplateParams(url) {
       return url.search.includes("&template=");
     },
+    showBookmarks() {
+      if (this.$route.query.categoryId !== "bookmarks") {
+        this.$router.push({ name: "index", query: { categoryId: "bookmarks" } });
+      }
+    },
+    showSearch() {
+    }
   },
 };
 </script>
@@ -363,11 +376,31 @@ export default {
   font-size: 1.3em;
   margin-top: 10px;
   margin-left: 1em;
-  i {
-    margin-right: 3px;
+  margin-right: 1em;
+  align-items: center;
+
+  .menu-button {
+    flex-grow: 1;
+    i {
+      margin-right: 3px;
+    }
   }
+
+  .bookmark-button {
+    display: flex;
+    padding: 10px;
+    margin-right: 10px;
+    font-size: 1.1em;
+  }
+
+  .search-button {
+    display: flex;
+    padding: 10px;
+    font-size: 1.1em;
+  }
+
   @media (max-width: $lp-breakpoint) {
-    display: block;
+    display: flex;
   }
 }
 

@@ -1,6 +1,5 @@
 <template>
   <div class="process-listing h-100">
-
     <CardProcess
       :key="index"
       v-if="!isTemplateCategory"

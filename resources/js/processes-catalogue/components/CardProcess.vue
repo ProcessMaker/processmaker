@@ -246,6 +246,7 @@ export default {
   justify-content: flex-start;
   @media (max-width: $lp-breakpoint) {
     display: block;
+    height: auto;
   }
 }
 .text-custom {

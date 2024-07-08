@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use ProcessMaker\Helpers\DefaultColumns;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -23,7 +24,7 @@ class InboxRulesController extends Controller
         $order_direction = $request->input('order_direction', 'desc');
         $per_page = $request->input('per_page', 10);
         $filter = $request->input('filter', '');
-        
+
         $query = InboxRule::query()->where('user_id', $request->user()->id);
 
         if (!empty($filter)) {
@@ -50,6 +51,7 @@ class InboxRulesController extends Controller
         if (empty($inboxRule->data)) {
             $inboxRuleArray['data'] = (object) [];
         }
+
         return new ApiResource($inboxRuleArray);
     }
 
@@ -67,13 +69,18 @@ class InboxRulesController extends Controller
                 Rule::unique('inbox_rules')->where(function ($query) use ($request) {
                     return $query->where('user_id', $request->user()->id);
                 }),
-                'alpha_spaces'
-            ]
-        ]);        
+                'alpha_spaces',
+            ],
+        ]);
+
+        $columns = $request->input('columns', null);
+        if (!$columns) {
+            $columns = DefaultColumns::get('tasks');
+        }
 
         // We always create a new saved search when we create a new inbox rule
         $savedSearch = InboxRule::createSavedSearch([
-            'columns' => $request->input('columns'),
+            'columns' => $columns,
             'advanced_filter' => $request->input('advanced_filter'),
             'pmql' => $request->input('pmql') ?? '',
             'user_id' => $request->user()->id,
@@ -98,7 +105,7 @@ class InboxRulesController extends Controller
             $inboxRule->applyToExistingTasks();
         }
 
-        return response([], 204);
+        return response($inboxRule, 201);
     }
 
     /**

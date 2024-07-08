@@ -148,7 +148,9 @@ class RollbackProcessRequest
         if ($this->newTask->user_id) {
             $this->newTask->sendActivityActivatedNotifications();
         }
-        event(new ActivityAssigned($this->newTask));
+        if ($this->newTask->element_type === 'task') {
+            event(new ActivityAssigned($this->newTask));
+        }
 
         $this->addComment();
     }
