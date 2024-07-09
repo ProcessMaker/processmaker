@@ -1,6 +1,6 @@
 <template>
   <div class="data-table">
-    <Recommendations if="showRecommendations" />
+    <Recommendations v-if="showRecommendations" />
     <div
       v-show="true"
       data-cy="tasks-table"
