@@ -98,7 +98,7 @@
                   >
                     <avatar-image
                       v-if="userRequested"
-                      size="25"
+                      size="32"
                       class="d-inline-flex pull-left align-items-center"
                       :input-data="requestBy"
                       hide-name="true"
@@ -121,12 +121,20 @@
                     role="cell"
                     class="custom-font-text"
                   >
+                  <div class="avatar-wrapper">
                     <avatar-image
-                      size="25"
-                      class="d-inline-flex pull-left align-items-center"
-                      :input-data="participants"
+                      v-for="(participant, index) in participants"
+                      :key="index"
+                      size="32"
+                      class="avatar"
+                      :input-data="participant"
                       hide-name="true"
+                      :custom-style="borderRoundedWhite"
                     />
+                    <div v-if="hiddenParticipantsCount > 0" class="more-avatars">
+                      ...
+                    </div>
+                  </div>
                   </td>
                 </tr>
                 <tr v-if="request.created_at">
@@ -260,9 +268,17 @@ export default {
       errorTask: authValues.errorTask,
       disabled: false,
       collapsed: false,
+      borderRoundedWhite: "border: 2px solid white;",
+      minVisible: 5,
     };
   },
   computed: {
+    visibleParticipants() {
+      return this.participants.length > this.minVisible ? this.participants.slice(0, this.minVisible) : this.participants;
+    },
+    hiddenParticipantsCount() {
+      return this.participants.length > this.minVisible ? this.participants.length - this.minVisible : 0;
+    },
     textColorClass() {
       const colors = {
         ACTIVE: "#4EA075",
@@ -543,5 +559,34 @@ export default {
   font-size: 16px;
   line-height: 24px;
   letter-spacing: -0.02%;
+}
+
+.avatar-wrapper {
+  display: flex;
+}
+
+.avatar-wrapper .avatar {
+  margin-left: -10px;
+  border: 0px solid white;
+  border-radius: 50%;
+}
+
+.avatar-wrapper .avatar:first-child {
+  margin-left: 0;
+}
+
+.avatar-wrapper .more-avatars {
+  display: flex;
+  justify-content: center;
+  margin-left: -10px;
+  border: 2px solid white;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  background-color: #ccc;
+  color: #5E5E5E;
+  font-weight: bold;
+  font-size: 22px;
+  margin-top: 1.5%;
 }
 </style>
