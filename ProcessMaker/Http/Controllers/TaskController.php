@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Filters\SaveSession;
+use ProcessMaker\Helpers\DefaultColumns;
 use ProcessMaker\Helpers\MobileHelper;
 use ProcessMaker\Jobs\MarkNotificationAsRead;
 use ProcessMaker\Managers\DataManager;
@@ -16,8 +17,6 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
-use ProcessMaker\Package\SavedSearch\Http\Controllers\SavedSearchController;
-use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
 
@@ -46,23 +45,7 @@ class TaskController extends Controller
 
         $userFilter = SaveSession::getConfigFilter('taskFilter', Auth::user());
 
-        // Get default Saved search config
-        if (class_exists(SavedSearch::class)) {
-            $defaultSavedSearch = SavedSearch::firstSystemSearchFor(
-                Auth::user(),
-                SavedSearch::KEY_TASKS,
-            );
-            if ($defaultSavedSearch) {
-                $defaultColumns = SavedSearchController::adjustColumnsOf(
-                    $defaultSavedSearch->columns,
-                    SavedSearch::TYPE_TASK
-                );
-            } else {
-                $defaultColumns = null;
-            }
-        } else {
-            $defaultColumns = null;
-        }
+        $defaultColumns = DefaultColumns::get('tasks');
 
         $taskDraftsEnabled = TaskDraft::draftsEnabled();
 

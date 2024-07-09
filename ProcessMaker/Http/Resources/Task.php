@@ -114,20 +114,6 @@ class Task extends ApiResource
         }
     }
 
-    private function loadUserRequestPermission(ProcessRequest $request, User $user, array $permissions)
-    {
-        $permissions[] = [
-            'process_request_id' => $request->id,
-            'allowed' => $user ? $user->can('view', $request) : false,
-        ];
-
-        if ($request->parentRequest && $user) {
-            $permissions = $this->loadUserRequestPermission($request->parentRequest, $user, $permissions);
-        }
-
-        return $permissions;
-    }
-
     /**
      * Add the active users to the list of assigned users
      *
@@ -161,17 +147,5 @@ class Task extends ApiResource
     private function addActiveAssignedGroupMembers(array $groups, array $assignedUsers)
     {
         return (new Process)->getConsolidatedUsers($groups, $assignedUsers);
-    }
-
-    private function getData()
-    {
-        if ($this->loadedData) {
-            return $this->loadedData;
-        }
-        $dataManager = new DataManager();
-        $task = $this->resource->loadTokenInstance();
-        $this->loadedData = $dataManager->getData($task);
-
-        return $this->loadedData;
     }
 }
