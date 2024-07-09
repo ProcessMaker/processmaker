@@ -22,13 +22,7 @@
             <div class="card-divider col-11" />
           </b-row>
           <div class="mt-3 mb-3">
-            <template v-if="type === 'tasks'">
-              <b-link href="">
-                #{{ item.process_request.id }}
-                {{ item.process.name }}
-              </b-link>
-            </template>
-            <template v-if="type === 'requests'">
+            <template>
               <template v-for="(row, index) in fields">
                 <div
                   :key="index"
@@ -47,16 +41,21 @@
             <img
               src="/img/smartinbox-images/open-case.svg"
               alt="case_number"
-            />
+            >
             <span class="footer-case-number">
-              #{{ item.case_number }}
+              #{{ caseNumber }}
             </span>
           </b-col>
           <b-col
-            v-if="type === 'requests'"
-            cols="4"
+            cols="8"
             class="align-left"
           >
+            <span
+              v-if="item.draft && item.status !== 'CLOSED' && type === 'tasks'"
+              class="footer-status badge-draft"
+            >
+              {{ $t('Draft') }}
+            </span>
             <b-badge
               class="footer-status"
               :style="colorStatus"
@@ -119,25 +118,39 @@ export default {
       formatItem: [],
     };
   },
+  computed: {
+    caseNumber() {
+      if (this.type === "requests") {
+        return this.item.case_number;
+      }
+      if (this.type === "tasks") {
+        return this.item.process_request.id;
+      }
+      return null;
+    },
+  },
   mounted() {
     this.formatItem = cloneDeep(this.item);
     window.addEventListener("resize", () => {
-      console.log("resize");
-      this.splitText(this.sanitize(this.item.case_title_formatted));
+      if (this.type === "requests") {
+        this.splitText(this.sanitize(this.item.case_title_formatted));
+      } else if (this.type === "tasks") {
+        this.splitText(this.sanitize(this.item.process_request.case_title_formatted));
+      }
     });
     if (this.type === "tasks") {
       this.splitText(this.sanitize(this.item.process_request.case_title_formatted));
     } else if (this.type === "requests") {
       this.splitText(this.sanitize(this.item.case_title_formatted));
-      this.fields.forEach((row) => {
-        if (row.field === "tasks") {
-          this.formatItem[row.field] = this.formatActiveTasks(this.formatItem.active_tasks);
-        }
-        if (row.format && row.format === "dateTime") {
-          this.formatItem[row.field] = this.formatDate(this.formatItem[row.field]);
-        }
-      });
     }
+    this.fields.forEach((row) => {
+      if (row.field === "tasks") {
+        this.formatItem[row.field] = this.formatActiveTasks(this.formatItem.active_tasks);
+      }
+      if (row.format && row.format === "dateTime") {
+        this.formatItem[row.field] = this.formatDate(this.formatItem[row.field]);
+      }
+    });
   },
   beforeDestroy() {
     window.removeEventListener("resize");
@@ -146,39 +159,30 @@ export default {
     /**
      * Show info in the badge
      */
-    showBadge(item) {
-      if (this.type === "tasks") {
-        if (item.due_notified === 1) {
-          this.colorStatus = "background-color: #FFF5DB";
-          this.taskStatus = "Due: ";
-          return this.taskStatus + this.formatDate(item.due_at);
-        }
-        this.taskStatus = "Done: ";
-        this.colorStatus = "background-color: #B8F2DF";
-        return this.taskStatus + this.formatDate(item.created_at);
+    showBadge() {
+      const statusMap = {
+        "DRAFT": { color: "#F9E8C3", label: this.$t("Draft") },
+        "CANCELED": { color: "#FFC7C7", label: this.$t("Canceled") },
+        "COMPLETED": { color: "#B8DCF7", label: this.$t("Completed") },
+        "ERROR": { color: "#FFC7C7", label: this.$t("Error") },
+        "ACTIVE": {
+          "overdue": { color: "#FFC7C7", label: this.$t("Overdue") },
+          "open": { color: "#C8F0CF", label: this.$t("In Progress") },
+          "default": { color: "#C8F0CF", label: this.$t("In Progress") }
+        },
+        "default": { color: "#C8F0CF", label: this.$t("In Progress") }
+      };
+
+      if (this.item.status === "ACTIVE") {
+        const advanceStatus = this.item.advanceStatus ? statusMap["ACTIVE"][this.item.advanceStatus] : statusMap["ACTIVE"]["default"];
+        this.colorStatus = `background-color: ${advanceStatus.color}`;
+        this.requestBadge = advanceStatus.label;
+      } else {
+        const currentStatus = statusMap[this.item.status] || statusMap["default"];
+        this.colorStatus = `background-color: ${currentStatus.color}`;
+        this.requestBadge = currentStatus.label;
       }
-      switch (this.item.status) {
-        case "DRAFT":
-          this.colorStatus = "background-color: #F9E8C3";
-          this.requestBadge = "Draft";
-          break;
-        case "CANCELED":
-          this.colorStatus = "background-color: #FFC7C7";
-          this.requestBadge = "Canceled";
-          break;
-        case "COMPLETED":
-          this.colorStatus = "background-color: #B8DCF7";
-          this.requestBadge = "Completed";
-          break;
-        case "ERROR":
-          this.colorStatus = "background-color: #FFC7C7";
-          this.requestBadge = "Error";
-          break;
-        default:
-          this.colorStatus = "background-color: #C8F0CF";
-          this.requestBadge = "In Progress";
-          break;
-      }
+
       return this.requestBadge;
     },
     /**
@@ -322,5 +326,11 @@ a {
   overflow: hidden;
   text-overflow: ellipsis;
   padding-bottom: 10px;
+}
+.badge-draft {
+  background-color: #F9E8C3;
+  margin-right: 3px;
+  line-height: 1;
+  display: inline-block;
 }
 </style>
