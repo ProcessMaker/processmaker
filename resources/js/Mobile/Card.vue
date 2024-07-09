@@ -62,6 +62,12 @@
             >
               {{ showBadge(item) }}
             </b-badge>
+            <img
+              v-if="item.is_priority"
+              src="/img/priority.svg"
+              class="mobile-priority"
+              :alt="$t('Priority')"
+            >
           </b-col>
         </b-row>
       </b-card-footer>
@@ -206,16 +212,18 @@ export default {
       // Split the text into two lines
       this.title1 = "";
       this.title2 = "";
+      let lineBreak = false;
       this.isVisible = true;
       const words = text.split(' ');
       this.$nextTick(() => {
         const fullText = this.$refs.fullText;
         const fullWidth = fullText.offsetWidth;
         words.forEach((word) => {
-          if ((this.title1 + word).length < (fullWidth / 7)) {
+          if (((this.title1 + word).length < (fullWidth / 7)) && !lineBreak) {
             this.title1 += `${word} `;
           } else {
             this.title2 += `${word} `;
+            lineBreak = true;
           }
         });
         this.isVisible = false;
@@ -332,5 +340,10 @@ a {
   margin-right: 3px;
   line-height: 1;
   display: inline-block;
+}
+.mobile-priority {
+  background-color: #F8E3E5;
+  padding: 5px;
+  border-radius: 4.5px;
 }
 </style>
