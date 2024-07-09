@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
@@ -939,5 +940,20 @@ class ProcessRequestsTest extends TestCase
         $json = $response->json();
 
         $this->assertEquals($hit->id, $json['data'][0]['id']);
+    }
+
+    // Test abeFlag function
+    public function testabeFlag()
+    {
+        //create a token
+        $token = ProcessRequestToken::factory()->create([
+            'process_request_id' => $request->id,
+            'user_id' => $this->user,
+        ]);
+        $this->assertEquals($token->is_actionbyemail, 0);
+
+        (new ProcessRequestController)->abeFlag($token->getKey());
+
+        $this->assertEquals($token->is_actionbyemail, 1);
     }
 }

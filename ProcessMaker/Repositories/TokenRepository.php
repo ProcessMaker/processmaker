@@ -28,6 +28,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\TokenRepositoryInterface;
+use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
 
 /**
  * Execution Instance Repository.
@@ -147,11 +148,6 @@ class TokenRepository implements TokenRepositoryInterface
             }
         }
 
-        // Check if is script or self service again to send the Action by email with the updated token
-        if (!$isScriptOrServiceTask) {
-            $this->validateAndSendActionByEmail($activity, $token, $user->email);
-        }
-
         //Default 3 days of due date
         $due = $this->getDueVariable($activity, $token);
         $token->due_at = $due ? Carbon::now()->addHours($due) : null;
@@ -161,6 +157,16 @@ class TokenRepository implements TokenRepositoryInterface
         $token->getInstance()->updateCatchEvents();
         $token->saveOrFail();
         $token->setId($token->getKey());
+
+        // Check if is script or self service again to send the Action by email with the updated token
+        if (!$isScriptOrServiceTask) {
+            $this->validateAndSendActionByEmail($activity, $token, $user->email);
+            $isActionsByEmail = $activity->getProperty('isActionsByEmail', false);
+            if ($isActionsByEmail) {
+                (new ProcessRequestController)->abeFlag($token->getKey());
+            }
+        }
+
         $request = $token->getInstance();
         $request->notifyProcessUpdated('ACTIVITY_ACTIVATED');
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());

@@ -780,4 +780,20 @@ class ProcessRequestController extends Controller
 
         return new ApiCollection($response);
     }
+
+    /**
+     * Adding abe flag
+     * @param  int  $id
+     * 
+     * @return Response
+     */
+    public function abeFlag($id)
+    {
+        $query = ProcessRequestToken::query();
+        $query->where('id', $id)
+            ->where('status', 'ACTIVE')
+            ->update(['is_actionbyemail' => true]);
+            
+        return response()->json([], 200);
+    }
 }
