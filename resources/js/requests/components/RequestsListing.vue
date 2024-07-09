@@ -9,10 +9,28 @@
         :unread="unreadColumnName"
         :loading="shouldShowLoader"
         @table-row-click="handleRowClick"
+        @table-column-mouseover="handleColumnMouseover"
+        @table-column-mouseleave="handleColumnMouseleave"
       >
         <!-- Slot Table Header -->
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
-          <div :key="index" style="display: inline-block;">{{ $t(column.label) }}</div>
+          <div
+            :key="index"
+            :id="`requests-table-column-${column.field}`"
+            class="pm-table-column-header-text"
+          >
+            {{ $t(column.label) }}
+          </div>
+          <b-tooltip
+            :key="index"
+            :target="`requests-table-column-${column.field}`"
+            custom-class="pm-table-tooltip-header"
+            placement="bottom"
+            :delay="0"
+            @show="checkIfTooltipIsNeeded"
+          >
+            {{ $t(column.label) }}
+          </b-tooltip>
         </template>
         <!-- Slot Table Header filter Button -->
         <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
@@ -31,6 +49,7 @@
                                    :columnSortAsc="column.sortAsc"
                                    :columnSortDesc="column.sortDesc"
                                    :filterApplied="column.filterApplied"
+                                   :columnMouseover="columnMouseover"
                                    @onChangeSort="onChangeSort($event, column.field)"
                                    @onApply="onApply($event, column.field)"
                                    @onClear="onClear(column.field)"
@@ -162,6 +181,7 @@ export default {
       previousAdvancedFilter: "",
       tableHeaders: [],
       unreadColumnName: "user_viewed_at",
+      columnMouseover: null,
     };
   },
   computed: {
@@ -257,18 +277,6 @@ export default {
           default: true,
           width: 220,
           truncate: true,
-        },
-        {
-          label: "Alternative",
-          field: "process_version_alternative",
-          sortable: true,
-          default: true,
-          width: 150,
-          truncate: true,
-          filter_subject: {
-            type: "Relationship",
-            value: "processVersion.alternative",
-          },
         },
         {
           label: "Task",
@@ -396,7 +404,22 @@ export default {
       };
     },
     formatProcessVersionAlternative(value) {
-      return `Alternative ${value}`;
+      let color = "primary";
+      let badge = "alternative-a";
+
+      if (value === "B") {
+        color = "secondary";
+        badge = "alternative-b";
+      } else if (value === null) {
+        return "-";
+      }
+
+      return `
+        <span 
+          class="badge badge-${color} status-${badge}"
+        >
+          ${this.$t('Alternative')} ${value}
+        </span>`;
     },
     transform(dataInput) {
       const data = _.cloneDeep(dataInput);
@@ -557,6 +580,12 @@ export default {
         type: 'requestFilter',
       }
     },
+    handleColumnMouseover(column) {
+      this.columnMouseover = column;
+    },
+    handleColumnMouseleave() {
+      this.columnMouseover = null;
+    },
   }
 };
 </script>
@@ -564,6 +593,10 @@ export default {
   .pm-table-ellipsis-column{
     text-transform: uppercase;
   }
+  .pm-table-column-header-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 </style>
 <style lang="scss" scoped>
   @import url("../../../sass/_scrollbar.scss");

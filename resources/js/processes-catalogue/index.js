@@ -42,6 +42,7 @@ new Vue({
     return {
       permission: window.ProcessMaker.permission,
       isDocumenterInstalled: window.ProcessMaker.isDocumenterInstalled,
+      categories: [],
     };
   },
   methods: {

@@ -991,6 +991,7 @@
   "Modified By Tasks": "Modified By Tasks",
   "Modified": "Modified",
   "month": "month",
+  "More": "More",
   "More Information": "More Information",
   "Multi Column": "Multi Column",
   "Multi-Instance (Parallel)": "Multi-Instance (Parallel)",
@@ -1581,6 +1582,7 @@
   "Show Me The Templates": "Show Me The Templates",
   "Show Mini-Map": "Show Mini-Map",
   "Show": "Show",
+  "Show More": "Show More",
   "Sign In": "Sign In",
   "Signal End Event": "Signal End Event",
   "Signal ID is required": "Signal ID is required",
@@ -2072,7 +2074,7 @@
   "We have e-mailed your password reset link!": "We have e-mailed your password reset link!",
   "We recommend using fewer than 25 form elements in your screen for optimal performance.": "We recommend using fewer than 25 form elements in your screen for optimal performance.",
   "We recommended a transparent PNG at :size pixels.": "We recommended a transparent PNG at :size pixels.",
-  "Select a Process below to get started.": "Select a Process to start your Case.",
+  "Select a process below to get started.": "Select a process below to get started.",
   "Web Entry": "Web Entry",
   "Webhook URL": "Webhook URL",
   "week": "week",
@@ -2282,5 +2284,7 @@
   "Type to search Screen": "Type to search Screen",
   "Type to search Chart": "Type to search Chart",
   "Open Case": "Open Case",
-  "Alternative": "Alternative"
+  "Alternative": "Alternative",
+  "No matching categories were found": "No matching categories were found",
+  "Search categories and processes": "Search categories and processes"
 }

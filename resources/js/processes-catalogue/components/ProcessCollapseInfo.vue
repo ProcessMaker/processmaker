@@ -1,14 +1,19 @@
 <template>
   <div id="processCollapseInfo">
     <div id="processData">
-      <process-header
+      <process-header-start
         :process="process"
         @goBack="goBack()"
-        @onProcessNavigate="onProcessNavigate()"
+      />
+      <process-header
+        :process="process"
+        :hide-header-options="true"
+        @goBack="goBack()"
+        @onProcessNavigate="onProcessNavigate"
       />
       <div
         id="collapseProcessInfo"
-        class="collapse show"
+        class="collapse show custom-class"
       >
         <div class="info-collapse">
           <div class="row">
@@ -97,6 +102,7 @@ import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
 import processNavigationMixin from "../../components/shared/processNavigation";
 import ProcessesMixin from "./mixins/ProcessesMixin";
 import ProcessHeader from "./ProcessHeader.vue";
+import ProcessHeaderStart from "./ProcessHeaderStart.vue";
 
 export default {
   components: {
@@ -108,6 +114,7 @@ export default {
     ProcessesCarousel,
     WizardHelperProcessModal,
     ProcessHeader,
+    ProcessHeaderStart,
   },
   mixins: [ProcessesMixin, ellipsisMenuMixin, processNavigationMixin],
   props: ["process", "currentUserId"],
@@ -160,7 +167,9 @@ export default {
     display: none;
   }
 }
-
+.custom-class {
+ margin-top: -13px;
+}
 .wizard-link {
   text-transform: none;
 }

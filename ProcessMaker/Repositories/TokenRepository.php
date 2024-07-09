@@ -96,8 +96,6 @@ class TokenRepository implements TokenRepositoryInterface
             $user = null;
         } else {
             $user = $token->getInstance()->getProcess()->getOwnerDocument()->getModel()->getNextUser($activity, $token);
-            // Validate if the task is enable the action by email
-            $this->validateAndSendActionByEmail($activity, $token, $user->email);
         }
         $this->addUserToData($token->getInstance(), $user);
         $this->addRequestToData($token->getInstance());
@@ -149,6 +147,11 @@ class TokenRepository implements TokenRepositoryInterface
             }
         }
 
+        // Check if is script or self service again to send the Action by email with the updated token
+        if (!$isScriptOrServiceTask) {
+            $this->validateAndSendActionByEmail($activity, $token, $user->email);
+        }
+
         //Default 3 days of due date
         $due = $this->getDueVariable($activity, $token);
         $token->due_at = $due ? Carbon::now()->addHours($due) : null;
@@ -190,7 +193,7 @@ class TokenRepository implements TokenRepositoryInterface
                         'token_abe' => $tokenAbe->id
                     ];
                     // Send Email
-                    return (new TaskActionByEmail())->sendAbeEmail($configEmail, $to, $data);
+                    return (new TaskActionByEmail())->sendAbeEmail($configEmail, $to, $token->getInstance()->getDataStore()->getData());
                 }
             }
         } catch (\Exception $e) {
@@ -204,8 +207,10 @@ class TokenRepository implements TokenRepositoryInterface
     /**
      * Get due Variable
      *
-     * @param Instance $instance
-     * @param User $user
+     * @param ActivityInterface $activity
+     * @param TokenInterface $token
+     *
+     * @return integer
      */
     private function getDueVariable(ActivityInterface $activity, TokenInterface $token)
     {

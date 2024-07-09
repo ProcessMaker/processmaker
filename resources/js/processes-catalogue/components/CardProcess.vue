@@ -1,34 +1,53 @@
 <template>
-  <div>
+  <div class="h-100">
     <SearchCards
       v-if="processList.length > 0 || showEmpty"
       :filter-pmql="onFilter"
     />
     <div
-      v-show="!loading && processList.length > 0"
-      class="processList"
+      id="infinite-list-card"
+      v-show="processList.length > 0"
+      class="processList d-flex"
+      ref="processListContainer"
     >
-      <Card
-        v-for="(process, index) in processList"
-        :key="`${index}_${renderKey}`"
-        :process="process"
-        @openProcessInfo="openProcessInfo"
-        :hideBookmark="categoryId === 'all_templates'"
-      />
-      <pagination
-        :total-row="totalRow"
-        :per-page="perPage"
-        @onPageChanged="onPageChanged"
-      />
-    </div>
-    <div
-      v-if="loading"
-      class="d-flex justify-content-center align-items-center m-5"
-    >
-      <data-loading
-        v-show="shouldShowLoader"
-        empty-icon="beach"
-      />
+      <template v-for="(process, index) in processList">
+        <Card
+          :key="`${index}_${renderKey}`"
+          :process="process"
+          :show-cards="true"
+          :current-page="currentPage"
+          :total-pages="totalPages"
+          :card-message="cardMessage"
+          :loading="false"
+          @openProcessInfo="openProcessInfo"
+          @callLoadCard="loadCard"
+          :hideBookmark="categoryId === 'all_templates'"
+        />
+
+          <div v-if="(index % perPage === perPage - 1) && processList.length >= perPage" style="width: 75%;">
+            
+              <Card v-if="((index + 1) === processList.length)"
+              style="width: 100%;"
+              :show-cards="false"
+              :current-page="counterPage + Math.floor(index / perPage)"
+              :total-pages="totalPages"
+              :card-message="'show-more'"
+              :loading="loading"
+              @callLoadCard="loadCard"
+            />
+
+              <Card
+              v-else
+              style="width: 100%;"
+              :show-cards="false"
+              :current-page="counterPage + Math.floor(index / perPage)"
+              :total-pages="totalPages"
+              :card-message="cardMessage"
+              :loading="loading"
+              @callLoadCard="loadCard"
+            />
+        </div>
+      </template>
     </div>
     <CatalogueEmpty
       v-if="!loading && processList.length === 0"
@@ -46,6 +65,7 @@ import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import Card from "./utils/Card.vue";
 import { EventBus } from '../index.js';
 
+
 export default {
   components: {
     pagination, CatalogueEmpty, SearchCards, Card,
@@ -54,6 +74,7 @@ export default {
   props: ["categoryId"],
   data() {
     return {
+      counterPage: 2,
       processList: [],
       currentdata: [],
       currentPage: 1,
@@ -69,30 +90,62 @@ export default {
       showEmpty: false,
       loading: false,
       renderKey: 0,
+      showMoreVisible: false,
+      cardMessage: "show-more",
+      sumHeight: 0,
     };
   },
   watch: {
-    categoryId() {
+    async categoryId() {
+      const listCard = document.querySelector(".processes-info");
+      listCard.scrollTop = 0;
       this.pmql = "";
       this.filter = "";
+      this.currentPage = 1;
+      this.processList = [];
+
+      await this.$nextTick();
       this.loadCard();
     },
   },
   mounted() {
-    this.loadCard();
+    this.loadCard(()=>{
+      this.$nextTick(()=>{
+          const listCard = document.querySelector(".processes-info");
+          
+          listCard.addEventListener("scrollend", () => this.handleScroll());
+      });
+    }, null);
+  },
+  destroyed() {
+    const listCard = document.querySelector(".processes-info");
+    listCard.removeEventListener("scrollend", this.handleScroll);
   },
   methods: {
-    loadCard() {
+    loadCard(callback, message) {
+      if(message === 'bookmark') {
+        this.processList = [];
+      }
       this.loading = true;
       const url = this.buildURL();
       ProcessMaker.apiClient
         .get(url)
         .then((response) => {
           this.loading = false;
-          this.processList = response.data.data;
+          this.processList = this.processList.concat(response.data.data);
           this.totalRow = response.data.meta.total;
           this.totalPages = response.data.meta.total_pages;
+          this.showMoreVisible = this.processList.length < this.totalRow;
           this.renderKey = this.renderKey + 1;
+          callback?.();
+          const container =  document.querySelector(".processes-info");
+          if(!callback) {
+            this.$nextTick(() => {
+                if((container.scrollTop+container.clientHeight)>=container.scrollHeight-5){
+                  container.scrollTop = container.scrollTop - 1050;
+                } 
+            });
+          } 
         });
     },
     /**
@@ -154,18 +207,28 @@ export default {
      * Load Cards in the new pagination
      */
     onPageChanged(page) {
-      this.currentPage = page;
-      this.loadCard();
+      if (page > this.currentPage && this.processList.length < this.totalRow) {
+        this.currentPage = page;
+        this.loadCard();
+      }
     },
     /**
      * Build the PMQL
      */
     onFilter(value, showEmpty = false) {
+      this.processList = [];
       this.currentPage = 1;
       this.pmql = `(fulltext LIKE "%${value}%")`;
       this.filter = value;
       this.showEmpty = showEmpty;
       this.loadCard();
+    },
+    handleScroll() {
+      const container =  document.querySelector(".processes-info");
+      if ((container.scrollTop + container.clientHeight >= container.scrollHeight - 5)) {
+        this.cardMessage = "show-page";
+        this.onPageChanged(this.currentPage + 1);
+      }
     },
   },
 };
@@ -177,7 +240,10 @@ export default {
 .processList {
   display: flex;
   flex-wrap: wrap;
-  
+  position: relative;
+  height: 100%;
+  overflow: unset;
+  justify-content: flex-start;
   @media (max-width: $lp-breakpoint) {
     display: block;
   }

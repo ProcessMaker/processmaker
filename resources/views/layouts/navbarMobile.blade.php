@@ -4,6 +4,7 @@
   if (
     Request::path() !== 'tasks' &&
     Request::path() !== 'requests' &&
+    Request::path() !== 'cases' &&
     !str_starts_with(Request::path(), 'process-browser')
   ) {
     $showPrincipalNavbar = 0;
@@ -67,9 +68,9 @@
             'isActive' => Request::path() === 'tasks',
           ],
           [
-            'name' => __('Requests'),
-            'url' => route('requests.index'),
-            'isActive' => Request::path() === 'requests',
+            'name' => __('Cases'),
+            'url' => route('cases.index'),
+            'isActive' => Request::path() === 'cases',
           ],
           [
             'name' => __('Processes'),

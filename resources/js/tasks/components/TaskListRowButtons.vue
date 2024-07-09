@@ -11,7 +11,9 @@
                       variant="light"
                       size="sm">
               <i v-if="button.icon" 
-                 :class="button.icon"/>
+                 :class="button.icon"
+                 class="task-row-icon"
+              />
               <img v-else-if="button.imgSrc"
                    :src="button.imgSrc"
                    :alt="button.title"/>
@@ -119,5 +121,8 @@
     border-color: transparent;
     border-style: solid;
     border-bottom-color: #F2F6F7;
+  }
+  .task-row-icon {
+    color: #6A7888;
   }
 </style>
