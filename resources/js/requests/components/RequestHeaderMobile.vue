@@ -43,7 +43,13 @@
           key="content"
         >
           <td colspan="2" style="padding: 0%;">
-            <table class="table m-0 border-0">
+            <table class="table m-0 border-0" aria-describedby="table-description">
+              <thead v-if="false">
+                <tr>
+                  <th scope="col" class="pl-0"></th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
               <tbody>
                 <tr v-if="request.case_number">
                   <td
@@ -499,6 +505,7 @@ export default {
 }
 .status-header-class {
   height: 85px;
+  cursor: pointer;
 }
 .collapse-enter-active,
 .collapse-leave-active {
@@ -509,12 +516,8 @@ export default {
   max-height: 0;
   overflow: hidden;
 }
-.status-header-class {
-  cursor: pointer;
-}
 .detail-header-class {
   padding: 0; 
-  line-height: 1;
   font-family: 'Open', sans-serif;
   font-weight: 500;
   font-size: 14px;
