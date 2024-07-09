@@ -13,6 +13,7 @@
     :hide-header="hideHeader"
     :header-class="headerClass"
     :footer-class="footerClass"
+    :content-class="contentClass"
     :size="size"
     :ok-only="okOnly"
     no-close-on-backdrop
@@ -132,7 +133,8 @@
       "requiredInFooter",
       "titleIcon",
       "headerClass",
-      "footerClass"
+      "footerClass",
+      "contentClass"
     ],
     methods: {
       onEvent(name, event) {

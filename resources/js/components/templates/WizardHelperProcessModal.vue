@@ -48,7 +48,7 @@ export default {
   font-weight: 400;
 }
 .wizard-details-description {
-  font-size: 16px;
+  font-size: 20px;
 }
 
 .wizard-details-headline {
