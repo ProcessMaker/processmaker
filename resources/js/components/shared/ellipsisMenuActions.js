@@ -265,7 +265,7 @@ export default {
           content: "Edit",
           icon: "fas fa-pen-square",
           permission: [
-            "edit-processes",
+            "edit-flow_genies",
             "view-additional-asset-actions",
           ],
         },
@@ -279,7 +279,7 @@ export default {
           value: "remove-item",
           content: "Delete",
           icon: "fas fa-trash",
-          permission: ["delete-processes", "view-additional-asset-actions"],
+          permission: ["delete-flow_genies", "view-additional-asset-actions"],
         },
       ],
       myTemplateActions: [
