@@ -8,7 +8,7 @@
                     :state="stateTabName">
       </b-form-input>
       <b-form-invalid-feedback :state="stateTabName">
-        {{ $t('Please enter Tab Name') }}
+        {{ stateMessageTabName }}
       </b-form-invalid-feedback>
     </b-form-group>
     <b-form-group :label="$t('Select a Saved Search')"
@@ -60,6 +60,10 @@
       showOptionSeeTabOnMobile: {
         type: Boolean,
         default: false
+      },
+      tabsList: {
+        type: Array,
+        defalut: []
       }
     },
     data() {
@@ -73,6 +77,7 @@
         seeTabOnMobile: false,
         options: [],
         stateTabName: null,
+        stateMessageTabName: "",
         stateIdSavedSearch: null,
         hideSelectSavedSearch: false
       };
@@ -88,6 +93,12 @@
         this.stateTabName = null;
         this.stateIdSavedSearch = null;
         if (!this.tabName) {
+          this.stateMessageTabName = this.$t('Please enter Tab Name');
+          this.stateTabName = false;
+          return;
+        }
+        if (this.tabsList.some(item => item.name === this.tabName)) {
+          this.stateMessageTabName = this.$t("Duplicate");
           this.stateTabName = false;
           return;
         }

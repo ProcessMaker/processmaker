@@ -64,6 +64,7 @@
                :custom-class="'pt-popover-body'"
                @shown="onShown">
       <CreateSavedSearchTab :ref="'createSavedSearchTab'"
+                            :tabsList="tabsList"
                             @onCancel="onCancelCreateSavedSerchTab"
                             @onOk="onOkCreateSavedSerchTab">
       </CreateSavedSearchTab>
@@ -76,6 +77,7 @@
       <CreateSavedSearchTab :ref="'tabSettingForm'"
                             :hideFormsButton="true"
                             :showOptionSeeTabOnMobile="true"
+                            :tabsList="tabsList"
                             @onOk="onOkTabSetting">
       </CreateSavedSearchTab>
     </b-modal>
@@ -169,7 +171,7 @@
             name: this.$t("My Tasks"),
             filter: "",
             pmql: `(user_id = ${ProcessMaker.user.id}) AND (process_id = ${this.process.id})`,
-            columns: window.Processmaker.defaultColumns || null
+            columns: window.Processmaker.defaultColumns || []
           }
         ],
         activeTab: 0,
@@ -278,18 +280,21 @@
       requestTabConfiguration() {
         if (this.process.launchpad) {
           let properties = JSON.parse(this.process.launchpad.properties);
-          if ("tabs" in properties) {
+          if ("tabs" in properties && properties.tabs.length > 0) {
             this.tabsList = properties.tabs;
           }
         }
         this.onTabsInput(0);
       },
       saveTabConfiguration() {
-        this.process.properties.tabs = this.tabsList;
-        let properties = this.process.properties;
-        //If launchpad does not exist, this conversion is necessary. We need to 
-        //review this behavior of the inherited methods.
-        if (!this.process.launchpad) {
+        let properties = {};
+        if (this.process.launchpad) {
+          properties = JSON.parse(this.process.launchpad.properties);
+          properties.tabs = this.tabsList;
+        } else {
+          //If launchpad does not exist, this conversion is necessary. We need to 
+          //review this behavior of the inherited methods.
+          properties.tabs = this.tabsList;
           properties = JSON.stringify(properties);
         }
         ProcessMaker.apiClient

@@ -192,6 +192,7 @@ export default {
           disabled: false,
         },
       ],
+      tabs: []
     };
   },
   mounted() {
@@ -214,6 +215,9 @@ export default {
           const firstResponse = response.data.shift();
           const unparseProperties = firstResponse?.launchpad?.properties;
           const launchpadProperties = unparseProperties ? JSON.parse(unparseProperties) : "";
+          if ("tabs" in launchpadProperties) {
+            this.tabs = launchpadProperties.tabs;
+          }
           if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
             this.selectedSavedChart = {
               id: this.verifyProperty(launchpadProperties.saved_chart_id) ? this.defaultChart.id : launchpadProperties.saved_chart_id,
@@ -295,7 +299,8 @@ export default {
         screen_title: this.selectedScreen.title,
         icon: this.selectedLaunchpadIcon,
         icon_label: this.selectedLaunchpadIconLabel,
-      });
+        tabs: this.tabs
+      }, null, 1);
 
       ProcessMaker.apiClient
         .put(`process_launchpad/${this.options.id}`, {
