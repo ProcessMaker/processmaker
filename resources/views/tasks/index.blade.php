@@ -155,6 +155,7 @@
                 @data-loading="dataLoading"
                 @tab-count="handleTabCount"
                 @on-fetch-task="onFetchTask"
+                :show-recommendations="true"
               ></tasks-list>
             </div>
 

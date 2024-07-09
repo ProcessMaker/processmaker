@@ -1,5 +1,5 @@
 <template>
-  <b-card class="m-3 card-mobile" no-body>
+  <b-card v-if="showCards" class="m-3 card-mobile" no-body>
     <a :href="openURL">
       <b-card-body
         class="card-mobile-body"
@@ -68,6 +68,13 @@
       </b-card-footer>
     </a>
   </b-card>
+  <b-card v-else class="card-tasks">
+    <div class="card-tasks-content">
+      <span v-if="cardMessage === 'show-page'">Page {{ currentPage }} of {{ totalPages }}</span>
+      <span v-if="cardMessage === 'show-more' && !loading"> {{ $t('Show More') }}</span>
+      <span v-if="loading"><i class="fas fa-spinner fa-spin"></i> {{ $t('Loading') }}...</span>
+    </div>
+  </b-card>
 </template>
 
 <script>
@@ -76,7 +83,30 @@ import AvatarImage from "../components/AvatarImage.vue";
 
 export default {
   components: { AvatarImage },
-  props: ["type", "item", "fields"],
+  props: {
+    item: null,
+    type: null,
+    loading: false,
+    cardMessage: null,
+    currentPage: {
+      type: Number,
+      default: 1,
+    },
+    totalPages: {
+      type: Number,
+      default: 0
+    } ,
+    process: null,
+    hideBookmark: {
+      type: Boolean,
+      default: false
+    },
+    showCards: true,
+    fields: {
+      type: Array,
+      default: () => []
+    },
+  },
   data() {
     return {
       openURL: "",
@@ -244,6 +274,27 @@ a {
 }
 .align-left {
   text-align: end;
+}
+
+.card-tasks {
+  height: 40px;
+  margin-top: 1rem;
+  margin-right: 1rem;
+  border-radius: 8px;
+  background-color: #E5EDF3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-left: 1rem;
+}
+
+.card-tasks-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 .card-divider {
   border-top: 1px solid #CDDDEE;
