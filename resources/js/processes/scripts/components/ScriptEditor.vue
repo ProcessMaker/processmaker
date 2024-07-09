@@ -298,9 +298,9 @@
                           <div class="text-light bg-danger">
                             {{ preview.error.exception }}
                           </div>
-                          <div class="text-light text-monospace small">
-                            {{ preview.error.message }}
-                          </div>
+                          <pre class="text-light text-monospace small">{{
+                            preview.error.message
+                          }}</pre>
                         </div>
                       </div>
                     </b-collapse>
@@ -552,7 +552,7 @@ export default {
       return this.packageAi && this.newCode !== "" && !this.changesApplied && !this.isDiffEditor;
     },
     language() {
-      return this.scriptExecutor.language;
+      return this.scriptExecutor.language === 'php-nayra' ? 'php' : this.scriptExecutor.language;
     },
     autosaveApiCall() {
       return () => {
@@ -887,6 +887,7 @@ export default {
       if (this.script.code === "[]") {
         switch (this.script.language) {
           case "php":
+          case "php-nayra":
             this.code = Vue.filter("php")(this.boilerPlateTemplate);
             break;
           case "lua":

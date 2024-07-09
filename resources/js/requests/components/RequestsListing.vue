@@ -470,7 +470,8 @@ export default {
             "&order_direction=" +
             this.orderDirection +
             this.additionalParams +
-            advancedFilter,
+            advancedFilter +
+            "&row_format=",
             {
               cancelToken: new CancelToken((c) => {
                 this.cancelToken = c;

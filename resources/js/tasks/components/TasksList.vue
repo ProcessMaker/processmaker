@@ -1,6 +1,6 @@
 <template>
   <div class="data-table">
-    <Recommendations />
+    <Recommendations if="showRecommendations" />
     <div
       v-show="true"
       data-cy="tasks-table"
@@ -300,6 +300,10 @@ export default {
     tableName: {
       type: String,
       default: "",
+    },
+    showRecommendations: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
