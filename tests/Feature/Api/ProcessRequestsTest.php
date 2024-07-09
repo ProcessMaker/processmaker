@@ -943,7 +943,7 @@ class ProcessRequestsTest extends TestCase
     }
 
     // Test abeFlag function
-    public function testabeFlag()
+    public function testAbeFlag()
     {
         //create a token
         $token = ProcessRequestToken::factory()->create([
