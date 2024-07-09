@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Mustache_Engine;
 use ProcessMaker\Mail\TaskActionByEmail;
+use ProcessMaker\Models\ProcessAbeRequestToken;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -169,7 +170,9 @@ class TokenRepository implements TokenRepositoryInterface
      * Validate email configuration and Send Email
      *
      * @param ActivityInterface $activity
+     * @param TokenInterface $token
      * @param string $to
+     * @param array $data
      *
      * @return void
      */
@@ -180,8 +183,16 @@ class TokenRepository implements TokenRepositoryInterface
             if ($isActionsByEmail) {
                 $configEmail = json_decode($activity->getProperty('configEmail'), true);
                 if (!empty($configEmail)) {
+                    $abeRequestToken = new ProcessAbeRequestToken();
+                    $tokenAbe = $abeRequestToken->updateOrCreate([
+                        'process_request_id' => $token->process_request_id,
+                        'process_request_token_id' => $token->id,
+                    ]);
+                    $data = $token->getInstance()->getDataStore()->getData();
+                    $data['token_id'] = $tokenAbe->process_request_token_id;
+                    $data['token_abe'] = $tokenAbe->id;
                     // Send Email
-                    return (new TaskActionByEmail())->sendAbeEmail($configEmail, $to, $token->getInstance()->getDataStore()->getData());
+                    return (new TaskActionByEmail())->sendAbeEmail($configEmail, $to, $data);
                 }
             }
         } catch (\Exception $e) {
