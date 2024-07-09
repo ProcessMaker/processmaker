@@ -234,7 +234,7 @@ export default {
           const embedArray = firstResponse.embed;
           mediaArray.forEach((media) => {
             this.$refs["image-carousel"].convertImageUrlToBase64(media);
-          }); 
+          });
           embedArray.forEach((media) => {
             this.$refs["image-carousel"].addEmbedFile(media);
           });
