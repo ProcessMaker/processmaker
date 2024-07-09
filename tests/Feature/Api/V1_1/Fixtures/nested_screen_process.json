@@ -1,0 +1,2431 @@
+{
+    "type": "process_package",
+    "version": "1",
+    "process": {
+        "id": 3,
+        "process_category_id": "2",
+        "user_id": 2,
+        "description": "asdf",
+        "name": "nested screen test",
+        "cancel_screen_id": null,
+        "request_detail_screen_id": null,
+        "status": "ACTIVE",
+        "is_valid": 1,
+        "package_key": null,
+        "pause_timer_start": 0,
+        "deleted_at": null,
+        "created_at": "2020-09-10T17:55:30+00:00",
+        "updated_at": "2021-01-04T18:48:52+00:00",
+        "start_events": [{
+            "id": "node_1",
+            "name": "Start Event",
+            "config": "{\"web_entry\":{\"require_valid_session\":false,\"mode\":\"DISABLED\",\"screen_id\":null,\"completed_action\":\"SCREEN\",\"completed_screen_id\":null,\"completed_url\":null,\"authenticatable_type\":\"ProcessMaker\\\\Models\\\\User\",\"authenticatable_id\":1,\"enable_query_params\":false,\"password\":null,\"enable_password_protect\":false,\"exclude_data\":[]}}",
+            "ownerProcessId": "ProcessId",
+            "eventDefinitions": [],
+            "ownerProcessName": "ProcessName",
+            "allowInterstitial": "false"
+        }],
+        "warnings": null,
+        "self_service_tasks": [],
+        "signal_events": [],
+        "conditional_events": [],
+        "properties": null,
+        "has_timer_start_events": false,
+        "notifications": {
+            "requester": {
+                "started": false,
+                "canceled": false,
+                "completed": false
+            },
+            "assignee": {
+                "started": false,
+                "canceled": false,
+                "completed": false
+            },
+            "participants": {
+                "started": false,
+                "canceled": false,
+                "completed": false
+            }
+        },
+        "task_notifications": {},
+        "bpmn": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<bpmn:definitions xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xmlns:bpmn=\"http:\/\/www.omg.org\/spec\/BPMN\/20100524\/MODEL\" xmlns:bpmndi=\"http:\/\/www.omg.org\/spec\/BPMN\/20100524\/DI\" xmlns:dc=\"http:\/\/www.omg.org\/spec\/DD\/20100524\/DC\" xmlns:di=\"http:\/\/www.omg.org\/spec\/DD\/20100524\/DI\" xmlns:pm=\"http:\/\/processmaker.com\/BPMN\/2.0\/Schema.xsd\" xmlns:tns=\"http:\/\/sourceforge.net\/bpmn\/definitions\/_1530553328908\" xmlns:xsd=\"http:\/\/www.w3.org\/2001\/XMLSchema\" targetNamespace=\"http:\/\/bpmn.io\/schema\/bpmn\" exporter=\"ProcessMaker Modeler\" exporterVersion=\"1.0\" xsi:schemaLocation=\"http:\/\/www.omg.org\/spec\/BPMN\/20100524\/MODEL http:\/\/bpmn.sourceforge.net\/schemas\/BPMN20.xsd\">\n  <bpmn:process id=\"ProcessId\" name=\"ProcessName\" isExecutable=\"true\">\n    <bpmn:startEvent id=\"node_1\" name=\"Start Event\" pm:allowInterstitial=\"false\" pm:config=\"{&#34;web_entry&#34;:null}\">\n      <bpmn:outgoing>node_4<\/bpmn:outgoing>\n    <\/bpmn:startEvent>\n    <bpmn:task id=\"node_2\" name=\"Form Task\" pm:screenRef=\"3\" pm:allowInterstitial=\"false\" pm:assignment=\"requester\" pm:assignmentLock=\"false\" pm:allowReassignment=\"false\" pm:config=\"{&quot;web_entry&quot;:{&quot;require_valid_session&quot;:false,&quot;mode&quot;:&quot;DISABLED&quot;,&quot;screen_id&quot;:null,&quot;completed_action&quot;:&quot;SCREEN&quot;,&quot;completed_screen_id&quot;:null,&quot;completed_url&quot;:null,&quot;authenticatable_type&quot;:&quot;ProcessMaker\\\\Models\\\\User&quot;,&quot;authenticatable_id&quot;:1,&quot;enable_query_params&quot;:false,&quot;password&quot;:null,&quot;enable_password_protect&quot;:false,&quot;exclude_data&quot;:[]},&quot;email_notifications&quot;:{&quot;notifications&quot;:[]}}\">\n      <bpmn:incoming>node_4<\/bpmn:incoming>\n      <bpmn:outgoing>node_5<\/bpmn:outgoing>\n    <\/bpmn:task>\n    <bpmn:endEvent id=\"node_3\" name=\"End Event\">\n      <bpmn:incoming>node_5<\/bpmn:incoming>\n    <\/bpmn:endEvent>\n    <bpmn:sequenceFlow id=\"node_4\" name=\"\" sourceRef=\"node_1\" targetRef=\"node_2\"\/>\n    <bpmn:sequenceFlow id=\"node_5\" name=\"\" sourceRef=\"node_2\" targetRef=\"node_3\"\/>\n  <\/bpmn:process>\n  <bpmndi:BPMNDiagram id=\"BPMNDiagramId\">\n    <bpmndi:BPMNPlane id=\"BPMNPlaneId\" bpmnElement=\"ProcessId\">\n      <bpmndi:BPMNShape id=\"node_1_di\" bpmnElement=\"node_1\">\n        <dc:Bounds x=\"170\" y=\"150\" width=\"36\" height=\"36\"\/>\n      <\/bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"node_2_di\" bpmnElement=\"node_2\">\n        <dc:Bounds x=\"380\" y=\"150\" width=\"116\" height=\"76\"\/>\n      <\/bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"node_3_di\" bpmnElement=\"node_3\">\n        <dc:Bounds x=\"700\" y=\"150\" width=\"36\" height=\"36\"\/>\n      <\/bpmndi:BPMNShape>\n      <bpmndi:BPMNEdge id=\"node_4_di\" bpmnElement=\"node_4\">\n        <di:waypoint x=\"188\" y=\"168\"\/>\n        <di:waypoint x=\"438\" y=\"188\"\/>\n      <\/bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"node_5_di\" bpmnElement=\"node_5\">\n        <di:waypoint x=\"438\" y=\"188\"\/>\n        <di:waypoint x=\"718\" y=\"168\"\/>\n      <\/bpmndi:BPMNEdge>\n    <\/bpmndi:BPMNPlane>\n  <\/bpmndi:BPMNDiagram>\n<\/bpmn:definitions>\n"
+    },
+    "process_categories": [{
+        "id": 2,
+        "name": "Uncategorized",
+        "status": "ACTIVE",
+        "is_system": 0,
+        "created_at": "2021-01-04T18:48:24+00:00",
+        "updated_at": "2021-01-04T18:48:24+00:00",
+        "pivot": {
+            "assignable_id": 3,
+            "category_id": 2,
+            "category_type": "ProcessMaker\\Models\\ProcessCategory"
+        }
+    }],
+    "screens": [{
+        "id": 2,
+        "screen_category_id": "1",
+        "title": "child",
+        "description": "asdf",
+        "type": "FORM",
+        "config": [{
+            "name": "child",
+            "items": [{
+                "label": "Rich Text",
+                "config": {
+                    "icon": "fas fa-pencil-ruler",
+                    "label": null,
+                    "content": "<p>Child<\/p>",
+                    "interactive": true,
+                    "renderVarHtml": null
+                },
+                "component": "FormHtmlViewer",
+                "inspector": [{
+                    "type": "FormTextArea",
+                    "field": "content",
+                    "config": {
+                        "rows": 5,
+                        "label": "Content",
+                        "value": null,
+                        "helper": "The HTML text to display"
+                    }
+                }, {
+                    "type": "FormCheckbox",
+                    "field": "renderVarHtml",
+                    "config": {
+                        "label": "Render HTML from a Variable",
+                        "value": null,
+                        "helper": null
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "conditionalHide",
+                    "config": {
+                        "label": "Visibility Rule",
+                        "helper": "This control is hidden until this expression is true"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "customCssSelector",
+                    "config": {
+                        "label": "CSS Selector Name",
+                        "helper": "Use this in your custom css rules",
+                        "validation": "regex: [-?[_a-zA-Z]+[_-a-zA-Z0-9]*]"
+                    }
+                }],
+                "editor-control": "FormHtmlEditor",
+                "editor-component": "FormHtmlEditor"
+            }, {
+                "label": "Line Input",
+                "config": {
+                    "icon": "far fa-square",
+                    "name": "child_input_1",
+                    "type": "text",
+                    "label": "child_input_1",
+                    "helper": null,
+                    "readonly": false,
+                    "dataFormat": "string",
+                    "validation": [],
+                    "placeholder": null
+                },
+                "component": "FormInput",
+                "inspector": [{
+                    "type": "FormInput",
+                    "field": "name",
+                    "config": {
+                        "name": "Variable Name",
+                        "label": "Variable Name",
+                        "helper": "A variable name is a symbolic name to reference information.",
+                        "validation": "regex:\/^(?:[A-Z_.a-z])(?:[0-9A-Z_.a-z])*$\/|required"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "label",
+                    "config": {
+                        "label": "Label",
+                        "helper": "The label describes the field's name"
+                    }
+                }, {
+                    "type": "FormMultiselect",
+                    "field": "dataFormat",
+                    "config": {
+                        "name": "Data Type",
+                        "label": "Data Type",
+                        "helper": "The data type specifies what kind of data is stored in the variable.",
+                        "options": [{
+                            "value": "string",
+                            "content": "Text"
+                        }, {
+                            "value": "int",
+                            "content": "Integer"
+                        }, {
+                            "value": "currency",
+                            "content": "Currency"
+                        }, {
+                            "value": "percentage",
+                            "content": "Percentage"
+                        }, {
+                            "value": "float",
+                            "content": "Decimal"
+                        }, {
+                            "value": "datetime",
+                            "content": "Datetime"
+                        }, {
+                            "value": "date",
+                            "content": "Date"
+                        }, {
+                            "value": "password",
+                            "content": "Password"
+                        }],
+                        "validation": "required"
+                    }
+                }, {
+                    "type": {
+                        "extends": {
+                            "props": ["label", "error", "options", "helper", "name", "value", "selectedControl"],
+                            "mixins": [{
+                                "props": ["validation", "validationData", "validationField", "validationMessages"],
+                                "watch": {
+                                    "validationData": {
+                                        "deep": true
+                                    }
+                                },
+                                "methods": []
+                            }],
+                            "methods": [],
+                            "computed": [],
+                            "_compiled": true,
+                            "components": {
+                                "Multiselect": {
+                                    "name": "vue-multiselect",
+                                    "props": {
+                                        "name": {
+                                            "default": null
+                                        },
+                                        "limit": {
+                                            "default": 99999
+                                        },
+                                        "loading": {
+                                            "default": false
+                                        },
+                                        "disabled": {
+                                            "default": false
+                                        },
+                                        "tabindex": {
+                                            "default": 0
+                                        },
+                                        "limitText": [],
+                                        "maxHeight": {
+                                            "default": 300
+                                        },
+                                        "showLabels": {
+                                            "default": true
+                                        },
+                                        "selectLabel": {
+                                            "default": "Press enter to select"
+                                        },
+                                        "deselectLabel": {
+                                            "default": "Press enter to remove"
+                                        },
+                                        "openDirection": {
+                                            "default": null
+                                        },
+                                        "selectedLabel": {
+                                            "default": "Selected"
+                                        },
+                                        "showNoOptions": {
+                                            "default": true
+                                        },
+                                        "showNoResults": {
+                                            "default": true
+                                        },
+                                        "selectGroupLabel": {
+                                            "default": "Press enter to select group"
+                                        },
+                                        "deselectGroupLabel": {
+                                            "default": "Press enter to deselect group"
+                                        }
+                                    },
+                                    "mixins": [{
+                                        "props": {
+                                            "id": {
+                                                "default": null
+                                            },
+                                            "max": {
+                                                "type": [null, null],
+                                                "default": false
+                                            },
+                                            "label": [],
+                                            "value": {
+                                                "type": null
+                                            },
+                                            "options": {
+                                                "required": true
+                                            },
+                                            "trackBy": [],
+                                            "multiple": {
+                                                "default": false
+                                            },
+                                            "taggable": {
+                                                "default": false
+                                            },
+                                            "blockKeys": [],
+                                            "allowEmpty": {
+                                                "default": true
+                                            },
+                                            "groupLabel": [],
+                                            "resetAfter": {
+                                                "default": false
+                                            },
+                                            "searchable": {
+                                                "default": true
+                                            },
+                                            "customLabel": [],
+                                            "groupSelect": {
+                                                "default": false
+                                            },
+                                            "groupValues": [],
+                                            "placeholder": {
+                                                "default": "Select option"
+                                            },
+                                            "tagPosition": {
+                                                "default": "top"
+                                            },
+                                            "hideSelected": {
+                                                "default": false
+                                            },
+                                            "optionsLimit": {
+                                                "default": 1000
+                                            },
+                                            "clearOnSelect": {
+                                                "default": true
+                                            },
+                                            "closeOnSelect": {
+                                                "default": true
+                                            },
+                                            "internalSearch": {
+                                                "default": true
+                                            },
+                                            "preselectFirst": {
+                                                "default": false
+                                            },
+                                            "preserveSearch": {
+                                                "default": false
+                                            },
+                                            "tagPlaceholder": {
+                                                "default": "Press enter to create a tag"
+                                            }
+                                        },
+                                        "watch": [],
+                                        "methods": [],
+                                        "computed": []
+                                    }, {
+                                        "props": {
+                                            "showPointer": {
+                                                "default": true
+                                            },
+                                            "optionHeight": {
+                                                "default": 40
+                                            }
+                                        },
+                                        "watch": [],
+                                        "methods": [],
+                                        "computed": []
+                                    }],
+                                    "computed": [],
+                                    "_compiled": true,
+                                    "beforeCreate": [null],
+                                    "staticRenderFns": []
+                                }
+                            },
+                            "inheritAttrs": false,
+                            "staticRenderFns": []
+                        },
+                        "computed": [],
+                        "_compiled": true,
+                        "staticRenderFns": []
+                    },
+                    "field": "dataMask",
+                    "config": {
+                        "name": "Data Format",
+                        "label": "Data Format",
+                        "helper": "The data format for the selected type."
+                    }
+                }, {
+                    "type": "ValidationSelect",
+                    "field": "validation",
+                    "config": {
+                        "label": "Validation Rules",
+                        "helper": "The validation rules needed for this field"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "placeholder",
+                    "config": {
+                        "label": "Placeholder Text",
+                        "helper": "The placeholder is what is shown in the field when no value is provided yet"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "helper",
+                    "config": {
+                        "label": "Helper Text",
+                        "helper": "Help text is meant to provide additional guidance on the field's value"
+                    }
+                }, {
+                    "type": "FormCheckbox",
+                    "field": "readonly",
+                    "config": {
+                        "label": "Read Only",
+                        "helper": null
+                    }
+                }, {
+                    "type": "ColorSelect",
+                    "field": "color",
+                    "config": {
+                        "label": "Text Color",
+                        "helper": "Set the element's text color",
+                        "options": [{
+                            "value": "text-primary",
+                            "content": "primary"
+                        }, {
+                            "value": "text-secondary",
+                            "content": "secondary"
+                        }, {
+                            "value": "text-success",
+                            "content": "success"
+                        }, {
+                            "value": "text-danger",
+                            "content": "danger"
+                        }, {
+                            "value": "text-warning",
+                            "content": "warning"
+                        }, {
+                            "value": "text-info",
+                            "content": "info"
+                        }, {
+                            "value": "text-light",
+                            "content": "light"
+                        }, {
+                            "value": "text-dark",
+                            "content": "dark"
+                        }]
+                    }
+                }, {
+                    "type": "ColorSelect",
+                    "field": "bgcolor",
+                    "config": {
+                        "label": "Background Color",
+                        "helper": "Set the element's background color",
+                        "options": [{
+                            "value": "alert alert-primary",
+                            "content": "primary"
+                        }, {
+                            "value": "alert alert-secondary",
+                            "content": "secondary"
+                        }, {
+                            "value": "alert alert-success",
+                            "content": "success"
+                        }, {
+                            "value": "alert alert-danger",
+                            "content": "danger"
+                        }, {
+                            "value": "alert alert-warning",
+                            "content": "warning"
+                        }, {
+                            "value": "alert alert-info",
+                            "content": "info"
+                        }, {
+                            "value": "alert alert-light",
+                            "content": "light"
+                        }, {
+                            "value": "alert alert-dark",
+                            "content": "dark"
+                        }]
+                    }
+                }, {
+                    "type": {
+                        "props": ["value"],
+                        "watch": {
+                            "value": {
+                                "immediate": true
+                            }
+                        },
+                        "methods": [],
+                        "_scopeId": "data-v-67152bf8",
+                        "computed": {
+                            "effectiveValue": []
+                        },
+                        "_compiled": true,
+                        "components": {
+                            "MonacoEditor": {
+                                "name": "MonacoEditor",
+                                "model": {
+                                    "event": "change"
+                                },
+                                "props": {
+                                    "theme": {
+                                        "default": "vs"
+                                    },
+                                    "amdRequire": []
+                                },
+                                "watch": {
+                                    "options": {
+                                        "deep": true
+                                    }
+                                },
+                                "methods": []
+                            }
+                        },
+                        "staticRenderFns": []
+                    },
+                    "field": "defaultValue",
+                    "config": {
+                        "label": "Default Value",
+                        "helper": "Takes precedence over value set in data."
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "conditionalHide",
+                    "config": {
+                        "label": "Visibility Rule",
+                        "helper": "This control is hidden until this expression is true"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "customCssSelector",
+                    "config": {
+                        "label": "CSS Selector Name",
+                        "helper": "Use this in your custom css rules",
+                        "validation": "regex: [-?[_a-zA-Z]+[_-a-zA-Z0-9]*]"
+                    }
+                }],
+                "editor-control": "FormInput",
+                "editor-component": "FormInput"
+            }]
+        }, {
+            "name": "p2",
+            "items": [{
+                "label": "Line Input",
+                "config": {
+                    "icon": "far fa-square",
+                    "name": "child_input_2",
+                    "type": "text",
+                    "label": "child_input_2",
+                    "helper": null,
+                    "readonly": false,
+                    "dataFormat": "string",
+                    "validation": [],
+                    "placeholder": null
+                },
+                "component": "FormInput",
+                "inspector": [{
+                    "type": "FormInput",
+                    "field": "name",
+                    "config": {
+                        "name": "Variable Name",
+                        "label": "Variable Name",
+                        "helper": "A variable name is a symbolic name to reference information.",
+                        "validation": "regex:\/^(?:[A-Z_.a-z])(?:[0-9A-Z_.a-z])*$\/|required"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "label",
+                    "config": {
+                        "label": "Label",
+                        "helper": "The label describes the field's name"
+                    }
+                }, {
+                    "type": "FormMultiselect",
+                    "field": "dataFormat",
+                    "config": {
+                        "name": "Data Type",
+                        "label": "Data Type",
+                        "helper": "The data type specifies what kind of data is stored in the variable.",
+                        "options": [{
+                            "value": "string",
+                            "content": "Text"
+                        }, {
+                            "value": "int",
+                            "content": "Integer"
+                        }, {
+                            "value": "currency",
+                            "content": "Currency"
+                        }, {
+                            "value": "percentage",
+                            "content": "Percentage"
+                        }, {
+                            "value": "float",
+                            "content": "Decimal"
+                        }, {
+                            "value": "datetime",
+                            "content": "Datetime"
+                        }, {
+                            "value": "date",
+                            "content": "Date"
+                        }, {
+                            "value": "password",
+                            "content": "Password"
+                        }],
+                        "validation": "required"
+                    }
+                }, {
+                    "type": {
+                        "_Ctor": [],
+                        "extends": {
+                            "_Ctor": [],
+                            "props": {
+                                "name": {
+                                    "type": null
+                                },
+                                "error": {
+                                    "type": null
+                                },
+                                "label": {
+                                    "type": null
+                                },
+                                "value": {
+                                    "type": null
+                                },
+                                "helper": {
+                                    "type": null
+                                },
+                                "options": {
+                                    "type": null
+                                },
+                                "selectedControl": {
+                                    "type": null
+                                }
+                            },
+                            "mixins": [{
+                                "props": {
+                                    "validation": {
+                                        "type": null
+                                    },
+                                    "validationData": {
+                                        "type": null
+                                    },
+                                    "validationField": {
+                                        "type": null
+                                    },
+                                    "validationMessages": {
+                                        "type": null
+                                    }
+                                },
+                                "watch": {
+                                    "validationData": {
+                                        "deep": true,
+                                        "user": true
+                                    }
+                                },
+                                "methods": []
+                            }],
+                            "methods": [],
+                            "computed": [],
+                            "_compiled": true,
+                            "components": {
+                                "Multiselect": {
+                                    "name": "vue-multiselect",
+                                    "_Ctor": [],
+                                    "props": {
+                                        "name": {
+                                            "default": null
+                                        },
+                                        "limit": {
+                                            "default": 99999
+                                        },
+                                        "loading": {
+                                            "default": false
+                                        },
+                                        "disabled": {
+                                            "default": false
+                                        },
+                                        "tabindex": {
+                                            "default": 0
+                                        },
+                                        "limitText": [],
+                                        "maxHeight": {
+                                            "default": 300
+                                        },
+                                        "showLabels": {
+                                            "default": true
+                                        },
+                                        "selectLabel": {
+                                            "default": "Press enter to select"
+                                        },
+                                        "deselectLabel": {
+                                            "default": "Press enter to remove"
+                                        },
+                                        "openDirection": {
+                                            "default": null
+                                        },
+                                        "selectedLabel": {
+                                            "default": "Selected"
+                                        },
+                                        "showNoOptions": {
+                                            "default": true
+                                        },
+                                        "showNoResults": {
+                                            "default": true
+                                        },
+                                        "selectGroupLabel": {
+                                            "default": "Press enter to select group"
+                                        },
+                                        "deselectGroupLabel": {
+                                            "default": "Press enter to deselect group"
+                                        }
+                                    },
+                                    "mixins": [{
+                                        "props": {
+                                            "id": {
+                                                "default": null
+                                            },
+                                            "max": {
+                                                "type": [null, null],
+                                                "default": false
+                                            },
+                                            "label": [],
+                                            "value": {
+                                                "type": null
+                                            },
+                                            "options": {
+                                                "required": true
+                                            },
+                                            "trackBy": [],
+                                            "multiple": {
+                                                "default": false
+                                            },
+                                            "taggable": {
+                                                "default": false
+                                            },
+                                            "blockKeys": [],
+                                            "allowEmpty": {
+                                                "default": true
+                                            },
+                                            "groupLabel": [],
+                                            "resetAfter": {
+                                                "default": false
+                                            },
+                                            "searchable": {
+                                                "default": true
+                                            },
+                                            "customLabel": [],
+                                            "groupSelect": {
+                                                "default": false
+                                            },
+                                            "groupValues": [],
+                                            "placeholder": {
+                                                "default": "Select option"
+                                            },
+                                            "tagPosition": {
+                                                "default": "top"
+                                            },
+                                            "hideSelected": {
+                                                "default": false
+                                            },
+                                            "optionsLimit": {
+                                                "default": 1000
+                                            },
+                                            "clearOnSelect": {
+                                                "default": true
+                                            },
+                                            "closeOnSelect": {
+                                                "default": true
+                                            },
+                                            "internalSearch": {
+                                                "default": true
+                                            },
+                                            "preselectFirst": {
+                                                "default": false
+                                            },
+                                            "preserveSearch": {
+                                                "default": false
+                                            },
+                                            "tagPlaceholder": {
+                                                "default": "Press enter to create a tag"
+                                            }
+                                        },
+                                        "watch": [],
+                                        "methods": [],
+                                        "computed": []
+                                    }, {
+                                        "props": {
+                                            "showPointer": {
+                                                "default": true
+                                            },
+                                            "optionHeight": {
+                                                "default": 40
+                                            }
+                                        },
+                                        "watch": [],
+                                        "methods": [],
+                                        "computed": []
+                                    }],
+                                    "computed": [],
+                                    "_compiled": true,
+                                    "beforeCreate": [null],
+                                    "staticRenderFns": []
+                                }
+                            },
+                            "inheritAttrs": false,
+                            "staticRenderFns": []
+                        },
+                        "computed": [],
+                        "_compiled": true,
+                        "staticRenderFns": []
+                    },
+                    "field": "dataMask",
+                    "config": {
+                        "name": "Data Format",
+                        "label": "Data Format",
+                        "helper": "The data format for the selected type."
+                    }
+                }, {
+                    "type": "ValidationSelect",
+                    "field": "validation",
+                    "config": {
+                        "label": "Validation Rules",
+                        "helper": "The validation rules needed for this field"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "placeholder",
+                    "config": {
+                        "label": "Placeholder Text",
+                        "helper": "The placeholder is what is shown in the field when no value is provided yet"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "helper",
+                    "config": {
+                        "label": "Helper Text",
+                        "helper": "Help text is meant to provide additional guidance on the field's value"
+                    }
+                }, {
+                    "type": "FormCheckbox",
+                    "field": "readonly",
+                    "config": {
+                        "label": "Read Only",
+                        "helper": null
+                    }
+                }, {
+                    "type": "ColorSelect",
+                    "field": "color",
+                    "config": {
+                        "label": "Text Color",
+                        "helper": "Set the element's text color",
+                        "options": [{
+                            "value": "text-primary",
+                            "content": "primary"
+                        }, {
+                            "value": "text-secondary",
+                            "content": "secondary"
+                        }, {
+                            "value": "text-success",
+                            "content": "success"
+                        }, {
+                            "value": "text-danger",
+                            "content": "danger"
+                        }, {
+                            "value": "text-warning",
+                            "content": "warning"
+                        }, {
+                            "value": "text-info",
+                            "content": "info"
+                        }, {
+                            "value": "text-light",
+                            "content": "light"
+                        }, {
+                            "value": "text-dark",
+                            "content": "dark"
+                        }]
+                    }
+                }, {
+                    "type": "ColorSelect",
+                    "field": "bgcolor",
+                    "config": {
+                        "label": "Background Color",
+                        "helper": "Set the element's background color",
+                        "options": [{
+                            "value": "alert alert-primary",
+                            "content": "primary"
+                        }, {
+                            "value": "alert alert-secondary",
+                            "content": "secondary"
+                        }, {
+                            "value": "alert alert-success",
+                            "content": "success"
+                        }, {
+                            "value": "alert alert-danger",
+                            "content": "danger"
+                        }, {
+                            "value": "alert alert-warning",
+                            "content": "warning"
+                        }, {
+                            "value": "alert alert-info",
+                            "content": "info"
+                        }, {
+                            "value": "alert alert-light",
+                            "content": "light"
+                        }, {
+                            "value": "alert alert-dark",
+                            "content": "dark"
+                        }]
+                    }
+                }, {
+                    "type": {
+                        "_Ctor": [],
+                        "props": {
+                            "value": {
+                                "type": null
+                            }
+                        },
+                        "watch": {
+                            "value": {
+                                "user": true,
+                                "immediate": true
+                            }
+                        },
+                        "methods": [],
+                        "_scopeId": "data-v-67152bf8",
+                        "computed": {
+                            "effectiveValue": []
+                        },
+                        "_compiled": true,
+                        "components": {
+                            "MonacoEditor": {
+                                "name": "MonacoEditor",
+                                "model": {
+                                    "event": "change"
+                                },
+                                "props": {
+                                    "theme": {
+                                        "default": "vs"
+                                    },
+                                    "amdRequire": []
+                                },
+                                "watch": {
+                                    "options": {
+                                        "deep": true
+                                    }
+                                },
+                                "methods": []
+                            }
+                        },
+                        "staticRenderFns": []
+                    },
+                    "field": "defaultValue",
+                    "config": {
+                        "label": "Default Value",
+                        "helper": "Takes precedence over value set in data."
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "conditionalHide",
+                    "config": {
+                        "label": "Visibility Rule",
+                        "helper": "This control is hidden until this expression is true"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "customCssSelector",
+                    "config": {
+                        "label": "CSS Selector Name",
+                        "helper": "Use this in your custom css rules",
+                        "validation": "regex: [-?[_a-zA-Z]+[_-a-zA-Z0-9]*]"
+                    }
+                }],
+                "editor-control": "FormInput",
+                "editor-component": "FormInput"
+            }]
+        }],
+        "computed": [{
+            "id": 1,
+            "name": "test",
+            "type": "javascript",
+            "formula": "return 'test calc!';",
+            "property": "child_input_1"
+        }],
+        "custom_css": "* { color: red }",
+        "created_at": "2020-09-10T17:34:07+00:00",
+        "updated_at": "2021-01-04T18:48:48+00:00",
+        "status": "ACTIVE",
+        "key": null,
+        "watchers": [{
+            "input_data": "{}",
+            "script_configuration": "{}",
+            "synchronous": false,
+            "name": "child watcher",
+            "watching": "child_input_1",
+            "script": {
+                "id": "script-3",
+                "key": null,
+                "title": "child watcher script",
+                "description": "test",
+                "language": "php",
+                "code": "<?php \nreturn ['child_watcher' => 'ok'];",
+                "timeout": 60,
+                "run_as_user_id": 1,
+                "created_at": "2020-09-11T19:06:28+00:00",
+                "updated_at": "2020-09-11T19:06:37+00:00",
+                "status": "ACTIVE",
+                "script_category_id": "1",
+                "script_executor_id": 3
+            },
+            "script_id": 3,
+            "script_key": null,
+            "output_variable": "watcher_result",
+            "uid": "15998512345162"
+        }],
+        "categories": [{
+            "id": 1,
+            "name": "Uncategorized",
+            "status": "ACTIVE",
+            "is_system": 0,
+            "created_at": "2021-01-04T18:48:24+00:00",
+            "updated_at": "2021-01-04T18:48:24+00:00",
+            "pivot": {
+                "assignable_id": 2,
+                "category_id": 1,
+                "category_type": "ProcessMaker\\Models\\ScreenCategory"
+            }
+        }]
+    }, {
+        "id": 3,
+        "screen_category_id": "1",
+        "title": "parent",
+        "description": "asdf",
+        "type": "FORM",
+        "config": [{
+            "name": "parent",
+            "items": [{
+                "label": "Rich Text",
+                "config": {
+                    "icon": "fas fa-pencil-ruler",
+                    "label": null,
+                    "content": "<p>Parent<\/p>",
+                    "interactive": true,
+                    "renderVarHtml": null
+                },
+                "component": "FormHtmlViewer",
+                "inspector": [{
+                    "type": "FormTextArea",
+                    "field": "content",
+                    "config": {
+                        "rows": 5,
+                        "label": "Content",
+                        "value": null,
+                        "helper": "The HTML text to display"
+                    }
+                }, {
+                    "type": "FormCheckbox",
+                    "field": "renderVarHtml",
+                    "config": {
+                        "label": "Render HTML from a Variable",
+                        "value": null,
+                        "helper": null
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "conditionalHide",
+                    "config": {
+                        "label": "Visibility Rule",
+                        "helper": "This control is hidden until this expression is true"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "customCssSelector",
+                    "config": {
+                        "label": "CSS Selector Name",
+                        "helper": "Use this in your custom css rules",
+                        "validation": "regex: [-?[_a-zA-Z]+[_-a-zA-Z0-9]*]"
+                    }
+                }],
+                "editor-control": "FormHtmlEditor",
+                "editor-component": "FormHtmlEditor"
+            }, {
+                "items": [
+                    [{
+                        "label": "Line Input",
+                        "config": {
+                            "icon": "far fa-square",
+                            "name": "parent_input_1",
+                            "type": "text",
+                            "label": "parent_input_1",
+                            "helper": null,
+                            "readonly": false,
+                            "dataFormat": "string",
+                            "validation": [],
+                            "placeholder": null
+                        },
+                        "component": "FormInput",
+                        "inspector": [{
+                            "type": "FormInput",
+                            "field": "name",
+                            "config": {
+                                "name": "Variable Name",
+                                "label": "Variable Name",
+                                "helper": "A variable name is a symbolic name to reference information.",
+                                "validation": "regex:\/^(?:[A-Z_.a-z])(?:[0-9A-Z_.a-z])*$\/|required"
+                            }
+                        }, {
+                            "type": "FormInput",
+                            "field": "label",
+                            "config": {
+                                "label": "Label",
+                                "helper": "The label describes the field's name"
+                            }
+                        }, {
+                            "type": "FormMultiselect",
+                            "field": "dataFormat",
+                            "config": {
+                                "name": "Data Type",
+                                "label": "Data Type",
+                                "helper": "The data type specifies what kind of data is stored in the variable.",
+                                "options": [{
+                                    "value": "string",
+                                    "content": "Text"
+                                }, {
+                                    "value": "int",
+                                    "content": "Integer"
+                                }, {
+                                    "value": "currency",
+                                    "content": "Currency"
+                                }, {
+                                    "value": "percentage",
+                                    "content": "Percentage"
+                                }, {
+                                    "value": "float",
+                                    "content": "Decimal"
+                                }, {
+                                    "value": "datetime",
+                                    "content": "Datetime"
+                                }, {
+                                    "value": "date",
+                                    "content": "Date"
+                                }, {
+                                    "value": "password",
+                                    "content": "Password"
+                                }],
+                                "validation": "required"
+                            }
+                        }, {
+                            "type": {
+                                "extends": {
+                                    "props": ["label", "error", "options", "helper", "name", "value", "selectedControl"],
+                                    "mixins": [{
+                                        "props": ["validation", "validationData", "validationField", "validationMessages"],
+                                        "watch": {
+                                            "validationData": {
+                                                "deep": true
+                                            }
+                                        },
+                                        "methods": []
+                                    }],
+                                    "methods": [],
+                                    "computed": [],
+                                    "_compiled": true,
+                                    "components": {
+                                        "Multiselect": {
+                                            "name": "vue-multiselect",
+                                            "_Ctor": [],
+                                            "props": {
+                                                "name": {
+                                                    "default": null
+                                                },
+                                                "limit": {
+                                                    "default": 99999
+                                                },
+                                                "loading": {
+                                                    "default": false
+                                                },
+                                                "disabled": {
+                                                    "default": false
+                                                },
+                                                "tabindex": {
+                                                    "default": 0
+                                                },
+                                                "limitText": [],
+                                                "maxHeight": {
+                                                    "default": 300
+                                                },
+                                                "showLabels": {
+                                                    "default": true
+                                                },
+                                                "selectLabel": {
+                                                    "default": "Press enter to select"
+                                                },
+                                                "deselectLabel": {
+                                                    "default": "Press enter to remove"
+                                                },
+                                                "openDirection": {
+                                                    "default": null
+                                                },
+                                                "selectedLabel": {
+                                                    "default": "Selected"
+                                                },
+                                                "showNoOptions": {
+                                                    "default": true
+                                                },
+                                                "showNoResults": {
+                                                    "default": true
+                                                },
+                                                "selectGroupLabel": {
+                                                    "default": "Press enter to select group"
+                                                },
+                                                "deselectGroupLabel": {
+                                                    "default": "Press enter to deselect group"
+                                                }
+                                            },
+                                            "mixins": [{
+                                                "props": {
+                                                    "id": {
+                                                        "default": null
+                                                    },
+                                                    "max": {
+                                                        "type": [null, null],
+                                                        "default": false
+                                                    },
+                                                    "label": [],
+                                                    "value": {
+                                                        "type": null
+                                                    },
+                                                    "options": {
+                                                        "required": true
+                                                    },
+                                                    "trackBy": [],
+                                                    "multiple": {
+                                                        "default": false
+                                                    },
+                                                    "taggable": {
+                                                        "default": false
+                                                    },
+                                                    "blockKeys": [],
+                                                    "allowEmpty": {
+                                                        "default": true
+                                                    },
+                                                    "groupLabel": [],
+                                                    "resetAfter": {
+                                                        "default": false
+                                                    },
+                                                    "searchable": {
+                                                        "default": true
+                                                    },
+                                                    "customLabel": [],
+                                                    "groupSelect": {
+                                                        "default": false
+                                                    },
+                                                    "groupValues": [],
+                                                    "placeholder": {
+                                                        "default": "Select option"
+                                                    },
+                                                    "tagPosition": {
+                                                        "default": "top"
+                                                    },
+                                                    "hideSelected": {
+                                                        "default": false
+                                                    },
+                                                    "optionsLimit": {
+                                                        "default": 1000
+                                                    },
+                                                    "clearOnSelect": {
+                                                        "default": true
+                                                    },
+                                                    "closeOnSelect": {
+                                                        "default": true
+                                                    },
+                                                    "internalSearch": {
+                                                        "default": true
+                                                    },
+                                                    "preselectFirst": {
+                                                        "default": false
+                                                    },
+                                                    "preserveSearch": {
+                                                        "default": false
+                                                    },
+                                                    "tagPlaceholder": {
+                                                        "default": "Press enter to create a tag"
+                                                    }
+                                                },
+                                                "watch": [],
+                                                "methods": [],
+                                                "computed": []
+                                            }, {
+                                                "props": {
+                                                    "showPointer": {
+                                                        "default": true
+                                                    },
+                                                    "optionHeight": {
+                                                        "default": 40
+                                                    }
+                                                },
+                                                "watch": [],
+                                                "methods": [],
+                                                "computed": []
+                                            }],
+                                            "computed": [],
+                                            "_compiled": true,
+                                            "beforeCreate": [null],
+                                            "staticRenderFns": []
+                                        }
+                                    },
+                                    "inheritAttrs": false,
+                                    "staticRenderFns": []
+                                },
+                                "computed": [],
+                                "_compiled": true,
+                                "staticRenderFns": []
+                            },
+                            "field": "dataMask",
+                            "config": {
+                                "name": "Data Format",
+                                "label": "Data Format",
+                                "helper": "The data format for the selected type."
+                            }
+                        }, {
+                            "type": "ValidationSelect",
+                            "field": "validation",
+                            "config": {
+                                "label": "Validation Rules",
+                                "helper": "The validation rules needed for this field"
+                            }
+                        }, {
+                            "type": "FormInput",
+                            "field": "placeholder",
+                            "config": {
+                                "label": "Placeholder Text",
+                                "helper": "The placeholder is what is shown in the field when no value is provided yet"
+                            }
+                        }, {
+                            "type": "FormInput",
+                            "field": "helper",
+                            "config": {
+                                "label": "Helper Text",
+                                "helper": "Help text is meant to provide additional guidance on the field's value"
+                            }
+                        }, {
+                            "type": "FormCheckbox",
+                            "field": "readonly",
+                            "config": {
+                                "label": "Read Only",
+                                "helper": null
+                            }
+                        }, {
+                            "type": "ColorSelect",
+                            "field": "color",
+                            "config": {
+                                "label": "Text Color",
+                                "helper": "Set the element's text color",
+                                "options": [{
+                                    "value": "text-primary",
+                                    "content": "primary"
+                                }, {
+                                    "value": "text-secondary",
+                                    "content": "secondary"
+                                }, {
+                                    "value": "text-success",
+                                    "content": "success"
+                                }, {
+                                    "value": "text-danger",
+                                    "content": "danger"
+                                }, {
+                                    "value": "text-warning",
+                                    "content": "warning"
+                                }, {
+                                    "value": "text-info",
+                                    "content": "info"
+                                }, {
+                                    "value": "text-light",
+                                    "content": "light"
+                                }, {
+                                    "value": "text-dark",
+                                    "content": "dark"
+                                }]
+                            }
+                        }, {
+                            "type": "ColorSelect",
+                            "field": "bgcolor",
+                            "config": {
+                                "label": "Background Color",
+                                "helper": "Set the element's background color",
+                                "options": [{
+                                    "value": "alert alert-primary",
+                                    "content": "primary"
+                                }, {
+                                    "value": "alert alert-secondary",
+                                    "content": "secondary"
+                                }, {
+                                    "value": "alert alert-success",
+                                    "content": "success"
+                                }, {
+                                    "value": "alert alert-danger",
+                                    "content": "danger"
+                                }, {
+                                    "value": "alert alert-warning",
+                                    "content": "warning"
+                                }, {
+                                    "value": "alert alert-info",
+                                    "content": "info"
+                                }, {
+                                    "value": "alert alert-light",
+                                    "content": "light"
+                                }, {
+                                    "value": "alert alert-dark",
+                                    "content": "dark"
+                                }]
+                            }
+                        }, {
+                            "type": {
+                                "props": ["value"],
+                                "watch": {
+                                    "value": {
+                                        "immediate": true
+                                    }
+                                },
+                                "methods": [],
+                                "_scopeId": "data-v-67152bf8",
+                                "computed": {
+                                    "effectiveValue": []
+                                },
+                                "_compiled": true,
+                                "components": {
+                                    "MonacoEditor": {
+                                        "name": "MonacoEditor",
+                                        "model": {
+                                            "event": "change"
+                                        },
+                                        "props": {
+                                            "theme": {
+                                                "default": "vs"
+                                            },
+                                            "amdRequire": []
+                                        },
+                                        "watch": {
+                                            "options": {
+                                                "deep": true
+                                            }
+                                        },
+                                        "methods": []
+                                    }
+                                },
+                                "staticRenderFns": []
+                            },
+                            "field": "defaultValue",
+                            "config": {
+                                "label": "Default Value",
+                                "helper": "Takes precedence over value set in data."
+                            }
+                        }, {
+                            "type": "FormInput",
+                            "field": "conditionalHide",
+                            "config": {
+                                "label": "Visibility Rule",
+                                "helper": "This control is hidden until this expression is true"
+                            }
+                        }, {
+                            "type": "FormInput",
+                            "field": "customCssSelector",
+                            "config": {
+                                "label": "CSS Selector Name",
+                                "helper": "Use this in your custom css rules",
+                                "validation": "regex: [-?[_a-zA-Z]+[_-a-zA-Z0-9]*]"
+                            }
+                        }],
+                        "editor-control": "FormInput",
+                        "editor-component": "FormInput"
+                    }],
+                    [{
+                        "label": "Nested Screen",
+                        "config": {
+                            "icon": "fas fa-file-invoice",
+                            "name": null,
+                            "event": "submit",
+                            "label": "Nested Screen",
+                            "value": null,
+                            "screen": 2,
+                            "variant": "primary"
+                        },
+                        "component": "FormNestedScreen",
+                        "inspector": [{
+                            "type": "ScreenSelector",
+                            "field": "screen",
+                            "config": {
+                                "name": "SelectScreen",
+                                "label": "Screen",
+                                "helper": "Select a screen"
+                            }
+                        }, {
+                            "type": "FormInput",
+                            "field": "conditionalHide",
+                            "config": {
+                                "label": "Visibility Rule",
+                                "helper": "This control is hidden until this expression is true"
+                            }
+                        }, {
+                            "type": "FormInput",
+                            "field": "customCssSelector",
+                            "config": {
+                                "label": "CSS Selector Name",
+                                "helper": "Use this in your custom css rules",
+                                "validation": "regex: [-?[_a-zA-Z]+[_-a-zA-Z0-9]*]"
+                            }
+                        }],
+                        "editor-control": "FormSubmit",
+                        "editor-component": "FormNestedScreen"
+                    }]
+                ],
+                "label": "Multicolumn \/ Table",
+                "config": {
+                    "icon": "fas fa-table",
+                    "label": null,
+                    "options": [{
+                        "value": "1",
+                        "content": "6"
+                    }, {
+                        "value": "2",
+                        "content": "6"
+                    }]
+                },
+                "component": "FormMultiColumn",
+                "container": true,
+                "inspector": [{
+                    "type": "ContainerColumns",
+                    "field": "options",
+                    "config": {
+                        "label": "Column Width",
+                        "validation": "columns-adds-to-12"
+                    }
+                }, {
+                    "type": "ColorSelect",
+                    "field": "color",
+                    "config": {
+                        "label": "Text Color",
+                        "helper": "Set the element's text color",
+                        "options": [{
+                            "value": "text-primary",
+                            "content": "primary"
+                        }, {
+                            "value": "text-secondary",
+                            "content": "secondary"
+                        }, {
+                            "value": "text-success",
+                            "content": "success"
+                        }, {
+                            "value": "text-danger",
+                            "content": "danger"
+                        }, {
+                            "value": "text-warning",
+                            "content": "warning"
+                        }, {
+                            "value": "text-info",
+                            "content": "info"
+                        }, {
+                            "value": "text-light",
+                            "content": "light"
+                        }, {
+                            "value": "text-dark",
+                            "content": "dark"
+                        }]
+                    }
+                }, {
+                    "type": "ColorSelect",
+                    "field": "bgcolor",
+                    "config": {
+                        "label": "Background Color",
+                        "helper": "Set the element's background color",
+                        "options": [{
+                            "value": "alert alert-primary",
+                            "content": "primary"
+                        }, {
+                            "value": "alert alert-secondary",
+                            "content": "secondary"
+                        }, {
+                            "value": "alert alert-success",
+                            "content": "success"
+                        }, {
+                            "value": "alert alert-danger",
+                            "content": "danger"
+                        }, {
+                            "value": "alert alert-warning",
+                            "content": "warning"
+                        }, {
+                            "value": "alert alert-info",
+                            "content": "info"
+                        }, {
+                            "value": "alert alert-light",
+                            "content": "light"
+                        }, {
+                            "value": "alert alert-dark",
+                            "content": "dark"
+                        }]
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "conditionalHide",
+                    "config": {
+                        "label": "Visibility Rule",
+                        "helper": "This control is hidden until this expression is true"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "customCssSelector",
+                    "config": {
+                        "label": "CSS Selector Name",
+                        "helper": "Use this in your custom css rules",
+                        "validation": "regex: [-?[_a-zA-Z]+[_-a-zA-Z0-9]*]"
+                    }
+                }],
+                "editor-control": "MultiColumn",
+                "editor-component": "MultiColumn"
+            }, {
+                "label": "Nested Screen",
+                "config": {
+                    "icon": "fas fa-file-invoice",
+                    "name": null,
+                    "event": "submit",
+                    "label": "Nested Screen",
+                    "value": null,
+                    "screen": 5,
+                    "variant": "primary"
+                },
+                "component": "FormNestedScreen",
+                "inspector": [{
+                    "type": "ScreenSelector",
+                    "field": "screen",
+                    "config": {
+                        "name": "SelectScreen",
+                        "label": "Screen",
+                        "helper": "Select a screen"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "conditionalHide",
+                    "config": {
+                        "label": "Visibility Rule",
+                        "helper": "This control is hidden until this expression is true"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "customCssSelector",
+                    "config": {
+                        "label": "CSS Selector Name",
+                        "helper": "Use this in your custom css rules",
+                        "validation": "regex: [-?[_a-zA-Z]+[_-a-zA-Z0-9]*]"
+                    }
+                }],
+                "editor-control": "FormSubmit",
+                "editor-component": "FormNestedScreen"
+            }, {
+                "label": "Submit Button",
+                "config": {
+                    "icon": "fas fa-share-square",
+                    "name": null,
+                    "event": "submit",
+                    "label": "New Submit",
+                    "variant": "primary",
+                    "fieldValue": null,
+                    "defaultSubmit": true
+                },
+                "component": "FormButton",
+                "inspector": [{
+                    "type": "FormInput",
+                    "field": "label",
+                    "config": {
+                        "label": "Label",
+                        "helper": "The label describes the button's text"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "name",
+                    "config": {
+                        "name": "Variable Name",
+                        "label": "Variable Name",
+                        "helper": "A variable name is a symbolic name to reference information."
+                    }
+                }, {
+                    "type": "FormMultiselect",
+                    "field": "event",
+                    "config": {
+                        "label": "Type",
+                        "helper": "Choose whether the button should submit the form",
+                        "options": [{
+                            "value": "submit",
+                            "content": "Submit Button"
+                        }, {
+                            "value": "script",
+                            "content": "Regular Button"
+                        }]
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "fieldValue",
+                    "config": {
+                        "label": "Value",
+                        "helper": "The value being submitted"
+                    }
+                }, {
+                    "type": "FormMultiselect",
+                    "field": "variant",
+                    "config": {
+                        "label": "Button Variant Style",
+                        "helper": "The variant determines the appearance of the button",
+                        "options": [{
+                            "value": "primary",
+                            "content": "Primary"
+                        }, {
+                            "value": "secondary",
+                            "content": "Secondary"
+                        }, {
+                            "value": "success",
+                            "content": "Success"
+                        }, {
+                            "value": "danger",
+                            "content": "Danger"
+                        }, {
+                            "value": "warning",
+                            "content": "Warning"
+                        }, {
+                            "value": "info",
+                            "content": "Info"
+                        }, {
+                            "value": "light",
+                            "content": "Light"
+                        }, {
+                            "value": "dark",
+                            "content": "Dark"
+                        }, {
+                            "value": "link",
+                            "content": "Link"
+                        }]
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "conditionalHide",
+                    "config": {
+                        "label": "Visibility Rule",
+                        "helper": "This control is hidden until this expression is true"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "customCssSelector",
+                    "config": {
+                        "label": "CSS Selector Name",
+                        "helper": "Use this in your custom css rules",
+                        "validation": "regex: [-?[_a-zA-Z]+[_-a-zA-Z0-9]*]"
+                    }
+                }],
+                "editor-control": "FormSubmit",
+                "editor-component": "FormButton"
+            }]
+        }],
+        "computed": [{
+            "id": 1,
+            "name": "test",
+            "type": "javascript",
+            "formula": "return 'test calc parent';",
+            "property": "parent_input_1"
+        }],
+        "custom_css": "* { color: blue }",
+        "created_at": "2020-09-10T17:34:26+00:00",
+        "updated_at": "2021-01-04T18:48:48+00:00",
+        "status": "ACTIVE",
+        "key": null,
+        "watchers": [{
+            "input_data": "{}",
+            "script_configuration": "{}",
+            "synchronous": false,
+            "name": "parent watcher test",
+            "watching": "parent_input_1",
+            "output_variable": "parent_watcher_result",
+            "script": {
+                "id": "script-2",
+                "key": null,
+                "title": "parent watcher script",
+                "description": "test",
+                "language": "php",
+                "code": "<?php \nreturn ['parent_watcher' => 'ok'];",
+                "timeout": 60,
+                "run_as_user_id": 1,
+                "created_at": "2020-09-11T19:05:08+00:00",
+                "updated_at": "2020-09-11T19:05:41+00:00",
+                "status": "ACTIVE",
+                "script_category_id": "1",
+                "script_executor_id": 3
+            },
+            "script_id": 2,
+            "script_key": null,
+            "uid": "15998513965032"
+        }],
+        "categories": [{
+            "id": 1,
+            "name": "Uncategorized",
+            "status": "ACTIVE",
+            "is_system": 0,
+            "created_at": "2021-01-04T18:48:24+00:00",
+            "updated_at": "2021-01-04T18:48:24+00:00",
+            "pivot": {
+                "assignable_id": 3,
+                "category_id": 1,
+                "category_type": "ProcessMaker\\Models\\ScreenCategory"
+            }
+        }]
+    }, {
+        "id": 4,
+        "screen_category_id": "1",
+        "title": "child3",
+        "description": "test",
+        "type": "FORM",
+        "config": [{
+            "name": "child3",
+            "items": [{
+                "label": "Rich Text",
+                "config": {
+                    "icon": "fas fa-pencil-ruler",
+                    "label": null,
+                    "content": "<p>Child 3<\/p>",
+                    "interactive": true,
+                    "renderVarHtml": null
+                },
+                "component": "FormHtmlViewer",
+                "inspector": [{
+                    "type": "FormTextArea",
+                    "field": "content",
+                    "config": {
+                        "rows": 5,
+                        "label": "Content",
+                        "value": null,
+                        "helper": "The HTML text to display"
+                    }
+                }, {
+                    "type": "FormCheckbox",
+                    "field": "renderVarHtml",
+                    "config": {
+                        "label": "Render HTML from a Variable",
+                        "value": null,
+                        "helper": null
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "conditionalHide",
+                    "config": {
+                        "label": "Visibility Rule",
+                        "helper": "This control is hidden until this expression is true"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "customCssSelector",
+                    "config": {
+                        "label": "CSS Selector Name",
+                        "helper": "Use this in your custom css rules",
+                        "validation": "regex: [-?[_a-zA-Z]+[_-a-zA-Z0-9]*]"
+                    }
+                }],
+                "editor-control": "FormHtmlEditor",
+                "editor-component": "FormHtmlEditor"
+            }, {
+                "label": "Submit Button",
+                "config": {
+                    "icon": "fas fa-share-square",
+                    "name": null,
+                    "event": "submit",
+                    "label": "child 3 submit",
+                    "variant": "primary",
+                    "fieldValue": null,
+                    "defaultSubmit": true
+                },
+                "component": "FormButton",
+                "inspector": [{
+                    "type": "FormInput",
+                    "field": "label",
+                    "config": {
+                        "label": "Label",
+                        "helper": "The label describes the button's text"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "name",
+                    "config": {
+                        "name": "Variable Name",
+                        "label": "Variable Name",
+                        "helper": "A variable name is a symbolic name to reference information."
+                    }
+                }, {
+                    "type": "FormMultiselect",
+                    "field": "event",
+                    "config": {
+                        "label": "Type",
+                        "helper": "Choose whether the button should submit the form",
+                        "options": [{
+                            "value": "submit",
+                            "content": "Submit Button"
+                        }, {
+                            "value": "script",
+                            "content": "Regular Button"
+                        }]
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "fieldValue",
+                    "config": {
+                        "label": "Value",
+                        "helper": "The value being submitted"
+                    }
+                }, {
+                    "type": "FormMultiselect",
+                    "field": "variant",
+                    "config": {
+                        "label": "Button Variant Style",
+                        "helper": "The variant determines the appearance of the button",
+                        "options": [{
+                            "value": "primary",
+                            "content": "Primary"
+                        }, {
+                            "value": "secondary",
+                            "content": "Secondary"
+                        }, {
+                            "value": "success",
+                            "content": "Success"
+                        }, {
+                            "value": "danger",
+                            "content": "Danger"
+                        }, {
+                            "value": "warning",
+                            "content": "Warning"
+                        }, {
+                            "value": "info",
+                            "content": "Info"
+                        }, {
+                            "value": "light",
+                            "content": "Light"
+                        }, {
+                            "value": "dark",
+                            "content": "Dark"
+                        }, {
+                            "value": "link",
+                            "content": "Link"
+                        }]
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "conditionalHide",
+                    "config": {
+                        "label": "Visibility Rule",
+                        "helper": "This control is hidden until this expression is true"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "customCssSelector",
+                    "config": {
+                        "label": "CSS Selector Name",
+                        "helper": "Use this in your custom css rules",
+                        "validation": "regex: [-?[_a-zA-Z]+[_-a-zA-Z0-9]*]"
+                    }
+                }],
+                "editor-control": "FormSubmit",
+                "editor-component": "FormButton"
+            }]
+        }],
+        "computed": [],
+        "custom_css": null,
+        "created_at": "2020-09-11T21:31:37+00:00",
+        "updated_at": "2021-01-04T18:50:04+00:00",
+        "status": "ACTIVE",
+        "key": null,
+        "watchers": [],
+        "categories": [{
+            "id": 1,
+            "name": "Uncategorized",
+            "status": "ACTIVE",
+            "is_system": 0,
+            "created_at": "2021-01-04T18:48:24+00:00",
+            "updated_at": "2021-01-04T18:48:24+00:00",
+            "pivot": {
+                "assignable_id": 4,
+                "category_id": 1,
+                "category_type": "ProcessMaker\\Models\\ScreenCategory"
+            }
+        }]
+    }, {
+        "id": 5,
+        "screen_category_id": "1",
+        "title": "child2",
+        "description": "test",
+        "type": "FORM",
+        "config": [{
+            "name": "child2",
+            "items": [{
+                "label": "Rich Text",
+                "config": {
+                    "icon": "fas fa-pencil-ruler",
+                    "label": null,
+                    "content": "<p>Child 2<\/p>",
+                    "interactive": true,
+                    "renderVarHtml": null
+                },
+                "component": "FormHtmlViewer",
+                "inspector": [{
+                    "type": "FormTextArea",
+                    "field": "content",
+                    "config": {
+                        "rows": 5,
+                        "label": "Content",
+                        "value": null,
+                        "helper": "The HTML text to display"
+                    }
+                }, {
+                    "type": "FormCheckbox",
+                    "field": "renderVarHtml",
+                    "config": {
+                        "label": "Render HTML from a Variable",
+                        "value": null,
+                        "helper": null
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "conditionalHide",
+                    "config": {
+                        "label": "Visibility Rule",
+                        "helper": "This control is hidden until this expression is true"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "customCssSelector",
+                    "config": {
+                        "label": "CSS Selector Name",
+                        "helper": "Use this in your custom css rules",
+                        "validation": "regex: [-?[_a-zA-Z]+[_-a-zA-Z0-9]*]"
+                    }
+                }],
+                "editor-control": "FormHtmlEditor",
+                "editor-component": "FormHtmlEditor"
+            }, {
+                "label": "Submit Button",
+                "config": {
+                    "icon": "fas fa-share-square",
+                    "name": null,
+                    "event": "submit",
+                    "label": "child 2 submit",
+                    "variant": "primary",
+                    "fieldValue": null,
+                    "defaultSubmit": true
+                },
+                "component": "FormButton",
+                "inspector": [{
+                    "type": "FormInput",
+                    "field": "label",
+                    "config": {
+                        "label": "Label",
+                        "helper": "The label describes the button's text"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "name",
+                    "config": {
+                        "name": "Variable Name",
+                        "label": "Variable Name",
+                        "helper": "A variable name is a symbolic name to reference information."
+                    }
+                }, {
+                    "type": "FormMultiselect",
+                    "field": "event",
+                    "config": {
+                        "label": "Type",
+                        "helper": "Choose whether the button should submit the form",
+                        "options": [{
+                            "value": "submit",
+                            "content": "Submit Button"
+                        }, {
+                            "value": "script",
+                            "content": "Regular Button"
+                        }]
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "fieldValue",
+                    "config": {
+                        "label": "Value",
+                        "helper": "The value being submitted"
+                    }
+                }, {
+                    "type": "FormMultiselect",
+                    "field": "variant",
+                    "config": {
+                        "label": "Button Variant Style",
+                        "helper": "The variant determines the appearance of the button",
+                        "options": [{
+                            "value": "primary",
+                            "content": "Primary"
+                        }, {
+                            "value": "secondary",
+                            "content": "Secondary"
+                        }, {
+                            "value": "success",
+                            "content": "Success"
+                        }, {
+                            "value": "danger",
+                            "content": "Danger"
+                        }, {
+                            "value": "warning",
+                            "content": "Warning"
+                        }, {
+                            "value": "info",
+                            "content": "Info"
+                        }, {
+                            "value": "light",
+                            "content": "Light"
+                        }, {
+                            "value": "dark",
+                            "content": "Dark"
+                        }, {
+                            "value": "link",
+                            "content": "Link"
+                        }]
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "conditionalHide",
+                    "config": {
+                        "label": "Visibility Rule",
+                        "helper": "This control is hidden until this expression is true"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "customCssSelector",
+                    "config": {
+                        "label": "CSS Selector Name",
+                        "helper": "Use this in your custom css rules",
+                        "validation": "regex: [-?[_a-zA-Z]+[_-a-zA-Z0-9]*]"
+                    }
+                }],
+                "editor-control": "FormSubmit",
+                "editor-component": "FormButton"
+            }, {
+                "items": [
+                    [],
+                    [{
+                        "label": "Submit Button",
+                        "config": {
+                            "icon": "fas fa-share-square",
+                            "name": null,
+                            "event": "submit",
+                            "label": "child 2 submit in multicolumn",
+                            "variant": "primary",
+                            "fieldValue": null,
+                            "defaultSubmit": true
+                        },
+                        "component": "FormButton",
+                        "inspector": [{
+                            "type": "FormInput",
+                            "field": "label",
+                            "config": {
+                                "label": "Label",
+                                "helper": "The label describes the button's text"
+                            }
+                        }, {
+                            "type": "FormInput",
+                            "field": "name",
+                            "config": {
+                                "name": "Variable Name",
+                                "label": "Variable Name",
+                                "helper": "A variable name is a symbolic name to reference information."
+                            }
+                        }, {
+                            "type": "FormMultiselect",
+                            "field": "event",
+                            "config": {
+                                "label": "Type",
+                                "helper": "Choose whether the button should submit the form",
+                                "options": [{
+                                    "value": "submit",
+                                    "content": "Submit Button"
+                                }, {
+                                    "value": "script",
+                                    "content": "Regular Button"
+                                }]
+                            }
+                        }, {
+                            "type": "FormInput",
+                            "field": "fieldValue",
+                            "config": {
+                                "label": "Value",
+                                "helper": "The value being submitted"
+                            }
+                        }, {
+                            "type": "FormMultiselect",
+                            "field": "variant",
+                            "config": {
+                                "label": "Button Variant Style",
+                                "helper": "The variant determines the appearance of the button",
+                                "options": [{
+                                    "value": "primary",
+                                    "content": "Primary"
+                                }, {
+                                    "value": "secondary",
+                                    "content": "Secondary"
+                                }, {
+                                    "value": "success",
+                                    "content": "Success"
+                                }, {
+                                    "value": "danger",
+                                    "content": "Danger"
+                                }, {
+                                    "value": "warning",
+                                    "content": "Warning"
+                                }, {
+                                    "value": "info",
+                                    "content": "Info"
+                                }, {
+                                    "value": "light",
+                                    "content": "Light"
+                                }, {
+                                    "value": "dark",
+                                    "content": "Dark"
+                                }, {
+                                    "value": "link",
+                                    "content": "Link"
+                                }]
+                            }
+                        }, {
+                            "type": "FormInput",
+                            "field": "conditionalHide",
+                            "config": {
+                                "label": "Visibility Rule",
+                                "helper": "This control is hidden until this expression is true"
+                            }
+                        }, {
+                            "type": "FormInput",
+                            "field": "customCssSelector",
+                            "config": {
+                                "label": "CSS Selector Name",
+                                "helper": "Use this in your custom css rules",
+                                "validation": "regex: [-?[_a-zA-Z]+[_-a-zA-Z0-9]*]"
+                            }
+                        }],
+                        "editor-control": "FormSubmit",
+                        "editor-component": "FormButton"
+                    }]
+                ],
+                "label": "Multicolumn \/ Table",
+                "config": {
+                    "icon": "fas fa-table",
+                    "label": null,
+                    "options": [{
+                        "value": "1",
+                        "content": "6"
+                    }, {
+                        "value": "2",
+                        "content": "6"
+                    }]
+                },
+                "component": "FormMultiColumn",
+                "container": true,
+                "inspector": [{
+                    "type": "ContainerColumns",
+                    "field": "options",
+                    "config": {
+                        "label": "Column Width",
+                        "validation": "columns-adds-to-12"
+                    }
+                }, {
+                    "type": "ColorSelect",
+                    "field": "color",
+                    "config": {
+                        "label": "Text Color",
+                        "helper": "Set the element's text color",
+                        "options": [{
+                            "value": "text-primary",
+                            "content": "primary"
+                        }, {
+                            "value": "text-secondary",
+                            "content": "secondary"
+                        }, {
+                            "value": "text-success",
+                            "content": "success"
+                        }, {
+                            "value": "text-danger",
+                            "content": "danger"
+                        }, {
+                            "value": "text-warning",
+                            "content": "warning"
+                        }, {
+                            "value": "text-info",
+                            "content": "info"
+                        }, {
+                            "value": "text-light",
+                            "content": "light"
+                        }, {
+                            "value": "text-dark",
+                            "content": "dark"
+                        }]
+                    }
+                }, {
+                    "type": "ColorSelect",
+                    "field": "bgcolor",
+                    "config": {
+                        "label": "Background Color",
+                        "helper": "Set the element's background color",
+                        "options": [{
+                            "value": "alert alert-primary",
+                            "content": "primary"
+                        }, {
+                            "value": "alert alert-secondary",
+                            "content": "secondary"
+                        }, {
+                            "value": "alert alert-success",
+                            "content": "success"
+                        }, {
+                            "value": "alert alert-danger",
+                            "content": "danger"
+                        }, {
+                            "value": "alert alert-warning",
+                            "content": "warning"
+                        }, {
+                            "value": "alert alert-info",
+                            "content": "info"
+                        }, {
+                            "value": "alert alert-light",
+                            "content": "light"
+                        }, {
+                            "value": "alert alert-dark",
+                            "content": "dark"
+                        }]
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "conditionalHide",
+                    "config": {
+                        "label": "Visibility Rule",
+                        "helper": "This control is hidden until this expression is true"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "customCssSelector",
+                    "config": {
+                        "label": "CSS Selector Name",
+                        "helper": "Use this in your custom css rules",
+                        "validation": "regex: [-?[_a-zA-Z]+[_-a-zA-Z0-9]*]"
+                    }
+                }],
+                "editor-control": "MultiColumn",
+                "editor-component": "MultiColumn"
+            }, {
+                "label": "Nested Screen",
+                "config": {
+                    "icon": "fas fa-file-invoice",
+                    "name": null,
+                    "event": "submit",
+                    "label": "Nested Screen",
+                    "value": null,
+                    "screen": 4,
+                    "variant": "primary"
+                },
+                "component": "FormNestedScreen",
+                "inspector": [{
+                    "type": "ScreenSelector",
+                    "field": "screen",
+                    "config": {
+                        "name": "SelectScreen",
+                        "label": "Screen",
+                        "helper": "Select a screen"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "conditionalHide",
+                    "config": {
+                        "label": "Visibility Rule",
+                        "helper": "This control is hidden until this expression is true"
+                    }
+                }, {
+                    "type": "FormInput",
+                    "field": "customCssSelector",
+                    "config": {
+                        "label": "CSS Selector Name",
+                        "helper": "Use this in your custom css rules",
+                        "validation": "regex: [-?[_a-zA-Z]+[_-a-zA-Z0-9]*]"
+                    }
+                }],
+                "editor-control": "FormSubmit",
+                "editor-component": "FormNestedScreen"
+            }]
+        }],
+        "computed": [],
+        "custom_css": null,
+        "created_at": "2020-09-11T21:32:12+00:00",
+        "updated_at": "2021-01-04T18:49:50+00:00",
+        "status": "ACTIVE",
+        "key": null,
+        "watchers": [],
+        "categories": [{
+            "id": 1,
+            "name": "Uncategorized",
+            "status": "ACTIVE",
+            "is_system": 0,
+            "created_at": "2021-01-04T18:48:24+00:00",
+            "updated_at": "2021-01-04T18:48:24+00:00",
+            "pivot": {
+                "assignable_id": 5,
+                "category_id": 1,
+                "category_type": "ProcessMaker\\Models\\ScreenCategory"
+            }
+        }]
+    }],
+    "screen_categories": [],
+    "scripts": [{
+        "id": 2,
+        "key": null,
+        "title": "parent watcher script",
+        "description": "test",
+        "language": "php",
+        "code": "<?php \nreturn ['parent_watcher' => 'ok'];",
+        "timeout": 60,
+        "run_as_user_id": null,
+        "created_at": "2020-09-11T19:05:08+00:00",
+        "updated_at": "2021-01-04T18:48:48+00:00",
+        "status": "ACTIVE",
+        "script_category_id": "1",
+        "script_executor_id": 3,
+        "categories": [{
+            "id": 1,
+            "name": "Uncategorized",
+            "status": "ACTIVE",
+            "is_system": 0,
+            "created_at": "2021-01-04T18:48:24+00:00",
+            "updated_at": "2021-01-04T18:48:24+00:00",
+            "pivot": {
+                "assignable_id": 2,
+                "category_id": 1,
+                "category_type": "ProcessMaker\\Models\\ScriptCategory"
+            }
+        }]
+    }, {
+        "id": 3,
+        "key": null,
+        "title": "child watcher script",
+        "description": "test",
+        "language": "php",
+        "code": "<?php \nreturn ['child_watcher' => 'ok'];",
+        "timeout": 60,
+        "run_as_user_id": null,
+        "created_at": "2020-09-11T19:06:28+00:00",
+        "updated_at": "2021-01-04T18:48:48+00:00",
+        "status": "ACTIVE",
+        "script_category_id": "1",
+        "script_executor_id": 3,
+        "categories": [{
+            "id": 1,
+            "name": "Uncategorized",
+            "status": "ACTIVE",
+            "is_system": 0,
+            "created_at": "2021-01-04T18:48:24+00:00",
+            "updated_at": "2021-01-04T18:48:24+00:00",
+            "pivot": {
+                "assignable_id": 3,
+                "category_id": 1,
+                "category_type": "ProcessMaker\\Models\\ScriptCategory"
+            }
+        }]
+    }],
+    "environment_variables": []
+}
