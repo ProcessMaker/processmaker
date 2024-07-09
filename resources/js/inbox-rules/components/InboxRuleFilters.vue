@@ -13,9 +13,7 @@
       </PMMessageScreen>
     </div>
     <div v-else>
-      <div v-if="filterTitle">
-        {{ filterTitle }}
-      </div>
+      {{  $t('In Progress') }} {{  $t('Tasks') }}
       <div class="mb-3">
         <PMBadgesFilters :value="pmql"
                          :advancedFilterProp="savedSearchAdvancedFilter"
@@ -313,14 +311,6 @@
           return this.savedSearch.pmql;
         }
         return '';
-      },
-      filterTitle() {
-        if (this.task) {
-          return this.$t('Your In-Progress "{{title}}" tasks', {title: this.task.element_name});
-        } else if (this.savedSearch?.title) {
-          return this.$t('Your In-Progress tasks in the saved search "{{title}}"', {title: this.savedSearch.title});
-        }
-        return null;
       },
       savedSearchData() {
         return {
