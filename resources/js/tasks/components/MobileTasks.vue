@@ -1,31 +1,31 @@
 <template>
-  <div>
+  <div ref="tasksContainer" class="tasks-container">
     <template v-for="(item, index) in data.data">
       <card
         :key="index"
         :item="item"
+        :show-cards="true"
         type="tasks"
       />
+      <mobile-cards-pagination
+        :index="index"
+        :per-page="perPage"
+        :data-length="data.data.length"
+        :counter-page="counterPage"
+        :total-pages="totalPages"
+        :card-message="cardMessage"
+        :loading="loading"
+      />
     </template>
-    <!-- Improve pagination for cards -->
-    <pagination
-      ref="pagination"
-      :single="$t('Task')"
-      :plural="$t('Tasks')"
-      :per-page-select-enabled="true"
-      @changePerPage="changePerPage"
-      @vuetable-pagination:change-page="onPageChange"
-    />
   </div>
 </template>
-
 <script>
 import Card from "../../Mobile/Card.vue";
 import datatableMixin from "../../components/common/mixins/datatable";
 import ListMixin from "./ListMixin";
-
+import MobileCardsPagination from "../../Mobile/MobileCardsPagination.vue"
 export default {
-  components: { Card },
+  components: { Card, MobileCardsPagination },
   mixins: [datatableMixin, ListMixin],
   props: {
     filter: {},

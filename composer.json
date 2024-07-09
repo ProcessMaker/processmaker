@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.11.0+next-20240628",
+    "version": "4.11.0+next-20240708",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -104,7 +104,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "5bc9e6c7",
+            "build": "6cd96395",
             "custom": {
                 "package-ellucian-ethos": "1.16.0",
                 "package-plaid": "1.6.0",
@@ -132,7 +132,8 @@
                 "package-zj-sonymusic": "dev-fall",
                 "pm-platform": "dev-fall",
                 "package-zj-nas": "dev-fall",
-                "package-plg": "0.0.3"
+                "package-plg": "0.0.3",
+                "package-accessibility": "dev-next"
             },
             "enterprise": {
                 "connector-docusign": "dev-next",
@@ -163,6 +164,7 @@
                 "package-process-optimization": "dev-next",
                 "package-product-analytics": "dev-next",
                 "package-projects": "dev-next",
+                "package-rpa": "dev-next",
                 "package-savedsearch": "dev-next",
                 "package-sentry": "dev-next",
                 "package-signature": "dev-next",
@@ -171,6 +173,7 @@
                 "package-versions": "dev-next",
                 "package-vocabularies": "dev-next",
                 "package-webentry": "dev-next",
+                "pm4-api-testing": "*",
                 "packages": "^0"
             },
             "docker-executors": {
