@@ -188,12 +188,11 @@ class TokenRepository implements TokenRepositoryInterface
                         'process_request_id' => $token->process_request_id,
                         'process_request_token_id' => $token->id,
                     ]);
-                    $data = [
-                        'token_id' => $tokenAbe->process_request_token_id,
-                        'token_abe' => $tokenAbe->id
-                    ];
+                    $data = $token->getInstance()->getDataStore()->getData();
+                    $data['token_id'] = $tokenAbe->process_request_token_id;
+                    $data['token_abe'] = $tokenAbe->id;
                     // Send Email
-                    return (new TaskActionByEmail())->sendAbeEmail($configEmail, $to, $token->getInstance()->getDataStore()->getData());
+                    return (new TaskActionByEmail())->sendAbeEmail($configEmail, $to, $data);
                 }
             }
         } catch (\Exception $e) {

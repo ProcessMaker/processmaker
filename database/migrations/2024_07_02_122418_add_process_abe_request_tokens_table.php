@@ -24,7 +24,9 @@ return new class extends Migration
             $table->index('process_request_id');
             $table->index('process_request_token_id');
             // Foreing keys
-            $table->foreign('process_request_token_id')->references('id')->on('process_request_tokens')->onDelete('cascade');
+            $table->foreign('process_request_token_id')->references('id')
+                ->on('process_request_tokens')
+                ->onDelete('cascade');
         });
     }
 
