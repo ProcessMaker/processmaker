@@ -33,7 +33,7 @@ export default {
       };
     },
     percent() {
-      return Math.round((this.count / this.total) * 100);
+      return this.total === 0 ? 0 : Math.round((this.count / this.total) * 100);
     },
   }
 };

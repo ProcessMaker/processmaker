@@ -56,6 +56,7 @@ import FilterTableBodyMixin from "./FilterTableBodyMixin";
 import PaginationTable from "./PaginationTable.vue";
 import { ellipsisSortClick } from "./UtilsTable";
 import TaskTooltip from "../../tasks/components/TaskTooltip.vue";
+import Recommendations from "../../components/Recommendations.vue"
 
 export {
   AddToProjectModal,
@@ -116,4 +117,5 @@ export {
   PaginationTable,
   ellipsisSortClick,
   TaskTooltip,
+  Recommendations,
 };

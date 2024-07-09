@@ -3,11 +3,11 @@
     v-if="showCards"
     overlay
     class="card-process"
+    @click="openInfo(process)"
   >
     <b-card-text>
       <div
         class="card-info"
-        @click="openInfo(process)"
       >
         <img
           class="icon-process"
@@ -130,7 +130,8 @@ export default {
     max-width: none;
     min-width: none;
     border-radius: 8px;
-    height: 100px;
+    height: 72px;
+    margin-right: 5px;
   }
 }
 .card-process2 {
@@ -158,7 +159,8 @@ export default {
   margin-bottom: 20px;
 
   @media (max-width: $lp-breakpoint) {
-    padding: 16px;
+    padding-left: 16px;
+    padding-right: 20px;
   }
 }
 .card-img {
@@ -172,9 +174,9 @@ export default {
   background-color: #F9E7C3;
   margin-right: 8px;
   
-  border-radius: 15px;
-  min-width: 30px;
-  height: 30px;
+  border-radius: 12px;
+  min-width: 24px;
+  height: 24px;
   justify-content: center;
   align-items: center;
   padding: 0 8px;
@@ -186,6 +188,7 @@ export default {
 
 .bookmark {
   float:right;
+  font-size: 1.2em;
 }
 .card-text {
   height: 100%;
@@ -212,8 +215,8 @@ export default {
   }
 }
 .icon-process {
-  width: 48px;
-  height: 48px;
+  width: 24px;
+  height: 24px;
   margin-bottom: 16px;
 
   @media (max-width: $lp-breakpoint) {
