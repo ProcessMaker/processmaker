@@ -63,6 +63,7 @@
             ? '/img/priority.svg'
             : '/img/priority-mobile.svg'
           "
+          :alt="$t('Priority')"
         >
       </button>
     </div>

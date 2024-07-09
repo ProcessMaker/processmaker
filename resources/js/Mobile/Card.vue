@@ -66,6 +66,7 @@
               v-if="item.is_priority"
               src="/img/priority.svg"
               class="mobile-priority"
+              :alt="$t('Priority')"
             >
           </b-col>
         </b-row>
