@@ -42,7 +42,7 @@
           v-if="!collapsed"
           key="content"
         >
-          <td colspan="2">
+          <td colspan="2" style="padding: 0%;">
             <table class="table m-0 border-0">
               <tbody>
                 <tr v-if="request.case_number">
