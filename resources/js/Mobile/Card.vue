@@ -1,66 +1,83 @@
 <template>
-  <b-card class="m-3">
+  <b-card v-if="showCards" class="m-3 card-mobile" no-body>
     <a :href="openURL">
-      <b-card-text @click="openCard()">
-        <b-row>
-          <b-col cols="9">
-            <span class="titleInfo">
-              <template v-if="type === 'tasks'">
-                {{ item.element_name }}
-              </template>
-              <template v-if="type === 'requests'">
-                {{ item.name }}
-              </template>
-            </span>
-          </b-col>
-          <b-col
-            cols="3"
-            class="align-left"
-          >
-            <span>
-              #{{ item.id }}
-            </span>
-          </b-col>
-        </b-row>
-        <div class="mt-3 mb-3">
-          <template v-if="type === 'tasks'">
-            <b-link href="">
-              #{{ item.process_request.id }}
-              {{ item.process.name }}
-            </b-link>
-          </template>
-          <template v-if="type === 'requests'">
-            <span class="dateInfo">
-              {{ $t("Started") }}: {{ formatDate(item.initiated_at) }}
-            </span>
-          </template>
-        </div>
+      <b-card-body
+        class="card-mobile-body"
+      >
+        <b-card-text @click="openCard()">
+          <b-row>
+            <b-col cols="12">
+              <span>
+                <div
+                  ref="fullText"
+                  :style="{ display: isVisible ? 'block' : 'none' }"
+                  v-html="sanitize(item.case_title_formatted)"
+                />
+                <div ref="line1" class="line-1" v-html="title1"></div>
+                <div ref="line2" class="line-2" v-html="title2"></div>
+              </span>
+            </b-col>
+          </b-row>
+          <b-row class="justify-content-center">
+            <div class="card-divider col-11" />
+          </b-row>
+          <div class="mt-3 mb-3">
+            <template v-if="type === 'tasks'">
+              <b-link href="">
+                #{{ item.process_request.id }}
+                {{ item.process.name }}
+              </b-link>
+            </template>
+            <template v-if="type === 'requests'">
+              <div class="bodyInfo">
+                {{ $t("Process") }}: {{ item.name }}
+              </div>
+              <div class="bodyInfo">
+                {{ $t("Task") }}: {{ formatActiveTasks(item.active_tasks) }}
+              </div>
+              <div class="bodyInfo">
+                {{ $t("Started") }}: {{ formatDate(item.initiated_at) }}
+              </div>
+              <div class="bodyInfo">
+                {{ $t("Completed") }}: {{ formatDate(item.completed_at) }}
+              </div>
+            </template>
+          </div>
+        </b-card-text>
+      </b-card-body>
+      <b-card-footer @click="openCard()" class="card-mobile-footer">
         <b-row align-h="between">
           <b-col cols="4">
-            <b-badge
-              pill
-              style="color: #44494E"
-              :style="colorStatus"
-            >
-              {{ showBadge(item) }}
-            </b-badge>
+            <img
+              src="/img/smartinbox-images/open-case.svg"
+              alt="case_number"
+            />
+            <span class="footer-case-number">
+              #{{ item.case_number }}
+            </span>
           </b-col>
           <b-col
             v-if="type === 'requests'"
             cols="4"
             class="align-left"
           >
-            <avatar-image
-              v-for="participant in item.participants"
-              :key="participant.id"
-              size="25"
-              hide-name="true"
-              :input-data="participant"
-            />
+            <b-badge
+              class="footer-status"
+              :style="colorStatus"
+            >
+              {{ showBadge(item) }}
+            </b-badge>
           </b-col>
         </b-row>
-      </b-card-text>
+      </b-card-footer>
     </a>
+  </b-card>
+  <b-card v-else class="card-tasks">
+    <div class="card-tasks-content">
+      <span v-if="cardMessage === 'show-page'">Page {{ currentPage }} of {{ totalPages }}</span>
+      <span v-if="cardMessage === 'show-more' && !loading"> {{ $t('Show More') }}</span>
+      <span v-if="loading"><i class="fas fa-spinner fa-spin"></i> {{ $t('Loading') }}...</span>
+    </div>
   </b-card>
 </template>
 
@@ -69,14 +86,43 @@ import AvatarImage from "../components/AvatarImage.vue";
 
 export default {
   components: { AvatarImage },
-  props: ["type", "item"],
+  props: {
+    item: null,
+    type: null,
+    loading: false,
+    cardMessage: null,
+    currentPage: {
+      type: Number,
+      default: 1,
+    },
+    totalPages: {
+      type: Number,
+      default: 0
+    } ,
+    process: null,
+    hideBookmark: {
+      type: Boolean,
+      default: false
+    },
+    showCards: true,
+  },
   data() {
     return {
       openURL: "",
       colorStatus: "",
       requestBadge: "",
       taskStatus: "",
+      isVisible: false,
+      title1: "",
+      title2: "",
     };
+  },
+  mounted() {
+    if (this.type === "tasks") {
+      this.splitText(this.sanitize(this.item.process_request.case_title_formatted));
+    } else if (this.type === "requests") {
+      this.splitText(this.sanitize(this.item.case_title_formatted));
+    }
   },
   methods: {
     /**
@@ -95,23 +141,23 @@ export default {
       }
       switch (this.item.status) {
         case "DRAFT":
-          this.colorStatus = "background-color: #ffdbdb";
+          this.colorStatus = "background-color: #F9E8C3";
           this.requestBadge = "Draft";
           break;
         case "CANCELED":
-          this.colorStatus = "background-color: #ffdbdb";
+          this.colorStatus = "background-color: #FFC7C7";
           this.requestBadge = "Canceled";
           break;
         case "COMPLETED":
-          this.colorStatus = "background-color: #B8F2DF";
+          this.colorStatus = "background-color: #B8DCF7";
           this.requestBadge = "Completed";
           break;
         case "ERROR":
-          this.colorStatus = "background-color: #ffdbdb";
+          this.colorStatus = "background-color: #FFC7C7";
           this.requestBadge = "Error";
           break;
         default:
-          this.colorStatus = "background-color: #FFF5DB";
+          this.colorStatus = "background-color: #C8F0CF";
           this.requestBadge = "In Progress";
           break;
       }
@@ -120,11 +166,9 @@ export default {
     /**
      * Format the date
      */
-    formatDate(value, format) {
-      const formatDate = format || "";
+    formatDate(value) {
       if (value) {
-        return window.moment(value)
-          .format(formatDate);
+        return window.moment(value).format('DD MMM YYYY / HH:mm');
       }
       return "n/a";
     },
@@ -136,14 +180,59 @@ export default {
         this.openURL = `/requests/${this.item.id}`;
       }
     },
+    splitText(text) {
+      // Split the text into two lines
+      this.isVisible = true;
+      const words = text.split(' ');
+      this.$nextTick(() => {
+        const fullText = this.$refs.fullText;
+        const fullWidth = fullText.offsetWidth;
+        words.forEach((word) => {
+          if ((this.title1 + word).length < (fullWidth / 7)) {
+            this.title1 += `${word} `;
+          } else {
+            this.title2 += `${word} `;
+          }
+        });
+        this.isVisible = false;
+      });
+    },
+    formatActiveTasks(value) {
+      return value.map((task) => `${task.element_name}`).join(", ");
+    },
+    sanitize(html) {
+      return this.removeScripts(html);
+    },
+    removeScripts(input) {
+      const doc = new DOMParser().parseFromString(input, 'text/html');
+
+      const scripts = doc.querySelectorAll('script');
+      scripts.forEach((script) => {
+        script.remove();
+      });
+
+      const styles = doc.querySelectorAll('style');
+      styles.forEach((style) => {
+        style.remove();
+      });
+
+      return doc.body.innerHTML;
+    },
   },
 };
 </script>
 
 <style scoped>
-a,
-.dateInfo {
-  color: #57646F;
+a {
+  color: #4C545C;
+}
+.bodyInfo {
+  color: rgba(76, 84, 92, 0.7);
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .titleInfo {
   color: #1572C2;
@@ -152,11 +241,66 @@ a,
   font-weight: 600;
   line-height: normal;
 }
-.badge-custom {
-  color: #44494E;
-  background-color: #FFF5DB;
+.footer-case-number {
+  font-weight: 500;
+  font-size: 13px;
+}
+.footer-status {
+  color: rgba(0, 0, 0, 0.75);
+  font-weight: 700;
+  font-size: 12px;
+  padding: 7px;
+  border-radius: 4.5px;
 }
 .align-left {
   text-align: end;
+}
+
+.card-tasks {
+  height: 40px;
+  margin-top: 1rem;
+  margin-right: 1rem;
+  border-radius: 8px;
+  background-color: #E5EDF3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-left: 1rem;
+}
+
+.card-tasks-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+.card-divider {
+  border-top: 1px solid #CDDDEE;
+}
+.card-mobile {
+  border: #CDDDEE 1px solid;
+  border-radius: 8px;
+}
+.card-mobile-body {
+  color: #4C545C;
+  padding: 16px 16px 0 16px;
+}
+.card-mobile-footer {
+  background-color: rgba(250, 250, 250, 1);
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+.line-1 {
+  font-size: 16px;
+}
+
+.line-2 {
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-bottom: 10px;
 }
 </style>

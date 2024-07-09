@@ -99,13 +99,11 @@
 </template>
 
 <script>
-import SearchCategories from "./utils/SearchCategories.vue";
 import SelectTemplateModal from "../../components/templates/SelectTemplateModal.vue";
 import { EventBus } from '../index.js';
 
 export default {
   components: {
-    SearchCategories,
     SelectTemplateModal,
   },
   props: [

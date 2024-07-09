@@ -1,5 +1,5 @@
 <template>
-  <div class="search">
+  <div class="search" :class="{ 'show-on-mobile' : $root.mobileSearchVisible }">
     <b-input-group class="search-input-group">
       <b-input-group-prepend >
         <b-button
@@ -7,6 +7,7 @@
           @click="fetch()"
         >
           <i class="fas fa-search search-icon" />
+          <i class="fas fa-arrow-left search-icon" />
         </b-button>
       </b-input-group-prepend>
 
@@ -19,11 +20,10 @@
 
       <b-input-group-append>
         <b-button
-          v-if="filter"
           v-b-tooltip.hover.bottom="$t('Clear Search')"
           @click="clearSearch()"
         >
-          <b-icon class="icon-close" icon="x" />
+          <i class="fas fa-times clear-icon" />
         </b-button>
       </b-input-group-append>
     </b-input-group>
@@ -90,12 +90,61 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import '~styles/variables';
+
+.search {
+  margin-right: 15px;
+
+  @media (max-width: $lp-breakpoint) {
+    display: none;
+    margin-right: 0;
+    
+    .input-group {
+      width: 100%;
+    }
+  }
+}
+
+.show-on-mobile {
+  display: block;
+}
+
 .search-input-group {
   margin-top: 10px;
   .btn-secondary, input {
     background-color: #E5EDF3;
     border-color: #E5EDF3;
     color: #5C5C63;
+  }
+    
+  .fa-search {
+    display: block;
+  }
+
+  .fa-arrow-left {
+    display: none;
+  }
+  
+  @media (max-width: $lp-breakpoint) {
+    .input-group-prepend .btn {
+      border-radius: 10px;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    .input-group-append .btn {
+      border-radius: 10px;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    .fa-search {
+      display:none;
+    }
+
+    .fa-arrow-left {
+      display: block;
+    }
   }
 }
 
