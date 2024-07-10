@@ -5,6 +5,8 @@ namespace Tests\Feature\Api;
 use Database\Seeders\PermissionSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Http\UploadedFile;
+use ProcessMaker\Models\Recommendation;
+use ProcessMaker\Models\RecommendationUser;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
@@ -774,5 +776,25 @@ class UsersTest extends TestCase
 
         // Check that it has changed
         $this->assertNotEquals($verify, $verifyNew);
+    }
+
+    public function testDisableRecommendations()
+    {
+        RecommendationUser::factory()->create([
+            'user_id' => $this->user->id,
+        ]);
+
+        $this->assertEquals(1, RecommendationUser::where('user_id', $this->user->id)->count());
+
+        $url = self::API_TEST_URL . '/' . $this->user->id;
+        $data = [
+            ...$this->getUpdatedData(),
+            'meta' => [
+                'disableRecommendations' => true,
+            ],
+        ];
+        $this->apiCall('PUT', $url, $data);
+
+        $this->assertEquals(0, RecommendationUser::where('user_id', $this->user->id)->count());
     }
 }
