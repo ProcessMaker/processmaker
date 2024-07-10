@@ -784,7 +784,7 @@ class ProcessRequestController extends Controller
     /**
      * Adding abe flag
      * @param  int  $id
-     * 
+     *
      * @return Response
      */
     public function enableIsActionbyemail($id)
