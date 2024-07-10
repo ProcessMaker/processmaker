@@ -17,6 +17,7 @@ use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessAbeRequestToken;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
@@ -230,14 +231,8 @@ class TaskController extends Controller
                     $response['message'] = 'Variable updated successfully';
                     $response['data'] = $abe;
                     $response['status'] = 200;
-
-                    if ($abe->completed_screen_id) {
-                        $customScreen = Screen::findOrFail($abe->completed_screen_id);
-                        $manager = app(ScreenBuilderManager::class);
-                        event(new ScreenBuilderStarting($manager, $customScreen->type ?? 'FORM'));
-
-                        return view('processes.screens.completedScreen', compact('customScreen', 'manager'));
-                    }
+                    // Show the screen defined
+                    $this->showScreen($abe->completed_screen_id);
                 }
             }
         } catch (\Exception $e) {
@@ -251,5 +246,16 @@ class TaskController extends Controller
             'message' => $response['message'],
             'data' => $response['data']
         ], $response['status']);
+    }
+
+    private function showScreen($screenId)
+    {
+        if (!empty($screenId)) {
+            $customScreen = Screen::findOrFail($screenId);
+            $manager = app(ScreenBuilderManager::class);
+            event(new ScreenBuilderStarting($manager, $customScreen->type ?? 'FORM'));
+
+            return view('processes.screens.completedScreen', compact('customScreen', 'manager'));
+        }
     }
 }
