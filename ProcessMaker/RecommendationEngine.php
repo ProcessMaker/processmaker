@@ -80,7 +80,9 @@ class RecommendationEngine
                 $this->debug('Creating new RecommendationUser records');
                 $this->create($recommendation, $count);
             } else {
-                $this->debug("Recommendation {$recommendation->id} does not meet minimum: {$recommendation->min_matches}");
+                $this->debug(
+                    "Recommendation {$recommendation->id} does not meet minimum: {$recommendation->min_matches}"
+                );
             }
         }
     }
