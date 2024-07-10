@@ -204,7 +204,13 @@ class TaskController extends Controller
             if (!$abe) {
                 $response['message'] = 'Token not found';
                 $response['status'] = 404;
-            } elseif ($abe->is_answered) {
+            }
+            // Review if the autentication is required
+            if ($abe->require_login && !Auth::check()) {
+                $response['message'] = 'Authentication required';
+                $response['status'] = 403;
+            }
+            if ($abe->is_answered) {
                 $response['message'] = 'This response has already been answered';
                 $response['data'] = $abe;
                 $response['status'] = 200;
@@ -219,9 +225,13 @@ class TaskController extends Controller
                     $data = $abe->data ? json_decode($abe->data, true) : [];
                     $data[$request->varName] = $request->varValue;
                     $abe->data = json_encode($data);
-                    // Asignar answered_at y is_answered
+                    // Define the answered_at and is_answered
                     $abe->is_answered = true;
                     $abe->answered_at = Carbon::now();
+                    // Review if the user is autenticated
+                    if (Auth::check()) {
+                        $abe->user_id = Auth::id();
+                    }
                     $abe->save();
                     // Define the parameter for complete the task
                     $process = $abe->process_id;
