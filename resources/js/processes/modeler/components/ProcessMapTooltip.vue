@@ -65,6 +65,12 @@ import moment from "moment";
 export default {
   name: "ProcessMapTooltip",
   props: {
+    enabled: {
+      type: Boolean,
+      default() {
+        true;
+      },
+    },
     nodeId: {
       type: String,
       default() {
@@ -95,6 +101,9 @@ export default {
   },
   watch: {
     nodeId() {
+      if (!this.enabled) {
+        return;
+      }
       this.getRequestTokens();
     },
     isLoading(value) {
