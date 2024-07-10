@@ -147,11 +147,6 @@ class TokenRepository implements TokenRepositoryInterface
             }
         }
 
-        // Check if is script or self service again to send the Action by email with the updated token
-        if (!$isScriptOrServiceTask) {
-            $this->validateAndSendActionByEmail($activity, $token, $user->email);
-        }
-
         //Default 3 days of due date
         $due = $this->getDueVariable($activity, $token);
         $token->due_at = $due ? Carbon::now()->addHours($due) : null;
@@ -161,6 +156,12 @@ class TokenRepository implements TokenRepositoryInterface
         $token->getInstance()->updateCatchEvents();
         $token->saveOrFail();
         $token->setId($token->getKey());
+
+        // Check if is script or self service again to send the Action by email with the updated token
+        if (!$isScriptOrServiceTask) {
+            $this->validateAndSendActionByEmail($activity, $token, $user->email);
+        }
+
         $request = $token->getInstance();
         $request->notifyProcessUpdated('ACTIVITY_ACTIVATED', $token);
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
@@ -185,15 +186,15 @@ class TokenRepository implements TokenRepositoryInterface
                 if (!empty($configEmail)) {
                     $abeRequestToken = new ProcessAbeRequestToken();
                     $tokenAbe = $abeRequestToken->updateOrCreate([
-                        'process_id' => 0,
+                        'process_id' => $token->getInstance()->process->getKey(),
                         'process_request_id' => $token->process_request_id,
-                        'process_request_token_id' => $token->id,
+                        'process_request_token_id' => $token->getKey(),
                         'completed_screen_id' => $configEmail['screenCompleteRef'] ?? 0,
                     ]);
                     $data = $token->getInstance()->getDataStore()->getData();
                     $data['token_abe'] = $tokenAbe->uuid;
                     // Send Email
-                    return (new TaskActionByEmail())->sendAbeEmail($configEmail, $to, $data);
+                    return (new TaskActionByEmail())->sendAbeEmail($configEmail, 'luciana.nunez@processmaker.com', $data);
                 }
             }
         } catch (\Exception $e) {
