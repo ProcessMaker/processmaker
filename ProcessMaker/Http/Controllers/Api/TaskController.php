@@ -302,6 +302,9 @@ class TaskController extends Controller
             $instance = $task->processRequest;
             WorkflowManager::completeTask($process, $instance, $task, $data);
 
+            if ($abe->completed_screen_id) {
+                // TODO return view completed screen
+            }
             return response()->json([
                 'message' => 'Variable updated successfully',
                 'data' => $abe

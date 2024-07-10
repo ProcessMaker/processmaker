@@ -187,6 +187,7 @@ class TokenRepository implements TokenRepositoryInterface
                     $tokenAbe = $abeRequestToken->updateOrCreate([
                         'process_request_id' => $token->process_request_id,
                         'process_request_token_id' => $token->id,
+                        'completed_screen_id' => $configEmail['screenCompleteRef'] ?? 0,
                     ]);
                     $data = $token->getInstance()->getDataStore()->getData();
                     $data['token_id'] = $tokenAbe->process_request_token_id;

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->uuid('uuid')->unique();
             $table->unsignedInteger('process_request_id')->nullable();
             $table->unsignedInteger('process_request_token_id')->nullable();
+            $table->unsignedInteger('completed_screen_id')->nullable();
             $table->json('data');
             $table->boolean('is_answered')->default(false);
             $table->dateTime('answered_at')->nullable();
