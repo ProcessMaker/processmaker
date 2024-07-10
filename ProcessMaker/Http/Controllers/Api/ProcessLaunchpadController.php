@@ -83,7 +83,8 @@ class ProcessLaunchpadController extends Controller
         // Get the embed related
         $processes = Process::with('launchpad')
             ->with(['media' => function ($query) {
-                $query->orderBy('order_column', 'asc');
+                $query->where('collection_name', '!=', Media::COLLECTION_SLIDESHOW)
+                    ->orderBy('order_column', 'asc');
             }])
             ->with(['embed' => function ($query) {
                 $query->orderBy('order_column', 'asc');
