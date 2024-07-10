@@ -24,7 +24,7 @@
         <tasks-list
           ref="taskList"
           :filter="filterTask"
-          :pmql="fullPmqlTask" 
+          :pmql="fullPmqlTask"
           :columns="columnsTask"
           :disable-tooltip="false"
           :disable-quick-fill-tooltip="false"
@@ -106,6 +106,9 @@ export default {
       columnsTask: window.Processmaker.defaultColumns || null
     };
   },
+  mounted() {
+    sessionStorage.setItem("elementDestinationURL", window.location.href);
+  },
   methods: {
     onTabChanged(activeTabIndex) {
       if (activeTabIndex === 1) {
@@ -113,8 +116,8 @@ export default {
           this.$refs.taskList.fetch();
         });
       }
-    }
-  }
+    },
+  },
 };
 </script>
 <style>

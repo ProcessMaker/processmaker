@@ -38,6 +38,7 @@ class Task extends ApiResource
         'interstitial',
         'userRequestPermission',
         'process',
+        'elementDestination',
     ];
 
     private $process = null;
@@ -94,7 +95,7 @@ class Task extends ApiResource
                                                 || count($array['assignable_users']) < 1;
         if (in_array('assignableUsers', $include) && $needToRecalculateAssignableUsers) {
             $definition = $this->getDefinition();
-            $config = json_decode($definition['config'], true) ?: [];
+            $config = isset($definition['config']) ? json_decode($definition['config'], true) : [];
             $isSelfService = $config['selfService'] ?? false;
             if ($isSelfService) {
                 $users = [];

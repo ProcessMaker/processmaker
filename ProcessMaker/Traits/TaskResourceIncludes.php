@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Resources\ScreenVersion as ScreenVersionResource;
 use ProcessMaker\Http\Resources\Users;
 use ProcessMaker\Managers\DataManager;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\User;
@@ -160,6 +161,18 @@ trait TaskResourceIncludes
         $userRequestPermission = $this->loadUserRequestPermission($this->processRequest, Auth::user(), []);
 
         return ['user_request_permission' => $userRequestPermission];
+    }
+
+    /**
+     * Include the element destination in the resource response.
+     *
+     * @return array
+     */
+    private function includeElementDestination()
+    {
+        $elementDestination = $this->resource->getElementDestinationAttribute();
+
+        return ['elementDestination' => $elementDestination];
     }
 
     private function loadUserRequestPermission(ProcessRequest $request, User $user, array $permissions)
