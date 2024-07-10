@@ -22,25 +22,15 @@
             <div class="card-divider col-11" />
           </b-row>
           <div class="mt-3 mb-3">
-            <template v-if="type === 'tasks'">
-              <b-link href="">
-                #{{ item.process_request.id }}
-                {{ item.process.name }}
-              </b-link>
-            </template>
-            <template v-if="type === 'requests'">
-              <div class="bodyInfo">
-                {{ $t("Process") }}: {{ item.name }}
-              </div>
-              <div class="bodyInfo">
-                {{ $t("Task") }}: {{ formatActiveTasks(item.active_tasks) }}
-              </div>
-              <div class="bodyInfo">
-                {{ $t("Started") }}: {{ formatDate(item.initiated_at) }}
-              </div>
-              <div class="bodyInfo">
-                {{ $t("Completed") }}: {{ formatDate(item.completed_at) }}
-              </div>
+            <template>
+              <template v-for="(row, index) in fields">
+                <div
+                  :key="index"
+                  class="bodyInfo"
+                >
+                  {{ $t(row.label) }}: {{ formatItem[row.field] }}
+                </div>
+              </template>
             </template>
           </div>
         </b-card-text>
@@ -51,22 +41,33 @@
             <img
               src="/img/smartinbox-images/open-case.svg"
               alt="case_number"
-            />
+            >
             <span class="footer-case-number">
-              #{{ item.case_number }}
+              #{{ caseNumber }}
             </span>
           </b-col>
           <b-col
-            v-if="type === 'requests'"
-            cols="4"
+            cols="8"
             class="align-left"
           >
+            <span
+              v-if="item.draft && item.status !== 'CLOSED' && type === 'tasks'"
+              class="footer-status badge-draft"
+            >
+              {{ $t('Draft') }}
+            </span>
             <b-badge
               class="footer-status"
               :style="colorStatus"
             >
               {{ showBadge(item) }}
             </b-badge>
+            <img
+              v-if="item.is_priority"
+              src="/img/priority.svg"
+              class="mobile-priority"
+              :alt="$t('Priority')"
+            >
           </b-col>
         </b-row>
       </b-card-footer>
@@ -82,6 +83,7 @@
 </template>
 
 <script>
+import { cloneDeep } from "lodash";
 import AvatarImage from "../components/AvatarImage.vue";
 
 export default {
@@ -105,6 +107,10 @@ export default {
       default: false
     },
     showCards: true,
+    fields: {
+      type: Array,
+      default: () => []
+    },
   },
   data() {
     return {
@@ -115,52 +121,74 @@ export default {
       isVisible: false,
       title1: "",
       title2: "",
+      formatItem: [],
     };
   },
+  computed: {
+    caseNumber() {
+      if (this.type === "requests") {
+        return this.item.case_number;
+      }
+      if (this.type === "tasks") {
+        return this.item.process_request.id;
+      }
+      return null;
+    },
+  },
   mounted() {
+    this.formatItem = cloneDeep(this.item);
+    window.addEventListener("resize", () => {
+      if (this.type === "requests") {
+        this.splitText(this.sanitize(this.item.case_title_formatted));
+      } else if (this.type === "tasks") {
+        this.splitText(this.sanitize(this.item.process_request.case_title_formatted));
+      }
+    });
     if (this.type === "tasks") {
       this.splitText(this.sanitize(this.item.process_request.case_title_formatted));
     } else if (this.type === "requests") {
       this.splitText(this.sanitize(this.item.case_title_formatted));
     }
+    this.fields.forEach((row) => {
+      if (row.field === "tasks") {
+        this.formatItem[row.field] = this.formatActiveTasks(this.formatItem.active_tasks);
+      }
+      if (row.format && row.format === "dateTime") {
+        this.formatItem[row.field] = this.formatDate(this.formatItem[row.field]);
+      }
+    });
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize");
   },
   methods: {
     /**
      * Show info in the badge
      */
-    showBadge(item) {
-      if (this.type === "tasks") {
-        if (item.due_notified === 1) {
-          this.colorStatus = "background-color: #FFF5DB";
-          this.taskStatus = "Due: ";
-          return this.taskStatus + this.formatDate(item.due_at);
-        }
-        this.taskStatus = "Done: ";
-        this.colorStatus = "background-color: #B8F2DF";
-        return this.taskStatus + this.formatDate(item.created_at);
+    showBadge() {
+      const statusMap = {
+        "DRAFT": { color: "#F9E8C3", label: this.$t("Draft") },
+        "CANCELED": { color: "#FFC7C7", label: this.$t("Canceled") },
+        "COMPLETED": { color: "#B8DCF7", label: this.$t("Completed") },
+        "ERROR": { color: "#FFC7C7", label: this.$t("Error") },
+        "ACTIVE": {
+          "overdue": { color: "#FFC7C7", label: this.$t("Overdue") },
+          "open": { color: "#C8F0CF", label: this.$t("In Progress") },
+          "default": { color: "#C8F0CF", label: this.$t("In Progress") }
+        },
+        "default": { color: "#C8F0CF", label: this.$t("In Progress") }
+      };
+
+      if (this.item.status === "ACTIVE") {
+        const advanceStatus = this.item.advanceStatus ? statusMap["ACTIVE"][this.item.advanceStatus] : statusMap["ACTIVE"]["default"];
+        this.colorStatus = `background-color: ${advanceStatus.color}`;
+        this.requestBadge = advanceStatus.label;
+      } else {
+        const currentStatus = statusMap[this.item.status] || statusMap["default"];
+        this.colorStatus = `background-color: ${currentStatus.color}`;
+        this.requestBadge = currentStatus.label;
       }
-      switch (this.item.status) {
-        case "DRAFT":
-          this.colorStatus = "background-color: #F9E8C3";
-          this.requestBadge = "Draft";
-          break;
-        case "CANCELED":
-          this.colorStatus = "background-color: #FFC7C7";
-          this.requestBadge = "Canceled";
-          break;
-        case "COMPLETED":
-          this.colorStatus = "background-color: #B8DCF7";
-          this.requestBadge = "Completed";
-          break;
-        case "ERROR":
-          this.colorStatus = "background-color: #FFC7C7";
-          this.requestBadge = "Error";
-          break;
-        default:
-          this.colorStatus = "background-color: #C8F0CF";
-          this.requestBadge = "In Progress";
-          break;
-      }
+
       return this.requestBadge;
     },
     /**
@@ -182,16 +210,20 @@ export default {
     },
     splitText(text) {
       // Split the text into two lines
+      this.title1 = "";
+      this.title2 = "";
+      let lineBreak = false;
       this.isVisible = true;
       const words = text.split(' ');
       this.$nextTick(() => {
         const fullText = this.$refs.fullText;
         const fullWidth = fullText.offsetWidth;
         words.forEach((word) => {
-          if ((this.title1 + word).length < (fullWidth / 7)) {
+          if (((this.title1 + word).length < (fullWidth / 7)) && !lineBreak) {
             this.title1 += `${word} `;
           } else {
             this.title2 += `${word} `;
+            lineBreak = true;
           }
         });
         this.isVisible = false;
@@ -302,5 +334,16 @@ a {
   overflow: hidden;
   text-overflow: ellipsis;
   padding-bottom: 10px;
+}
+.badge-draft {
+  background-color: #F9E8C3;
+  margin-right: 3px;
+  line-height: 1;
+  display: inline-block;
+}
+.mobile-priority {
+  background-color: #F8E3E5;
+  padding: 5px;
+  border-radius: 4.5px;
 }
 </style>
