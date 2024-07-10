@@ -194,7 +194,7 @@ class TokenRepository implements TokenRepositoryInterface
                     $data = $token->getInstance()->getDataStore()->getData();
                     $data['token_abe'] = $tokenAbe->uuid;
                     // Send Email
-                    return (new TaskActionByEmail())->sendAbeEmail($configEmail, 'luciana.nunez@processmaker.com', $data);
+                    return (new TaskActionByEmail())->sendAbeEmail($configEmail, $to, $data);
                 }
             }
         } catch (\Exception $e) {
