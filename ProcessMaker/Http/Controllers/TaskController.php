@@ -11,6 +11,7 @@ use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Filters\SaveSession;
 use ProcessMaker\Helpers\DefaultColumns;
 use ProcessMaker\Helpers\MobileHelper;
+use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
 use ProcessMaker\Jobs\MarkNotificationAsRead;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
@@ -226,7 +227,10 @@ class TaskController extends Controller
                         $task,
                         $data
                     );
-                    // Set here the flag is_actionbyemail
+
+                    // Set the flag is_actionbyemail in true
+                    (new ProcessRequestController)->enableIsActionbyemail($task->id);
+
                     $response['message'] = 'Variable updated successfully';
                     $response['data'] = $abe;
                     $response['status'] = 200;

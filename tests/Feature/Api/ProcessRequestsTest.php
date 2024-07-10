@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
@@ -939,5 +940,17 @@ class ProcessRequestsTest extends TestCase
         $json = $response->json();
 
         $this->assertEquals($hit->id, $json['data'][0]['id']);
+    }
+
+    // Test enableIsActionbyemail function
+    public function testEnableIsActionbyemail()
+    {
+        //create a token
+        $token = ProcessRequestToken::factory()->create();
+        $this->assertEquals($token->is_actionbyemail, 0);
+
+        (new ProcessRequestController)->enableIsActionbyemail($token->getKey());
+
+        $this->assertEquals($token->is_actionbyemail, 1);
     }
 }
