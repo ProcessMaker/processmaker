@@ -162,7 +162,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->saveOrFail();
         $token->setId($token->getKey());
         $request = $token->getInstance();
-        $request->notifyProcessUpdated('ACTIVITY_ACTIVATED');
+        $request->notifyProcessUpdated('ACTIVITY_ACTIVATED', $token);
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
     }
 
@@ -185,13 +185,13 @@ class TokenRepository implements TokenRepositoryInterface
                 if (!empty($configEmail)) {
                     $abeRequestToken = new ProcessAbeRequestToken();
                     $tokenAbe = $abeRequestToken->updateOrCreate([
+                        'process_id' => 0,
                         'process_request_id' => $token->process_request_id,
                         'process_request_token_id' => $token->id,
                         'completed_screen_id' => $configEmail['screenCompleteRef'] ?? 0,
                     ]);
                     $data = $token->getInstance()->getDataStore()->getData();
-                    $data['token_id'] = $tokenAbe->process_request_token_id;
-                    $data['token_abe'] = $tokenAbe->id;
+                    $data['token_abe'] = $tokenAbe->uuid;
                     // Send Email
                     return (new TaskActionByEmail())->sendAbeEmail($configEmail, $to, $data);
                 }
@@ -259,7 +259,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->saveOrFail();
         $token->setId($token->getKey());
         $request = $token->getInstance();
-        $request->notifyProcessUpdated('START_EVENT_TRIGGERED');
+        $request->notifyProcessUpdated('START_EVENT_TRIGGERED', $token);
     }
 
     private function assignTaskUser(ActivityInterface $activity, TokenInterface $token, Instance $instance)
@@ -291,7 +291,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->save();
         $token->setId($token->getKey());
         $request = $token->getInstance();
-        $request->notifyProcessUpdated('ACTIVITY_EXCEPTION');
+        $request->notifyProcessUpdated('ACTIVITY_EXCEPTION', $token);
     }
 
     /**
@@ -325,7 +325,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->save();
         $token->setId($token->getKey());
         $request = $token->getInstance();
-        $request->notifyProcessUpdated('ACTIVITY_COMPLETED');
+        $request->notifyProcessUpdated('ACTIVITY_COMPLETED', $token);
     }
 
     /**

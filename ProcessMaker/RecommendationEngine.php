@@ -149,4 +149,17 @@ class RecommendationEngine
     {
         return config('app.recommendations_enabled') === false;
     }
+
+    public static function shouldGenerateFor(User|null $user): bool
+    {
+        if (!$user || self::disabled()) {
+            return false;
+        }
+
+        if (isset($user->meta->disableRecommendations) && $user->meta->disableRecommendations) {
+            return false;
+        }
+
+        return true;
+    }
 }

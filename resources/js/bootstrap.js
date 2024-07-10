@@ -1,5 +1,6 @@
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
+import * as bootstrap from "bootstrap";
 import Echo from "laravel-echo";
 import Router from "vue-router";
 import ScreenBuilder, { initializeScreenCache } from "@processmaker/screen-builder";
@@ -16,7 +17,9 @@ import VueI18Next from "@panter/vue-i18next";
 import { install as VuetableInstall } from "vuetable-2";
 import MonacoEditor from "vue-monaco";
 import Vue from "vue";
+import * as vue from "vue";
 import VueCookies from "vue-cookies";
+import GlobalStore from "./globalStore";
 import Pagination from "./components/common/Pagination";
 import ScreenSelect from "./processes/modeler/components/inspector/ScreenSelect.vue";
 import translator from "./modules/lang.js";
@@ -68,10 +71,12 @@ window.$ = window.jQuery = require("jquery");
  */
 
 window.Vue = Vue;
-
+window.vue = vue;
+window.bootstrap = bootstrap;
 window.Vue.use(BootstrapVue);
 window.Vue.use(BootstrapVueIcons);
 window.Vue.use(ScreenBuilder);
+window.Vue.use(GlobalStore);
 window.Vue.use(VueDeepSet);
 window.Vue.use(VueCookies);
 if (!document.head.querySelector("meta[name=\"is-horizon\"]")) {
@@ -81,6 +86,7 @@ window.VueMonaco = require("vue-monaco");
 
 window.ScreenBuilder = require("@processmaker/screen-builder");
 window.VueFormElements = require("@processmaker/vue-form-elements");
+window.Modeler = require("@processmaker/modeler");
 
 window.VueRouter = Router;
 
@@ -232,7 +238,30 @@ if (token) {
   console.error("CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token");
 }
 
-window.ProcessMaker.apiClient.defaults.baseURL = "/api/1.0/";
+// Setup api versions
+const apiVersionConfig = [
+  { version: "1.0", baseURL: "/api/1.0/" },
+  { version: "1.1", baseURL: "/api/1.1/" },
+];
+
+window.ProcessMaker.apiClient.defaults.baseURL = apiVersionConfig[0].baseURL;
+window.ProcessMaker.apiClient.interceptors.request.use((config) => {
+  if (typeof config.url !== "string" || !config.url) {
+    throw new Error("Invalid URL in the request configuration");
+  }
+
+  apiVersionConfig.forEach(({ version, baseURL }) => {
+    const versionPrefix = `/api/${version}/`;
+    if (config.url.startsWith(versionPrefix)) {
+      // eslint-disable-next-line no-param-reassign
+      config.baseURL = baseURL;
+      // eslint-disable-next-line no-param-reassign
+      config.url = config.url.replace(versionPrefix, "");
+    }
+  });
+
+  return config;
+});
 
 // Set the default API timeout
 let apiTimeout = 5000;

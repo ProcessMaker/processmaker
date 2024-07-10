@@ -59,9 +59,12 @@ new Vue({
     ProcessMaker.EventBus.$on('advanced-search-addition', (component) => {
       this.additions.push(component);
     });
-    this.$nextTick(() => {
-      this.$refs.taskList.fetch();
-    });
+    
+    if (!window.location.search.includes("filter_user_recommendation")) {
+      this.$nextTick(() => {
+        this.$refs.taskList.fetch();
+      });
+    }
   },
   created() {
     const params = new URL(document.location).searchParams;

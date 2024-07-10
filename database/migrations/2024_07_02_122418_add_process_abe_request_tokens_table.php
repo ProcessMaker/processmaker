@@ -14,10 +14,13 @@ return new class extends Migration
         Schema::create('process_abe_request_tokens', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
+            $table->unsignedInteger('process_id')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedInteger('process_request_id')->nullable();
             $table->unsignedInteger('process_request_token_id')->nullable();
             $table->unsignedInteger('completed_screen_id')->nullable();
             $table->json('data');
+            $table->boolean('require_login')->default(true);
             $table->boolean('is_answered')->default(false);
             $table->dateTime('answered_at')->nullable();
             $table->timestamps();
@@ -25,9 +28,11 @@ return new class extends Migration
             $table->index('process_request_id');
             $table->index('process_request_token_id');
             // Foreing keys
+            $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
             $table->foreign('process_request_token_id')->references('id')
                 ->on('process_request_tokens')
                 ->onDelete('cascade');
+            $table->foreign('completed_screen_id')->references('id')->on('screens')->onDelete('cascade');
         });
     }
 
