@@ -1,9 +1,9 @@
 const ListMixin = {
   mounted() {
     const taskListCard = document.querySelector(".mobile-container");
-    if (taskListCard ) {
+    if (taskListCard) {
       taskListCard .addEventListener("scrollend", this.onScroll);
-    } ;
+    }
   },
   beforeDestroy() {
     const taskListCard = document.querySelector(".mobile-container");
