@@ -15,7 +15,7 @@
         <!-- Slot Table Header -->
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
           <div
-            :key="index"
+            :key="`requests-table-column-${index}`"
             :id="`requests-table-column-${column.field}`"
             class="pm-table-column-header-text"
           >
@@ -470,7 +470,8 @@ export default {
             "&order_direction=" +
             this.orderDirection +
             this.additionalParams +
-            advancedFilter,
+            advancedFilter +
+            "&row_format=",
             {
               cancelToken: new CancelToken((c) => {
                 this.cancelToken = c;

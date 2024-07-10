@@ -54,4 +54,9 @@ class RecommendationUser extends ProcessMakerModel
 
         $this->saveOrFail();
     }
+
+    public static function deleteFor(User $user): void
+    {
+        static::where('user_id', $user->id)->delete();
+    }
 }
