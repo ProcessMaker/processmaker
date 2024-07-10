@@ -942,14 +942,14 @@ class ProcessRequestsTest extends TestCase
         $this->assertEquals($hit->id, $json['data'][0]['id']);
     }
 
-    // Test abeFlag function
-    public function testAbeFlag()
+    // Test enableIsActionbyemail function
+    public function testEnableIsActionbyemail()
     {
         //create a token
         $token = ProcessRequestToken::factory()->create();
         $this->assertEquals($token->is_actionbyemail, 0);
 
-        (new ProcessRequestController)->abeFlag($token->getKey());
+        (new ProcessRequestController)->enableIsActionbyemail($token->getKey());
 
         $this->assertEquals($token->is_actionbyemail, 1);
     }
