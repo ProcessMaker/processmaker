@@ -787,13 +787,13 @@ class ProcessRequestController extends Controller
      * 
      * @return Response
      */
-    public function abeFlag($id)
+    public function enableIsActionbyemail($id)
     {
         $query = ProcessRequestToken::query();
         $query->where('id', $id)
             ->where('status', 'ACTIVE')
             ->update(['is_actionbyemail' => true]);
             
-        return response()->json([], 200);
+        return response()->json(true, 200);
     }
 }

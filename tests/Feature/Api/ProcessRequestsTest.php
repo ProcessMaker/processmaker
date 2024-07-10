@@ -946,10 +946,7 @@ class ProcessRequestsTest extends TestCase
     public function testAbeFlag()
     {
         //create a token
-        $token = ProcessRequestToken::factory()->create([
-            'process_request_id' => $request->id,
-            'user_id' => $this->user,
-        ]);
+        $token = ProcessRequestToken::factory()->create();
         $this->assertEquals($token->is_actionbyemail, 0);
 
         (new ProcessRequestController)->abeFlag($token->getKey());
