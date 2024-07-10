@@ -228,7 +228,7 @@ class TaskController extends Controller
                         $data
                     );
 
-                    // Set the flag is_actionbyemail
+                    // Set the flag is_actionbyemail in true
                     (new ProcessRequestController)->enableIsActionbyemail($task->id);
 
                     $response['message'] = 'Variable updated successfully';

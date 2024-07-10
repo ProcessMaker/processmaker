@@ -785,15 +785,15 @@ class ProcessRequestController extends Controller
      * Adding abe flag
      * @param  int  $id
      *
-     * @return Response
+     * @return boolean
      */
     public function enableIsActionbyemail($id)
     {
         $query = ProcessRequestToken::query();
-        $query->where('id', $id)
-            ->where('status', 'ACTIVE')
-            ->update(['is_actionbyemail' => true]);
-            
-        return response()->json(true, 200);
+        $affectedRows = $query->where('id', $id)
+                          ->where('status', 'ACTIVE')
+                          ->update(['is_actionbyemail' => true]);
+
+        return $affectedRows > 0;
     }
 }
