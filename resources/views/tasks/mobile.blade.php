@@ -25,5 +25,9 @@
 @endsection
 
 @section('css')
-
+<style>
+  #tasks-mobile {
+    background-color: #F7F9FB;
+  }
+</style>
 @endsection

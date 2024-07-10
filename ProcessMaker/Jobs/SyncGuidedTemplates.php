@@ -151,6 +151,10 @@ class SyncGuidedTemplates implements ShouldQueue
     private function buildTemplateUrl($config, $templatePath)
     {
         // Build the URL for a template based on the configuration and template path
+        if (empty($templatePath)) {
+            return null;
+        }
+
         return $config['base_url'] .
             $config['template_repo'] . '/' .
             $config['template_branch'] . '/' .
@@ -273,9 +277,11 @@ class SyncGuidedTemplates implements ShouldQueue
         // Build asset urls
         $templateIconUrl = $this->buildTemplateUrl($config, $template['assets']['icon']);
         $templateCardBackgroundUrl = $this->buildTemplateUrl($config, $template['assets']['card-background']);
+        $templateListIconUrl = $this->buildTemplateUrl($config, $template['assets']['list-icon']);
         // Import template assets and associate with the media collection
         $this->importMedia($templateIconUrl, 'icon', $mediaCollectionName, $guidedTemplate);
         $this->importMedia($templateCardBackgroundUrl, 'cardBackground', $mediaCollectionName, $guidedTemplate);
+        $this->importMedia($templateListIconUrl, 'listIcon', $mediaCollectionName, $guidedTemplate);
 
         if (!empty($template['assets']['launchpad']['process-card-background'])) {
             $templateProcessCardBackgroundUrl =
@@ -300,7 +306,12 @@ class SyncGuidedTemplates implements ShouldQueue
     private function importMedia($assetUrl, $customProperty, $mediaCollectionName, $guidedTemplate)
     {
         // Import a media asset and associate it with the media collection
-        $guidedTemplate->addMediaFromUrl($assetUrl)->withCustomProperties(['media_type' => $customProperty])->toMediaCollection($mediaCollectionName);
+        if (!is_null($assetUrl)) {
+            $guidedTemplate
+                ->addMediaFromUrl($assetUrl)
+                ->withCustomProperties(['media_type' => $customProperty])
+                ->toMediaCollection($mediaCollectionName);
+        }
     }
 
     private function checkForTemplateChanges($template)

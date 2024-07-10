@@ -140,6 +140,16 @@
                     @{{errors.status}}
                 </div>
             </div>
+            
+            <div class="form-group">
+                {!! Form::label('status', __('Recommendations')) !!}
+                <b-form-select
+                    id="status"
+                    v-model="disableRecommendations"
+                    class="form-control"
+                    :options="[{value: false, text: 'Enabled'}, {value: true, text: 'Disabled'}]">
+                </b-form-select>
+            </div>
 
             @isset($addonsSettings)
                 @foreach ($addonsSettings as $addon)

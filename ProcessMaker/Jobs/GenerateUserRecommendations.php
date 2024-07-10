@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
+use ProcessMaker\Models\Recommendation;
 use ProcessMaker\Models\User;
 use ProcessMaker\RecommendationEngine;
 
@@ -33,6 +34,9 @@ class GenerateUserRecommendations implements ShouldQueue
     public function handle(): void
     {
         $user = User::findOrFail($this->user_id);
+        if (!RecommendationEngine::shouldGenerateFor($user)) {
+            return;
+        }
         RecommendationEngine::for($user)->generate();
     }
 }

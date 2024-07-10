@@ -4,6 +4,7 @@
       <form-checkbox
         :label="$t('Display Next Assigned Task to Task Assignee')"
         :checked="allowInterstitial"
+        :disabled="isDisabled"
         @change="checked"
       />
       <small
@@ -56,6 +57,7 @@ export default {
       parameters: {
         type: "DISPLAY",
       },
+      isDisabled: false,
     };
   },
   computed: {
@@ -90,6 +92,10 @@ export default {
       },
     },
   },
+  created() {
+    // Listen for elementDestination interstitial event
+    this.$root.$on("handle-interstitial", this.handleInterstitial);
+  },
   mounted() {
     if (!("allowInterstitial" in this.node)) {
       this.$set(this.node, "allowInterstitial", this.enabledByDefault);
@@ -101,6 +107,22 @@ export default {
      */
     checked(checkboxChecked) {
       this.allowInterstitial = checkboxChecked;
+    },
+    /**
+     * Handle interstitial event
+     *
+     * @param {Object} { nodeId, isDisabled }
+     */
+    handleInterstitial({ nodeId, isDisabled }) {
+      if (nodeId !== this.node.id) {
+        return;
+      }
+
+      if (isDisabled) {
+        this.$set(this.node, "allowInterstitial", false);
+      }
+
+      this.isDisabled = isDisabled;
     },
   },
 };

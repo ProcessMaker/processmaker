@@ -3,8 +3,12 @@
 namespace Tests\unit\ProcessMaker;
 
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
 use ProcessMaker\Events\ActivityAssigned;
+use ProcessMaker\Jobs\GenerateUserRecommendations;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Recommendation;
@@ -80,6 +84,47 @@ class RecommendationEngineTest extends TestCase
         $recommendationUser->dismiss();
 
         $this->assertFalse($recommendationUser->isExpired());
+    }
+
+    public function testUserHasDisabledRecommendations(): void
+    {
+        Queue::fake([
+            GenerateUserRecommendations::class,
+        ]);
+
+        $user = User::factory()->create([
+            'status' => 'ACTIVE',
+            'meta' => [
+                'disableRecommendations' => true,
+            ],
+        ]);
+
+        $processRequestToken = ProcessRequestToken::factory()->create([
+            'user_id' => $user->id,
+        ]);
+
+        event(new ActivityAssigned($processRequestToken));
+
+        Queue::assertNotPushed(GenerateUserRecommendations::class);
+    }
+
+    public function testSystemHasDisabledRecommendations(): void
+    {
+        config(['app.recommendations_enabled' => false]);
+
+        Queue::fake([
+            GenerateUserRecommendations::class,
+        ]);
+
+        $user = User::factory()->create(['status' => 'ACTIVE']);
+
+        $processRequestToken = ProcessRequestToken::factory()->create([
+            'user_id' => $user->id,
+        ]);
+
+        event(new ActivityAssigned($processRequestToken));
+
+        Queue::assertNotPushed(GenerateUserRecommendations::class);
     }
 
     public function testRecommendationsSync(): void
