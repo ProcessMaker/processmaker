@@ -25,10 +25,10 @@ class RecommendationsServiceProvider extends ServiceProvider
         Event::listen(ActivityCompleted::class, function ($event) {
             // Without relations to prevent huge sets of unnecessary
             // data from being serialized and passed to the job
-            $processRequestToken = $event->getProcessRequestToken()->withoutRelations();
+            $processRequestToken = $event->getProcessRequestToken();
 
             // Dispatch the job to the low-priority queue
-            if ($processRequestToken->user_id) {
+            if (RecommendationEngine::shouldGenerateFor($processRequestToken->user)) {
                 GenerateUserRecommendations::dispatch($processRequestToken->user_id)->onQueue('low');
             }
         });

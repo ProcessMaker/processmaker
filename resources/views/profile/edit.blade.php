@@ -240,6 +240,21 @@
                 state2FA() {
                     return typeof this.formData.preferences_2fa != "undefined" &&
                         this.formData.preferences_2fa != null && this.formData.preferences_2fa.length > 0;
+                },
+                disableRecommendations: {
+                  get() {
+                    return this.formData?.meta?.disableRecommendations ?? false;
+                  },
+                  set(value) {
+                    if (value === true) {
+                      if (!this.formData.meta) {
+                        this.$set(this.formData, 'meta', {});
+                      }
+                      this.$set(this.formData.meta, 'disableRecommendations', true);
+                    } else {
+                      this.$delete(this.formData.meta, 'disableRecommendations');
+                    }
+                  }
                 }
             }
         });

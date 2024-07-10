@@ -12,4 +12,15 @@ return [
     | https://github.com/ProcessMaker/docker-executor-node
     |
     */
+    'php-nayra' => [
+        'name' => 'PHP (µService)',
+        'runner' => 'PhpRunner',
+        'mime_type' => 'application/x-php',
+        'options' => ['invokerPackage' => 'ProcessMaker\\Client'],
+        'init_dockerfile' => [
+        ],
+        'package_path' => base_path('/docker-services/nayra'),
+        'package_version' => '1.0.0',
+        'sdk' => '',
+    ],
 ];

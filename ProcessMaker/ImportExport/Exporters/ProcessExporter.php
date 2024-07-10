@@ -21,6 +21,10 @@ class ProcessExporter extends ExporterBase
 
     public static $fallbackMatchColumn = 'name';
 
+    const BPMN_TASK = 'bpmn:task';
+
+    const BPMN_MANUAL_TASK = 'bpmn:manualTask';
+
     public function export() : void
     {
         $process = $this->model;
@@ -263,8 +267,8 @@ class ProcessExporter extends ExporterBase
     private function exportAssignments()
     {
         $tags = [
-            'bpmn:task',
-            'bpmn:manualTask',
+            self::BPMN_TASK,
+            self::BPMN_MANUAL_TASK,
             'bpmn:callActivity',
         ];
 
@@ -409,6 +413,7 @@ class ProcessExporter extends ExporterBase
             $this->importSubprocesses();
             $this->importAssignments();
             $this->importProcessLaunchpad();
+            $this->importElementDestination();
         }
     }
 
@@ -474,6 +479,59 @@ class ProcessExporter extends ExporterBase
     {
         foreach ($this->getDependents('process_launchpad') as $launchpad) {
             $launchpad->model->setAttribute('process_id', $this->model->id);
+        }
+    }
+
+    /**
+     * Imports element destinations from the model and updates specific elements.
+     *
+     * This method searches for elements with specific tags and updates their 'pm:elementDestination' attribute
+     * if it matches certain criteria. Specifically, it checks if the attribute is a JSON object with a 'type'
+     * of 'customDashboard' and updates it to a JSON object with a 'type' of 'summaryScreen' and a 'value' of null.
+     *
+     * @return void
+     */
+    public function importElementDestination(): void
+    {
+        // Tags to search for in the model definitions
+        $tags = [
+            self::BPMN_TASK,
+            self::BPMN_MANUAL_TASK,
+            'bpmn:endEvent',
+        ];
+
+        // Get model definitions
+        $definitions = $this->model->getDefinitions(true);
+
+        // Get elements by specified tags
+        $elements = Utils::getElementByMultipleTags($definitions, $tags);
+
+        // Iterate through the elements
+        foreach ($elements as $element) {
+            $path = $element->getNodePath();
+            $elementDestination = $element->getAttribute('pm:elementDestination');
+
+            // If the element has a pm:elementDestination attribute
+            if ($elementDestination !== null) {
+                // Decode the JSON string in the attribute
+                $data = json_decode($elementDestination, true);
+
+                // Check for JSON errors and if the type is customDashboard
+                if (json_last_error() === JSON_ERROR_NONE && isset($data['type'])
+                    && $data['type'] === 'customDashboard') {
+                    // Create a new JSON string with updated values
+                    $newElementDestination = json_encode([
+                        'type' => 'summaryScreen',
+                        'value' => null,
+                    ]);
+
+                    // Set the new attribute value at the specified XPath
+                    Utils::setAttributeAtXPath(
+                        $this->model, $path, 'pm:elementDestination',
+                        htmlspecialchars($newElementDestination, ENT_QUOTES)
+                    );
+                }
+            }
         }
     }
 }
