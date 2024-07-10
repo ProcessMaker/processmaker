@@ -189,6 +189,7 @@ class TokenRepository implements TokenRepositoryInterface
                         'process_id' => $token->getInstance()->process->getKey(),
                         'process_request_id' => $token->process_request_id,
                         'process_request_token_id' => $token->getKey(),
+                        'require_login' => $configEmail['requireLogin'] === true ? 1 : 0,
                         'completed_screen_id' => $configEmail['screenCompleteRef'] ?? 0,
                     ]);
                     $data = $token->getInstance()->getDataStore()->getData();
