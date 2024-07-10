@@ -122,6 +122,7 @@ export default {
       title1: "",
       title2: "",
       formatItem: [],
+      callbackResize: function() {}
     };
   },
   computed: {
@@ -137,13 +138,14 @@ export default {
   },
   mounted() {
     this.formatItem = cloneDeep(this.item);
-    window.addEventListener("resize", () => {
+    this.callbackResize = () => {
       if (this.type === "requests") {
         this.splitText(this.sanitize(this.item.case_title_formatted));
       } else if (this.type === "tasks") {
         this.splitText(this.sanitize(this.item.process_request.case_title_formatted));
       }
-    });
+    };
+    window.addEventListener("resize", this.callbackResize);
     if (this.type === "tasks") {
       this.splitText(this.sanitize(this.item.process_request.case_title_formatted));
     } else if (this.type === "requests") {
@@ -159,7 +161,7 @@ export default {
     });
   },
   beforeDestroy() {
-    window.removeEventListener("resize");
+    window.removeEventListener("resize", this.callbackResize);
   },
   methods: {
     /**
