@@ -504,7 +504,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     {
         if ($user->can('update', $this)) {
             $definitions = $this->getDefinition();
-            if (empty($definitions['allowReassignment'])) {
+            if (empty($definitions['allowReassignment']) || $definitions['allowReassignment'] === 'false') {
                 throw new AuthorizationException('Not authorized to reassign this task');
             }
 

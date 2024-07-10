@@ -64,13 +64,13 @@ class TaskResource extends ApiResource
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request
+     * @param  Request
      * @return array
      */
     public function toArray($request)
     {
         $array = [
-            'advancedStatus' => $this->advanceStatus,
+            'advanceStatus' => $this->advanceStatus,
         ];
         foreach (self::$defaultFields as $field) {
             $array[$field] = $this->$field;
@@ -171,6 +171,7 @@ class TaskResource extends ApiResource
                 $array[$key] = $this->$key;
             }
         }
+
         return $array;
     }
 }
