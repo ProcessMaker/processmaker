@@ -3,8 +3,8 @@
 namespace ProcessMaker\Console\Commands;
 
 use Exception;
-use Illuminate\Support\Str;
 use Illuminate\Console\Command;
+use ProcessMaker\Jobs\SyncRecommendations as SyncRecommendationsJob;
 use ProcessMaker\SyncRecommendations;
 
 class SyncRecommendationsCommand extends Command
@@ -14,7 +14,8 @@ class SyncRecommendationsCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'processmaker:sync-recommendations';
+    protected $signature = 'processmaker:sync-recommendations
+                            {--queue : Queue this command to run asynchronously}';
 
     /**
      * The console command description.
@@ -23,24 +24,22 @@ class SyncRecommendationsCommand extends Command
      */
     protected $description = 'Syncs recommendations from GitHub';
 
-    public SyncRecommendations $syncRecommendations;
-
-    public function __construct(SyncRecommendations $syncRecommendations)
-    {
-        parent::__construct();
-
-        $this->syncRecommendations = $syncRecommendations;
-    }
-
     /**
      * Execute the console command.
      */
     public function handle(): void
     {
+        if ($this->option('queue')) {
+            $randomDelay = random_int(10, 120);
+            SyncRecommendationsJob::dispatch()->delay(now()->addMinutes($randomDelay));
+
+            return;
+        }
+
         $this->line('Syncing recommendations from GitHub...');
 
         try {
-            $this->syncRecommendations->sync();
+            app(SyncRecommendations::class)->sync();
         } catch (Exception $e) {
             $this->error($e->getMessage());
         } finally {
