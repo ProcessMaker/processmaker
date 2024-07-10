@@ -12,15 +12,8 @@ class HomeController extends Controller
     public function index(Request $request)
     {
         if (Auth::check()) {
-            $isMobile = (
-                isset($_SERVER['HTTP_USER_AGENT']) && MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])
-            ) ? true : false;
-            // If is mobile redirect to view mobile request
-            if ($isMobile) {
-                return redirect('/requests');
-            }
             // Redirect to home dynamic only if the package was enable
-            if (!$isMobile && hasPackage('package-dynamic-ui')) {
+            if (hasPackage('package-dynamic-ui')) {
                 $user = \Auth::user();
                 $homePage = \ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::getHomePage($user);
 

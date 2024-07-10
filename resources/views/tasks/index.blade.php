@@ -172,6 +172,8 @@
       window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
       window.ProcessMaker.advanced_filter = @json($userFilter);
       window.Processmaker.defaultColumns = @json($defaultColumns);
+
+      window.sessionStorage.setItem('elementDestinationURL', window.location.href);
     </script>
     <script src="{{mix('js/tasks/index.js')}}"></script>
 @endsection

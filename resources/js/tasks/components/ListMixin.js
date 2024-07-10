@@ -1,11 +1,11 @@
 const ListMixin = {
   mounted() {
     const taskListCard = document.querySelector(".mobile-container");
-    taskListCard.addEventListener("scrollend", () => this.onScroll());
+    taskListCard?.addEventListener("scrollend", () => this.onScroll());
   },
   beforeDestroy() {
     const taskListCard = document.querySelector(".mobile-container");
-    taskListCard.removeEventListener("scrollend", this.onScroll());
+    taskListCard?.removeEventListener("scrollend", this.onScroll());
   },
   computed: {
     columnsQuery() {

@@ -15,14 +15,14 @@
         <!-- Slot Table Header -->
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
           <div
-            :key="index"
+            :key="`requests-table-column-${index}`"
             :id="`requests-table-column-${column.field}`"
             class="pm-table-column-header-text"
           >
             {{ $t(column.label) }}
           </div>
           <b-tooltip
-            :key="index"
+            :key="`requests-table-column-${index}`"
             :target="`requests-table-column-${column.field}`"
             custom-class="pm-table-tooltip-header"
             placement="bottom"

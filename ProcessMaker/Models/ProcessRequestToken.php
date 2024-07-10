@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
 use DB;
+use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Notification;
@@ -287,6 +288,50 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     }
 
     /**
+     * Returns either the owner element or its properties
+     *
+     * @param asObject Boolean flag that determines whether the function should return the element directly or its
+     * properties as an object.
+     *
+     * @return If the parameter is true, the function will return the object. If is false, the
+     * function will return the properties of the object.
+     */
+    private function getDefinitionFromOwner($asObject)
+    {
+        $element = $this->getOwnerElement();
+
+        return $asObject ? $element : $element->getProperties();
+    }
+
+    /**
+     * Retrieves a specific element's BPMN definition from a request object and returns either the element
+     * itself or its properties.
+     *
+     * @param asObject Boolean flag that determines whether the function should return the BPMN element instance
+     * as an object or just its properties.
+     *
+     * @return If `asObject` is false, the properties of the BPMN element instance are returned.
+     */
+    private function getDefinitionFromRequest($asObject)
+    {
+        $request = $this->processRequest ?: $this->getInstance();
+
+        if (!$request) {
+            return [];
+        }
+
+        $process = $request->processVersion ?: $request->process;
+        $definitions = $process->getDefinitions();
+        $element = $definitions->findElementById($this->element_id);
+
+        if (!$element) {
+            return [];
+        }
+
+        return $asObject ? $element->getBpmnElementInstance() : $element->getBpmnElementInstance()->getProperties();
+    }
+
+    /**
      * Get the BPMN definition of the element where the token is.
      *
      * @return array|\ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface
@@ -294,19 +339,10 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     public function getDefinition($asObject = false, $par = null)
     {
         if ($this->getOwner() && $this->getOwnerElement()) {
-            $element = $this->getOwnerElement();
-
-            return $asObject ? $element : $element->getProperties();
-        }
-        $request = $this->processRequest ?: $this->getInstance();
-        $process = $request->processVersion ?: $request->process;
-        $definitions = $process->getDefinitions();
-        $element = $definitions->findElementById($this->element_id);
-        if (!$element) {
-            return [];
+            return $this->getDefinitionFromOwner($asObject);
         }
 
-        return $asObject ? $element->getBpmnElementInstance() : $element->getBpmnElementInstance()->getProperties();
+        return $this->getDefinitionFromRequest($asObject);
     }
 
     /**
@@ -468,7 +504,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     {
         if ($user->can('update', $this)) {
             $definitions = $this->getDefinition();
-            if (empty($definitions['allowReassignment'])) {
+            if (empty($definitions['allowReassignment']) || $definitions['allowReassignment'] === 'false') {
                 throw new AuthorizationException('Not authorized to reassign this task');
             }
 
@@ -1153,5 +1189,83 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         if ($this->element_type === 'task') {
             event(new ActivityAssigned($this));
         }
+    }
+
+    /**
+     * Determines the destination based on the type of element destination property
+     *
+     * @param elementDestinationType Used to determine the type of destination for an element.
+     * @param elementDestinationProp Used to determine the properties of the destination for an element.
+     *
+     * @return array|null Returns the destination URL.
+     */
+    private function getElementDestination($elementDestinationType, $elementDestinationProp): ?array
+    {
+        $elementDestination = null;
+
+        switch ($elementDestinationType) {
+            case 'anotherProcess':
+            case 'customDashboard':
+            case 'externalURL':
+                if (array_key_exists('value', $elementDestinationProp)) {
+                    if (is_string($elementDestinationProp['value'])) {
+                        $elementDestination = $elementDestinationProp['value'];
+                    } else {
+                        $elementDestination = $elementDestinationProp['value']['url'] ?? null;
+                    }
+                }
+                break;
+            case 'taskList':
+                $elementDestination = route('tasks.index');
+                break;
+            case 'homepageDashboard':
+                if (hasPackage('package-dynamic-ui')) {
+                    $user = auth()->user();
+                    $elementDestination = \ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::getHomePage($user);
+                } else {
+                    $elementDestination = route('home');
+                }
+                break;
+            case 'processLaunchpad':
+                $elementDestination = route('process.browser.index', [
+                    'process' => $this->process_id,
+                    'categorySelected' => -1,
+                ]);
+                break;
+            case 'taskSource':
+                $elementDestination = $elementDestinationType;
+                break;
+            default:
+                $elementDestination = null;
+                break;
+        }
+
+        return [
+            'type' => $elementDestinationType,
+            'value' => $elementDestination,
+        ];
+    }
+
+    /**
+     * Determines the destination URL based on the element destination type specified in the definition.
+     *
+     * @return array|null
+     */
+    public function getElementDestinationAttribute(): ?array
+    {
+        $definition = $this->getDefinition();
+        $elementDestinationProp = $definition['elementDestination'] ?? null;
+        $elementDestinationType = null;
+
+        try {
+            $elementDestinationProp = json_decode($elementDestinationProp, true);
+            if (is_array($elementDestinationProp) && array_key_exists('type', $elementDestinationProp)) {
+                $elementDestinationType = $elementDestinationProp['type'];
+            }
+        } catch (Exception $e) {
+            return null;
+        }
+
+        return $this->getElementDestination($elementDestinationType, $elementDestinationProp);
     }
 }
