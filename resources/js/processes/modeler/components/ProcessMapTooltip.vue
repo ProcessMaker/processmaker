@@ -68,7 +68,7 @@ export default {
     enabled: {
       type: Boolean,
       default() {
-        true;
+        return true;
       },
     },
     nodeId: {
