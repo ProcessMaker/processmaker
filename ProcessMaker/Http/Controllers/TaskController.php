@@ -20,7 +20,6 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
-use ProcessMaker\Packages\Connectors\Email\ScreenRenderer;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
 
