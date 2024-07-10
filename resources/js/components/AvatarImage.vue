@@ -6,7 +6,7 @@
       <b-button
         ref="button"
         :variant="variant(value)"
-        class="avatar-button rounded-circle overflow-hidden p-0 m-0 d-inline-flex border-0"
+        class="avatar-button rounded-circle overflow-hidden p-0 m-0 d-inline-flex"
         :href="href(value)"
         :key="'link-' + key"
         :title="value.tooltip"
@@ -15,6 +15,7 @@
         :aria-haspopup="ariaHasPopup(value)"
         :disabled="disabled(value)"
         :aria-expanded="ariaExpanded"
+        :style="customStyle"
       >
         <img
           v-if="value.src"
@@ -88,6 +89,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    customStyle: {
+      type: String,
+      default: '',
+    }
   },
   data() {
     return {
@@ -275,5 +280,8 @@ export default {
   }
   .new-wrap {
     overflow-wrap: anywhere;
+  }
+  .class-border-avatar {
+    border: 2px solid white;
   }
 </style>

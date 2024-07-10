@@ -1,6 +1,6 @@
 <template>
   <div class="data-table">
-    <Recommendations if="showRecommendations" />
+    <Recommendations v-if="showRecommendations" />
     <div
       v-show="true"
       data-cy="tasks-table"
@@ -617,23 +617,22 @@ export default {
       this.$refs.preview.showSideBar(info, this.data.data, true, size);
     },
     formatStatus(props) {
-      let color;
-      let label;
-      const isSelfService = props.is_self_service;
+      let color = "success";
+      let label = "In Progress";
 
-      if (props.status === "ACTIVE" && isSelfService) {
-        color = "danger";
-        label = "Self Service";
-      } else if (props.status === "ACTIVE" && props.advanceStatus === "open") {
-        color = "success";
-        label = "In Progress";
-      } else if (props.status === "ACTIVE" && props.advanceStatus === "overdue") {
-        color = "danger";
-        label = "Overdue";
+      if (props.status === "ACTIVE") {
+        if (props.is_self_service) {
+          color = "danger";
+          label = "Self Service";
+        } else if (props.advanceStatus === "overdue") {
+          color = "danger";
+          label = "Overdue";
+        }
       } else if (props.status === "CLOSED") {
         color = "primary";
         label = "Completed";
       }
+
       return `
         <span class="badge badge-${color} status-${color}">
           ${label}

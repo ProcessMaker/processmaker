@@ -17,6 +17,8 @@ class ProcessCompleted implements ShouldBroadcastNow
 
     private $processRequest;
 
+    public $endEventDestination;
+
     /**
      * Create a new event instance.
      *
@@ -26,6 +28,7 @@ class ProcessCompleted implements ShouldBroadcastNow
     {
         $this->payloadUrl = route('api.requests.show', ['request' => $processRequest->getKey()]);
         $this->processRequest = $processRequest;
+        $this->endEventDestination = $processRequest->getElementDestination();
     }
 
     /**

@@ -531,11 +531,17 @@
             `element_id=${this.task.element_id}&` +
             `process_id=${this.task.process_id}`;
           },
-          completed(processRequestId) {
+          completed(processRequestId, endEventDestination = null) {
             // avoid redirection if using a customized renderer
-            if(this.task.component && this.task.component === 'AdvancedScreenFrame') {
+            if (this.task.component && this.task.component === 'AdvancedScreenFrame') {
               return;
             }
+
+            if (endEventDestination) {
+              this.redirect(endEventDestination);
+              return;
+            }
+
             this.redirect(`/requests/${processRequestId}`);
           },
           error(processRequestId) {
@@ -544,11 +550,17 @@
           redirectToTask(task, force = false) {
             this.redirect(`/tasks/${task}/edit`, force);
           },
-          closed(taskId) {
+          closed(taskId, elementDestination = null) {
             // avoid redirection if using a customized renderer
             if (this.task.component && this.task.component === 'AdvancedScreenFrame') {
               return;
             }
+
+            if (elementDestination) {
+              this.redirect(elementDestination);
+              return;
+            }
+
             this.redirect("/tasks");
           },
           claimTask() {
@@ -691,7 +703,7 @@
               screenFields.forEach((field) => {
                 _.set(draftData, field, _.get(this.formData, field));
               });
-                
+
               return ProcessMaker.apiClient
               .put("drafts/" + this.task.id, draftData)
               .then((response) => {

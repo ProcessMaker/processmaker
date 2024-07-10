@@ -14,6 +14,8 @@ import NavbarRequestMobile from "./components/NavbarRequestMobile.vue";
 import SummaryMobile from "./components/SummaryMobile.vue";
 import FilesMobile from "./components/FilesMobile.vue";
 import RequestHeaderMobile from "./components/RequestHeaderMobile.vue";
+import FilterMobile from "../Mobile/FilterMobile.vue";
+import FilterMixin from "../Mobile/FilterMixin";
 
 Vue.component("DataSummary", DataSummary);
 Vue.component("RequestDetail", RequestDetail);
@@ -28,6 +30,8 @@ Vue.component("NavbarRequestMobile", NavbarRequestMobile);
 Vue.component("SummaryMobile", SummaryMobile);
 Vue.component("FilesMobile", FilesMobile);
 Vue.component("RequestHeaderMobile", RequestHeaderMobile);
+Vue.component("FilterMobile", FilterMobile);
+Vue.mixin(FilterMixin);
 
 Vue.use("vue-form-renderer", VueFormRenderer);
 window.debounce = debounce;

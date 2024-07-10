@@ -4,6 +4,7 @@
       <card
         :key="index"
         :item="item"
+        :fields="fields"
         :show-cards="true"
         type="requests"
       />
@@ -42,7 +43,26 @@ export default {
           direction: "desc",
         },
       ],
-      fields: [],
+      fields: [
+        {
+          label: "Process",
+          field: "name",
+        },
+        {
+          label: "Task",
+          field: "tasks",
+        },
+        {
+          label: "Started",
+          field: "initiated_at",
+          format: "dateTime",
+        },
+        {
+          label: "Completed",
+          field: "completed_at",
+          format: "dateTime",
+        },
+      ],
       previousFilter: "",
       previousPmql: "",
       endpoint: "requests",

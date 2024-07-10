@@ -173,7 +173,7 @@
                 "package-versions": "dev-next",
                 "package-vocabularies": "dev-next",
                 "package-webentry": "dev-next",
-                "pm4-api-testing": "*",
+                "package-api-testing": "dev-next",
                 "packages": "^0"
             },
             "docker-executors": {

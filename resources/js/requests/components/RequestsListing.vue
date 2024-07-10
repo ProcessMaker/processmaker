@@ -15,7 +15,7 @@
         <!-- Slot Table Header -->
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
           <div
-            :key="index"
+            :key="`requests-table-column-${index}`"
             :id="`requests-table-column-${column.field}`"
             class="pm-table-column-header-text"
           >
