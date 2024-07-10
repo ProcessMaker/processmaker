@@ -1,7 +1,7 @@
 <template>
   <div
     id="navbarRequestMobile"
-    class="d-flex bg-primary p-2 justify-content-start"
+    class="d-flex bg-primary p-2 justify-content-start navbar-class"
   >
     <button
       type="buttom"
@@ -13,7 +13,7 @@
 
     <div class="mx-1">
       <span class="lead text-white font-weight-normal">
-        {{ title }}
+        {{ truncatedTitle }}
       </span>
     </div>
   </div>
@@ -25,6 +25,14 @@ export default {
   data() {
     return {};
   },
+  computed: {
+    truncatedTitle() {
+      if (this.title.length > 30) {
+        return this.title.slice(0, 30) + '...';
+      }
+      return this.title;
+    }
+  },
   methods: {
     returnTasks() {
       window.location = `/requests`;
@@ -32,3 +40,9 @@ export default {
   },
 };
 </script>
+<style scoped>
+.navbar-class {
+  background-color: #1572C2;
+  height: 48px;
+}
+</style>

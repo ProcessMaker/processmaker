@@ -9,6 +9,7 @@ require_once __DIR__ . '/../bootstrap/app.php';
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\ScriptExecutor;
+use ProcessMaker\ScriptRunners\Base;
 
 // Bootstrap laravel
 app()->make(Kernel::class)->bootstrap();
@@ -103,9 +104,14 @@ if (env('TEST_TOKEN')) {
         ['title' => 'Test Executor']
     );
     ScriptExecutor::firstOrCreate(
+        ['language' => 'php-nayra'],
+        ['title' => 'Test Executor Nayra']
+    );
+    ScriptExecutor::firstOrCreate(
         ['language' => 'lua'],
         ['title' => 'Test Executor']
     );
+    Base::initNayraPhpUnitTest();
 
     if (env('PARALLEL_TEST_PROCESSES')) {
         Artisan::call('processmaker:create-test-dbs');

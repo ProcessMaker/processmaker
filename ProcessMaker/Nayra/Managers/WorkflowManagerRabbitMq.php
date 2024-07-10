@@ -682,7 +682,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
      *
      * @return array
      */
-    private function getEnvironmentVariables()
+    public function getEnvironmentVariables()
     {
         $environmentVariables = [];
         EnvironmentVariable::chunk(50, function ($variables) use (&$environmentVariables) {

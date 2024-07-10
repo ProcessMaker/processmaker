@@ -230,7 +230,7 @@
                                                         label="title"
                                                     >
                                                         <span slot="noResult">
-                                                            {{ __('Oops! No elements found. Consider changing the search query.') }}
+                                                            @{{ __(noElementsFoundMsg) }}
                                                         </span>
                                                         <template slot="noOptions">
                                                             {{ __('No Data Available') }}
@@ -261,8 +261,8 @@
                                                         label="title"
                                                     >
                                                         <span slot="noResult">
-                                                            {{
-                                                                __('Oops! No elements found. Consider changing the search query.')
+                                                            @{{
+                                                                __(noElementsFoundMsg)
                                                             }}
                                                         </span>
                                                         <template slot="noOptions">
@@ -293,8 +293,8 @@
                                                         group-label="label"
                                                     >
                                                         <span slot="noResult">
-                                                            {{
-                                                                __('Oops! No elements found. Consider changing the search query.')
+                                                            @{{
+                                                                noElementsFoundMsg
                                                             }}
                                                         </span>
                                                         <template slot="noOptions">
@@ -317,8 +317,8 @@
                                                         group-label="label"
                                                     >
                                                         <span slot="noResult">
-                                                            {{
-                                                                __('Oops! No elements found. Consider changing the search query.')
+                                                            @{{
+                                                                __(noElementsFoundMsg)
                                                             }}
                                                         </span>
                                                         <template slot="noOptions">
@@ -632,6 +632,7 @@
                     translatedLanguages: [],
                     editTranslation: null,
                     activeTab: "",
+                    noElementsFoundMsg: 'Oops! No elements found. Consider changing the search query.',
                 }
                 },
                 mounted() {

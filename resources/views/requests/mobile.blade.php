@@ -27,5 +27,9 @@
 @endsection
 
 @section('css')
-
+<style>
+  #requests-mobile {
+    background-color: #F7F9FB;
+  }
+</style>
 @endsection

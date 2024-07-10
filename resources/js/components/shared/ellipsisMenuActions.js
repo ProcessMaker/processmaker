@@ -259,6 +259,29 @@ export default {
           permission: ["delete-decision_tables", "view-additional-asset-actions"],
         },
       ],
+      flowGenieActions: [
+        {
+          value: "edit-item",
+          content: "Edit",
+          icon: "fas fa-pen-square",
+          permission: [
+            "edit-flow_genies",
+            "view-additional-asset-actions",
+          ],
+        },
+        {
+          value: "add-to-project",
+          content: "Add to Project",
+          icon: "fas fa-folder-plus",
+          permission: "create-projects",
+        },
+        {
+          value: "remove-item",
+          content: "Delete",
+          icon: "fas fa-trash",
+          permission: ["delete-flow_genies", "view-additional-asset-actions"],
+        },
+      ],
       myTemplateActions: [
         {
           value: "edit-template",
