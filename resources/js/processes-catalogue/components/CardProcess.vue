@@ -93,6 +93,7 @@ export default {
       showMoreVisible: false,
       cardMessage: "show-more",
       sumHeight: 0,
+      isCardProcess: true,
     };
   },
   watch: {
@@ -112,12 +113,12 @@ export default {
     this.loadCard(()=>{
       this.$nextTick(()=>{
           const listCard = document.querySelector(".processes-info");
-          
           listCard.addEventListener("scrollend", () => this.handleScroll());
       });
     }, null);
   },
-  destroyed() {
+  beforeDestroy() {
+    this.isCardProcess = false;
     const listCard = document.querySelector(".processes-info");
     listCard.removeEventListener("scrollend", this.handleScroll);
   },
@@ -225,7 +226,7 @@ export default {
     },
     handleScroll() {
       const container =  document.querySelector(".processes-info");
-      if ((container.scrollTop + container.clientHeight >= container.scrollHeight - 5)) {
+      if ((container.scrollTop + container.clientHeight >= container.scrollHeight - 5) && this.isCardProcess) {
         this.cardMessage = "show-page";
         this.onPageChanged(this.currentPage + 1);
       }

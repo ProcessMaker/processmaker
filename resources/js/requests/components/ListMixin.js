@@ -1,11 +1,15 @@
 const ListMixin = {
   mounted() {
     const requestListCard = document.querySelector(".mobile-container");
-    requestListCard.addEventListener("scrollend", () => this.onScroll());
+    if (requestListCard) {
+      requestListCard.addEventListener("scrollend", this.onScroll);
+    } 
   },
   beforeDestroy() {
     const requestListCard = document.querySelector(".mobile-container");
-    requestListCard.removeEventListener("scrollend", this.onScroll());
+    if (requestListCard) {
+      requestListCard.removeEventListener("scrollend", this.onScroll);
+    }
   },
   methods: {
     onScroll() {
