@@ -229,7 +229,7 @@ class TaskController extends Controller
                     );
 
                     // Set the flag is_actionbyemail
-                    (new ProcessRequestController)->abeFlag($task->id);
+                    (new ProcessRequestController)->enableIsActionbyemail($task->id);
 
                     $response['message'] = 'Variable updated successfully';
                     $response['data'] = $abe;
