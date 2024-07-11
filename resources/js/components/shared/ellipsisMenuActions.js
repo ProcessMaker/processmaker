@@ -160,6 +160,11 @@ export default {
           permission: ["delete-screens", "view-additional-asset-actions"],
           icon: "fas fa-trash-alt",
         },
+        {
+          value: "devlink-sync-screen",
+          content: "DevLink sync",
+          icon: "fas fa-sync",
+        },
       ],
       scriptActions: [
         {

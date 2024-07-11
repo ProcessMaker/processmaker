@@ -57,6 +57,17 @@ export default {
               case 'create-template':
                 this.showCreateTemplateModal(data.title, data.id, data.type);
                 break;
+              case 'devlink-sync-screen':
+                ProcessMaker.apiClient
+                      .get("devlink/sync?type=screen&id=" + data.id)
+                      .then(response => {
+                        ProcessMaker.alert(
+                          this.$t("Sync action completed."),
+                          "success"
+                        );
+                        that.fetch();
+                      });
+                break;
             }
           } else {
               switch (actionType) {

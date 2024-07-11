@@ -318,4 +318,9 @@ class ExportProcess implements ShouldQueue
             return $this->cacheFile();
         }
     }
+
+    public function getFileContents()
+    {
+        return $this->fileContents;
+    }
 }

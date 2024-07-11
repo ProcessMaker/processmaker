@@ -22,6 +22,7 @@
         "guzzlehttp/guzzle": "^7.4",
         "igaster/laravel-theme": "2.0.*",
         "jenssegers/agent": "^2.6",
+        "knplabs/github-api": "^3.14",
         "laravel/framework": "^10.19",
         "laravel/horizon": "^5.12",
         "laravel/passport": "^11.5",

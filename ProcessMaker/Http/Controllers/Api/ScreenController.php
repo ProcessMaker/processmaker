@@ -606,4 +606,68 @@ class ScreenController extends Controller
             $screen->update(['is_template' => 1, 'asset_type' => 'SCREEN_TEMPLATE']);
         }
     }
+
+    public function sync(Request $request)
+    {
+        // Get screen info
+        $screen = Screen::find($request->get('id'));
+        $exportScreen = new ExportScreen($screen);
+        $exportScreen->handle();
+
+        // Get DevLink settings
+        $githubRepo = env('GITHUB_REPO');
+        $githubAccount = env('GITHUB_ACCOUNT');
+        $githubToken =  env('GITHUB_TOKEN');
+        $githubBranch =  env('GITHUB_BRANCH');
+
+        // Authenticate
+        $github = new \Github\Client();
+        $github->authenticate($githubAccount, $githubToken, \Github\AuthMethod::CLIENT_ID);
+
+        // Create blob
+        $blob = $github->api('gitData')->blobs()->create(
+            $githubAccount,
+            $githubRepo,
+            [
+                'content' => $exportScreen->getFileContents(),
+                'encoding' => 'utf-8'
+            ]
+        );
+
+        // Get base tree
+        $baseTree = $github->api('gitData')->trees()->show($githubAccount, $githubRepo, $githubBranch);
+
+        // Create tree
+        $treeData = [
+            'base_tree' => $baseTree['sha'],
+            'tree' => [
+                [
+                    'path' => 'screens' . '/' . $screen->uuid . '.json',
+                    'mode' => '100644',
+                    'type' => 'blob',
+                    'sha' => $blob['sha']
+                ]
+            ]
+        ];
+        $tree = $github->api('gitData')->trees()->create($githubAccount, $githubRepo, $treeData);
+
+        // Create commit
+        $commitData = [
+            'message' => 'Update screen ' . $screen->uuid,
+            'tree' => $tree['sha'],
+            'parents' => [
+                $baseTree['sha']
+            ]
+        ];
+        $commit = $github->api('gitData')->commits()->create($githubAccount, $githubRepo, $commitData);
+
+        // Update reference
+        $referenceData = [
+            'sha' => $commit['sha'],
+            'force' => false
+        ];
+        $reference = $github->api('gitData')->references()->update($githubAccount, $githubRepo, 'heads/' . $githubBranch, $referenceData);
+
+        return response([], 204);
+    }
 }
