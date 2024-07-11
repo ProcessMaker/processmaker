@@ -6,6 +6,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessAbeRequestToken;
 use ProcessMaker\Models\ProcessTaskAssignment;
 use Tests\Feature\Shared\RequestHelper;
+use ProcessMaker\Facades\WorkflowManager;
 use Tests\TestCase;
 
 class TaskControllerTest extends TestCase
