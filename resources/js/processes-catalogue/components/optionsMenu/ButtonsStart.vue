@@ -159,7 +159,6 @@ export default {
   @media (max-width: $lp-breakpoint) {
     width: 100%;
     font-size: 18px;
-    height: auto;
   }
 }
 .scrollable-menu {

@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-3">
+  <div :class="{'mt-3': !mobileApp}">
     <PMTabs ref="bTabs"
             v-model="activeTab"
             @input="onTabsInput"
@@ -176,7 +176,8 @@
         ],
         activeTab: 0,
         selectTab: "",
-        removalMessage: ""
+        removalMessage: "",
+        mobileApp: window.ProcessMaker.mobileApp
       };
     },
     mounted() {

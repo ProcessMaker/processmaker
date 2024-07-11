@@ -5,6 +5,7 @@
         :process="process"
         @goBack="goBack()"
         @onProcessNavigate="onProcessNavigate"
+        v-if="!mobileApp"
       />
       <process-header
         :process="process"
@@ -108,6 +109,7 @@ export default {
   },
   data() {
     return {
+      mobileApp: window.ProcessMaker.mobileApp
     };
   },
   methods: {
