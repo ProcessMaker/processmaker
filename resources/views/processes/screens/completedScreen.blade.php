@@ -25,7 +25,7 @@
             el: '#completedScreen',
             data() {
                 return {
-                    formData: @json($screen),
+                    formData: @json($customScreen),
                     errors: {
                         'title': null,
                         'type': null,
