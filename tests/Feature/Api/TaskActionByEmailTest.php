@@ -11,7 +11,6 @@ class TaskActionByEmailTest extends TestCase
 {
     use RequestHelper;
 
-
     /**
      * Create new task assignment type user successfully
      */
