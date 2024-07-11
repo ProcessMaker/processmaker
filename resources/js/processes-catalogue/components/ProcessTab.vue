@@ -4,7 +4,44 @@
             v-model="activeTab"
             @input="onTabsInput"
             @changed="onTabsChanged">
-      <b-tab v-for="(item, index) in tabsList"
+      <b-tab v-if="mobileApp && item?.seeTabOnMobile===true"
+             v-for="(item, index) in tabsList"
+             :key="index"
+             :title="item.name"
+             @hook:mounted="checkTabsMounted">
+        <template v-if="item.type==='myCases'">
+          <filter-mobile type="requests"
+                         :outRef="$refs"
+                         :outName="'listMobile'+index">
+          </filter-mobile>
+          <mobile-requests :ref="'listMobile'+index"
+                           :filter="item.filter"
+                           :pmql="item.pmql">
+          </mobile-requests>
+        </template>
+        <template v-else-if="item.type==='myTasks'">
+          <filter-mobile type="tasks"
+                         :outRef="$refs"
+                         :outName="'listMobile'+index">
+          </filter-mobile>
+          <mobile-tasks :ref="'listMobile'+index"
+                        :filter="item.filter"
+                        :pmql="item.pmql">
+          </mobile-tasks>
+        </template>
+        <template v-else>
+          <filter-mobile type="tasks"
+                         :outRef="$refs"
+                         :outName="'listMobile'+index">
+          </filter-mobile>
+          <mobile-tasks :ref="'listMobile'+index"
+                        :filter="item.filter"
+                        :pmql="item.pmql">
+          </mobile-tasks>
+        </template>
+      </b-tab>
+      <b-tab v-if="!mobileApp"
+             v-for="(item, index) in tabsList"
              :key="index"
              :title="item.name"
              @hook:mounted="checkTabsMounted">
@@ -47,7 +84,8 @@
           </tasks-list>
         </template>
       </b-tab>
-      <template #tabs-end>
+      <template #tabs-end
+                v-if="!mobileApp">
         <b-nav-item id="pt-b-nav-item-id"
                     role="presentation"
                     href="#">
@@ -73,7 +111,7 @@
              :title="$t('Tab Settings')"
              :button-size="'sm'"
              :centered="true"
-             @ok="$refs.tabSettingForm.onOk()">
+             @ok="onOkModal">
       <CreateSavedSearchTab :ref="'tabSettingForm'"
                             :hideFormsButton="true"
                             :showOptionSeeTabOnMobile="true"
@@ -101,6 +139,9 @@
   import PMTabs from "../../components/PMTabs.vue";
   import PMSearchBar from "../../components/PMSearchBar.vue";
   import TabOptions from "./TabOptions.vue";
+  import FilterMobile from "../../Mobile/FilterMobile.vue";
+  import MobileRequests from "../../requests/components/MobileRequests.vue";
+  import MobileTasks from "../../tasks/components/MobileTasks.vue";
   export default {
     components: {
       RequestsListing,
@@ -108,7 +149,10 @@
       CreateSavedSearchTab,
       PMTabs,
       PMSearchBar,
-      TabOptions
+      TabOptions,
+      FilterMobile,
+      MobileRequests,
+      MobileTasks
     },
     props: {
       currentUser: {
@@ -176,7 +220,8 @@
         ],
         activeTab: 0,
         selectTab: "",
-        removalMessage: ""
+        removalMessage: "",
+        mobileApp: window.ProcessMaker.mobileApp
       };
     },
     mounted() {
@@ -206,14 +251,21 @@
         this.tabsList.push(tab);
         this.saveTabConfiguration();
       },
+      onOkModal(evt) {
+        evt.preventDefault();
+        this.$refs.tabSettingForm.onOk();
+      },
       onOkTabSetting(tab) {
         this.$set(this.tabsList, this.activeTab, tab);
         this.saveTabConfiguration();
+        this.$nextTick(() => {
+          this.$refs.tabSetting.hide();
+        });
       },
       onTabSettings() {
         this.$refs.tabSetting.show();
         this.$refs.tabSetting.$nextTick(() => {
-          this.$refs.tabSettingForm.set(this.tabsList[this.activeTab]);
+          this.$refs.tabSettingForm.set(this.tabsList[this.activeTab], this.activeTab);
         });
       },
       onDelete() {
