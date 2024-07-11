@@ -221,18 +221,17 @@ class TaskController extends Controller
                     $process = $abe->process_id;
                     $instance = $task->processRequest;
                     // Completar la tarea relacionada
-                    WorkflowManager::completeTask(
-                        $process,
-                        $instance,
-                        $task,
-                        $data
-                    );
+                    $this->completTask($process, $instance, $task, $data);
                     // Set here the flag is_actionbyemail
                     $response['message'] = 'Variable updated successfully';
                     $response['data'] = $abe;
                     $response['status'] = 200;
                     // Show the screen defined
-                    $this->showScreen($abe->completed_screen_id);
+                    $ressponse = response()->json([
+                        'message' => $response['message'],
+                        'data' => $response['data']
+                    ], $response['status']);
+                    return $this->showScreen($abe->completed_screen_id, $response);
                 }
             }
         } catch (\Exception $e) {
@@ -248,7 +247,7 @@ class TaskController extends Controller
         ], $response['status']);
     }
 
-    public function showScreen($screenId)
+    public function showScreen($screenId, $response)
     {
         if (!empty($screenId)) {
             $customScreen = Screen::findOrFail($screenId);
@@ -257,5 +256,17 @@ class TaskController extends Controller
 
             return view('processes.screens.completedScreen', compact('customScreen', 'manager'));
         }
+
+        return $response;
+    }
+
+    public function completeTask($process, $instance, $task, $data)
+    {
+        WorkflowManager::completeTask(
+            $process,
+            $instance,
+            $task,
+            $data
+        );
     }
 }
