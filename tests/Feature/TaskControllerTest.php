@@ -2,8 +2,7 @@
 
 namespace Tests\Feature;
 
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Http\Controllers\TaskController;
+use ProcessMaker\Models\ProcessAbeRequestToken;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -13,10 +12,11 @@ class TaskControllerTest extends TestCase
 
     public function testShowScreen()
     {
-        $screenId = Screen::factory()->create()->id;
-        $response = (new TaskController)->showScreen($screenId);
+        $processAbeRequestUuid = ProcessAbeRequestToken::factory()->create()->uuid;
+        $response = $this->webCall('GET', 'tasks/update_variable/' . $processAbeRequestUuid);
 
         // check the correct view is called
         $response->assertViewIs('processes.screens.completedScreen');
+        $response->assertStatus(200);
     }
 }
