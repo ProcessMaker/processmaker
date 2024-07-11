@@ -23,7 +23,8 @@ class ProcessAbeRequestTokenFactory extends Factory
         $screen = Screen::factory()->create();
         $process = Process::factory()->create();
         $processRequest = ProcessRequest::factory()->create([
-            'process_id' => $process->getKey()
+            'process_id' => $process->getKey(),
+            'bpmn' => $bpmn,
         ]);
         $processRequestToken = ProcessRequestToken::factory()->create([
             'process_id' => $process->getKey(),
