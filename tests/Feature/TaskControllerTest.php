@@ -34,7 +34,10 @@ class TaskControllerTest extends TestCase
             'process_request_token_id' => $task->getKey(),
         ]);
 
-        $response = $this->webCall('GET', 'tasks/update_variable/' . $processAbeRequest->uuid . '?varName=res&varValue=yes');
+        $response = $this->webCall(
+            'GET', 
+            'tasks/update_variable/' . $processAbeRequest->uuid . '?varName=res&varValue=yes'
+        );
 
         // check the correct view is called
         $response->assertViewIs('processes.screens.completedScreen');
