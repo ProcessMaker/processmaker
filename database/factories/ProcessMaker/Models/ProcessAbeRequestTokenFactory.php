@@ -20,7 +20,7 @@ class ProcessAbeRequestTokenFactory extends Factory
      */
     public function definition()
     {
-        $screenId = Screen::factory()->create()->id;
+        $screen = Screen::factory()->create();
         $process = Process::factory()->create();
         $processRequest = ProcessRequest::factory()->create([
             'process_id' => $process->getKey()
@@ -31,14 +31,12 @@ class ProcessAbeRequestTokenFactory extends Factory
         ]);
 
         return [
-            'data' => [],
             'process_id' => $process->getKey(),
             'process_request_id' => $processRequest->getKey(),
             'process_request_token_id' => $processRequestToken->getKey(),
-            'completed_screen_id' => $screenId,
-            'is_answered' => false,
-            'require_login' => false,
-            'answered_at' => null
+            'completed_screen_id' => $screen->getKey(),
+            'is_answered' => 0,
+            'require_login' => 0
         ];
     }
 }
