@@ -1,6 +1,7 @@
 <template>
   <div class="mt-3">
-    <PMTabs ref="bTabs"
+    <PMTabs v-show="!bTabsHide"
+            ref="bTabs"
             v-model="activeTab"
             @input="onTabsInput"
             @changed="onTabsChanged">
@@ -209,15 +210,18 @@
                 default: true,
                 width: 160
               }
-            ]
+            ],
+            seeTabOnMobile: true
           }, {
             type: "myTasks",
             name: this.$t("My Tasks"),
             filter: "",
             pmql: `(user_id = ${ProcessMaker.user.id}) AND (process_id = ${this.process.id})`,
-            columns: window.Processmaker.defaultColumns || []
+            columns: window.Processmaker.defaultColumns || [],
+            seeTabOnMobile: true
           }
         ],
+        bTabsHide: false,
         activeTab: 0,
         selectTab: "",
         removalMessage: "",
@@ -226,6 +230,7 @@
     },
     mounted() {
       this.requestTabConfiguration();
+      this.verifyTabsLength();
     },
     methods: {
       onTabsInput(activeTabIndex) {
@@ -365,6 +370,13 @@
           string = string.slice(0, 25) + "...";
         }
         return string;
+      },
+      verifyTabsLength() {
+        this.$nextTick(() => {
+          if (this.mobileApp && this.$refs.bTabs.getTabs().length === 0) {
+            this.bTabsHide = true;
+          }
+        });
       }
     }
   };
