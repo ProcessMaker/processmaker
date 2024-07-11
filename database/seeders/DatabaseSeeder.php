@@ -25,7 +25,8 @@ class DatabaseSeeder extends Seeder
             ScreenTypeSeeder::class,
             CategorySystemSeeder::class,
             ScreenSystemSeeder::class,
-            ScriptExecutorSeeder::class,
+            // Executor seed was disabled and should be executed manually
+            // ScriptExecutorSeeder::class,
             SignalSeeder::class,
             SettingsMenusSeeder::class,
         ]);
