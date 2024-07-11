@@ -35,7 +35,7 @@ class TaskControllerTest extends TestCase
         ]);
 
         $response = $this->webCall(
-            'GET', 
+            'GET',
             'tasks/update_variable/' . $processAbeRequest->uuid . '?varName=res&varValue=yes'
         );
 
