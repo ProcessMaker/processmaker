@@ -41,7 +41,7 @@
     </b-card-text>
   </b-card>
   <b-card v-else
-  class="d-flex text-center align-items-center justify-content-center card-process3">
+  class="d-flex text-center align-items-center justify-content-center card-process2">
     <span v-if="cardMessage === 'show-page'">Page {{ currentPage }} of {{ totalPages }}</span>
     <span v-if="cardMessage === 'show-more' && !loading"> {{ $t('Show More') }}</span>
     <span v-if="loading"><i class="fas fa-spinner fa-spin"></i> {{ $t('Loading') }}...</span>
@@ -135,25 +135,11 @@ export default {
     margin-right: 5px;
   }
 }
+
 .card-process2 {
   height: 40px;
   margin-top: 1rem;
-  margin-right: 1rem;
-  border-radius: 8px;
-  background-color: #E5EDF3;
-
-  @media (max-width: $lp-breakpoint) {
-    width: 100%;
-    max-width: none;
-    min-width: none;
-    border-radius: 8px;
-    height: 40px;
-  }
-}
-.card-process3 {
-  height: 40px;
-  margin-top: 1rem;
-  margin-right: 13.5%;
+  margin-right: 7%;
   border-radius: 8px;
   background-color: #E5EDF3;
   margin-left: 1rem;

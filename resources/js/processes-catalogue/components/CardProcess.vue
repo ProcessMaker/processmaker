@@ -242,8 +242,7 @@ export default {
   height: 100%;
   overflow: unset;
   justify-content: flex-start;
-  /*margin-left: 4%;
-  margin-right: 4%;*/
+
   @media (max-width: $lp-breakpoint) {
     display: block;
     height: auto;
@@ -259,9 +258,17 @@ export default {
   animation: 0.75s linear infinite spinner-border;
 }
 .separator-class {
-  width: 90%;
+  width: 85%;
   @media (max-width: $lp-breakpoint) {
+    display: block;
+    height: auto;
     width: 94%;
+  }
+
+  @media (min-width: 1870px) {
+    display: block;
+    height: auto;
+    width: 100%;
   }
 }
 </style>
