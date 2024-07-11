@@ -164,6 +164,9 @@ class TokenRepository implements TokenRepositoryInterface
 
         $request = $token->getInstance();
         $request->notifyProcessUpdated('ACTIVITY_ACTIVATED', $token);
+        if (!$isScriptOrServiceTask) {
+            $this->validateAndSendActionByEmail($activity, $token, $user->email);
+        }
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
     }
 
@@ -181,12 +184,14 @@ class TokenRepository implements TokenRepositoryInterface
     {
         try {
             $isActionsByEmail = $activity->getProperty('isActionsByEmail', false);
-            if ($isActionsByEmail) {
+            Log::Info('Activity isActionsByEmail: ' . $isActionsByEmail);
+            // If the actionByEmail is enable
+            if ($isActionsByEmail && !empty($to)) {
                 $configEmail = json_decode($activity->getProperty('configEmail'), true);
                 if (!empty($configEmail)) {
+                    Log::info('Activity configEmail: ', $configEmail);
                     $abeRequestToken = new ProcessAbeRequestToken();
                     $tokenAbe = $abeRequestToken->updateOrCreate([
-                        'process_id' => $token->getInstance()->process->getKey(),
                         'process_request_id' => $token->process_request_id,
                         'process_request_token_id' => $token->getKey(),
                         'require_login' => $configEmail['requireLogin'] === true ? 1 : 0,

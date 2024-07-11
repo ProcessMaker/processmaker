@@ -11,10 +11,12 @@ use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Filters\SaveSession;
 use ProcessMaker\Helpers\DefaultColumns;
 use ProcessMaker\Helpers\MobileHelper;
+use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
 use ProcessMaker\Jobs\MarkNotificationAsRead;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Comment;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessAbeRequestToken;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
@@ -206,7 +208,6 @@ class TaskController extends Controller
                     $response['status'] = 404;
                 } else {
                     // Update the data
-                    $data = $abe->data ? json_decode($abe->data, true) : [];
                     $data[$request->varName] = $request->varValue;
                     $abe->data = json_encode($data);
                     // Define the answered_at and is_answered
@@ -218,11 +219,19 @@ class TaskController extends Controller
                     }
                     $abe->save();
                     // Define the parameter for complete the task
-                    $process = $abe->process_id;
+                    $process = Process::find($task->process_id);
                     $instance = $task->processRequest;
                     // Completar la tarea relacionada
-                    $this->completTask($process, $instance, $task, $data);
-                    // Set here the flag is_actionbyemail
+                    WorkflowManager::completeTask(
+                        $process,
+                        $instance,
+                        $task,
+                        $data
+                    );
+
+                    // Set the flag is_actionbyemail in true
+                    (new ProcessRequestController)->enableIsActionbyemail($task->id);
+
                     $response['message'] = 'Variable updated successfully';
                     $response['data'] = $abe;
                     $response['status'] = 200;
