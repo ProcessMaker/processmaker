@@ -135,8 +135,7 @@ export default {
   methods: {
     hideMenu() {
       this.showMenu = !this.showMenu;
-      this.currentWidth = this.$refs.processInfo.offsetWidth;
-      this.$root.$emit("sizeChanged", this.currentWidth);
+      this.$root.$emit("sizeChanged", !this.showMenu);
     },
     /**
      * Add new page of categories

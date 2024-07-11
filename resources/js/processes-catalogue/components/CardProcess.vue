@@ -10,6 +10,7 @@
       class="processList d-flex"
       ref="processListContainer"
     >
+      
       <template v-for="(process, index) in processList">
         <Card
           :key="`${index}_${renderKey}`"
@@ -24,24 +25,26 @@
           :hideBookmark="categoryId === 'all_templates'"
         />
 
-          <div v-if="(index % perPage === perPage - 1) && processList.length >= perPage" :class="separatorClass">
-              <Card v-if="(((index + 1) === processList.length))"
-              :show-cards="false"
-              :current-page="counterPage + Math.floor(index / perPage)"
-              :total-pages="totalPages"
-              :card-message="'show-more'"
-              :loading="loading"
-              @callLoadCard="loadCard"
-            />
+        <div v-if="(index % perPage === perPage - 1) && processList.length >= perPage" :class="separatorClass">
+          <Card
+            v-if="((index + 1) === processList.length) && ((index + 1) < totalPages * perPage)"
+            :show-cards="false"
+            :current-page="counterPage + Math.floor(index / perPage)"
+            :total-pages="totalPages"
+            :card-message="'show-more'"
+            :loading="loading"
+            @callLoadCard="loadCard"
+          />
 
-              <Card
-              v-else
-              :show-cards="false"
-              :current-page="counterPage + Math.floor(index / perPage)"
-              :total-pages="totalPages"
-              :card-message="cardMessage"
-              :loading="loading"
-              @callLoadCard="loadCard"
+          <div v-else-if="((index + 1) === processList.length) && currentPage === totalPages && ((index + 1) === processList.length)">
+          </div>
+          <Card v-else
+          :show-cards="false"
+            :current-page="counterPage + Math.floor(index / perPage)"
+            :total-pages="totalPages"
+            :card-message="cardMessage"
+            :loading="loading"
+            @callLoadCard="loadCard"
             />
         </div>
       </template>
@@ -90,15 +93,14 @@ export default {
       showMoreVisible: false,
       cardMessage: "show-more",
       sumHeight: 0,
-      size: null,
-      minWidthCardContainer: 1414.
+      sizeChange: false,
     };
   },
   computed: {
     separatorClass() {
       const classes = {
         'separator-class': true,
-        'width-changed': this.size === this.minWidthCardContainer,
+        'width-changed': this.sizeChange,
       };
       return classes;
     },
@@ -133,8 +135,8 @@ export default {
     listCard.removeEventListener("scrollend", this.handleScroll);
   },
   methods: {
-    handleSizeChange(valor) {
-      this.size = valor;
+    handleSizeChange(value) {
+      this.sizeChange = value;
     },
     loadCard(callback, message) {
       if(message === 'bookmark') {
