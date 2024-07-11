@@ -158,7 +158,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->setId($token->getKey());
         $request = $token->getInstance();
         $request->notifyProcessUpdated('ACTIVITY_ACTIVATED', $token);
-        if (!$isScriptOrServiceTask) {
+        if (!is_null($user)) {
             $this->validateAndSendActionByEmail($activity, $token, $user->email);
         }
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
