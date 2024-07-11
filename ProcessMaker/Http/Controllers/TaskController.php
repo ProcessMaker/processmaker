@@ -236,7 +236,7 @@ class TaskController extends Controller
                     $response['data'] = $abe;
                     $response['status'] = 200;
                     // Show the screen defined
-                    $ressponse = response()->json([
+                    $response = response()->json([
                         'message' => $response['message'],
                         'data' => $response['data']
                     ], $response['status']);
