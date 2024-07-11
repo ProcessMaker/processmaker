@@ -15,10 +15,9 @@ class TaskControllerTest extends TestCase
 
     public function testShowScreen()
     {
-        ImportProcess::dispatchSync(
-            file_get_contents(__DIR__ . '/../Fixtures/rollback_test.bpmn')
-        );
-        $process = Process::orderBy('id', 'desc')->first();
+        $process = Process::factory()->create([
+            'bpmn' => file_get_contents(__DIR__ . '/../Fixtures/action_by_email_process.bpmn'),
+        ]);
 
         // Start a request
         $route = route('api.process_events.trigger', [$process->id, 'event' => 'node_1']);
