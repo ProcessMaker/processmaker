@@ -8,6 +8,7 @@ use ProcessMaker\Events\BuildScriptExecutor;
 use ProcessMaker\Exception\InvalidDockerImageException;
 use ProcessMaker\Facades\Docker;
 use ProcessMaker\Models\ScriptExecutor;
+use ProcessMaker\ScriptRunners\Base;
 
 class BuildScriptExecutors extends Command
 {
@@ -157,6 +158,16 @@ class BuildScriptExecutors extends Command
         $command = Docker::command() .
             " build --build-arg SDK_DIR=./sdk -t {$image} -f {$packagePath}/Dockerfile.custom {$packagePath}";
 
+        $this->execCommand($command);
+
+        $isNayra = $scriptExecutor->language === Base::NAYRA_LANG;
+        if ($isNayra) {
+            Base::bringUpNayraExecutor($this, $image);
+        }
+    }
+
+    public function execCommand(string $command)
+    {
         if ($this->userId) {
             $this->runProc(
                 $command,
@@ -185,7 +196,7 @@ class BuildScriptExecutors extends Command
         parent::info($text, $verbosity);
     }
 
-    private function sendEvent($output, $status)
+    public function sendEvent($output, $status)
     {
         if ($this->userId) {
             event(new BuildScriptExecutor($output, $this->userId, $status));

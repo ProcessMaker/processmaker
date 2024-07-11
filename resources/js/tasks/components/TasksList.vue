@@ -1,5 +1,6 @@
 <template>
   <div class="data-table">
+    <Recommendations v-if="showRecommendations" />
     <div
       v-show="true"
       data-cy="tasks-table"
@@ -16,6 +17,8 @@
         @table-row-mouseover="handleRowMouseover"
         @table-tr-mouseleave="handleTrMouseleave"
         @table-row-mouseleave="handleRowMouseleave"
+        @table-column-mouseover="handleColumnMouseover"
+        @table-column-mouseleave="handleColumnMouseleave"
       >
         <!-- Slot Table Header -->
         <template
@@ -23,8 +26,9 @@
           v-slot:[column.field]
         >
           <div
-            :key="index"
-            style="display: inline-block"
+            :key="`tasks-table-column-${index}`"
+            :id="`tasks-table-column-${column.field}`"
+            class="pm-table-column-header-text"
           >
             <img
               v-if="column.field === 'is_priority'"
@@ -35,6 +39,16 @@
             />
             <span v-else>{{ $t(column.label) }}</span>
           </div>
+          <b-tooltip
+            :key="index"
+            :target="`tasks-table-column-${column.field}`"
+            custom-class="pm-table-tooltip-header"
+            placement="bottom"
+            :delay="0"
+            @show="checkIfTooltipIsNeeded"
+          >
+            {{ $t(column.label) }}
+          </b-tooltip>
         </template>
         <!-- Slot Table Header filter Button -->
         <template
@@ -56,6 +70,7 @@
             :columnSortAsc="column.sortAsc"
             :columnSortDesc="column.sortDesc"
             :filterApplied="column.filterApplied"
+            :columnMouseover="columnMouseover"
             @onChangeSort="onChangeSort($event, column.field)"
             @onApply="onApply($event, column.field)"
             @onClear="onClear(column.field)"
@@ -219,6 +234,7 @@ import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMCol
 import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
 import TaskListRowButtons from "./TaskListRowButtons.vue";
 import { get } from "lodash";
+import Recommendations from "../../components/Recommendations.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -233,7 +249,8 @@ export default {
     TaskTooltip,
     PMColumnFilterIconAsc,
     PMColumnFilterIconDesc,
-    TaskListRowButtons
+    TaskListRowButtons,
+    Recommendations,
   },
   mixins: [
     datatableMixin,
@@ -283,6 +300,10 @@ export default {
     tableName: {
       type: String,
       default: "",
+    },
+    showRecommendations: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -350,6 +371,7 @@ export default {
       isTooltipVisible: false,
       hideTimer: null,
       ellipsisShow: false,
+      columnMouseover: null,
     };
   },
   computed: {
@@ -595,23 +617,22 @@ export default {
       this.$refs.preview.showSideBar(info, this.data.data, true, size);
     },
     formatStatus(props) {
-      let color;
-      let label;
-      const isSelfService = props.is_self_service;
+      let color = "success";
+      let label = "In Progress";
 
-      if (props.status === "ACTIVE" && isSelfService) {
-        color = "danger";
-        label = "Self Service";
-      } else if (props.status === "ACTIVE" && props.advanceStatus === "open") {
-        color = "success";
-        label = "In Progress";
-      } else if (props.status === "ACTIVE" && props.advanceStatus === "overdue") {
-        color = "danger";
-        label = "Overdue";
+      if (props.status === "ACTIVE") {
+        if (props.is_self_service) {
+          color = "danger";
+          label = "Self Service";
+        } else if (props.advanceStatus === "overdue") {
+          color = "danger";
+          label = "Overdue";
+        }
       } else if (props.status === "CLOSED") {
         color = "primary";
         label = "Completed";
       }
+
       return `
         <span class="badge badge-${color} status-${color}">
           ${label}
@@ -839,6 +860,12 @@ export default {
     taskListRowButtonsHide(row, index) {
       this.$refs["taskListRowButtons-" + index][0].close();
     },
+    handleColumnMouseover(column) {
+      this.columnMouseover = column;
+    },
+    handleColumnMouseleave() {
+      this.columnMouseover = null;
+    },
   },
 };
 </script>
@@ -869,6 +896,10 @@ export default {
 .btn-light:hover {
   background-color: #EDF1F6;
   color: #888;
+}
+.pm-table-column-header-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
 <style lang="scss" scoped>

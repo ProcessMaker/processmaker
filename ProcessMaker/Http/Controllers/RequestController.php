@@ -10,6 +10,7 @@ use ProcessMaker\Cache\CacheRemember;
 use ProcessMaker\Events\FilesDownloaded;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Filters\SaveSession;
+use ProcessMaker\Helpers\DefaultColumns;
 use ProcessMaker\Helpers\MobileHelper;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\DataManager;
@@ -22,8 +23,6 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Package\PackageComments\PackageServiceProvider;
-use ProcessMaker\Package\SavedSearch\Http\Controllers\SavedSearchController;
-use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 use ProcessMaker\ProcessTranslations\ProcessTranslation;
 use ProcessMaker\RetryProcessRequest;
 use ProcessMaker\Traits\HasControllerAddons;
@@ -68,23 +67,7 @@ class RequestController extends Controller
         }
         $userFilter = SaveSession::getConfigFilter('requestFilter' . $requestType, Auth::user());
 
-        // Get default Saved search config
-        if (class_exists(SavedSearch::class)) {
-            $defaultSavedSearch = SavedSearch::firstSystemSearchFor(
-                Auth::user(),
-                SavedSearch::KEY_REQUESTS,
-            );
-            if ($defaultSavedSearch) {
-                $defaultColumns = SavedSearchController::adjustColumnsOf(
-                    $defaultSavedSearch->columns,
-                    SavedSearch::TYPE_REQUEST
-                );
-            } else {
-                $defaultColumns = null;
-            }
-        } else {
-            $defaultColumns = null;
-        }
+        $defaultColumns = DefaultColumns::get('requests');
 
         return view('requests.index', compact(
             ['type', 'title', 'currentUser', 'userFilter', 'defaultColumns']
@@ -176,7 +159,6 @@ class RequestController extends Controller
         $files = \ProcessMaker\Models\Media::getFilesRequest($request);
 
         $canPrintScreens = $this->canUserPrintScreen($request);
-        $screenRequested = $canPrintScreens ? $request->getScreensRequested() : [];
 
         $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, ($request->summary_screen) ? $request->summary_screen->type : 'FORM'));
@@ -203,7 +185,6 @@ class RequestController extends Controller
                 'canRetry',
                 'manager',
                 'canPrintScreens',
-                'screenRequested',
                 'addons',
                 'isProcessManager',
                 'eligibleRollbackTask',
@@ -222,7 +203,6 @@ class RequestController extends Controller
             'canRetry',
             'manager',
             'canPrintScreens',
-            'screenRequested',
             'addons',
             'dataActionsAddons',
             'isProcessManager',

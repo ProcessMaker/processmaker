@@ -1,7 +1,13 @@
 <template>
   <b-card-text class="asset">
     <span>
+      <img
+        v-if="image_icon"
+        :src="image_icon"
+        :alt="asset_name"
+      >
       <i
+        v-if="icon"
         :class="icon"
         :style="{color: color}"
       />
@@ -15,7 +21,8 @@ export default {
   props: [
     "color",
     "asset_name",
-    "icon"
+    "icon",
+    "image_icon",
   ],
   data() {
     return { };

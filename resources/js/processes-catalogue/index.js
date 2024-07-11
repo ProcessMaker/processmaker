@@ -43,6 +43,7 @@ new Vue({
       permission: window.ProcessMaker.permission,
       isDocumenterInstalled: window.ProcessMaker.isDocumenterInstalled,
       categories: [],
+      mobileSearchVisible: false,
     };
   },
   methods: {
