@@ -22,11 +22,8 @@ class ProcessAbeRequestTokenFactory extends Factory
     {
         $screen = Screen::factory()->create();
         $process = Process::factory()->create();
-        $bpmn = file_get_contents(__DIR__ . '/../../Fixtures/rollback_test.bpmn');
-        $bpmn = str_replace('[task_user_id]', $this->user->id, $bpmn);
         $processRequest = ProcessRequest::factory()->create([
             'process_id' => $process->getKey(),
-            'bpmn' => $bpmn,
         ]);
         $processRequestToken = ProcessRequestToken::factory()->create([
             'process_id' => $process->getKey(),
