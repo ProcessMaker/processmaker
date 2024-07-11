@@ -158,6 +158,7 @@ export default {
   font-weight: 400;
   vertical-align: middle;
   font-style: italic;
+  margin-right: 5px;
 }
 .charts {
   display: flex;
