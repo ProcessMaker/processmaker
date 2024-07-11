@@ -7,7 +7,7 @@
       <b-tab v-if="mobileApp && item?.seeTabOnMobile===true"
              v-for="(item, index) in tabsList"
              :key="index"
-             :title="item.name"
+             :title="formatItemName(item.name)"
              @hook:mounted="checkTabsMounted">
         <template v-if="item.type==='myCases'">
           <filter-mobile type="requests"
@@ -43,7 +43,7 @@
       <b-tab v-if="!mobileApp"
              v-for="(item, index) in tabsList"
              :key="index"
-             :title="item.name"
+             :title="formatItemName(item.name)"
              @hook:mounted="checkTabsMounted">
         <PMSearchBar v-model="item.filter">
           <template v-slot:right-content>
@@ -359,6 +359,12 @@
                 .catch((error) => {
                   ProcessMaker.alert(this.$t("The launchpad settings could not be saved due to an error."), "danger");
                 });
+      },
+      formatItemName(string) {
+        if (string.length > 25) {
+          string = string.slice(0, 25) + "...";
+        }
+        return string;
       }
     }
   };
