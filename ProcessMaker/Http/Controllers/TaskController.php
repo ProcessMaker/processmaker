@@ -248,7 +248,7 @@ class TaskController extends Controller
         ], $response['status']);
     }
 
-    private function showScreen($screenId)
+    public function showScreen($screenId)
     {
         if (!empty($screenId)) {
             $customScreen = Screen::findOrFail($screenId);

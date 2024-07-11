@@ -14,6 +14,7 @@ class TaskControllerTest extends TestCase
         $screenId = Screen::factory()->create()->id;
         $response = (new TaskController)->showScreen($screenId);
 
+        // check the correct view is called
         $response->assertViewIs('processes.screens.completedScreen');
     }
 }
