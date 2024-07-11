@@ -26,7 +26,7 @@ class TaskControllerTest extends TestCase
         $this->apiCall('POST', $route, []);
         
         $instance = ProcessRequest::first();
-        $task = ProcessRequestToken::where('element_name', 'Terminate Task')->first();
+        $task = ProcessRequestToken::where('element_name', 'Form Task')->first();
 
         $processAbeRequest = ProcessAbeRequestToken::factory()->create([
             'process_id' => $process->getKey(),
