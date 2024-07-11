@@ -2,17 +2,16 @@
 
 namespace Tests\Feature;
 
+use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessAbeRequestToken;
 use ProcessMaker\Models\ProcessTaskAssignment;
 use Tests\Feature\Shared\RequestHelper;
-use Tests\Feature\Shared\ProcessTestingTrait;
 use Tests\TestCase;
 
 class TaskControllerTest extends TestCase
 {
     use RequestHelper;
-    use ProcessTestingTrait;
 
     public function testShowScreen()
     {
@@ -28,8 +27,11 @@ class TaskControllerTest extends TestCase
         $instance = ProcessRequest::first();
         $task = ProcessRequestToken::where('element_name', 'Terminate Task')->first();
 
-        dd($task);
-        $processAbeRequest = ProcessAbeRequestToken::factory()->create();
+        $processAbeRequest = ProcessAbeRequestToken::factory()->create([
+            'process_id' => $process->getKey(),
+            'process_request_id' => $instance->getKey(),
+            'process_request_token_id' => $task->getKey(),
+        ]);
 
         $response = $this->webCall('GET', 'tasks/update_variable/' . $processAbeRequest->uuid . '?varName=res&varValue=yes');
 
