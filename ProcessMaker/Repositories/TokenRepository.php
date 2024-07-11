@@ -156,12 +156,6 @@ class TokenRepository implements TokenRepositoryInterface
         $token->getInstance()->updateCatchEvents();
         $token->saveOrFail();
         $token->setId($token->getKey());
-
-        // Check if is script or self service again to send the Action by email with the updated token
-        if (!$isScriptOrServiceTask) {
-            $this->validateAndSendActionByEmail($activity, $token, $user->email);
-        }
-
         $request = $token->getInstance();
         $request->notifyProcessUpdated('ACTIVITY_ACTIVATED', $token);
         if (!$isScriptOrServiceTask) {
