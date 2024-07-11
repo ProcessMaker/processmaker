@@ -101,6 +101,7 @@ export default {
       fromProcessList: false,
       categoryCount: 0,
       hideLaunchpad: true,
+      currentWidth: 0,
     };
   },
   mounted() {
@@ -134,6 +135,8 @@ export default {
   methods: {
     hideMenu() {
       this.showMenu = !this.showMenu;
+      this.currentWidth = this.$refs.processInfo.offsetWidth;
+      this.$root.$emit("sizeChanged", this.currentWidth);
     },
     /**
      * Add new page of categories

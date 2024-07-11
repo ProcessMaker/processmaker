@@ -24,9 +24,8 @@
           :hideBookmark="categoryId === 'all_templates'"
         />
 
-          <div v-if="(index % perPage === perPage - 1) && processList.length >= perPage" class="separator-class">
-            
-              <Card v-if="((index + 1) === processList.length)"
+          <div v-if="(index % perPage === perPage - 1) && processList.length >= perPage" :class="separatorClass">
+              <Card v-if="(((index + 1) === processList.length))"
               :show-cards="false"
               :current-page="counterPage + Math.floor(index / perPage)"
               :total-pages="totalPages"
@@ -91,7 +90,18 @@ export default {
       showMoreVisible: false,
       cardMessage: "show-more",
       sumHeight: 0,
+      size: null,
+      minWidthCardContainer: 1414.
     };
+  },
+  computed: {
+    separatorClass() {
+      const classes = {
+        'separator-class': true,
+        'width-changed': this.size === this.minWidthCardContainer,
+      };
+      return classes;
+    },
   },
   watch: {
     async categoryId() {
@@ -114,12 +124,18 @@ export default {
           listCard.addEventListener("scrollend", () => this.handleScroll());
       });
     }, null);
+    this.$root.$on("sizeChanged", (val) => {
+      this.handleSizeChange(val);
+    });
   },
   destroyed() {
     const listCard = document.querySelector(".processes-info");
     listCard.removeEventListener("scrollend", this.handleScroll);
   },
   methods: {
+    handleSizeChange(valor) {
+      this.size = valor;
+    },
     loadCard(callback, message) {
       if(message === 'bookmark') {
         this.processList = [];
@@ -270,5 +286,8 @@ export default {
     height: auto;
     width: 100%;
   }
+}
+.separator-class.width-changed {
+  width: 93%;
 }
 </style>
