@@ -41,7 +41,7 @@
     </b-card-text>
   </b-card>
   <b-card v-else
-  class="text-center d-flex align-items-center justify-content-center card-process2">
+  class="d-flex text-center align-items-center justify-content-center card-process3">
     <span v-if="cardMessage === 'show-page'">Page {{ currentPage }} of {{ totalPages }}</span>
     <span v-if="cardMessage === 'show-more' && !loading"> {{ $t('Show More') }}</span>
     <span v-if="loading"><i class="fas fa-spinner fa-spin"></i> {{ $t('Loading') }}...</span>
@@ -117,11 +117,12 @@ export default {
 
 .card-process {
   max-width: 343px;
-  min-width: 296px;
+  min-width: 300px;
   width: 27vw;
   height: 232px;
   margin-top: 1rem;
   margin-right: 1rem;
+  margin-left: 1rem;
   border-radius: 16px;
   background-image: url("/img/launchpad-images/process_background.svg");
 
@@ -147,6 +148,23 @@ export default {
     min-width: none;
     border-radius: 8px;
     height: 40px;
+  }
+}
+.card-process3 {
+  height: 40px;
+  margin-top: 1rem;
+  margin-right: 13.5%;
+  border-radius: 8px;
+  background-color: #E5EDF3;
+  margin-left: 1rem;
+
+  @media (max-width: $lp-breakpoint) {
+    width: 100%;
+    max-width: none;
+    min-width: none;
+    border-radius: 8px;
+    height: 40px;
+    margin-right: 0;
   }
 }
 .card-process:hover {

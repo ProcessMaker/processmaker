@@ -24,10 +24,9 @@
           :hideBookmark="categoryId === 'all_templates'"
         />
 
-          <div v-if="(index % perPage === perPage - 1) && processList.length >= perPage" style="width: 75%;">
+          <div v-if="(index % perPage === perPage - 1) && processList.length >= perPage" class="separator-class">
             
               <Card v-if="((index + 1) === processList.length)"
-              style="width: 100%;"
               :show-cards="false"
               :current-page="counterPage + Math.floor(index / perPage)"
               :total-pages="totalPages"
@@ -38,7 +37,6 @@
 
               <Card
               v-else
-              style="width: 100%;"
               :show-cards="false"
               :current-page="counterPage + Math.floor(index / perPage)"
               :total-pages="totalPages"
@@ -244,6 +242,8 @@ export default {
   height: 100%;
   overflow: unset;
   justify-content: flex-start;
+  /*margin-left: 4%;
+  margin-right: 4%;*/
   @media (max-width: $lp-breakpoint) {
     display: block;
     height: auto;
@@ -257,5 +257,11 @@ export default {
   border-right-color: transparent;
   border-radius: 50%;
   animation: 0.75s linear infinite spinner-border;
+}
+.separator-class {
+  width: 90%;
+  @media (max-width: $lp-breakpoint) {
+    width: 94%;
+  }
 }
 </style>
