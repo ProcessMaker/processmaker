@@ -4,10 +4,12 @@ namespace Tests\Feature;
 
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Http\Controllers\TaskController;
+use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
 class TaskControllerTest extends TestCase
 {
+    use RequestHelper;
 
     public function testShowScreen()
     {
