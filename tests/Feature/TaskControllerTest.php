@@ -41,7 +41,7 @@ class TaskControllerTest extends TestCase
         // $definitions = $process->getDefinitions();
         // $startEvent = $definitions->getEvent('node_1');
         // $request = WorkflowManager::triggerStartEvent($process, $startEvent, []);
-        $bpmn = file_get_contents(__DIR__ . '/../../../Fixtures/rollback_test.bpmn');
+        $bpmn = file_get_contents(__DIR__ . '/../Fixtures/rollback_test.bpmn');
         $bpmn = str_replace('[task_user_id]', $this->user->id, $bpmn);
         $process = Process::factory()->create([
             'bpmn' => $bpmn,
