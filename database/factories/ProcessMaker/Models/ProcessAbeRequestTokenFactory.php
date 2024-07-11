@@ -11,7 +11,7 @@ use ProcessMaker\Models\Screen;
 /**
  * Model factory for a process request
  */
-class ProcessAbeRequestFactory extends Factory
+class ProcessAbeRequestTokenFactory extends Factory
 {
     /**
      * Define the model's default state.
