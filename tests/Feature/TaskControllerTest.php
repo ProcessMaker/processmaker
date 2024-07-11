@@ -12,8 +12,8 @@ class TaskControllerTest extends TestCase
 
     public function testShowScreen()
     {
-        $processAbeRequestUuid = ProcessAbeRequestToken::factory()->create()->uuid;
-        $response = $this->webCall('GET', 'tasks/update_variable/' . $processAbeRequestUuid);
+        $processAbeRequestUuid = ProcessAbeRequestToken::factory()->create();
+        $response = $this->webCall('GET', 'tasks/update_variable/' . $processAbeRequestUuid->uuid);
 
         // check the correct view is called
         $response->assertViewIs('processes.screens.completedScreen');
