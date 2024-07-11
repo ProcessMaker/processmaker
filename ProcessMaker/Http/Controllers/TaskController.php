@@ -268,14 +268,4 @@ class TaskController extends Controller
 
         return $response;
     }
-
-    public function completeTask($process, $instance, $task, $data)
-    {
-        WorkflowManager::completeTask(
-            $process,
-            $instance,
-            $task,
-            $data
-        );
-    }
 }
