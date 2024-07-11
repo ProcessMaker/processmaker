@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessAbeRequestToken;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessTaskAssignment;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
