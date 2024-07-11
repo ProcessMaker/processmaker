@@ -59,7 +59,8 @@
                             :filter="item.filter"
                             :pmql="item.pmql"
                             :autosaveFilter="false"
-                            :fetch-on-created="false">
+                            :fetch-on-created="false"
+                            :advancedFilterProp="advancedFilterProp">
           </requests-listing>
         </template>
         <template v-else-if="item.type==='myTasks'">
@@ -70,7 +71,8 @@
                       :autosaveFilter="false"
                       :fetch-on-created="false"
                       :disable-tooltip="false"
-                      :disable-quick-fill-tooltip="false">
+                      :disable-quick-fill-tooltip="false"
+                      :advancedFilterProp="advancedFilterProp">
           </tasks-list>
         </template>
         <template v-else>
@@ -222,6 +224,17 @@
           }
         ],
         bTabsHide: false,
+        advancedFilterProp: {
+          filters: [
+            {
+              subject: {type: "Status"},
+              operator: "=",
+              value: "In Progress",
+              _column_field: "status",
+              _column_label: "Status"
+            }
+          ]
+        },
         activeTab: 0,
         selectTab: "",
         removalMessage: "",
