@@ -93,12 +93,12 @@ export default {
      */
     dueInVariableSetter(event) {
       this.$set(this.node, "dueInVariable", event.target.value);
-      this.showError = this.valideteMustache(event.target.value);
+      this.showError = this.validateMustache(event.target.value);
     },
     /**
      * Validate if the value is a correct Mustache Syntaxis.
      */
-    valideteMustache(value) {
+    validateMustache(value) {
       const regex = /^{{(.*)}}/gm;
       return !regex.test(value);
     },
