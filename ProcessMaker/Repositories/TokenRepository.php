@@ -190,6 +190,8 @@ class TokenRepository implements TokenRepositoryInterface
                         'process_request_token_id' => $token->id,
                     ]);
                     $data = $token->getInstance()->getDataStore()->getData();
+                    // Set custom variables defined in the link
+                    $data['abe_uri'] = config('app.url');
                     $data['token_abe'] = $tokenAbe->uuid;
                     // Send Email
                     return (new TaskActionByEmail())->sendAbeEmail($configEmail, $to, $data);
