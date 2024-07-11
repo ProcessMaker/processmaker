@@ -16,15 +16,19 @@ class TaskControllerTest extends TestCase
 
     public function testShowScreen()
     {
-        $process = $this->createProcess([
-            'id' => 1,
-            'bpmn' => file_get_contents(__DIR__ . '/../Fixtures/rollback_test.bpmn'),
-        ]);
+        ImportProcess::dispatchSync(
+            file_get_contents(__DIR__ . '/../Fixtures/rollback_test.bpmn')
+        );
+        $process = Process::orderBy('id', 'desc')->first();
 
-        $instance = $this->startProcess($parent, 'node_1');
-        $activeTask = $instance->tokens()->where('status', 'ACTIVE')->first();
+        // Start a request
+        $route = route('api.process_events.trigger', [$process->id, 'event' => 'node_1']);
+        $this->apiCall('POST', $route, []);
+        
+        $instance = ProcessRequest::first();
+        $task = ProcessRequestToken::where('element_name', 'Terminate Task')->first();
 
-        dd($activeTask);
+        dd($task);
         $processAbeRequest = ProcessAbeRequestToken::factory()->create();
 
         $response = $this->webCall('GET', 'tasks/update_variable/' . $processAbeRequest->uuid . '?varName=res&varValue=yes');
