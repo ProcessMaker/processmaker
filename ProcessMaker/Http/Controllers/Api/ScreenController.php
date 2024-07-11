@@ -653,7 +653,7 @@ class ScreenController extends Controller
 
         // Create commit
         $commitData = [
-            'message' => 'Update screen ' . $screen->uuid,
+            'message' => 'Update screen ' . $screen->uuid . ' (' . time() . ')',
             'tree' => $tree['sha'],
             'parents' => [
                 $baseTree['sha']
