@@ -65,7 +65,6 @@ export default {
                           this.$t("Sync action completed."),
                           "success"
                         );
-                        that.fetch();
                       });
                 break;
             }
