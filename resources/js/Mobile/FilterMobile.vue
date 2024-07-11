@@ -4,7 +4,7 @@
       <div
         v-if="showDropdowns"
         class="dropdown"
-        >
+      >
         <button
           id="statusDropdown"
           class="btn btn-secondary dropdown-toggle dropdown-status-style"
@@ -12,7 +12,7 @@
           data-toggle="dropdown"
           aria-haspopup="true"
           aria-expanded="false"
-          >
+        >
           <i :class="selectedIconStatus" />
           {{ selectedOptionStatus }}
           <i class="fas fa-caret-down status-dropdown" />
@@ -20,19 +20,19 @@
         <div
           class="dropdown-menu mobile-dropdown-menu"
           aria-labelledby="statusDropdown"
-          >
+        >
           <a
             class="dropdown-item"
             :class="{ 'dropdown-item-selected': selectedOptionStatus === 'In Progress' }"
             @click="selectOption('In Progress', 'status', '')"
-            >
+          >
             {{ $t('In Progress') }}
           </a>
           <a
             class="dropdown-item"
             :class="{ 'dropdown-item-selected': selectedOptionStatus === 'Completed' }"
             @click="selectOption('Completed', 'status', '')"
-            >
+          >
             {{ $t('Completed') }}
           </a>
         </div>
@@ -40,11 +40,11 @@
       <div
         class="d-flex justify-content-between"
         :class="{ 'w-100': showInput }"
-        >
+      >
         <div
           v-if="showDropdowns && type === 'requests'"
           class="dropdown"
-          >
+        >
           <button
             id="requestsDropdown"
             class="btn dropdown-toggle dropdown-requests-style"
@@ -52,28 +52,28 @@
             data-toggle="dropdown"
             aria-haspopup="true"
             aria-expanded="false"
-            >
+          >
             <img
               src="/img/sort-down-icon.svg"
               alt="sort-down"
-              >
+            >
           </button>
           <div
             class="dropdown-menu mobile-dropdown-menu"
             aria-labelledby="requestsDropdown"
-            >
+          >
             <a
               class="dropdown-item"
               :class="{ 'dropdown-item-selected': selectedIconFilter === 'fas fa-user' }"
               @click="selectOption(`requester`, 'filter', 'fas fa-user')"
-              >
+            >
               {{ $t('As Requester') }}
             </a>
             <a
               class="dropdown-item"
               :class="{ 'dropdown-item-selected': selectedIconFilter === 'fas fa-users' }"
               @click="selectOption(`participant`, 'filter', 'fas fa-users')"
-              >
+            >
               {{ $t('As Participant') }}
             </a>
           </div>
@@ -81,7 +81,7 @@
         <div
           v-if="showDropdowns && type === 'tasks'"
           class="dropdown"
-          >
+        >
           <button
             id="requestsDropdown"
             class="btn dropdown-toggle dropdown-requests-style"
@@ -89,28 +89,28 @@
             data-toggle="dropdown"
             aria-haspopup="true"
             aria-expanded="false"
-            >
+          >
             <img
               src="/img/sort-down-icon.svg"
               alt="sort-down"
-              >
+            >
           </button>
           <div
             class="dropdown-menu mobile-dropdown-menu"
             aria-labelledby="tasksDropdown"
-            >
+          >
             <a
               class="dropdown-item"
               :class="{ 'dropdown-item-selected': selectedOrderBy === 'due_at' }"
               @click="selectOption('due_at', 'orderBy')"
-              >
+            >
               {{ $t('By Due Date') }}
             </a>
             <a
               class="dropdown-item"
               :class="{ 'dropdown-item-selected': selectedOrderBy === 'created_at' }"
               @click="selectOption('created_at', 'orderBy')"
-              >
+            >
               {{ $t('By Creation Date') }}
             </a>
           </div>
@@ -118,15 +118,15 @@
         <div
           class="d-flex align-items-end ml-1"
           :class="{ 'w-100': showInput }"
-          >
+        >
           <button
             class="btn"
             @click="toggleInput"
-            >
+          >
             <img
               :src="getIconSrc"
               alt="search"
-              >
+            >
           </button>
           <input
             v-if="showInput"
@@ -136,14 +136,14 @@
             class="form-control narrow-input"
             placeholder="(fulltext LIKE '%someText%')"
             @keyup.enter="performSearch"
-            >
-            <button
-              v-if="showInput"
-              class="btn btn-clear"
-              @click="clearSearch"
-              >
-              <i class="fas fa-times" />
-            </button>
+          >
+          <button
+            v-if="showInput"
+            class="btn btn-clear"
+            @click="clearSearch"
+          >
+            <i class="fas fa-times" />
+          </button>
         </div>
       </div>
     </div>
@@ -306,7 +306,7 @@ export default {
     padding: 8px 4px;
     margin-left: 5px;
     color: #888;
-  }
+    }
 
   .dropdown-toggle {
     font-size: 12px;
