@@ -946,7 +946,9 @@ class ProcessRequestsTest extends TestCase
     public function testEnableIsActionbyemail()
     {
         //create a token
-        $token = ProcessRequestToken::factory()->create();
+        $token = ProcessRequestToken::factory()->create([
+            'status' => 'ACTIVE'
+        ]);
         $this->assertEquals($token->is_actionbyemail, 0);
 
         (new ProcessRequestController)->enableIsActionbyemail($token->getKey());
