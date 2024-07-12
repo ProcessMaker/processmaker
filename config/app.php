@@ -242,4 +242,8 @@ return [
     'force_https' => env('FORCE_HTTPS', true),
 
     'nayra_docker_network' => env('NAYRA_DOCKER_NETWORK', ''),
+
+    // Process Request security log rate limit: 1 per day (86400 seconds)
+    'process_request_errors_rate_limit' => env('PROCESS_REQUEST_ERRORS_RATE_LIMIT', 1),
+    'process_request_errors_rate_limit_duration' => env('PROCESS_REQUEST_ERRORS_RATE_LIMIT_DURATION', 86400),
 ];

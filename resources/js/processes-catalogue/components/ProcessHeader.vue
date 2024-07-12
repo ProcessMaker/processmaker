@@ -93,6 +93,7 @@
               :process="process"
               :icon-wizard-template="iconWizardTemplate"
               :enable-collapse="enableCollapse"
+              @click.native="toggleInfoCollapsed"
             />
           </template>
         </div>

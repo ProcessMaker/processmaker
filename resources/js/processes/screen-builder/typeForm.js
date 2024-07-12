@@ -16,7 +16,12 @@ ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
   initialControls.forEach((config) => {
     config.control.inspector.push(...globalProperties[0].inspector);
 
-    if (config.control.component !== "FormListTable" && config.control.component !== "FormAnalyticsChart" && config.control.component !== "FormAvatar") {
+    if (
+      config.control.component !== "FormListTable"
+      && config.control.component !== "FormAnalyticsChart"
+      && config.control.component !== "FormAvatar"
+      && config.control.component !== "LinkButton"
+    ) {
       manager.addControl(
         config.control,
         config.rendererComponent,

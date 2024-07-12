@@ -180,6 +180,12 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('/test_email', [TestStatusController::class, 'email'])->name('test.email');
 });
 
+Route::group([
+    'middleware' => ['web', 'auth:web,anon', 'sanitize', 'bindings'],
+], function () {
+    Route::get('tasks/update_variable/{token_abe}', [TaskController::class, 'updateVariable'])->name('tasks.abe.update');
+});
+
 // Add our broadcasting routes
 Broadcast::routes();
 

@@ -27,6 +27,8 @@
                 <xsd:attribute name="assignmentLock" type="xsd:boolean" default="false"/>
                 <xsd:attribute name="allowReassignment" type="xsd:boolean" default="false"/>
                 <xsd:attribute name="config" type="xsd:string" use="optional"/>
+                <xsd:attribute name="configEmail" type="xsd:string" use="optional"/>
+                <xsd:attribute name="isActionsByEmail" type="xsd:boolean" default="false"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>

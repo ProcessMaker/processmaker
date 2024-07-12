@@ -12,8 +12,8 @@
       >
         {{ process.description }}
       </p>
-      <span 
-        v-if="readActivated || !largeDescription" 
+      <span
+        v-if="readActivated || !largeDescription"
         class="class-version">
         {{ $t('Version') }} {{ processVersion }}
       </span>
@@ -30,6 +30,11 @@
         <span style="color: #1572C2;">{{ $t('More') }}</span>
         </a>
       </p>
+        <div
+          v-if="!readActivated && largeDescription"
+          class="class-version">
+          {{ $t('Version') }} {{ processVersion }}
+        </div>
     </div>
 </template>
 <script>

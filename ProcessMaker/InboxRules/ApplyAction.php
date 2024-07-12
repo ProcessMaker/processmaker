@@ -2,12 +2,14 @@
 
 namespace ProcessMaker\InboxRules;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\InboxRule;
 use ProcessMaker\Models\InboxRuleLog;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\User;
+use ProcessMaker\Notifications\ApplyActionNotification;
 
 class ApplyAction
 {
@@ -61,7 +63,15 @@ class ApplyAction
     public function reassignToUserID($task, $inboxRule)
     {
         $inboxRuleUser = User::findOrFail($inboxRule->user_id);
-        $task->reassign($inboxRule->reassign_to_user_id, $inboxRuleUser);
+        try {
+            $task->reassign($inboxRule->reassign_to_user_id, $inboxRuleUser);
+        } catch(AuthorizationException $e) {
+            $message =
+                'Task :task_id could not be reassigned because the task settings prevent it from being reassigned';
+            $inboxRuleUser->notify(
+                new ApplyActionNotification(__($message, ['task_id' => $task->id]))
+            );
+        }
     }
 
     public function markAsPriority($task)
