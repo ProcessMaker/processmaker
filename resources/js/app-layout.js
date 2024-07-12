@@ -326,7 +326,7 @@ window.ProcessMaker.apiClient.interceptors.response.use((response) => {
   return response;
 }, (error) => {
   // Set in your .catch to false to not show the alert inside window.ProcessMaker.apiClient
-  if (!error.response.showAlert) {
+  if (!error?.response?.showAlert) {
     return Promise.reject(error);
   }
 

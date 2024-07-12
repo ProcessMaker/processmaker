@@ -132,7 +132,7 @@ export default {
   },
   destroyed() {
     const listCard = document.querySelector(".processes-info");
-    listCard.removeEventListener("scrollend", this.handleScroll);
+    listCard?.removeEventListener("scrollend", this.handleScroll);
   },
   methods: {
     handleSizeChange(value) {
