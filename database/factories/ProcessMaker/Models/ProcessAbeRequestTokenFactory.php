@@ -31,7 +31,6 @@ class ProcessAbeRequestTokenFactory extends Factory
         ]);
 
         return [
-            'process_id' => $process->getKey(),
             'process_request_id' => $processRequest->getKey(),
             'process_request_token_id' => $processRequestToken->getKey(),
             'completed_screen_id' => $screen->getKey(),
