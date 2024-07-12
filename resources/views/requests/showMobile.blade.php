@@ -87,6 +87,7 @@
           role="tabpanel"
           aria-labelledby="tasks-tab"
         >
+          <filter-mobile type="tasks" @filterspmqlchange="onFiltersPmqlChange"></filter-mobile>
           <request-detail-mobile
             ref="pending"
             :process-request-id="request.id"

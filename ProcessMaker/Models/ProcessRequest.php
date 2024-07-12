@@ -355,8 +355,20 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             ->orderBy('completed_at')
             ->get();
         $screens = [];
+        $definitions = [];
         foreach ($tokens as $token) {
-            $definition = $token->getDefinition();
+            // Get process related to token
+            $request = $token->processRequest ?: $token->getInstance();
+            $process = $request->processVersion ?: $request->process;
+
+            // Get the definition
+            if (!empty($definitions[$process->id])) {
+                $definition = $definitions[$process->id];
+            } else {
+                $definition = $definitions[$process->id] = $token->getDefinition();
+            }
+
+            // Get the screen realated to token
             if (array_key_exists('screenRef', $definition)) {
                 $screen = $token->getScreenVersion();
                 if ($screen) {
@@ -891,11 +903,11 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      *
      * @param string $eventName
      */
-    public function notifyProcessUpdated($eventName)
+    public function notifyProcessUpdated($eventName, TokenInterface $token = null)
     {
-        $event = new ProcessUpdated($this, $eventName);
+        $event = new ProcessUpdated($this, $eventName, $token);
         if ($this->parentRequest) {
-            $this->parentRequest->notifyProcessUpdated($eventName);
+            $this->parentRequest->notifyProcessUpdated($eventName, $token);
         }
         event($event);
     }
@@ -953,19 +965,26 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         return Media::getFilesRequest($this);
     }
 
-    public function getErrors()
+    public function getErrors($limit = 10)
     {
         if ($this->errors) {
-            return $this->errors;
+            return array_slice($this->errors, -$limit);
         }
 
         // select tokens with errors
         return $this->tokens()
             ->select('token_properties->error as message', 'created_at', 'element_name')
             ->where('status', '=', ActivityInterface::TOKEN_STATE_FAILING)
-            ->limit(10)
+            ->limit($limit)
             ->get()
             ->toArray();
+    }
+
+    public function getRequestAsArray()
+    {
+        $array = $this->toArray();
+        unset($array['process_version']['svg']);
+        return $array;
     }
 
     /**
@@ -1050,10 +1069,25 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
 
     public function getProcessVersionAlternativeAttribute(): string | null
     {
-        if (class_exists('ProcessMaker\Package\PackageABTesting\Models\Alternative')) {
-            return $this->processVersion?->alternative;
+        return $this->processVersion?->alternative ?? 'A';
+    }
+
+    /**
+     * Retrieves the destination of the first closed end event.
+     *
+     * @return ?array Returns a string value representing the element destination of the first closed end event.
+     */
+    public function getElementDestination(): ?array
+    {
+        $endEvents = $this->tokens()
+            ->where('element_type', 'end_event')
+            ->where('status', 'CLOSED')
+            ->get();
+
+        if ($endEvents->count(0) === 0) {
+            return null;
         }
 
-        return null;
+        return $endEvents->first()->elementDestination;
     }
 }

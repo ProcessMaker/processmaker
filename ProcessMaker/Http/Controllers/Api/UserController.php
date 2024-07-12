@@ -17,7 +17,9 @@ use ProcessMaker\Filters\SaveSession;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Users as UserResource;
+use ProcessMaker\Models\RecommendationUser;
 use ProcessMaker\Models\User;
+use ProcessMaker\RecommendationEngine;
 use ProcessMaker\TwoFactorAuthentication;
 
 class UserController extends Controller
@@ -194,7 +196,7 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return \Illuminate\Http\Response
      *
      *     @OA\Get(
@@ -332,6 +334,10 @@ class UserController extends Controller
             $user->is_administrator = $request->get('is_administrator');
         }
 
+        if (empty($fields['meta'])) {
+            $user->meta = null;
+        }
+
         $user->saveOrFail();
         $changes = $user->getChanges();
 
@@ -339,6 +345,10 @@ class UserController extends Controller
         UserUpdated::dispatch($user, $changes, $original);
         if ($request->has('avatar')) {
             $this->uploadAvatar($user, $request);
+        }
+
+        if (!RecommendationEngine::shouldGenerateFor($user)) {
+            RecommendationUser::deleteFor($user);
         }
 
         return response([], 204);

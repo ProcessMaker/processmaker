@@ -4,9 +4,6 @@ namespace ProcessMaker\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use Illuminate\Support\Facades\Artisan;
-use ProcessMaker\Jobs\SyncDefaultTemplates;
-use ProcessMaker\Jobs\SyncWizardTemplates;
 
 class Kernel extends ConsoleKernel
 {
@@ -15,30 +12,35 @@ class Kernel extends ConsoleKernel
      *
      * @var array
      */
-    protected $commands = [
-        // @todo Add our ProcessMaker specific commands to this list
-    ];
+    protected $commands = [];
 
     /**
      * Define the application's command schedule.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @param  Schedule  $schedule
      * @return void
      */
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('bpmn:timer')
-            ->everyMinute()
-            ->onOneServer();
+                 ->everyMinute()
+                 ->onOneServer();
+
+        $schedule->command('processmaker:sync-recommendations --queue')
+                 ->daily()
+                 ->onOneServer();
 
         $schedule->command('package-data-sources:delete-logs')
-            ->weekly();
+                 ->weekly();
 
-        $schedule->command('processmaker:sync-default-templates --queue')->daily();
+        $schedule->command('processmaker:sync-default-templates --queue')
+                 ->daily();
 
-        $schedule->command('processmaker:sync-guided-templates --queue')->daily();
+        $schedule->command('processmaker:sync-guided-templates --queue')
+                 ->daily();
 
-        $schedule->command('processmaker:sync-screen-templates --queue')->daily();
+        $schedule->command('processmaker:sync-screen-templates --queue')
+                 ->daily();
     }
 
     /**
@@ -49,6 +51,7 @@ class Kernel extends ConsoleKernel
     protected function commands()
     {
         $this->load(__DIR__ . '/Commands');
+
         require base_path('routes/console.php');
     }
 }

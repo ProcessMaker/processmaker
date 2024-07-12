@@ -18,28 +18,9 @@
       </div>
     </div>
     <div class="mobile-process-details" :class="{ 'active' : showDetails }">
-      <h1>{{ $t('Details') }}</h1>
-      <h2>{{ selectedProcess.name }}</h2>
-      <p>{{ selectedProcess.description }}</p>
-      <h3>{{ $t('Version') }} {{ processVersion }}</h3>
-      <h1 class="started-cases-title">{{ $t('Started Cases') }}</h1>
-      <p class="started-cases">{{ startedCases.toLocaleString() }}</p>
-      <div class="charts">
-        <mini-pie-chart
-          :count="selectedProcess.counts?.in_progress"
-          :total="startedCases"
-          :name="$t('In Progress')"
-          color="#4EA075"
-        />
-        <mini-pie-chart
-          :count="selectedProcess.counts?.completed"
-          :total="startedCases"
-          :name="$t('Completed')"
-          color="#478FCC"
-        />
-      </div>
+      <process-description :process="selectedProcess" />
+      <process-counter :process="selectedProcess" />
     </div>
-
 
     <ProcessInfo
       v-if="!verifyScreen"
@@ -59,11 +40,13 @@ import ProcessInfo from "./ProcessInfo.vue";
 import ProcessScreen from "./ProcessScreen.vue";
 import MiniPieChart from "./MiniPieChart.vue";
 import Bookmark from "./Bookmark.vue";
+import ProcessDescription from "./optionsMenu/ProcessDescription.vue";
+import ProcessCounter from "./optionsMenu/ProcessCounter.vue";
 
 export default {
   props: ["process", "processId"],
   components: {
-    ProcessInfo, ProcessScreen, MiniPieChart, Bookmark
+    ProcessInfo, ProcessScreen, MiniPieChart, Bookmark, ProcessDescription, ProcessCounter
   },
   data() {
     return {
@@ -115,7 +98,6 @@ export default {
       ProcessMaker.apiClient
         .get(`process_launchpad/${this.processId}`)
         .then((response) => {
-          console.log("Process.vue got response", response.data[0]);
           this.loadedProcess = response.data[0];
         });
     }

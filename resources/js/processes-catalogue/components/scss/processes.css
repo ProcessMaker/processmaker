@@ -19,9 +19,17 @@
 }
 .info-collapse {
   padding: 32px;
-  padding-bottom: 0px;
   background-color: white;
+  border-left: 1px solid rgb(205, 221, 238);
+  border-right: 1px solid rgb(205, 221, 238);
+  border-bottom: 1px solid rgb(205, 221, 238);
+  border-top: 1px solid rgb(205, 221, 238);
+  border-radius: 0px;
+  margin-right: 20px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
 }
+
 .title-process {
   color: #556271;
   font-family: 'Open Sans', sans-serif;

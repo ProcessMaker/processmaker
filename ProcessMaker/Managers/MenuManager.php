@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Managers;
 
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\View;
 
 class MenuManager extends \Lavary\Menu\Menu
@@ -33,6 +34,9 @@ class MenuManager extends \Lavary\Menu\Menu
 
         // Make the instance available in all views
         View::share($name, $this->menu[$name]);
+
+        // Dispatching the created event
+        Event::dispatch("menu.created.{$name}");
 
         return $this->menu[$name];
     }

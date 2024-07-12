@@ -6,12 +6,30 @@ use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Resources\ScreenVersion as ScreenVersionResource;
 use ProcessMaker\Http\Resources\Users;
 use ProcessMaker\Managers\DataManager;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\TaskDraft;
+use ProcessMaker\Models\User;
 use ProcessMaker\ProcessTranslations\ProcessTranslation;
 use StdClass;
 
 trait TaskResourceIncludes
 {
+    use TaskScreenResourceTrait;
+
+
+    private function getData()
+    {
+        if ($this->loadedData) {
+            return $this->loadedData;
+        }
+        $dataManager = new DataManager();
+        $task = $this->resource->loadTokenInstance();
+        $this->loadedData = $dataManager->getData($task);
+
+        return $this->loadedData;
+    }
+
     private function includeData()
     {
         return ['data' => $this->getData()];
@@ -29,7 +47,7 @@ trait TaskResourceIncludes
 
     private function includeProcessRequest()
     {
-        return ['process_request' => new Users($this->processRequest)];
+        return ['process_request' => $this->processRequest->attributesToArray()];
     }
 
     private function includeDraft()
@@ -72,11 +90,13 @@ trait TaskResourceIncludes
             // Apply translations to screen
             $processTranslation = new ProcessTranslation($this->process);
             $array['screen']['config'] = $processTranslation->applyTranslations($array['screen']);
+            $array['screen']['config'] = $this->removeInspectorMetadata($array['screen']['config']);
 
             // Apply translations to nested screens
             if (array_key_exists('nested', $array['screen'])) {
                 foreach ($array['screen']['nested'] as &$nestedScreen) {
                     $nestedScreen['config'] = $processTranslation->applyTranslations($nestedScreen);
+                    $nestedScreen['config'] = $this->removeInspectorMetadata($nestedScreen['config']);
                 }
             }
         }
@@ -116,7 +136,7 @@ trait TaskResourceIncludes
         return ['process' => $this->process];
     }
 
-    private function includeInterstitial()
+    public function includeInterstitial()
     {
         $interstitial = $this->getInterstitial();
 
@@ -124,6 +144,11 @@ trait TaskResourceIncludes
         $processTranslation = new ProcessTranslation($this->process);
         $translatedConf = $processTranslation->applyTranslations($interstitial['interstitial_screen']);
         $interstitial['interstitial_screen']['config'] = $translatedConf;
+
+        // Remove inspector metadata
+        $interstitial['interstitial_screen']['config'] = $this->removeInspectorMetadata(
+            $interstitial['interstitial_screen']['config'] ?: []
+        );
 
         return [
             'allow_interstitial' => $interstitial['allow_interstitial'],
@@ -136,5 +161,31 @@ trait TaskResourceIncludes
         $userRequestPermission = $this->loadUserRequestPermission($this->processRequest, Auth::user(), []);
 
         return ['user_request_permission' => $userRequestPermission];
+    }
+
+    /**
+     * Include the element destination in the resource response.
+     *
+     * @return array
+     */
+    private function includeElementDestination()
+    {
+        $elementDestination = $this->resource->getElementDestinationAttribute();
+
+        return ['elementDestination' => $elementDestination];
+    }
+
+    private function loadUserRequestPermission(ProcessRequest $request, User $user, array $permissions)
+    {
+        $permissions[] = [
+            'process_request_id' => $request->id,
+            'allowed' => $user ? $user->can('view', $request) : false,
+        ];
+
+        if ($request->parentRequest && $user) {
+            $permissions = $this->loadUserRequestPermission($request->parentRequest, $user, $permissions);
+        }
+
+        return $permissions;
     }
 }

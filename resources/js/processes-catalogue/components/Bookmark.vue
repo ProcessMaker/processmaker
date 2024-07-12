@@ -3,7 +3,7 @@
       v-b-tooltip.hover.bottom
       :title="bookmarkTitle"
       :class="bookmarkClass"
-      @click="checkBookmark()"
+      @click="checkBookmark"
     />
 </template>
 
@@ -24,7 +24,10 @@ export default {
     this.bookmarkId = this.process?.bookmark_id;
   },
   methods: {
-    checkBookmark() {
+    checkBookmark(event) {
+      // prevent opening the process when the bookmark is clicked
+      event.stopPropagation();
+
       if (this.isBookmarked) {
         ProcessMaker.apiClient
           .delete(`process_bookmarks/${this.bookmarkId}`)
@@ -53,6 +56,9 @@ export default {
       return this.isBookmarked ? "fas fa-bookmark marked bookmark" : "fas fa-bookmark unmarked bookmark";
     },
     bookmarkTitle() {
+      if (!this.clickable) {
+        return null;
+      }
       return this.isBookmarked ? this.$t("Remove from My Bookmarks") : this.$t("Add to My Bookmarks");
     },
 
