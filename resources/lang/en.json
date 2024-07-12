@@ -2318,5 +2318,6 @@
   "Task Source (Default)": "Task Source (Default)",
   "Welcome Screen": "Welcome Screen",
   ":count tasks were not reassigned because the task settings prevent them from being reassigned" : ":count tasks were not reassigned because the task settings prevent them from being reassigned",
-  "Task :task_id could not be reassigned because the task settings prevent it from being reassigned": "Task :task_id could not be reassigned because the task settings prevent it from being reassigned"
+  "Task :task_id could not be reassigned because the task settings prevent it from being reassigned": "Task :task_id could not be reassigned because the task settings prevent it from being reassigned",
+  "No items to show": "No items to show"
 }

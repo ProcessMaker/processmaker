@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-3">
+  <div :class="{'mt-3': !mobileApp}">
     <PMTabs v-show="!bTabsHide"
             ref="bTabs"
             v-model="activeTab"

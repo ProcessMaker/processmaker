@@ -215,7 +215,7 @@ export default {
           const firstResponse = response.data.shift();
           const unparseProperties = firstResponse?.launchpad?.properties;
           const launchpadProperties = unparseProperties ? JSON.parse(unparseProperties) : "";
-          if ("tabs" in launchpadProperties) {
+          if (launchpadProperties !== "" && "tabs" in launchpadProperties) {
             this.tabs = launchpadProperties.tabs;
           }
           if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
