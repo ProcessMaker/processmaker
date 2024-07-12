@@ -30,6 +30,12 @@
   border-bottom-right-radius: 8px;
 }
 
+@media (min-width: 2560px) {
+  .info-collapse {
+    padding: 32px 8vw;
+  }
+}
+
 .title-process {
   color: #556271;
   font-family: 'Open Sans', sans-serif;
