@@ -17,7 +17,7 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @param  Schedule  $schedule
      * @return void
      */
     protected function schedule(Schedule $schedule)
@@ -26,8 +26,8 @@ class Kernel extends ConsoleKernel
                  ->everyMinute()
                  ->onOneServer();
 
-        $schedule->command('processmaker:sync-recommendations')
-                 ->dailyAt('12:00')
+        $schedule->command('processmaker:sync-recommendations --queue')
+                 ->daily()
                  ->onOneServer();
 
         $schedule->command('package-data-sources:delete-logs')

@@ -15,7 +15,7 @@ class RecommendationEngine
     /**
      * Target user's recommendations
      *
-     * @var ProcessRequestToken|User
+     * @var User
      */
     protected User $user;
 
@@ -43,6 +43,7 @@ class RecommendationEngine
      */
     public function generate(): void
     {
+        $this->debug("Generating recommendations for user {$this->user->id}");
         if (static::disabled()) {
             return;
         }
@@ -51,25 +52,37 @@ class RecommendationEngine
             $query = $recommendation->baseQuery($this->user);
 
             // Set up the RecommendationUser query
-            $recommendationUsersQuery = $recommendation->recommendationUsers(function (Builder $query) {
-                $query->where('user_id', '=', $this->user->id);
-            });
+            $recommendationUsersQuery = $recommendation->recommendationUsers()->where('user_id', '=', $this->user->id);
 
             // Check if this RecommendationUser exists
             $recommendationUsersExists = $recommendationUsersQuery->exists();
+
+            if ($recommendationUsersExists) {
+                $this->debug("RecommendationUser {$recommendation->id} exists for user {$this->user->id}");
+            } else {
+                $this->debug("RecommendationUser {$recommendation->id} does not exist for user {$this->user->id}");
+            }
 
             // Check if there are enough results to satisfy the
             // minimum matches required by the recommendation
             $minimumMatchesMet = $this->minimumMatchesMet($recommendation, ($count = $query->count()));
 
+            $this->debug("Recommendation {$recommendation->id} matches {$count} results");
+
             if ($recommendationUsersExists) {
                 // If we find the RecommendationUser records, we need
                 // to make sure they're up-to-date
+                $this->debug('Modifying existing RecommendationUser records');
                 $this->modifyExisting($recommendationUsersQuery, $minimumMatchesMet, $count);
             } elseif ($minimumMatchesMet) {
                 // If the minimum number of matches is satisfied and the RecommendationUser
                 // records don't exist, we need to create them
+                $this->debug('Creating new RecommendationUser records');
                 $this->create($recommendation, $count);
+            } else {
+                $this->debug(
+                    "Recommendation {$recommendation->id} does not meet minimum: {$recommendation->min_matches}"
+                );
             }
         }
     }
@@ -161,5 +174,12 @@ class RecommendationEngine
         }
 
         return true;
+    }
+
+    public function debug(string $message, array $params = []): void
+    {
+        if (config('app.debug')) {
+            \Log::debug($message, $params);
+        }
     }
 }

@@ -5,8 +5,8 @@
             v-model="activeTab"
             @changed="$emit('changed', $event)"
             lazy
-            nav-class="pl-2 pm-tabs-nav-class pm-tabs-nav-link"
-            active-nav-item-class="font-weight-bold pm-tabs-nav-class"
+            :nav-class="{'pl-2': true, 'pm-tabs-nav-class': true, 'pm-tabs-nav-link': true, 'pm-tabs-nav-class-mobile': mobileApp, 'pm-tabs-nav-link-mobile': mobileApp}"
+            :active-nav-item-class="{'font-weight-bold': true, 'pm-tabs-nav-class': true, 'pm-tabs-nav-class-mobile': mobileApp}"
             content-class="m-2">
       <template #tabs-start>
         <slot name="tabs-start"></slot>
@@ -29,7 +29,8 @@
     },
     data() {
       return {
-        activeTab: this.value
+        activeTab: this.value,
+        mobileApp: window.ProcessMaker.mobileApp
       };
     },
     watch: {
@@ -69,5 +70,12 @@
     border-color: #EBF1F7 !important;
     padding-top: 14px;
     padding-bottom: 16px;
+  }
+  .pm-tabs-nav-class-mobile {
+    background: #FFFFFF !important;
+  }
+  .pm-tabs-nav-link-mobile .nav-link {
+    border-right-color: #FFFFFF !important;
+    border-left-color: #FFFFFF !important;
   }
 </style>

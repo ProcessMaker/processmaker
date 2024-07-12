@@ -152,6 +152,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         'self_service_groups' => 'array',
         'token_properties' => 'array',
         'is_priority' => 'boolean',
+        'is_actionbyemail' => 'boolean'
     ];
 
     /**
@@ -504,7 +505,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     {
         if ($user->can('update', $this)) {
             $definitions = $this->getDefinition();
-            if (empty($definitions['allowReassignment'])) {
+            if (empty($definitions['allowReassignment']) || $definitions['allowReassignment'] === 'false') {
                 throw new AuthorizationException('Not authorized to reassign this task');
             }
 

@@ -153,6 +153,8 @@
 export default {
   props: {
     type: String,
+    outRef: null,
+    outName: null
   },
   data() {
     return {
@@ -234,18 +236,23 @@ export default {
     callApiFilter(payload) {
       if (this.type === "tasks") {
         if (payload.startsWith("pmql")) {
-          this.$parent.$refs.taskMobileList.updatePmql(payload.substr(5));
+          this.$parent.$refs.taskMobileList?.updatePmql(payload.substr(5));
+          this.outRef?.[this.outName]?.[0]?.updatePmql(payload.substr(5));
         }
         if (payload.startsWith("order_by")) {
-          this.$parent.$refs.taskMobileList.updateOrder(payload.substr(9));
+          this.$parent.$refs.taskMobileList?.updateOrder(payload.substr(9));
+          this.outRef?.[this.outName]?.[0]?.updateOrder(payload.substr(9));
         }
-        this.$parent.$refs.taskMobileList.fetch(true);
+        this.$parent.$refs.taskMobileList?.fetch(true);
+        this.outRef?.[this.outName]?.[0]?.fetch(true);
       }
       if (this.type === "requests") {
         if (payload.startsWith("pmql")) {
-          this.$parent.$refs.requestsMobileList.updatePmql(payload.substr(5), this.statusChange);
+          this.$parent.$refs.requestsMobileList?.updatePmql(payload.substr(5), this.statusChange);
+          this.outRef?.[this.outName]?.[0]?.updatePmql(payload.substr(5), this.statusChange);
         }
-        this.$parent.$refs.requestsMobileList.fetch(true);
+        this.$parent.$refs.requestsMobileList?.fetch(true);
+        this.outRef?.[this.outName]?.[0]?.fetch(true);
       }
     },
     /**

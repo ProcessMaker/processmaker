@@ -68,6 +68,7 @@
     },
     data() {
       return {
+        activeTab: null,
         type: "default",
         tabName: "",
         filter: "",
@@ -97,7 +98,12 @@
           this.stateTabName = false;
           return;
         }
-        if (this.tabsList.some(item => item.name === this.tabName)) {
+        //We remove the current element if it's being edited to allow saving the current tab name
+        let clonedTabsList = JSON.parse(JSON.stringify(this.tabsList));
+        if (Number.isInteger(this.activeTab)) {
+          clonedTabsList.splice(this.activeTab, 1);
+        }
+        if (clonedTabsList.some(item => item.name === this.tabName)) {
           this.stateMessageTabName = this.$t("Duplicate");
           this.stateTabName = false;
           return;
@@ -143,7 +149,8 @@
                   });
                 });
       },
-      async set(tab) {
+      async set(tab, activeTab) {
+        this.activeTab = activeTab;
         this.type = tab.type;
         this.tabName = tab.name;
         this.filter = tab.filter;
