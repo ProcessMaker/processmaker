@@ -219,13 +219,15 @@ export default {
   }
 }
 .icon-process {
-  width: 24px;
-  height: 24px;
+  width: 40px;
+  height: 48px;
   margin-bottom: 16px;
 
   @media (max-width: $lp-breakpoint) {
     margin-bottom: 0;
-    margin-right: 10px;
+    margin-right: 10px;  
+    width: 24px;
+    height: 24px;
   }
 }
 .title-process {
