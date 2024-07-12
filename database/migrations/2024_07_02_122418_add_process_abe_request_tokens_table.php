@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('process_abe_request_tokens', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->unsignedInteger('process_id')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedInteger('process_request_id')->nullable();
             $table->unsignedInteger('process_request_token_id')->nullable();
@@ -28,7 +27,6 @@ return new class extends Migration
             $table->index('process_request_id');
             $table->index('process_request_token_id');
             // Foreing keys
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
             $table->foreign('process_request_token_id')->references('id')
                 ->on('process_request_tokens')
                 ->onDelete('cascade');

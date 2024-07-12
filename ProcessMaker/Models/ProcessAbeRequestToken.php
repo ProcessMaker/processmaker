@@ -30,7 +30,7 @@ class ProcessAbeRequestToken extends ProcessMakerModel
      * @var array
      */
     protected $fillable = [
-        'process_id',
+        'user_id',
         'process_request_id',
         'process_request_token_id',
         'completed_screen_id',
