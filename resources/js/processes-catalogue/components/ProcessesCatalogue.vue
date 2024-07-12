@@ -5,6 +5,7 @@
       :category="category ? category.name : ''"
       :process="selectedProcess ? selectedProcess.name : ''"
       :template="guidedTemplates ? 'Guided Templates' : ''"
+      v-if="!mobileApp"
     />
     <div class="menu-mask" :class="{ 'menu-open' : showMenu }"></div>
     <div class="process-catalog-main" :class="{ 'menu-open' : showMenu }">
@@ -102,6 +103,7 @@ export default {
       categoryCount: 0,
       hideLaunchpad: true,
       currentWidth: 0,
+      mobileApp: window.ProcessMaker.mobileApp
     };
   },
   mounted() {
