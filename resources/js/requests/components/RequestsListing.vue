@@ -22,7 +22,7 @@
             {{ $t(column.label) }}
           </div>
           <b-tooltip
-            :key="`requests-table-column-${index}`"
+            :key="index"
             :target="`requests-table-column-${column.field}`"
             custom-class="pm-table-tooltip-header"
             placement="bottom"
