@@ -2,7 +2,7 @@
 
 namespace ProcessMaker\Mail;
 
-use Log;
+use Illuminate\Support\Facades\Log;
 use Mustache_Engine;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Packages\Connectors\ActionsByEmail\EmailProvider;

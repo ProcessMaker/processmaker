@@ -16,15 +16,27 @@ class ProcessAbeRequestToken extends ProcessMakerModel
     protected $table = 'process_abe_request_tokens';
 
     /**
+     * Attributes that are not mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [
+        'uuid',
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
+        'user_id',
         'process_request_id',
         'process_request_token_id',
+        'completed_screen_id',
         'data',
         'is_answered',
+        'require_login',
         'answered_at'
     ];
 
