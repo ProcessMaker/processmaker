@@ -158,7 +158,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->setId($token->getKey());
         $request = $token->getInstance();
         $request->notifyProcessUpdated('ACTIVITY_ACTIVATED', $token);
-        if (!$isScriptOrServiceTask) {
+        if (!is_null($user)) {
             $this->validateAndSendActionByEmail($activity, $token, $user->email);
         }
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
@@ -192,6 +192,8 @@ class TokenRepository implements TokenRepositoryInterface
                         'completed_screen_id' => $configEmail['screenCompleteRef'] ?? 0,
                     ]);
                     $data = $token->getInstance()->getDataStore()->getData();
+                    // Set custom variables defined in the link
+                    $data['abe_uri'] = config('app.url');
                     $data['token_abe'] = $tokenAbe->uuid;
                     // Send Email
                     return (new TaskActionByEmail())->sendAbeEmail($configEmail, $to, $data);
