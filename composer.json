@@ -1,6 +1,10 @@
 {
     "name": "processmaker/processmaker",
+<<<<<<< HEAD
     "version": "4.11.0+next-20240708",
+=======
+    "version": "4.10.2",
+>>>>>>> origin
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -104,7 +108,11 @@
             "Gmail"
         ],
         "processmaker": {
+<<<<<<< HEAD
             "build": "6cd96395",
+=======
+            "build": "663597d7",
+>>>>>>> origin
             "custom": {
                 "package-ellucian-ethos": "1.16.0",
                 "package-plaid": "1.6.0",
@@ -136,6 +144,7 @@
                 "package-accessibility": "dev-next"
             },
             "enterprise": {
+<<<<<<< HEAD
                 "connector-docusign": "dev-next",
                 "connector-idp": "dev-next",
                 "connector-pdf-print": "dev-next",
@@ -175,6 +184,44 @@
                 "package-vocabularies": "dev-next",
                 "package-webentry": "dev-next",
                 "package-api-testing": "dev-next",
+=======
+                "connector-docusign": "1.9.0",
+                "connector-idp": "1.9.4",
+                "connector-pdf-print": "1.16.1",
+                "connector-send-email": "1.26.3",
+                "connector-slack": "1.8.0",
+                "docker-executor-cdata": "1.4.1",
+                "docker-executor-node-ssr": "1.5.0",
+                "package-ab-testing": "1.1.0",
+                "package-actions-by-email": "1.17.0",
+                "package-advanced-user-manager": "1.11.0",
+                "package-ai": "1.8.1",
+                "package-analytics-reporting": "1.7.1",
+                "package-auth": "1.19.1",
+                "package-cdata": "1.4.5",
+                "package-collections": "2.17.0",
+                "package-comments": "1.13.0",
+                "package-conversational-forms": "1.8.2",
+                "package-data-sources": "1.27.1",
+                "package-decision-engine": "1.9.16",
+                "package-dynamic-ui": "1.20.1",
+                "package-files": "1.16.0",
+                "package-googleplaces": "1.11.0",
+                "package-photo-video": "1.5.1",
+                "package-pm-blocks": "1.6.8",
+                "package-process-documenter": "1.9.0",
+                "package-process-optimization": "1.10.0",
+                "package-product-analytics": "1.5.8",
+                "package-projects": "1.4.0",
+                "package-savedsearch": "1.34.1",
+                "package-sentry": "1.8.0",
+                "package-signature": "1.12.0",
+                "package-testing": "1.3.1",
+                "package-translations": "2.9.0",
+                "package-versions": "1.10.2",
+                "package-vocabularies": "2.15.2",
+                "package-webentry": "2.21.2",
+>>>>>>> origin
                 "packages": "^0"
             },
             "docker-executors": {
@@ -185,7 +232,11 @@
             "microservices": {
                 "pmai": "fall-2023"
             },
+<<<<<<< HEAD
             "release": "Summer 2024 Nightly"
+=======
+            "release": "Spring 2024"
+>>>>>>> origin
         }
     },
     "scripts": {

@@ -29,7 +29,6 @@ class TaskControllerTest extends TestCase
         $task = ProcessRequestToken::where('element_name', 'Form Task')->first();
 
         $processAbeRequest = ProcessAbeRequestToken::factory()->create([
-            'process_id' => $process->getKey(),
             'process_request_id' => $instance->getKey(),
             'process_request_token_id' => $task->getKey(),
         ]);
