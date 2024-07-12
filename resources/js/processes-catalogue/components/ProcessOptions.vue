@@ -30,10 +30,9 @@ export default {
   flex-direction: column;
   align-items: flex-start;
 }
-@media (max-width: 2560px) {
-  .section-options {
-    flex-direction: row;
-    justify-content: space-between;
-  }
+
+.section-options {
+  flex-direction: row;
+  justify-content: space-between;
 }
 </style>
