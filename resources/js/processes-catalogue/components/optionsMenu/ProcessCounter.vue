@@ -10,13 +10,13 @@
     </div>
     <div class="charts">
       <mini-pie-chart
-        :count="process.counts.completed"
+        :count="process.counts.in_progress"
         :total="process.counts.total"
         :name="$t('In Progress')"
         color="#4EA075"
       />
       <mini-pie-chart
-        :count="process.counts.in_progress"
+        :count="process.counts.completed"
         :total="process.counts.total"
         :name="$t('Completed')"
         color="#478FCC"
@@ -69,7 +69,7 @@ export default {
       count: 0,
       completed: 0,
       inProgress: 0,
-      processIcon: 'Default_Icon',
+      processIcon: 'Default Icon',
       completedCollapsed: 0,
       inProgressCollapsed: 0,
     };
@@ -96,7 +96,7 @@ export default {
         this.processIcon = propertiesObject.icon;
       }
       
-      return this.processIcon ? this.processIcon : 'Default_Icon';
+      return this.processIcon ? this.processIcon : 'Default Icon';
     },
     getHelperProcess() {
       this.$parent.$refs.wizardHelperProcessModal.getHelperProcessStartEvent();
@@ -117,11 +117,11 @@ export default {
 }
 .process-counter-total {
   color: #4C545C;
-  margin: 5px 0px 5px 0px;
+  margin: 5px 0px 16px 0px;
   font-family: 'Open Sans', sans-serif;
   font-size: 55px;
-  font-weight: 700;
-  line-height: 43.58px;
+  font-weight: 600;
+  line-height: 55px;
   letter-spacing: -0.02em;
   text-align: left;
 }
@@ -149,6 +149,7 @@ export default {
   color: #1572C2;
   font-size: 18px;
   font-weight: 700;
+  line-height: 27px;
   letter-spacing: -0.02em;
 }
 .text-summary {
@@ -157,6 +158,7 @@ export default {
   font-weight: 400;
   vertical-align: middle;
   font-style: italic;
+  margin-right: 5px;
 }
 .charts {
   display: flex;
@@ -164,6 +166,7 @@ export default {
 }
 .spacing-class {
   margin-top: 10px;
+  padding-left: 15px;
 }
 .icon-wizard-class {
   border-left: 1px solid rgba(0, 0, 0, 0.125);

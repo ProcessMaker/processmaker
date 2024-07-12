@@ -116,7 +116,7 @@
   }
   .nav-tabs {
     list-style-type: none;
-    background-color: #EFF5FF;
+    background-color: #FFFFFF;
     flex-direction: row;
   }
   .mobile-nav-tabs {
@@ -129,9 +129,6 @@
     padding: 1rem 1rem;
   }
   .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
-    color: black;
-    background-color: transparent;
-    border-color: transparent transparent #f3f3f3;
     border-bottom: 3px solid #1572C2;
     font-size: 16px;
     font-weight: 600;
