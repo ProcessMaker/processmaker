@@ -26,7 +26,7 @@
           <div>
             {{ $t("Formats: PNG, JPG. 2 MB") }}
           </div>
-          {{ $t("Recommended: 1800 x 750 px") }}
+          {{ $t("Recommended: 1280 x 720 px") }}
         </div>
       </div>
       <div
