@@ -31,13 +31,13 @@
         </div>
       </div>
       <div class="slide-control">
-        <a href="#" @click="showMenu = !showMenu">
+        <a href="#" @click="hideMenu">
           <i class="fa" :class="{ 'fa-caret-right' : !showMenu, 'fa-caret-left' : showMenu }"></i>
         </a>
       </div>
-      <div class="processes-info">
+      <div ref="processInfo" class="processes-info">
           <div class="mobile-menu-control" v-show="showMobileMenuControl">
-            <div class="menu-button" @click="showMenu = !showMenu">
+            <div class="menu-button" @click="hideMenu">
               <i class="fa fa-bars"></i>
               {{ category?.name || '' }}
             </div>
@@ -102,6 +102,7 @@ export default {
       fromProcessList: false,
       categoryCount: 0,
       hideLaunchpad: true,
+      currentWidth: 0,
       mobileApp: window.ProcessMaker.mobileApp
     };
   },
@@ -134,6 +135,10 @@ export default {
     }
   },
   methods: {
+    hideMenu() {
+      this.showMenu = !this.showMenu;
+      this.$root.$emit("sizeChanged", !this.showMenu);
+    },
     /**
      * Add new page of categories
      */
@@ -422,7 +427,7 @@ export default {
 }
 .processes-info {
   width: 100%;
-  margin-right: -16px;
+  margin-right: 0px;
   height: calc(100vh - 145px);
   overflow-x: hidden;
   @media (max-width: $lp-breakpoint) {

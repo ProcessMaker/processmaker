@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="modeler-app">
     <div class="h-100">
       <div
         class="overflow-hidden position-relative p-0 vh-100"
@@ -8,6 +8,7 @@
         <ProcessMapTooltip
           v-show="showTooltip"
           ref="tooltip"
+          :enabled="enableTooltip"
           :node-id="tooltip.nodeId"
           :node-name="tooltip.nodeName"
           :request-id="requestId"
@@ -25,6 +26,7 @@
           :request-in-progress-nodes="requestInProgressNodes"
           :request-idle-nodes="requestIdleNodes"
           :read-only="true"
+          :for-documenting="forDocumenting"
           @set-xml-manager="xmlManager = $event"
           @click="handleClick"
         />
@@ -39,6 +41,16 @@ import ProcessMapTooltip from "./ProcessMapTooltip.vue";
 
 export default {
   name: "ProcessMap",
+  props: {
+    forDocumenting: {
+      type: Boolean,
+      default: false,
+    },
+    enableTooltip: {
+      type: Boolean,
+      default: true,
+    },
+  },
   components: {
     Modeler,
     ProcessMapTooltip,
@@ -80,7 +92,7 @@ export default {
         : true;
     },
     showTooltip() {
-      return this.tooltip.isActive;
+      return this.enableTooltip && this.tooltip.isActive;
     },
   },
   watch: {

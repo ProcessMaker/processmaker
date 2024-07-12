@@ -27,7 +27,6 @@ export default {
   margin-top: 20px;
 }
 .left-column {
-  display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
