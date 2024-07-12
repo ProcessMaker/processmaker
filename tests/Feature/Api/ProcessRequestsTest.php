@@ -947,12 +947,40 @@ class ProcessRequestsTest extends TestCase
     {
         //create a token
         $token = ProcessRequestToken::factory()->create([
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ]);
         $this->assertEquals($token->is_actionbyemail, 0);
 
         $res = (new ProcessRequestController)->enableIsActionbyemail($token->getKey());
 
         $this->assertTrue($res);
+    }
+
+    /**
+     * Test the screenRequested method of ProcessRequestController.
+     */
+    public function testScreenRequested()
+    {
+        $request = ProcessRequest::factory()->create();
+        ProcessRequestToken::factory()->create([
+            'process_request_id' => $request->id,
+            'element_type' => 'userTask',
+            'status' => 'CLOSED',
+        ]);
+
+        $params = [
+            'page' => 1,
+            'per_page' => 10,
+            'order_by' => 'completed_at',
+            'order_direction' => 'asc',
+            'filter' => '',
+        ];
+        $route = route('api.requests.detail.screen', ['request' => $request->id]);
+        $response = $this->apiCall('GET', $route, $params);
+
+        $response->assertStatus(200);
+        // Assert empty because tokens does not have screens.
+        $data = $response->json()['data'];
+        $this->assertEmpty($data);
     }
 }
