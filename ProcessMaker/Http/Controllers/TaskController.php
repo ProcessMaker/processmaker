@@ -3,17 +3,23 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Carbon\Carbon;
+use Illuminate\Http\Request as HttpRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Filters\SaveSession;
 use ProcessMaker\Helpers\DefaultColumns;
 use ProcessMaker\Helpers\MobileHelper;
+use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
 use ProcessMaker\Jobs\MarkNotificationAsRead;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Comment;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessAbeRequestToken;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
@@ -155,5 +161,111 @@ class TaskController extends Controller
             'task' => $task,
             'screenFields' => $screenFields,
         ]);
+    }
+
+    /**
+     * Update variable.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param string $abe_uuid
+     */
+    public function updateVariable(HttpRequest $request, $abe_uuid)
+    {
+        // Validar los parámetros GET
+        $request->validate([
+            'varName' => 'required|string',
+            'varValue' => 'required|string',
+        ]);
+
+        $response = [
+            'message' => 'An error occurred',
+            'data' => null,
+            'status' => 500
+        ];
+
+        try {
+            // Verificar si la respuesta ya ha sido enviada
+            $abe = ProcessAbeRequestToken::where('uuid', $abe_uuid)->first();
+            // Check if the token is available
+            if (!$abe) {
+                $response['message'] = 'Token not found';
+                $response['status'] = 404;
+            }
+            // Review if the autentication is required
+            if ($abe->require_login && !Auth::check()) {
+                $response['message'] = 'Authentication required';
+                $response['status'] = 403;
+            }
+            if ($abe->is_answered) {
+                $response['message'] = 'This response has already been answered';
+                $response['data'] = $abe;
+                $response['status'] = 200;
+            } else {
+                // Get the token related
+                $task = ProcessRequestToken::find($abe->process_request_token_id);
+                if (!$task) {
+                    $response['message'] = 'Process request token not found';
+                    $response['status'] = 404;
+                } else {
+                    // Update the data
+                    $data[$request->varName] = $request->varValue;
+                    $abe->data = json_encode($data);
+                    // Define the answered_at and is_answered
+                    $abe->is_answered = true;
+                    $abe->answered_at = Carbon::now();
+                    // Review if the user is autenticated
+                    if (Auth::check()) {
+                        $abe->user_id = Auth::id();
+                    }
+                    $abe->save();
+                    // Define the parameter for complete the task
+                    $process = Process::find($task->process_id);
+                    $instance = $task->processRequest;
+                    // Completar la tarea relacionada
+                    WorkflowManager::completeTask(
+                        $process,
+                        $instance,
+                        $task,
+                        $data
+                    );
+
+                    // Set the flag is_actionbyemail in true
+                    (new ProcessRequestController)->enableIsActionbyemail($task->id);
+
+                    $response['message'] = 'Variable updated successfully';
+                    $response['data'] = $abe;
+                    $response['status'] = 200;
+                    // Show the screen defined
+                    $response = response()->json([
+                        'message' => $response['message'],
+                        'data' => $response['data']
+                    ], $response['status']);
+                    return $this->showScreen($abe->completed_screen_id, $response);
+                }
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error updating variable',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+        // Return response
+        return response()->json([
+            'message' => $response['message'],
+            'data' => $response['data']
+        ], $response['status']);
+    }
+
+    public function showScreen($screenId, $response)
+    {
+        if (!empty($screenId)) {
+            $customScreen = Screen::findOrFail($screenId);
+            $manager = app(ScreenBuilderManager::class);
+            event(new ScreenBuilderStarting($manager, $customScreen->type ?? 'FORM'));
+
+            return view('processes.screens.completedScreen', compact('customScreen', 'manager'));
+        }
+
+        return $response;
     }
 }
