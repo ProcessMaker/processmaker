@@ -226,7 +226,7 @@ class Media extends MediaLibraryModel
             ];
             if ($mediaType === 'slideshow') {
                 $customProperties['node_id'] = $properties['node_id'] ?? '';
-                $customProperties['alternative'] = $properties['alternative'] ?? '';                
+                $customProperties['alternative'] = $properties['alternative'] ?? '';
             }
             // Store the images related move to MEDIA
             $process->addMediaFromBase64($properties['url'])
