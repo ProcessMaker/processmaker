@@ -26,6 +26,8 @@ class ProcessExporter extends ExporterBase
 
     const BPMN_MANUAL_TASK = 'bpmn:manualTask';
 
+    const PM_INTERSTITIAL_SCREEN = 'pm:interstitialScreenRef';
+
     public function export() : void
     {
         $process = $this->model;
@@ -319,7 +321,8 @@ class ProcessExporter extends ExporterBase
             foreach ($screenTypes as $attribute => $dependentType) {
                 $screenId = $element->getAttribute($attribute);
 
-                if ($attribute == 'pm:interstitialScreenRef' && $element->getAttribute('pm:allowInterstitial') !== 'true') {
+                if ($attribute == self::PM_INTERSTITIAL_SCREEN
+                    && $element->getAttribute('pm:allowInterstitial') !== 'true') {
                     continue;
                 }
 
@@ -345,7 +348,7 @@ class ProcessExporter extends ExporterBase
         if ($this->getDependents(DependentType::INTERSTITIAL_SCREEN)) {
             foreach ($this->getDependents(DependentType::INTERSTITIAL_SCREEN) as $interDependent) {
                 $path = $interDependent->meta['path'];
-                Utils::setAttributeAtXPath($this->model, $path, 'pm:interstitialScreenRef', $interDependent->model->id);
+                Utils::setAttributeAtXPath($this->model, $path, self::PM_INTERSTITIAL_SCREEN, $interDependent->model->id);
             }
         }
 
