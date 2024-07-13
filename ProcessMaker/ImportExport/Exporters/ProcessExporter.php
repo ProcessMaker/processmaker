@@ -303,56 +303,33 @@ class ProcessExporter extends ExporterBase
             'bpmn:endEvent',
         ];
 
+        $screenTypes = [
+            'pm:screenRef' => DependentType::SCREENS,
+            'pm:interstitialScreenRef' => DependentType::INTERSTITIAL_SCREEN,
+            'pm:screenEmailRef' => DependentType::EMAIL_SCREENS,
+            'pm:screenCompleteRef' => DependentType::EMAIL_COMPLETED_SCREENS,
+        ];
+
         foreach (Utils::getElementByMultipleTags($this->model->getDefinitions(true), $tags) as $element) {
             $path = $element->getNodePath();
             $meta = [
                 'path' => $path,
             ];
 
-            $screenId = $element->getAttribute('pm:screenRef');
-            $interstitialScreenId = $element->getAttribute('pm:interstitialScreenRef');
-            $allowInterstitial = $element->getAttribute('pm:allowInterstitial');
-            $screenEmailId = $screenCompletedId = null;
-            $configEmail = json_decode($element->getProperty('configEmail'), true);
-            if (!empty($configEmail)) {
-                $screenEmailId = $configEmail['screenEmailRef'] ?? null;
-                $screenCompletedId = $configEmail['screenCompleteRef'] ?? null;
-            }
+            foreach ($screenTypes as $attribute => $dependentType) {
+                $screenId = $element->getAttribute($attribute);
 
-            if (is_numeric($screenId)) {
-                $screen = Screen::find($screenId);
-                if ($screen) {
-                    $this->addDependent(DependentType::SCREENS, $screen, ScreenExporter::class, $meta);
-                } else {
-                    Log::debug("ScreenId: {$screenId} not exists");
+                if ($attribute == 'pm:interstitialScreenRef' && $element->getAttribute('pm:allowInterstitial') !== 'true') {
+                    continue;
                 }
-            }
 
-            // Let's check if interstitialScreen exist
-            if (is_numeric($interstitialScreenId) && $allowInterstitial === 'true') {
-                $interstitialScreen = Screen::find($interstitialScreenId);
-                if ($interstitialScreen) {
-                    $this->addDependent(DependentType::INTERSTITIAL_SCREEN, $interstitialScreen, ScreenExporter::class, $meta);
-                } else {
-                    Log::debug("Interstitial screenId: {$interstitialScreenId} not exists");
-                }
-            }
-            // Let's check if email screen exist
-            if (is_numeric($screenEmailId)) {
-                $screen = Screen::find($screenEmailId);
-                if ($screen) {
-                    $this->addDependent(DependentType::EMAIL_SCREENS, $screen, ScreenExporter::class, $meta);
-                } else {
-                    Log::debug("ScreenId: {$screenId} not exists");
-                }
-            }
-            // Let's check if email completed screen exist
-            if (is_numeric($screenCompletedId)) {
-                $screen = Screen::find($screenCompletedId);
-                if ($screen) {
-                    $this->addDependent(DependentType::EMAIL_COMPLETED_SCREENS, $screen, ScreenExporter::class, $meta);
-                } else {
-                    Log::debug("ScreenId: {$screenId} not exists");
+                if (is_numeric($screenId)) {
+                    $screen = Screen::find($screenId);
+                    if ($screen) {
+                        $this->addDependent($dependentType, $screen, ScreenExporter::class, $meta);
+                    } else {
+                        Log::debug("ScreenId: {$screenId} not exists for type: {$dependentType}");
+                    }
                 }
             }
         }

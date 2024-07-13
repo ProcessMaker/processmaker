@@ -39,6 +39,18 @@ class ScreensInProcess
             $ref = $node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'interstitialScreenRef');
             $references[] = [Screen::class, $ref];
         }
+        // Used abe email screen
+        $nodes = $xpath->query("//*[@pm:screenEmailRef!='']");
+        foreach ($nodes as $node) {
+            $ref = $node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenEmailRef');
+            $references[] = [Screen::class, $ref];
+        }
+        // Used abe email screen for completed
+        $nodes = $xpath->query("//*[@pm:screenCompleteRef!='']");
+        foreach ($nodes as $node) {
+            $ref = $node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenCompleteRef');
+            $references[] = [Screen::class, $ref];
+        }
         // Add cancel screen
         if ($process->cancel_screen_id) {
             $references[] = [Screen::class, $process->cancel_screen_id];
