@@ -7,24 +7,19 @@
       :disabled="processEvents.length === 0"
       @click="goToNewRequest(startEvent)"
     >
-      <i
-        class="fa fa-play-circle"
-        style="font-size: 16px;"
-      />
+      <i class="fa fa-play-circle" />
       <span class="pl-2"> {{ displayTitle }} </span>
     </button>
     <button
       v-else
-      class="btn btn-success btn-lg dropdown-toggle start-button justify-content-between"
+      class="btn btn-success start-button justify-content-between"
       type="button"
       data-toggle="dropdown"
       aria-haspopup="true"
       aria-expanded="false"
     >
-      <span>
-        <i class="fa fa-play-circle" />
-        <span class="pl-2"> {{ displayTitle }} </span>
-      </span>
+      <i class="fa fa-play-circle" />
+      <span class="pl-2"> {{ displayTitle }} </span>
     </button>
     <div class="dropdown-menu dropdown-menu-right scrollable-menu p-3 pb-0 mt-2">
       <div
@@ -45,7 +40,7 @@
           @click="copyLink(event)"
         >
           <i class="fas fa-link pr-1" />
-          {{ $t('Copy Link') }}
+          {{ $t('Copy Link') }}11
         </button>
         <button
           v-else
@@ -54,7 +49,7 @@
           @click="goToNewRequest(event.id)"
         >
           <i class="fas fa-play-circle pr-1" />
-          {{ $t('Start Here') }}
+          {{ $t('Start Here') }}22
         </button>
         <hr class="line-item">
       </div>
@@ -141,16 +136,7 @@ export default {
   background: #4EA075;
   border: 0px;
   border-radius: 8px;
-  height: 40px;
-  width: 249px;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 14px;
-  line-height: 21px;
-  letter-spacing: -0.02em;
-  text-align: left;
   text-transform: capitalize;
-  padding: 16px;
-
   i {
     font-size: 1.3em;
     vertical-align: top;
@@ -174,8 +160,14 @@ export default {
   display: none;
 }
 .start-event {
-  padding: 16px;
+  /*padding: 16px;*/
   padding-bottom: 0px;
+  /*border: 1px solid red;*/
+  height: 88px;
+  /* width: 100px; */
+  display: flex;
+  flex-direction: column;
+  align-items: start;
 }
 .start-event-title {
   color: #566877;
