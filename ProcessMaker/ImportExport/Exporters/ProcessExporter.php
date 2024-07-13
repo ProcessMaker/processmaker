@@ -312,8 +312,12 @@ class ProcessExporter extends ExporterBase
             $screenId = $element->getAttribute('pm:screenRef');
             $interstitialScreenId = $element->getAttribute('pm:interstitialScreenRef');
             $allowInterstitial = $element->getAttribute('pm:allowInterstitial');
-            $screenEmailId = $element->getAttribute('pm:screenEmailRef');
-            $screenCompletedId = $element->getAttribute('pm:screenCompleteRef');
+            $screenEmailId = $screenCompletedId = null;
+            $configEmail = json_decode($element->getProperty('configEmail'), true);
+            if (!empty($configEmail)) {
+                $screenEmailId = $configEmail['screenEmailRef'] ?? null;
+                $screenCompletedId = $configEmail['screenCompleteRef'] ?? null;
+            }
 
             if (is_numeric($screenId)) {
                 $screen = Screen::find($screenId);
