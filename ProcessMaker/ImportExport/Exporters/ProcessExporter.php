@@ -312,6 +312,8 @@ class ProcessExporter extends ExporterBase
             $screenId = $element->getAttribute('pm:screenRef');
             $interstitialScreenId = $element->getAttribute('pm:interstitialScreenRef');
             $allowInterstitial = $element->getAttribute('pm:allowInterstitial');
+            $screenEmailId = $element->getAttribute('pm:screenEmailRef');
+            $screenCompletedId = $element->getAttribute('pm:screenCompleteRef');
 
             if (is_numeric($screenId)) {
                 $screen = Screen::find($screenId);
@@ -331,6 +333,24 @@ class ProcessExporter extends ExporterBase
                     Log::debug("Interstitial screenId: {$interstitialScreenId} not exists");
                 }
             }
+            // Let's check if email screen exist
+            if (is_numeric($screenEmailId)) {
+                $screen = Screen::find($screenEmailId);
+                if ($screen) {
+                    $this->addDependent(DependentType::EMAIL_SCREENS, $screen, ScreenExporter::class, $meta);
+                } else {
+                    Log::debug("ScreenId: {$screenId} not exists");
+                }
+            }
+            // Let's check if email completed screen exist
+            if (is_numeric($screenCompletedId)) {
+                $screen = Screen::find($screenCompletedId);
+                if ($screen) {
+                    $this->addDependent(DependentType::EMAIL_COMPLETED_SCREENS, $screen, ScreenExporter::class, $meta);
+                } else {
+                    Log::debug("ScreenId: {$screenId} not exists");
+                }
+            }
         }
     }
 
@@ -345,6 +365,20 @@ class ProcessExporter extends ExporterBase
             foreach ($this->getDependents(DependentType::INTERSTITIAL_SCREEN) as $interDependent) {
                 $path = $interDependent->meta['path'];
                 Utils::setAttributeAtXPath($this->model, $path, 'pm:interstitialScreenRef', $interDependent->model->id);
+            }
+        }
+
+        if ($this->getDependents(DependentType::EMAIL_SCREENS)) {
+            foreach ($this->getDependents(DependentType::EMAIL_SCREENS) as $interDependent) {
+                $path = $interDependent->meta['path'];
+                Utils::setAttributeAtXPath($this->model, $path, 'pm:screenEmailRef', $interDependent->model->id);
+            }
+        }
+
+        if ($this->getDependents(DependentType::EMAIL_COMPLETED_SCREENS)) {
+            foreach ($this->getDependents(DependentType::EMAIL_COMPLETED_SCREENS) as $interDependent) {
+                $path = $interDependent->meta['path'];
+                Utils::setAttributeAtXPath($this->model, $path, 'pm:screenCompleteRef', $interDependent->model->id);
             }
         }
     }

@@ -10,6 +10,10 @@ abstract class DependentType
 
     const SCREENS = 'screens';
 
+    const EMAIL_SCREENS = 'email_screen';
+
+    const EMAIL_COMPLETED_SCREENS = 'email_completed_screen';
+
     const INTERSTITIAL_SCREEN = 'interstitial_screen';
 
     const NOTIFICATION_SETTINGS = 'process_notification_settings';
