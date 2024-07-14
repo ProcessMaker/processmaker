@@ -178,9 +178,8 @@ class TaskController extends Controller
         ]);
 
         $response = [
-            'message' => 'An error occurred',
-            'data' => null,
-            'status' => 500
+            'message' => __('An error occurred'),
+            'status' => 500,
         ];
 
         try {
@@ -188,25 +187,38 @@ class TaskController extends Controller
             $abe = ProcessAbeRequestToken::where('uuid', $abe_uuid)->first();
             // Check if the token is available
             if (!$abe) {
-                $response['message'] = 'Token not found';
-                $response['status'] = 404;
+                $response = [
+                    'message' => __('Token not found'),
+                    'status' => 404,
+                ];
             }
             // Review if the autentication is required
             if ($abe->require_login && !Auth::check()) {
-                $response['message'] = 'Authentication required';
-                $response['status'] = 403;
+                $response = [
+                    'message' => __('Authentication required'),
+                    'status' => 403,
+                ];
             }
             if ($abe->is_answered) {
-                $response['message'] = 'This response has already been answered';
-                $response['data'] = $abe;
-                $response['status'] = 200;
+                $response = [
+                    'message' => __('This response has already been answered'),
+                    'status' => 200,
+                ];
             } else {
                 // Get the token related
                 $task = ProcessRequestToken::find($abe->process_request_token_id);
                 if (!$task) {
-                    $response['message'] = 'Process request token not found';
-                    $response['status'] = 404;
+                    $response = [
+                        'message' => __('Process request token not found'),
+                        'status' => 404,
+                    ];
                 } else {
+                    if ($task->status === 'CLOSED') {
+                        $response = [
+                            'message' => __('Task already closed'),
+                            'status' => 404,
+                        ];
+                    }
                     // Update the data
                     $data[$request->varName] = $request->varValue;
                     $abe->data = json_encode($data);
@@ -231,16 +243,8 @@ class TaskController extends Controller
 
                     // Set the flag is_actionbyemail in true
                     (new ProcessRequestController)->enableIsActionbyemail($task->id);
-
-                    $response['message'] = 'Variable updated successfully';
-                    $response['data'] = $abe;
-                    $response['status'] = 200;
-                    // Show the screen defined
-                    $response = response()->json([
-                        'message' => $response['message'],
-                        'data' => $response['data']
-                    ], $response['status']);
-                    return $this->showScreen($abe->completed_screen_id, $response);
+                    // Show the abe completed screen
+                    return $this->showScreen($abe->completed_screen_id);
                 }
             }
         } catch (\Exception $e) {
@@ -252,11 +256,10 @@ class TaskController extends Controller
         // Return response
         return response()->json([
             'message' => $response['message'],
-            'data' => $response['data']
         ], $response['status']);
     }
 
-    public function showScreen($screenId, $response)
+    public function showScreen($screenId)
     {
         if (!empty($screenId)) {
             $customScreen = Screen::findOrFail($screenId);
@@ -266,6 +269,8 @@ class TaskController extends Controller
             return view('processes.screens.completedScreen', compact('customScreen', 'manager'));
         }
 
-        return $response;
+        return response()->json([
+            'message' => __('Your response has been submitted.'),
+        ], 200);
     }
 }
