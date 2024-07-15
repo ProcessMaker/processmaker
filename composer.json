@@ -166,7 +166,7 @@
                 "package-projects": "dev-next",
                 "package-rpa": "dev-next",
                 "package-savedsearch": "dev-next",
-                "package-slideshow": "dev-feature/FOUR-15522",
+                "package-slideshow": "dev-next",
                 "package-sentry": "dev-next",
                 "package-signature": "dev-next",
                 "package-testing": "dev-next",
