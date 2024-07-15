@@ -142,6 +142,7 @@ export default {
     loadCard(callback, message) {
       if(message === 'bookmark') {
         this.processList = [];
+        this.page = 1;
       }
       this.loading = true;
       const url = this.buildURL();
