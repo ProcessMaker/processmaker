@@ -362,4 +362,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // Recommendations
     Route::get('recommendations', [RecommendationsController::class, 'index'])->name('recommendations.index');
     Route::put('recommendations/{recommendationUser}', [RecommendationsController::class, 'update'])->name('recommendations.update');
+
+    // Devlink
+    Route::get('devlink/sync', [ScreenController::class, 'sync'])->name('devlink.sync');
 });

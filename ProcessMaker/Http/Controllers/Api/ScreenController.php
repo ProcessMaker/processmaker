@@ -606,4 +606,78 @@ class ScreenController extends Controller
             $screen->update(['is_template' => 1, 'asset_type' => 'SCREEN_TEMPLATE']);
         }
     }
+
+    public function sync(Request $request)
+    {
+        // Get screen info
+        $screen = Screen::find($request->get('id'));
+        $exportScreen = new ExportScreen($screen);
+        $exportScreen->handle();
+        $content = $exportScreen->getFileContents();
+
+        // Next steps/actions to be defined and/or determined
+        /**
+         * - Create a JSON schema for each asset type
+         * - Clean some attributes not required. e.g. id, created_at, updated_at, etc.
+         * - Add uuids from referenced assets e.g. screen_uuid (for nested), screen_category_uuid, etc.
+         * - Avoid nested assets in JSON. e.g. screen_category, etc, always use references with the uuid.
+         * - Apply "beautify" to JSON (or maybe use YAML)
+         */
+
+        // Get DevLink settings
+        $githubRepo = config('devlink.repo');
+        $githubAccount = config('devlink.account');
+        $githubToken =  config('devlink.token');
+        $githubBranch =  config('devlink.branch');
+
+        // Authenticate
+        $github = new \Github\Client();
+        $github->authenticate($githubAccount, $githubToken, \Github\AuthMethod::CLIENT_ID);
+
+        // Create blob
+        $blob = $github->api('gitData')->blobs()->create(
+            $githubAccount,
+            $githubRepo,
+            [
+                'content' => $content,
+                'encoding' => 'utf-8'
+            ]
+        );
+
+        // Get base tree
+        $baseTree = $github->api('gitData')->trees()->show($githubAccount, $githubRepo, $githubBranch);
+
+        // Create tree
+        $treeData = [
+            'base_tree' => $baseTree['sha'],
+            'tree' => [
+                [
+                    'path' => 'screens' . '/' . $screen->uuid . '.json',
+                    'mode' => '100644',
+                    'type' => 'blob',
+                    'sha' => $blob['sha']
+                ]
+            ]
+        ];
+        $tree = $github->api('gitData')->trees()->create($githubAccount, $githubRepo, $treeData);
+
+        // Create commit
+        $commitData = [
+            'message' => 'Update screen ' . $screen->uuid . ' (' . time() . ')',
+            'tree' => $tree['sha'],
+            'parents' => [
+                $baseTree['sha']
+            ]
+        ];
+        $commit = $github->api('gitData')->commits()->create($githubAccount, $githubRepo, $commitData);
+
+        // Update reference
+        $referenceData = [
+            'sha' => $commit['sha'],
+            'force' => false
+        ];
+        $reference = $github->api('gitData')->references()->update($githubAccount, $githubRepo, 'heads/' . $githubBranch, $referenceData);
+
+        return response([], 204);
+    }
 }
