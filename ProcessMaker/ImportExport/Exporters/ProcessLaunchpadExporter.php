@@ -24,11 +24,13 @@ class ProcessLaunchpadExporter extends ExporterBase
             $this->addDependent('screen', $launchScreen, ScreenExporter::class);
         }
 
-        $properties = json_decode($this->model->properties, true);
-        foreach (Arr::get($properties, 'tabs', []) as $tab) {
-            if (isset($tab['idSavedSearch']) && $tab['idSavedSearch'] > 0) {
-                $savedSearch = SavedSearch::findOrFail($tab['idSavedSearch']);
-                $this->addDependent('savedSearch', $savedSearch, SavedSearchExporter::class, $tab['idSavedSearch']);
+        if (class_exists(SavedSearch::class)) {
+            $properties = json_decode($this->model->properties, true);
+            foreach (Arr::get($properties, 'tabs', []) as $tab) {
+                if (isset($tab['idSavedSearch']) && $tab['idSavedSearch'] > 0) {
+                    $savedSearch = SavedSearch::findOrFail($tab['idSavedSearch']);
+                    $this->addDependent('savedSearch', $savedSearch, SavedSearchExporter::class, $tab['idSavedSearch']);
+                }
             }
         }
     }
@@ -45,15 +47,17 @@ class ProcessLaunchpadExporter extends ExporterBase
             $this->model->properties = json_encode($properties);
         }
 
-        $properties = json_decode($this->model->properties, true);
-        foreach ($this->getDependents('savedSearch') as $dependent) {
-            foreach (Arr::get($properties, 'tabs', []) as $key => $tab) {
-                if ($tab['idSavedSearch'] === $dependent->meta) {
-                    Arr::set($properties, 'tabs.' . $key . '.idSavedSearch', $dependent->model->id);
+        if (class_exists(SavedSearch::class)) {
+            $properties = json_decode($this->model->properties, true);
+            foreach ($this->getDependents('savedSearch') as $dependent) {
+                foreach (Arr::get($properties, 'tabs', []) as $key => $tab) {
+                    if ($tab['idSavedSearch'] === $dependent->meta) {
+                        Arr::set($properties, 'tabs.' . $key . '.idSavedSearch', $dependent->model->id);
+                    }
                 }
             }
+            $this->model->properties = json_encode($properties);
         }
-        $this->model->properties = json_encode($properties);
 
         return $this->model->save();
     }
