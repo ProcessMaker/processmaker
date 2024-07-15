@@ -31,8 +31,15 @@ export default {
   align-items: flex-start;
 }
 
-.section-options {
+/* .section-options {
   flex-direction: row;
   justify-content: space-between;
+} */
+
+@media (min-width: 769px) {
+  .section-options {
+    flex-direction: row;
+    justify-content: space-between;
+  }
 }
 </style>
