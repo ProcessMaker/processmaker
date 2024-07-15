@@ -177,47 +177,27 @@ class TaskController extends Controller
             'varValue' => 'required|string',
         ]);
 
-        $response = [
-            'message' => __('An error occurred'),
-            'status' => 500,
-        ];
-
         try {
             // Verificar si la respuesta ya ha sido enviada
             $abe = ProcessAbeRequestToken::where('uuid', $abe_uuid)->first();
             // Check if the token is available
             if (!$abe) {
-                $response = [
-                    'message' => __('Token not found'),
-                    'status' => 404,
-                ];
+                return $this->returnErrorResponse(__('Token not found'), 404);
             }
             // Review if the autentication is required
             if ($abe->require_login && !Auth::check()) {
-                $response = [
-                    'message' => __('Authentication required'),
-                    'status' => 403,
-                ];
+                return $this->returnErrorResponse(__('Authentication required'), 403);
             }
             if ($abe->is_answered) {
-                $response = [
-                    'message' => __('This response has already been answered'),
-                    'status' => 200,
-                ];
+                return $this->returnErrorResponse(__('This response has already been answered'), 200);
             } else {
                 // Get the token related
                 $task = ProcessRequestToken::find($abe->process_request_token_id);
                 if (!$task) {
-                    $response = [
-                        'message' => __('Process request token not found'),
-                        'status' => 404,
-                    ];
+                    return $this->returnErrorResponse(__('Process request token not found'), 404);
                 } else {
                     if ($task->status === 'CLOSED') {
-                        $response = [
-                            'message' => __('Task already closed'),
-                            'status' => 404,
-                        ];
+                        return $this->returnErrorResponse(__('Task already closed'), 404);
                     }
                     // Update the data
                     $data[$request->varName] = $request->varValue;
@@ -253,10 +233,6 @@ class TaskController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
-        // Return response
-        return response()->json([
-            'message' => $response['message'],
-        ], $response['status']);
     }
 
     public function showScreen($screenId)
@@ -267,10 +243,15 @@ class TaskController extends Controller
             event(new ScreenBuilderStarting($manager, $customScreen->type ?? 'FORM'));
 
             return view('processes.screens.completedScreen', compact('customScreen', 'manager'));
+        } else {
+            return $this->returnErrorResponse(__('Your response has been submitted.'), 200);
         }
+    }
 
+    public function returnErrorResponse(string $message, int $status)
+    {
         return response()->json([
-            'message' => __('Your response has been submitted.'),
-        ], 200);
+            'message' => $message,
+        ], $status);
     }
 }
