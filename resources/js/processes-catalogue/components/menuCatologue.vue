@@ -44,48 +44,52 @@
         </p>
       </b-list-group>
     </b-collapse>
-    <div class="hide-on-mobile">
-    <hr class="my-12">
     <div
-      v-b-toggle.collapse-3
-      block
-      variant="light"
-      class="m-1"
-      @click="onToggleTemplates"
-    >
-      <div class="d-flex align-items-center justify-content-between pl-3 pr-3">
-        <div class="d-flex align-items-center">
-          <img
-            class="mr-3"
-            src="../../../img/template-icon.svg"
-            alt="Template Icon"
-          >
-          {{ $t("Add From Templates") }}
-        </div>
-        <i
-          class="fas fa-sort-down"
-          :class="{'fa-sort-up': showGuidedTemplates, 'fa-sort-down': !showGuidedTemplates,}"
-        />
-      </div>
-    </div>
-    <b-collapse
-      id="collapse-3"
-      visible
+      v-if="!hideMobile"
       class="hide-on-mobile"
     >
-      <b-list-group>
-        <b-list-group-item
-          v-for="(item, index) in filteredTemplateOptions"
-          :key="index"
-          ref="templateItems"
-          :class="{ 'list-item-selected': isSelectedTemplate(item) }"
-          class="list-item"
-          @click="selectTemplateItem(item)"
-        >
-          {{ item.label }}
-        </b-list-group-item>
-      </b-list-group>
-    </b-collapse>
+      <hr class="my-12">
+      <div
+        v-b-toggle.collapse-3
+        block
+        variant="light"
+        class="m-1"
+        @click="onToggleTemplates"
+      >
+        <div class="d-flex align-items-center justify-content-between pl-3 pr-3">
+          <div class="d-flex align-items-center">
+            <img
+              class="mr-3"
+              src="../../../img/template-icon.svg"
+              alt="Template Icon"
+            >
+            {{ $t("Add From Templates") }}
+          </div>
+          <i
+            class="fas fa-sort-down"
+            :class="{'fa-sort-up': showGuidedTemplates, 'fa-sort-down': !showGuidedTemplates,}"
+          />
+        </div>
+      </div>
+      <b-collapse
+        v-if="!hideMobile"
+        id="collapse-3"
+        visible
+        class="hide-on-mobile"
+      >
+        <b-list-group>
+          <b-list-group-item
+            v-for="(item, index) in filteredTemplateOptions"
+            :key="index"
+            ref="templateItems"
+            :class="{ 'list-item-selected': isSelectedTemplate(item) }"
+            class="list-item"
+            @click="selectTemplateItem(item)"
+          >
+            {{ item.label }}
+          </b-list-group-item>
+        </b-list-group>
+      </b-collapse>
     </div>
 
     <select-template-modal
@@ -140,12 +144,19 @@ export default {
         },
       ],
       comeFromProcess: false,
+      hideMobile: false,
+      mobileSize: 768,
     };
   },
   created() {
     EventBus.$on('templates-selected', (obj) => {
       this.openTemplate(obj);
     });
+    this.handleResize();
+    window.addEventListener('resize', this.handleResize);
+  },
+  destroyed() {
+    window.removeEventListener('resize', this.handleResize);
   },
   computed: {
     /**
@@ -179,8 +190,10 @@ export default {
     }
   },
   methods: {
+    handleResize() {
+      this.hideMobile = window.innerWidth <= this.mobileSize;
+    },
     handleRouteQuery() {
-
       // Do not change the selected category if we are not in the index route.
       // This way, we preserve the selected category when returning from process details.
 
