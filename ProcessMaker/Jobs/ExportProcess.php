@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use ProcessMaker\Http\Resources\V1_1\TaskScreen;
 use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\EnvironmentVariable;
@@ -15,6 +16,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Providers\WorkflowServiceProvider;
+use Symfony\Component\Yaml\Yaml;
 
 class ExportProcess implements ShouldQueue
 {
@@ -322,5 +324,33 @@ class ExportProcess implements ShouldQueue
     public function getFileContents()
     {
         return $this->fileContents;
+    }
+
+    public function prepareForDevLink()
+    {
+        $rawContent = json_decode($this->fileContents, true);
+        $content = $rawContent['screens'][0];
+        // HERE: Reeplace the IDs by UUIDs
+        unset($content['id']);
+        unset($content['screen_category_id']);
+        unset($content['projects']);
+        $content['categories'] = $this->convertToUUIDReferences($content['categories']);
+
+        // Prepare the content for DevLink
+        $content['config'] = TaskScreen::removeInspectorFromScreenMetadata($content['config']);
+        
+        // return json_encode($rawContent, JSON_PRETTY_PRINT);
+        // Convert result to YAML
+        return Yaml::dump($content, 16, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK);
+    }
+
+    private function convertToUUIDReferences(array $references): array
+    {
+        $response = [];
+        foreach ($references as $reference) {
+            $response[] = $reference['uuid'];
+        }
+
+        return $response;
     }
 }

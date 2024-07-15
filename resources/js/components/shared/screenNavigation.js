@@ -59,7 +59,9 @@ export default {
                 break;
               case 'devlink-sync-screen':
                 ProcessMaker.apiClient
-                      .get("devlink/sync?type=screen&id=" + data.id)
+                      .get("devlink/sync?type=screen&id=" + data.id, {
+                        timeout: 30000
+                      })
                       .then(response => {
                         ProcessMaker.alert(
                           this.$t("Sync action completed."),

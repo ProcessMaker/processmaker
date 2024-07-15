@@ -2,8 +2,15 @@
 
 namespace ProcessMaker\Traits;
 
+use ProcessMaker\Models\ProcessRequestToken;
+
 trait TaskScreenResourceTrait
 {
+
+    public static function removeInspectorFromScreenMetadata(array $config): array
+    {
+        return (new static(new ProcessRequestToken()))->removeInspectorMetadata($config);
+    }
 
     /**
      * Removes the inspector metadata from the screen configuration

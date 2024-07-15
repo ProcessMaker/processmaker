@@ -613,7 +613,8 @@ class ScreenController extends Controller
         $screen = Screen::find($request->get('id'));
         $exportScreen = new ExportScreen($screen);
         $exportScreen->handle();
-        $content = $exportScreen->getFileContents();
+        $content = $exportScreen->prepareForDevLink();
+        $fileName = $screen->uuid . '.yaml';
 
         // Next steps/actions to be defined and/or determined
         /**
@@ -652,7 +653,7 @@ class ScreenController extends Controller
             'base_tree' => $baseTree['sha'],
             'tree' => [
                 [
-                    'path' => 'screens' . '/' . $screen->uuid . '.json',
+                    'path' => 'screens' . '/' . $fileName,
                     'mode' => '100644',
                     'type' => 'blob',
                     'sha' => $blob['sha']
