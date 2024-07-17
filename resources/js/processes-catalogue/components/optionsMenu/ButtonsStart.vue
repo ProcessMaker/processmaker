@@ -25,35 +25,30 @@
       <div
         v-for="event in processEvents"
         :key="event.id"
-        class="dropdown-item start-event"
+        class="dropdown-item dropdown-item-div"
         type="button"
       >
-        <button
-          v-if="event.webEntry"
-          type="button"
-          class="btn button-start-event"
-          @click="copyLink(event)"
-        >
-          <i class="fas fa-link pr-1" />
-        </button>
-        <button
-          v-else
-          type="button"
-          class="btn button-start-event"
-          @click="goToNewRequest(event.id)"
-        >
-          <i class="fas fa-play-circle pr-1" />
-        </button>
-        <div>
-          {{ event.name }}
-        </div>
         <div v-if="event.webEntry" 
-             class="start-event-label">
-          {{ $t('Copy link') }}
+             class="start-event"
+             @click="copyLink(event)">
+          <button class="btn button-start-event">
+            <i class="fas fa-link pr-1" />
+          </button>
+          {{ event.name }}
+          <div class="start-event-label">
+            {{ $t('Copy link') }}  
+          </div>
         </div>
         <div v-else
-             class="start-event-label">
-          {{ $t('Start') }}
+             class="start-event"
+             @click="goToNewRequest(event.id)">
+          <button class="btn button-start-event">
+            <i class="fas fa-play-circle pr-1" />  
+          </button>
+          {{ event.name }}
+          <div class="start-event-label">
+            {{ $t('Start') }}
+          </div>
         </div>
       </div>
     </div>
@@ -163,11 +158,13 @@ export default {
 .dropdown-toggle::after {
   display: none;
 }
-.start-event {
+.dropdown-item-div {
   padding: initial;
+}
+.start-event {
   display: flex;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding: 10px;
+  width: 100%;
 }
 .dropdown-item:hover {
   background-color: #E0F5E7;
