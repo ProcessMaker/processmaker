@@ -107,8 +107,8 @@ export default {
   mixins: [settingMixin],
   props: {
     value: {
-      type: [String, Object],
-      default: null,
+      type: [String, Object, Array],
+      default: "",
     },
     setting: {
       type: Object,
@@ -172,17 +172,12 @@ export default {
   watch: {
     value: {
       handler(value) {
-        this.input = value;
+        this.updateInputAndTransformed(value);
       },
     },
   },
   mounted() {
-    if (this.value === null) {
-      this.input = "";
-    } else {
-      this.input = this.value;
-    }
-    this.transformed = this.copy(this.input);
+    this.updateInputAndTransformed(this.value);
   },
   methods: {
     onCancel() {

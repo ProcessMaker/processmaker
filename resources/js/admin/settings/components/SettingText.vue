@@ -174,10 +174,6 @@ export default {
     this.updateInputAndTransformed(this.value);
   },
   methods: {
-    updateInputAndTransformed(value) {
-      this.input = value === null ? "" : value;
-      this.transformed = this.copy(this.input);
-    },
     onCancel() {
       this.showModal = false;
     },
