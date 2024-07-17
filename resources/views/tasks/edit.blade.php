@@ -256,7 +256,7 @@
                             </li>
                             <li class="list-group-item">
                               <p class="section-title">{{__('Case')}}</p>
-                              {{ $task->process->name }}
+                              @{{ caseTitle }}
                               <p class="launchpad-link">
                                 <a href="{{route('process.browser.index', [$task->process->id])}}">
                                   {{ __('Open Process Launchpad') }}
@@ -435,6 +435,7 @@
           showInfo: true,
           isPriority: false,
           userHasInteracted: false,
+          caseTitle: "",
         },
         watch: {
           task: {
@@ -764,9 +765,13 @@
           },
           collapseTabs() {
 
+          },
+          caseTitleField(task) {
+            this.caseTitle = task.process_request.case_title;
           }
         },
         mounted() {
+          this.caseTitleField(this.task);
           this.prepareData();
           window.ProcessMaker.isSelfService = this.isSelfService;
           this.isPriority = task.is_priority;
