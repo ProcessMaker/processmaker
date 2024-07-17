@@ -55,7 +55,7 @@
                         {{-- Configuration --}}
                         <div
                             class="tab-pane fade show"
-                            :class="{'active': activeTab === ''}"
+                            :class="{'active': activeTab === '' || activeTab === 'nav-config'}"
                             id="nav-config"
                             role="tabpanel"
                             aria-labelledby="nav-config-tab"
