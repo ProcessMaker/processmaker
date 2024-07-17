@@ -362,7 +362,6 @@
   "Copy Client Secret To Clipboard": "Copy Client Secret To Clipboard",
   "Copy Control": "Copy Control",
   "Copy Element": "Copy Element",
-  "Copy Link": "Copy Link",
   "Copy Screen": "Copy Screen",
   "Copy Script": "Copy Script",
   "Copy to Clipboard": "Copy to Clipboard",
@@ -1635,7 +1634,6 @@
   "Start event is missing event definition": "Start event is missing event definition",
   "Start event must be blank": "Start event must be blank",
   "Start Event": "Start Event",
-  "Start Here": "Start Here",
   "Start New Request": "Start New Request",
   "Start Permissions": "Start Permissions",
   "Start Sub Process As": "Start Sub Process As",
@@ -2319,5 +2317,7 @@
   "Welcome Screen": "Welcome Screen",
   ":count tasks were not reassigned because the task settings prevent them from being reassigned" : ":count tasks were not reassigned because the task settings prevent them from being reassigned",
   "Task :task_id could not be reassigned because the task settings prevent it from being reassigned": "Task :task_id could not be reassigned because the task settings prevent it from being reassigned",
-  "No items to show": "No items to show"
+  "No items to show": "No items to show",
+  "Start": "Start",
+  "Copy link": "Copy link"
 }
