@@ -36,6 +36,7 @@ class TaskResource extends ApiResource
         'interstitial',
         'userRequestPermission',
         'process',
+        'elementDestination',
     ];
 
     protected static $defaultFields = [
