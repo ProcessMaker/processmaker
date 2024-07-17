@@ -138,19 +138,13 @@ export default {
   },
   computed: {
     variant() {
-      if (this.disabled) {
-        return "secondary";
-      }
-      return "success";
+      return this.disabled ? "secondary" : "success";
     },
     changed() {
       return JSON.stringify(this.input) !== JSON.stringify(this.transformed);
     },
     icon() {
-      if (this.type === "password") {
-        return "fa-eye";
-      }
-      return "fa-eye-slash";
+      return this.type === "password" ? "fa-eye" : "fa-eye-slash";
     },
     hidden() {
       return "•".repeat(this.input.length);
@@ -172,19 +166,18 @@ export default {
   watch: {
     value: {
       handler(value) {
-        this.input = value;
+        this.updateInputAndTransformed(value);
       },
     },
   },
   mounted() {
-    if (this.value === null) {
-      this.input = "";
-    } else {
-      this.input = this.value;
-    }
-    this.transformed = this.copy(this.input);
+    this.updateInputAndTransformed(this.value);
   },
   methods: {
+    updateInputAndTransformed(value) {
+      this.input = value === null ? "" : value;
+      this.transformed = this.copy(this.input);
+    },
     onCancel() {
       this.showModal = false;
     },
@@ -207,11 +200,7 @@ export default {
       this.emitSaved(this.input);
     },
     togglePassword() {
-      if (this.type === "text") {
-        this.type = "password";
-      } else {
-        this.type = "text";
-      }
+      this.type = this.type === "text" ? "password" : "text";
       this.$refs.input.focus();
     },
   },
