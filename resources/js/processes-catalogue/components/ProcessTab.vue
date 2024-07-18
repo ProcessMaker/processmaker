@@ -17,7 +17,8 @@
           </filter-mobile>
           <mobile-requests :ref="'listMobile'+index"
                            :filter="item.filter"
-                           :pmql="item.pmql">
+                           :pmql="item.pmql"
+                           :process="process">
           </mobile-requests>
         </template>
         <template v-else-if="item.type==='myTasks'">
@@ -27,7 +28,8 @@
           </filter-mobile>
           <mobile-tasks :ref="'listMobile'+index"
                         :filter="item.filter"
-                        :pmql="item.pmql">
+                        :pmql="item.pmql"
+                        :process="process">
           </mobile-tasks>
         </template>
         <template v-else>
@@ -37,7 +39,8 @@
           </filter-mobile>
           <mobile-tasks :ref="'listMobile'+index"
                         :filter="item.filter"
-                        :pmql="item.pmql">
+                        :pmql="item.pmql"
+                        :process="process">
           </mobile-tasks>
         </template>
       </b-tab>
