@@ -194,6 +194,7 @@
         </template>
       </data-loading>
       <pagination-table
+        v-show="!shouldShowLoader"
         :meta="data.meta"
         @page-change="changePage"
         @per-page-change="changePerPage"

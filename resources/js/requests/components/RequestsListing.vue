@@ -119,6 +119,7 @@ Please consider trying a different search. Thank you`)"
       empty-icon="noData"
     />
     <pagination-table
+      v-show="!shouldShowLoader"
       :meta="data.meta"
       @page-change="changePage"
       @per-page-change="changePerPage"
