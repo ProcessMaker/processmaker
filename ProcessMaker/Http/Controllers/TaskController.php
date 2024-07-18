@@ -166,7 +166,7 @@ class TaskController extends Controller
     /**
      * Update variable.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param HttpRequest $request
      * @param string $abe_uuid
      */
     public function updateVariable(HttpRequest $request, $abe_uuid)
@@ -213,16 +213,16 @@ class TaskController extends Controller
                     // Define the parameter for complete the task
                     $process = Process::find($task->process_id);
                     $instance = $task->processRequest;
-                    // Completar la tarea relacionada
+                    // Complete the task related
                     WorkflowManager::completeTask(
                         $process,
                         $instance,
                         $task,
                         $data
                     );
-
                     // Set the flag is_actionbyemail in true
                     (new ProcessRequestController)->enableIsActionbyemail($task->id);
+
                     // Show the abe completed screen
                     return $this->showScreen($abe->completed_screen_id);
                 }
@@ -230,12 +230,16 @@ class TaskController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error updating variable',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
 
-    public function showScreen($screenId)
+    /**
+     * Show a screen defined
+     * @param int $screenId
+     */
+    private function showScreen($screenId)
     {
         if (!empty($screenId)) {
             $customScreen = Screen::findOrFail($screenId);
@@ -248,6 +252,11 @@ class TaskController extends Controller
         }
     }
 
+    /**
+     * Return response
+     * @param string $message
+     * @param int $status
+     */
     public function returnErrorResponse(string $message, int $status)
     {
         return response()->json([
