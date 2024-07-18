@@ -265,6 +265,13 @@ export default {
         this.visibleHeaders[index].width = this.originalWidths[index];
       }
     },
+    resetToOriginalWidths() {
+      if (this.originalWidths) {
+        this.originalWidths.forEach((value, index) => {
+          this.visibleHeaders[index].width = value;
+        });
+      }
+    },
     handleRowClick(row, event) {
       this.$emit("table-row-click", row, event);
     },
