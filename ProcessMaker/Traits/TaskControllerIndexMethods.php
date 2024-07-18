@@ -17,7 +17,12 @@ trait TaskControllerIndexMethods
 {
     private function indexBaseQuery($request)
     {
-        $query = ProcessRequestToken::with(['processRequest', 'user', 'draft']);
+        $query = ProcessRequestToken::with([
+            'processRequest',
+            'process',
+            'user',
+            'draft'
+        ]);
         $query->select(
             [
                 'process_request_tokens.id',
