@@ -67,6 +67,6 @@ return [
         'base_url' => 'https://raw.githubusercontent.com/processmaker',
         'repo' => env('RECOMMENDATIONS_REPO', 'pm4-recommendations'),
         'branch' => env('RECOMMENDATIONS_BRANCH', 'develop'),
-        'token' => env('GITHUB_TOKEN'),
+        'token' => env('RECOMMENDATIONS_GITHUB_TOKEN'),
     ],
 ];
