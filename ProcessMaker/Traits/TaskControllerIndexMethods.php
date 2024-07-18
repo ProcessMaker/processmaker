@@ -18,7 +18,36 @@ trait TaskControllerIndexMethods
     private function indexBaseQuery($request)
     {
         $query = ProcessRequestToken::with(['processRequest', 'user', 'draft']);
-        $query->select('process_request_tokens.*');
+        $query->select(
+            [
+                'process_request_tokens.id',
+                'process_request_tokens.uuid',
+                'process_request_tokens.user_id',
+                'process_request_tokens.process_id',
+                'process_request_tokens.process_request_id',
+                'process_request_tokens.subprocess_request_id',
+                'process_request_tokens.element_id',
+                'process_request_tokens.element_type',
+                'process_request_tokens.element_name',
+                'process_request_tokens.status',
+                'process_request_tokens.element_index',
+                'process_request_tokens.subprocess_start_event_id',
+                'process_request_tokens.completed_at',
+                'process_request_tokens.due_at',
+                'process_request_tokens.due_notified',
+                'process_request_tokens.initiated_at',
+                'process_request_tokens.riskchanges_at',
+                'process_request_tokens.created_at',
+                'process_request_tokens.updated_at',
+                'process_request_tokens.version_id',
+                'process_request_tokens.version_type',
+                'process_request_tokens.is_self_service',
+                'process_request_tokens.self_service_groups',
+                'process_request_tokens.token_properties',
+                'process_request_tokens.is_priority',
+            ]
+        );
+
         $include = $request->input('include') ? explode(',', $request->input('include')) : [];
 
         foreach (['data'] as $key) {
