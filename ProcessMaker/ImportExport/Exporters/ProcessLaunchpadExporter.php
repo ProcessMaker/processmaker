@@ -51,7 +51,7 @@ class ProcessLaunchpadExporter extends ExporterBase
             $properties = json_decode($this->model->properties, true);
             foreach ($this->getDependents('savedSearch') as $dependent) {
                 foreach (Arr::get($properties, 'tabs', []) as $key => $tab) {
-                    if ($tab['idSavedSearch'] === $dependent->meta) {
+                    if (isset($tab['idSavedSearch']) && $tab['idSavedSearch'] === $dependent->meta) {
                         Arr::set($properties, 'tabs.' . $key . '.idSavedSearch', $dependent->model->id);
                     }
                 }
