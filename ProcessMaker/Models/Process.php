@@ -1034,7 +1034,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                 $query->where('group_id', $groupOrGroups);
             })
             ->leftjoin('users', 'users.id', '=', 'group_members.member_id')
-            ->whereNotIn('users.status', Process::NOT_ASSIGNABLE_USER_STATUS)
+            ->whereNotIn('users.status', self::NOT_ASSIGNABLE_USER_STATUS)
             ->chunk(1000, function ($members) use (&$users) {
                 $userIds = $members->pluck('member_id')->toArray();
                 $users = array_unique(array_merge($users, $userIds));
