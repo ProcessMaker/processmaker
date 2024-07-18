@@ -265,6 +265,9 @@ export default {
         this.visibleHeaders[index].width = this.originalWidths[index];
       }
     },
+    /**
+     * Helper to reset all width to original widths
+     */
     resetToOriginalWidths() {
       if (this.originalWidths) {
         this.originalWidths.forEach((value, index) => {
