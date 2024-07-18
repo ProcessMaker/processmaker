@@ -21,6 +21,7 @@ class TaskController extends Controller
         'element_type',
         'status',
         'due_at',
+        'user_id',
     ];
 
     /**
