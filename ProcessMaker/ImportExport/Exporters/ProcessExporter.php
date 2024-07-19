@@ -26,6 +26,8 @@ class ProcessExporter extends ExporterBase
 
     const BPMN_MANUAL_TASK = 'bpmn:manualTask';
 
+    const  BPMN_END_EVENT = 'bpmn:endEvent';
+
     public function export() : void
     {
         $process = $this->model;
@@ -488,7 +490,7 @@ class ProcessExporter extends ExporterBase
         $tags = [
             self::BPMN_TASK,
             self::BPMN_MANUAL_TASK,
-            'bpmn:endEvent',
+            self:: BPMN_END_EVENT,
         ];
 
         // Get model definitions
@@ -527,7 +529,7 @@ class ProcessExporter extends ExporterBase
         $tags = [
             self::BPMN_TASK,
             self::BPMN_MANUAL_TASK,
-            'bpmn:endEvent',
+            self::BPMN_END_EVENT,
         ];
 
         // Get model definitions
