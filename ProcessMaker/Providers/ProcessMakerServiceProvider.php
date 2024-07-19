@@ -152,10 +152,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
             new Filesystem, $this->app->basePath(), $this->app->getCachedPackagesPath()
         ));
 
-        $this->app->extend(MigrateCommand::class, function ($command, $app) {
+        $this->app->extend(MigrateCommand::class, function () {
             return new ExtendedMigrateCommand(
-                $app['migrator'],
-                $app['events']
+                app('migrator'),
+                app('events')
             );
         });
     }
