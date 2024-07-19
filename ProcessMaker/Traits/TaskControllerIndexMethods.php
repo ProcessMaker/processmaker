@@ -22,10 +22,11 @@ trait TaskControllerIndexMethods
             'process' => fn($q) => $q->exclude(['svg', 'warnings']),
             // review if bpmn is reuiqred here processRequest.process
             'processRequest.process' => fn($q) => $q->exclude(['svg', 'warnings']),
+            // The following lines use to much memory but reduce the number of queries
             // bpmn is required here in processRequest.processVersion
-            'processRequest.processVersion' => fn($q) => $q->exclude(['svg', 'warnings']),
+            // 'processRequest.processVersion' => fn($q) => $q->exclude(['svg', 'warnings']),
             // review if bpmn is reuiqred here processRequest.processVersion.process
-            'processRequest.processVersion.process' => fn($q) => $q->exclude(['svg', 'warnings']),
+            // 'processRequest.processVersion.process' => fn($q) => $q->exclude(['svg', 'warnings']),
             'user',
             'draft'
         ]);
