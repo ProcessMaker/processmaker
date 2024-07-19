@@ -180,7 +180,7 @@ class TokenRepository implements TokenRepositoryInterface
             $isActionsByEmail = $activity->getProperty('isActionsByEmail', false);
             Log::Info('Activity isActionsByEmail: ' . $isActionsByEmail);
             // If the actionByEmail is enable
-            if ($isActionsByEmail && !empty($to)) {
+            if ($isActionsByEmail === 'true' && !empty($to)) {
                 $configEmail = json_decode($activity->getProperty('configEmail'), true);
                 if (!empty($configEmail)) {
                     Log::info('Activity configEmail: ', $configEmail);

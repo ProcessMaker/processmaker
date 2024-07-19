@@ -233,7 +233,7 @@ import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColu
 import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
 import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
 import TaskListRowButtons from "./TaskListRowButtons.vue";
-import { get } from "lodash";
+import { cloneDeep, get } from "lodash";
 import Recommendations from "../../components/Recommendations.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
@@ -501,6 +501,17 @@ export default {
     },
     getColumns() {
       if (this.columns && this.columns.length > 0) {
+        const exists = this.columns.some((column) => column.field === "options");
+        if (!exists) {
+          const customColumns = cloneDeep(this.columns);
+          customColumns.push({
+            label: "",
+            field: "options",
+            sortable: false,
+            width: 180,
+          });
+          return customColumns;
+        }
         return this.columns;
       }
       // from query string status=CLOSED
