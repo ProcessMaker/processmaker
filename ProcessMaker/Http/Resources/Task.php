@@ -54,6 +54,8 @@ class Task extends ApiResource
         $array = parent::toArray($request);
         $include = explode(',', $request->input('include', ''));
 
+        $this->process = $this->resource->process;
+
         foreach ($this->includeMethods as $key) {
             if (!in_array($key, $include)) {
                 continue;
