@@ -5,6 +5,8 @@ namespace ProcessMaker\Models;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Base class that all models should extend from.
@@ -12,6 +14,8 @@ use Illuminate\Database\Eloquent\Model;
 class ProcessMakerModel extends Model
 {
     use HasFactory;
+
+    const MIGRATION_COLUMNS_CACHE_KEY = 'migration_columns';
 
     /**
      * Prepare a date for array / JSON serialization.
@@ -29,20 +33,21 @@ class ProcessMakerModel extends Model
         return $columns !== [] ? $query->select(
             array_diff(
                 $this->getTableColumns(),
-                \Illuminate\Support\Arr::flatten($columns)
+                Arr::flatten($columns)
             )
         ) : $query;
     }
 
     public function getTableColumns()
     {
-        return \Illuminate\Support\Facades\Cache::rememberForever(
-            'MigrMod:'.filemtime(
-                database_path('migrations')).':'.$this->getTable(), function () {
-                    return $this->getConnection()
-                        ->getSchemaBuilder()
-                        ->getColumnListing($this->getTable());
-                }
-            );
+        $key = 'MigrMod:' . $this->getTable();
+
+        return Cache::tags(static::MIGRATION_COLUMNS_CACHE_KEY)->rememberForever(
+            $key, function () {
+                return $this->getConnection()
+                    ->getSchemaBuilder()
+                    ->getColumnListing($this->getTable());
+            }
+        );
     }
 }
