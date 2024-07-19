@@ -88,7 +88,7 @@ trait TaskResourceIncludes
 
         if ($array['screen']) {
             // Apply translations to screen
-            $processTranslation = new ProcessTranslation($this->process);
+            $processTranslation = new ProcessTranslation($this->processRequest->process);
             $array['screen']['config'] = $processTranslation->applyTranslations($array['screen']);
             $array['screen']['config'] = $this->removeInspectorMetadata($array['screen']['config']);
 
