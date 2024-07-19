@@ -185,16 +185,6 @@ class Screen extends ProcessMakerModel implements ScreenInterface
             ->wherePivot('asset_type', static::class)->withTimestamps();
     }
 
-    public function scopeExclude($query, $value = [])
-    {
-        $columns = array_diff($this->columns, (array) $value);
-        $columns = array_map(function ($column) {
-            return $this->table . '.' . $column;
-        }, $columns);
-
-        return $query->select($columns);
-    }
-
     /**
      * Set multiple|single categories to the screen
      *
