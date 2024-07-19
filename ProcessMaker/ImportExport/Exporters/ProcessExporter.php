@@ -48,6 +48,7 @@ class ProcessExporter extends ExporterBase
 
         $this->exportAssignments();
 
+        $this->addReference('hasCustomDashboardRedirect', $this->hasCustomDashboardRedirect());
         // Notification Settings.
         $this->addReference('notification_settings', $process->notification_settings->toArray());
 
@@ -480,6 +481,35 @@ class ProcessExporter extends ExporterBase
         foreach ($this->getDependents('process_launchpad') as $launchpad) {
             $launchpad->model->setAttribute('process_id', $this->model->id);
         }
+    }
+
+    public function hasCustomDashboardRedirect(): bool
+    {
+        $tags = [
+            self::BPMN_TASK,
+            self::BPMN_MANUAL_TASK,
+            'bpmn:endEvent',
+        ];
+
+        // Get model definitions
+        $definitions = $this->model->getDefinitions(true);
+
+        // Get elements by specified tags
+        $elements = Utils::getElementByMultipleTags($definitions, $tags);
+
+        // Iterate through the elements to check for elementDestination attribute
+        foreach ($elements as $element) {
+            // Get the value of the pm:elementDestination attribute
+            $elementDestination = $element->getAttribute('pm:elementDestination');
+
+            // If the attribute is not empty, return true
+            if (!empty($elementDestination)) {
+                return true;
+            }
+        }
+
+        // If no elements have the attribute set, return false
+        return false;
     }
 
     /**
