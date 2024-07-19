@@ -297,7 +297,14 @@ i {
   color: #6a7888;
 }
 #category-menu > .list-group {
+  min-height: 37vh;
   overflow-y: auto;
+  max-height: 37vh;
+}
+@media (max-width: 650px) {
+  #category-menu > .list-group {
+    max-height: 60vh;
+  }
 }
 .list-group-item {
   background: #f7f9fb;
