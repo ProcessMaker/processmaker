@@ -7,7 +7,6 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ProcessMaker\Filters\Filter;
-use ProcessMaker\Http\Resources\Task as Resource;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
@@ -19,7 +18,15 @@ trait TaskControllerIndexMethods
     {
         $query = ProcessRequestToken::exclude(['data'])->with([
             'processRequest' => fn($q) => $q->exclude(['data']),
-            'process' => fn($q) => $q->exclude(['svg', 'bpmn', 'warnings']),
+            // review if bpmn is reuiqred here process
+            'process' => fn($q) => $q->exclude(['svg', 'warnings']),
+            // review if bpmn is reuiqred here processRequest.process
+            'processRequest.process' => fn($q) => $q->exclude(['svg', 'warnings']),
+            // bpmn is required here in processRequest.processVersion
+            'processRequest.processVersion' => fn($q) => $q->exclude(['svg', 'warnings']),
+            // review if bpmn is reuiqred here processRequest.processVersion.process
+            'processRequest.processVersion.process' => fn($q) => $q->exclude(['svg', 'warnings']),
+            'process.categories',
             'user',
             'draft'
         ]);
