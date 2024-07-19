@@ -14,6 +14,8 @@ use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
 use Lavary\Menu\Menu;
+use Illuminate\Database\Console\Migrations\MigrateCommand;
+use ProcessMaker\Console\Migration\ExtendedMigrateCommand;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Helpers\PmHash;
@@ -149,6 +151,13 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton(PackageManifest::class, fn () => new LicensedPackageManifest(
             new Filesystem, $this->app->basePath(), $this->app->getCachedPackagesPath()
         ));
+
+        $this->app->extend(MigrateCommand::class, function ($command, $app) {
+            return new ExtendedMigrateCommand(
+                $app['migrator'],
+                $app['events']
+            );
+        });
     }
 
     /**
