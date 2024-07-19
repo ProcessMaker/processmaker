@@ -28,6 +28,8 @@ class ProcessExporter extends ExporterBase
 
     const  BPMN_END_EVENT = 'bpmn:endEvent';
 
+    const  PM_ELEMENT_DESTINATION = 'pm:elementDestination';
+
     public function export() : void
     {
         $process = $this->model;
@@ -502,7 +504,7 @@ class ProcessExporter extends ExporterBase
         // Iterate through the elements to check for elementDestination attribute
         foreach ($elements as $element) {
             // Get the value of the pm:elementDestination attribute
-            $elementDestination = $element->getAttribute('pm:elementDestination');
+            $elementDestination = $element->getAttribute(self::PM_ELEMENT_DESTINATION);
 
             // If the attribute is not empty, return true
             if (!empty($elementDestination)) {
@@ -541,7 +543,7 @@ class ProcessExporter extends ExporterBase
         // Iterate through the elements
         foreach ($elements as $element) {
             $path = $element->getNodePath();
-            $elementDestination = $element->getAttribute('pm:elementDestination');
+            $elementDestination = $element->getAttribute(self::PM_ELEMENT_DESTINATION);
 
             // If the element has a pm:elementDestination attribute
             if ($elementDestination !== null) {
@@ -559,7 +561,7 @@ class ProcessExporter extends ExporterBase
 
                     // Set the new attribute value at the specified XPath
                     Utils::setAttributeAtXPath(
-                        $this->model, $path, 'pm:elementDestination',
+                        $this->model, $path, self::PM_ELEMENT_DESTINATION,
                         htmlspecialchars($newElementDestination, ENT_QUOTES)
                     );
                 }
