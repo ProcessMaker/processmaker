@@ -342,9 +342,9 @@ export default {
 }
 
 .slide-control {
-  border-left: 0;
-  border-right: 1px solid #DEE0E1;
+  border-left: 1px solid #DEE0E1;
   margin-left: 10px;
+  width: 29px;
   
   @media (max-width: $lp-breakpoint) {
     display: none;
@@ -352,7 +352,7 @@ export default {
 
   a {
     position: relative;
-    left: 10px;
+    left: -11px;
     top: 40px;
     z-index: 5;
 
@@ -364,17 +364,33 @@ export default {
     background-color: #ffffff;
     border-radius: 10px;
     border: 1px solid #DEE0E1;
+    color: #6A7888;
   }
 }
 
 .menu-open .slide-control {
-  border-right: 0;
   border-left: 1px solid #DEE0E1;
 
   a {
-    left: -10px;
+    left: -11px;
+    display: none;
   }
   
+}
+
+.slide-control:hover{
+  border-left: 1px solid rgba(72, 145, 255, 0.40);
+  box-shadow: -1px 0 0 rgba(72, 145, 255, 0.5);
+}
+.menu-open .slide-control:hover {
+  border-left: 1px solid rgba(72, 145, 255, 0.40);
+  box-shadow: -1px 0 0 rgba(72, 145, 255, 0.5);
+  a {
+    display: flex;
+  }
+}
+.slide-control a:hover {
+  background-color: #EAEEF2;
 }
 
 .mobile-menu-control {
