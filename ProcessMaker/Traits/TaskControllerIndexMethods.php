@@ -26,7 +26,6 @@ trait TaskControllerIndexMethods
             'processRequest.processVersion' => fn($q) => $q->exclude(['svg', 'warnings']),
             // review if bpmn is reuiqred here processRequest.processVersion.process
             'processRequest.processVersion.process' => fn($q) => $q->exclude(['svg', 'warnings']),
-            'process.categories',
             'user',
             'draft'
         ]);
