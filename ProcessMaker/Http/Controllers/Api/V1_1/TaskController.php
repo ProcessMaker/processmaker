@@ -33,7 +33,7 @@ class TaskController extends Controller
             ->where('element_type', 'task');
 
         $this->processFilters(request(), $query);
-        $pagination = $query->paginate();
+        $pagination = $query->paginate(request()->get('per_page', 10));
         $perPage = $pagination->perPage();
         $page = $pagination->currentPage();
         $lastPage = $pagination->lastPage();
