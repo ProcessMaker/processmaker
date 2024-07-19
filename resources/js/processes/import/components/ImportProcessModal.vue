@@ -56,7 +56,7 @@
     components: { Modal, WarningMessage },
     mixins: [ FormErrorsMixin ],
     props: ['existingAssets', 'processName','userHasEditPermissions'],
-    data: function() {  
+    data: function() {
       return {
         showModal: false,
         disabled: true,

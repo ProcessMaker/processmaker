@@ -492,7 +492,7 @@ class ProcessExporter extends ExporterBase
         $tags = [
             self::BPMN_TASK,
             self::BPMN_MANUAL_TASK,
-            self:: BPMN_END_EVENT,
+            self::BPMN_END_EVENT,
         ];
 
         // Get model definitions
