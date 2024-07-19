@@ -28,17 +28,21 @@ class ProcessMakerModel extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
-    public function scopeExclude($query, ...$columns)
+    public function scopeExclude($query, array $columns)
     {
-        return $columns !== [] ? $query->select(
-            array_diff(
-                $this->getTableColumns(),
-                Arr::flatten($columns)
-            )
-        ) : $query;
+        if (!empty($columns)) {
+            return $query;
+        }
+
+        $columnsToShow = array_diff($this->getTableColumns(), $columns);
+        $columnsToShow = array_map(function ($column) {
+            return $this->table . '.' . $column;
+        }, $columnsToShow);
+
+        return $query->select($columnsToShow);
     }
 
-    public function getTableColumns()
+    private function getTableColumns()
     {
         $key = 'MigrMod:' . $this->getTable();
 
