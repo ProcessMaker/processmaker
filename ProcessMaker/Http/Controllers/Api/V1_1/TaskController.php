@@ -21,6 +21,7 @@ class TaskController extends Controller
         'element_type',
         'status',
         'due_at',
+        'user_id',
     ];
 
     /**
@@ -32,7 +33,7 @@ class TaskController extends Controller
             ->where('element_type', 'task');
 
         $this->processFilters(request(), $query);
-        $pagination = $query->paginate();
+        $pagination = $query->paginate(request()->get('per_page', 10));
         $perPage = $pagination->perPage();
         $page = $pagination->currentPage();
         $lastPage = $pagination->lastPage();
@@ -56,6 +57,10 @@ class TaskController extends Controller
 
     private function processFilters(Request $request, Builder $query)
     {
+        if (request()->has('user_id')) {
+            $query->where('user_id', request()->get('user_id'));
+        }
+
         if ($request->has('process_request_id')) {
             $query->where('process_request_id', $request->input('process_request_id'));
         }
