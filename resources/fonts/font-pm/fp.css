@@ -1,0 +1,20 @@
+@font-face {
+  font-family: "fp";
+  src: url('fp.eot?t=1721664346334'); /* IE9*/
+  src: url('fp.eot?t=1721664346334#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url("fp.woff2?t=1721664346334") format("woff2"),
+  url("fp.woff?t=1721664346334") format("woff"),
+  url('fp.ttf?t=1721664346334') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+  url('fp.svg?t=1721664346334#fp') format('svg'); /* iOS 4.1- */
+}
+
+[class^="fp-"], [class*=" fp-"] {
+  font-family: 'fp' !important;
+  font-style:normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+.fp-brush-icon:before { content: "\ea01"; }
+

@@ -17,7 +17,8 @@
         "production": "mix --production",
         "test": "cross-env NODE_ENV=test jest",
         "test-watch": "npm run test -- --watch --notify",
-        "lint": "eslint --fix --ignore-path .eslintignore resources/"
+        "lint": "eslint --fix --ignore-path .eslintignore resources/",
+        "font": "node ./svgtofont.js"
     },
     "devDependencies": {
         "@babel/eslint-parser": "^7.15.8",
@@ -39,6 +40,7 @@
         "resolve-url-loader": "^3.1.2",
         "sass": "^1.77.4",
         "sass-loader": "^12.6.0",
+        "svgtofont": "^4.2.2",
         "vue-loader": "^15.10.0"
     },
     "dependencies": {
