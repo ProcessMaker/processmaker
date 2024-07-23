@@ -16,13 +16,13 @@ return new class extends Migration
         Schema::table('processes', function (Blueprint $table) {
             $table->unsignedInteger('updated_by')->nullable()->after('updated_at');
             //Foreign keys
-            $table->foreign('updated_by')->references('id')->on('users')->onDelete('set null');;
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('set null');
         });
 
         Schema::table('process_versions', function (Blueprint $table) {
             $table->unsignedInteger('updated_by')->nullable()->after('updated_at');
             //Foreign keys
-            $table->foreign('updated_by')->references('id')->on('users')->onDelete('set null');;
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('set null');
         });
 
         $this->updateUpdatedBy();
