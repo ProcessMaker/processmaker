@@ -18,7 +18,8 @@
         "test": "cross-env NODE_ENV=test jest",
         "test-watch": "npm run test -- --watch --notify",
         "lint": "eslint --fix --ignore-path .eslintignore resources/",
-        "font": "node ./svgtofont.js"
+        "font": "node ./svgtofont.js",
+        "dev-font": "node ./svgtofont.js && http-server ./resources/fonts/font-pm -p 9090"
     },
     "devDependencies": {
         "@babel/eslint-parser": "^7.15.8",
@@ -68,6 +69,7 @@
         "bpmn-moddle": "^6.0.2",
         "chart.js": "^2.9.4",
         "country-json": "^1.1.0",
+        "http-server": "^14.1.1",
         "i18next": "^15.0.8",
         "i18next-chained-backend": "^1.0.1",
         "i18next-localstorage-backend": "^2.1.2",
