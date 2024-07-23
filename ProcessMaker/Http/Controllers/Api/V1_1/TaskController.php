@@ -57,8 +57,8 @@ class TaskController extends Controller
 
     private function processFilters(Request $request, Builder $query)
     {
-        if (request()->has('user_id')) {
-            $query->where('user_id', request()->get('user_id'));
+        if ($request->has('user_id')) {
+            $query->where('user_id', $request->get('user_id'));
         }
 
         if ($request->has('process_request_id')) {
