@@ -17,7 +17,6 @@
           </filter-mobile>
           <mobile-requests :ref="'listMobile'+index"
                            :filter="item.filter"
-                           :pmql="item.pmql"
                            :process="process">
           </mobile-requests>
         </template>
@@ -28,7 +27,6 @@
           </filter-mobile>
           <mobile-tasks :ref="'listMobile'+index"
                         :filter="item.filter"
-                        :pmql="item.pmql"
                         :process="process">
           </mobile-tasks>
         </template>
@@ -39,7 +37,6 @@
           </filter-mobile>
           <mobile-tasks :ref="'listMobile'+index"
                         :filter="item.filter"
-                        :pmql="item.pmql"
                         :process="process">
           </mobile-tasks>
         </template>
