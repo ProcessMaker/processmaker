@@ -46,6 +46,7 @@ class TaskResource extends ApiResource
         'element_type',
         'status',
         'due_at',
+        'process_request_id',
     ];
 
     protected static $defaultIncludes = [
