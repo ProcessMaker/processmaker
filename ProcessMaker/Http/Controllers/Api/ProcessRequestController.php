@@ -764,7 +764,7 @@ class ProcessRequestController extends Controller
                 $httpRequest->input('order_direction', 'asc')
             )->paginate($httpRequest->input('per_page', 10));
 
-        $collection = $response->getCollection()
+        $response->getCollection()
             ->transform(function ($token): ?object {
                 $definition = $token->getDefinition();
                 if (array_key_exists('screenRef', $definition)) {
@@ -782,7 +782,7 @@ class ProcessRequestController extends Controller
             })
             ->reject(fn ($item) => $item === null);
 
-        return new ApiCollection($collection);
+        return new ApiCollection($response);
     }
 
     /**
