@@ -147,6 +147,7 @@
                     @click="onClear(row)"
                     variant="link"
                     class="settings-listing-button"
+                    :data-cy="`clear-${row.item.key}`"
                     >
                     <i class="fa-lg fas fa-trash-alt settings-listing-button"></i>
                   </b-button>
