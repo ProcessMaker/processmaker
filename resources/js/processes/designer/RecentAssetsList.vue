@@ -99,6 +99,7 @@ import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import dataSourceNavigationMixin from "../../components/shared/dataSourceNavigation";
 import decisionTableNavigationMixin from "../../components/shared/decisionTableNavigation";
+import flowGenieNavigationMixin from "../../components/shared/flowGenieNavigation";
 import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
 import processNavigationMixin from "../../components/shared/processNavigation";
 import screenNavigationMixin from "../../components/shared/screenNavigation";
@@ -123,6 +124,7 @@ export default {
     dataLoadingMixin,
     dataSourceNavigationMixin,
     decisionTableNavigationMixin,
+    flowGenieNavigationMixin,
     ellipsisMenuMixin,
     processNavigationMixin,
     screenNavigationMixin,
@@ -220,6 +222,8 @@ export default {
           return this.dataSourceActions;
         case "Decision Table":
           return this.decisionTableActions;
+        case "Flow Genie":
+          return this.flowGenieActions;
         default:
           return []; // Handle unknown asset types as needed
       }
@@ -279,6 +283,10 @@ export default {
         case "Decision Table":
           this.assetType = "decision-table";
           this.onDecisionTableNavigate(action, data);
+          break;
+        case "Flow Genie":
+          this.assetType = "flow-genie";
+          this.onFlowGenieNavigate(action, data);
           break;
         default:
           break; // Handle unknown asset types as needed
@@ -366,6 +374,12 @@ export default {
     &.asset_type_decision_table {
       &::before {
         background:#712F4A;
+      }
+    }
+
+    &.asset_type_flow_genie {
+      &::before {
+        background:#4b667c;
       }
     }
   }

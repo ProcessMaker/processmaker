@@ -2,22 +2,23 @@
 
 namespace Tests\unit\ProcessMaker;
 
-use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
 use ProcessMaker\Events\ActivityAssigned;
+use ProcessMaker\Jobs\GenerateUserRecommendations;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Recommendation;
 use ProcessMaker\Models\RecommendationUser;
-use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
 use ProcessMaker\SyncRecommendations;
 use Tests\TestCase;
 
 class RecommendationEngineTest extends TestCase
 {
-    private static string $appUrl;
-
     private static array $generatedModelUuids;
 
     private SyncRecommendations $syncRecommendations;
@@ -85,27 +86,81 @@ class RecommendationEngineTest extends TestCase
         $this->assertFalse($recommendationUser->isExpired());
     }
 
+    public function testUserHasDisabledRecommendations(): void
+    {
+        Queue::fake([
+            GenerateUserRecommendations::class,
+        ]);
+
+        $user = User::factory()->create([
+            'status' => 'ACTIVE',
+            'meta' => [
+                'disableRecommendations' => true,
+            ],
+        ]);
+
+        $processRequestToken = ProcessRequestToken::factory()->create([
+            'user_id' => $user->id,
+        ]);
+
+        event(new ActivityAssigned($processRequestToken));
+
+        Queue::assertNotPushed(GenerateUserRecommendations::class);
+    }
+
+    public function testSystemHasDisabledRecommendations(): void
+    {
+        config(['app.recommendations_enabled' => false]);
+
+        Queue::fake([
+            GenerateUserRecommendations::class,
+        ]);
+
+        $user = User::factory()->create(['status' => 'ACTIVE']);
+
+        $processRequestToken = ProcessRequestToken::factory()->create([
+            'user_id' => $user->id,
+        ]);
+
+        event(new ActivityAssigned($processRequestToken));
+
+        Queue::assertNotPushed(GenerateUserRecommendations::class);
+    }
+
     public function testRecommendationsSync(): void
     {
-        // Swap out the app's url for this test
-        static::swapAppUrl();
-
         Http::preventStrayRequests();
-
-        // Create the url patterns simulating the file urls in the repo
-        $index_file_url = $this->syncRecommendations->url('index.json');
-        $default_dir_url = $this->syncRecommendations->url('default/*.json');
-        $local_dir_url = $this->syncRecommendations->url('local.test/*.json');
 
         // Set up the fake responses for the
         Http::fake([
             // Index file contains all directories/filenames in the repo
-            $index_file_url => Http::response($this->generateIndexJsonFileContents()),
+            'https://api.github.com/repos/processmaker/pm4-recommendations/contents*' => Http::response([
+                [
+                    'name' => 'default',
+                    'type' => 'dir',
+                    'url' => 'https://repo.test/default',
+                ],
+                [
+                    'name' => 'localhost',
+                    'type' => 'dir',
+                    'url' => 'https://repo.test/localhost',
+                ],
+            ]),
             // Default directory
-            $default_dir_url => Http::response($this->generateModelData()),
+            'https://repo.test/default' => Http::response([
+                [
+                    'download_url' => 'https://repo.test/default/global_test.json',
+                ],
+            ]),
             // Matches with the instance domain
             // the unit tests are running on
-            $local_dir_url => Http::response($this->generateModelData()),
+            'https://repo.test/localhost' => Http::response([
+                [
+                    'download_url' => 'https://repo.test/localhost/instance_test.json',
+                ],
+            ]),
+            'https://repo.test/default/global_test.json' => Http::response($this->generateModelData()),
+            'https://repo.test/localhost/instance_test.json' => Http::response($this->generateModelData()),
         ]);
 
         // Run the sync
@@ -118,9 +173,6 @@ class RecommendationEngineTest extends TestCase
         // Compare the number of recommendations we
         // persisted from the generated model data
         $this->assertCount($persistedRecommendationQuery->count(), static::$generatedModelUuids);
-
-        // Put the original app url back in the config
-        static::swapAppUrl();
     }
 
     /**
@@ -143,48 +195,5 @@ class RecommendationEngineTest extends TestCase
         // Return an anonymous object, which will represent
         // the json body of the mock http response
         return $model_data->toArray();
-    }
-
-    /**
-     * Generate simulated json file contents standing in
-     * for the index.json file contained in the repo
-     *
-     * @return array
-     */
-    protected function generateIndexJsonFileContents(): array
-    {
-        $generateFileName = static fn () => Str::random().'.json';
-
-        return [
-            // The default recommendations for all instances
-            'default' => [
-                $generateFileName()
-            ],
-
-            // Every other directory name is checked against the
-            // instance's domain for a match. If it matches, it
-            // downloads/saves them. local.test is created
-            // specifically for this unit test.
-            'local.test' => [
-                $generateFileName(),
-                $generateFileName(),
-            ],
-        ];
-    }
-
-    /**
-     * Swap the app URL in the configuration for use by a testing
-     * recommendations meant for specific instances
-     *
-     * @return void
-     */
-    protected static function swapAppUrl(): void
-    {
-        if (config('app.url') === 'local.test') {
-            config(['app.url' => static::$appUrl]);
-        } else {
-            static::$appUrl = config('app.url');
-            config(['app.url' => 'local.test']);
-        }
     }
 }

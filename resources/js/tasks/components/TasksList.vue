@@ -1,6 +1,6 @@
 <template>
   <div class="data-table">
-    <Recommendations />
+    <Recommendations v-if="showRecommendations" />
     <div
       v-show="true"
       data-cy="tasks-table"
@@ -26,7 +26,7 @@
           v-slot:[column.field]
         >
           <div
-            :key="index"
+            :key="`tasks-table-column-${index}`"
             :id="`tasks-table-column-${column.field}`"
             class="pm-table-column-header-text"
           >
@@ -233,7 +233,7 @@ import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColu
 import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
 import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
 import TaskListRowButtons from "./TaskListRowButtons.vue";
-import { get } from "lodash";
+import { cloneDeep, get } from "lodash";
 import Recommendations from "../../components/Recommendations.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
@@ -300,6 +300,10 @@ export default {
     tableName: {
       type: String,
       default: "",
+    },
+    showRecommendations: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -497,6 +501,17 @@ export default {
     },
     getColumns() {
       if (this.columns && this.columns.length > 0) {
+        const exists = this.columns.some((column) => column.field === "options");
+        if (!exists) {
+          const customColumns = cloneDeep(this.columns);
+          customColumns.push({
+            label: "",
+            field: "options",
+            sortable: false,
+            width: 180,
+          });
+          return customColumns;
+        }
         return this.columns;
       }
       // from query string status=CLOSED
@@ -613,23 +628,22 @@ export default {
       this.$refs.preview.showSideBar(info, this.data.data, true, size);
     },
     formatStatus(props) {
-      let color;
-      let label;
-      const isSelfService = props.is_self_service;
+      let color = "success";
+      let label = "In Progress";
 
-      if (props.status === "ACTIVE" && isSelfService) {
-        color = "danger";
-        label = "Self Service";
-      } else if (props.status === "ACTIVE" && props.advanceStatus === "open") {
-        color = "success";
-        label = "In Progress";
-      } else if (props.status === "ACTIVE" && props.advanceStatus === "overdue") {
-        color = "danger";
-        label = "Overdue";
+      if (props.status === "ACTIVE") {
+        if (props.is_self_service) {
+          color = "danger";
+          label = "Self Service";
+        } else if (props.advanceStatus === "overdue") {
+          color = "danger";
+          label = "Overdue";
+        }
       } else if (props.status === "CLOSED") {
         color = "primary";
         label = "Completed";
       }
+
       return `
         <span class="badge badge-${color} status-${color}">
           ${label}

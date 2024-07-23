@@ -26,27 +26,44 @@
       :aria-expanded="infoCollapsed"
       @click="toggleInfoCollapsed()"
     >
-      <div class="d-flex justify-content-between">
+      <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
           <template v-if="infoCollapsed">
-            <i class="fas fa-caret-down pl-2 mr-2 custom-color" />
+            <i class="fas fa-caret-down pl-2 mr-2 custom-color"></i>
             <span class="custom-text">
               {{ $t("Process Info") }}
             </span>
           </template>
           <template v-else>
-            <i class="fas fa-caret-right pl-2 mr-2 custom-color" />
+            <i class="fas fa-caret-right pl-2 mr-2 custom-color"></i>
             <span class="custom-text">
               {{ $t("Process Info") }}
             </span>
           </template>
         </div>
+
+        <div class="d-flex align-items-center custom-align-wizard">
+          <div
+            class="icon-wizard-class"
+            v-if="iconWizardTemplate && infoCollapsed"
+            @click="getHelperProcess"
+          >
+            <img
+              src="../../../img/wizard-icon.svg"
+              :alt="$t('Guided Template Icon')"
+            />
+            <span class="custom-text">
+              {{ $t('Re-run Wizard') }}
+            </span>
+          </div>
+        </div>
+
         <div
           v-if="!hideHeaderOptions"
           class="d-flex align-items-center"
         >
           <div class="card-bookmark mx-2">
-            <bookmark :process="process" />
+            <bookmark :process="process"></bookmark>
           </div>
           <span class="ellipsis-border">
             <ellipsis-menu
@@ -56,7 +73,7 @@
               :divider="false"
               :lauchpad="true"
               variant="none"
-              @navigate="$emit('onProcessNavigate')"
+              @navigate="ellipsisNavigate"
               :isDocumenterInstalled="$root.isDocumenterInstalled"
               :permission="$root.permission"
             />
@@ -74,12 +91,21 @@
           <template v-if="!infoCollapsed">
             <process-counter
               :process="process"
+              :icon-wizard-template="iconWizardTemplate"
               :enable-collapse="enableCollapse"
+              @click.native="toggleInfoCollapsed"
             />
           </template>
         </div>
       </div>
     </div>
+    <wizard-helper-process-modal
+      v-if="createdFromWizardTemplate"
+      id="wizardHelperProcessModal"
+      ref="wizardHelperProcessModal"
+      :process-launchpad-id="process.id"
+      :wizard-template-uuid="wizardTemplateUuid"
+    />
   </div>
 </template>
 
@@ -90,6 +116,7 @@ import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
 import Bookmark from "./Bookmark.vue";
 import ProcessCounter from "./optionsMenu/ProcessCounter.vue";
+import WizardHelperProcessModal from "../../components/templates/WizardHelperProcessModal.vue";
 
 export default {
   components: {
@@ -97,6 +124,7 @@ export default {
     EllipsisMenu,
     Bookmark,
     ProcessCounter,
+    WizardHelperProcessModal,
   },
   mixins: [ProcessesMixin, ellipsisMenuMixin],
   props: {
@@ -112,6 +140,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    iconWizardTemplate: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -123,11 +155,19 @@ export default {
   mounted() {
     this.getStartEvents();
   },
+  computed: {
+    createdFromWizardTemplate() {
+      return !!this.process?.properties?.wizardTemplateUuid;
+    },
+    wizardTemplateUuid() {
+      return this.process?.properties?.wizardTemplateUuid;
+    },
+  },
   methods: {
     ellipsisNavigate(action, data) {
-      this.$emit('onProcessNavigate', action, data);
+      this.$emit("onProcessNavigate", action, data);
     },
-     toggleInfoCollapsed() {
+    toggleInfoCollapsed() {
       this.infoCollapsed = !this.infoCollapsed;
     },
     /**
@@ -149,6 +189,9 @@ export default {
         .catch((err) => {
           ProcessMaker.alert(err, "danger");
         });
+    },
+    getHelperProcess() {
+      this.$refs.wizardHelperProcessModal.getHelperProcessStartEvent();
     },
   },
 };
@@ -204,18 +247,28 @@ export default {
   margin-right: 20px;
 }
 
-.custom-text {
-  font-size: 16px;
-  font-weight: 400;
-  color: #556271;
-  letter-spacing: -0.2;
-}
-
 .custom-color {
   color: #4c545c;
 }
 
 .clickable {
   cursor: pointer;
+}
+
+.custom-align-wizard {
+  margin-left: auto;
+}
+
+.custom-text {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: -0.02;
+  color: #556271;
+}
+
+.icon-wizard-class {
+  z-index: 5;
 }
 </style>

@@ -12,7 +12,6 @@ use ProcessMaker\Models\ProcessRequestToken;
  *    InboxRules in the system and returns the InboxRule models.
  * 2. The `get` method returns all tasks that match a given InboxRule
  */
-
 class MatchingTasks
 {
     /**

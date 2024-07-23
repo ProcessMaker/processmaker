@@ -3,11 +3,11 @@
     v-if="showCards"
     overlay
     class="card-process"
+    @click="openInfo(process)"
   >
     <b-card-text>
       <div
         class="card-info"
-        @click="openInfo(process)"
       >
         <img
           class="icon-process"
@@ -41,7 +41,7 @@
     </b-card-text>
   </b-card>
   <b-card v-else
-  class="text-center d-flex align-items-center justify-content-center card-process2">
+  class="d-flex text-center align-items-center justify-content-center card-process2">
     <span v-if="cardMessage === 'show-page'">Page {{ currentPage }} of {{ totalPages }}</span>
     <span v-if="cardMessage === 'show-more' && !loading"> {{ $t('Show More') }}</span>
     <span v-if="loading"><i class="fas fa-spinner fa-spin"></i> {{ $t('Loading') }}...</span>
@@ -117,11 +117,12 @@ export default {
 
 .card-process {
   max-width: 343px;
-  min-width: 296px;
+  min-width: 300px;
   width: 27vw;
   height: 232px;
   margin-top: 1rem;
   margin-right: 1rem;
+  margin-left: 1rem;
   border-radius: 16px;
   background-image: url("/img/launchpad-images/process_background.svg");
 
@@ -130,15 +131,18 @@ export default {
     max-width: none;
     min-width: none;
     border-radius: 8px;
-    height: 100px;
+    height: 72px;
+    margin-right: 5px;
   }
 }
+
 .card-process2 {
   height: 40px;
   margin-top: 1rem;
-  margin-right: 1rem;
+  margin-right: 7%;
   border-radius: 8px;
   background-color: #E5EDF3;
+  margin-left: 1rem;
 
   @media (max-width: $lp-breakpoint) {
     width: 100%;
@@ -146,6 +150,7 @@ export default {
     min-width: none;
     border-radius: 8px;
     height: 40px;
+    margin-right: 0;
   }
 }
 .card-process:hover {
@@ -158,7 +163,8 @@ export default {
   margin-bottom: 20px;
 
   @media (max-width: $lp-breakpoint) {
-    padding: 16px;
+    padding-left: 16px;
+    padding-right: 20px;
   }
 }
 .card-img {
@@ -172,9 +178,9 @@ export default {
   background-color: #F9E7C3;
   margin-right: 8px;
   
-  border-radius: 15px;
-  min-width: 30px;
-  height: 30px;
+  border-radius: 12px;
+  min-width: 24px;
+  height: 24px;
   justify-content: center;
   align-items: center;
   padding: 0 8px;
@@ -186,6 +192,7 @@ export default {
 
 .bookmark {
   float:right;
+  font-size: 1.2em;
 }
 .card-text {
   height: 100%;
@@ -212,13 +219,15 @@ export default {
   }
 }
 .icon-process {
-  width: 48px;
+  width: 40px;
   height: 48px;
   margin-bottom: 16px;
 
   @media (max-width: $lp-breakpoint) {
     margin-bottom: 0;
-    margin-right: 10px;
+    margin-right: 10px;  
+    width: 24px;
+    height: 24px;
   }
 }
 .title-process {

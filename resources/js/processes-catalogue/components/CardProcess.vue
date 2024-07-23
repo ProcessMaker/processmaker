@@ -10,6 +10,7 @@
       class="processList d-flex"
       ref="processListContainer"
     >
+      
       <template v-for="(process, index) in processList">
         <Card
           :key="`${index}_${renderKey}`"
@@ -24,27 +25,26 @@
           :hideBookmark="categoryId === 'all_templates'"
         />
 
-          <div v-if="(index % perPage === perPage - 1) && processList.length >= perPage" style="width: 75%;">
-            
-              <Card v-if="((index + 1) === processList.length)"
-              style="width: 100%;"
-              :show-cards="false"
-              :current-page="counterPage + Math.floor(index / perPage)"
-              :total-pages="totalPages"
-              :card-message="'show-more'"
-              :loading="loading"
-              @callLoadCard="loadCard"
-            />
+        <div v-if="(index % perPage === perPage - 1) && processList.length >= perPage" :class="separatorClass">
+          <Card
+            v-if="((index + 1) === processList.length) && ((index + 1) < totalPages * perPage)"
+            :show-cards="false"
+            :current-page="counterPage + Math.floor(index / perPage)"
+            :total-pages="totalPages"
+            :card-message="'show-more'"
+            :loading="loading"
+            @callLoadCard="loadCard"
+          />
 
-              <Card
-              v-else
-              style="width: 100%;"
-              :show-cards="false"
-              :current-page="counterPage + Math.floor(index / perPage)"
-              :total-pages="totalPages"
-              :card-message="cardMessage"
-              :loading="loading"
-              @callLoadCard="loadCard"
+          <div v-else-if="((index + 1) === processList.length) && currentPage === totalPages && ((index + 1) === processList.length)">
+          </div>
+          <Card v-else
+          :show-cards="false"
+            :current-page="counterPage + Math.floor(index / perPage)"
+            :total-pages="totalPages"
+            :card-message="cardMessage"
+            :loading="loading"
+            @callLoadCard="loadCard"
             />
         </div>
       </template>
@@ -93,7 +93,18 @@ export default {
       showMoreVisible: false,
       cardMessage: "show-more",
       sumHeight: 0,
+      isCardProcess: true,
+      sizeChange: false,
     };
+  },
+  computed: {
+    separatorClass() {
+      const classes = {
+        'separator-class': true,
+        'width-changed': this.sizeChange,
+      };
+      return classes;
+    },
   },
   watch: {
     async categoryId() {
@@ -112,16 +123,22 @@ export default {
     this.loadCard(()=>{
       this.$nextTick(()=>{
           const listCard = document.querySelector(".processes-info");
-          
           listCard.addEventListener("scrollend", () => this.handleScroll());
       });
     }, null);
+    this.$root.$on("sizeChanged", (val) => {
+      this.handleSizeChange(val);
+    });
   },
-  destroyed() {
+  beforeDestroy() {
+    this.isCardProcess = false;
     const listCard = document.querySelector(".processes-info");
-    listCard.removeEventListener("scrollend", this.handleScroll);
+    listCard?.removeEventListener("scrollend", this.handleScroll);
   },
   methods: {
+    handleSizeChange(value) {
+      this.sizeChange = value;
+    },
     loadCard(callback, message) {
       if(message === 'bookmark') {
         this.processList = [];
@@ -225,7 +242,7 @@ export default {
     },
     handleScroll() {
       const container =  document.querySelector(".processes-info");
-      if ((container.scrollTop + container.clientHeight >= container.scrollHeight - 5)) {
+      if ((container.scrollTop + container.clientHeight >= container.scrollHeight - 5) && this.isCardProcess) {
         this.cardMessage = "show-page";
         this.onPageChanged(this.currentPage + 1);
       }
@@ -244,8 +261,10 @@ export default {
   height: 100%;
   overflow: unset;
   justify-content: flex-start;
+
   @media (max-width: $lp-breakpoint) {
     display: block;
+    height: auto;
   }
 }
 .text-custom {
@@ -256,5 +275,22 @@ export default {
   border-right-color: transparent;
   border-radius: 50%;
   animation: 0.75s linear infinite spinner-border;
+}
+.separator-class {
+  width: 85%;
+  @media (max-width: $lp-breakpoint) {
+    display: block;
+    height: auto;
+    width: 94%;
+  }
+
+  @media (min-width: 1870px) {
+    display: block;
+    height: auto;
+    width: 100%;
+  }
+}
+.separator-class.width-changed {
+  width: 93%;
 }
 </style>

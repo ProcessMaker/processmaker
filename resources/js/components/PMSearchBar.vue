@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex align-items-start mb-3">
+  <div class="d-flex align-items-start mb-2">
     <div>
       <slot name="left-content"></slot>
     </div>

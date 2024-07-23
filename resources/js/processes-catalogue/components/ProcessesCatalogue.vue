@@ -5,6 +5,7 @@
       :category="category ? category.name : ''"
       :process="selectedProcess ? selectedProcess.name : ''"
       :template="guidedTemplates ? 'Guided Templates' : ''"
+      v-if="!mobileApp"
     />
     <div class="menu-mask" :class="{ 'menu-open' : showMenu }"></div>
     <div class="process-catalog-main" :class="{ 'menu-open' : showMenu }">
@@ -30,16 +31,22 @@
         </div>
       </div>
       <div class="slide-control">
-        <a href="#" @click="showMenu = !showMenu">
+        <a href="#" @click="hideMenu">
           <i class="fa" :class="{ 'fa-caret-right' : !showMenu, 'fa-caret-left' : showMenu }"></i>
         </a>
       </div>
-      <div class="processes-info">
+      <div ref="processInfo" class="processes-info">
           <div class="mobile-menu-control" v-show="showMobileMenuControl">
-            <span @click="showMenu = !showMenu">
+            <div class="menu-button" @click="hideMenu">
               <i class="fa fa-bars"></i>
               {{ category?.name || '' }}
-            </span>
+            </div>
+            <div class="bookmark-button" @click="showBookmarks">
+              <i class="fas fa-bookmark"></i>
+            </div>
+            <div class="search-button" @click="$root.mobileSearchVisible = !$root.mobileSearchVisible">
+              <i class="fas fa-search"></i>
+            </div>
           </div>
         
           <router-view @goBackCategory="goBackCategory"></router-view>
@@ -95,6 +102,8 @@ export default {
       fromProcessList: false,
       categoryCount: 0,
       hideLaunchpad: true,
+      currentWidth: 0,
+      mobileApp: window.ProcessMaker.mobileApp
     };
   },
   mounted() {
@@ -126,6 +135,10 @@ export default {
     }
   },
   methods: {
+    hideMenu() {
+      this.showMenu = !this.showMenu;
+      this.$root.$emit("sizeChanged", !this.showMenu);
+    },
     /**
      * Add new page of categories
      */
@@ -234,6 +247,13 @@ export default {
     hasTemplateParams(url) {
       return url.search.includes("&template=");
     },
+    showBookmarks() {
+      if (this.$route.query.categoryId !== "bookmarks") {
+        this.$router.push({ name: "index", query: { categoryId: "bookmarks" } });
+      }
+    },
+    showSearch() {
+    }
   },
 };
 </script>
@@ -363,11 +383,31 @@ export default {
   font-size: 1.3em;
   margin-top: 10px;
   margin-left: 1em;
-  i {
-    margin-right: 3px;
+  margin-right: 1em;
+  align-items: center;
+
+  .menu-button {
+    flex-grow: 1;
+    i {
+      margin-right: 3px;
+    }
   }
+
+  .bookmark-button {
+    display: flex;
+    padding: 10px;
+    margin-right: 10px;
+    font-size: 1.1em;
+  }
+
+  .search-button {
+    display: flex;
+    padding: 10px;
+    font-size: 1.1em;
+  }
+
   @media (max-width: $lp-breakpoint) {
-    display: block;
+    display: flex;
   }
 }
 
@@ -387,7 +427,7 @@ export default {
 }
 .processes-info {
   width: 100%;
-  margin-right: -16px;
+  margin-right: 0px;
   height: calc(100vh - 145px);
   overflow-x: hidden;
   @media (max-width: $lp-breakpoint) {

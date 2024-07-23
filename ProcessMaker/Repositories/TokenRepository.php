@@ -6,6 +6,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Mustache_Engine;
+use ProcessMaker\Mail\TaskActionByEmail;
+use ProcessMaker\Models\ProcessAbeRequestToken;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -155,8 +157,54 @@ class TokenRepository implements TokenRepositoryInterface
         $token->saveOrFail();
         $token->setId($token->getKey());
         $request = $token->getInstance();
-        $request->notifyProcessUpdated('ACTIVITY_ACTIVATED');
+        $request->notifyProcessUpdated('ACTIVITY_ACTIVATED', $token);
+        if (!is_null($user)) {
+            $this->validateAndSendActionByEmail($activity, $token, $user->email);
+        }
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
+    }
+
+    /**
+     * Validate email configuration and Send Email
+     *
+     * @param ActivityInterface $activity
+     * @param TokenInterface $token
+     * @param string $to
+     * @param array $data
+     *
+     * @return void
+     */
+    private function validateAndSendActionByEmail(ActivityInterface $activity, TokenInterface $token, string $to)
+    {
+        try {
+            $isActionsByEmail = $activity->getProperty('isActionsByEmail', false);
+            Log::Info('Activity isActionsByEmail: ' . $isActionsByEmail);
+            // If the actionByEmail is enable
+            if ($isActionsByEmail === 'true' && !empty($to)) {
+                $configEmail = json_decode($activity->getProperty('configEmail'), true);
+                if (!empty($configEmail)) {
+                    Log::info('Activity configEmail: ', $configEmail);
+                    $abeRequestToken = new ProcessAbeRequestToken();
+                    $tokenAbe = $abeRequestToken->updateOrCreate([
+                        'process_request_id' => $token->process_request_id,
+                        'process_request_token_id' => $token->getKey(),
+                        'require_login' => $configEmail['requireLogin'] === true ? 1 : 0,
+                        'completed_screen_id' => $configEmail['screenCompleteRef'] ?? 0,
+                    ]);
+                    $data = $token->getInstance()->getDataStore()->getData();
+                    // Set custom variables defined in the link
+                    $data['abe_uri'] = config('app.url');
+                    $data['token_abe'] = $tokenAbe->uuid;
+                    // Send Email
+                    return (new TaskActionByEmail())->sendAbeEmail($configEmail, $to, $data);
+                }
+            }
+        } catch (\Exception $e) {
+            // Catch and log the error
+            Log::error('Failed to validate and send action by email', [
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**
@@ -214,7 +262,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->saveOrFail();
         $token->setId($token->getKey());
         $request = $token->getInstance();
-        $request->notifyProcessUpdated('START_EVENT_TRIGGERED');
+        $request->notifyProcessUpdated('START_EVENT_TRIGGERED', $token);
     }
 
     private function assignTaskUser(ActivityInterface $activity, TokenInterface $token, Instance $instance)
@@ -246,7 +294,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->save();
         $token->setId($token->getKey());
         $request = $token->getInstance();
-        $request->notifyProcessUpdated('ACTIVITY_EXCEPTION');
+        $request->notifyProcessUpdated('ACTIVITY_EXCEPTION', $token);
     }
 
     /**
@@ -280,7 +328,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->save();
         $token->setId($token->getKey());
         $request = $token->getInstance();
-        $request->notifyProcessUpdated('ACTIVITY_COMPLETED');
+        $request->notifyProcessUpdated('ACTIVITY_COMPLETED', $token);
     }
 
     /**
