@@ -135,7 +135,7 @@ export default {
         {
           color: "#556271",
           image_icon: require("../../../img/flowGenieIcon.svg"),
-          asset_name: "FlowGenies",
+          asset_name: "FlowGenie",
           asset_name_all: `${this.$t("View All")} Genies`,
           asset_name_new: `${this.$t("New")} Genie`,
           urlPath: "/designer/flow-genies",
