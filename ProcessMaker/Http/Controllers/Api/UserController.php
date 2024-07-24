@@ -347,9 +347,7 @@ class UserController extends Controller
             $this->uploadAvatar($user, $request);
         }
 
-        if (!RecommendationEngine::shouldGenerateFor($user)) {
-            RecommendationUser::deleteFor($user);
-        }
+        RecommendationEngine::handleUserSettingChanges($user, $original);
 
         return response([], 204);
     }
