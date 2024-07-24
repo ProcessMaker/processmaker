@@ -118,6 +118,10 @@
                 :target="`element-${rowIndex}-${colIndex}`"
                 custom-class="pm-table-tooltip"
                 @show="checkIfTooltipIsNeeded"
+                placement="topright"
+                trigger="hover"
+                boundary="viewport"
+                :delay="{'show':0,'hide':0}"
               >
                 {{ sanitizeTooltip(getNestedPropertyValue(row, header)) }}
               </b-tooltip>
@@ -172,6 +176,10 @@
                       :target="`element-${rowIndex}-${colIndex}`"
                       custom-class="pm-table-tooltip"
                       @show="checkIfTooltipIsNeeded"
+                      placement="topright"
+                      trigger="hover"
+                      boundary="viewport"
+                      :delay="{'show':0,'hide':0}"
                     >
                       {{ getNestedPropertyValue(row, header) }}
                     </b-tooltip>
@@ -183,17 +191,24 @@
         </template>
       </filter-table>
       <data-loading
-        v-show="shouldShowLoader"
+        v-show="shouldShowLoader && noResultsMessage === 'tasks'"
         :empty="$t('All clear')"
         :empty-desc="$t('No new tasks at this moment.')"
         empty-icon="noTasks"
         :data-loading-id="dataLoadingId"
-        >
+      >
         <template v-slot:no-results>
           <slot name="no-results"></slot>
         </template>
       </data-loading>
+      <default-tab
+        v-if="shouldShowLoader && noResultsMessage === 'launchpad'"
+        :alt-text="$t('No Image')"
+        :title-text="$t('No items to show.')"
+        :description-text="$t('You have to start a Case of this process.')"
+      />
       <pagination-table
+        v-show="!shouldShowLoader"
         :meta="data.meta"
         @page-change="changePage"
         @per-page-change="changePerPage"
@@ -235,6 +250,7 @@ import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
 import TaskListRowButtons from "./TaskListRowButtons.vue";
 import { cloneDeep, get } from "lodash";
 import Recommendations from "../../components/Recommendations.vue";
+import DefaultTab from "../../processes-catalogue/components/DefaultTab.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -251,6 +267,7 @@ export default {
     PMColumnFilterIconDesc,
     TaskListRowButtons,
     Recommendations,
+    DefaultTab,
   },
   mixins: [
     datatableMixin,
@@ -304,6 +321,10 @@ export default {
     showRecommendations: {
       type: Boolean,
       default: false,
+    },
+    noResultsMessage: {
+      type: String,
+      default: "tasks",
     },
   },
   data() {

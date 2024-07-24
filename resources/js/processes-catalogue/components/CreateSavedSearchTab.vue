@@ -94,7 +94,7 @@
         this.stateTabName = null;
         this.stateIdSavedSearch = null;
         if (!this.tabName) {
-          this.stateMessageTabName = this.$t('Please enter Tab Name');
+          this.stateMessageTabName = this.$t('Type a valid name');
           this.stateTabName = false;
           return;
         }

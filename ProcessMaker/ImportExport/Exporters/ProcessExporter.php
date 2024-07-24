@@ -26,6 +26,10 @@ class ProcessExporter extends ExporterBase
 
     const BPMN_MANUAL_TASK = 'bpmn:manualTask';
 
+    const  BPMN_END_EVENT = 'bpmn:endEvent';
+
+    const  PM_ELEMENT_DESTINATION = 'pm:elementDestination';
+
     public function export() : void
     {
         $process = $this->model;
@@ -48,6 +52,7 @@ class ProcessExporter extends ExporterBase
 
         $this->exportAssignments();
 
+        $this->addReference('hasCustomDashboardRedirect', $this->hasCustomDashboardRedirect());
         // Notification Settings.
         $this->addReference('notification_settings', $process->notification_settings->toArray());
 
@@ -482,6 +487,35 @@ class ProcessExporter extends ExporterBase
         }
     }
 
+    public function hasCustomDashboardRedirect(): bool
+    {
+        $tags = [
+            self::BPMN_TASK,
+            self::BPMN_MANUAL_TASK,
+            self::BPMN_END_EVENT,
+        ];
+
+        // Get model definitions
+        $definitions = $this->model->getDefinitions(true);
+
+        // Get elements by specified tags
+        $elements = Utils::getElementByMultipleTags($definitions, $tags);
+
+        // Iterate through the elements to check for elementDestination attribute
+        foreach ($elements as $element) {
+            // Get the value of the pm:elementDestination attribute
+            $elementDestination = $element->getAttribute(self::PM_ELEMENT_DESTINATION);
+
+            // If the attribute is not empty, return true
+            if (!empty($elementDestination)) {
+                return true;
+            }
+        }
+
+        // If no elements have the attribute set, return false
+        return false;
+    }
+
     /**
      * Imports element destinations from the model and updates specific elements.
      *
@@ -497,7 +531,7 @@ class ProcessExporter extends ExporterBase
         $tags = [
             self::BPMN_TASK,
             self::BPMN_MANUAL_TASK,
-            'bpmn:endEvent',
+            self::BPMN_END_EVENT,
         ];
 
         // Get model definitions
@@ -509,7 +543,7 @@ class ProcessExporter extends ExporterBase
         // Iterate through the elements
         foreach ($elements as $element) {
             $path = $element->getNodePath();
-            $elementDestination = $element->getAttribute('pm:elementDestination');
+            $elementDestination = $element->getAttribute(self::PM_ELEMENT_DESTINATION);
 
             // If the element has a pm:elementDestination attribute
             if ($elementDestination !== null) {
@@ -521,13 +555,13 @@ class ProcessExporter extends ExporterBase
                     && $data['type'] === 'customDashboard') {
                     // Create a new JSON string with updated values
                     $newElementDestination = json_encode([
-                        'type' => 'summaryScreen',
+                        'type' => 'customDashboard',
                         'value' => null,
-                    ]);
+                    ], JSON_HEX_QUOT);
 
                     // Set the new attribute value at the specified XPath
                     Utils::setAttributeAtXPath(
-                        $this->model, $path, 'pm:elementDestination',
+                        $this->model, $path, self::PM_ELEMENT_DESTINATION,
                         htmlspecialchars($newElementDestination, ENT_QUOTES)
                     );
                 }

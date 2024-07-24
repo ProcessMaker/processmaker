@@ -77,7 +77,13 @@ class ModelerController extends Controller
      *               block list, external integrations list, screen types, script executors,
      *               category counts, and other relevant information.
      */
-    public function prepareModelerData(ModelerManager $manager, Process $process, Request $request, string $alternative)
+    public function prepareModelerData(
+        ModelerManager $manager,
+        Process $process,
+        Request $request,
+        string $alternative,
+        $isTemplate = false
+    )
     {
         // Retrieve PM block list and external integrations list
         $pmBlockList = $this->getPmBlockList();
@@ -85,25 +91,26 @@ class ModelerController extends Controller
 
         // Emit ModelerStarting event to allow customization of modeler controls
         event(new ModelerStarting($manager));
-
+        
         // Count process categories for creating subprocess modal
         $countProcessCategories = ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
 
         // Retrieve screen types and count screen categories for creating screen modal
         $screenTypes = ScreenType::pluck('name')->map(fn ($type) => __(ucwords(strtolower($type))))->sort()->toArray();
         $countScreenCategories = ScreenCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
-
+        
         // Check if Projects and AI packages are installed
         $isProjectsInstalled = PackageHelper::isPackageInstalled(PackageHelper::PM_PACKAGE_PROJECTS);
         $isPackageAiInstalled = hasPackage('package-ai');
-
+        
         // Retrieve script executors and count script categories for creating script modal
         $scriptExecutors = ScriptExecutor::list();
         $countScriptCategories = ScriptCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
 
         // Retrieve draft version of the process
         $draft = $process->getDraftOrPublishedLatestVersion($alternative);
-        if ($draft) {
+
+        if ($draft && !$isTemplate) {
             $process->fill($draft->only(['svg', 'bpmn']));
         }
 

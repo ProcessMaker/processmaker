@@ -196,7 +196,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .pagination {
   display: flex;
   justify-content: left;
@@ -245,7 +245,7 @@ export default {
 }
 .pagination-dropup {
   font-weight: 400;
-  font-size: 15px;
+  font-size: 15px !important;
   color: #5C5C63;
   text-transform: none;
 }

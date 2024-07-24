@@ -1202,6 +1202,7 @@ export default {
             actions: [...this.ellipsisMenuOptions.actions],
             data: {},
             divider: false,
+            lauchpad: true,
           },
         },
         4,

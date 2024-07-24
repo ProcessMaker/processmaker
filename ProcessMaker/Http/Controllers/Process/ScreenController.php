@@ -83,8 +83,21 @@ class ScreenController extends Controller
     {
         $addons = $this->getPluginAddons('edit', compact(['screen']));
         $assignedProjects = json_decode($screen->projects, true);
+        
+        $lastDraftOrPublishedVersion = $screen->getDraftOrPublishedLatestVersion();
 
-        return view('processes.screens.edit', compact('screen', 'addons', 'assignedProjects'));
+        $isDraft = 0;
+        if ($lastDraftOrPublishedVersion) {
+            $isDraft = $lastDraftOrPublishedVersion->draft;
+        }
+
+        return view('processes.screens.edit', compact(
+                'screen',
+                'addons',
+                'assignedProjects',
+                'isDraft'
+            )
+        );
     }
 
     /**
