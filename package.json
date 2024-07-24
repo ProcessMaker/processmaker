@@ -18,8 +18,8 @@
         "test": "cross-env NODE_ENV=test jest",
         "test-watch": "npm run test -- --watch --notify",
         "lint": "eslint --fix --ignore-path .eslintignore resources/",
-        "font": "node ./devhub/pm-font/svgtofont.js && cp -Rf ./devhub/pm-font/dist/ ./resources/fonts/pm-font",
-        "dev-font": "node ./devhub/pm-font/svgtofont.js && cp -Rf ./devhub/pm-font/dist/ ./resources/fonts/pm-font && http-server ./devhub/pm-font/dist -p 7771"
+        "font": "node ./devhub/pm-font/svgtofont.js && cp -f ./devhub/pm-font/dist/*.* ./resources/fonts/pm-font",
+        "dev-font": "node ./devhub/pm-font/svgtofont.js && cp -f ./devhub/pm-font/dist/*.* ./resources/fonts/pm-font && http-server ./devhub/pm-font/dist -p 7771"
     },
     "devDependencies": {
         "@babel/eslint-parser": "^7.15.8",
