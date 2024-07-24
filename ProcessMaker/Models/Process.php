@@ -178,6 +178,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         'user_id',
         'created_at',
         'updated_at',
+        'updated_by',
         'has_timer_start_events',
         'warnings',
     ];
@@ -240,6 +241,21 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         'conditional_events' => 'array',
         'properties' => 'array',
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $user = Auth::user();
+            $model->updated_by = $user?->id;
+        });
+
+        static::updating(function ($model) {
+            $user = Auth::user();
+            $model->updated_by = $user?->id;
+        });
+    }
 
     /**
      * Category of the process.
@@ -415,6 +431,14 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Get the last user that updated the process
+     */
+    public function updatedByUser()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 
     /**
