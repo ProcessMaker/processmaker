@@ -477,7 +477,6 @@
               );
               return false;
             }
-            console.log('saving....');
             if (!this.validatePassword()) return false;
             if (@json($enabled2FA) && typeof this.formData.preferences_2fa != "undefined" &&
               this.formData.preferences_2fa != null && this.formData.preferences_2fa.length < 1) return false;

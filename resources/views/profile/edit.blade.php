@@ -179,7 +179,7 @@
                       let message = 'The Two Step Authentication Method has not been set. ' +
                       'Please contact your administrator.';
                       // User has not enabled two-factor authentication correctly
-                      ProcessMaker.alert(this.$t($message, 'warning'));
+                      ProcessMaker.alert(this.$t($message), 'warning');
                       return false;
                     }
                     if (!this.validatePassword()) return false;
