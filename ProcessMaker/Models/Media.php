@@ -129,6 +129,7 @@ class Media extends MediaLibraryModel
         } elseif ($name === 'slideshow') {
             return self::COLLECTION_SLIDESHOW;
         }
+
         return null;
     }
 
@@ -229,10 +230,14 @@ class Media extends MediaLibraryModel
                 $customProperties['alternative'] = $properties['alternative'] ?? '';
             }
             // Store the images related move to MEDIA
-            $process->addMediaFromBase64($properties['url'])
-                ->usingFileName($properties['file_name'])
-                ->withCustomProperties($customProperties)
-                ->toMediaCollection($collectionName);
+            $media = $process->addMediaFromBase64($properties['url'])
+                ->withCustomProperties($customProperties);
+            // Only if the file_name exist this will save
+            if (isset($properties['file_name']) && !empty($properties['file_name'])) {
+                $media->usingFileName($properties['file_name']);
+            }
+            // Add the media
+            $media->toMediaCollection($collectionName);
         }
     }
 
