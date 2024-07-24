@@ -316,15 +316,6 @@ export default {
   }
 }
 .separator-class.width-changed {
-  //width: 93%;
-
-  // @media (max-width: $lp-breakpoint) {
-  //   display: block;
-  //   height: auto;
-  //   width: 95%;
-  //   // width: 340px;
-  // }
-
   @media (min-width: 641px) and (max-width:767px) {
     width: 340px;
   }
