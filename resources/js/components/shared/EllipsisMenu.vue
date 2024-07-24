@@ -315,7 +315,7 @@ export default {
   color: #556271;
   text-transform: none;
   border-radius: 4px;
-  font-size: 16px;
+  font-size: 16px !important;
 }
 .ellipsis-icon-v {
   height: 16px;
