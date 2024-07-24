@@ -1,6 +1,9 @@
 name: deploy-k8s
 run-name: ${{ github.actor }} send deploy EKS 🚀
 on:
+  push:
+    branches:
+      - SCO-24110
   pull_request:
     types: [opened, reopened, synchronize, edited, closed]
   schedule:
@@ -27,7 +30,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
   BUILD_BASE: ${{ (contains(github.event.pull_request.body, 'ci:build-base') || github.event_name == 'schedule') && '1' || '0' }}
   BASE_IMAGE: ${{ secrets.REGISTRY_HOST }}/processmaker/processmaker:base
-  K8S_BRANCH: ${{ contains(github.event.pull_request.body, 'ci:next') && 'next' || 'develop' }}
+  K8S_BRANCH: next
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -77,7 +80,7 @@ jobs:
           docker push ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}
   deployEKS:
     name: build-deploy-EKS
-    if: contains(github.event.pull_request.body, 'ci:deploy')
+    #if: contains(github.event.pull_request.body, 'ci:deploy')
     needs: imageEKS
     runs-on: ${{ vars.RUNNER }}
     steps:
