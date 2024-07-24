@@ -350,8 +350,7 @@ export default {
 }
 
 .slide-control {
-  border-left: 0;
-  border-right: 1px solid #DEE0E1;
+  border-left: 1px solid #DEE0E1;
   margin-left: 10px;
   
   @media (max-width: $lp-breakpoint) {
@@ -360,7 +359,7 @@ export default {
 
   a {
     position: relative;
-    left: 10px;
+    left: -10px;
     top: 40px;
     z-index: 5;
 
@@ -376,7 +375,6 @@ export default {
 }
 
 .menu-open .slide-control {
-  border-right: 0;
   border-left: 1px solid #DEE0E1;
 
   a {
