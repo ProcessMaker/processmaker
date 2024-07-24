@@ -80,7 +80,7 @@ jobs:
           docker push ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}
   deployEKS:
     name: build-deploy-EKS
-    #if: contains(github.event.pull_request.body, 'ci:deploy')
+    #if: contains(github.event.pull_request.body, 'ci:deploy') 
     needs: imageEKS
     runs-on: ${{ vars.RUNNER }}
     steps:
