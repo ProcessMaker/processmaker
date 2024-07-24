@@ -21,7 +21,10 @@
             :id="`${tableName}-column-${index}`"
             :key="index"
             class="pm-table-ellipsis-column"
-            :class="{ 'pm-table-filter-applied': column.filterApplied }"
+            :class="{ 'pm-table-filter-applied': column.filterApplied || column.sortAsc || column.sortDesc }"
+            :style="{ width: column.fixed_width + 'px' }"
+            @mouseover="$emit('table-column-mouseover', column.field)"
+            @mouseleave="$emit('table-column-mouseleave')"
           >
             <div
               class="pm-table-column-header"
@@ -37,7 +40,9 @@
             <div
               v-if="index !== visibleHeaders.length - 1"
               class="pm-table-column-resizer"
-              @mousedown="startResize($event, index)"
+              @dblclick="resetSize(index)"
+              :class="{ 'resizable': column.resizable === undefined || column.resizable }"
+              @mousedown="column.resizable === undefined || column.resizable ? startResize($event, index) : null"
             />
             <b-tooltip
               v-if="column.tooltip"
@@ -74,6 +79,7 @@
           <slot :name="`row-${rowIndex}`">
             <td
               v-for="(header, index) in visibleHeaders"
+              :class="{ 'pm-table-filter-applied-tbody': header.sortAsc || header.sortDesc }"
               :key="index"
             >
               <template v-if="containsHTML(getNestedPropertyValue(row, header))">
@@ -180,6 +186,7 @@ export default {
       startX: 0,
       startWidth: 0,
       resizingColumnIndex: -1,
+      originalWidths: [],
     };
   },
   computed: {
@@ -212,6 +219,9 @@ export default {
     },
     calculateColumnWidth(widthAdjust = 1) {
       this.visibleHeaders.forEach((headerColumn, index) => {
+        if (!this.originalWidths[index]) {
+          this.originalWidths[index] = headerColumn.width || this.calculateContent(index);
+        }
         if (this.calculateContent(index) !== 0) {
           headerColumn.width = (this.calculateContent(index) * widthAdjust) - 32;
         }
@@ -234,7 +244,7 @@ export default {
     doResize(event) {
       if (this.isResizing) {
         const diff = event.pageX - this.startX;
-        let min = 40;
+        let min = 64;
         const currentWidth = Math.max(min, this.startWidth + diff);
         const contentWidth = this.calculateContent(this.resizingColumnIndex);
         if ((contentWidth - currentWidth) <= 80) {
@@ -248,6 +258,11 @@ export default {
         document.removeEventListener("mouseup", this.stopResize);
         this.isResizing = false;
         this.resizingColumnIndex = -1;
+      }
+    },
+    resetSize(index) {
+      if (this.originalWidths[index]) {
+        this.visibleHeaders[index].width = this.originalWidths[index];
       }
     },
     handleRowClick(row, event) {
@@ -279,19 +294,23 @@ export default {
   border-right: 1px solid rgba(0, 0, 0, 0.125);
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 5px;
-  scrollbar-width: 8px;
-  scrollbar-color: #6C757D;
   max-height: calc(100vh - 150px);
+  overflow: hidden;
+}
+
+.pm-table-container:hover {
+  overflow: auto;
 }
 
 .pm-table-container th {
   position: relative;
-  max-width: 800px;
+  max-width: 960px;
 }
 
 .pm-table-column-header {
   overflow: hidden;
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .pm-table-column-resizer {
@@ -301,8 +320,11 @@ export default {
   transform: translateY(-50%);
   height: 85%;
   width: 10px;
-  cursor: col-resize;
+  cursor: default;
   border-right: 1px solid rgba(0, 0, 0, 0.125);
+}
+.pm-table-column-resizer.resizable {
+  cursor: col-resize;
 }
 .pm-table-filter {
   width: 100%;
@@ -314,19 +336,24 @@ export default {
 .pm-table-filter td {
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
   padding: 10px 16px;
-  height: 56px;
+  height: 52px;
 }
 .pm-table-ellipsis-column {
   padding: 10px 16px;
-  height: 56px;
+  height: 52px;
 }
 .pm-table-filter th:hover {
-  background-color: #FAFBFC;
+  background-color: #F2F8FE;
   color: #1572C2;
 }
 .pm-table-filter tbody tr:hover {
-  background-color: #FAFBFC;
-  color: #1572C2;
+  background-color: #EFF5FB;
+}
+.pm-table-filter tbody tr a {
+  color: #566877;
+}
+.pm-table-filter tbody tr a:hover {
+  color: #1990FF;
 }
 .pm-table-filter thead {
   position: sticky;
@@ -353,10 +380,15 @@ export default {
   position: absolute;
   top: 20%;
   right: 7px;
+  background-color: #F2F8FE
 }
 .pm-table-ellipsis-column .pm-table-filter-button {
   opacity: 0;
   visibility: hidden;
+}
+.pm-table-filter-applied .pm-table-filter-button {
+  opacity: 1;
+  visibility: visible;
 }
 .pm-table-ellipsis-column:hover .pm-table-filter-button {
   opacity: 1;
@@ -386,41 +418,76 @@ export default {
   opacity: 1 !important;
 }
 .pm-table-tooltip-header .tooltip-inner {
-  background-color: #deebff;
-  color: #104a75;
+  background-color: #FFFFFF;
+  color: #4C545C;
   box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.3);
   max-width: 250px;
   padding: 14px;
   border-radius: 7px;
+  border: 1px solid #CDDDEE
 }
 .pm-table-tooltip-header .arrow::before {
-  border-bottom-color: #deebff !important;
-  border-top-color: #deebff !important;
+  border-bottom-color: #CDDDEE !important;
+  border-top-color: #CDDDEE !important;
+}
+.pm-table-tooltip-header .arrow::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  border-width: 0 .4rem .4rem;
+  transform: translateY(3px);
+  border-color: transparent;
+  border-style: solid;
+  border-bottom-color: #FFFFFF;
 }
 .pm-table-filter-applied {
   color: #1572C2;
   background-color: #F2F8FE !important;
 }
+.pm-table-filter-applied-tbody {
+  background-color: rgba(247, 249, 251, 1) !important;
+}
 .pm-table-unread-row {
-  font-weight: bold;
+  background-color: #FFFDEA;
 }
 .status-success {
-  background-color: rgba(78, 160, 117, 0.2);
-  color: rgba(78, 160, 117, 1);
+  background-color: rgba(200, 240, 207, 1);
+  color: rgba(0, 0, 0, 0.75);
   width: 100px;
   border-radius: 5px;
+  padding: 7px;
 }
 .status-danger {
-  background-color:rgba(237, 72, 88, 0.2);
-  color: rgba(237, 72, 88, 1);
+  background-color:rgba(255, 199, 199, 1);
+  color: rgba(0, 0, 0, 0.75);
   width: 100px;
   border-radius: 5px;
+  padding: 7px;
 }
 .status-primary {
-  background: rgba(21, 114, 194, 0.2);
-  color: rgba(21, 114, 194, 1);
+  background: rgba(184, 220, 247, 1);
+  color: rgba(0, 0, 0, 0.75);
   width: 100px;
   border-radius: 5px;
+  padding: 7px;
+}
+.status-warning {
+  background: rgba(249, 232, 195, 1);
+  color: rgba(0, 0, 0, 0.75);
+  border-radius: 5px;
+  padding: 7px;
+}
+.status-alternative-a {
+  background: rgba(224, 229, 232, 1);
+  color: rgba(0, 0, 0, 0.75);
+  border-radius: 5px;
+  padding: 7px;
+}
+.status-alternative-b {
+  background: rgba(249, 232, 195, 1);
+  color: rgba(0, 0, 0, 0.75);
+  border-radius: 5px;
+  padding: 7px;
 }
 @-moz-document url-prefix() {
   .pm-table-truncate {
@@ -428,18 +495,6 @@ export default {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-}
-.pm-table-container::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-.pm-table-container::-webkit-scrollbar-thumb {
-  background-color: #6C757D;
-  border-radius: 20px;
-}
-.ellipsis-dropdown-main ul.dropdown-menu.dropdown-menu-right.show {
-  max-height: 250px;
-  overflow-y: auto;
 }
 .pm-table-selected-row {
   background-color: #E8F0F9;

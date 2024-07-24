@@ -134,17 +134,22 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('/redirect-to-intended', [HomeController::class, 'redirectToIntended'])->name('redirect_to_intended');
 
     Route::post('/keep-alive', [LoginController::class, 'keepAlive'])->name('keep-alive');
-
-    Route::get('requests/search', [RequestController::class, 'search'])->name('requests.search');
-    Route::get('requests/{type?}', [RequestController::class, 'index'])
+    // Cases
+    Route::get('cases', [RequestController::class, 'index'])->name('cases.index')->middleware('no-cache');
+    Route::get('cases/{type?}', [RequestController::class, 'index'])->name('cases_by_type')
         ->where('type', 'all|in_progress|completed')
-        ->name('requests_by_type')
         ->middleware('no-cache');
-    Route::get('request/{request}/files/{media}', [RequestController::class, 'downloadFiles'])->middleware('can:view,request');
-    Route::get('requests', [RequestController::class, 'index'])
-        ->name('requests.index')
-        ->middleware('no-cache');
+    // Requests
+    Route::get('requests', function () {
+        return redirect()->route('cases.index');
+    })->name('requests.index')->middleware('no-cache');
+    Route::get('requests/{type?}', function ($type = null) {
+        return redirect()->route('cases_by_type', ['type' => $type]);
+    })->where('type', 'all|in_progress|completed')->name('requests_by_type')->middleware('no-cache');
+
     Route::get('requests/{request}', [RequestController::class, 'show'])->name('requests.show');
+    Route::get('request/{request}/files/{media}', [RequestController::class, 'downloadFiles'])->middleware('can:view,request');
+    Route::get('requests/search', [RequestController::class, 'search'])->name('requests.search');
     Route::get('requests/mobile/{request}', [RequestController::class, 'show'])->name('requests.showMobile');
     Route::get('requests/{request}/task/{task}/screen/{screen}', [RequestController::class, 'screenPreview'])->name('requests.screen-preview');
 
@@ -175,6 +180,12 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('/test_email', [TestStatusController::class, 'email'])->name('test.email');
 });
 
+Route::group([
+    'middleware' => ['web', 'auth:web,anon', 'sanitize', 'bindings'],
+], function () {
+    Route::get('tasks/update_variable/{token_abe}', [TaskController::class, 'updateVariable'])->name('tasks.abe.update');
+});
+
 // Add our broadcasting routes
 Broadcast::routes();
 
@@ -186,6 +197,7 @@ Route::get('2fa', [TwoFactorAuthController::class, 'displayTwoFactorAuthForm'])-
 Route::post('2fa/validate', [TwoFactorAuthController::class, 'validateTwoFactorAuthCode'])->name('2fa.validate');
 Route::get('2fa/send_again', [TwoFactorAuthController::class, 'sendCode'])->name('2fa.send_again');
 Route::get('2fa/auth_app_qr', [TwoFactorAuthController::class, 'displayAuthAppQr'])->name('2fa.auth_app_qr');
+Route::get('login-failed', [LoginController::class, 'showLoginFailed'])->name('login-failed');
 
 // Password Reset Routes...
 Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
@@ -209,4 +221,3 @@ Route::get('/unavailable', [UnavailableController::class, 'show'])->name('error.
 
 // SAML Metadata Route
 Route::resource('/saml/metadata', MetadataController::class)->only('index');
-

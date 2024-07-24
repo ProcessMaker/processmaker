@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "929e0f9c52d801df6cc507bb7e77aaac",
+    "content-hash": "18b301b8146def68ff32a6aaf95c5c46",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -7492,20 +7492,20 @@
         },
         {
             "name": "processmaker/nayra",
-            "version": "1.10.0",
+            "version": "1.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "62c91962863a628bc332b64252dc68ec5dc64787"
+                "reference": "07bc74a8f21f09bb80985f80a925ee364dc1ef7b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/62c91962863a628bc332b64252dc68ec5dc64787",
-                "reference": "62c91962863a628bc332b64252dc68ec5dc64787",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/07bc74a8f21f09bb80985f80a925ee364dc1ef7b",
+                "reference": "07bc74a8f21f09bb80985f80a925ee364dc1ef7b",
                 "shasum": ""
             },
             "require-dev": {
-                "phpunit/phpunit": "^7.5"
+                "phpunit/phpunit": "^9.5"
             },
             "type": "library",
             "autoload": {
@@ -7520,9 +7520,9 @@
             "description": "BPMN compliant engine",
             "support": {
                 "issues": "https://github.com/ProcessMaker/nayra/issues",
-                "source": "https://github.com/ProcessMaker/nayra/tree/v1.10.0"
+                "source": "https://github.com/ProcessMaker/nayra/tree/v1.12.0"
             },
-            "time": "2023-11-01T02:20:26+00:00"
+            "time": "2024-07-01T02:14:36+00:00"
         },
         {
             "name": "processmaker/pmql",
@@ -7932,16 +7932,16 @@
         },
         {
             "name": "psr/log",
-            "version": "3.0.0",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "fe5ea303b0887d5caefd3d431c3e61ad47037001"
+                "reference": "ef29f6d262798707a9edd554e2b82517ef3a9376"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/fe5ea303b0887d5caefd3d431c3e61ad47037001",
-                "reference": "fe5ea303b0887d5caefd3d431c3e61ad47037001",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/ef29f6d262798707a9edd554e2b82517ef3a9376",
+                "reference": "ef29f6d262798707a9edd554e2b82517ef3a9376",
                 "shasum": ""
             },
             "require": {
@@ -7950,7 +7950,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.x-dev"
+                    "dev-master": "2.0.x-dev"
                 }
             },
             "autoload": {
@@ -7976,9 +7976,9 @@
                 "psr-3"
             ],
             "support": {
-                "source": "https://github.com/php-fig/log/tree/3.0.0"
+                "source": "https://github.com/php-fig/log/tree/2.0.0"
             },
-            "time": "2021-07-14T16:46:02+00:00"
+            "time": "2021-07-14T16:41:46+00:00"
         },
         {
             "name": "psr/simple-cache",

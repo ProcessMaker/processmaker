@@ -49,7 +49,7 @@ return [
     // TODO Does the ProcessMakerSerializer class exist, if so, we need to fix its namespace :)
     'serialize_fractal' => env('SERIALIZE_FRACTAL', ProcessMaker\Transformers\ProcessMakerSerializer::class),
 
-    //Option Fractal, paginator
+    // Option Fractal, paginator
     'paginate_fractal' => env('PAGINATE_FRACTAL', League\Fractal\Pagination\IlluminatePaginatorAdapter::class),
 
     // The processmaker identifier of the web client application
@@ -99,6 +99,8 @@ return [
             env('APP_URL', 'http://localhost')
         )
     ),
+    'nayra_rest_api_host' => env('NAYRA_REST_API_HOST', ''),
+    'screen_task_cache_time' => env('SCREEN_TASK_CACHE_TIME', 86400),
 
     // Allows our script executors to ignore invalid SSL. This should only be set to false for development.
     'api_ssl_verify' => env('API_SSL_VERIFY', 'true'),
@@ -153,6 +155,9 @@ return [
 
     ],
 
+    // Turn on/off the recommendation engine
+    'recommendations_enabled' => env('RECOMMENDATIONS_ENABLED', true),
+
     // Define the view of the Login
     'login_view' => env('LOGIN_VIEW', 'auth.newLogin'),
 
@@ -170,6 +175,7 @@ return [
          * ProcessMaker Service Providers
          */
         ProcessMaker\Providers\ProcessMakerServiceProvider::class,
+        ProcessMaker\Providers\RecommendationsServiceProvider::class,
         ProcessMaker\Providers\SettingServiceProvider::class,
         ProcessMaker\Providers\AuthServiceProvider::class,
         ProcessMaker\Providers\EventServiceProvider::class,
@@ -232,4 +238,12 @@ return [
     'node_bin_path' => env('NODE_BIN_PATH', '/usr/bin/node'),
 
     'task_drafts_enabled' => env('TASK_DRAFTS_ENABLED', true),
+
+    'force_https' => env('FORCE_HTTPS', true),
+
+    'nayra_docker_network' => env('NAYRA_DOCKER_NETWORK', 'host'),
+
+    // Process Request security log rate limit: 1 per day (86400 seconds)
+    'process_request_errors_rate_limit' => env('PROCESS_REQUEST_ERRORS_RATE_LIMIT', 1),
+    'process_request_errors_rate_limit_duration' => env('PROCESS_REQUEST_ERRORS_RATE_LIMIT_DURATION', 86400),
 ];

@@ -246,8 +246,10 @@ abstract class ExporterBase implements ExporterInterface
             $name = $model->name;
         } elseif (isset($model->title)) {
             $name = $model->title;
+        } elseif ($this->getClassName() === 'LaunchpadSetting') {
+            $name = 'Setting';
         }
-
+       
         return $name;
     }
 

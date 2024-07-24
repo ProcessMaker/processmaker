@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}">
-
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -35,9 +34,7 @@
       <meta name="alertVariant" content="{{$type}}">
       <meta name="alertMessage" content="{{$message}}">
     @endif
-
     <title>@yield('title',__('Welcome')) - {{ __('ProcessMaker') }}</title>
-
     <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ mix('css/sidebar.css') }}" rel="stylesheet">
@@ -68,13 +65,11 @@
           enabledTransports: ['ws', 'wss'],
           disableStats: true,
         };
-
         @if(config('broadcasting.connections.pusher.options.host'))
           window.Processmaker.broadcasting.wsHost = "{{config('broadcasting.connections.pusher.options.host')}}";
           window.Processmaker.broadcasting.wsPort = "{{config('broadcasting.connections.pusher.options.port')}}";
           window.Processmaker.broadcasting.wssPort = "{{config('broadcasting.connections.pusher.options.port')}}";
         @endif
-
       @endif
     @endif
   </script>
@@ -88,14 +83,12 @@
             @endif
         @endforeach
     @endisset
-
     @if (config('global_header'))
         <!-- Start Global Header -->
         {!! config('global_header') !!}
         <!-- End Global Header -->
     @endif
 </head>
-
 <body>
 <a class="skip-navigation alert alert-info" role="link" href="#main" tabindex="1">{{ __('Skip to Content') }}</a>
 <div class="d-flex w-100 mw-100 h-100 mh-100" id="app-container">
@@ -112,13 +105,16 @@
         @include('layouts.navbar')
     </div>
     <div class="flex-grow-1 d-flex flex-column overflow-hidden h-100" id="mainbody">
-      <div id="main" class="main flex-grow-1 h-100 overflow-auto {{$content_margin ?? 'py-3'}}">
-        @yield('content')
+      <div
+        id="main"
+        class="main flex-grow-1 h-100
+          {{$content_margin ?? 'overflow-auto'}}
+          {{$content_margin ?? 'py-3'}}">
+      @yield('content')
       </div>
     </div>
   </div>
 </div>
-
 <div id="api-error" class="error-content">
   <div>
     <h1>{{__('Sorry! API failed to load')}}</h1>
@@ -136,9 +132,7 @@
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
 </script>
 <script src="{{ mix('js/app-layout.js') }}"></script>
-
 @include('shared.monaco')
-
 @foreach(GlobalScripts::getScripts() as $script)
   <script src="{{$script}}"></script>
 @endforeach
@@ -152,8 +146,10 @@
   @endif
 @endforeach
 @endisset
+@if (hasPackage('package-accessibility'))
+  @include('package-accessibility::userway')
+@endif
     <!--javascript!-->
     @yield('js')
 </body>
-
 </html>

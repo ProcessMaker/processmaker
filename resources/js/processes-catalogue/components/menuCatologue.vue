@@ -1,9 +1,5 @@
 <template>
   <div>
-    <SearchCategories
-      ref="searchCategory"
-      :filter-pmql="onFilter"
-    />
     <div
       v-b-toggle.category-menu
       block
@@ -48,6 +44,7 @@
         </p>
       </b-list-group>
     </b-collapse>
+    <div class="hide-on-mobile">
     <hr class="my-12">
     <div
       v-b-toggle.collapse-3
@@ -74,6 +71,7 @@
     <b-collapse
       id="collapse-3"
       visible
+      class="hide-on-mobile"
     >
       <b-list-group>
         <b-list-group-item
@@ -88,6 +86,7 @@
         </b-list-group-item>
       </b-list-group>
     </b-collapse>
+    </div>
 
     <select-template-modal
       ref="addProcessModal"
@@ -100,17 +99,15 @@
 </template>
 
 <script>
-import SearchCategories from "./utils/SearchCategories.vue";
 import SelectTemplateModal from "../../components/templates/SelectTemplateModal.vue";
+import { EventBus } from '../index.js';
 
 export default {
   components: {
-    SearchCategories,
     SelectTemplateModal,
   },
   props: [
     "data",
-    "select",
     "title",
     "preicon",
     "filterCategories",
@@ -145,6 +142,11 @@ export default {
       comeFromProcess: false,
     };
   },
+  created() {
+    EventBus.$on('templates-selected', (obj) => {
+      this.openTemplate(obj);
+    });
+  },
   computed: {
     /**
      * Filters options regarding user permissions
@@ -168,26 +170,55 @@ export default {
       this.selectDefault();
     }
   },
+  watch: {
+    $route(r) {
+      this.handleRouteQuery();
+    },
+    data() {
+      this.handleRouteQuery();
+    }
+  },
   methods: {
+    handleRouteQuery() {
+
+      // Do not change the selected category if we are not in the index route.
+      // This way, we preserve the selected category when returning from process details.
+
+      if (this.$route.name !== "index") {
+        return;
+      }
+
+      const query = this.$route.query;
+
+      if (query.categoryId) {
+        const selectedProcessItem = this.data.find((category) => {
+          return String(category.id) === String(query.categoryId);
+        });
+
+        if (selectedProcessItem) {
+          this.selectProcessItem(selectedProcessItem);
+        }
+
+        const selectedTemplateItem = this.filteredTemplateOptions.find((category) => {
+          return String(category.id) === String(query.categoryId);
+        });
+
+        if (selectedTemplateItem) {
+          this.selectTemplateItem(selectedTemplateItem);
+        }
+      }
+    },
     /**
      * Adding categories
      */
     loadMore() {
       this.$emit("addCategories");
     },
-    markCategory(item, filter = true) {
-      this.comeFromProcess = true;
-      this.selectedProcessItem = item;
-      this.selectedTemplateItem = null;
-      if (filter) {
-        this.$refs.searchCategory.fillFilter(item.name);
-      }
-    },
     selectProcessItem(item) {
       this.comeFromProcess = false;
       this.selectedProcessItem = item;
       this.selectedTemplateItem = null;
-      this.select(item);
+      this.$emit('categorySelected', item);
     },
     /**
      * Enables All Templates option only if user has create-processes permission
@@ -201,14 +232,9 @@ export default {
           return obj.id === "guided_templates";
         });
       }
-      if (item.id === "all_templates") {
-        this.addNewProcess();
-        return;
-      }
       this.selectedTemplateItem = item;
       this.selectedProcessItem = null;
-      this.select(item);
-      this.$emit("wizardLinkSelect");
+      this.$emit('categorySelected', item);
     },
     /**
      * This method opens New Process modal window
@@ -218,11 +244,20 @@ export default {
         this.$refs.addProcessModal.show();
       });
     },
+    openTemplate(obj) {
+      this.$nextTick(() => {
+        this.$refs.addProcessModal.show();
+        this.$refs.addProcessModal.$nextTick(() => {
+          this.$refs.addProcessModal.$refs["template-search"].showDetails(obj);
+          this.$refs.addProcessModal.hideBackButton();
+        });
+      });
+    },
     isSelectedProcess(item) {
       return this.selectedProcessItem === item;
     },
-    isSelectedTemplate(index) {
-      return this.selectedTemplateItem === index;
+    isSelectedTemplate(item) {
+      return this.selectedTemplateItem === item;
     },
     onToggleCatalogue() {
       this.showCatalogue = !this.showCatalogue;
@@ -237,7 +272,7 @@ export default {
       this.filterCategories(value);
     },
     hasPermission() {
-      return this.permission.includes("create-processes");
+      return this.$root.permission.includes("create-processes");
     },
     checkPackageAiInstalled() {
       this.hasPackageAI = ProcessMaker.packages.includes("package-ai") ? 1 : 0;
@@ -256,14 +291,20 @@ export default {
 
 <style lang="scss" scoped>
 @import url("../../../sass/_scrollbar.scss");
+@import "~styles/variables";
 i {
   font-size: 20px;
   color: #6a7888;
 }
 #category-menu > .list-group {
-  max-height: 37vh;
   min-height: 37vh;
   overflow-y: auto;
+  max-height: 37vh;
+}
+@media (max-width: 650px) {
+  #category-menu > .list-group {
+    max-height: 60vh;
+  }
 }
 .list-group-item {
   background: #f7f9fb;
@@ -312,5 +353,11 @@ i {
   height: 44px;
   padding: 12px 18px;
   gap: 16px;
+}
+
+.hide-on-mobile {
+  @media (max-width: $lp-breakpoint) {
+    display: none;
+  }
 }
 </style>

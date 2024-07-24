@@ -1,85 +1,80 @@
 <template>
   <b-container class="bv-example-row">
     <div class="d-flex justify-content-between">
-      <div>
-        <div
-          v-if="showDropdowns"
-          class="dropdown"
+      <div
+        v-if="showDropdowns"
+        class="dropdown"
+      >
+        <button
+          id="statusDropdown"
+          class="btn btn-secondary dropdown-toggle dropdown-status-style"
+          type="button"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
         >
-          <button
-            id="statusDropdown"
-            class="btn btn-secondary dropdown-toggle dropdown-style"
-            type="button"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
+          <i :class="selectedIconStatus" />
+          {{ selectedOptionStatus }}
+          <i class="fas fa-caret-down status-dropdown" />
+        </button>
+        <div
+          class="dropdown-menu mobile-dropdown-menu"
+          aria-labelledby="statusDropdown"
+        >
+          <a
+            class="dropdown-item"
+            :class="{ 'dropdown-item-selected': selectedOptionStatus === 'In Progress' }"
+            @click="selectOption('In Progress', 'status', '')"
           >
-            <i :class="selectedIconStatus" />
-            {{ selectedOptionStatus }}
-            <i class="fas fa-caret-down" />
-          </button>
-          <div
-            class="dropdown-menu"
-            aria-labelledby="statusDropdown"
+            {{ $t('In Progress') }}
+          </a>
+          <a
+            class="dropdown-item"
+            :class="{ 'dropdown-item-selected': selectedOptionStatus === 'Completed' }"
+            @click="selectOption('Completed', 'status', '')"
           >
-            <a
-              class="dropdown-item"
-              @click="selectOption('In Progress', 'status', 'fas fa-circle text-warning')"
-            >
-              <i class="fas fa-circle text-warning" />
-              {{ $t('In Progress') }}
-            </a>
-            <a
-              class="dropdown-item"
-              @click="selectOption('Completed', 'status', 'fas fa-circle text-primary')"
-            >
-              <i class="fas fa-circle text-primary" />
-              {{ $t('Completed') }}
-            </a>
-          </div>
+            {{ $t('Completed') }}
+          </a>
         </div>
       </div>
-      <div class="d-flex justify-content-between">
+      <div
+        class="d-flex justify-content-between"
+        :class="{ 'w-100': showInput }"
+      >
         <div
           v-if="showDropdowns && type === 'requests'"
           class="dropdown"
         >
           <button
             id="requestsDropdown"
-            class="btn btn-secondary dropdown-toggle"
+            class="btn dropdown-toggle dropdown-requests-style"
             type="button"
             data-toggle="dropdown"
             aria-haspopup="true"
             aria-expanded="false"
           >
-            <i :class="selectedIconFilter" />
-            <i class="fas fa-caret-down" />
+            <img
+              src="/img/sort-down-icon.svg"
+              alt="sort-down"
+            >
           </button>
           <div
-            class="dropdown-menu"
+            class="dropdown-menu mobile-dropdown-menu"
             aria-labelledby="requestsDropdown"
           >
             <a
               class="dropdown-item"
+              :class="{ 'dropdown-item-selected': selectedIconFilter === 'fas fa-user' }"
               @click="selectOption(`requester`, 'filter', 'fas fa-user')"
             >
-              <i class="fas fa-user" />
               {{ $t('As Requester') }}
-              <i
-                v-if="selectedIconFilter=== 'fas fa-user'"
-                class="fas fa-check ml-auto text-success"
-              />
             </a>
             <a
               class="dropdown-item"
+              :class="{ 'dropdown-item-selected': selectedIconFilter === 'fas fa-users' }"
               @click="selectOption(`participant`, 'filter', 'fas fa-users')"
             >
-              <i class="fas fa-users" />
               {{ $t('As Participant') }}
-              <i
-                v-if="selectedIconFilter === 'fas fa-users'"
-                class="fas fa-check ml-auto text-success"
-              />
             </a>
           </div>
         </div>
@@ -88,40 +83,50 @@
           class="dropdown"
         >
           <button
-            id="tasksDropdown"
-            class="btn btn-secondary dropdown-toggle"
+            id="requestsDropdown"
+            class="btn dropdown-toggle dropdown-requests-style"
             type="button"
             data-toggle="dropdown"
             aria-haspopup="true"
             aria-expanded="false"
           >
-            <i class="fas fa-list" />
-            <i class="fas fa-caret-down" />
+            <img
+              src="/img/sort-down-icon.svg"
+              alt="sort-down"
+            >
           </button>
           <div
-            class="dropdown-menu"
+            class="dropdown-menu mobile-dropdown-menu"
             aria-labelledby="tasksDropdown"
           >
             <a
               class="dropdown-item"
+              :class="{ 'dropdown-item-selected': selectedOrderBy === 'due_at' }"
               @click="selectOption('due_at', 'orderBy')"
             >
               {{ $t('By Due Date') }}
             </a>
             <a
               class="dropdown-item"
+              :class="{ 'dropdown-item-selected': selectedOrderBy === 'created_at' }"
               @click="selectOption('created_at', 'orderBy')"
             >
               {{ $t('By Creation Date') }}
             </a>
           </div>
         </div>
-        <div class="d-flex align-items-end ml-1">
+        <div
+          class="d-flex align-items-end ml-1"
+          :class="{ 'w-100': showInput }"
+        >
           <button
-            class="btn btn-primary"
+            class="btn"
             @click="toggleInput"
           >
-            <i class="fas fa-search" />
+            <img
+              :src="getIconSrc"
+              alt="search"
+            >
           </button>
           <input
             v-if="showInput"
@@ -148,12 +153,15 @@
 export default {
   props: {
     type: String,
+    outRef: null,
+    outName: null
   },
   data() {
     return {
       searchCriteria: "",
       selectedOptionStatus: "In Progress",
-      selectedIconStatus: "fas fa-circle text-warning",
+      selectedIconStatus: "",
+      selectedOrderBy: "",
       selectedIconFilter: "fas fa-user",
       apiData: [],
       showInput: false,
@@ -164,6 +172,11 @@ export default {
       searchText: "",
       filter: "",
     };
+  },
+  computed: {
+    getIconSrc() {
+      return this.showInput ? "/img/arrow-left.svg" : "/img/search-icon.svg";
+    },
   },
   methods: {
     /**
@@ -207,6 +220,7 @@ export default {
         return this.buildPmql();
       }
       if (controlName === "orderBy") {
+        this.selectedOrderBy = option;
         return `order_by=${option}`;
       }
       if (controlName === "search") {
@@ -222,18 +236,23 @@ export default {
     callApiFilter(payload) {
       if (this.type === "tasks") {
         if (payload.startsWith("pmql")) {
-          this.$parent.$refs.taskMobileList.updatePmql(payload.substr(5));
+          this.$parent.$refs.taskMobileList?.updatePmql(payload.substr(5));
+          this.outRef?.[this.outName]?.[0]?.updatePmql(payload.substr(5));
         }
         if (payload.startsWith("order_by")) {
-          this.$parent.$refs.taskMobileList.updateOrder(payload.substr(9));
+          this.$parent.$refs.taskMobileList?.updateOrder(payload.substr(9));
+          this.outRef?.[this.outName]?.[0]?.updateOrder(payload.substr(9));
         }
-        this.$parent.$refs.taskMobileList.fetch(true);
+        this.$parent.$refs.taskMobileList?.fetch(true);
+        this.outRef?.[this.outName]?.[0]?.fetch(true);
       }
       if (this.type === "requests") {
         if (payload.startsWith("pmql")) {
-          this.$parent.$refs.requestsMobileList.updatePmql(payload.substr(5), this.statusChange);
+          this.$parent.$refs.requestsMobileList?.updatePmql(payload.substr(5), this.statusChange);
+          this.outRef?.[this.outName]?.[0]?.updatePmql(payload.substr(5), this.statusChange);
         }
-        this.$parent.$refs.requestsMobileList.fetch(true);
+        this.$parent.$refs.requestsMobileList?.fetch(true);
+        this.outRef?.[this.outName]?.[0]?.fetch(true);
       }
     },
     /**
@@ -294,16 +313,44 @@ export default {
     padding: 5px 10px;
   }
   .dropdown-item {
-    font-size: 12px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #556271;
+    height: 48px;
   }
   .narrow-input {
     font-size: 12px;
     width: 100%;
-    padding: 5px 60px;
+    padding: 5px 5px;
+    border: none;
   }
-  .dropdown-style {
-    background-color: white !important;
-    color: black !important;
+  .dropdown-status-style {
+    background-color: transparent !important;
+    color: #4C545C !important;
+    border: none;
+    text-transform: none;
+    font-size: 15px;
+    font-weight: 400;
   }
-
+  .dropdown-status-style:focus {
+    color: #0C8CE9 !important;
+    box-shadow: none !important;
+  }
+  .status-dropdown {
+    margin-left: 5px;
+  }
+  .dropdown-requests-style {
+    align-items: center;
+    padding: 8px 8px;
+  }
+  .dropdown-requests-style:focus {
+    background-color: #E1EAF0;
+  }
+  .dropdown-item-selected {
+    background-color: #EBEEF2;
+  }
+  .mobile-dropdown-menu {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
 </style>

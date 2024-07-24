@@ -38,6 +38,7 @@ class Task extends ApiResource
         'interstitial',
         'userRequestPermission',
         'process',
+        'elementDestination',
     ];
 
     private $process = null;
@@ -53,7 +54,7 @@ class Task extends ApiResource
         $array = parent::toArray($request);
         $include = explode(',', $request->input('include', ''));
 
-        $this->process = Process::findOrFail($this->processRequest->process_id);
+        $this->process = $this->resource->process;
 
         foreach ($this->includeMethods as $key) {
             if (!in_array($key, $include)) {
@@ -94,70 +95,57 @@ class Task extends ApiResource
                                                 || count($array['assignable_users']) < 1;
         if (in_array('assignableUsers', $include) && $needToRecalculateAssignableUsers) {
             $definition = $this->getDefinition();
-            if (isset($definition['assignment']) && $definition['assignment'] == 'self_service') {
+            $config = isset($definition['config']) ? json_decode($definition['config'], true) : [];
+            $isSelfService = $config['selfService'] ?? false;
+            if ($isSelfService) {
                 $users = [];
                 $selfServiceUsers = $array['self_service_groups']['users'];
                 $selfServiceGroups = $array['self_service_groups']['groups'];
 
                 if ($selfServiceUsers !== ['']) {
-                    $assignedUsers = $this->getAssignedUsers($selfServiceUsers);
-                    $users = array_unique(array_merge($users, $assignedUsers));
+                    $users = $this->addActiveAssignedUsers($selfServiceUsers, $users);
                 }
 
                 if ($selfServiceGroups !== ['']) {
-                    $assignedUsers = $this->getAssignedGroupMembers($selfServiceGroups);
-                    $users = array_unique(array_merge($users, $assignedUsers));
+                    $users = $this->addActiveAssignedGroupMembers($selfServiceGroups, $users);
                 }
                 $array['assignable_users'] = $users;
             }
         }
     }
 
-    private function loadUserRequestPermission(ProcessRequest $request, User $user, array $permissions)
+    /**
+     * Add the active users to the list of assigned users
+     *
+     * @param array $users List of users ids
+     * @param array $assignedUsers List of assigned users
+     *
+     * @return array List of assigned users with additional active users
+     */
+    private function addActiveAssignedUsers(array $users, array $assignedUsers)
     {
-        $permissions[] = [
-            'process_request_id' => $request->id,
-            'allowed' => $user ? $user->can('view', $request) : false,
-        ];
-
-        if ($request->parentRequest && $user) {
-            $permissions = $this->loadUserRequestPermission($request->parentRequest, $user, $permissions);
-        }
-
-        return $permissions;
-    }
-
-    private function getAssignedUsers($users)
-    {
-        foreach ($users as $user) {
-            $assignedUsers[] = User::where('status', 'ACTIVE')->where('id', $user)->first();
-        }
-
-        return $assignedUsers;
-    }
-
-    private function getAssignedGroupMembers($groups)
-    {
-        \Log::debug('groups', ['groups' =>$groups]);
-        foreach ($groups as $group) {
-            $groupMembers = GroupMember::where('group_id', $group)->get();
-            foreach ($groupMembers as $member) {
-                $assignedUsers[] = User::where('status', 'ACTIVE')->where('id', $member->member_id)->first();
-            }
+        $users = array_unique($users);
+        $userChunks = array_chunk($users, 1000);
+        foreach ($userChunks as $chunk) {
+            $activeUsers = User::select('id')
+                ->whereNotIn('status', Process::NOT_ASSIGNABLE_USER_STATUS)
+                ->whereIn('id', $chunk)
+                ->pluck('id')->toArray();
+            $assignedUsers = array_merge($assignedUsers,$activeUsers);
         }
 
         return $assignedUsers;
     }
 
-    private function getData()
+    /**
+     * Add the active group members to the list of assigned users
+     *
+     * @param array $groups List of group ids
+     * @param array $assignedUsers List of assigned users
+     * @return array List of assigned users with additional active users
+     */
+    private function addActiveAssignedGroupMembers(array $groups, array $assignedUsers)
     {
-        if ($this->loadedData) {
-            return $this->loadedData;
-        }
-        $dataManager = new DataManager();
-        $task = $this->resource->loadTokenInstance();
-        $this->loadedData = $dataManager->getData($task);
-
-        return $this->loadedData;
+        return (new Process)->getConsolidatedUsers($groups, $assignedUsers);
     }
 }

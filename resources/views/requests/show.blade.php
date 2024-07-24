@@ -225,8 +225,7 @@
             </div>
             <div class="tab-pane fade card card-body border-top-0 p-0" id="forms" role="tabpanel"
               aria-labelledby="forms-tab" v-show="canViewPrint">
-              <request-screens :id="requestId" :information="dataSummary" :screens="screenRequested"
-                ref="forms">
+              <request-screens :id="requestId" :information="dataSummary" ref="forms">
               </request-screens>
             </div>
             <div v-if="activeTab === 'overview'" class="tab-pane fade p-0" id="overview" role="tabpanel"
@@ -360,6 +359,15 @@
                           <p class="section-title">@{{ __(labelDate) }}:</p>
                           <i class="far fa-calendar-alt"></i>
                           <small>@{{ moment(statusDate).format() }}</small>
+                        </li>
+                        <li class="list-group-item">
+                          <p class="section-title">{{ __('Process') }}</p>
+                          {{ $request->name }}
+                          <p class="launchpad-link">
+                            <a href="{{route('process.browser.index', [$request->process_id])}}">
+                              {{ __('Open Process Launchpad') }}
+                            </a>
+                          </p>
                         </li>
                         @if ($request->user_id)
                           <li class="list-group-item">
@@ -499,8 +507,7 @@
           showJSONEditor: false,
           data: @json($request->getRequestData()),
           requestId: @json($request->getKey()),
-          screenRequested: @json($screenRequested),
-          request: @json($request),
+          request: @json($request->getRequestAsArray()),
           files: @json($files),
           refreshTasks: 0,
           canCancel: @json($canCancel),
@@ -574,7 +581,17 @@
         dataSummary() {
           let options = {};
           this.request.summary.forEach(option => {
-            options[option.key] = option.value;
+            if (option.type === 'datetime') {
+              options[option.key] = moment(option.value).
+                      tz(window.ProcessMaker.user.timezone).
+                      format("MM/DD/YYYY HH:mm");
+            } else if (option.type === 'date') {
+              options[option.key] = moment(option.value).
+                  tz(window.ProcessMaker.user.timezone).
+                  format("MM/DD/YYYY");
+            } else {
+              options[option.key] = option.value;
+            }
           });
           return options;
         },
@@ -905,6 +922,9 @@
   }
   .card-header:first-child.text-status {
     border-radius: 6px;
+  }
+  .launchpad-link {
+    margin-top: 5px;
   }
 </style>
 @endsection

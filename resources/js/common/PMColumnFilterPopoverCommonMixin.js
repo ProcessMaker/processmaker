@@ -2,6 +2,10 @@ import { get, cloneDeep } from "lodash";
 
 const PMColumnFilterCommonMixin = {
   props: {
+    autosaveFilter: {
+      type: Boolean,
+      default: true
+    },
     advancedFilterProp: {
       type: Object,
       default: null
@@ -26,6 +30,13 @@ const PMColumnFilterCommonMixin = {
         this.fetch();
       }
     }
+  },
+  mounted() {
+    this.$root.$on("load-with-filter", (filter) => {
+      _.set(window, "ProcessMaker.advanced_filter.filters", filter);
+      this.getFilterConfiguration();
+      this.fetch();
+    });
   },
   methods: {
     storeFilterConfiguration() {
@@ -55,7 +66,9 @@ const PMColumnFilterCommonMixin = {
         order
       };
 
-      ProcessMaker.apiClient.put(url, config);
+      if (!this.autosaveFilter) {
+        ProcessMaker.apiClient.put(url, config);
+      }
       window.ProcessMaker.advanced_filter = config;
       window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
     },
@@ -266,7 +279,13 @@ const PMColumnFilterCommonMixin = {
         this.tableHeaders[i].sortDesc = false;
       }
       for (let i in this.tableHeaders) {
-        if (this.tableHeaders[i].field === this.orderBy) {
+        if (this.tableHeaders[i].order_column !== undefined) {
+          if (this.orderBy === this.tableHeaders[i].order_column) {
+            let sort = this.sortOrder[0].direction;
+            this.tableHeaders[i].sortAsc = (sort.toLowerCase() === "asc");
+            this.tableHeaders[i].sortDesc = (sort.toLowerCase() === "desc");
+          }
+        } else if (this.orderBy.endsWith(this.tableHeaders[i].field)) {
           let sort = this.sortOrder[0].direction;
           this.tableHeaders[i].sortAsc = (sort.toLowerCase() === "asc");
           this.tableHeaders[i].sortDesc = (sort.toLowerCase() === "desc");

@@ -1,37 +1,65 @@
 <template>
-  <div class="carousel-container">
-    <b-carousel
-      id="processes-carousel"
-      v-model="slide"
-      no-animation
-      :interval="interval"
-      indicators
-      @sliding-start="onSlideStart"
-      @sliding-end="onSlideEnd"
+  <div
+    id="carouselwrapper"
+    v-show="imagesLoaded"
+    class="h-100 w-100 custom-fit"
+  >
+    <button
+      :class="[fullPage ? 'prev-full' : 'prev']"
+      @click="prevSlide"
     >
-      <b-carousel-slide
-        v-for="(image, index) in images.length > 0 ? images : defaultImage"
-        :key="index"
+      <i class="fas fa-caret-left"></i>
+    </button>
+    <button
+      :class="[fullPage ? 'next-full' : 'next']"
+      @click="nextSlide"
+    >
+      <i class="fas fa-caret-right"></i>
+    </button>
+
+    <div
+      ref="containercarousel"
+      @resize="updateSlideWidth"
+      class="carousel"
+      :style="{
+        '--var-sizes-sm': `${100 / sizes.sm}%`,
+        '--var-sizes-md': `${100 / sizes.md}%`,
+        '--var-sizes-lg': `${100 / sizes.lg}%`,
+        '--var-sizes-xl': `${100 / sizes.xl}%`,
+        '--var-sizes-2xl': `${100 / sizes['2xl']}%`,
+        '--var-sizes-3xl': `${100 / sizes['3xl']}%`,
+      }"
+    >
+      <div
+        class="slides"
+        :style="{ transform: 'translateX(' + translateX + 'px)' }"
       >
-        <template #img>
+        <div
+          class="slide"
+          v-for="(image, index) in images.length > 0 ? images : defaultImage"
+          :key="index"
+        >
           <iframe
             v-if="image.type === 'embed'"
-            class="d-block iframe-carousel"
+            ref="slides"
+            :class="['content', fullPage ? 'iframe-carousel-full' : 'iframe-carousel']"
             :src="image.url"
             title="embed media"
+            @click="handleClick(image.url, index)"
           />
           <img
             v-else
+            ref="slides"
+            :class="['content', fullPage ? 'img-carousel-full' : 'img-carousel']"
             :src="image.url"
             :alt="process.name"
-            class="d-block img-carousel"
-          >
-        </template>
-      </b-carousel-slide>
-    </b-carousel>
+            @click="handleClick(image.url, index)"
+          />
+        </div>
+      </div>
+    </div>
   </div>
 </template>
-
 <script>
 export default {
   props: {
@@ -39,33 +67,110 @@ export default {
       type: Object,
       required: true,
     },
+    fullCarousel: {
+      type: Object,
+      default: null,
+    },
+    indexSelectedImage: {
+      type: Number,
+      default: 0,
+    },
   },
   data() {
     return {
+      discountSlide: 1,
       slide: 0,
       sliding: null,
       images: [],
-      defaultImage: Array(4).fill({ url: "/img/launchpad-images/defaultImage.svg" }),
+      imagesLoaded: true,
+      defaultImage: Array(4).fill({
+        url: "/img/launchpad-images/defaultImage.svg",
+      }),
       interval: 0,
+      resizeObserver: null,
+      currentIndex: 0,
+      slideWidth: 0,
+      translateX: 0,
+      fullPage: false,
+      sizes: {
+        sm: 1,
+        md: 1,
+        lg: 2,
+        xl: 2,
+        "2xl": 2,
+        "3xl": 3,
+      },
     };
+  },
+  watch: {
+    'fullCarousel.hideLaunchpad': {
+      immediate: true,
+      handler(value) {
+        if (value) {
+          this.sizes = {
+            sm: 1,
+            md: 1,
+            lg: 1,
+            xl: 1,
+            "2xl": 1,
+            "3xl": 1,
+          };
+          this.discountSlide = 0;
+          this.fullPage = true;
+        } 
+      }
+    },
+    indexSelectedImage() {
+        this.currentIndex = 0;
+        this.currentIndex = this.indexSelectedImage - 1;
+        this.nextSlide();
+    },
+  },
+  computed: {
+    slideCount() {
+      return this.images.length - this.discountSlide;
+    },
   },
   mounted() {
     this.getLaunchpadImages();
-    ProcessMaker.EventBus.$on("getLaunchpadImagesEvent", ({ indexImage, type }) => {
-      if (type === "delete") {
-        this.images.splice(indexImage, 1);
-      } else {
-        this.images = [];
-        this.getLaunchpadImages();
+    ProcessMaker.EventBus.$on(
+      "getLaunchpadImagesEvent",
+      ({ indexImage, type }) => {
+        if (type === "delete") {
+          this.images.splice(indexImage, 1);
+        } else {
+          this.images = [];
+          this.getLaunchpadImages();
+        }
+      }
+    );
+    this.$nextTick(() => {
+      this.updateSlideWidth();
+      this.resizeObserver = new ResizeObserver(this.updateSlideWidth);
+      if (this.$refs.containercarousel) {
+        this.resizeObserver.observe(this.$refs.containercarousel);
       }
     });
   },
+  beforeDestroy() {
+    if (this.resizeObserver && this.$refs.containercarousel) {
+      this.resizeObserver.unobserve(this.$refs.containercarousel);
+    }
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+    }
+  },
   methods: {
-    onSlideStart(slide) {
-      this.sliding = true;
-    },
-    onSlideEnd(slide) {
-      this.sliding = false;
+    handleClick(url, index) {
+      if(!this.fullPage) {
+        const data = {
+          "url" : url,
+          "hideLaunchpad" : true,
+          "countImages" : this.images.length,
+          "imagePosition" : index,
+          };
+        this.$root.$emit("clickCarouselImage", data);
+      }
     },
     /**
      * Get images from Media library related to process.
@@ -91,10 +196,43 @@ export default {
               type: customProperties.type,
             });
           });
+          // If no images were loaded Carousel container is not shown
+          if (this.images.length === 0) {
+            this.imagesLoaded = false;
+          }
+          // If only one image is loaded, rest of carousel must be completed with default image
+          if (this.images.length === 1) {
+            for (let i = 1; i <= 3; i++) {
+              this.images[i] = {
+                url: "/img/launchpad-images/defaultImage.svg",
+                type: "image",
+              };
+            }
+          }
         })
         .catch((error) => {
           console.error(error);
         });
+    },
+    updateSlideWidth() {
+      if (this.$refs.slides?.[0]) {
+        this.slideWidth = this.$refs.slides[0].offsetWidth + 11;
+        this.translateX = this.slideWidth * -this.currentIndex - 10;
+      }
+    },
+    prevSlide() {
+      if (this.currentIndex > 0) {
+        this.currentIndex--;
+        this.translateX += this.slideWidth;
+        this.$root.$emit("carouselImageSelected", this.currentIndex);
+      }
+    },
+    nextSlide() {
+      if (this.currentIndex < this.slideCount - 1) {
+        this.currentIndex++;
+        this.translateX -= this.slideWidth;
+        this.$root.$emit("carouselImageSelected", this.currentIndex);
+      }
     },
   },
 };
@@ -103,42 +241,151 @@ export default {
 .carousel-inner {
   overflow: hidden;
 }
+
 .img-carousel {
-  max-width: 800px;
-  height: 410px;
+  width: 100%;
+  height: auto;
   aspect-ratio: 16/9;
+  object-fit: cover;
+  border-radius: 16px;
 }
 .iframe-carousel {
-  border: 0px;
-  width: 800px;
-  height: 400px;
-}
-.carousel-container {
-  display: flex;
-  justify-content: center;
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
   border-radius: 16px;
-  background-color: #edf1f6;
 }
-@media (width <= 1500px) {
-  .img-carousel {
-    max-width: 700px;
+
+.img-carousel-full {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  border-radius: 16px;
+  margin-top: 2%;
+  margin-bottom: 2%;
+}
+.iframe-carousel-full {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  border-radius: 16px;
+  margin-top: 2%;
+  margin-bottom: 2%;
+}
+
+.carousel {
+  position: relative;
+  overflow: hidden;
+  container-type: inline-size;
+}
+.slides {
+  display: flex;
+  transition: transform 0.3s ease;
+}
+.slide {
+  flex: 0 0 auto;
+  width: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ccc;
+}
+
+
+
+.prev {
+  left: 0px;
+  background-color: #fff;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  cursor: pointer;
+  color: #556271;
+}
+.next {
+  right: 0%;
+  background-color: #fff;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  cursor: pointer;
+  color: #556271;
+}
+
+.prev-full {
+  left: -6px;
+  background-color: #f7f9fb;
+  position: absolute;
+  top: 60%;
+  transform: translateY(-50%);
+  border: none;
+  cursor: pointer;
+  color: #556271;
+}
+.next-full {
+  right: 2px;
+  background-color: #f7f9fb;
+  position: absolute;
+  top: 60%;
+  transform: translateY(-50%);
+  border: none;
+  cursor: pointer;
+  color: #556271;
+  z-index: 1;
+}
+
+#carouselwrapper:hover .prev,
+#carouselwrapper:hover .next,
+#carouselwrapper:hover .prev-full,
+#carouselwrapper:hover .next-full {
+  display: block;
+}
+
+.prev, .next,
+.prev-full, .next-full {
+  font-size: 20px;
+  display: none;
+}
+
+.custom-fit {
+  padding-left: 1%;
+}
+
+@media (min-width: 640px) {
+  .slide {
+    width: var(--var-sizes-sm);
   }
 }
-@media (width <= 1366px) {
-  .img-carousel {
-    max-width: 590px;
+@media (min-width: 768px) {
+  .slide {
+    width: var(--var-sizes-md);
   }
 }
-@media (width <= 1200px) {
-  .img-carousel {
-    max-width: 513px;
-    height: auto;
+@media (min-width: 1024px) {
+  .slide {
+    width: var(--var-sizes-lg);
   }
 }
-@media (width <= 992px) {
-  .img-carousel {
-    max-width: 486px;
-    height: auto;
+@media (min-width: 1280px) {
+  .slide {
+    width: var(--var-sizes-xl);
+  }
+}
+@media (min-width: 1536px) {
+  .slide {
+    width: var(--var-sizes-2xl);
+  }
+}
+@media (min-width: 1920px) {
+  .slide {
+    width: var(--var-sizes-3xl);
   }
 }
 </style>

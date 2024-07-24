@@ -3,8 +3,8 @@ run-name: ${{ github.actor }} send deploy EKS 🚀
 on:
   pull_request:
     types: [opened, reopened, synchronize, edited, closed]
-  #schedule:
-  #  - cron: '30 2 * * *'  # every day at midnight
+  schedule:
+    - cron: '30 2 * * *'  # run daily
   workflow_dispatch:
   workflow_call:
 env:
@@ -15,10 +15,10 @@ env:
   pull_req_id: ${{github.event.pull_request.number}}
   DATE: $(date -d '-1 day' '+%Y-%m-%d'|sed 's/-//g')
   CURRENT_DATE: $(date '+%Y-%m-%d %H:%M:%S'|sed 's/-//g')
-  CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref || 'next' }}
-  CI_PROJECT: ${{github.event.pull_request.head.repo.name || 'processmaker' }}
+  CI_PACKAGE_BRANCH: ${{ github.event.pull_request.head.ref || github.event.ref || 'develop' }}
+  CI_PROJECT: ${{github.event.pull_request.head.repo.name || github.event.repository.name || 'processmaker' }}
   CI_PR_BODY: ${{ github.event_name == 'schedule' && 'No ci tags needed here' || github.event.pull_request.body }}
-  IMAGE_TAG: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
+  IMAGE_TAG: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g" | sed "s/refs-heads-//g")
   DEPLOY: ${{ secrets.DEPLOY }}
   GH_USER: ${{ secrets.GH_USER }}
   GH_EMAIL: ${{ secrets.GH_EMAIL }}
@@ -48,7 +48,7 @@ jobs:
       - name: Generate image EKS
         run: |
           cd pm4-k8s-distribution/images
-          branch=$CI_PACKAGE_BRANCH tag=${{env.IMAGE_TAG}} bash build.k8s-cicd.sh
+          branch=$(echo "${{ env.CI_PACKAGE_BRANCH }}" | sed 's/refs-heads-//g') tag=${{env.IMAGE_TAG}} bash build.k8s-cicd.sh
           echo "VERSION=${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
       - name: List Images
         run: |
@@ -145,6 +145,76 @@ jobs:
         run: |
           echo "Instance URL: '${INSTANCE_URL}'"
           bash argocd/gh_comment.sh "$CI_PROJECT" "$pull_req_id"
+  runAPITest:
+    name: Run API Tests
+    needs: [deployEKS]
+    if: contains(github.event.pull_request.body, 'ci:api-test')
+    runs-on: self-hosted
+    steps:
+      - name: Clone private repository
+        run: |
+          git clone --depth 1 -b eng "https://$GITHUB_TOKEN@github.com/ProcessMaker/argocd.git" argocd
+      - name: Install pm4-tools
+        run: |
+          git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
+          echo "versionHelm=$(grep "version:" "pm4-k8s-distribution/charts/enterprise/Chart.yaml" | awk '{print $2}' | sed 's/\"//g')" >> $GITHUB_ENV
+          cd pm4-k8s-distribution/images/pm4-tools
+          composer install --no-interaction
+          cd ..
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID1 }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY1 }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Set up kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+      - name: Authenticate with Amazon EKS
+        run: aws eks update-kubeconfig --region us-east-1 --name pm4-eng
+      - name: Run the API tests
+        run: |
+          cd argocd 
+          deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
+          namespace="ci-$deploy-ns-pm4"
+          pr_body=$(jq -r .pull_request.body < "$GITHUB_EVENT_PATH" | base64)
+          kubectl get pods --namespace=$namespace
+          pod_names=$(kubectl get pods --namespace=$namespace --field-selector=status.phase=Running -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep -E '(-processmaker-scheduler-)')
+          for pod in $pod_names; do
+            code='
+              has_processmaker=$(ls /opt | grep processmaker)
+              has_sudo=$(ls /usr/bin | grep sudo)
+              has_php=$(ls /usr/bin | grep php)
+              if [ ! -z "$has_processmaker" ] && [ ! -z "$has_sudo" ] && [ ! -z "$has_php" ]; then
+                echo $pr_body | base64 -d > /tmp/pr_body
+                cd /opt/processmaker
+                sudo -u nginx php artisan package-api-testing:run --body="$pr_body"
+              else
+                exit 1
+              fi'
+            kubectl exec -n $namespace $pod -- /bin/sh -c "pr_body='${pr_body}';${code}" | tee /tmp/comment.md && break || true
+          done
+          # Send the content of /tmp/comment.md as a PR comment
+          MESSAGE=$(cat /tmp/comment.md)
+          GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY=${{ github.repository }}
+          PR_NUMBER=$(jq -r .number < "$GITHUB_EVENT_PATH")
+
+          if [ -z "$PR_NUMBER" ]; then
+              echo "The PR number is not available. Make sure this script is executed in a context of Pull Request."
+              exit 1
+          fi
+
+          URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments"
+          json_payload=$(jq -n --arg message "$MESSAGE" '{"body": $message}')
+
+          curl -s \
+               -H "Authorization: token ${GITHUB_TOKEN}" \
+               -H "Accept: application/vnd.github.v3+json" \
+               -d "$json_payload" \
+               "${URL}"
   deleteEKS:
     name: Delete Instance
     if: github.event.action == 'closed'

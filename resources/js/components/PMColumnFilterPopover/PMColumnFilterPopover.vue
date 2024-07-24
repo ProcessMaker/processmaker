@@ -4,7 +4,12 @@
               variant="link"
               size="sm"
               class="pm-filter-popover-button">
-      <PMColumnFilterIconThreeDots></PMColumnFilterIconThreeDots>
+      <PMColumnFilterIconThreeDots
+        :columnSortAsc="columnSortAsc"
+        :columnSortDesc="columnSortDesc"
+        :filterApplied="filterApplied"
+        :columnMouseover="columnHover"
+      />
     </b-button>
     <b-popover :container="container"
                :boundary="boundary"
@@ -40,13 +45,34 @@
   export default {
     components: {
       PMColumnFilterForm,
-      PMColumnFilterIconThreeDots
+      PMColumnFilterIconThreeDots,
     },
-    props: ["container", "boundary", "id", "type", "value", "format", "formatRange", "operators", "viewConfig", "sort", "hideSortingButtons"],
+    props: [
+      "container",
+      "boundary",
+      "id",
+      "type",
+      "value",
+      "format",
+      "formatRange",
+      "operators",
+      "viewConfig",
+      "sort",
+      "hideSortingButtons",
+      "columnSortAsc",
+      "columnSortDesc",
+      "filterApplied",
+      "columnMouseover",
+    ],
     data() {
       return {
         popoverShow: false
       };
+    },
+    computed: {
+      columnHover() {
+        return this.columnMouseover === this.value;
+      },
     },
     methods: {
       onShown() {

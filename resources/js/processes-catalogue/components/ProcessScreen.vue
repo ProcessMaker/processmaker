@@ -1,47 +1,11 @@
 <template>
   <div id="process-screen">
-    <div
-      id="header"
-      class="card card-body"
-    >
-      <div class="d-flex justify-content-between">
-        <div class="d-flex align-items-center">
-          <i
-            class="fas fa-arrow-left text-secondary mr-2 iconTitle"
-            @click="goBack"
-          />
-          <span class="header-process">
-            {{ getNameEllipsis() }}
-          </span>
-        </div>
-        <div class="d-flex align-items-center">
-          <div class="card-bookmark mx-2">
-            <i
-              :ref="`bookmark-${process.id}-marked`"
-              v-b-tooltip.hover.bottom
-              :title="$t(labelTooltip)"
-              class="fas fa-bookmark"
-              :class="{ marked: showBookmarkIcon, unmarked: !showBookmarkIcon }"
-              @click="checkBookmark(process)"
-            />
-          </div>
-          <span class="ellipsis-border">
-            <ellipsis-menu
-              v-if="showEllipsis"
-              :actions="processLaunchpadActions"
-              :permission="permission"
-              :data="process"
-              :is-documenter-installed="isDocumenterInstalled"
-              :divider="false"
-              :lauchpad="true"
-              variant="none"
-              @navigate="onProcessNavigate"
-            />
-          </span>
-          <buttons-start :process="process" />
-        </div>
-      </div>
-    </div>
+    <process-header-start
+        :process="process"
+        @goBack="goBack()"
+        @onProcessNavigate="onProcessNavigate"
+        v-if="!mobileApp"
+      />
     <display-screen
       v-if="showScreen"
       :screen="screen"
@@ -91,6 +55,7 @@ import LaunchpadSettingsModal from "../../components/shared/LaunchpadSettingsMod
 import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
 import processNavigationMixin from "../../components/shared/processNavigation";
 import ProcessesMixin from "./mixins/ProcessesMixin";
+import ProcessHeaderStart from "./ProcessHeaderStart.vue";
 
 export default {
   components: {
@@ -101,14 +66,16 @@ export default {
     CreatePmBlockModal,
     AddToProjectModal,
     LaunchpadSettingsModal,
+    ProcessHeaderStart,
   },
   mixins: [ellipsisMenuMixin, processNavigationMixin, ProcessesMixin],
-  props: ["process", "permission", "isDocumenterInstalled", "currentUserId"],
+  props: ["process", "currentUserId"],
   data() {
     return {
       screen: {},
       screen_id: "",
       showScreen: false,
+      mobileApp: window.ProcessMaker.mobileApp,
     };
   },
   mounted() {

@@ -9,12 +9,28 @@
         :unread="unreadColumnName"
         :loading="shouldShowLoader"
         @table-row-click="handleRowClick"
+        @table-column-mouseover="handleColumnMouseover"
+        @table-column-mouseleave="handleColumnMouseleave"
       >
         <!-- Slot Table Header -->
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
-          <PMColumnFilterIconAsc v-if="column.sortAsc"></PMColumnFilterIconAsc>
-          <PMColumnFilterIconDesc v-if="column.sortDesc"></PMColumnFilterIconDesc>
-          <div :key="index" style="display: inline-block;">{{ $t(column.label) }}</div>
+          <div
+            :key="`requests-table-column-${index}`"
+            :id="`requests-table-column-${column.field}`"
+            class="pm-table-column-header-text"
+          >
+            {{ $t(column.label) }}
+          </div>
+          <b-tooltip
+            :key="index"
+            :target="`requests-table-column-${column.field}`"
+            custom-class="pm-table-tooltip-header"
+            placement="bottom"
+            :delay="0"
+            @show="checkIfTooltipIsNeeded"
+          >
+            {{ $t(column.label) }}
+          </b-tooltip>
         </template>
         <!-- Slot Table Header filter Button -->
         <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
@@ -30,6 +46,10 @@
                                    :container="''"
                                    :boundary="'viewport'"
                                    :hideSortingButtons="column.hideSortingButtons"
+                                   :columnSortAsc="column.sortAsc"
+                                   :columnSortDesc="column.sortDesc"
+                                   :filterApplied="column.filterApplied"
+                                   :columnMouseover="columnMouseover"
                                    @onChangeSort="onChangeSort($event, column.field)"
                                    @onApply="onApply($event, column.field)"
                                    @onClear="onClear(column.field)"
@@ -40,6 +60,7 @@
         <template v-for="(row, rowIndex) in data.data" v-slot:[`row-${rowIndex}`]>
           <td
             v-for="(header, colIndex) in tableHeaders"
+            :class="{ 'pm-table-filter-applied-tbody': header.sortAsc || header.sortDesc }"
             :key="colIndex"
           >
             <template v-if="containsHTML(getNestedPropertyValue(row, header))">
@@ -55,6 +76,10 @@
                 :target="`element-${rowIndex}-${colIndex}`"
                 custom-class="pm-table-tooltip"
                 @show="checkIfTooltipIsNeeded"
+                placement="topright"
+                trigger="hover"
+                boundary="viewport"
+                :delay="{'show':0,'hide':0}"
               >
                 {{ sanitizeTooltip(getNestedPropertyValue(row, header)) }}
               </b-tooltip>
@@ -79,6 +104,10 @@
                     :target="`element-${rowIndex}-${colIndex}`"
                     custom-class="pm-table-tooltip"
                     @show="checkIfTooltipIsNeeded"
+                    placement="topright"
+                    trigger="hover"
+                    boundary="viewport"
+                    :delay="{'show':0,'hide':0}"
                   >
                     {{ getNestedPropertyValue(row, header) }}
                   </b-tooltip>
@@ -90,14 +119,21 @@
       </filter-table>
     </div>
     <data-loading
-      v-show="shouldShowLoader"
+      v-show="shouldShowLoader && noResultsMessage === 'cases'"
       :for="/requests\?page|results\?page/"
       :empty="$t('No results have been found')"
       :empty-desc="$t(`We apologize, but we were unable to find any results that match your search.
 Please consider trying a different search. Thank you`)"
       empty-icon="noData"
     />
+    <default-tab
+      v-if="shouldShowLoader && noResultsMessage === 'launchpad'"
+      :alt-text="$t('No Image')"
+      :title-text="$t('No items to show.')"
+      :description-text="$t('You have to start a Case of this process.')"
+    />
     <pagination-table
+      v-show="!shouldShowLoader"
       :meta="data.meta"
       @page-change="changePage"
       @per-page-change="changePerPage"
@@ -121,6 +157,7 @@ import paginationTable from "../../components/shared/PaginationTable.vue";
 import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
 import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
 import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
+import DefaultTab from "../../processes-catalogue/components/DefaultTab.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -131,7 +168,8 @@ export default {
     PMColumnFilterPopover,
     paginationTable,
     PMColumnFilterIconAsc,
-    PMColumnFilterIconDesc
+    PMColumnFilterIconDesc,
+    DefaultTab
   },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin, PMColumnFilterPopoverCommonMixin, FilterTableBodyMixin],
   props: {
@@ -140,6 +178,10 @@ export default {
     pmql: {},
     savedSearch: {
       default: false,
+    },
+    noResultsMessage: {
+      type: String,
+      default: "cases",
     },
   },
   data() {
@@ -160,6 +202,7 @@ export default {
       previousAdvancedFilter: "",
       tableHeaders: [],
       unreadColumnName: "user_viewed_at",
+      columnMouseover: null,
     };
   },
   computed: {
@@ -238,7 +281,7 @@ export default {
           field: "case_number",
           sortable: true,
           default: true,
-          width: 80,
+          width: 95,
         },
         {
           label: "Case title",
@@ -246,34 +289,22 @@ export default {
           sortable: true,
           default: true,
           truncate: true,
-          width: 220,
+          width: 375,
         },
         {
           label: "Process",
           field: "name",
           sortable: true,
           default: true,
-          width: 220,
+          width: 145,
           truncate: true,
-        },
-        {
-          label: "Alternative",
-          field: "process_version_alternative",
-          sortable: true,
-          default: true,
-          width: 150,
-          truncate: true,
-          filter_subject: {
-            type: "Relationship",
-            value: "processVersion.alternative",
-          },
         },
         {
           label: "Task",
           field: "active_tasks",
           sortable: false,
           default: true,
-          width: 140,
+          width: 175,
           truncate: true,
           tooltip: this.$t("This column can not be sorted or filtered."),
         },
@@ -282,7 +313,7 @@ export default {
           field: "participants",
           sortable: true,
           default: true,
-          width: 160,
+          width: 175,
           truncate: true,
           filter_subject: { type: 'ParticipantsFullName' },
           hideSortingButtons: true,
@@ -292,7 +323,7 @@ export default {
           field: "status",
           sortable: true,
           default: true,
-          width: 100,
+          width: 115,
           filter_subject: { type: 'Status' },
         },
         {
@@ -394,7 +425,22 @@ export default {
       };
     },
     formatProcessVersionAlternative(value) {
-      return `Alternative ${value}`;
+      let color = "primary";
+      let badge = "alternative-a";
+
+      if (value === "B") {
+        color = "secondary";
+        badge = "alternative-b";
+      } else if (value === null) {
+        return "-";
+      }
+
+      return `
+        <span 
+          class="badge badge-${color} status-${badge}"
+        >
+          ${this.$t('Alternative')} ${value}
+        </span>`;
     },
     transform(dataInput) {
       const data = _.cloneDeep(dataInput);
@@ -445,11 +491,15 @@ export default {
             "&order_direction=" +
             this.orderDirection +
             this.additionalParams +
-            advancedFilter,
+            advancedFilter +
+            "&row_format=",
             {
               cancelToken: new CancelToken((c) => {
                 this.cancelToken = c;
               }),
+              headers: {
+                'Cache-Control': 'no-cache',
+              }
             },
           )
           .then((response) => {
@@ -552,6 +602,12 @@ export default {
         type: 'requestFilter',
       }
     },
+    handleColumnMouseover(column) {
+      this.columnMouseover = column;
+    },
+    handleColumnMouseleave() {
+      this.columnMouseover = null;
+    },
   }
 };
 </script>
@@ -559,6 +615,10 @@ export default {
   .pm-table-ellipsis-column{
     text-transform: uppercase;
   }
+  .pm-table-column-header-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 </style>
 <style lang="scss" scoped>
   @import url("../../../sass/_scrollbar.scss");

@@ -161,6 +161,7 @@ export default {
                         matchedBy: asset.matched_by,
                         existingUpdatedAt: asset.existing_attributes?.updated_at,
                         importingUpdatedAt: asset.attributes?.updated_at,
+                        references: asset.references,
                     };
                 });
             }

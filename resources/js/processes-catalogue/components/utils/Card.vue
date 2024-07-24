@@ -1,21 +1,13 @@
 <template>
   <b-card
+    v-if="showCards"
     overlay
     class="card-process"
+    @click="openInfo(process)"
   >
     <b-card-text>
-      <div class="card-bookmark">
-        <i
-          :ref="`bookmark-${process.id}`"
-          v-b-tooltip.hover.bottom
-          :title="$t(labelTooltip)"
-          :class="bookmarkIcon()"
-          @click="checkBookmark(process)"
-        />
-      </div>
       <div
         class="card-info"
-        @click="openInfo(process)"
       >
         <img
           class="icon-process"
@@ -37,51 +29,66 @@
           variant="custom"
         />
       </div>
+      <div class="requests-count" v-if="caseCount">
+        {{ caseCount }}
+      </div>
+      <bookmark
+        v-if="!hideBookmark"
+        :process="process"
+        class="bookmark"
+        @bookmark-updated="callLoadCard"
+      />
     </b-card-text>
+  </b-card>
+  <b-card v-else
+  class="d-flex text-center align-items-center justify-content-center card-process2">
+    <span v-if="cardMessage === 'show-page'">Page {{ currentPage }} of {{ totalPages }}</span>
+    <span v-if="cardMessage === 'show-more' && !loading"> {{ $t('Show More') }}</span>
+    <span v-if="loading"><i class="fas fa-spinner fa-spin"></i> {{ $t('Loading') }}...</span>
   </b-card>
 </template>
 
 <script>
+
+import Bookmark from "../Bookmark.vue";
+
 export default {
-  props: ["process"],
+  components: {
+    Bookmark
+  },
+  props: {
+    loading: false,
+    cardMessage: null,
+    currentPage: {
+      type: Number,
+      default: 1,
+    },
+    totalPages: {
+      type: Number,
+      default: 0
+    } ,
+    process: null,
+    hideBookmark: {
+      type: Boolean,
+      default: false
+    },
+    showCards: true,
+  },
   data() {
     return {
       labelIcon: "Default Icon",
       labelTooltip: "",
     };
   },
+  computed: {
+    caseCount() {
+      if (this.process?.counts?.total) {
+        return this.process.counts.total.toLocaleString();
+      }
+      return null;
+    },
+  },
   methods: {
-    /**
-     * Check the bookmark to add bookmarked list or remove it
-     */
-    checkBookmark(process) {
-      if (process.bookmark_id) {
-        ProcessMaker.apiClient
-          .delete(`process_bookmarks/${process.bookmark_id}`)
-          .then(() => {
-            ProcessMaker.alert(this.$t("Process removed from Bookmarked List."), "success");
-            this.$parent.loadCard();
-          });
-        return;
-      }
-      ProcessMaker.apiClient
-        .post(`process_bookmarks/${process.id}`)
-        .then(() => {
-          ProcessMaker.alert(this.$t("Process added to Bookmarked List."), "success");
-          this.$parent.loadCard();
-        });
-    },
-    /**
-     * Verify if the process is marked
-     */
-    bookmarkIcon() {
-      if (this.process.bookmark_id !== 0) {
-        this.labelTooltip = this.$t("Remove from My Bookmarks");
-        return "fas fa-bookmark marked";
-      }
-      this.labelTooltip = this.$t("Add to My Bookmarks");
-      return "fas fa-bookmark unmarked";
-    },
     /**
      * Open the process
      */
@@ -97,20 +104,55 @@ export default {
 
       return `/img/launchpad-images/icons/${icon}.svg`;
     },
+    callLoadCard() {
+      this.$emit('callLoadCard', () => {}, 'bookmark');
+    },
   },
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+
+@import '~styles/variables';
+
 .card-process {
   max-width: 343px;
-  min-width: 296px;
+  min-width: 300px;
   width: 27vw;
   height: 232px;
   margin-top: 1rem;
-  margin-right: 1rem;
+  margin-left: 1rem;
   border-radius: 16px;
   background-image: url("/img/launchpad-images/process_background.svg");
+
+  @media (max-width: $lp-breakpoint) {
+    width: 100%;
+    max-width: none;
+    min-width: none;
+    border-radius: 8px;
+    height: 72px;
+    margin-right: 5px;
+    margin-left: 0;
+    background-image: none;
+  }
+}
+
+.card-process2 {
+  height: 40px;
+  margin-top: 1rem;
+  margin-right: 7%;
+  border-radius: 8px;
+  background-color: #E5EDF3;
+  margin-left: 1rem;
+
+  @media (max-width: $lp-breakpoint) {
+    width: 100%;
+    max-width: none;
+    min-width: none;
+    border-radius: 8px;
+    height: 40px;
+    margin-right: 0;
+  }
 }
 .card-process:hover {
   box-shadow: 0px 3px 16px 2px #acbdcf75;
@@ -119,44 +161,75 @@ export default {
   padding: 32px;
   height: 100%;
   width: 100%;
+  margin-bottom: 20px;
+
+  @media (max-width: $lp-breakpoint) {
+    padding-left: 16px;
+    padding-right: 20px;
+  }
 }
 .card-img {
   border-radius: 16px;
 }
-.card-bookmark {
+.requests-count {
+  display: none;
   float: right;
-  font-size: 24px;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #F9E7C3;
+  margin-right: 8px;
+  
+  border-radius: 12px;
+  min-width: 24px;
+  height: 24px;
+  justify-content: center;
+  align-items: center;
+  padding: 0 8px;
+
+  @media (max-width: $lp-breakpoint) {
+    display: flex;
+  }
 }
-.card-bookmark:hover {
-  cursor: pointer;
+
+.bookmark {
+  float:right;
+  font-size: 1.2em;
 }
 .card-text {
   height: 100%;
+  display: flex;
+  width: 100%;
+  
+  @media (max-width: $lp-breakpoint) {
+    align-items: center;
+  }
 }
 .card-info {
   cursor: pointer;
   height: 100%;
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: baseline;
   justify-content: flex-end;
+
+  @media (max-width: $lp-breakpoint) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: normal;
+  }
 }
 .icon-process {
-  width: 48px;
+  width: 40px;
   height: 48px;
   margin-bottom: 16px;
-}
-.marked {
-  color: #f5bC00;
-}
-.unmarked {
-  color: #ebf3f7;
-  -webkit-text-stroke-color: #bed1e5;
-  -webkit-text-stroke-width: 1px;
-}
-.unmarked:hover {
-  color: #ffd445;
-  -webkit-text-stroke-width: 0;
+
+  @media (max-width: $lp-breakpoint) {
+    margin-bottom: 0;
+    margin-right: 10px;  
+    width: 24px;
+    height: 24px;
+  }
 }
 .title-process {
   color: #556271;

@@ -27,7 +27,7 @@
       <!-- Tabs navs -->
       <ul 
         id="tabsRequests"
-        class="nav nav-tabs nav-justified"
+        class="nav nav-tabs"
         role="tablist"
       >
         <li class="nav-item" role="presentation">

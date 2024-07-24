@@ -22,6 +22,7 @@ use ProcessMaker\Http\Controllers\Api\ProcessLaunchpadController;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestFileController;
 use ProcessMaker\Http\Controllers\Api\ProcessTranslationController;
+use ProcessMaker\Http\Controllers\Api\RecommendationsController;
 use ProcessMaker\Http\Controllers\Api\ScreenCategoryController;
 use ProcessMaker\Http\Controllers\Api\ScreenController;
 use ProcessMaker\Http\Controllers\Api\ScriptCategoryController;
@@ -210,6 +211,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     });
     Route::get('/tasks/rule-execution-log', [InboxRulesController::class, 'executionLog'])->name('inboxrules.execution-log');
 
+    // Cases
+    Route::get('cases', [ProcessRequestController::class, 'index'])->name('cases.index');
     // Requests
     Route::get('requests', [ProcessRequestController::class, 'index'])->name('requests.index'); // Already filtered in controller
     Route::get('requests/{process}/count', [ProcessRequestController::class, 'getCount'])->name('requests.count');
@@ -220,6 +223,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::delete('requests/{request}', [ProcessRequestController::class, 'destroy'])->name('requests.destroy')->middleware('can:destroy,request');
     Route::get('requests/{request}/tokens', [ProcessRequestController::class, 'getRequestToken'])->name('requests.getRequestToken')->middleware('can:view,request');
     Route::post('requests/{request}/events/{event}', [ProcessRequestController::class, 'activateIntermediateEvent'])->name('requests.update,request');
+    Route::get('requests/{request}/details-screen-request', [ProcessRequestController::class, 'screenRequested'])->name('requests.detail.screen')->middleware('can:view,request');
 
     // Request Files
     Route::get('requests/{request}/files', [ProcessRequestFileController::class, 'index'])->name('requests.files.index')->middleware('can:view,request');
@@ -354,4 +358,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     // 2FA
     Route::post('2fa/test', [TwoFactorAuthController::class, 'testSettings'])->name('2fa.test_settings');
+
+    // Recommendations
+    Route::get('recommendations', [RecommendationsController::class, 'index'])->name('recommendations.index');
+    Route::put('recommendations/{recommendationUser}', [RecommendationsController::class, 'update'])->name('recommendations.update');
 });

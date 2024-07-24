@@ -77,7 +77,7 @@ export default {
           value: "view-documentation",
           content: "View Documentation",
           link: true,
-          href: "/modeler/{{id}}/print",
+          href: ProcessMaker.packages.includes('package-ai') ? "/modeler/{{id}}/documentation" : "/modeler/{{id}}/print",
           permission: ["view-processes", "view-additional-asset-actions"],
           icon: "fas fa-sign",
           conditional: "isDocumenterInstalled",
@@ -257,6 +257,29 @@ export default {
           content: "Delete",
           icon: "fas fa-trash",
           permission: ["delete-decision_tables", "view-additional-asset-actions"],
+        },
+      ],
+      flowGenieActions: [
+        {
+          value: "edit-item",
+          content: "Edit",
+          icon: "fas fa-pen-square",
+          permission: [
+            "edit-flow_genies",
+            "view-additional-asset-actions",
+          ],
+        },
+        {
+          value: "add-to-project",
+          content: "Add to Project",
+          icon: "fas fa-folder-plus",
+          permission: "create-projects",
+        },
+        {
+          value: "remove-item",
+          content: "Delete",
+          icon: "fas fa-trash",
+          permission: ["delete-flow_genies", "view-additional-asset-actions"],
         },
       ],
       myTemplateActions: [

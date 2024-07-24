@@ -176,6 +176,12 @@ $multiselect-height: 33px;
     margin-top: 0px;
   }
 
+  .multiselect__single > span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
   .multiselect__select:before {
     border-width: 4px 4px 0 4px;
     top: 20px;

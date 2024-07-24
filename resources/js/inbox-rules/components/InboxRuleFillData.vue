@@ -56,7 +56,7 @@
         this.$emit("submit", data);
       });
       this.receiveEvent('taskReady', () => {
-        this.sendEvent("fillData", this.inboxRuleData);
+        this.sendEvent("fillDataOverwriteExistingFields", this.inboxRuleData);
       });
     },
     methods: {

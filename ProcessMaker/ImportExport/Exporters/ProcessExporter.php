@@ -9,6 +9,7 @@ use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Psudomodels\Signal;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Models\Group;
+use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Screen;
@@ -20,6 +21,14 @@ class ProcessExporter extends ExporterBase
     public $handleDuplicatesByIncrementing = ['name'];
 
     public static $fallbackMatchColumn = 'name';
+
+    const BPMN_TASK = 'bpmn:task';
+
+    const BPMN_MANUAL_TASK = 'bpmn:manualTask';
+
+    const  BPMN_END_EVENT = 'bpmn:endEvent';
+
+    const  PM_ELEMENT_DESTINATION = 'pm:elementDestination';
 
     public function export() : void
     {
@@ -43,6 +52,7 @@ class ProcessExporter extends ExporterBase
 
         $this->exportAssignments();
 
+        $this->addReference('hasCustomDashboardRedirect', $this->hasCustomDashboardRedirect());
         // Notification Settings.
         $this->addReference('notification_settings', $process->notification_settings->toArray());
 
@@ -67,7 +77,6 @@ class ProcessExporter extends ExporterBase
         $this->exportSubprocesses();
         $this->exportProcessLaunchpad();
         $this->exportMedia();
-
         $this->exportEmbed();
     }
 
@@ -263,8 +272,8 @@ class ProcessExporter extends ExporterBase
     private function exportAssignments()
     {
         $tags = [
-            'bpmn:task',
-            'bpmn:manualTask',
+            self::BPMN_TASK,
+            self::BPMN_MANUAL_TASK,
             'bpmn:callActivity',
         ];
 
@@ -409,6 +418,7 @@ class ProcessExporter extends ExporterBase
             $this->importSubprocesses();
             $this->importAssignments();
             $this->importProcessLaunchpad();
+            $this->importElementDestination();
         }
     }
 
@@ -437,7 +447,7 @@ class ProcessExporter extends ExporterBase
      */
     public function exportMedia(): void
     {
-        $this->model->media->each(function ($media) {
+        $this->model->media->where('collection_name', '!=', Media::COLLECTION_SLIDESHOW)->each(function ($media) {
             $this->addDependent(DependentType::MEDIA, $media, MediaExporter::class);
         });
     }
@@ -474,6 +484,88 @@ class ProcessExporter extends ExporterBase
     {
         foreach ($this->getDependents('process_launchpad') as $launchpad) {
             $launchpad->model->setAttribute('process_id', $this->model->id);
+        }
+    }
+
+    public function hasCustomDashboardRedirect(): bool
+    {
+        $tags = [
+            self::BPMN_TASK,
+            self::BPMN_MANUAL_TASK,
+            self::BPMN_END_EVENT,
+        ];
+
+        // Get model definitions
+        $definitions = $this->model->getDefinitions(true);
+
+        // Get elements by specified tags
+        $elements = Utils::getElementByMultipleTags($definitions, $tags);
+
+        // Iterate through the elements to check for elementDestination attribute
+        foreach ($elements as $element) {
+            // Get the value of the pm:elementDestination attribute
+            $elementDestination = $element->getAttribute(self::PM_ELEMENT_DESTINATION);
+
+            // If the attribute is not empty, return true
+            if (!empty($elementDestination)) {
+                return true;
+            }
+        }
+
+        // If no elements have the attribute set, return false
+        return false;
+    }
+
+    /**
+     * Imports element destinations from the model and updates specific elements.
+     *
+     * This method searches for elements with specific tags and updates their 'pm:elementDestination' attribute
+     * if it matches certain criteria. Specifically, it checks if the attribute is a JSON object with a 'type'
+     * of 'customDashboard' and updates it to a JSON object with a 'type' of 'summaryScreen' and a 'value' of null.
+     *
+     * @return void
+     */
+    public function importElementDestination(): void
+    {
+        // Tags to search for in the model definitions
+        $tags = [
+            self::BPMN_TASK,
+            self::BPMN_MANUAL_TASK,
+            self::BPMN_END_EVENT,
+        ];
+
+        // Get model definitions
+        $definitions = $this->model->getDefinitions(true);
+
+        // Get elements by specified tags
+        $elements = Utils::getElementByMultipleTags($definitions, $tags);
+
+        // Iterate through the elements
+        foreach ($elements as $element) {
+            $path = $element->getNodePath();
+            $elementDestination = $element->getAttribute(self::PM_ELEMENT_DESTINATION);
+
+            // If the element has a pm:elementDestination attribute
+            if ($elementDestination !== null) {
+                // Decode the JSON string in the attribute
+                $data = json_decode($elementDestination, true);
+
+                // Check for JSON errors and if the type is customDashboard
+                if (json_last_error() === JSON_ERROR_NONE && isset($data['type'])
+                    && $data['type'] === 'customDashboard') {
+                    // Create a new JSON string with updated values
+                    $newElementDestination = json_encode([
+                        'type' => 'customDashboard',
+                        'value' => null,
+                    ], JSON_HEX_QUOT);
+
+                    // Set the new attribute value at the specified XPath
+                    Utils::setAttributeAtXPath(
+                        $this->model, $path, self::PM_ELEMENT_DESTINATION,
+                        htmlspecialchars($newElementDestination, ENT_QUOTES)
+                    );
+                }
+            }
         }
     }
 }

@@ -16,6 +16,8 @@
                 <xsd:attribute name="interstitialScreenRef" type="xsd:string"/>
                 <xsd:attribute name="screenVersion" type="xsd:string" use="optional"/>
                 <xsd:attribute name="dueIn" type="xsd:decimal"/>
+                <xsd:attribute name="dueInVariable" type="xsd:string" use="optional"/>
+                <xsd:attribute name="isDueInVariable" type="xsd:boolean" default="false"/>
                 <xsd:attribute name="notifyAfterRouting" type="xsd:boolean" default="false"/>
                 <xsd:attribute name="notifyToRequestCreator" type="xsd:boolean" default="false"/>
                 <xsd:attribute name="assignment" type="xsd:string" default="requestor"/>
@@ -25,6 +27,8 @@
                 <xsd:attribute name="assignmentLock" type="xsd:boolean" default="false"/>
                 <xsd:attribute name="allowReassignment" type="xsd:boolean" default="false"/>
                 <xsd:attribute name="config" type="xsd:string" use="optional"/>
+                <xsd:attribute name="configEmail" type="xsd:string" use="optional"/>
+                <xsd:attribute name="isActionsByEmail" type="xsd:boolean" default="false"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>

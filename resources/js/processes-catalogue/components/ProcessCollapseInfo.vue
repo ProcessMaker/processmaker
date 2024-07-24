@@ -1,123 +1,38 @@
 <template>
   <div id="processCollapseInfo">
     <div id="processData">
-      <div
-        id="header"
-        class="card card-body"
-      >
-        <div class="d-flex justify-content-between">
-          <div class="d-flex align-items-center">
-            <i
-              class="fas fa-arrow-left text-secondary mr-2 iconTitle"
-              @click="goBack"
-            />
-            <button
-              class="btn border-0 header-process title-process-button"
-              type="button"
-              data-toggle="collapse"
-              data-target="#collapseProcessInfo"
-              aria-controls="collapseProcessInfo"
-              :aria-expanded="infoCollapsed"
-              @click="toogleInfoCollapsed()"
-            >
-              <template v-if="infoCollapsed">
-                {{ $t('Process Info') }}
-                <i class="fas fa-angle-up pl-2" />
-              </template>
-              <template v-else>
-                {{ getNameEllipsis() }}
-                <i class="fas fa-angle-down pl-2" />
-              </template>
-            </button>
-          </div>
-          <div class="d-flex align-items-center">
-            <div class="card-bookmark mx-2">
-              <i
-                :ref="`bookmark-${process.id}-marked`"
-                v-b-tooltip.hover.bottom
-                :title="$t(labelTooltip)"
-                class="fas fa-bookmark"
-                :class="{ marked: showBookmarkIcon, unmarked: !showBookmarkIcon }"
-                @click="checkBookmark(process)"
-              />
-            </div>
-            <span class="ellipsis-border">
-              <ellipsis-menu
-                v-if="showEllipsis"
-                :actions="processLaunchpadActions"
-                :permission="permission"
-                :data="process"
-                :is-documenter-installed="isDocumenterInstalled"
-                :divider="false"
-                :lauchpad="true"
-                variant="none"
-                @navigate="onProcessNavigate"
-              />
-            </span>
-            <buttons-start :process="process" />
-          </div>
-        </div>
-      </div>
+      <process-header-start
+        :process="process"
+        @goBack="goBack()"
+        @onProcessNavigate="onProcessNavigate"
+        v-if="!mobileApp"
+      />
+      <process-header
+        :process="process"
+        :hide-header-options="true"
+        :icon-wizard-template="createdFromWizardTemplate"
+        @goBack="goBack()"
+      />
       <div
         id="collapseProcessInfo"
-        class="collapse show"
+        class="collapse show custom-class"
       >
         <div class="info-collapse">
-          <div class="row">
-            <div class="col-sm-9">
-              <p class="title-process">
-                {{ process.name }}
-              </p>
-              <p
-                v-if="readActivated || !largeDescription"
-                class="description"
-              >
-                {{ process.description }}
-              </p>
-              <p
-                v-if="!readActivated && largeDescription"
-                class="description"
-              >
-                {{ process.description.slice(0,300) }}
-                <a
-                  v-if="!readActivated"
-                  class="read-more"
-                  @click="activateReadMore"
-                >
-                  ...
-                </a>
-              </p>
-            </div>
-            <div class="wizard-container col-sm-3">
-              <div class="wizard">
-                <b-button
-                  v-if="createdFromWizardTemplate"
-                  class="mt-2 wizard-link"
-                  variant="link"
-                  @click="getHelperProcess"
-                >
-                  <img
-                    src="../../../img/wizard-icon.svg"
-                    :alt="$t('Guided Template Icon')"
-                  >
-                  {{ $t('Re-run Wizard') }}
-                </b-button>
-              </div>
-            </div>
-          </div>
           <b-row>
-            <b-col class="process-carousel col-sm-12 col-md-12 col-lg-12 col-xl-9 col-pm-9 col-9">
+            <b-col class="process-carousel col-12">
               <processes-carousel
                 :process="process"
+                :full-carousel="{ url: null, hideLaunchpad: false }"
               />
             </b-col>
-            <b-col class="process-options col-sm-12 col-md-12 col-lg-12 col-xl-3 col-pm-3 col-2">
+            <b-col class="process-options col-12">
               <process-options :process="process" />
             </b-col>
           </b-row>
         </div>
       </div>
     </div>
+    
     <create-template-modal
       id="create-template-modal"
       ref="create-template-modal"
@@ -149,44 +64,35 @@
       :description-settings="process.description"
       :process="process"
     />
-    <wizard-helper-process-modal
-      v-if="createdFromWizardTemplate"
-      id="wizardHelperProcessModal"
-      ref="wizardHelperProcessModal"
-      :process-launchpad-id="process.id"
-      :wizard-template-uuid="wizardTemplateUuid"
-    />
   </div>
 </template>
 
 <script>
-import ButtonsStart from "./optionsMenu/ButtonsStart.vue";
-import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 import CreateTemplateModal from "../../components/templates/CreateTemplateModal.vue";
 import CreatePmBlockModal from "../../components/pm-blocks/CreatePmBlockModal.vue";
 import AddToProjectModal from "../../components/shared/AddToProjectModal.vue";
 import LaunchpadSettingsModal from "../../components/shared/LaunchpadSettingsModal.vue";
-import WizardHelperProcessModal from "../../components/templates/WizardHelperProcessModal.vue";
 import ProcessesCarousel from "./ProcessesCarousel.vue";
 import ProcessOptions from "./ProcessOptions.vue";
 import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
 import processNavigationMixin from "../../components/shared/processNavigation";
 import ProcessesMixin from "./mixins/ProcessesMixin";
+import ProcessHeader from "./ProcessHeader.vue";
+import ProcessHeaderStart from "./ProcessHeaderStart.vue";
 
 export default {
   components: {
-    ButtonsStart,
-    EllipsisMenu,
     CreateTemplateModal,
     CreatePmBlockModal,
     AddToProjectModal,
     LaunchpadSettingsModal,
     ProcessOptions,
     ProcessesCarousel,
-    WizardHelperProcessModal,
+    ProcessHeader,
+    ProcessHeaderStart,
   },
   mixins: [ProcessesMixin, ellipsisMenuMixin, processNavigationMixin],
-  props: ["process", "permission", "isDocumenterInstalled", "currentUserId"],
+  props: ["process", "currentUserId"],
   computed: {
     createdFromWizardTemplate() {
       return !!this.process?.properties?.wizardTemplateUuid;
@@ -201,13 +107,12 @@ export default {
       window.location.reload();
     });
   },
+  data() {
+    return {
+      mobileApp: window.ProcessMaker.mobileApp
+    };
+  },
   methods: {
-    /**
-     * Change button title
-     */
-    toogleInfoCollapsed() {
-      this.infoCollapsed = !this.infoCollapsed;
-    },
     /**
      * Verify if the Description is large
      */
@@ -231,6 +136,16 @@ export default {
 
 <style lang="scss" scoped>
 @import url("./scss/processes.css");
+@import '~styles/variables';
+
+#collapseProcessInfo {
+  @media (max-width: $lp-breakpoint) {
+    display: none;
+  }
+}
+.custom-class {
+ margin-top: -13px;
+}
 .wizard-link {
   text-transform: none;
 }
@@ -283,6 +198,31 @@ export default {
   .col-pm-3 {
     flex: 0 0 100%;
     max-width: 100%;
+  }
+}
+
+.header {
+  @media (max-width: $lp-breakpoint) {
+    display: none;
+  }
+}
+
+.header-mobile {
+  display: none;
+  padding: 1em;
+
+  .title {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 1.5em;
+  }
+
+  @media (max-width: $lp-breakpoint) {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
   }
 }
 </style>

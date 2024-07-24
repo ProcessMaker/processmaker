@@ -1,14 +1,14 @@
 <template>
   <b-dropdown
     v-if="filterActions.length > 0"
+    v-b-tooltip.hover="{ placement: 'bottom', title: 'Options', variant: 'secondary', customClass: 'ellipsis-tooltip' }"
     :variant="variant ? variant : 'outlined-secondary'"
-    toggle-class="static-header"
+    :toggle-class="['static-header', { 'contracted-menu': !contractedMenu }, { 'expanded-menu': contractedMenu }]"
     no-flip
     lazy
-    right
-    offset="0"
+    no-caret
     class="ellipsis-dropdown-main static-header"
-    :popper-opts="{ placement: 'bottom-end' }"
+    :dropleft="!lauchpad"
     @show="onShow"
     @hide="onHide"
   >
@@ -22,12 +22,14 @@
       </span>
     </template>
     <template v-else-if="lauchpad" #button-content>
-      <i class="fas fa-ellipsis-h ellipsis-menu-icon p-0" />
+      <i class="fas fa-ellipsis-v ellipsis-menu-icon p-0 ellipsis-icon-v" />
+      <span>
+        {{ $t('Options') }}
+      </span>
     </template>
     <template v-else #button-content>
       <span class="text-capitalize screen-toolbar-button">
-        <i class="fas fa-cog" />
-        {{ $t("Options") }}
+        <i class="fas fa-ellipsis-h ellipsis-menu-icon p-0" />
       </span>
     </template>
     <div v-if="divider === true">
@@ -115,7 +117,22 @@ export default {
   components: { PmqlInput },
   filters: { },
   mixins: [],
-  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "lauchpad", "customButton", "showProgress", "isPackageInstalled", "searchBar", "variant", "redirectTo", "redirectId"],
+  props: [
+    "actions",
+    "permission",
+    "data",
+    "isDocumenterInstalled",
+    "divider",
+    "lauchpad",
+    "customButton",
+    "showProgress",
+    "isPackageInstalled",
+    "searchBar",
+    "variant",
+    "redirectTo",
+    "redirectId",
+    "translation",
+  ],
   data() {
     return {
       active: false,
@@ -142,6 +159,9 @@ export default {
       const lastAction = filteredActions.slice(-1);
 
       return lastAction;
+    },
+    contractedMenu() {
+      return this.lauchpad || this.translation;
     },
   },
   methods: {
@@ -237,7 +257,7 @@ export default {
       const currentUrl = window.location.href;
       const isInUrl = currentUrl.includes("process-browser");
       return isInUrl;
-    }
+    },
   },
 };
 </script>
@@ -246,7 +266,6 @@ export default {
 @import "../../../sass/colors";
 
 .ellipsis-dropdown-main {
-  float: right;
 }
 
 .ellipsis-dropdown-item {
@@ -292,5 +311,35 @@ export default {
 <style>
 .static-header {
   position: static !important;
+}
+.contracted-menu {
+  width: 40px;
+  height: 40px;
+  box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  background-color: #FFFFFF;
+}
+.static-header:hover {
+  background-color: #EBEEF2;
+  border-radius: 4px;
+}
+.contracted-menu:focus {
+  box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.15);
+}
+.expanded-menu {
+  color: #556271;
+  text-transform: none;
+  border-radius: 4px;
+  font-size: 16px !important;
+}
+.ellipsis-icon-v {
+  height: 16px;
+  width: 16px;
+}
+.ellipsis-tooltip {
+  border-radius: 4px;
+}
+.ellipsis-tooltip .arrow {
+  display: none;
 }
 </style>

@@ -7,7 +7,6 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ProcessMaker\Filters\Filter;
-use ProcessMaker\Http\Resources\Task as Resource;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
@@ -15,40 +14,23 @@ use ProcessMaker\Query\SyntaxError;
 
 trait TaskControllerIndexMethods
 {
-    /**
-     * Manually enable paginated results from the
-     * index method()
-     *
-     * @return void
-     */
-    public function enableIndexPagination(): void
-    {
-        static::$paginate = true;
-    }
-
-    /**
-     * Determine if pagination was manually set for the
-     * index() method results
-     *
-     * @return bool
-     */
-    public function isPaginationEnabled(): bool
-    {
-        return static::$paginate === true;
-    }
-
-    /**
-     * Used by saved search to paginate the results
-     * from the index() method
-     *
-     * @var bool
-     */
-    protected static bool $paginate = false;
-
     private function indexBaseQuery($request)
     {
-        $query = ProcessRequestToken::with(['processRequest', 'user', 'draft']);
-        $query->select('process_request_tokens.*');
+        $query = ProcessRequestToken::exclude(['data'])->with([
+            'processRequest' => fn($q) => $q->exclude(['data']),
+            // review if bpmn is reuiqred here process
+            'process' => fn($q) => $q->exclude(['svg', 'warnings']),
+            // review if bpmn is reuiqred here processRequest.process
+            'processRequest.process' => fn($q) => $q->exclude(['svg', 'warnings']),
+            // The following lines use to much memory but reduce the number of queries
+            // bpmn is required here in processRequest.processVersion
+            // 'processRequest.processVersion' => fn($q) => $q->exclude(['svg', 'warnings']),
+            // review if bpmn is reuiqred here processRequest.processVersion.process
+            // 'processRequest.processVersion.process' => fn($q) => $q->exclude(['svg', 'warnings']),
+            'user',
+            'draft'
+        ]);
+
         $include = $request->input('include') ? explode(',', $request->input('include')) : [];
 
         foreach (['data'] as $key) {
@@ -298,13 +280,6 @@ trait TaskControllerIndexMethods
         }
 
         return $response;
-    }
-
-    private function applyResource($response)
-    {
-        return $response->map(function ($processRequestToken) {
-            return new Resource($processRequestToken);
-        });
     }
 
     private function applyForCurrentUser($query, $user)

@@ -25,6 +25,7 @@ use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
 use ProcessMaker\Jobs\CancelRequest;
 use ProcessMaker\Jobs\TerminateRequest;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -261,12 +262,12 @@ class ProcessRequestController extends Controller
     /**
      * Retry the service, script, and other tasks for a given request
      *
-     * @param  \ProcessMaker\Models\ProcessRequest  $request
-     * @param  \Illuminate\Http\Request  $httpRequest
+     * @param  ProcessRequest  $request
+     * @param  Request  $httpRequest
      *
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Auth\Access\AuthorizationException
-     * @throws \Illuminate\Validation\ValidationException
+     * @return JsonResponse
+     * @throws AuthorizationException
+     * @throws ValidationException
      */
     public function retry(ProcessRequest $request, Request $httpRequest): JsonResponse
     {
@@ -592,7 +593,7 @@ class ProcessRequestController extends Controller
      * Cancel all tokens of request.
      *
      * @param ProcessRequest $request
-     * @throws \Throwable
+     * @throws Throwable
      */
     private function cancelRequestToken(ProcessRequest $request)
     {
@@ -608,7 +609,7 @@ class ProcessRequestController extends Controller
      * Manually complete a request
      *
      * @param ProcessRequest $request
-     * @throws \Throwable
+     * @throws Throwable
      */
     private function completeRequest(ProcessRequest $request)
     {
@@ -738,5 +739,67 @@ class ProcessRequestController extends Controller
         }
 
         return new ApiResource($token);
+    }
+
+    /**
+     * Retrieve the screens requested for a given process request.
+     *
+     * @param  Request  $httpRequest
+     * @param  ProcessRequest  $request
+     *
+     * @return ApiCollection
+     */
+    public function screenRequested(Request $httpRequest, ProcessRequest $request)
+    {
+        $query = ProcessRequestToken::query();
+        $query->select('id', 'element_id', 'process_id', 'process_request_id', 'data')
+            ->where('process_request_id', $request->id)
+            ->whereNotIn('element_type', ['startEvent', 'end_event', 'scriptTask'])
+            ->where('status', 'CLOSED')
+            ->orderBy('completed_at');
+
+        $response =
+            $query->orderBy(
+                $httpRequest->input('order_by', 'id'),
+                $httpRequest->input('order_direction', 'asc')
+            )->paginate($httpRequest->input('per_page', 10));
+
+        $collection = $response->getCollection()
+            ->transform(function ($token): ?object {
+                $definition = $token->getDefinition();
+                if (array_key_exists('screenRef', $definition)) {
+                    $screen = $token->getScreenVersion();
+                    if ($screen) {
+                        $dataManager = new DataManager();
+                        $screen->data = $dataManager->getData($token, true);
+                        $screen->screen_id = $screen->id;
+
+                        return $screen;
+                    }
+                }
+                return null;
+            })
+            ->reject(fn ($item) => $item === null)
+            ->values();
+
+        $response->setCollection($collection);
+
+        return new ApiCollection($response);
+    }
+
+    /**
+     * Adding abe flag
+     * @param  int  $id
+     *
+     * @return bool
+     */
+    public function enableIsActionbyemail($id)
+    {
+        $query = ProcessRequestToken::query();
+        $affectedRows = $query->where('id', $id)
+                          ->where('status', 'ACTIVE')
+                          ->update(['is_actionbyemail' => true]);
+
+        return $affectedRows > 0;
     }
 }

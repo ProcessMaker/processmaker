@@ -4,6 +4,8 @@
       <card
         :key="index"
         :item="item"
+        :fields="fields"
+        :show-cards="true"
         type="tasks"
       />
     </template>
@@ -13,10 +15,11 @@
 <script>
 import datatableMixin from "../../components/common/mixins/datatable";
 import Card from "../../Mobile/Card.vue";
+import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 
 export default {
   components: { Card },
-  mixins: [datatableMixin],
+  mixins: [datatableMixin,  dataLoadingMixin],
   props: ["processRequestId", "isAdmin", "isProcessManager"],
   data() {
     return {
@@ -26,6 +29,17 @@ export default {
           field: "due_at",
           sortField: "due_at",
           direction: "asc",
+        },
+      ],
+      fields: [
+        {
+          label: "Task",
+          field: "element_name",
+        },
+        {
+          label: "Due Date",
+          field: "due_at",
+          format: "dateTime",
         },
       ],
     };

@@ -255,6 +255,15 @@
                               @{{ moment(createdAt).format() }}
                             </li>
                             <li class="list-group-item">
+                              <p class="section-title">{{__('Case')}}</p>
+                              @{{ caseTitle }}
+                              <p class="launchpad-link">
+                                <a href="{{route('process.browser.index', [$task->process->id])}}">
+                                  {{ __('Open Process Launchpad') }}
+                                </a>
+                              </p>
+                            </li>
+                            <li class="list-group-item">
                               <p class="section-title">{{__('Request')}}</p>
                               <a href="{{route('requests.show', [$task->process_request_id, 'skipInterstitial' => '1'])}}">
                                 #{{$task->process_request_id}} {{$task->process->name}}
@@ -371,6 +380,11 @@
       postScriptEndpoint: '/scripts/execute/{id}?task_id={{ $task->id }}',
     };
 
+    window.sessionStorage.setItem(
+      'elementDestinationURL',
+      '{{ route('requests.show', ['request' => $task->process_request_id]) }}'
+    );
+
     const task = @json($task);
     const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
@@ -426,6 +440,7 @@
           showInfo: true,
           isPriority: false,
           userHasInteracted: false,
+          caseTitle: "",
         },
         watch: {
           task: {
@@ -508,7 +523,7 @@
               "COMPLETED": "open-style",
               "TRIGGERED": "open-style",
             };
-            const status = this.task.advanceStatus.toUpperCase();
+            const status = (this.task.advanceStatus || '').toUpperCase();
             return "card-header text-status " + header[status];
           },
           isAllowReassignment() {
@@ -522,11 +537,17 @@
             `element_id=${this.task.element_id}&` +
             `process_id=${this.task.process_id}`;
           },
-          completed(processRequestId) {
+          completed(processRequestId, endEventDestination = null) {
             // avoid redirection if using a customized renderer
-            if(this.task.component && this.task.component === 'AdvancedScreenFrame') {
+            if (this.task.component && this.task.component === 'AdvancedScreenFrame') {
               return;
             }
+
+            if (endEventDestination) {
+              this.redirect(endEventDestination);
+              return;
+            }
+
             this.redirect(`/requests/${processRequestId}`);
           },
           error(processRequestId) {
@@ -535,11 +556,17 @@
           redirectToTask(task, force = false) {
             this.redirect(`/tasks/${task}/edit`, force);
           },
-          closed(taskId) {
+          closed(taskId, elementDestination = null) {
             // avoid redirection if using a customized renderer
             if (this.task.component && this.task.component === 'AdvancedScreenFrame') {
               return;
             }
+
+            if (elementDestination) {
+              this.redirect(elementDestination);
+              return;
+            }
+
             this.redirect("/tasks");
           },
           claimTask() {
@@ -646,9 +673,14 @@
                 // to view error details. This is done in loadTask in Task.vue
                 if (error.response?.status && error.response?.status === 422) {
                   // Validation error
-                  Object.entries(error.response.data.errors).forEach(([key, value]) => {
-                    window.ProcessMaker.alert(`${key}: ${value[0]}`, 'danger', 0);
-                  });
+                  if (error.response.data.errors) {
+                    Object.entries(error.response.data.errors).forEach(([key, value]) => {
+                      window.ProcessMaker.alert(`${key}: ${value[0]}`, 'danger', 0);
+                    });
+                  } else if (error.response.data.message) {
+                    window.ProcessMaker.alert(error.response.data.message, 'danger', 0);
+                  }
+                  this.$refs.task.loadNextAssignedTask();
                 }
               }).finally(() => {
                 this.submitting = false;
@@ -677,7 +709,7 @@
               screenFields.forEach((field) => {
                 _.set(draftData, field, _.get(this.formData, field));
               });
-                
+
               return ProcessMaker.apiClient
               .put("drafts/" + this.task.id, draftData)
               .then((response) => {
@@ -738,9 +770,13 @@
           },
           collapseTabs() {
 
+          },
+          caseTitleField(task) {
+            this.caseTitle = task.process_request.case_title;
           }
         },
         mounted() {
+          this.caseTitleField(this.task);
           this.prepareData();
           window.ProcessMaker.isSelfService = this.isSelfService;
           this.isPriority = task.is_priority;
@@ -879,6 +915,9 @@
   }
   .card-header:first-child.text-status {
     border-radius: 6px;
+  }
+  .launchpad-link {
+    margin-top: 5px;
   }
 </style>
 @endsection
