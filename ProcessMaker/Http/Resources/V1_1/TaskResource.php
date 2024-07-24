@@ -36,6 +36,7 @@ class TaskResource extends ApiResource
         'interstitial',
         'userRequestPermission',
         'process',
+        'elementDestination',
     ];
 
     protected static $defaultFields = [
@@ -45,6 +46,7 @@ class TaskResource extends ApiResource
         'element_type',
         'status',
         'due_at',
+        'process_request_id',
     ];
 
     protected static $defaultIncludes = [
@@ -55,7 +57,24 @@ class TaskResource extends ApiResource
     protected static $defaultFieldsFor = [
         'user' => ['id', 'firstname', 'lastname', 'email', 'username', 'avatar'],
         'requestor' => ['id', 'first_name', 'last_name', 'email'],
-        'processRequest' => ['id', 'process_id', 'process_version_id', 'callable_id', 'status'],
+        'processRequest' => [
+            'id',
+            'uuid',
+            'process_id',
+            'user_id',
+            'parent_request_id',
+            'status',
+            'do_not_sanitize',
+            'errors',
+            'completed_at',
+            'initiated_at',
+            'created_at',
+            'updated_at',
+            'case_title',
+            'case_number',
+            'callable_id',
+            'process_version_id',
+        ],
         'draft' => ['id', 'task_id', 'data'],
         'screen' => ['id', 'config'],
         'process' => ['id', 'name'],

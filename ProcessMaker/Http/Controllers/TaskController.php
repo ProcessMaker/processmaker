@@ -224,6 +224,10 @@ class TaskController extends Controller
                     // Define the parameter for complete the task
                     $process = Process::find($task->process_id);
                     $instance = $task->processRequest;
+                    
+                    // Set the flag is_actionbyemail in true
+                    (new ProcessRequestController)->enableIsActionbyemail($task->id);
+
                     // Completar la tarea relacionada
                     WorkflowManager::completeTask(
                         $process,
@@ -231,9 +235,6 @@ class TaskController extends Controller
                         $task,
                         $data
                     );
-
-                    // Set the flag is_actionbyemail in true
-                    (new ProcessRequestController)->enableIsActionbyemail($task->id);
 
                     $response['message'] = 'Variable updated successfully';
                     $response['data'] = $abe;
