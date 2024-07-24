@@ -281,17 +281,34 @@ export default {
   animation: 0.75s linear infinite spinner-border;
 }
 .separator-class {
-  width: 85%;
   @media (max-width: $lp-breakpoint) {
     display: block;
     height: auto;
-    width: 94%;
+    width: 95%;
   }
 
-  @media (min-width: 1870px) {
-    display: block;
-    height: auto;
-    width: 100%;
+  @media (min-width: 641px) and (max-width:1075px) {
+    width: 343px;
+  }
+
+  @media (min-width: 1076px) and (max-width:1520px) {
+    width: 772px;
+  }
+
+  @media (min-width: 1521px) and (max-width: 1789px) {
+    width: 1160px;
+  }
+
+  @media (min-width: 1790px) and (max-width: 2148px) {
+    width: 1542px;
+  }
+
+  @media (min-width: 2149px) and (max-width: 2507px){
+    width: 1924px;
+  }
+
+  @media (min-width: 2508px){
+    width: 2306px;
   }
 }
 .separator-class.width-changed {
