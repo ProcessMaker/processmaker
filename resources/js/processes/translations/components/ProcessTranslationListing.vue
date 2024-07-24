@@ -31,13 +31,14 @@
           <td class="action">
             <div class="translation-in-progress">
               <ellipsis-menu
-                  :actions="actionsInProgress"
-                  :permission="permission"
-                  :data="item"
-                  :divider="true"
-                  :customButton="inProgressButton"
-                  :showProgress="true"
-                  @navigate="onNavigate"
+                :translation="true"
+                :actions="actionsInProgress"
+                :permission="permission"
+                :data="item"
+                :divider="true"
+                :custom-button="inProgressButton"
+                :show-progress="true"
+                @navigate="onNavigate"
               />
               <p class="right-aligned-percent m-0" v-if="item.stream && item.stream.data">{{ item.stream.data }}</p>
             </div>
@@ -49,11 +50,12 @@
           <td class="action">{{ formatDate(item.updatedAt) }}</td>
           <td class="action">
             <ellipsis-menu
+              :translation="true"
               :actions="actions"
               :permission="permission"
               :data="item"
               :divider="true"
-              :customButton="loadingItems.includes(item.language) ? inProgressButtonSmall : false"
+              :custom-button="loadingItems.includes(item.language) ? inProgressButtonSmall : false"
               @navigate="onNavigate"
             />
           </td>
