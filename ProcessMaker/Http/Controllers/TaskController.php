@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Carbon\Carbon;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Http\Request as HttpRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
@@ -15,6 +16,7 @@ use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
 use ProcessMaker\Jobs\MarkNotificationAsRead;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
+use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessAbeRequestToken;
@@ -188,8 +190,11 @@ class TaskController extends Controller
                 return $this->returnErrorResponse(__('Token not found'), 404);
             }
             // Review if the autentication is required
-            if ($abe->require_login && !Auth::check()) {
-                return $this->returnErrorResponse(__('Authentication required'), 403);
+            if ($abe->require_login && Auth::user()->username === AnonymousUser::ANONYMOUS_USERNAME) {
+                $request->session()->put('url.intended', url()->full());
+                $cookie = cookie('processmaker_intended', url()->full(), 10, '/');
+
+                return redirect('login')->withCookie($cookie);
             }
             if ($abe->is_answered) {
                 return $this->returnErrorResponse(__('This response has already been answered'), 200);
