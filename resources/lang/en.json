@@ -1742,6 +1742,7 @@
   "The environment variable was created.": "The environment variable was created.",
   "The environment variable was deleted.": "The environment variable was deleted.",
   "The environment variable was saved.": "The environment variable was saved.",
+  "The Genie name must be unique.": "The Genie name must be unique.",
   "The expression \":body\" is invalid. Please contact the creator of this process to fix the issue. Original error: \":error\"": "The expression \":body\" is invalid. Please contact the creator of this process to fix the issue. Original error: \":error\"",
   "The field under validation must be a valid date format which is acceptable by Javascript's Date object.": "The field under validation must be a valid date format which is acceptable by Javascript's Date object.",
   "The field under validation must be after the given date.": "The field under validation must be after the given date.",
