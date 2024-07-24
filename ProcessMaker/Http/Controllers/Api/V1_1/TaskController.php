@@ -21,6 +21,8 @@ class TaskController extends Controller
         'element_type',
         'status',
         'due_at',
+        'user_id',
+        'process_request_id',
     ];
 
     /**
@@ -32,10 +34,11 @@ class TaskController extends Controller
             ->where('element_type', 'task');
 
         $this->processFilters(request(), $query);
-        $pagination = $query->paginate();
+        $pagination = $query->paginate(request()->get('per_page', 10));
         $perPage = $pagination->perPage();
         $page = $pagination->currentPage();
         $lastPage = $pagination->lastPage();
+
         return [
             'data' => $pagination->items(),
             'meta' => [
@@ -56,6 +59,10 @@ class TaskController extends Controller
 
     private function processFilters(Request $request, Builder $query)
     {
+        if (request()->has('user_id')) {
+            $query->where('user_id', request()->get('user_id'));
+        }
+
         if ($request->has('process_request_id')) {
             $query->where('process_request_id', $request->input('process_request_id'));
         }
@@ -67,14 +74,15 @@ class TaskController extends Controller
     public function show(ProcessRequestToken $task)
     {
         $resource = TaskResource::preprocessInclude(request(), ProcessRequestToken::where('id', $task->id));
+
         return $resource->toArray(request());
     }
 
     public function showScreen($taskId)
     {
         $task = ProcessRequestToken::select(
-                array_merge($this->defaultFields, ['process_request_id', 'process_id'])
-            )->findOrFail($taskId);
+            array_merge($this->defaultFields, ['process_request_id', 'process_id'])
+        )->findOrFail($taskId);
         $response = new TaskScreen($task);
         $response = response($response->toArray(request())['screen'], 200);
         $now = time();
@@ -82,6 +90,7 @@ class TaskController extends Controller
         $cacheTime = config('screen_task_cache_time', 86400);
         $response->headers->set('Cache-Control', 'max-age=' . $cacheTime . ', must-revalidate, public');
         $response->headers->set('Expires', gmdate('D, d M Y H:i:s', $now + $cacheTime) . ' GMT');
+
         return $response;
     }
 
@@ -97,6 +106,7 @@ class TaskController extends Controller
         $cacheTime = config('screen_task_cache_time', 86400);
         $response->headers->set('Cache-Control', 'max-age=' . $cacheTime . ', must-revalidate, public');
         $response->headers->set('Expires', gmdate('D, d M Y H:i:s', $now + $cacheTime) . ' GMT');
+
         return $response;
     }
 }
