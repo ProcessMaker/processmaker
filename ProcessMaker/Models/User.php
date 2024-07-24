@@ -150,7 +150,19 @@ class User extends Authenticatable implements HasMedia
     public static function boot()
     {
         parent::boot();
+
+        static::deleting(function ($user) {
+            $user->status = 'INACTIVE';
+            $user->save();
+        });
+
+        static::restoring(function ($user) {
+            $user->status = 'ACTIVE';
+            $user->save();
+        });
+
         static::deleted(function ($user) {
+            $user->status = 'INACTIVE';
             $user->removeFromGroups();
         });
     }
