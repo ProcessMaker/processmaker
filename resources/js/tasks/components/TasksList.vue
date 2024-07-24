@@ -118,6 +118,10 @@
                 :target="`element-${rowIndex}-${colIndex}`"
                 custom-class="pm-table-tooltip"
                 @show="checkIfTooltipIsNeeded"
+                placement="topright"
+                trigger="hover"
+                boundary="viewport"
+                :delay="{'show':0,'hide':0}"
               >
                 {{ sanitizeTooltip(getNestedPropertyValue(row, header)) }}
               </b-tooltip>
@@ -172,6 +176,10 @@
                       :target="`element-${rowIndex}-${colIndex}`"
                       custom-class="pm-table-tooltip"
                       @show="checkIfTooltipIsNeeded"
+                      placement="topright"
+                      trigger="hover"
+                      boundary="viewport"
+                      :delay="{'show':0,'hide':0}"
                     >
                       {{ getNestedPropertyValue(row, header) }}
                     </b-tooltip>
