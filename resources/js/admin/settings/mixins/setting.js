@@ -1,5 +1,9 @@
 export default {
   methods: {
+    updateInputAndTransformed(value) {
+      this.input = value === null ? "" : value;
+      this.transformed = this.copy(this.input);
+    },
     emitSaved(value) {
       const setting = this.copy(this.setting);
       setting.config = value;

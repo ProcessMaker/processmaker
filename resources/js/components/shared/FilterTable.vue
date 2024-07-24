@@ -304,7 +304,7 @@ export default {
 
 .pm-table-container th {
   position: relative;
-  max-width: 800px;
+  max-width: 960px;
 }
 
 .pm-table-column-header {
@@ -336,11 +336,11 @@ export default {
 .pm-table-filter td {
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
   padding: 10px 16px;
-  height: 56px;
+  height: 52px;
 }
 .pm-table-ellipsis-column {
   padding: 10px 16px;
-  height: 56px;
+  height: 52px;
 }
 .pm-table-filter th:hover {
   background-color: #F2F8FE;

@@ -243,6 +243,8 @@ export default {
         promptTokens: 0,
         totalTokens: 0,
       },
+      promptSessionId: "",
+      currentNonce: "",
       get,
     };
   },
@@ -312,6 +314,9 @@ export default {
     this.filtersPmql = this.filtersValue;
     this.inputAriaLabel = this.ariaLabel;
 
+    this.promptSessionId = localStorage.promptSessionId;
+    this.currentNonce = localStorage.currentNonce;
+
     this.$root.$on("bv::collapse::state", (collapseId, isJustShown) => {
       this.query = this.value;
       this.pmql = this.value;
@@ -325,6 +330,44 @@ export default {
   },
 
   methods: {
+    getNonce() {
+      const max = 999999999999999;
+      const nonce = Math.floor(Math.random() * max);
+      this.currentNonce = nonce;
+      localStorage.currentNonce = this.currentNonce;
+    },
+    getPromptSession() {
+      const url = "/package-ai/getPromptSessionHistory";
+      let params = {
+        server: window.location.host,
+      };
+      if (this.promptSessionId?.startsWith("ss")) {
+        this.promptSessionId = "";
+      }
+      if (
+        this.promptSessionId
+        && this.promptSessionId !== null
+        && this.promptSessionId !== ""
+      ) {
+        params = {
+          promptSessionId: this.promptSessionId,
+        };
+      }
+      ProcessMaker.apiClient
+        .post(url, params)
+        .then((response) => {
+          this.promptSessionId = response.data.promptSessionId;
+          localStorage.promptSessionId = response.data.promptSessionId;
+          this.runNLQToPMQL();
+        })
+        .catch((error) => {
+          if (error.response.status === 404) {
+            localStorage.promptSessionId = "";
+            this.promptSessionId = "";
+            this.getPromptSession();
+          }
+        });
+    },
     onFiltersPmqlChange(value) {
       this.filtersPmql = value[0];
       this.selectedFilters = value[1];
@@ -381,7 +424,7 @@ export default {
         this.$emit("submit", this.query);
         this.$emit("input", this.query);
       } else if (this.aiEnabledLocal) {
-        this.runNLQToPMQL();
+        this.getPromptSession();
       } else if (!this.query.isPMQL() && !this.aiEnabledLocal) {
         const fullTextSearch = `(fulltext LIKE "%${this.query}%")`;
         this.pmql = fullTextSearch;
@@ -395,10 +438,13 @@ export default {
       this.runSearch();
     },
     runNLQToPMQL() {
+      this.getNonce();
       const params = {
-        question: this.query,
+        search: this.query,
         type: this.searchType,
         classifySearch: false,
+        promptSessionId: this.promptSessionId,
+        nonce: this.currentNonce,
       };
 
       this.aiLoading = true;
@@ -406,8 +452,8 @@ export default {
       ProcessMaker.apiClient
         .post("/package-ai/naturalLanguageToPmql", params)
         .then((response) => {
-          this.pmql = response.data.result;
-          this.usage = response.data.usage;
+          this.pmql = response.data.result[0].result.pmql;
+          this.usage = response.data.result[0].usage;
           this.$emit("submit", this.pmql);
           this.$emit("input", this.pmql);
           this.aiLoading = false;

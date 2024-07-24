@@ -93,6 +93,7 @@ class TaskController extends Controller
         $task->draft = $task->draft();
         $element = $task->getDefinition(true);
         $screenFields = $screenVersion ? $screenVersion->screenFilteredFields() : [];
+        $taskDraftsEnabled = TaskDraft::draftsEnabled();
 
         if ($element instanceof ScriptTaskInterface) {
             return redirect(route('requests.show', ['request' => $task->processRequest->getKey()]));
@@ -121,6 +122,8 @@ class TaskController extends Controller
                     'addons' => $this->getPluginAddons('edit', []),
                     'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
                     'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
+                    'screenFields' => $screenFields,
+                    'taskDraftsEnabled' => $taskDraftsEnabled,
                 ]);
             }
 
@@ -147,7 +150,7 @@ class TaskController extends Controller
                 'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
                 'currentUser' => $currentUser,
                 'screenFields' => $screenFields,
-                'taskDraftsEnabled' => TaskDraft::draftsEnabled(),
+                'taskDraftsEnabled' => $taskDraftsEnabled,
             ]);
         }
     }
