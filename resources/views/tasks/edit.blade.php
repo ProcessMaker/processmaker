@@ -58,6 +58,7 @@
                               :user-id="{{ Auth::user()->id }}"
                               csrf-token="{{ csrf_token() }}"
                               initial-loop-context="{{ $task->getLoopContext() }}"
+                              :wait-loading-listeners="true"
                               @task-updated="taskUpdated"
                               @submit="submit"
                               @completed="completed"
