@@ -95,6 +95,7 @@ class TaskController extends Controller
         $task->draft = $task->draft();
         $element = $task->getDefinition(true);
         $screenFields = $screenVersion ? $screenVersion->screenFilteredFields() : [];
+        $taskDraftsEnabled = TaskDraft::draftsEnabled();
 
         if ($element instanceof ScriptTaskInterface) {
             return redirect(route('requests.show', ['request' => $task->processRequest->getKey()]));
@@ -123,6 +124,8 @@ class TaskController extends Controller
                     'addons' => $this->getPluginAddons('edit', []),
                     'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
                     'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
+                    'screenFields' => $screenFields,
+                    'taskDraftsEnabled' => $taskDraftsEnabled,
                 ]);
             }
 
@@ -149,7 +152,7 @@ class TaskController extends Controller
                 'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
                 'currentUser' => $currentUser,
                 'screenFields' => $screenFields,
-                'taskDraftsEnabled' => TaskDraft::draftsEnabled(),
+                'taskDraftsEnabled' => $taskDraftsEnabled,
             ]);
         }
     }
@@ -190,8 +193,7 @@ class TaskController extends Controller
             $abe = ProcessAbeRequestToken::where('uuid', $abe_uuid)->first();
             // Check if the token is available
             if (!$abe) {
-                $response['message'] = 'Token not found';
-                $response['status'] = 404;
+                return $this->returnErrorResponse(__('Token not found'), 404);
             }
             // Review if the autentication is required
             if ($abe->require_login && Auth::user()->username === AnonymousUser::ANONYMOUS_USERNAME) {
@@ -201,16 +203,16 @@ class TaskController extends Controller
                 return redirect('login')->withCookie($cookie);
             }
             if ($abe->is_answered) {
-                $response['message'] = 'This response has already been answered';
-                $response['data'] = $abe;
-                $response['status'] = 200;
+                return $this->returnErrorResponse(__('This response has already been answered'), 200);
             } else {
                 // Get the token related
                 $task = ProcessRequestToken::find($abe->process_request_token_id);
                 if (!$task) {
-                    $response['message'] = 'Process request token not found';
-                    $response['status'] = 404;
+                    return $this->returnErrorResponse(__('Process request token not found'), 404);
                 } else {
+                    if ($task->status === 'CLOSED') {
+                        return $this->returnErrorResponse(__('Task already closed'), 404);
+                    }
                     // Update the data
                     $data[$request->varName] = $request->varValue;
                     $abe->data = json_encode($data);
@@ -225,7 +227,9 @@ class TaskController extends Controller
                     // Define the parameter for complete the task
                     $process = Process::find($task->process_id);
                     $instance = $task->processRequest;
-                    // Completar la tarea relacionada
+                    // Set the flag is_actionbyemail in true
+                    (new ProcessRequestController)->enableIsActionbyemail($task->id);
+                    // Complete the task related
                     WorkflowManager::completeTask(
                         $process,
                         $instance,
@@ -252,6 +256,7 @@ class TaskController extends Controller
             return response()->json([
                 'message' => 'Error updating variable',
                 'error' => $e->getMessage(),
+                'error' => $e->getMessage(),
             ], 500);
         }
 
@@ -270,8 +275,20 @@ class TaskController extends Controller
             event(new ScreenBuilderStarting($manager, $customScreen->type ?? 'FORM'));
 
             return view('processes.screens.completedScreen', compact('customScreen', 'manager'));
+        } else {
+            return $this->returnErrorResponse(__('Your response has been submitted.'), 200);
         }
+    }
 
-        return $response;
+    /**
+     * Return response
+     * @param string $message
+     * @param int $status
+     */
+    public function returnErrorResponse(string $message, int $status)
+    {
+        return response()->json([
+            'message' => $message,
+        ], $status);
     }
 }

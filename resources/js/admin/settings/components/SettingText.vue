@@ -1,6 +1,9 @@
 <template>
   <div class="setting-text">
-    <div v-if="input === null || !input.length" class="font-italic text-black-50">
+    <div
+      v-if="input === null || !input.length"
+      class="font-italic text-black-50"
+    >
       Empty
     </div>
     <div v-else>
@@ -11,36 +14,99 @@
         {{ hidden }}
       </template>
     </div>
-    <b-modal class="setting-object-modal" v-model="showModal" size="lg" @hidden="onModalHidden" @shown="onModalShown">
-      <template v-slot:modal-header class="d-block">
+    <b-modal
+      v-model="showModal"
+      class="setting-object-modal"
+      size="lg"
+      @hidden="onModalHidden"
+      @shown="onModalShown"
+    >
+      <template
+        #modal-header
+        class="d-block"
+      >
         <div>
-          <h5 class="mb-0" v-if="setting.name">{{ $t(setting.name) }}</h5>
-          <h5 class="mb-0" v-else>{{ setting.key }}</h5>
-          <small class="form-text text-muted" v-if="setting.helper">{{ $t(setting.helper) }}</small>
+          <h5
+            v-if="setting.name"
+            class="mb-0"
+          >
+            {{ $t(setting.name) }}
+          </h5>
+          <h5
+            v-else
+            class="mb-0"
+          >
+            {{ setting.key }}
+          </h5>
+          <small
+            v-if="setting.helper"
+            class="form-text text-muted"
+          >{{ $t(setting.helper) }}</small>
         </div>
-        <button type="button" :aria-label="$t('Close')" class="close" @click="onCancel">×</button>
+        <button
+          type="button"
+          :aria-label="$t('Close')"
+          class="close"
+          @click="onCancel"
+        >
+          ×
+        </button>
       </template>
       <template v-if="! ui('sensitive')">
         <b-form-group :invalid-feedback="invalidFeedback">
-          <b-form-input ref="input" v-model="transformed" @keyup.enter="onSave" spellcheck="false" autocomplete="off" type="text" :state="state"></b-form-input>
+          <b-form-input
+            ref="input"
+            v-model="transformed"
+            spellcheck="false"
+            autocomplete="off"
+            type="text"
+            :state="state"
+            @keyup.enter="onSave"
+          />
         </b-form-group>
       </template>
       <template v-else>
         <b-input-group>
-          <b-form-input class="border-right-0" ref="input" v-model="transformed" @keyup.enter="onSave" spellcheck="false" autocomplete="new-password" :type="type"></b-form-input>
+          <b-form-input
+            ref="input"
+            v-model="transformed"
+            class="border-right-0"
+            spellcheck="false"
+            :type="type"
+            @keyup.enter="onSave"
+          />
           <b-input-group-append>
-            <b-button :aria-label="$t('Toggle Show Password')" variant="secondary" @click="togglePassword">
-              <i class="fas" :class="icon"></i>
+            <b-button
+              :aria-label="$t('Toggle Show Password')"
+              variant="secondary"
+              @click="togglePassword"
+            >
+              <i
+                class="fas"
+                :class="icon"
+              />
             </b-button>
           </b-input-group-append>
         </b-input-group>
       </template>
-      <div slot="modal-footer" class="w-100 m-0 d-flex">
-        <button type="button" class="btn btn-outline-secondary ml-auto" @click="onCancel">
-            {{ $t('Cancel') }}
+      <div
+        slot="modal-footer"
+        class="w-100 m-0 d-flex"
+      >
+        <button
+          type="button"
+          class="btn btn-outline-secondary ml-auto"
+          @click="onCancel"
+        >
+          {{ $t('Cancel') }}
         </button>
-        <button type="button" class="btn btn-secondary ml-3" @click="onSave" :disabled="! changed">
-            {{ $t('Save')}}
+        <button
+          type="button"
+          class="btn btn-secondary ml-3"
+          :disabled="! changed"
+          @click="onSave"
+        >
+          {{ $t('Save') }}
         </button>
       </div>
     </b-modal>
@@ -52,55 +118,60 @@ import settingMixin from "../mixins/setting";
 
 export default {
   mixins: [settingMixin],
-  props: ['value', 'setting'],
+  props: {
+    value: {
+      type: [String, Number],
+      default: null,
+    },
+    setting: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
   data() {
     return {
       input: null,
       showModal: false,
       transformed: null,
-      type: 'password'
+      type: "password",
     };
   },
   computed: {
     variant() {
-      if (this.disabled) {
-        return 'secondary';
-      } else {
-        return 'success';
-      }
+      return this.disabled ? "secondary" : "success";
     },
     changed() {
       return JSON.stringify(this.input) !== JSON.stringify(this.transformed);
     },
     icon() {
-      if (this.type == 'password') {
-        return 'fa-eye';
-      } else {
-        return 'fa-eye-slash';
-      }
+      return this.type === "password" ? "fa-eye" : "fa-eye-slash";
     },
     hidden() {
-      return '•'.repeat(this.input.length);
+      return "•".repeat(this.input.length);
     },
     state() {
       if (this.setting?.ui?.isNotEmpty) {
-        return this.transformed !== '' && this.transformed !== null;
+        return this.transformed !== "" && this.transformed !== null;
       }
 
       return true;
     },
     invalidFeedback() {
-      if (this.setting?.ui?.isNotEmpty && (this.transformed === '' || this.transformed === null)) {
+      if (this.setting?.ui?.isNotEmpty && (this.transformed === "" || this.transformed === null)) {
         return this.$t("The current value is empty but a value is required. Please provide a valid value.");
       }
-    }
+      return "";
+    },
   },
   watch: {
     value: {
-      handler: function(value) {
-        this.input = value;
+      handler(value) {
+        this.updateInputAndTransformed(value);
       },
-    }
+    },
+  },
+  mounted() {
+    this.updateInputAndTransformed(this.value);
   },
   methods: {
     onCancel() {
@@ -110,14 +181,14 @@ export default {
       this.showModal = true;
     },
     onModalHidden() {
-      this.type = 'password';
+      this.type = "password";
       this.transformed = this.copy(this.input);
     },
     onModalShown() {
       this.$refs.input.focus();
     },
     onSave() {
-      if (this.setting.ui?.isNotEmpty && (this.transformed === '' || this.transformed === null)) {
+      if (this.setting.ui?.isNotEmpty && (this.transformed === "" || this.transformed === null)) {
         return;
       }
       this.input = this.copy(this.transformed);
@@ -125,34 +196,22 @@ export default {
       this.emitSaved(this.input);
     },
     togglePassword() {
-      if (this.type == 'text') {
-        this.type = 'password';
-      } else {
-        this.type = 'text';
-      }
+      this.type = this.type === "text" ? "password" : "text";
       this.$refs.input.focus();
-    }
+    },
   },
-  mounted() {
-    if (this.value === null) {
-      this.input = '';
-    } else {
-      this.input = this.value;
-    }
-    this.transformed = this.copy(this.input);
-  }
 };
 </script>
 
 <style lang="scss" scoped>
-  @import '../../../../sass/colors';
+@import '../../../../sass/colors';
 
-  $disabledBackground: lighten($secondary, 20%);
+$disabledBackground: lighten($secondary, 20%);
 
-  .btn:disabled,
-  .btn.disabled {
-    background: $disabledBackground;
-    border-color: $disabledBackground;
-    opacity: 1 !important;
-  }
+.btn:disabled,
+.btn.disabled {
+  background: $disabledBackground;
+  border-color: $disabledBackground;
+  opacity: 1 !important;
+}
 </style>

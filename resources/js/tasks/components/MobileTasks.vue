@@ -38,6 +38,7 @@ export default {
   mixins: [datatableMixin, ListMixin, dataLoadingMixin],
   props: {
     filter: {},
+    process: Object,
   },
   data() {
     return {
@@ -75,7 +76,7 @@ export default {
     };
   },
   mounted() {
-    this.pmql = `(user_id = ${ProcessMaker.user.id}) AND (status = "In Progress")`;
+    this.pmql = `(user_id = ${ProcessMaker.user.id}) AND (status = "In Progress") AND (process_id = ${this.process.id})`;
   },
   methods: {
     updatePmql(value) {

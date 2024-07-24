@@ -20,17 +20,24 @@
         </b-row>
         <b-row align-v="start" class="pt-3">
           <b-col v-if="existingAssets.length" class="overflow-modal">
-            <b-row align-v="start" v-for="(asset, index) in existingAssets" :key="index">
-              <b-col class="col-1 p-0 pr-1 text-right">
-                <i class="fas fa-exclamation-triangle text-warning"></i>
-              </b-col>
-              <b-col class="p-0 pl-1">
-                <h5 class="mb-3 fw-semibold">
-                  {{ warningTitle(asset) }}
-                  <div><small class="helper text-muted">{{ helperText(asset) }}</small></div>
-                </h5>
-              </b-col>
-            </b-row>
+            <!-- Dashboard Warning -->
+             <template v-if="hasDashboardRedirect">
+            <warning-message
+                :title="dashboardWarningTitle()"
+                :helper-text="dashboardHelperText()"
+              ></warning-message>
+            </template>
+            
+            <!-- Asset Warnings -->
+            <template v-for="(asset, index) in existingAssets">
+              <warning-message
+                :key="index"
+                :title="warningTitle(asset)"
+                :helper-text="helperText(asset)"
+              ></warning-message>
+            </template>
+
+            <!-- No Update Permissions Message -->
             <p v-if="!userHasEditPermissions">{{ noUpdatePermissions(asset) }}</p>
           </b-col>
         </b-row>
@@ -43,9 +50,10 @@
 <script>
   import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
   import Modal from "../../../components/shared/Modal";
-
+  import WarningMessage from "./WarningMessage";
+  
   export default {
-    components: { Modal },
+    components: { Modal, WarningMessage },
     mixins: [ FormErrorsMixin ],
     props: ['existingAssets', 'processName','userHasEditPermissions'],
     data: function() {
@@ -62,10 +70,15 @@
     computed: {
       title() {
         if (this.existingAssets.length > 0) {
-          return this.$t('Import {{type}}: {{item}}', {type: this.existingAssets[0].typeHuman, item: this.processName});
+          return this.$t('{{item}}', {type: this.existingAssets[0].typeHuman, item: this.processName});
         }
         return;
       },
+      hasDashboardRedirect() {
+        if (this.existingAssets.length > 0) {
+          return this.existingAssets[0]?.references?.hasDashbordRedirect;
+        }
+      }
     },
     watch: {
     },
@@ -101,8 +114,14 @@
           return this.$t(" will overwrite any assets tied to the current {{type}}. This may cause unintended side effects.", { type: this.existingAssets[0].typeHuman.toLowerCase() });
         }
       },
+      dashboardWarningTitle(){
+        return this.$t('Dashboard configuration was not imported');
+      },
       warningTitle(asset) {
-        return this.$t('Caution: {{type}} Already Exists', {type: asset.typeHuman});
+        return this.$t('{{type}} Already Exists', {type: asset.typeHuman});
+      },
+      dashboardHelperText() {
+        return this.$t('Manually reconfigure the dashboard using an existing one in the environment.');
       },
       helperText(asset) {
         let text = "This environment already contains the {{ item }} named '{{ name }}.'";

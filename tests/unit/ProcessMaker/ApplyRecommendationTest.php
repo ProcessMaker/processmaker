@@ -59,7 +59,7 @@ class ApplyRecommendationTest extends TestCase
             'status' => 'ACTIVE',
         ]);
 
-        $userToReassignTo = User::factory()->create();
+        $userToReassignTo = User::factory()->create(['status' => 'ACTIVE']);
 
         $task = Mockery::mock(ProcessRequestToken::class);
         $task->shouldReceive('reassign')->once()->with($userToReassignTo->id, $user);

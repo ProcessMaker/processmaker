@@ -1,11 +1,11 @@
 <template>
   <div id="process-screen">
-    <process-header
-      :process="process"
-      @goBack="goBack()"
-      @onProcessNavigate="onProcessNavigate()"
-      :enableCollapse="false"
-    />
+    <process-header-start
+        :process="process"
+        @goBack="goBack()"
+        @onProcessNavigate="onProcessNavigate"
+        v-if="!mobileApp"
+      />
     <display-screen
       v-if="showScreen"
       :screen="screen"
@@ -55,7 +55,7 @@ import LaunchpadSettingsModal from "../../components/shared/LaunchpadSettingsMod
 import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
 import processNavigationMixin from "../../components/shared/processNavigation";
 import ProcessesMixin from "./mixins/ProcessesMixin";
-import ProcessHeader from "./ProcessHeader.vue";
+import ProcessHeaderStart from "./ProcessHeaderStart.vue";
 
 export default {
   components: {
@@ -66,7 +66,7 @@ export default {
     CreatePmBlockModal,
     AddToProjectModal,
     LaunchpadSettingsModal,
-    ProcessHeader,
+    ProcessHeaderStart,
   },
   mixins: [ellipsisMenuMixin, processNavigationMixin, ProcessesMixin],
   props: ["process", "currentUserId"],
@@ -75,6 +75,7 @@ export default {
       screen: {},
       screen_id: "",
       showScreen: false,
+      mobileApp: window.ProcessMaker.mobileApp,
     };
   },
   mounted() {

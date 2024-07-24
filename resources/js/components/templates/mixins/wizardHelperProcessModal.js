@@ -74,7 +74,7 @@ export default {
       this.cancelHelperProcessRequest();
     },
     cancelHelperProcessRequest() {
-      const { process_request_id: processRequestId } = this.task;
+      const processRequestId = this.task.process_request.id;
       ProcessMaker.apiClient.put(`requests/${processRequestId}`, {
         status: "CANCELED",
       }).then(() => {

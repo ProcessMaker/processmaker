@@ -27,7 +27,7 @@
       <!-- Tabs navs -->
       <ul 
         id="tabsRequests"
-        class="nav nav-tabs nav-justified"
+        class="nav nav-tabs"
         role="tablist"
       >
         <li class="nav-item" role="presentation">
@@ -87,7 +87,6 @@
           role="tabpanel"
           aria-labelledby="tasks-tab"
         >
-          <filter-mobile type="tasks" @filterspmqlchange="onFiltersPmqlChange"></filter-mobile>
           <request-detail-mobile
             ref="pending"
             :process-request-id="request.id"

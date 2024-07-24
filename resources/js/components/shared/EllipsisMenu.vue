@@ -3,14 +3,12 @@
     v-if="filterActions.length > 0"
     v-b-tooltip.hover="{ placement: 'bottom', title: 'Options', variant: 'secondary', customClass: 'ellipsis-tooltip' }"
     :variant="variant ? variant : 'outlined-secondary'"
-    :toggle-class="['static-header', { 'contracted-menu': !lauchpad }, { 'expanded-menu': lauchpad }]"
+    :toggle-class="['static-header', { 'contracted-menu': !contractedMenu }, { 'expanded-menu': contractedMenu }]"
     no-flip
     lazy
-    right
     no-caret
-    offset="0"
     class="ellipsis-dropdown-main static-header"
-    :popper-opts="{ placement: 'bottom-end' }"
+    :dropleft="!lauchpad"
     @show="onShow"
     @hide="onHide"
   >
@@ -119,7 +117,22 @@ export default {
   components: { PmqlInput },
   filters: { },
   mixins: [],
-  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "lauchpad", "customButton", "showProgress", "isPackageInstalled", "searchBar", "variant", "redirectTo", "redirectId"],
+  props: [
+    "actions",
+    "permission",
+    "data",
+    "isDocumenterInstalled",
+    "divider",
+    "lauchpad",
+    "customButton",
+    "showProgress",
+    "isPackageInstalled",
+    "searchBar",
+    "variant",
+    "redirectTo",
+    "redirectId",
+    "translation",
+  ],
   data() {
     return {
       active: false,
@@ -146,6 +159,9 @@ export default {
       const lastAction = filteredActions.slice(-1);
 
       return lastAction;
+    },
+    contractedMenu() {
+      return this.lauchpad || this.translation;
     },
   },
   methods: {
@@ -241,7 +257,7 @@ export default {
       const currentUrl = window.location.href;
       const isInUrl = currentUrl.includes("process-browser");
       return isInUrl;
-    }
+    },
   },
 };
 </script>
@@ -250,7 +266,6 @@ export default {
 @import "../../../sass/colors";
 
 .ellipsis-dropdown-main {
-  float: right;
 }
 
 .ellipsis-dropdown-item {
@@ -315,7 +330,7 @@ export default {
   color: #556271;
   text-transform: none;
   border-radius: 4px;
-  font-size: 16px;
+  font-size: 16px !important;
 }
 .ellipsis-icon-v {
   height: 16px;
