@@ -304,7 +304,7 @@ export default {
 
 .pm-table-container th {
   position: relative;
-  max-width: 800px;
+  max-width: 960px;
 }
 
 .pm-table-column-header {
