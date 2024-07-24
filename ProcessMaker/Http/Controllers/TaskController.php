@@ -231,19 +231,8 @@ class TaskController extends Controller
                         $data
                     );
 
-                    // Set the flag is_actionbyemail in true
-                    (new ProcessRequestController)->enableIsActionbyemail($task->id);
-
-                    $response['message'] = 'Variable updated successfully';
-                    $response['data'] = $abe;
-                    $response['status'] = 200;
-                    // Show the screen defined
-                    $response = response()->json([
-                        'message' => $response['message'],
-                        'data' => $response['data'],
-                    ], $response['status']);
-
-                    return $this->showScreen($abe->completed_screen_id, $response);
+                    // Show the abe completed screen	                    // Set the flag is_actionbyemail in true
+                    return $this->showScreen($abe->completed_screen_id);
                 }
             }
         } catch (\Exception $e) {
