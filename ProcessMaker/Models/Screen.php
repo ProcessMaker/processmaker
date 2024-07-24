@@ -106,28 +106,6 @@ class Screen extends ProcessMakerModel implements ScreenInterface
     ];
 
     /**
-     * Table columns.
-     *
-     * @var array
-     */
-    protected $columns = [
-        'id',
-        'uuid',
-        'screen_category_id',
-        'title',
-        'description',
-        'type',
-        'config',
-        'computed',
-        'custom_css',
-        'created_at',
-        'updated_at',
-        'status',
-        'key',
-        'watchers',
-    ];
-
-    /**
      * Validation rules
      *
      * @param $existing
@@ -183,16 +161,6 @@ class Screen extends ProcessMakerModel implements ScreenInterface
             'project_assets', 'asset_id', 'project_id')
             ->withPivot('asset_type')
             ->wherePivot('asset_type', static::class)->withTimestamps();
-    }
-
-    public function scopeExclude($query, $value = [])
-    {
-        $columns = array_diff($this->columns, (array) $value);
-        $columns = array_map(function ($column) {
-            return $this->table . '.' . $column;
-        }, $columns);
-
-        return $query->select($columns);
     }
 
     /**

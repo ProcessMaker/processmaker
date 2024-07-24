@@ -4,18 +4,17 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use ProcessMaker\Models\User;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\User;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
         Schema::table('processes', function (Blueprint $table) {
-            if (! Schema::hasColumn('processes', 'updated_by')) {
+            if (!Schema::hasColumn('processes', 'updated_by')) {
                 $table->unsignedInteger('updated_by')->nullable()->after('updated_at');
 
                 $table->foreign('updated_by')
@@ -26,7 +25,7 @@ return new class extends Migration
         });
 
         Schema::table('process_versions', function (Blueprint $table) {
-            if (! Schema::hasColumn('process_versions', 'updated_by')) {
+            if (!Schema::hasColumn('process_versions', 'updated_by')) {
                 $table->unsignedInteger('updated_by')->nullable()->after('updated_at');
 
                 $table->foreign('updated_by')

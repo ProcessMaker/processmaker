@@ -7,7 +7,6 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ProcessMaker\Filters\Filter;
-use ProcessMaker\Http\Resources\Task as Resource;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
@@ -17,8 +16,21 @@ trait TaskControllerIndexMethods
 {
     private function indexBaseQuery($request)
     {
-        $query = ProcessRequestToken::with(['processRequest', 'user', 'draft']);
-        $query->select('process_request_tokens.*');
+        $query = ProcessRequestToken::exclude(['data'])->with([
+            'processRequest' => fn($q) => $q->exclude(['data']),
+            // review if bpmn is reuiqred here process
+            'process' => fn($q) => $q->exclude(['svg', 'warnings']),
+            // review if bpmn is reuiqred here processRequest.process
+            'processRequest.process' => fn($q) => $q->exclude(['svg', 'warnings']),
+            // The following lines use to much memory but reduce the number of queries
+            // bpmn is required here in processRequest.processVersion
+            // 'processRequest.processVersion' => fn($q) => $q->exclude(['svg', 'warnings']),
+            // review if bpmn is reuiqred here processRequest.processVersion.process
+            // 'processRequest.processVersion.process' => fn($q) => $q->exclude(['svg', 'warnings']),
+            'user',
+            'draft'
+        ]);
+
         $include = $request->input('include') ? explode(',', $request->input('include')) : [];
 
         foreach (['data'] as $key) {

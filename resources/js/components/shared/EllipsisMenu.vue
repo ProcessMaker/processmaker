@@ -6,11 +6,9 @@
     :toggle-class="['static-header', { 'contracted-menu': !contractedMenu }, { 'expanded-menu': contractedMenu }]"
     no-flip
     lazy
-    right
     no-caret
-    offset="0"
     class="ellipsis-dropdown-main static-header"
-    :popper-opts="{ placement: 'bottom-end' }"
+    :dropleft="!lauchpad"
     @show="onShow"
     @hide="onHide"
   >
@@ -268,7 +266,6 @@ export default {
 @import "../../../sass/colors";
 
 .ellipsis-dropdown-main {
-  float: right;
 }
 
 .ellipsis-dropdown-item {

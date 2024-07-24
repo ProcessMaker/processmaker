@@ -496,10 +496,6 @@ export default {
     white-space: nowrap;
   }
 }
-.ellipsis-dropdown-main ul.dropdown-menu.dropdown-menu-right.show {
-  max-height: 250px;
-  overflow-y: auto;
-}
 .pm-table-selected-row {
   background-color: #E8F0F9;
   color: #1572C2;
