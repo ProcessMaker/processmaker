@@ -207,7 +207,7 @@
             }
           ],
           actions: [
-            { value: "view-documentation", content: "Template Documentation", link: true, href:"/modeler/template/{{id}}/print", permission: "view-process-templates", icon: "fas fa-sign", conditional: "isDocumenterInstalled"},
+            { value: "view-documentation", content: "Template Documentation", link: true, href:"/modeler/template/{{id}}/documentation", permission: "view-process-templates", icon: "fas fa-sign", conditional: "isDocumenterInstalled"},
             { value: "edit-designer", content: "Edit Template", link: true, href:"/modeler/templates/{{id}}", permission: "edit-process-templates", icon: "fas fa-edit"},
             { value: "export-item", content: "Export Template", permission: "export-process-templates", icon: "fas fa-file-export"},
             { value: "edit-item", content: "Configure Template", link: true, href:"/template/process/{{id}}/configure", permission: "edit-process-templates", icon: "fas fa-cog"},

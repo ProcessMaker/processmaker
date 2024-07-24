@@ -142,6 +142,7 @@ export default {
     loadCard(callback, message) {
       if(message === 'bookmark') {
         this.processList = [];
+        this.page = 1;
       }
       this.loading = true;
       const url = this.buildURL();
@@ -235,7 +236,11 @@ export default {
     onFilter(value, showEmpty = false) {
       this.processList = [];
       this.currentPage = 1;
-      this.pmql = `(fulltext LIKE "%${value}%")`;
+      if (value) {
+        this.pmql = `(fulltext LIKE "%${value}%")`;
+      } else {
+        this.pmql = "";
+      }
       this.filter = value;
       this.showEmpty = showEmpty;
       this.loadCard();
@@ -258,7 +263,6 @@ export default {
   display: flex;
   flex-wrap: wrap;
   position: relative;
-  height: 100%;
   overflow: unset;
   justify-content: flex-start;
 

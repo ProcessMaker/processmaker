@@ -230,6 +230,7 @@ class Media extends MediaLibraryModel
             }
             // Store the images related move to MEDIA
             $process->addMediaFromBase64($properties['url'])
+                ->usingFileName($properties['file_name'])
                 ->withCustomProperties($customProperties)
                 ->toMediaCollection($collectionName);
         }

@@ -103,6 +103,9 @@ export default {
     // Some controllers return each row as a json object to preserve integer keys (ie saved search)
     jsonRows(rows) {
       if (rows.length === 0 || !(_.has(_.head(rows), "_json"))) {
+        if (!Array.isArray(rows) && typeof rows === "object") {
+          return Object.values(rows);
+        }
         return rows;
       }
       return rows.map((row) => JSON.parse(row._json));
