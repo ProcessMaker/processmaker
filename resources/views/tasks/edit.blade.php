@@ -380,6 +380,11 @@
       postScriptEndpoint: '/scripts/execute/{id}?task_id={{ $task->id }}',
     };
 
+    window.sessionStorage.setItem(
+      'elementDestinationURL',
+      '{{ route('requests.show', ['request' => $task->process_request_id]) }}'
+    );
+
     const task = @json($task);
     const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};

@@ -196,7 +196,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .pagination {
   display: flex;
   justify-content: left;

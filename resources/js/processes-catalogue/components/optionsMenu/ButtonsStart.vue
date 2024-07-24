@@ -7,56 +7,49 @@
       :disabled="processEvents.length === 0"
       @click="goToNewRequest(startEvent)"
     >
-      <i
-        class="fa fa-play-circle"
-        style="font-size: 16px;"
-      />
+      <i class="fa fa-play-circle" />
       <span class="pl-2"> {{ displayTitle }} </span>
     </button>
     <button
       v-else
-      class="btn btn-success btn-lg dropdown-toggle start-button justify-content-between"
+      class="btn btn-success start-button justify-content-between"
       type="button"
       data-toggle="dropdown"
       aria-haspopup="true"
       aria-expanded="false"
     >
-      <span>
-        <i class="fa fa-play-circle" />
-        <span class="pl-2"> {{ displayTitle }} </span>
-      </span>
+      <i class="fa fa-play-circle" />
+      <span class="pl-2"> {{ displayTitle }} </span>
     </button>
     <div class="dropdown-menu dropdown-menu-right scrollable-menu p-3 pb-0 mt-2">
       <div
         v-for="event in processEvents"
         :key="event.id"
-        class="dropdown-item start-event"
+        class="dropdown-item dropdown-item-div"
         type="button"
       >
-        <p
-          class="start-event-title"
-        >
+        <div v-if="event.webEntry" 
+             class="start-event"
+             @click="copyLink(event)">
+          <button class="btn button-start-event">
+            <i class="fas fa-link pr-1" />
+          </button>
           {{ event.name }}
-        </p>
-        <button
-          v-if="event.webEntry"
-          type="button"
-          class="btn button-start-event"
-          @click="copyLink(event)"
-        >
-          <i class="fas fa-link pr-1" />
-          {{ $t('Copy Link') }}
-        </button>
-        <button
-          v-else
-          type="button"
-          class="btn button-start-event"
-          @click="goToNewRequest(event.id)"
-        >
-          <i class="fas fa-play-circle pr-1" />
-          {{ $t('Start Here') }}
-        </button>
-        <hr class="line-item">
+          <div class="start-event-label">
+            {{ $t('Copy link') }}  
+          </div>
+        </div>
+        <div v-else
+             class="start-event"
+             @click="goToNewRequest(event.id)">
+          <button class="btn button-start-event">
+            <i class="fas fa-play-circle pr-1" />  
+          </button>
+          {{ event.name }}
+          <div class="start-event-label">
+            {{ $t('Start') }}
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -141,16 +134,7 @@ export default {
   background: #4EA075;
   border: 0px;
   border-radius: 8px;
-  height: 40px;
-  width: 249px;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 14px;
-  line-height: 21px;
-  letter-spacing: -0.02em;
-  text-align: left;
   text-transform: capitalize;
-  padding: 16px;
-
   i {
     font-size: 1.3em;
     vertical-align: top;
@@ -169,41 +153,38 @@ export default {
   border-radius: 8px;
   border: 1px solid #cdddee;
   box-shadow: 0px 10px 20px 4px #00000021;
+  padding: initial !important;
 }
 .dropdown-toggle::after {
   display: none;
 }
+.dropdown-item-div {
+  padding: initial;
+}
 .start-event {
-  padding: 16px;
-  padding-bottom: 0px;
+  display: flex;
+  padding: 10px;
+  width: 100%;
 }
-.start-event-title {
-  color: #566877;
-  margin-bottom: 8px;
-  text-transform: uppercase;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 14px;
-  line-height: 21px;
-  letter-spacing: -0.02em;
-  text-align: left;
+.dropdown-item:hover {
+  background-color: #E0F5E7;
 }
-.line-item {
-  margin-top: 16px;
-  margin-bottom: 0px;
+.dropdown-item:hover .start-event-label{
+  color: #4EA075;
 }
 .button-start-event {
   color: #4ea075;
   text-transform: capitalize;
-  padding: 4px 6px;
-  border: 0px;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 16px;
-  line-height: 24px;
-  letter-spacing: -0.02em;
-  text-align: left;
+  padding: initial;
 }
 .button-start-event:hover {
   color: white;
   background-color: #4ea075;
+}
+.start-event-label {
+  margin-left: auto;
+  font-style: italic;
+  font-size: 14px;
+  color: darkgray;
 }
 </style>

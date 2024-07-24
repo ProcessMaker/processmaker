@@ -3,7 +3,8 @@
     v-if="filterActions.length > 0"
     v-b-tooltip.hover="{ placement: 'bottom', title: 'Options', variant: 'secondary', customClass: 'ellipsis-tooltip' }"
     :variant="variant ? variant : 'outlined-secondary'"
-    :toggle-class="['static-header', { 'contracted-menu': !lauchpad }, { 'expanded-menu': lauchpad }]"
+    :toggle-class="['static-header', { 'contracted-menu': !contractedMenu }, { 'expanded-menu': contractedMenu }]"
+    no-flip
     lazy
     no-caret
     class="ellipsis-dropdown-main static-header"
@@ -116,7 +117,22 @@ export default {
   components: { PmqlInput },
   filters: { },
   mixins: [],
-  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "lauchpad", "customButton", "showProgress", "isPackageInstalled", "searchBar", "variant", "redirectTo", "redirectId"],
+  props: [
+    "actions",
+    "permission",
+    "data",
+    "isDocumenterInstalled",
+    "divider",
+    "lauchpad",
+    "customButton",
+    "showProgress",
+    "isPackageInstalled",
+    "searchBar",
+    "variant",
+    "redirectTo",
+    "redirectId",
+    "translation",
+  ],
   data() {
     return {
       active: false,
@@ -143,6 +159,9 @@ export default {
       const lastAction = filteredActions.slice(-1);
 
       return lastAction;
+    },
+    contractedMenu() {
+      return this.lauchpad || this.translation;
     },
   },
   methods: {
@@ -238,7 +257,7 @@ export default {
       const currentUrl = window.location.href;
       const isInUrl = currentUrl.includes("process-browser");
       return isInUrl;
-    }
+    },
   },
 };
 </script>
