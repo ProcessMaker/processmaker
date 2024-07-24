@@ -299,16 +299,20 @@ export default {
     width: 1160px;
   }
 
-  @media (min-width: 1790px) and (max-width: 2148px) {
-    width: 1542px;
+  @media (min-width: 1790px) and (max-width: 1879px) {
+    width: 1156px;
   }
 
-  @media (min-width: 2149px) and (max-width: 2507px){
-    width: 1924px;
+  @media (min-width: 1880px) and (max-width: 2148px){
+    width: 1544px;
   }
 
-  @media (min-width: 2508px){
-    width: 2306px;
+  @media (min-width: 2149px) and (max-width: 2438px){
+    width: 1926px;
+  }
+
+  @media (min-width: 2439px){
+    width: 2308px;
   }
 }
 .separator-class.width-changed {
