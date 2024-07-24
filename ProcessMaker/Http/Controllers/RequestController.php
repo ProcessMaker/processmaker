@@ -176,7 +176,6 @@ class RequestController extends Controller
         $files = \ProcessMaker\Models\Media::getFilesRequest($request);
 
         $canPrintScreens = $this->canUserPrintScreen($request);
-        $screenRequested = $canPrintScreens ? $request->getScreensRequested() : [];
 
         $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, ($request->summary_screen) ? $request->summary_screen->type : 'FORM'));
@@ -203,7 +202,6 @@ class RequestController extends Controller
                 'canRetry',
                 'manager',
                 'canPrintScreens',
-                'screenRequested',
                 'addons',
                 'isProcessManager',
                 'eligibleRollbackTask',
@@ -222,7 +220,6 @@ class RequestController extends Controller
             'canRetry',
             'manager',
             'canPrintScreens',
-            'screenRequested',
             'addons',
             'dataActionsAddons',
             'isProcessManager',
