@@ -182,12 +182,6 @@ class TaskController extends Controller
             'varValue' => 'required|string',
         ]);
 
-        $response = [
-            'message' => 'An error occurred',
-            'data' => null,
-            'status' => 500,
-        ];
-
         try {
             // Verificar si la respuesta ya ha sido enviada
             $abe = ProcessAbeRequestToken::where('uuid', $abe_uuid)->first();
@@ -256,18 +250,15 @@ class TaskController extends Controller
             return response()->json([
                 'message' => 'Error updating variable',
                 'error' => $e->getMessage(),
-                'error' => $e->getMessage(),
             ], 500);
         }
-
-        // Return response
-        return response()->json([
-            'message' => $response['message'],
-            'data' => $response['data'],
-        ], $response['status']);
     }
-
-    public function showScreen($screenId, $response)
+    
+    /**
+     * Show a screen defined
+     * @param int $screenId
+     */
+    private function showScreen($screenId)
     {
         if (!empty($screenId)) {
             $customScreen = Screen::findOrFail($screenId);
