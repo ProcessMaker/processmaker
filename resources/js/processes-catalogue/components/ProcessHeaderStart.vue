@@ -102,7 +102,11 @@ export default {
   }
 }
 </script>
-
+<style>
+.ellipsis-border div button span {
+  font-size: 16px;
+}
+</style>
 <style lang="scss" scoped>
 @import url("./scss/processes.css");
 @import '~styles/variables';
