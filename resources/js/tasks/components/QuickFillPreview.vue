@@ -86,9 +86,6 @@
                   <i class="fas fa-times" />
                 </b-button>
               </div>
-              <div class="header-container-warning">
-                <p>{{ disclaimer }}</p>
-              </div>
             </div>
             <div v-else style="width: 92%">
               <div class="header-container-quick">
@@ -131,9 +128,6 @@
                   <i class="fas fa-times" />
                 </b-button>
               </div>
-              <div class="header-container-warning">
-                <p>{{ disclaimer }}</p>
-              </div>
             </div>
           </template>
           <template v-slot:tooltip="{ tooltipRowData, previewTasks }">
@@ -175,7 +169,7 @@
 </template>
 <script>
 export default {
-  props: ["task", "propColumns", "propFilters", "propFromButton"],
+  props: ["task", "propColumns", "propFilters", "propFromButton", "screenFields"],
   data() {
     return {
       processName: "",
@@ -233,7 +227,6 @@ export default {
         },
       ],
       dataTasks: {},
-      disclaimer: this.$t("This is a Beta version and when using Quickfill, it may replace the pre-filled information in the form."),
       tasksListName: "preview-table",
     };
   },
@@ -269,9 +262,33 @@ export default {
       }
       this.$emit("close");
     },
-    buttonThisDataFromFullTask(data) {
+    buttonThisDataFromFullTask(quickFillData) {
+      // If the task does not have a draft yet, use the task data
+      const dataToUse = this.task.draft?.data ?? this.task.data;
+
+      const draftData = {};
+      this.screenFields.forEach((field) => {
+        const existingValue = _.get(dataToUse, field, null);
+
+        let quickFillValue;
+        if (existingValue) {
+          // If the value exists in the task data (or task draft data), don't overwrite it
+          quickFillValue = existingValue;
+        } else {
+          // use the value from the quick fill
+          quickFillValue = _.get(quickFillData, field, null);
+        }
+
+        if(this.validateBase64(quickFillValue)) {
+          _.set(draftData, field, existingValue);
+          return;
+        }
+        // Set the value. This handles nested values using dot notation in 'field' string
+        _.set(draftData, field, quickFillValue);
+      });
+
       return ProcessMaker.apiClient
-        .put("drafts/" + this.task.id, data)
+        .put("drafts/" + this.task.id, draftData)
         .then((response) => {
           this.task.draft = _.merge({}, this.task.draft, response.data);
           window.location.href = `/tasks/${this.task.id}/edit`;
@@ -280,6 +297,10 @@ export default {
         .catch((error) => {
           console.error("Error", error);
         });
+    },
+    validateBase64(field) {
+      const regex = /^data:image\/\w+;base64,/;
+      return regex.test(field);
     },
     /*
      * To do: There's a global-search-bar class with a large z-index. We added a class 
