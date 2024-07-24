@@ -1,0 +1,20 @@
+@font-face {font-family: "processmaker-font";
+  src: url('processmaker-font.eot?t=1721831155434'); /* IE9*/
+  src: url('processmaker-font.eot?t=1721831155434#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url("processmaker-font.woff2?t=1721831155434") format("woff2"),
+  url("processmaker-font.woff?t=1721831155434") format("woff"),
+  url('processmaker-font.ttf?t=1721831155434') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+  url('processmaker-font.svg?t=1721831155434#processmaker-font') format('svg'); /* iOS 4.1- */
+}
+
+[class^="fp-"], [class*=" fp-"] {
+  font-family: 'processmaker-font' !important;
+  font-style:normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.fp-brush-icon:before { content: "\ea01"; }
+
+$fp-brush-icon: "\ea01";
+

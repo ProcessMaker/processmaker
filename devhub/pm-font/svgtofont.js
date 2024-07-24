@@ -6,8 +6,8 @@ const svgtofont = require("svgtofont");
 const path = require("path");
 
 svgtofont({
-  src: path.resolve(process.cwd(), "resources/icons"), // svg path
-  dist: path.resolve(process.cwd(), "resources/fonts/font-pm"), // output path
+  src: path.resolve(process.cwd(), "./devhub/pm-font/svg"), // svg path
+  dist: path.resolve(process.cwd(), "./devhub/pm-font/dist"), // output path
   fontName: "processmaker-font", // font name
   css: true, // Create CSS files.
   startUnicode: 0xea01, // unicode start number
@@ -17,6 +17,7 @@ svgtofont({
   },
   classNamePrefix: "fp",
   website: {
+    template: path.join(process.cwd(), "./devhub/pm-font/template.ejs"),
     title: "ProcessMaker Icons",
     // Must be a .svg format image.
     version: "0.0.1",
