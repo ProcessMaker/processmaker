@@ -14,6 +14,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Recommendation;
 use ProcessMaker\Models\RecommendationUser;
 use ProcessMaker\Models\User;
+use ProcessMaker\RecommendationEngine;
 use ProcessMaker\SyncRecommendations;
 use Tests\TestCase;
 
@@ -195,5 +196,47 @@ class RecommendationEngineTest extends TestCase
         // Return an anonymous object, which will represent
         // the json body of the mock http response
         return $model_data->toArray();
+    }
+
+    public function testHandleUserSettingChanges(): void
+    {
+        Queue::fake([
+            GenerateUserRecommendations::class,
+        ]);
+
+        $user = User::factory()->create([
+            'meta' => (object) [
+                'disableRecommendations' => true,
+            ],
+        ]);
+
+        $original = [
+            'meta' => null,
+        ];
+
+        RecommendationUser::factory()->create([
+            'user_id' => $user->id,
+        ]);
+
+        $this->assertCount(1, RecommendationUser::all());
+
+        RecommendationEngine::handleUserSettingChanges($user, $original);
+
+        // User disabled so all recommendations should be deleted
+        $this->assertCount(0, RecommendationUser::all());
+
+        Queue::assertNotPushed(GenerateUserRecommendations::class);
+
+        $user->meta = null;
+        $user->save();
+
+        $original['meta'] = (object) [
+            'disableRecommendations' => true,
+        ];
+
+        RecommendationEngine::handleUserSettingChanges($user, $original);
+
+        // User enabled so recommendations should be generated
+        Queue::assertPushed(GenerateUserRecommendations::class);
     }
 }

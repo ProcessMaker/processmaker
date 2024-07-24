@@ -185,20 +185,30 @@ trait ScriptDockerNayraTrait
     private function findNayraAddresses($docker, $instanceName, $times): bool
     {
         $ip = '';
+        $nayraDockerNetwork = config('app.nayra_docker_network');
+
         for ($i = 0; $i < $times; $i++) {
             if ($i > 0) {
                 sleep(1);
             }
-            $ip = exec(
-                $docker . ' inspect --format '
-                . (config('app.nayra_docker_network')
-                    ? "'{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'"
-                    : "'{{ .NetworkSettings.IPAddress }}'"
-                    )
-                . " {$instanceName}_nayra 2>/dev/null",
-                $output,
-                $status
-            );
+            if ($nayraDockerNetwork === 'host') {
+                $ip = exec(
+                    $docker . " exec {$instanceName}_nayra hostname -i 2>/dev/null",
+                    $output,
+                    $status
+                );
+            } else {
+                $ip = exec(
+                    $docker . ' inspect --format '
+                    . ($nayraDockerNetwork
+                        ? "'{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'"
+                        : "'{{ .NetworkSettings.IPAddress }}'"
+                        )
+                    . " {$instanceName}_nayra 2>/dev/null",
+                    $output,
+                    $status
+                );
+            }
             if ($status) {
                 $ip = '';
             }

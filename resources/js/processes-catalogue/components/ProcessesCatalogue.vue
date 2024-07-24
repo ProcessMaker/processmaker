@@ -94,7 +94,7 @@ export default {
       category: null,
       selectedProcess: null,
       guidedTemplates: false,
-      numCategories: 100,
+      numCategories: 20,
       page: 1,
       key: 0,
       totalPages: 1,
@@ -114,6 +114,10 @@ export default {
     if (!this.isMobile) {
       this.showMenu = true;
     }
+
+    this.$root.$on('filter-categories', (filter) => {
+      this.filterCategories(filter);
+    });
   },
   watch: {
     category: {
@@ -124,9 +128,6 @@ export default {
           this.showMenu = false;
         }
       }
-    },
-    listCategories() {
-      this.$root.categories = this.listCategories;
     },
   },
   computed: {
@@ -151,8 +152,10 @@ export default {
      */
     filterCategories(filter = "") {
       this.page = 1;
-      this.listCategories = [];
       this.filter = filter;
+      if (filter === null) {
+        this.$root.filteredCategories = null;
+      }
       this.getCategories();
     },
     /**
@@ -166,8 +169,13 @@ export default {
             + "&order_direction=asc"
             + `&page=${this.page}`
             + `&per_page=${this.numCategories}`
-            + `&filter=${this.filter}`)
+            + `&filter=${this.filter || ''}`)
           .then((response) => {
+
+            if (this.filter) {
+              this.$root.filteredCategories = response.data.data;
+              return;
+            }
 
             const loadedCategories = response.data.data.filter(category => {
               // filter if category exists in the default options
@@ -288,7 +296,7 @@ export default {
     background-color: #F7F9FB;
     flex: 1;
     width: 315px;
-    height: 100%;
+    height: 95%;
     overflow-y: scroll;
   }
 
@@ -342,8 +350,7 @@ export default {
 }
 
 .slide-control {
-  border-left: 0;
-  border-right: 1px solid #DEE0E1;
+  border-left: 1px solid #DEE0E1;
   margin-left: 10px;
   
   @media (max-width: $lp-breakpoint) {
@@ -352,7 +359,7 @@ export default {
 
   a {
     position: relative;
-    left: 10px;
+    left: -10px;
     top: 40px;
     z-index: 5;
 
@@ -368,7 +375,6 @@ export default {
 }
 
 .menu-open .slide-control {
-  border-right: 0;
   border-left: 1px solid #DEE0E1;
 
   a {
