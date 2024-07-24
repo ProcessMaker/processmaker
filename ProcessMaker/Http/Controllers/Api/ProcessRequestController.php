@@ -764,19 +764,25 @@ class ProcessRequestController extends Controller
                 $httpRequest->input('order_direction', 'asc')
             )->paginate($httpRequest->input('per_page', 10));
 
-        $response->getCollection()->transform(function ($token) {
-            $definition = $token->getDefinition();
-            if (array_key_exists('screenRef', $definition)) {
-                $screen = $token->getScreenVersion();
-                if ($screen) {
-                    $dataManager = new DataManager();
-                    $screen->data = $dataManager->getData($token, true);
-                    $screen->screen_id = $screen->id;
+        $collection = $response->getCollection()
+            ->transform(function ($token): ?object {
+                $definition = $token->getDefinition();
+                if (array_key_exists('screenRef', $definition)) {
+                    $screen = $token->getScreenVersion();
+                    if ($screen) {
+                        $dataManager = new DataManager();
+                        $screen->data = $dataManager->getData($token, true);
+                        $screen->screen_id = $screen->id;
 
-                    return $screen;
+                        return $screen;
+                    }
                 }
-            }
-        });
+                return null;
+            })
+            ->reject(fn ($item) => $item === null)
+            ->values();
+
+        $response->setCollection($collection);
 
         return new ApiCollection($response);
     }
@@ -785,7 +791,7 @@ class ProcessRequestController extends Controller
      * Adding abe flag
      * @param  int  $id
      *
-     * @return boolean
+     * @return bool
      */
     public function enableIsActionbyemail($id)
     {

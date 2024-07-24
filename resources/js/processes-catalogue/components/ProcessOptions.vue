@@ -30,7 +30,10 @@ export default {
   flex-direction: column;
   align-items: flex-start;
 }
-@media (max-width: 2560px) {
+/*
+  When Screen Width is less than 769px Chart section moves below Details
+*/
+@media (min-width: 769px) {
   .section-options {
     flex-direction: row;
     justify-content: space-between;
