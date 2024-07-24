@@ -296,7 +296,7 @@ export default {
     background-color: #F7F9FB;
     flex: 1;
     width: 315px;
-    height: 100%;
+    height: 95%;
     overflow-y: scroll;
   }
 
