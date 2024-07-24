@@ -316,6 +316,45 @@ export default {
   }
 }
 .separator-class.width-changed {
-  width: 93%;
+  //width: 93%;
+
+  // @media (max-width: $lp-breakpoint) {
+  //   display: block;
+  //   height: auto;
+  //   width: 95%;
+  //   // width: 340px;
+  // }
+
+  @media (min-width: 641px) and (max-width:767px) {
+    width: 340px;
+  }
+
+  @media (min-width: 768px) and (max-width:1075px) {
+    width: 678px;
+  }
+
+  @media (min-width: 1076px) and (max-width:1520px) {
+    width: 1156px;
+  }
+
+  @media (min-width: 1521px) and (max-width: 1789px) {
+    width: 1156px;
+  }
+
+  @media (min-width: 1790px) and (max-width: 1879px) {
+    width: 1542px;
+  }
+
+  @media (min-width: 1880px) and (max-width: 2148px){
+    width: 1859px;
+  }
+
+  @media (min-width: 2149px) and (max-width: 2438px){
+    width: 1926px;
+  }
+
+  @media (min-width: 2439px){
+    width: 2308px;
+  }
 }
 </style>
