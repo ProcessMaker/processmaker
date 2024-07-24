@@ -10,7 +10,13 @@
 
 @section('content_mobile')
 <div v-cloak id="taskMobile">
-  <navbar-task-mobile :task="task" :userIsAdmin="userIsAdmin" :userIsProcessManager="userIsProcessManager"></navbar-task-mobile>
+  <navbar-task-mobile
+    :task="task"
+    :userIsAdmin="userIsAdmin"
+    :userIsProcessManager="userIsProcessManager"
+    @reload-task="handleReloadTask"
+  >
+  </navbar-task-mobile>
   
   <div class="d-flex flex-column">
     <div class="flex-fill">
@@ -18,7 +24,7 @@
         <button type="button" class="btn btn-primary" @click="claimTask">{{__('Claim Task')}}</button>
         {{__('This task is unassigned, click Claim Task to assign yourself.')}}
       </div>
-      <div class="container-fluid h-100 d-flex flex-column">
+      <div id="interactionListener" class="container-fluid h-100 d-flex flex-column">
         <div id="tabContent" class="tab-content m-3 flex-grow-1">
           <task
             ref="task"
@@ -35,6 +41,7 @@
             @@error="error"
             @closed="closed"
             @redirect="redirectToTask"
+            @form-data-changed="handleFormDataChange"
           ></task>
         </div>
       </div>
@@ -69,6 +76,9 @@
     const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
     const userIsProcessManager = {{ Auth::user()->id === $task->process->manager_id ? "true": "false" }};
+    var screenFields = @json($screenFields);
+    window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
+
   </script>
   @foreach($manager->getScripts() as $script)
     <script src="{{$script}}"></script>
@@ -106,6 +116,7 @@
           userIsAdmin,
           userIsProcessManager,
           showTree: false,
+          userHasInteracted: false,
         },
         watch: {
           task: {
@@ -114,6 +125,20 @@
               window.ProcessMaker.breadcrumbs.taskTitle = task.element_name;
               if (task && oldTask && task.id !== oldTask.id) {
                 history.replaceState(null, null, `/tasks/${task.id}/edit`);
+              }
+            }
+          },
+          formData: {
+            deep: true,
+            handler(formData) {
+              if (this.userHasInteracted) {
+                if (this.formDataWatcherActive)
+                {
+                  this.handleAutosave();
+                  this.userHasInteracted = false;
+                } else {
+                  this.formDataWatcherActive = true;
+                }
               }
             }
           },
@@ -298,11 +323,74 @@
           },
           taskUpdated(task) {
             this.task = task;
-          }
+          },
+          autosaveApiCall() {
+            if (!this.taskDraftsEnabled) {
+              return;
+            }
+            const draftData = {};
+
+            const saveDraft = () => {
+              screenFields.forEach((field) => {
+                _.set(draftData, field, _.get(this.formData, field));
+              });
+
+              return ProcessMaker.apiClient
+              .put("drafts/" + this.task.id, draftData)
+              .then((response) => {
+                ProcessMaker.alert(this.$t('Saved'), 'success')
+                this.task.draft = _.merge(
+                  {},
+                  this.task.draft,
+                  response.data
+                );
+              })
+              .catch(() => {
+                this.errorAutosave = true;
+              })
+            };
+            if (screenFields.length === 0) {
+              return this.updateScreenFields(this.task.id)
+              .then(() => {
+                return saveDraft();
+              });
+            } else {
+              return saveDraft();
+            }
+          },
+          updateScreenFields(taskId) {
+            return ProcessMaker.apiClient
+            .get(`tasks/${taskId}/screen_fields`)
+            .then((response)=> {
+              screenFields = response.data;
+            });
+          },
+          sendUserHasInteracted() {
+            if (!this.userHasInteracted) {
+              this.userHasInteracted = true;
+            }
+          },
+          handleFormDataChange() {
+            if (this.userHasInteracted) {
+              this.handleAutosave();
+              this.userHasInteracted = false;
+            }
+          },
+          handleReloadTask(value) {
+            const taskComponent = this.$refs.task;
+            taskComponent.loadTask();
+          },
         },
         mounted() {
           this.prepareData();
           window.ProcessMaker.isSelfService = this.isSelfService;
+          const interactionListener = document.getElementById('interactionListener');
+          interactionListener.addEventListener('mousedown', (event) => {
+            this.sendUserHasInteracted();
+          });
+          interactionListener.addEventListener('keydown', (event) => {
+            this.sendUserHasInteracted();
+          });
         }
       });
       window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name)

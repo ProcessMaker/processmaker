@@ -93,6 +93,7 @@ class TaskController extends Controller
         $task->draft = $task->draft();
         $element = $task->getDefinition(true);
         $screenFields = $screenVersion ? $screenVersion->screenFilteredFields() : [];
+        $taskDraftsEnabled = TaskDraft::draftsEnabled();
 
         if ($element instanceof ScriptTaskInterface) {
             return redirect(route('requests.show', ['request' => $task->processRequest->getKey()]));
@@ -121,6 +122,8 @@ class TaskController extends Controller
                     'addons' => $this->getPluginAddons('edit', []),
                     'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
                     'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
+                    'screenFields' => $screenFields,
+                    'taskDraftsEnabled' => $taskDraftsEnabled,
                 ]);
             }
 
@@ -147,7 +150,7 @@ class TaskController extends Controller
                 'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
                 'currentUser' => $currentUser,
                 'screenFields' => $screenFields,
-                'taskDraftsEnabled' => TaskDraft::draftsEnabled(),
+                'taskDraftsEnabled' => $taskDraftsEnabled,
             ]);
         }
     }
@@ -166,7 +169,7 @@ class TaskController extends Controller
     /**
      * Update variable.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param HttpRequest $request
      * @param string $abe_uuid
      */
     public function updateVariable(HttpRequest $request, $abe_uuid)
@@ -180,7 +183,7 @@ class TaskController extends Controller
         $response = [
             'message' => 'An error occurred',
             'data' => null,
-            'status' => 500
+            'status' => 500,
         ];
 
         try {
@@ -238,21 +241,23 @@ class TaskController extends Controller
                     // Show the screen defined
                     $response = response()->json([
                         'message' => $response['message'],
-                        'data' => $response['data']
+                        'data' => $response['data'],
                     ], $response['status']);
+
                     return $this->showScreen($abe->completed_screen_id, $response);
                 }
             }
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error updating variable',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
+
         // Return response
         return response()->json([
             'message' => $response['message'],
-            'data' => $response['data']
+            'data' => $response['data'],
         ], $response['status']);
     }
 

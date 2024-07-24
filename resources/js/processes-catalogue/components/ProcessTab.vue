@@ -17,7 +17,7 @@
           </filter-mobile>
           <mobile-requests :ref="'listMobile'+index"
                            :filter="item.filter"
-                           :pmql="item.pmql">
+                           :process="process">
           </mobile-requests>
         </template>
         <template v-else-if="item.type==='myTasks'">
@@ -27,7 +27,7 @@
           </filter-mobile>
           <mobile-tasks :ref="'listMobile'+index"
                         :filter="item.filter"
-                        :pmql="item.pmql">
+                        :process="process">
           </mobile-tasks>
         </template>
         <template v-else>
@@ -37,7 +37,7 @@
           </filter-mobile>
           <mobile-tasks :ref="'listMobile'+index"
                         :filter="item.filter"
-                        :pmql="item.pmql">
+                        :process="process">
           </mobile-tasks>
         </template>
       </b-tab>
@@ -60,6 +60,7 @@
                             :pmql="item.pmql"
                             :autosaveFilter="false"
                             :fetch-on-created="false"
+                            no-results-message="launchpad"
                             :advancedFilterProp="advancedFilterProp">
           </requests-listing>
         </template>
@@ -72,6 +73,7 @@
                       :fetch-on-created="false"
                       :disable-tooltip="false"
                       :disable-quick-fill-tooltip="false"
+                      no-results-message="launchpad"
                       :advancedFilterProp="advancedFilterProp">
           </tasks-list>
         </template>
@@ -83,6 +85,7 @@
                       :autosaveFilter="false"
                       :fetch-on-created="false"
                       :saved-search="item.idSavedSearch"
+                      no-results-message="launchpad"
                       @in-overdue="setInOverdueMessage">
           </tasks-list>
         </template>

@@ -27,10 +27,10 @@
         </b-button>
       </b-input-group-append>
     </b-input-group>
-    <div v-if="filteredCategories !== null"
+    <div v-if="$root.filteredCategories !== null"
          class="category-button-container">
-      <template v-if="filteredCategories.length > 0">
-        <b-button v-for="category in filteredCategories"
+      <template v-if="$root.filteredCategories.length > 0">
+        <b-button v-for="category in $root.filteredCategories"
           :key="category.id"
           class="category-button"
           variant="light"
@@ -54,17 +54,22 @@ export default {
   data() {
     return {
       filter: "",
-      filteredCategories: null,
     };
+  },
+  mounted() {
+    this.$root.filteredCategories = null;
   },
   methods: {
     fetch() {
+      if (this.filter === "") {
+        this.clearSearch();
+        return;
+      }
       this.filterPmql(this.filter, true);
       this.filterCategories();
     },
     clearSearch() {
-      this.filter = "";
-      this.filterCategories();
+      this.filter = null;
       this.fetch();
     },
     selectCategory(category) {
@@ -75,15 +80,7 @@ export default {
       this.clearSearch();
     },
     filterCategories() {
-      if (!this.filter) {
-        this.filteredCategories = null;
-        return;
-      }
-      this.filteredCategories = this.$root.categories.filter((category) => {
-        return category.name
-          .toLowerCase()
-          .includes(this.filter.toLowerCase());
-      });
+      this.$root.$emit("filter-categories", this.filter);
     },
   },
 };

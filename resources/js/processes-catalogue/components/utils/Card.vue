@@ -121,7 +121,6 @@ export default {
   width: 27vw;
   height: 232px;
   margin-top: 1rem;
-  margin-right: 1rem;
   margin-left: 1rem;
   border-radius: 16px;
   background-image: url("/img/launchpad-images/process_background.svg");
@@ -133,6 +132,8 @@ export default {
     border-radius: 8px;
     height: 72px;
     margin-right: 5px;
+    margin-left: 0;
+    background-image: none;
   }
 }
 

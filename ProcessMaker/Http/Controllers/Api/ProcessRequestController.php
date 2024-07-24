@@ -777,12 +777,14 @@ class ProcessRequestController extends Controller
                         return $screen;
                     }
                 }
-
                 return null;
             })
-            ->reject(fn ($item) => $item === null);
+            ->reject(fn ($item) => $item === null)
+            ->values();
 
-        return new ApiCollection($collection);
+        $response->setCollection($collection);
+
+        return new ApiCollection($response);
     }
 
     /**

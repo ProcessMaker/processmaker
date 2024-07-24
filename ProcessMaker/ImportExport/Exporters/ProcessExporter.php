@@ -521,14 +521,14 @@ class ProcessExporter extends ExporterBase
                     && $data['type'] === 'customDashboard') {
                     // Create a new JSON string with updated values
                     $newElementDestination = json_encode([
-                        'type' => 'summaryScreen',
+                        'type' => 'customDashboard',
                         'value' => null,
-                    ]);
+                    ], JSON_HEX_QUOT);
 
                     // Set the new attribute value at the specified XPath
                     Utils::setAttributeAtXPath(
                         $this->model, $path, 'pm:elementDestination',
-                        htmlspecialchars($newElementDestination, ENT_QUOTES)
+                        $newElementDestination
                     );
                 }
             }
