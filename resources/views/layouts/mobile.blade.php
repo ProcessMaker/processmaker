@@ -21,6 +21,7 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
+    min-width: 360px;
   }
   .mobile-container {
     flex: 1;

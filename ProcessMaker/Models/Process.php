@@ -178,6 +178,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         'user_id',
         'created_at',
         'updated_at',
+        'updated_by',
         'has_timer_start_events',
         'warnings',
     ];
@@ -240,6 +241,21 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         'conditional_events' => 'array',
         'properties' => 'array',
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $user = Auth::user();
+            $model->updated_by = $user?->id;
+        });
+
+        static::updating(function ($model) {
+            $user = Auth::user();
+            $model->updated_by = $user?->id;
+        });
+    }
 
     /**
      * Category of the process.
@@ -415,6 +431,14 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Get the last user that updated the process
+     */
+    public function updatedByUser()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 
     /**
@@ -760,6 +784,16 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         // We need to remove inactive users.
         $users = User::whereIn('id', array_unique($assignedUsers))->where('status', 'ACTIVE')->pluck('id')->toArray();
 
+        // user in OUT_OF_OFFICE
+        $outOfOffice = User::whereIn('id', array_unique($assignedUsers))->where('status', 'OUT_OF_OFFICE')->get();
+
+        foreach ($outOfOffice as $user) {
+            $delegation = $user->delegationUser()->pluck('id')->toArray();
+            if ($delegation) {
+                $users[] = $delegation[0];
+            }
+        }
+
         foreach ($assignedGroups as $groupId) {
             // getConsolidatedUsers already removes inactive users
             $this->getConsolidatedUsers($groupId, $users);
@@ -1024,7 +1058,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                 $query->where('group_id', $groupOrGroups);
             })
             ->leftjoin('users', 'users.id', '=', 'group_members.member_id')
-            ->whereNotIn('users.status', Process::NOT_ASSIGNABLE_USER_STATUS)
+            ->whereNotIn('users.status', self::NOT_ASSIGNABLE_USER_STATUS)
             ->chunk(1000, function ($members) use (&$users) {
                 $userIds = $members->pluck('member_id')->toArray();
                 $users = array_unique(array_merge($users, $userIds));

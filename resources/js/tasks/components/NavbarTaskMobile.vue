@@ -44,6 +44,7 @@
           :task="task"
           :userisadmin="userisadmin"
           :userisprocessmanager="userisprocessmanager"
+          @reload-task="handleReloadTask"
         />
       </div>
     </div>
@@ -115,6 +116,9 @@ export default {
         .then(() => {
           this.task.is_priority = !this.task.is_priority;
         });
+    },
+    handleReloadTask(value) {
+      this.$emit("reload-task", value);
     },
   },
 };

@@ -102,6 +102,16 @@
                 </tr>
               </tbody>
             </table>
+            <div class="p-3">
+              <button
+                type="button"
+                class="btn btn-outline-secondary btn-block"
+                @click="eraseDraft()"
+              >
+                <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
+                {{ $t('Clear Draft') }}
+              </button>
+            </div>
             <div v-if="task.definition.allowReassignment || userisadmin || userisprocessmanager" class="p-3">
               <button
                 v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
@@ -126,9 +136,12 @@
 <script>
 import AvatarImage from "../../components/AvatarImage.vue";
 import ReassignMobileModal from "./ReassignMobileModal.vue";
+import draftFileUploadMixin from "../../modules/autosave/draftFileUploadMixin";
 
 Vue.component("AvatarImage", AvatarImage);
 Vue.component("ReassignMobileModal", ReassignMobileModal);
+
+Vue.mixin(draftFileUploadMixin);
 
 export default {
   components: { ReassignMobileModal },
@@ -164,6 +177,19 @@ export default {
     showRequestModal() {
       // Perform initial load of requests from backend
       this.$refs.requestModal.showModal();
+    },
+    eraseDraft() {
+      this.formDataWatcherActive = false;
+      ProcessMaker.apiClient
+        .delete("drafts/" + this.task.id)
+        .then(response => {
+          this.resetRequestFiles(response);
+          this.$emit("reload-task", true);
+          this.closeModal();
+        });
+    },
+    closeModal() {
+      $('#detailsTaskModal').modal('hide');
     },
   },
 };

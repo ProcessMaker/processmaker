@@ -4,8 +4,7 @@ namespace ProcessMaker;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Query\Builder;
-use ProcessMaker\Filters\Filter;
-use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Jobs\GenerateUserRecommendations;
 use ProcessMaker\Models\Recommendation;
 use ProcessMaker\Models\RecommendationUser;
 use ProcessMaker\Models\User;
@@ -44,6 +43,7 @@ class RecommendationEngine
     public function generate(): void
     {
         $this->debug("Generating recommendations for user {$this->user->id}");
+
         if (static::disabled()) {
             return;
         }
@@ -180,6 +180,25 @@ class RecommendationEngine
     {
         if (config('app.debug')) {
             \Log::debug($message, $params);
+        }
+    }
+
+    public static function handleUserSettingChanges(User $user, array $originalAttributes): void
+    {
+        $originalMeta = $originalAttributes['meta'] ?? null;
+        $newMeta = $user->meta ?? null;
+
+        $originalDisableRecommendations = $originalMeta?->disableRecommendations ?? false;
+        $newDisableRecommendations = $newMeta?->disableRecommendations ?? false;
+
+        if ($originalDisableRecommendations && !$newDisableRecommendations) {
+            // The user enabled recommendations. Generate new recommendations.
+            GenerateUserRecommendations::dispatch($user->id);
+        }
+
+        if (!$originalDisableRecommendations && $newDisableRecommendations) {
+            // The user disabled recommendations. Delete all existing recommendations.
+            RecommendationUser::deleteFor($user);
         }
     }
 }
