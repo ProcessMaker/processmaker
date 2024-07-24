@@ -1049,10 +1049,6 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
 
     public function getProcessVersionAlternativeAttribute(): string | null
     {
-        if (class_exists('ProcessMaker\Package\PackageABTesting\Models\Alternative')) {
-            return $this->processVersion?->alternative;
-        }
-
-        return null;
+        return $this->processVersion?->alternative ?? 'A';
     }
 }
