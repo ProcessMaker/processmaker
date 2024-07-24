@@ -1,5 +1,7 @@
 <template>
-  <div class="search" :class="{ 'show-on-mobile' : $root.mobileSearchVisible }">
+  <div :class="{'show-on-mobile' : $root.mobileSearchVisible && !sizeChange, 
+                'search-wide' : sizeChange, 
+                'search': !sizeChange }">
     <b-input-group class="search-input-group">
       <b-input-group-prepend >
         <b-button
@@ -54,12 +56,27 @@ export default {
   data() {
     return {
       filter: "",
+      sizeChange: false,
     };
+  },
+  computed: {
+    searchWide() {
+      const classes = {
+        'search-wide': true,
+      };
+      return classes;
+    },
   },
   mounted() {
     this.$root.filteredCategories = null;
+    this.$root.$on("sizeChanged", (val) => {
+      this.handleSizeChange(val);
+    });
   },
   methods: {
+    handleSizeChange(value) {
+      this.sizeChange = value;
+    },
     fetch() {
       if (this.filter === "") {
         this.clearSearch();
@@ -91,7 +108,8 @@ export default {
 
 .search {
   margin-right: 15px;
-
+  margin-left: 15px;
+  min-width: 300px;
   @media (max-width: $lp-breakpoint) {
     display: none;
     margin-right: 0;
@@ -99,6 +117,54 @@ export default {
     .input-group {
       width: 100%;
     }
+  }
+
+  @media (min-width: 641px) and (max-width: 1075px) {
+    width: 300px;
+  }
+
+  @media (min-width: 1270px) and (max-width: 1520px) {
+      width: 701px;
+  }
+
+  @media (min-width: 1521px) and (max-width: 1789px) {
+      width: 1059px;
+  }
+
+  @media (min-width: 1790px) and (max-width: 2148px){
+      width: 1059px;
+  }
+
+  @media (min-width: 2149px) and (max-width: 2507px){
+      width: 1775px;
+  }
+
+  @media (min-width: 2508px){
+      width: 100%;
+  }
+}
+
+.search-wide{
+  margin-left: 15px;
+
+  @media (min-width: 641px) and (max-width: 767px) {
+    width: 300px;
+  }
+  @media (min-width: 768px) and (max-width: 1083px) {
+    width: 618px;
+  }
+
+  @media (min-width: 1084px) and (max-width: 1572px) {
+    width: 1065px;
+  }
+  @media (min-width: 1573px) and (max-width: 1931px) {
+    width: 1420px;
+  }
+  @media (min-width: 1932px) and (max-width: 2200px) {
+    width: 1778px;
+  }
+  @media (min-width: 2201px) {
+    width: 100%;
   }
 }
 
