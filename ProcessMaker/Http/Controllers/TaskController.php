@@ -231,7 +231,7 @@ class TaskController extends Controller
                         $data
                     );
 
-                    // Show the abe completed screen	                    // Set the flag is_actionbyemail in true
+                    // Show the abe completed screen
                     return $this->showScreen($abe->completed_screen_id);
                 }
             }
@@ -242,7 +242,7 @@ class TaskController extends Controller
             ], 500);
         }
     }
-    
+
     /**
      * Show a screen defined
      * @param int $screenId
