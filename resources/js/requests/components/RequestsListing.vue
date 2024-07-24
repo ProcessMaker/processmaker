@@ -111,14 +111,21 @@
       </filter-table>
     </div>
     <data-loading
-      v-show="shouldShowLoader"
+      v-show="shouldShowLoader && noResultsMessage === 'cases'"
       :for="/requests\?page|results\?page/"
       :empty="$t('No results have been found')"
       :empty-desc="$t(`We apologize, but we were unable to find any results that match your search.
 Please consider trying a different search. Thank you`)"
       empty-icon="noData"
     />
+    <default-tab
+      v-if="shouldShowLoader && noResultsMessage === 'launchpad'"
+      :alt-text="$t('No Image')"
+      :title-text="$t('No items to show.')"
+      :description-text="$t('You have to start a Case of this process.')"
+    />
     <pagination-table
+      v-show="!shouldShowLoader"
       :meta="data.meta"
       @page-change="changePage"
       @per-page-change="changePerPage"
@@ -142,6 +149,7 @@ import paginationTable from "../../components/shared/PaginationTable.vue";
 import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
 import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
 import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
+import DefaultTab from "../../processes-catalogue/components/DefaultTab.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -152,7 +160,8 @@ export default {
     PMColumnFilterPopover,
     paginationTable,
     PMColumnFilterIconAsc,
-    PMColumnFilterIconDesc
+    PMColumnFilterIconDesc,
+    DefaultTab
   },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin, PMColumnFilterPopoverCommonMixin, FilterTableBodyMixin],
   props: {
@@ -161,6 +170,10 @@ export default {
     pmql: {},
     savedSearch: {
       default: false,
+    },
+    noResultsMessage: {
+      type: String,
+      default: "cases",
     },
   },
   data() {
