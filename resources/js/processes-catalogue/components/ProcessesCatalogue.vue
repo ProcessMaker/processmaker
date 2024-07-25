@@ -94,7 +94,7 @@ export default {
       category: null,
       selectedProcess: null,
       guidedTemplates: false,
-      numCategories: 20,
+      numCategories: 100,
       page: 1,
       key: 0,
       totalPages: 1,

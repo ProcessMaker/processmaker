@@ -156,12 +156,6 @@ export default {
     },
   },
   mounted() {
-    const listElm = document.querySelector("#infinite-list");
-    listElm.addEventListener("scroll", () => {
-      if (listElm.scrollTop + listElm.clientHeight + 2 >= listElm.scrollHeight) {
-        this.loadMore();
-      }
-    });
     this.comeFromProcess = this.fromProcessList;
     this.checkPackageAiInstalled();
   },
@@ -303,7 +297,7 @@ i {
 }
 @media (max-width: 650px) {
   #category-menu > .list-group {
-    max-height: 60vh;
+    max-height: 75vh;
   }
 }
 .list-group-item {
