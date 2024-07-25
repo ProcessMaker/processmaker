@@ -40,7 +40,7 @@ svgtofont({
         url: "https://github.com/ProcessMaker/processmaker",
       },
     ],
-    footerInfo: "SVGTOFONT is Licensed under MIT. (Yes it's free and <a href=\"https://github.com/jaywcjlove/svgtofont\">open-sourced</a>",
+    footerInfo: "SVGTOFONT is Licensed under MIT. (Yes it's free and open-sourced",
   },
 }).then(() => {
   console.log("done!");
