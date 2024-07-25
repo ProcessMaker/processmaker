@@ -27,7 +27,6 @@
         </div>
       </div>
     </div>
-
     <data-loading
       v-show="loading"
       :for="/clients/"
@@ -35,7 +34,6 @@
       :empty-desc="$t('')"
       empty-icon="noData"
     />
-
     <div
       v-show="!loading"
       class="card card-body table-card d-none d-sm-block"
