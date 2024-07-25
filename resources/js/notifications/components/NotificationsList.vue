@@ -27,7 +27,19 @@
         </div>
       </div>
     </div>
-    <div class="card card-body table-card d-none d-sm-block">
+
+    <data-loading
+      v-show="loading"
+      :for="/clients/"
+      :empty="$t('No Data Available')"
+      :empty-desc="$t('')"
+      empty-icon="noData"
+    />
+
+    <div
+      v-show="!loading"
+      class="card card-body table-card d-none d-sm-block"
+    >
       <vuetable
         :data-manager="dataManager"
         :sort-order="sortOrder"
@@ -103,6 +115,7 @@
 <script>
 import moment from "moment";
 import datatableMixin from "../../components/common/mixins/datatable";
+import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import AvatarImage from "../../components/AvatarImage";
 import NotificationMessage from "./notification-message";
 import NotificationUser from "./notification-user";
@@ -115,7 +128,7 @@ export default {
     NotificationUser,
     AvatarImage,
   },
-  mixins: [datatableMixin],
+  mixins: [datatableMixin, dataLoadingMixin],
   props: ["filter", "filterComments", "type", "showTime"],
   data() {
     return {
@@ -123,6 +136,7 @@ export default {
       orderBy: "",
       showTime: true,
       sortOrder: [],
+      loading: false,
       fields: [
         {
           title: () => this.$t("Status"),
