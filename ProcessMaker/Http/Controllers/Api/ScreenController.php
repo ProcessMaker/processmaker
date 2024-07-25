@@ -80,7 +80,13 @@ class ScreenController extends Controller
 
         $query = Screen::nonSystem()
             ->leftJoin('screen_categories as category', 'screens.screen_category_id', '=', 'category.id')
-            ->exclude($exclusions);
+            ->when($request->has('exclude'), function ($query) use ($exclusions) {
+                $query->exclude($exclusions);
+            })
+            ->when(!$request->has('exclude'), function ($query)  {
+                // Return all screen columns by default
+                $query->select('screens.*');
+            });
 
         $include = $request->input('include', '');
 
