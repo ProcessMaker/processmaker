@@ -214,6 +214,7 @@ class TaskController extends Controller
                     $abe->is_answered = true;
                     $abe->answered_at = Carbon::now();
                     // Review if the user is autenticated
+                    // review this line
                     if (Auth::check()) {
                         $abe->user_id = Auth::id();
                     }
