@@ -60,9 +60,27 @@
       </div>
     </div>
 
-    <b-modal id="confirm" :title="$t('Confirmation')" @ok="onConfirm">
-      <p v-html="confirmText"></p>
-      <user-select v-if="action === 'reassign_to_user'" :label="false" @input="toUserId = $event" />
+    <b-modal id="confirm" :title="$t('Confirmation')">
+      <template v-if="loadingMode === 'timeout'">
+        {{ $t('This actions is taking longer than expected. We will continue updating your tasks in the background.') }}
+      </template>
+      <template v-else>
+        <p v-html="confirmText"></p>
+        <user-select v-if="action === 'reassign_to_user'" :label="false" @input="toUserId = $event" />
+        <div class="message" v-if="message">{{ message }}</div>
+      </template>
+
+      <template #modal-footer="{ cancel }">
+        <b-button @click="cancel()" class="" v-if="loadingMode === null">{{ $t('Cancel') }}</b-button>
+        <b-button @click="loadingMode === 'timeout' ? cancel() : onConfirm()" variant="primary">
+          <template v-if="loadingMode === 'loading'">
+            <b-spinner small />
+          </template>
+          <template v-else>
+            {{ $t('Ok') }}
+          </template>
+        </b-button>
+      </template>
     </b-modal>
   </div>
 </template>
@@ -81,6 +99,9 @@ export default {
       confirmText: null,
       toUserId: null,
       currentUserRecommendationId: null,
+      loadingMode: null,
+      message: null,
+      timeout: null,
     }
   },
   props: {
@@ -117,8 +138,25 @@ export default {
   },
   mounted() {
     this.fetchRecommendations();
+    this.listenForTaskListUpdates();
   },
   methods: {
+    listenForTaskListUpdates() {
+      const channel = `ProcessMaker.Models.User.${window.ProcessMaker?.user?.id}`;
+      const event = ".TasksUpdated";
+      window.Echo.private(channel).listen(
+        event,
+        (response) => {
+          this.loadingMode = null;
+          clearTimeout(this.timeout);
+          this.message = response.message || null;
+          if (!this.message) {
+            this.$bvModal.hide('confirm');
+            this.removeSelectedRecommendation();
+          }
+        },
+      );
+    },
     next() {
       if (this.currentIndex < this.userRecommendations.length - 1) {
         this.currentUserRecommendationId = this.userRecommendations[this.currentIndex + 1].id;
@@ -194,6 +232,10 @@ export default {
       this.$bvModal.show('confirm');
     },
     onConfirm() {
+      if (this.loadingMode === 'loading') {
+        return;
+      }
+
       let params = {};
       if (this.action === 'reassign_to_user') {
         this.update({ to_user_id: this.toUserId });
@@ -205,6 +247,14 @@ export default {
       if (!this.userRecommendation || !this.action) {
         return;
       }
+
+      this.message = null;
+      this.loadingMode = 'loading';
+      this.timeout = setTimeout(() => {
+        this.loadingMode = 'timeout';
+        this.removeSelectedRecommendation();
+      }, 10 * 1000);
+
       return this.callApi(
         this.userRecommendation.id, 
         {
@@ -212,8 +262,10 @@ export default {
           ...params
         }
       ).then(() => {
-        this.userRecommendations = this.userRecommendations.filter(r => r.id !== this.userRecommendation.id);
       });
+    },
+    removeSelectedRecommendation() {
+      this.userRecommendations = this.userRecommendations.filter(r => r.id !== this.userRecommendation.id);
     },
     callApi(id, params) {
       return ProcessMaker.apiClient.put(
@@ -223,11 +275,9 @@ export default {
     filter() {
       const filter = this.userRecommendation.recommendation.advanced_filter;
       filter.push({ subject: { type: "Status" }, operator: "=", value: "In Progress" });
-      console.log("Hello, I'm filtering", filter, this.dashboard);
       if (this.dashboard) {
         window.location.href = `/tasks?filter_user_recommendation=${this.userRecommendation.id}`
       } else {
-        console.log("EMITTING LOAD WITH FILTER", filter)
         this.$root.$emit('load-with-filter', filter);
       }
     }

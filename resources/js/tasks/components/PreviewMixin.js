@@ -234,16 +234,16 @@ const PreviewMixin = {
       switch (action.value) {
         case "clear-draft":
           ProcessMaker.apiClient
-            .delete("drafts/" + this.task.id)
-            .then(response => {
-              this.resetRequestFiles(response);
-              this.isLoading = setTimeout(() => {
-                this.stopFrame = true;
-                this.taskTitle = this.$t("Task Lorem");
-              }, 4900);
-              this.showSideBar(this.task, this.data);
-              this.task.draft = null;
-            });
+          .delete("drafts/" + this.task.id)
+          .then(response => {
+            this.isLoading = setTimeout(() => {
+              this.stopFrame = true;
+              this.taskTitle = this.$t("Task Lorem");
+            }, 4900);
+            this.showSideBar(this.task, this.data);
+            this.task.draft = null;
+            this.userHasInteracted = false;
+          });
           break;
         case "quick-fill":
           this.showQuickFillPreview = true;

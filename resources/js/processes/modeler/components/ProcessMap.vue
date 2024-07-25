@@ -41,6 +41,10 @@ import ProcessMapTooltip from "./ProcessMapTooltip.vue";
 
 export default {
   name: "ProcessMap",
+  components: {
+    Modeler,
+    ProcessMapTooltip,
+  },
   props: {
     forDocumenting: {
       type: Boolean,
@@ -50,10 +54,6 @@ export default {
       type: Boolean,
       default: true,
     },
-  },
-  components: {
-    Modeler,
-    ProcessMapTooltip,
   },
   data() {
     return {
@@ -74,6 +74,7 @@ export default {
           "bpmn:SequenceFlow",
           "bpmn:ScriptTask",
           "bpmn:CallActivity",
+          "bpmn:ServiceTask",
         ],
         coordinates: { x: 0, y: 0 },
         newX: 0,

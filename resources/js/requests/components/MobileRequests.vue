@@ -36,6 +36,9 @@ import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 export default {
   components: {Card, MobileCardsPagination, PMMessageResults},
   mixins: [datatableMixin, ListMixin, dataLoadingMixin],
+  props:{
+    process: Object,
+  },
   data() {
     return {
       data: "",
@@ -77,7 +80,7 @@ export default {
     };
   },
   mounted() {
-    this.pmql = `(status = "In Progress") AND (requester = "${Processmaker.user.username}")`;
+    this.pmql = `(status = "In Progress") AND (requester = "${Processmaker.user.username}") AND (process_id = ${this.process.id})`;
   },
   methods: {
     updatePmql(value, status) {

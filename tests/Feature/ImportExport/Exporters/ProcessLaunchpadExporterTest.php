@@ -9,6 +9,7 @@ use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessLaunchpad;
 use ProcessMaker\Models\User;
+use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 use Tests\Feature\ImportExport\HelperTrait;
 use Tests\TestCase;
 
@@ -28,6 +29,13 @@ class ProcessLaunchpadExporterTest extends TestCase
             'request_detail_screen_id' => $requestDetailScreen->id,
         ]);
 
+        $savedSearch1 = SavedSearch::factory()->create(
+            ['title' => 'Saved Search For Tab', 'user_id' => $user->id]
+        );
+        $savedSearch2 = SavedSearch::factory()->create(
+            ['title' => 'Another Saved Search For Tab', 'user_id' => $user->id]
+        );
+
         $launchpad = ProcessLaunchpad::factory()->create([
             'process_id' => $process->id,
             'user_id' => $user->id,
@@ -37,6 +45,10 @@ class ProcessLaunchpadExporterTest extends TestCase
                 'screen_id' => $cancelScreen->id,
                 'screen_uuid' => $cancelScreen->uuid,
                 'screen_title' => 'Cancel Screen',
+                'tabs' => [
+                    ['idSavedSearch' => $savedSearch1->id],
+                    ['idSavedSearch' => $savedSearch2->id],
+                ],
             ]),
         ]);
 
@@ -44,6 +56,8 @@ class ProcessLaunchpadExporterTest extends TestCase
             'process' => $process,
             'user' => $user,
             'launchpad' => $launchpad,
+            'savedSearch1' => $savedSearch1,
+            'savedSearch2' => $savedSearch2,
         ];
     }
 
@@ -71,13 +85,19 @@ class ProcessLaunchpadExporterTest extends TestCase
         $this->addGlobalSignalProcess();
         [
             'process' => $process,
+            'savedSearch1' => $savedSearch1,
+            'savedSearch2' => $savedSearch2,
         ] = $this->fixtures();
 
         $exporter = new Exporter();
         $exporter->exportProcess($process);
         $payload = $exporter->payload();
 
+        $originalSavedSearch1Id = $savedSearch1->id;
+        $savedSearch1->delete();
+
         $optionsArray[$process->uuid] = ['mode' => 'copy'];
+        $optionsArray[$savedSearch2->uuid] = ['mode' => 'copy'];
 
         $options = new Options($optionsArray);
         $importer = new Importer($payload, $options);
@@ -86,5 +106,17 @@ class ProcessLaunchpadExporterTest extends TestCase
 
         $newProcess = Process::where('name', 'Process 2')->first();
         $this->assertNotNull($newProcess->launchpad);
+
+        // Assert savedSearch1 has a new ID and that savedSearch2 has been copied
+        $savedSearch1 = SavedSearch::where('title', 'Saved Search For Tab')->firstOrFail();
+        $savedSearch2 = SavedSearch::where('title', 'Another Saved Search For Tab 2')->firstOrFail();
+
+        $properties = json_decode($newProcess->launchpad->properties, true);
+        $newSavedSearch1Id = Arr::get($properties, 'tabs.0.idSavedSearch');
+        $newSavedSearch2Id = Arr::get($properties, 'tabs.1.idSavedSearch');
+
+        $this->assertNotEquals($originalSavedSearch1Id, $savedSearch1->id);
+        $this->assertEquals($savedSearch1->id, $newSavedSearch1Id);
+        $this->assertEquals($savedSearch2->id, $newSavedSearch2Id);
     }
 }

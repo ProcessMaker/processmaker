@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Faker\Factory as Faker;
 use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessAbeRequestToken;
@@ -24,7 +25,7 @@ class TaskControllerTest extends TestCase
         // Start a request
         $route = route('api.process_events.trigger', [$process->id, 'event' => 'node_1']);
         $this->apiCall('POST', $route, []);
-        
+
         $instance = ProcessRequest::first();
         $task = ProcessRequestToken::where('element_name', 'Form Task')->first();
 
@@ -41,5 +42,16 @@ class TaskControllerTest extends TestCase
         // check the correct view is called
         $response->assertViewIs('processes.screens.completedScreen');
         $response->assertStatus(200);
+    }
+
+    public function testReturnMessageTokenNoFound()
+    {
+        $token = Faker::create()->uuid;
+        $response = $this->webCall(
+            'GET',
+            'tasks/update_variable/' . $token . '?varName=res&varValue=yes'
+        );
+        $response->assertSee('Token not found');
+        $response->assertStatus(404);
     }
 }

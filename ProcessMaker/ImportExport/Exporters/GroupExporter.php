@@ -30,7 +30,7 @@ class GroupExporter extends ExporterBase
             $dependent->model->groups()->syncWithoutDetaching($group->id);
         }
 
-        $permissions = $this->getReference('permissions');
+        $permissions = $this->getReference('permissions') ?? [];
         $permissionIds = Permission::whereIn('name', $permissions)->pluck('id')->toArray();
         $group->permissions()->sync($permissionIds);
 

@@ -142,6 +142,7 @@ export default {
     loadCard(callback, message) {
       if(message === 'bookmark') {
         this.processList = [];
+        this.page = 1;
       }
       this.loading = true;
       const url = this.buildURL();
@@ -235,7 +236,11 @@ export default {
     onFilter(value, showEmpty = false) {
       this.processList = [];
       this.currentPage = 1;
-      this.pmql = `(fulltext LIKE "%${value}%")`;
+      if (value) {
+        this.pmql = `(fulltext LIKE "%${value}%")`;
+      } else {
+        this.pmql = "";
+      }
       this.filter = value;
       this.showEmpty = showEmpty;
       this.loadCard();
@@ -258,7 +263,6 @@ export default {
   display: flex;
   flex-wrap: wrap;
   position: relative;
-  height: 100%;
   overflow: unset;
   justify-content: flex-start;
 
@@ -277,20 +281,71 @@ export default {
   animation: 0.75s linear infinite spinner-border;
 }
 .separator-class {
-  width: 85%;
   @media (max-width: $lp-breakpoint) {
     display: block;
     height: auto;
-    width: 94%;
+    width: 95%;
   }
 
-  @media (min-width: 1870px) {
-    display: block;
-    height: auto;
-    width: 100%;
+  @media (min-width: 641px) and (max-width:1075px) {
+    width: 343px;
+  }
+
+  @media (min-width: 1076px) and (max-width:1520px) {
+    width: 772px;
+  }
+
+  @media (min-width: 1521px) and (max-width: 1789px) {
+    width: 1160px;
+  }
+
+  @media (min-width: 1790px) and (max-width: 1879px) {
+    width: 1156px;
+  }
+
+  @media (min-width: 1880px) and (max-width: 2148px){
+    width: 1544px;
+  }
+
+  @media (min-width: 2149px) and (max-width: 2438px){
+    width: 1926px;
+  }
+
+  @media (min-width: 2439px){
+    width: 2308px;
   }
 }
 .separator-class.width-changed {
-  width: 93%;
+  @media (min-width: 641px) and (max-width:767px) {
+    width: 340px;
+  }
+
+  @media (min-width: 768px) and (max-width:1075px) {
+    width: 678px;
+  }
+
+  @media (min-width: 1076px) and (max-width:1520px) {
+    width: 1156px;
+  }
+
+  @media (min-width: 1521px) and (max-width: 1789px) {
+    width: 1156px;
+  }
+
+  @media (min-width: 1790px) and (max-width: 1879px) {
+    width: 1542px;
+  }
+
+  @media (min-width: 1880px) and (max-width: 2148px){
+    width: 1859px;
+  }
+
+  @media (min-width: 2149px) and (max-width: 2438px){
+    width: 1926px;
+  }
+
+  @media (min-width: 2439px){
+    width: 2308px;
+  }
 }
 </style>
