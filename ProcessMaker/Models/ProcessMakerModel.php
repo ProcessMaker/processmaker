@@ -30,7 +30,7 @@ class ProcessMakerModel extends Model
 
     public function scopeExclude($query, array $columns)
     {
-        if (!empty($columns)) {
+        if (empty($columns)) {
             return $query;
         }
 
