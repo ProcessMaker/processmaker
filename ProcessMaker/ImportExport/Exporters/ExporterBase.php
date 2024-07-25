@@ -69,7 +69,7 @@ abstract class ExporterBase implements ExporterInterface
         $baseQuery = $class::query();
 
         // If table does not exists for model, continue.
-        if (!Schema::hasTable($baseQuery->getModel()->getTable())) {
+        if (!Schema::hasTable($baseQuery->getModel()->getTable(), true)) {
             return [null, null];
         }
 
@@ -249,7 +249,7 @@ abstract class ExporterBase implements ExporterInterface
         } elseif ($this->getClassName() === 'LaunchpadSetting') {
             $name = 'Setting';
         }
-       
+
         return $name;
     }
 

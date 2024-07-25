@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Providers;
 
+use Illuminate\Database\Console\Migrations\MigrateCommand;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\PackageManifest;
@@ -14,7 +15,6 @@ use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
 use Lavary\Menu\Menu;
-use Illuminate\Database\Console\Migrations\MigrateCommand;
 use ProcessMaker\Console\Migration\ExtendedMigrateCommand;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ScreenBuilderStarting;
@@ -28,6 +28,7 @@ use ProcessMaker\Managers\MenuManager;
 use ProcessMaker\Models;
 use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
+use ProcessMaker\SchemaBuilderDecorator;
 
 /**
  * Provide our ProcessMaker specific services.
@@ -38,6 +39,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
     {
         $this->app->singleton(Menu::class, function ($app) {
             return new MenuManager();
+        });
+
+        $this->app->extend('db.schema', function ($schema) {
+            return new SchemaBuilderDecorator($schema);
         });
 
         static::bootObservers();
