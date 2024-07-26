@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Http\Request as HttpRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Facades\WorkflowManager;
@@ -189,6 +190,9 @@ class TaskController extends Controller
             if (!$abe) {
                 return $this->returnErrorResponse(__('Token not found'), 404);
             }
+            
+            Log::Info('User: ' . Auth::user());
+            Log::Info('Require_login: ' . $abe->require_login);
             // Review if the autentication is required
             if ($abe->require_login && Auth::user()->username === AnonymousUser::ANONYMOUS_USERNAME) {
                 $request->session()->put('url.intended', url()->full());
