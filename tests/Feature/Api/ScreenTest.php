@@ -573,4 +573,64 @@ class ScreenTest extends TestCase
         $this->assertEquals('c2', $json['computed'][3]['name']);
         $this->assertEquals("bar\nfoo", $json['custom_css']);
     }
+
+    /**
+     * Test get list of screens with categories but without config field
+     */
+    public function testListScreensWithCategoriesAndWithoutConfig()
+    {
+        $category = ScreenCategory::factory()->create();
+        $screen1 = Screen::factory()->create([
+            'screen_category_id' => $category->id,
+        ]);
+        $screen2 = Screen::factory()->create([
+            'screen_category_id' => $category->id,
+        ]);
+
+        $url = self::API_TEST_SCREEN . '?exclude=config&order_by=id';
+        $response = $this->apiCall('GET', $url);
+        $response->assertStatus(200);
+
+        $json = $response->json();
+
+        // Verify the IDs of screens and categories
+        $this->assertEquals($category->id, $json['data'][0]['screen_category_id']);
+        $this->assertEquals($category->id, $json['data'][1]['screen_category_id']);
+        $this->assertEquals($screen1->id, $json['data'][0]['id']);
+        $this->assertEquals($screen2->id, $json['data'][1]['id']);
+
+        // Verify the response does not contain the confing field
+        $this->assertArrayNotHasKey('config', $json['data'][0]);
+        $this->assertArrayNotHasKey('config', $json['data'][1]);
+    }
+
+    /**
+     * Test get list of screens with categories with config field
+     */
+    public function testListScreensWithCategoriesWithoContent()
+    {
+        $category = ScreenCategory::factory()->create();
+        $screen1 = Screen::factory()->create([
+            'screen_category_id' => $category->id,
+        ]);
+        $screen2 = Screen::factory()->create([
+            'screen_category_id' => $category->id,
+        ]);
+
+        $url = self::API_TEST_SCREEN . '?order_by=id';
+        $response = $this->apiCall('GET', $url);
+        $response->assertStatus(200);
+
+        $json = $response->json();
+
+        // Verify the IDs of screens and categories
+        $this->assertEquals($category->id, $json['data'][0]['screen_category_id']);
+        $this->assertEquals($category->id, $json['data'][1]['screen_category_id']);
+        $this->assertEquals($screen1->id, $json['data'][0]['id']);
+        $this->assertEquals($screen2->id, $json['data'][1]['id']);
+
+        // Verify the response must contain the config field
+        $this->assertArrayHasKey('config', $json['data'][0]);
+        $this->assertArrayHasKey('config', $json['data'][1]);
+    }
 }
