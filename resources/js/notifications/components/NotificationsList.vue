@@ -35,7 +35,7 @@
       empty-icon="noData"
     />
     <div
-      v-show="!loading"
+      v-if="!loading"
       class="card card-body table-card d-none d-sm-block"
     >
       <vuetable
