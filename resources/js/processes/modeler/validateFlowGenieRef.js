@@ -5,7 +5,7 @@ const validateFlowGenieRef = () => ProcessMaker.EventBus.$on("modeler-validate",
 
   if (node.config) {
     const config = JSON.parse(node.config);
-    if (config && config.flow_genie_id) {
+    if (config?.flow_genie_id) {
       return;
     }
   }
