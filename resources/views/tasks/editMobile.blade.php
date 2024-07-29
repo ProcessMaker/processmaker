@@ -47,6 +47,9 @@
       </div>
     </div>
   </div>
+  <div v-if="showConfirmationMessage" class="confirmation-message">
+    {{ __('Saved') }}
+  </div>
   @isset($assignedToAddons)
     @foreach ($assignedToAddons as $addon)
       {!! $addon['content'] ?? '' !!}
@@ -117,6 +120,8 @@
           userIsProcessManager,
           showTree: false,
           userHasInteracted: false,
+          autoSaveDelay: 2000,
+          showConfirmationMessage: false,
         },
         watch: {
           task: {
@@ -338,7 +343,10 @@
               return ProcessMaker.apiClient
               .put("drafts/" + this.task.id, draftData)
               .then((response) => {
-                ProcessMaker.alert(this.$t('Saved'), 'success')
+                this.showConfirmationMessage = true;
+                setTimeout(() => {
+                    this.showConfirmationMessage = false;
+                }, 3000);
                 this.task.draft = _.merge(
                   {},
                   this.task.draft,
@@ -399,5 +407,17 @@
 @endsection
 
 @section('css')
-
+<style>
+  .confirmation-message {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+</style>
 @endsection
