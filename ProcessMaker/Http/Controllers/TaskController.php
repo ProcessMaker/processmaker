@@ -190,9 +190,6 @@ class TaskController extends Controller
             if (!$abe) {
                 return $this->returnErrorResponse(__('Token not found'), 404);
             }
-            
-            Log::Error('User: ' . Auth::user());
-            Log::Error('Require_login: ' . $abe->require_login);
             // Review if the autentication is required
             if ($abe->require_login && Auth::user()->username === AnonymousUser::ANONYMOUS_USERNAME) {
                 $request->session()->put('url.intended', url()->full());
