@@ -53,7 +53,7 @@ class TaskControllerTest extends TestCase
 
         // Start a request
         $route = route('api.process_events.trigger', [$process->id, 'event' => 'node_1']);
-        $response = $this->apiCall('POST', $route);
+        $this->apiCall('POST', $route);
 
         $processAbeRequest = ProcessAbeRequestToken::first();
 
