@@ -4,7 +4,7 @@
     <bpmn:startEvent id="node_1" name="Start Event" pm:allowInterstitial="true" pm:config="{&#34;web_entry&#34;:null}">
       <bpmn:outgoing>node_13</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:task id="node_2" name="Form Task" pm:screenRef="62" pm:allowInterstitial="false" pm:assignment="requester" pm:assignmentLock="false" pm:allowReassignment="false" pm:config="{&#34;web_entry&#34;:null,&#34;email_notifications&#34;:{&#34;notifications&#34;:[]}}" pm:configEmail="{&#34;subject&#34;:&#34;RE: Form Task&#34;,&#34;emailServer&#34;:&#34;&#34;,&#34;requireLogin&#34;:&#34;false&#34;,&#34;screenEmailRef&#34;:10,&#34;screenCompleteRef&#34;:4}" pm:isActionsByEmail="true" pm:elementDestination="{&#34;type&#34;:&#34;taskSource&#34;,&#34;value&#34;:null}">
+    <bpmn:task id="node_2" name="Form Task" pm:screenRef="62" pm:allowInterstitial="false" pm:assignment="requester" pm:assignmentLock="false" pm:allowReassignment="false" pm:config="{&#34;web_entry&#34;:null,&#34;email_notifications&#34;:{&#34;notifications&#34;:[]}}" pm:configEmail="{&#34;subject&#34;:&#34;RE: Form Task&#34;,&#34;emailServer&#34;:&#34;&#34;,&#34;requireLogin&#34;:0,&#34;screenEmailRef&#34;:10,&#34;screenCompleteRef&#34;:null}" pm:isActionsByEmail="true" pm:elementDestination="{&#34;type&#34;:&#34;taskSource&#34;,&#34;value&#34;:null}">
       <bpmn:incoming>node_13</bpmn:incoming>
       <bpmn:outgoing>node_29</bpmn:outgoing>
     </bpmn:task>

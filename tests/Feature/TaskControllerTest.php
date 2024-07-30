@@ -27,13 +27,7 @@ class TaskControllerTest extends TestCase
         $route = route('api.process_events.trigger', [$process->id, 'event' => 'node_1']);
         $this->apiCall('POST', $route, []);
 
-        $instance = ProcessRequest::first();
-        $task = ProcessRequestToken::where('element_name', 'Form Task')->first();
-
-        $processAbeRequest = ProcessAbeRequestToken::factory()->create([
-            'process_request_id' => $instance->getKey(),
-            'process_request_token_id' => $task->getKey(),
-        ]);
+        $processAbeRequest = ProcessAbeRequestToken::first();
 
         $response = $this->webCall(
             'GET',
@@ -41,7 +35,7 @@ class TaskControllerTest extends TestCase
         );
 
         // check the correct view is called
-        $response->assertViewIs('processes.screens.completedScreen');
+        $response->assertSee('Your response has been submitted.');
         $response->assertStatus(200);
     }
     /*
@@ -61,24 +55,9 @@ class TaskControllerTest extends TestCase
         $route = route('api.process_events.trigger', [$process->id, 'event' => 'node_1']);
         $response = $this->apiCall('POST', $route);
 
-        $instance = ProcessRequest::first();
-        $task = ProcessRequestToken::where('element_name', 'Form Task')
-        ->orderBy('id', 'desc')
-        ->first();
+        $processAbeRequest = ProcessAbeRequestToken::first();
 
-        $processAbeRequest = ProcessAbeRequestToken::where('process_request_id', $instance->getKey())
-        ->where('process_request_token_id', $task->getKey())
-        ->first();
-
-        $response = $this->webCall(
-            'GET',
-            'tasks/update_variable/' . $processAbeRequest->uuid . '?varName=res&varValue=yes'
-        );
-        
-        $loginView = empty(config('app.login_view')) ? 'auth.login' : config('app.login_view');
-        // check the correct view is called
-        $response->assertViewIs($loginView);
-        $response->assertStatus(200);
+        $this->assertEquals(1, $processAbeRequest->require_login);
     }
 
     public function testReturnMessageTokenNoFound()

@@ -186,10 +186,10 @@ class TokenRepository implements TokenRepositoryInterface
                     Log::info('Activity configEmail: ', $configEmail);
                     $abeRequestToken = new ProcessAbeRequestToken();
                     $tokenAbe = $abeRequestToken->updateOrCreate([
-                        'process_request_id' => $token->process_request_id,
-                        'process_request_token_id' => $token->getKey(),
-                        'require_login' => $configEmail['requireLogin'],
-                        'completed_screen_id' => $configEmail['screenCompleteRef'] ?? 0,
+                        'process_request_id' => $token->process_request_id ?? null,
+                        'process_request_token_id' => $token->getKey() ?? null,
+                        'require_login' => $configEmail['requireLogin'] ?? 1,
+                        'completed_screen_id' => $configEmail['screenCompleteRef'] ?? null,
                     ]);
                     $data = $token->getInstance()->getDataStore()->getData();
                     // Set custom variables defined in the link
