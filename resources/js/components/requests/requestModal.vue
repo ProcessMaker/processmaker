@@ -284,4 +284,8 @@ export default {
   line-height: 38px;
   letter-spacing: -0.04em;
 }
+.process-list {
+  height: calc(100vh - 14rem);
+  overflow-y: auto;
+}
 </style>
