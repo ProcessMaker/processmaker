@@ -413,7 +413,7 @@
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: #28a745;
+    background-color: #4ea075;
     color: white;
     padding: 10px 20px;
     border-radius: 5px;
