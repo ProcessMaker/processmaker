@@ -132,7 +132,6 @@ export default {
     return {
       response: null,
       orderBy: "",
-      showTime: true,
       sortOrder: [],
       loading: false,
       fields: [
