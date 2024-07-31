@@ -224,7 +224,6 @@ export default {
       }
     },
     prevSlide() {
-      console.log("this.translateX",this.translateX)
       if (this.currentIndex > 0) {
         this.currentIndex--;
         this.translateX += this.slideWidth;
