@@ -147,7 +147,14 @@ class Filter
         if (!is_numeric($value)) {
             $value = \DB::connection()->getPdo()->quote($value);
         }
-        $query->whereRaw("json_unquote(json_extract(`data`, '$.\"{$selector}\"')) {$operator} {$value}");
+        if ($operator === 'like') {
+            // For JSON data is required to do a CAST in order to make insensitive the comparison
+            $query->whereRaw(
+                "cast(json_unquote(json_extract(`data`, '$.\"{$selector}\"')) as CHAR) {$operator} {$value}"
+            );
+        } else {
+            $query->whereRaw("json_unquote(json_extract(`data`, '$.\"{$selector}\"')) {$operator} {$value}");
+        }
     }
 
     private function operator()
