@@ -31,10 +31,12 @@
       }"
     >
       <div
+        ref="slidesDiv"
         class="slides"
         :style="{ transform: 'translateX(' + translateX + 'px)' }"
       >
         <div
+          ref="slidesDivChild"
           class="slide"
           v-for="(image, index) in images.length > 0 ? images : defaultImage"
           :key="index"
@@ -162,6 +164,7 @@ export default {
   },
   methods: {
     handleClick(url, index) {
+      this.$root.hasClickSlide = true;
       if(!this.fullPage) {
         const data = {
           "url" : url,
@@ -221,6 +224,7 @@ export default {
       }
     },
     prevSlide() {
+      console.log("this.translateX",this.translateX)
       if (this.currentIndex > 0) {
         this.currentIndex--;
         this.translateX += this.slideWidth;
@@ -228,7 +232,25 @@ export default {
       }
     },
     nextSlide() {
-      if (this.currentIndex < this.slideCount - 1) {
+      let slidesWidth = getComputedStyle(this.$refs.slidesDiv).getPropertyValue('width');
+      let slidesWidthChild = getComputedStyle(this.$refs.slidesDivChild[0]).getPropertyValue('width');
+      slidesWidth = parseInt(slidesWidth);
+      slidesWidthChild = parseInt(slidesWidthChild);
+      let n = this.slideCount - 1;
+      let optionClicked = true;
+      if(slidesWidth === slidesWidthChild) {
+        n = this.slideCount;
+      }
+
+      let currentTranslateX = this.translateX;
+      let slideWidth = this.slideWidth;
+      let newTranslateX = currentTranslateX - slideWidth;
+      let slideWidthTotal = (-1) * slideWidth * this.slideCount;
+      if(this.$root.hasClickSlide) {
+        optionClicked = (newTranslateX > slideWidthTotal);
+      }
+
+      if ((this.currentIndex < n) && optionClicked) {
         this.currentIndex++;
         this.translateX -= this.slideWidth;
         this.$root.$emit("carouselImageSelected", this.currentIndex);
