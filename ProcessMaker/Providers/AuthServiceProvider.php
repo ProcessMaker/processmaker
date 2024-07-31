@@ -69,7 +69,6 @@ class AuthServiceProvider extends ServiceProvider
 
         try {
             // Cache the permissions for a day to improve performance
-            // Todo:: Listen to permissions saved/delete event to invalidate permissions cache
             $permissions = Cache::remember('permissions', 86400, function () {
                 return Permission::pluck('name')->toArray();
             });
