@@ -242,6 +242,10 @@ class LoginController extends Controller
             //Clear the user permissions
             $request->session()->forget('permissions');
 
+            //Clear the user permissions
+            $userId = Auth::user()->id;
+            $request->session()->forget("user_{$userId}_permissions");
+
             // Clear the user session
             $this->forgetUserSession();
 
@@ -327,7 +331,7 @@ class LoginController extends Controller
                 return redirect()->route('password.change');
             }
             // Cache user permissions for a day to improve performance
-            // Todo: Listen to the logout event to saved/delete
+            // TODO:: Listn to saved/delete events
             // TODO: Listen when user permissions are updated (assignables model)
             Cache::remember("user_{$user->id}_permissions", 86400, function () use ($user) {
                 return $user->permissions->pluck('name')->toArray();
