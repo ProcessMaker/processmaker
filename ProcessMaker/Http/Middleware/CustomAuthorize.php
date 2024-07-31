@@ -16,107 +16,86 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CustomAuthorize extends Middleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle($request, Closure $next, $ability, ...$models)
     {
         try {
-            // Call the parent handle method first
             $response = parent::handle($request, $next, $ability, ...$models);
-        } catch (\AuthenticationException $e) {
-            // Parent logic was not successful, run custom logic
-            return $this->handleCustomLogic($request, $next, $ability, ...$models);
-        } catch (\AuthorizationException $e) {
-            // Parent logic was not successful, run custom logic
-            return $this->handleCustomLogic($request, $next, $ability, ...$models);
+
+            if ($response->getStatusCode() == 200) {
+                return $response;
+            }
         } catch (\Exception $e) {
-            // Parent logic was not successful, run custom logic
             return $this->handleCustomLogic($request, $next, $ability, ...$models);
         }
 
-        // Check if the response is successful before proceeding
-        if ($response->getStatusCode() === 200) {
-            // Parent logic was successful, proceed with request
-            return $response;
-        }
-
-        // Parent logic was not successful, run custom logic
         return $this->handleCustomLogic($request, $next, $ability, ...$models);
     }
 
     private function handleCustomLogic($request, Closure $next, $ability, ...$models)
     {
         $user = $request->user();
+        $userPermissions = $this->getUserPermissions($user->id);
 
-        // Retrieve the permissions from cache
-        $cacheKey = "user_{$user->id}_permissions";
-        $userPermissions = Cache::remember($cacheKey, 3600, function () use ($user) {
-            return $user->permissions->pluck('name')->toArray();
-        });
-
-        // Check if the user has the required ability
-        if (!in_array($ability, $userPermissions)) {
-            // Additional checks for 'create-projects' permission
-            if (in_array('create-projects', $userPermissions)) {
+        if (!$this->hasPermission($userPermissions, $ability)) {
+            if ($this->hasPermission($userPermissions, 'create-projects')) {
                 $projects = $this->getProjectsForUser($user->id);
-                if (empty($projects)) {
-                    abort(403, 'Unauthorized action.');
-                }
-
-                $isAllowedEndpoint = $this->checkAllowedEndpoints($projects, $request->path());
-
-                if ($isAllowedEndpoint && $this->isProjectAsset($ability, $models)) {
+                if ($projects && $this->isAllowedEndpoint($projects, $request->path(), $ability, $models)) {
                     return $next($request);
                 }
-
-                abort(403, 'Unauthorized action.');
             }
+            dd($userPermissions);
+            abort(403, 'Unauthorized action.');
         }
+
+        return $next($request);
     }
 
-    /**
-     * Retrieves the projects associated with the user.
-     */
-    private function getProjectsForUser(int $userId): array
+    private function getUserPermissions($userId)
     {
+        // TODO: Check if user permissions are already set if not query user database for permissions
+        return Cache::remember("user_${userId}_permissions", 3600, function () use ($userId) {
+            return User::find($userId)->permissions->pluck('name')->toArray();
+        });
+    }
+
+    private function hasPermission($userPermissions, $ability)
+    {
+        return in_array($ability, $userPermissions);
+    }
+
+    private function getProjectsForUser($userId)
+    {
+        // TODO: Could we assign projects to the cache too?
         if (!hasPackage('package-projects')) {
             return [];
         }
 
-        // Get projects where the current user is an owner
-        $ownerProjects = DB::table('projects')
-            ->where('user_id', $userId)
-            ->pluck('id');
-
-        // Get projects where the current user is a member
+        $ownerProjects = DB::table('projects')->where('user_id', $userId)->pluck('id');
         $memberProjects = DB::table('projects')
             ->join('project_members', 'projects.id', '=', 'project_members.project_id')
             ->where([
                 'project_members.member_id' => $userId,
                 'project_members.member_type' => User::class,
-            ])
-            ->pluck('projects.id');
+            ])->pluck('projects.id');
 
-        // Combine owner and member projects
         return $ownerProjects->merge($memberProjects)->unique()->values()->toArray();
     }
 
-    /**
-     * Checks if the current path is allowed based on the user's project assets.
-     */
-    private function checkAllowedEndpoints(array $projectIds, string $currentPath): bool
+    private function isAllowedEndpoint($projectIds, $currentPath, $ability, $models)
     {
-        $allowedEndpoints = [
-            'api',
-        ];
+        $allowedEndpoints = $this->getAllowedEndpoints($projectIds);
 
-        $dataSourceClass = 'ProcessMaker\Packages\Connectors\DataSources\Models\DataSource';
-        $decisionTableClass = 'ProcessMaker\Package\PackageDecisionEngine\Models\DecisionTable';
+        if (Str::contains($currentPath, $allowedEndpoints) && $this->isProjectAsset($ability, $models)) {
+            return true;
+        }
 
-        // Get the assets associated with the user's projects
+        return false;
+    }
+
+    private function getAllowedEndpoints($projectIds)
+    {
+        $allowedEndpoints = ['api'];
+
         $projectAssets = DB::table('project_assets')
             ->select('asset_id', 'asset_type')
             ->whereIn('project_id', $projectIds)
@@ -124,61 +103,62 @@ class CustomAuthorize extends Middleware
             ->get();
 
         foreach ($projectAssets as $asset) {
-            // Get each project asset's type and id
-            $assetId = $asset->asset_id;
-            $assetType = $asset->asset_type;
-
-            // Check asset types and push to $allowedEndpoints
-            if ($assetType === Process::class) {
-                $allowedEndpoints[] = "modeler/{$assetId}";
-            } elseif ($assetType === Screen::class) {
-                $allowedEndpoints[] = "designer/screen-builder/{$assetId}/edit";
-                $allowedEndpoints[] = "designer/screens/{$assetId}/edit";
-                $allowedEndpoints[] = 'designer/screens/preview';
-            } elseif ($assetType === Script::class) {
-                $allowedEndpoints[] = "designer/scripts/{$assetId}/builder";
-                $allowedEndpoints[] = "designer/scripts/{$assetId}/edit";
-                $allowedEndpoints[] = 'designer/scripts/preview';
-            }
-
-            if (class_exists($dataSourceClass) && $assetType === $dataSourceClass) {
-                $allowedEndpoints[] = "designer/data-sources/{$assetId}/edit";
-            }
-            if (class_exists($decisionTableClass) && $assetType === $decisionTableClass) {
-                $allowedEndpoints[] = "decision-tables/table-builder/{$assetId}/edit";
-            }
+            $allowedEndpoints =
+                array_merge($allowedEndpoints, $this->getEndpointsForAsset($asset->asset_type, $asset->asset_id));
         }
 
-        return Str::contains($currentPath, $allowedEndpoints);
+        return $allowedEndpoints;
+    }
+
+    private function getEndpointsForAsset($assetType, $assetId)
+    {
+        $endpoints = [];
+
+        switch ($assetType) {
+            case Process::class:
+                $endpoints[] = "modeler/{$assetId}";
+                break;
+            case Screen::class:
+                $endpoints[] = "designer/screen-builder/{$assetId}/edit";
+                $endpoints[] = "designer/screens/{$assetId}/edit";
+                $endpoints[] = 'designer/screens/preview';
+                break;
+            case Script::class:
+                $endpoints[] = "designer/scripts/{$assetId}/builder";
+                $endpoints[] = "designer/scripts/{$assetId}/edit";
+                $endpoints[] = 'designer/scripts/preview';
+                break;
+            default:
+                if (class_exists('ProcessMaker\Packages\Connectors\DataSources\Models\DataSource')
+                    && $assetType === 'ProcessMaker\Packages\Connectors\DataSources\Models\DataSource') {
+                    $endpoints[] = "designer/data-sources/{$assetId}/edit";
+                }
+                if (class_exists('ProcessMaker\Package\PackageDecisionEngine\Models\DecisionTable')
+                    && $assetType === 'ProcessMaker\Package\PackageDecisionEngine\Models\DecisionTable') {
+                    $endpoints[] = "decision-tables/table-builder/{$assetId}/edit";
+                }
+                break;
+        }
+
+        return $endpoints;
     }
 
     private function isProjectAsset($permission, $params)
     {
-        if ($params && $params[0]) {
-            return $this->handleUpdateDeleteOperations($permission, class_basename($params[0]));
-        }
-
-        return $this->checkForListCreateOperations($permission);
+        return $params && $params[0]
+            ? $this->handleUpdateDeleteOperations($permission, class_basename($params[0]))
+            : $this->checkForListCreateOperations($permission);
     }
 
     private function handleUpdateDeleteOperations($permission, $modelClass)
     {
-        $asset = $this->getAssetName($modelClass);
-
-        return $this->checkPermissionForAsset($permission, $asset);
+        return $this->checkPermissionForAsset($permission, $this->getAssetName($modelClass));
     }
 
-    /**
-     * Get the asset name based on the model class.
-     *
-     * @param string $modelClass
-     * @return string
-     */
     private function getAssetName($modelClass)
     {
         $asset = Str::snake(class_basename($modelClass));
 
-        // Adjust asset name for DataSource class
         if ($modelClass === 'DataSource') {
             $asset = 'data-source';
         }
@@ -191,7 +171,7 @@ class CustomAuthorize extends Middleware
         $projectAssetTypes = ['process', 'screen', 'script', 'data-source', 'decision_table', 'pm-block'];
 
         foreach ($projectAssetTypes as $asset) {
-            if (Str::contains($permission->name, $asset)) {
+            if (Str::contains($permission, $asset)) {
                 return true;
             }
         }
