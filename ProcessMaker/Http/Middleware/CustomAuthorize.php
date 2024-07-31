@@ -19,18 +19,11 @@ class CustomAuthorize extends Middleware
     public function handle($request, Closure $next, $ability, ...$models)
     {
         try {
-            $response = parent::handle($request, $next, $ability, ...$models);
-
-            if ($response->getStatusCode() == 200) {
-                return $response;
-            }
+            return parent::handle($request, $next, $ability, ...$models);
         } catch (\Exception $e) {
             // TODO: dump $e to find the exact class that is thrown and catch it
             return $this->handleCustomLogic($request, $next, $ability, ...$models);
         }
-
-        // TODO: DOUBLE CHECK IF THIS IS NECESSARY MAY ONLY NEED THE EXCEPTION HANDLER
-        return $this->handleCustomLogic($request, $next, $ability, ...$models);
     }
 
     private function handleCustomLogic($request, Closure $next, $ability, ...$models)
