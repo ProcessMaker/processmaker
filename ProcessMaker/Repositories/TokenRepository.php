@@ -185,8 +185,8 @@ class TokenRepository implements TokenRepositoryInterface
                 if (!empty($configEmail)) {
                     Log::info('Activity configEmail: ', $configEmail);
                     $abeRequestToken = new ProcessAbeRequestToken();
-                    $requireLogin = $configEmail['requireLogin'] ?? 1;
-                    $screenCompleted = $configEmail['screenCompleteRef'] ?? null;
+                    $requireLogin = ($configEmail['requireLogin']) ? 1 : 0;
+                    $screenCompleted = !empty($configEmail['screenCompleteRef']) ? $configEmail['screenCompleteRef'] : null;
                     $tokenAbe = $abeRequestToken->updateOrCreate([
                         'process_request_id' => $token->process_request_id ?? null,
                         'process_request_token_id' => $token->getKey() ?? null,
