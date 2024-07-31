@@ -316,32 +316,33 @@ export default {
   }
 }
 .separator-class.width-changed {
-  @media (min-width: 641px) and (max-width:767px) {
+  @media (min-width: 641px) and (max-width:775px) {
     width: 340px;
   }
 
-  @media (min-width: 768px) and (max-width:1075px) {
+  @media (min-width: 776px) and (max-width:1083px) {
     width: 678px;
   }
 
-  @media (min-width: 1076px) and (max-width:1520px) {
-    width: 1156px;
+  @media (min-width: 1084px) and (max-width:1572px) {
+    width: 1154px;
   }
 
-  @media (min-width: 1521px) and (max-width: 1789px) {
-    width: 1156px;
+  @media (min-width: 1573px) and (max-width:1669px) {
+    width: 1544px;
+    margin-right: -95px;
   }
 
-  @media (min-width: 1790px) and (max-width: 1879px) {
-    width: 1542px;
+  @media (min-width: 1670px) and (max-width: 1931px) {
+    width: 1544px;
   }
 
-  @media (min-width: 1880px) and (max-width: 2148px){
-    width: 1859px;
+  @media (min-width: 1932px) and (max-width: 2290px){
+    width: 1932px;
   }
 
-  @media (min-width: 2149px) and (max-width: 2438px){
-    width: 1926px;
+  @media (min-width: 2291px) and (max-width: 2438px){
+    width: 2308px;
   }
 
   @media (min-width: 2439px){
