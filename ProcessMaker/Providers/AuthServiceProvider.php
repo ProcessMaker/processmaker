@@ -4,6 +4,7 @@ namespace ProcessMaker\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
@@ -67,11 +68,15 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         try {
-            Permission::select('name')->get()->each(function ($permission) {
-                Gate::define($permission->name, function ($user) use ($permission) {
-                    return $user->hasPermission($permission->name);
-                });
+            // Cache the permissions for a day to improve performance
+            $permissions = Cache::remember('permissions', 86400, function () {
+                return Permission::pluck('name')->toArray();
             });
+            foreach ($permissions as $permission) {
+                Gate::define($permission->name, function ($user) use ($permission) {
+                    return $user->hasPermission($permission);
+                });
+            }
         } catch (\Exception $e) {
             Log::notice('Unable to register gates. Either no database connection or no permissions table exists.');
         }

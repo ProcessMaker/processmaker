@@ -6,6 +6,7 @@ use App;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Validation\ValidationException;
 use ProcessMaker\Events\Logout;
@@ -325,6 +326,10 @@ class LoginController extends Controller
 
                 return redirect()->route('password.change');
             }
+            // Cache user permissions for a day to improve performance
+            Cache::remember("user_{$user->id}_permissions", 86400, function () use ($user) {
+                return $user->permissions->pluck('name')->toArray();
+            });
 
             return $this->sendLoginResponse($request);
         }

@@ -34,7 +34,7 @@ class CustomAuthorize extends Middleware
     private function handleCustomLogic($request, Closure $next, $ability, ...$models)
     {
         $user = $request->user();
-        $userPermissions = $this->getUserPermissions($user->id);
+        $userPermissions = $this->getUserPermissions($user);
 
         if (!$this->hasPermission($userPermissions, $ability)) {
             if ($this->hasPermission($userPermissions, 'create-projects')) {
@@ -43,18 +43,16 @@ class CustomAuthorize extends Middleware
                     return $next($request);
                 }
             }
-            dd($userPermissions);
             abort(403, 'Unauthorized action.');
         }
 
         return $next($request);
     }
 
-    private function getUserPermissions($userId)
+    private function getUserPermissions($user)
     {
-        // TODO: Check if user permissions are already set if not query user database for permissions
-        return Cache::remember("user_${userId}_permissions", 3600, function () use ($userId) {
-            return User::find($userId)->permissions->pluck('name')->toArray();
+        return Cache::remember("user_{$user->id}_permissions", 86400, function () use ($user) {
+            return $user->permissions->pluck('name')->toArray();
         });
     }
 
