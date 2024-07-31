@@ -18,9 +18,9 @@ class ProcessTranslationController extends Controller
         $processId = $request->input('process_id', '');
         $filter = $request->input('filter', '');
 
-        $process = Process::findOrFail($processId);
+        $processVersion = Process::find($processId)->getDraftOrPublishedLatestVersion();
 
-        $processTranslation = new ProcessTranslation($process);
+        $processTranslation = new ProcessTranslation($processVersion);
         $screensTranslations = $processTranslation->getProcessScreensWithTranslations();
         $languageList = $processTranslation->getLanguageList($screensTranslations);
 
@@ -85,9 +85,9 @@ class ProcessTranslationController extends Controller
     {
         $processId = $request->input('process_id');
 
-        $process = Process::findOrFail($processId);
+        $processVersion = Process::find($processId)->getDraftOrPublishedLatestVersion();
 
-        $processTranslation = new ProcessTranslation($process);
+        $processTranslation = new ProcessTranslation($processVersion);
         $screensTranslations = $processTranslation->getProcessScreensWithTranslations();
         $translatedLanguageList = $processTranslation->getLanguageList($screensTranslations);
         $translatingLanguageList = ProcessTranslationToken::where('process_id', $processId)->get();
@@ -148,8 +148,8 @@ class ProcessTranslationController extends Controller
 
     public function show(Request $request, $processId)
     {
-        $process = Process::findOrFail($processId);
-        $processTranslation = new ProcessTranslation($process);
+        $processVersion = Process::find($processId)->getDraftOrPublishedLatestVersion();
+        $processTranslation = new ProcessTranslation($processVersion);
         $screensTranslations = $processTranslation->getProcessScreensWithTranslations();
 
         return response()->json([
@@ -159,8 +159,8 @@ class ProcessTranslationController extends Controller
 
     public function cancel(Request $request, $processId, $language)
     {
-        $process = Process::findOrFail($processId);
-        $processTranslation = new ProcessTranslation($process);
+        $processVersion = Process::find($processId)->getDraftOrPublishedLatestVersion();
+        $processTranslation = new ProcessTranslation($processVersion);
         $processTranslation->cancelTranslation($language);
 
         return response()->json();
@@ -168,8 +168,8 @@ class ProcessTranslationController extends Controller
 
     public function delete(Request $request, $processId, $language)
     {
-        $process = Process::findOrFail($processId);
-        $processTranslation = new ProcessTranslation($process);
+        $processVersion = Process::find($processId)->getDraftOrPublishedLatestVersion();
+        $processTranslation = new ProcessTranslation($processVersion);
         $processTranslation->deleteTranslations($language);
 
         return response()->json();
@@ -181,22 +181,21 @@ class ProcessTranslationController extends Controller
         $screensTranslations = $request->input('screens_translations');
         $language = $request->input('language');
 
-        $process = Process::findOrFail($processId);
-
-        $processTranslation = new ProcessTranslation($process);
+        $processVersion = Process::find($processId)->getDraftOrPublishedLatestVersion();
+        $processTranslation = new ProcessTranslation($processVersion);
         $processTranslation->updateTranslations($screensTranslations, $language);
     }
 
     public function export(Request $request, $processId, $languageCode)
     {
-        $process = Process::findOrFail($processId);
-        $processTranslation = new ProcessTranslation($process);
+        $processVersion = Process::find($processId)->getDraftOrPublishedLatestVersion();
+        $processTranslation = new ProcessTranslation($processVersion);
         $exportList = $processTranslation->exportTranslations($languageCode);
 
-        $fileName = trim($process->name);
+        $fileName = trim($processVersion->name);
 
         $exportInfo = json_encode([
-            'processName' => $process->name,
+            'processName' => $processVersion->name,
             'language' => $languageCode,
             'humanLanguage' => Languages::ALL[$languageCode],
         ]);
@@ -218,8 +217,8 @@ class ProcessTranslationController extends Controller
         $content = $request->file('file')->get();
         $payload = json_decode($content, true);
 
-        $process = Process::findOrFail($processId);
-        $processTranslation = new ProcessTranslation($process);
+        $processVersion = Process::find($processId)->getDraftOrPublishedLatestVersion();
+        $processTranslation = new ProcessTranslation($processVersion);
         $importData = $processTranslation->getImportData($payload);
 
         if (!$importData || !count($importData)) {
@@ -239,8 +238,8 @@ class ProcessTranslationController extends Controller
         $content = $request->file('file')->get();
         $payload = json_decode($content, true);
 
-        $process = Process::findOrFail($processId);
-        $processTranslation = new ProcessTranslation($process);
+        $processVersion = Process::find($processId)->getDraftOrPublishedLatestVersion();
+        $processTranslation = new ProcessTranslation($processVersion);
         $processTranslation->importTranslations($payload);
 
         return response()->json(['processId' => $processId], 200);
