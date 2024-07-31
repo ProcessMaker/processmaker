@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Laravel\Passport\HasApiTokens;
@@ -396,7 +397,20 @@ class User extends Authenticatable implements HasMedia
      */
     public function canAny($permissions, $arguments = []): bool
     {
-        return parent::canAny(explode('|', $permissions), $arguments);
+        // Ensure permissions are in an array format
+        $permissionsArray = is_array($permissions) ? $permissions : explode('|', $permissions);
+
+        // Check with parent method first
+        if (parent::canAny($permissionsArray, $arguments)) {
+            return true;
+        }
+
+        $userPermissions = $this->permissions->pluck('name')->toArray();
+
+        // Check if there are any common permissions
+        $commonPermissions = array_intersect($permissionsArray, $userPermissions);
+
+        return !empty($commonPermissions);
     }
 
     /**
@@ -569,6 +583,7 @@ class User extends Authenticatable implements HasMedia
         if ($hasSingleGroupWith2fa || $hasMultipleGroupsWithAtLeastOne2fa || $independent) {
             return true;
         }
+
         return false;
     }
 }
