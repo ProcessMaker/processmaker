@@ -25,9 +25,11 @@ class CustomAuthorize extends Middleware
                 return $response;
             }
         } catch (\Exception $e) {
+            // TODO: dump $e to find the exact class that is thrown and catch it
             return $this->handleCustomLogic($request, $next, $ability, ...$models);
         }
 
+        // TODO: DOUBLE CHECK IF THIS IS NECESSARY MAY ONLY NEED THE EXCEPTION HANDLER
         return $this->handleCustomLogic($request, $next, $ability, ...$models);
     }
 
@@ -43,6 +45,7 @@ class CustomAuthorize extends Middleware
                     return $next($request);
                 }
             }
+            // TODO: instead of abort throw the same exception thrown in above try catch
             abort(403, 'Unauthorized action.');
         }
 
@@ -64,6 +67,8 @@ class CustomAuthorize extends Middleware
     private function getProjectsForUser($userId)
     {
         // TODO: Could we assign projects to the cache too?
+        // TODO: Cache user projects and project assets / invalidate cache when user is addded to projects and an asset added/removed from the project
+        // TODO: Ensure that the cache does not get to big
         if (!hasPackage('package-projects')) {
             return [];
         }
@@ -93,7 +98,7 @@ class CustomAuthorize extends Middleware
     private function getAllowedEndpoints($projectIds)
     {
         $allowedEndpoints = ['api'];
-
+        // TODO: Project assets will be stored in the projects cache for the user
         $projectAssets = DB::table('project_assets')
             ->select('asset_id', 'asset_type')
             ->whereIn('project_id', $projectIds)
