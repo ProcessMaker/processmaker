@@ -62,7 +62,7 @@ class TokenRepository implements TokenRepositoryInterface
         return $token;
     }
 
-    public function loadTokenByUid($uid): ? TokenInterface
+    public function loadTokenByUid($uid): ?TokenInterface
     {
         if (is_numeric($uid)) {
             return Token::find($uid);
@@ -186,7 +186,9 @@ class TokenRepository implements TokenRepositoryInterface
                     Log::info('Activity configEmail: ', $configEmail);
                     $abeRequestToken = new ProcessAbeRequestToken();
                     $requireLogin = ($configEmail['requireLogin']) ? 1 : 0;
-                    $screenCompleted = !empty($configEmail['screenCompleteRef']) ? $configEmail['screenCompleteRef'] : null;
+                    $screenCompleted = !empty($configEmail['screenCompleteRef'])
+                        ? $configEmail['screenCompleteRef']
+                        : null;
                     $tokenAbe = $abeRequestToken->updateOrCreate([
                         'process_request_id' => $token->process_request_id ?? null,
                         'process_request_token_id' => $token->getKey() ?? null,

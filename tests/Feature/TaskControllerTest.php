@@ -18,6 +18,9 @@ class TaskControllerTest extends TestCase
 {
     use RequestHelper;
 
+    /**
+     * Test Process action by email with screen completed
+     */
     public function testActionByEmailWithScreen()
     {
         $screen = Screen::factory()->create([
@@ -43,6 +46,9 @@ class TaskControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
+    /**
+     * Test Process action by email without screen completed
+     */
     public function testActionByEmailWithoutScreen()
     {
         $process = Process::factory()->create([
@@ -64,6 +70,9 @@ class TaskControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
+    /**
+     * Test Process action by email with empty screen completed
+     */
     public function testActionByEmailWithScreenEmpty()
     {
         $process = Process::factory()->create([
@@ -86,7 +95,7 @@ class TaskControllerTest extends TestCase
     }
 
     /*
-     * Test Process ABE With require login
+     * Test Process action by email with require login and without screen completed
     */
     public function testActionByEmailWithRequireLogin()
     {
@@ -105,7 +114,7 @@ class TaskControllerTest extends TestCase
     }
 
     /*
-     * Test Process ABE Without require login
+     * Test Process action by email without require login and without screen completed
     */
     public function testActionByEmailWithoutRequireLogin()
     {
@@ -124,6 +133,9 @@ class TaskControllerTest extends TestCase
         $this->assertEquals(null, $processAbeRequest->completed_screen_id);
     }
 
+    /**
+     * Test Process action by email when the token is invalid
+     */
     public function testReturnMessageTokenNoFound()
     {
         $token = Faker::create()->uuid;
