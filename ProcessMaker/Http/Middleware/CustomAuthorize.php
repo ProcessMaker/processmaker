@@ -3,10 +3,13 @@
 namespace ProcessMaker\Http\Middleware;
 
 use Closure;
+use Illuminate\Auth\Access\AuthenticationException;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Middleware\Authorize as Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
@@ -18,30 +21,40 @@ class CustomAuthorize extends Middleware
 {
     public function handle($request, Closure $next, $ability, ...$models)
     {
+        $modelsString = implode('-', $models);
+        $permission = $ability . '-' . $modelsString;
+
         try {
             return parent::handle($request, $next, $ability, ...$models);
+        } catch (AuthorizationException $e) {
+            return $this->handleCustomLogic($request, $next, $permission, $e, ...$models);
+        } catch (AuthenticationException $e) {
+            return $this->handleCustomLogic($request, $next, $permission, $e, ...$models);
         } catch (\Exception $e) {
-            // TODO: dump $e to find the exact class that is thrown and catch it
-            $modelsString = implode('-', $models);
-            $permission = $ability . '-' . $modelsString;
+            Log::error('An unexpected error occurred in CustomAuthorize middleware.', [
+                'exception' => $e,
+                'permission' => $permission,
+                'models' => $models,
+            ]);
 
-            return $this->handleCustomLogic($request, $next, $permission, ...$models);
+            return $this->handleCustomLogic($request, $next, $permission, $e, ...$models);
         }
     }
 
-    private function handleCustomLogic($request, Closure $next, $permission, ...$models)
+    private function handleCustomLogic($request, Closure $next, $permission, $error, ...$models)
     {
         $user = $request->user();
         $userPermissions = $this->getUserPermissions($user);
         if (!$this->hasPermission($userPermissions, $permission)) {
+            // Check for 'create-projects' permission and validate project access
             if ($this->hasPermission($userPermissions, 'create-projects')) {
                 $projects = $this->getProjectsForUser($user->id);
                 if ($projects && $this->isAllowedEndpoint($projects, $request->path(), $permission, $models)) {
                     return $next($request);
                 }
             }
-            // TODO: instead of abort throw the same exception thrown in above try catch
-            abort(403, 'Unauthorized action.');
+            // Re-throw the original exception if permission is not allowed
+            throw $error;
         }
 
         return $next($request);
