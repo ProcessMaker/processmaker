@@ -1,122 +1,124 @@
 <template>
   <div class="data-table">
-    <div class="card-deck d-block d-sm-none">
-      <div
-        v-for="notification in data.data"
-        :key="notification.id"
-        class="card"
-      >
-        <div class="card-body shadow">
-          <div class="d-flex align-items-center mb-3">
-            <notification-user :notification="notification" />
-          </div>
-          <h5 class="card-title">
-            <notification-message
-              :notification="notification"
-              :show-time="showTime"
-            />
-          </h5>
-          <h6 class="card-subtitle mb-2 text-muted">
-            {{ notification.read_at || 'N/A' }}
-          </h6>
-          <a
-            v-if="notification.data.url"
-            href="#"
-            @click="redirectToURL(notification.data.url)"
-          >More</a>
-        </div>
-      </div>
-    </div>
     <data-loading
       v-show="loading"
-      :for="/clients/"
+      :for="/notifications\?page/"
       :empty="$t('No Data Available')"
       :empty-desc="$t('')"
       empty-icon="noData"
     />
-    <div
-      v-if="!loading"
-      class="card card-body table-card d-none d-sm-block"
-    >
-      <vuetable
-        :data-manager="dataManager"
-        :sort-order="sortOrder"
-        :css="css"
-        :api-mode="false"
-        :fields="fields"
-        :data="data"
-        data-path="data"
-        pagination-path="meta"
-        :no-data-template="$t('No Data Available')"
-        @vuetable:pagination-data="onPaginationData"
-      >
-        <!-- Change Status Slot -->
-        <template
-          slot="changeStatus"
-          slot-scope="props"
+    <div v-show="!loading">
+      <div class="card-deck d-block d-sm-none">
+        <div
+          v-for="notification in data.data"
+          :key="notification.id"
+          class="card"
         >
-          <span
-            v-if="props.rowData.read_at === null"
-            style="cursor:pointer"
-            class="far fa-envelope fa-lg blue-envelope"
-            @click="read(props.rowData.id)"
-          />
-
-          <span
-            v-if="props.rowData.read_at !== null"
-            style="cursor:pointer"
-            @click="unread(props.rowData)"
-          >
-            <i class="far fa-envelope-open fa-lg gray-envelope" />
-          </span>
-        </template>
-
-        <!-- From Slot -->
-        <template
-          slot="from"
-          slot-scope="props"
-        >
-          <notification-user :notification="props.rowData" />
-        </template>
-
-        <!-- Subject Slot -->
-        <template
-          slot="subject"
-          slot-scope="props"
-        >
-          <a
-            style="cursor: pointer;"
-            @click="redirectToURL(props.rowData.data?.url)"
-          >
-            <span v-if="props.rowData.type === 'FILE_READY'" />
-            <span v-else>
+          <div class="card-body shadow">
+            <div class="d-flex align-items-center mb-3">
+              <notification-user :notification="notification" />
+            </div>
+            <h5 class="card-title">
               <notification-message
-                :notification="props.rowData"
-                :style="{ fontSize: '14px' }"
+                :notification="notification"
+                :show-time="showTime"
               />
+            </h5>
+            <h6 class="card-subtitle mb-2 text-muted">
+              {{ notification.read_at || 'N/A' }}
+            </h6>
+            <a
+              v-if="notification.data.url"
+              href="#"
+              @click="redirectToURL(notification.data.url)"
+            >More</a>
+          </div>
+        </div>
+      </div>
+      <div class="card card-body table-card d-none d-sm-block">
+        <vuetable
+          :data-manager="dataManager"
+          :sort-order="sortOrder"
+          :css="css"
+          :api-mode="false"
+          :fields="fields"
+          :data="data"
+          data-path="data"
+          pagination-path="meta"
+          :no-data-template="$t('No Data Available')"
+          @vuetable:pagination-data="onPaginationData"
+        >
+          <!-- Change Status Slot -->
+          <template
+            slot="changeStatus"
+            slot-scope="props"
+          >
+            <span
+              v-if="props.rowData.read_at === null"
+              style="cursor:pointer"
+              class="far fa-envelope fa-lg blue-envelope"
+              @click="read(props.rowData.id)"
+            />
+
+            <span
+              v-if="props.rowData.read_at !== null"
+              style="cursor:pointer"
+              @click="unread(props.rowData)"
+            >
+              <i class="far fa-envelope-open fa-lg gray-envelope" />
             </span>
-          </a>
-        </template>
-      </vuetable>
-      <pagination
-        ref="pagination"
-        :single="$t('Task')"
-        :plural="$t('Tasks')"
-        :per-page-select-enabled="true"
-        @changePerPage="changePerPage"
-        @vuetable-pagination:change-page="onPageChange"
-      />
+          </template>
+
+          <!-- From Slot -->
+          <template
+            slot="from"
+            slot-scope="props"
+          >
+            <notification-user :notification="props.rowData" />
+          </template>
+
+          <!-- Subject Slot -->
+          <template
+            slot="subject"
+            slot-scope="props"
+          >
+            <a
+              style="cursor: pointer;"
+              @click="redirectToURL(props.rowData.data?.url)"
+            >
+              <span v-if="props.rowData.type === 'FILE_READY'" />
+              <span v-else>
+                <notification-message
+                  :notification="props.rowData"
+                  :style="{ fontSize: '14px' }"
+                />
+              </span>
+            </a>
+          </template>
+        </vuetable>
+        <pagination
+          ref="pagination"
+          :single="$t('Task')"
+          :plural="$t('Tasks')"
+          :per-page-select-enabled="true"
+          @changePerPage="changePerPage"
+          @vuetable-pagination:change-page="onPageChange"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import moment from "moment";
+import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import AvatarImage from "../../components/AvatarImage";
 import NotificationMessage from "./notification-message";
 import NotificationUser from "./notification-user";
+
+const uniqIdsMixin = createUniqIdsMixin();
 
 Vue.component("AvatarImage", AvatarImage);
 
@@ -126,7 +128,7 @@ export default {
     NotificationUser,
     AvatarImage,
   },
-  mixins: [datatableMixin, dataLoadingMixin],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: ["filter", "filterComments", "type", "showTime"],
   data() {
     return {
