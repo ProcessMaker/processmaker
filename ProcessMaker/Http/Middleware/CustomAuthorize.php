@@ -75,7 +75,6 @@ class CustomAuthorize extends Middleware
 
     private function getProjectsForUser($userId)
     {
-        // TODO: Could we assign projects to the cache too?
         // TODO: Cache user projects and project assets / invalidate cache when user is addded to projects and an asset added/removed from the project
         // TODO: Ensure that the cache does not get to big
         if (!hasPackage('package-projects')) {
@@ -85,67 +84,59 @@ class CustomAuthorize extends Middleware
         return Cache::remember("user_{$userId}_projects_with_assets", 86400, function () use ($userId) {
             return $this->getUserProjectsWithAssets($userId);
         });
-
-        // dd($userProjectsWithAssets);
-
-        // return $ownerProjects->merge($memberProjects)->unique()->values()->toArray();
-
-        // $userProjects = Cache::remember("user_{$userId}_projects", 86400, function () {
-        //     $ownerProjects = DB::table('projects')->where('user_id', $userId)->pluck('id');
-        //     $memberProjects = DB::table('projects')
-        //         ->join('project_members', 'projects.id', '=', 'project_members.project_id')
-        //         ->where([
-        //             'project_members.member_id' => $userId,
-        //             'project_members.member_type' => User::class,
-        //         ])->pluck('projects.id');
-
-        //     return $ownerProjects->merge($memberProjects)->unique()->values()->toArray();
-        // });
     }
 
     private function getUserProjectsWithAssets($userId)
     {
-        $ownerProjectsWithAssets = DB::table('projects')
+        $userProjectsWithAssets = $this->fetchUserProjectWithAssets($userId);
+
+        return $this->formatProjectsWithAssets($userProjectsWithAssets);
+    }
+
+    /**
+     * Fetch projects with assets for the given user.
+     */
+    private function fetchUserProjectWithAssets($userId)
+    {
+        return DB::table('projects')
         ->join('project_assets', 'projects.id', '=', 'project_assets.project_id')
+        ->leftJoin('project_members', function ($join) use ($userId) {
+            $join->on('projects.id', '=', 'project_members.project_id')
+                ->where('project_members.member_id', '=', $userId)
+                ->where('project_members.member_type', '=', User::class);
+        })
         ->where('projects.user_id', $userId)
+        ->orWhere('project_members.member_id', $userId)
         ->select('projects.id as project_id', 'project_assets.id as asset_id', 'project_assets.asset_type')
-        ->get();
+        ->get()
+        ->unique()
+        ->toArray();
+    }
 
-        $memberProjectsWithAssets = DB::table('projects')
-            ->join('project_members', 'projects.id', '=', 'project_members.project_id')
-            ->join('project_assets', 'projects.id', '=', 'project_assets.project_id')
-            ->where([
-                'project_members.member_id' => $userId,
-                'project_members.member_type' => User::class,
-            ])
-            ->select('projects.id as project_id', 'project_assets.id as asset_id', 'project_assets.asset_type')
-            ->get();
+    /**
+     * Format projects with assets into the desired structure.
+     */
+    private function formatProjectsWithAssets($projectsWithAssets)
+    {
+        $formattedArray = [];
 
-        $userProjectsWithAssets = $ownerProjectsWithAssets->merge($memberProjectsWithAssets)->unique()->values()->toArray();
-
-        // Init the formatted array
-        $userProjectWithAssetsArray = [];
-        // Iterate over the results and format the array
-        foreach ($userProjectsWithAssets as $project) {
+        foreach ($projectsWithAssets as $project) {
             $projectId = $project->project_id;
             $assetType = $project->asset_type;
             $assetId = $project->asset_id;
 
-            // Init project entry if not exists
-            if (!isset($userProjectWithAssetsArray[$projectId])) {
-                $userProjectWithAssetsArray[$projectId] = [];
+            if (!isset($formattedArray[$projectId])) {
+                $formattedArray[$projectId] = [];
             }
 
-            // Init asset type entry if not exists
-            if (!isset($userProjectWithAssetsArray[$projectId][$assetType])) {
-                $userProjectWithAssetsArray[$projectId][$assetType] = [];
+            if (!isset($formattedArray[$projectId][$assetType])) {
+                $formattedArray[$projectId][$assetType] = [];
             }
 
-            // Add asset ID to the respective asset type array
-            $userProjectWithAssetsArray[$projectId][$assetType][] = $assetId;
+            $formattedArray[$projectId][$assetType][] = $assetId;
         }
 
-        return $userProjectWithAssetsArray;
+        return $formattedArray;
     }
 
     private function isAllowedEndpoint($projectIds, $currentPath, $permission, $models)
