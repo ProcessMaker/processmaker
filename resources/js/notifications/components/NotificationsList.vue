@@ -135,7 +135,6 @@ export default {
       response: null,
       orderBy: "",
       sortOrder: [],
-      loading: false,
       fields: [
         {
           title: () => this.$t("Status"),
