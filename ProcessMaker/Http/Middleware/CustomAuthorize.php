@@ -81,7 +81,7 @@ class CustomAuthorize extends Middleware
             return [];
         }
 
-        return Cache::remember("user_{$userId}_projects_with_assets", function () use ($userId) {
+        return Cache::remember("user_{$userId}_projects_with_assets", 86400, function () use ($userId) {
             return $this->getUserProjectsWithAssets($userId);
         });
 
