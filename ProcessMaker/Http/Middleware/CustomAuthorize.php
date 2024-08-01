@@ -49,7 +49,7 @@ class CustomAuthorize extends Middleware
             // Check for 'create-projects' permission and validate project access
             if ($this->hasPermission($userPermissions, 'create-projects')) {
                 $projects = $this->getProjectsForUser($user->id);
-                // $projectIds = array_keys($projects);
+
                 if ($projects && $this->isAllowedEndpoint($projects, $request->path(), $permission, $models)) {
                     return $next($request);
                 }
