@@ -101,6 +101,9 @@ window.Vue.component("data-tree-toggle", DataTreeToggle);
 window.Vue.component("tree-view", TreeView);
 window.Vue.component("filter-table", FilterTable);
 window.Vue.component("pagination-table", PaginationTable);
+// overwrite FormMaskedInput
+window,Vue.component("FormMaskedInput", require("./components/FormMaskedInput.vue").default);
+window,Vue.component("FormTextArea", require("./components/FormTextArea.vue").default);
 
 let translationsLoaded = false;
 const mdates = JSON.parse(
@@ -186,6 +189,31 @@ window.ProcessMaker = {
 
   $notifications: {
     icons: {},
+  },
+
+  // ProcessMaker frontend AI API
+  ai: {
+    createTextSession: () => {
+      return {
+        prompt: async (value, data = {}) => {
+          if (!value) {
+            throw new Error('Prompt value is required');
+          }
+          if (!data) {
+            throw new Error('Data value is required');
+          }
+          const form = new FormData();
+          form.append('file', 'null');
+          form.append('prompt', value);
+          form.append('data', JSON.stringify(data));
+          form.append('response_format', 'text');
+
+          const response = await window.ProcessMaker.apiClient.post('package-ai/testAiTask', form, {timeout: 120000});
+
+          return response.data.output;
+        },
+      };
+    },
   },
 };
 

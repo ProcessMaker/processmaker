@@ -42,7 +42,26 @@
 
 @section('js')
     <script>
+      console.log('entro');
       window.ProcessMaker.EventBus.$on("screen-builder-init", (builder) => {
+        // Add AI suggestion
+        const addSuggestionTo = (component) => {
+          const inputControl = builder.$refs.builder.controls.find(c=>c['editor-component'] === component);
+          const inputInspector = inputControl.inspector;
+          inputInspector.push({
+            type: 'FormTextArea',
+            field: 'aiSuggestion',
+            config: {
+              label: 'AI Suggestion',
+              helper: 'AI Suggestion prompt',
+            }
+          });
+        };
+        builder.$nextTick(() => {
+          addSuggestionTo('FormInput');
+          addSuggestionTo('FormTextArea');
+        });
+
         // Registrar el EP para script, datasource y execute
         if (builder.watchers) {
           if (@json(route::has('api.scripts.index'))) {
