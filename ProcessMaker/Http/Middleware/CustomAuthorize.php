@@ -49,8 +49,8 @@ class CustomAuthorize extends Middleware
             // Check for 'create-projects' permission and validate project access
             if ($this->hasPermission($userPermissions, 'create-projects')) {
                 $projects = $this->getProjectsForUser($user->id);
-                $projectIds = array_keys($projects);
-                if ($projects && $this->isAllowedEndpoint($projectIds, $request->path(), $permission, $models)) {
+                // $projectIds = array_keys($projects);
+                if ($projects && $this->isAllowedEndpoint($projects, $request->path(), $permission, $models)) {
                     return $next($request);
                 }
             }
@@ -107,7 +107,7 @@ class CustomAuthorize extends Middleware
         })
         ->where('projects.user_id', $userId)
         ->orWhere('project_members.member_id', $userId)
-        ->select('projects.id as project_id', 'project_assets.id as asset_id', 'project_assets.asset_type')
+        ->select('projects.id as project_id', 'project_assets.asset_id as asset_id', 'project_assets.asset_type')
         ->get()
         ->unique()
         ->toArray();
@@ -139,9 +139,9 @@ class CustomAuthorize extends Middleware
         return $formattedArray;
     }
 
-    private function isAllowedEndpoint($projectIds, $currentPath, $permission, $models)
+    private function isAllowedEndpoint($projects, $currentPath, $permission, $models)
     {
-        $allowedEndpoints = $this->getAllowedEndpoints($projectIds);
+        $allowedEndpoints = $this->getAllowedEndpoints($projects);
         if (Str::contains($currentPath, $allowedEndpoints) && $this->isProjectAsset($permission, $models)) {
             return true;
         }
@@ -149,22 +149,20 @@ class CustomAuthorize extends Middleware
         return false;
     }
 
-    private function getAllowedEndpoints($projectIds)
+    private function getAllowedEndpoints($projects) : array
     {
         $allowedEndpoints = ['api'];
-        // TODO: Project assets will be stored in the projects cache for the user
-        $projectAssets = DB::table('project_assets')
-            ->select('asset_id', 'asset_type')
-            ->whereIn('project_id', $projectIds)
-            ->distinct()
-            ->get();
+        $endpoints = [];
 
-        foreach ($projectAssets as $asset) {
-            $allowedEndpoints =
-                array_merge($allowedEndpoints, $this->getEndpointsForAsset($asset->asset_type, $asset->asset_id));
+        foreach ($projects as $projectId => $assets) {
+            foreach ($assets as  $assetType => $assetIds) {
+                foreach ($assetIds as $id) {
+                    $endpoints = array_merge($endpoints, $this->getEndpointsForAsset($assetType, $id));
+                }
+            }
         }
 
-        return $allowedEndpoints;
+        return array_merge($allowedEndpoints, $endpoints);
     }
 
     private function getEndpointsForAsset($assetType, $assetId)
