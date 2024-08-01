@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Events\PermissionChanged;
 use ProcessMaker\Events\PermissionUpdated;
 use ProcessMaker\Http\Controllers\Controller;
@@ -114,6 +115,16 @@ class PermissionController extends Controller
         //Sync the entity's permissions with the database
         $entity->permissions()->sync($permissions->pluck('id')->toArray());
 
+        // Clear user permissions cache and rebuild
+        $this->clearAndRebuildCache($entity);
+
         return response([], 204);
+    }
+
+    private function clearAndRebuildCache($user)
+    {
+        // Rebuild and update the permissions cache
+        $permissions = $user->permissions->pluck('name')->toArray();
+        Cache::put("user_{$user->id}_permissions", $permissions, 86400);
     }
 }

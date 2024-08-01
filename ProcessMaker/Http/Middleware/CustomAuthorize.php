@@ -22,19 +22,21 @@ class CustomAuthorize extends Middleware
             return parent::handle($request, $next, $ability, ...$models);
         } catch (\Exception $e) {
             // TODO: dump $e to find the exact class that is thrown and catch it
-            return $this->handleCustomLogic($request, $next, $ability, ...$models);
+            $modelsString = implode('-', $models);
+            $permission = $ability . '-' . $modelsString;
+
+            return $this->handleCustomLogic($request, $next, $permission, ...$models);
         }
     }
 
-    private function handleCustomLogic($request, Closure $next, $ability, ...$models)
+    private function handleCustomLogic($request, Closure $next, $permission, ...$models)
     {
         $user = $request->user();
         $userPermissions = $this->getUserPermissions($user);
-
-        if (!$this->hasPermission($userPermissions, $ability)) {
+        if (!$this->hasPermission($userPermissions, $permission)) {
             if ($this->hasPermission($userPermissions, 'create-projects')) {
                 $projects = $this->getProjectsForUser($user->id);
-                if ($projects && $this->isAllowedEndpoint($projects, $request->path(), $ability, $models)) {
+                if ($projects && $this->isAllowedEndpoint($projects, $request->path(), $permission, $models)) {
                     return $next($request);
                 }
             }
@@ -52,9 +54,9 @@ class CustomAuthorize extends Middleware
         });
     }
 
-    private function hasPermission($userPermissions, $ability)
+    private function hasPermission($userPermissions, $permission)
     {
-        return in_array($ability, $userPermissions);
+        return in_array($permission, $userPermissions);
     }
 
     private function getProjectsForUser($userId)
@@ -77,11 +79,10 @@ class CustomAuthorize extends Middleware
         return $ownerProjects->merge($memberProjects)->unique()->values()->toArray();
     }
 
-    private function isAllowedEndpoint($projectIds, $currentPath, $ability, $models)
+    private function isAllowedEndpoint($projectIds, $currentPath, $permission, $models)
     {
         $allowedEndpoints = $this->getAllowedEndpoints($projectIds);
-
-        if (Str::contains($currentPath, $allowedEndpoints) && $this->isProjectAsset($ability, $models)) {
+        if (Str::contains($currentPath, $allowedEndpoints) && $this->isProjectAsset($permission, $models)) {
             return true;
         }
 

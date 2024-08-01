@@ -331,8 +331,7 @@ class LoginController extends Controller
                 return redirect()->route('password.change');
             }
             // Cache user permissions for a day to improve performance
-            // TODO:: Listn to saved/delete events
-            // TODO: Listen when user permissions are updated (assignables model)
+            // TODO: Listen to when user is added as member to projects
             Cache::remember("user_{$user->id}_permissions", 86400, function () use ($user) {
                 return $user->permissions->pluck('name')->toArray();
             });
