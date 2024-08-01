@@ -302,6 +302,9 @@ export default {
         .then((response) => {
           this.response = response;
           this.loading = false;
+        })
+        .catch(() => {
+          this.loading = false;
         });
     },
   },
