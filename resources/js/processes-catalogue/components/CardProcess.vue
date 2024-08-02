@@ -324,7 +324,7 @@ export default {
   }
 
   @media (min-width: 3321px) and (max-width: 3440px){
-    width: 3075px;
+    width: 3087px;
     margin-right: -200px;
   }
 
@@ -380,7 +380,7 @@ export default {
   }
 
   @media (min-width: 3368px) and (max-width: 3726px){
-    width: 3464px;
+    width: 3470px;
   }
 
   @media (min-width: 3727px){
