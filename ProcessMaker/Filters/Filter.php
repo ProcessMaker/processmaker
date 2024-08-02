@@ -21,6 +21,8 @@ class Filter
 
     public const TYPE_STATUS = 'Status';
 
+    public const TYPE_ALTERNATIVE = 'Alternative';
+
     public const TYPE_FIELD = 'Field';
 
     public const TYPE_PROCESS = 'Process';
@@ -262,6 +264,9 @@ class Filter
                 break;
             case self::TYPE_STATUS:
                 $method = 'valueAliasStatus';
+                break;
+            case self::TYPE_ALTERNATIVE:
+                $method = 'valueAliasAlternative';
                 break;
         }
 
