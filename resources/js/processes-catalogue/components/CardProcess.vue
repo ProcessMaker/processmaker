@@ -311,8 +311,30 @@ export default {
     width: 1926px;
   }
 
-  @media (min-width: 2439px){
-    width: 2308px;
+  @media (min-width: 2439px) and (max-width: 2602px){ //n
+    width: 1932px;
+  }
+
+  @media (min-width: 2603px) and (max-width: 2961px){
+    width: 2312px;
+  }
+
+  @media (min-width: 2962px) and (max-width: 3320px){
+    width: 2700px;
+  }
+
+  @media (min-width: 3321px) and (max-width: 3440px){
+    width: 3075px;
+    margin-right: -200px;
+  }
+
+  @media (min-width: 3441px) and (max-width: 3680px){
+    width: 3075px;
+    margin-right: -200px;
+  }
+
+  @media (min-width: 3681px){
+    width: 100%;
   }
 }
 .separator-class.width-changed {
@@ -345,8 +367,24 @@ export default {
     width: 2308px;
   }
 
-  @media (min-width: 2439px){
-    width: 2308px;
+  @media (min-width: 2439px) and (max-width: 2649px){ //n
+    width: 2318px;
+  }
+
+  @media (min-width: 2650px) and (max-width: 3008px){
+    width: 2685px;
+  }
+
+  @media (min-width: 3009px) and (max-width: 3367px){
+    width: 3076px;
+  }
+
+  @media (min-width: 3368px) and (max-width: 3726px){
+    width: 3464px;
+  }
+
+  @media (min-width: 3727px){
+    width: 100%;
   }
 }
 </style>
