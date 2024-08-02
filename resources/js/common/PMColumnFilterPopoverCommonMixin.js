@@ -176,7 +176,8 @@ const PMColumnFilterCommonMixin = {
     onUpdate(object, index) {
       if (object.$refs.pmColumnFilterForm &&
               index in this.advancedFilter &&
-              this.advancedFilter[index].length > 0) {
+              this.advancedFilter[index].length > 0) 
+      {
         object.$refs.pmColumnFilterForm.setValues(this.advancedFilter[index]);
       }
     },
@@ -220,15 +221,19 @@ const PMColumnFilterCommonMixin = {
           format = "string";
         }
       }
-      if (column.field === "status") {
+      if (column.field === "status" || column.field === "process_version_alternative") {
         format = "stringSelect";
       }
+      
       return format;
     },
     getFormatRange(column) {
       let formatRange = [];
       if (column.field === "status") {
         formatRange = this.getStatus();
+      }
+      if (column.field === "process_version_alternative") {
+        formatRange = this.getAlternatives();
       }
       return formatRange;
     },
@@ -239,6 +244,9 @@ const PMColumnFilterCommonMixin = {
       }
       if (column.field === "status") {
         operators = ["=", "in"];
+      }
+      if (column.field === "process_version_alternative") {
+        operators = ["="];
       }
       if (column.field === "initiated_at" || column.field === "completed_at" || column.field === "due_at") {
         operators = ["<", "<=", ">", ">=", "between"];

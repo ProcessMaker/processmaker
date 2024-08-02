@@ -558,6 +558,12 @@ export default {
     },
     handleRowClick(row) {
     },
+    getAlternatives() {
+      return [
+        {value: "A", text: this.$t("Alternative A")},
+        {value: "B", text: this.$t("Alternative B")}
+      ]
+    },
     /**
      * This method is used in PMColumnFilterPopoverCommonMixin.js
      * @returns {Array}

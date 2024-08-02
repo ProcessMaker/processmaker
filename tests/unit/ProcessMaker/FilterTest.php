@@ -2,6 +2,8 @@
 
 namespace Tests;
 
+use ProcessMaker\Models\Process;
+use Database\Factories\ProcessMaker\Models\ProcessFactory;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Filters\Filter;
 use ProcessMaker\Models\ProcessRequest;
@@ -285,6 +287,27 @@ class FilterTest extends TestCase
         $query = ProcessRequestToken::query();
         Filter::filter($query, json_encode($filter));
         $this->assertEquals($query->first()->id, $task->id);
+    }
+    
+    public function testAlternative()
+    {
+        $process = Process::factory()->create(['alternative' => 'B']);
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'process_version_id' => $process->getLatestVersion('B')
+        ]);
+
+        $filter = [
+            [
+                'subject' => ['type' => 'Relationship', 'value' => 'process.alternative'],
+                'operator' => '=',
+                'value' => 'B',
+            ],
+        ];
+
+        $query = ProcessRequest::query();
+        Filter::filter($query, json_encode($filter));
+        $this->assertEquals($query->first()->id, $request->id);
     }
 
     public function testTaskCaseNumber()

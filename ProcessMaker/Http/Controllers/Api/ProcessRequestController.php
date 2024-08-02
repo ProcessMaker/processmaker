@@ -164,10 +164,15 @@ class ProcessRequestController extends Controller
             } elseif ($request->input('total') == 'true') {
                 return ['meta' => ['total' => $query->count()]];
             } else {
-                $response = $query->orderBy(
-                    str_ireplace('.', '->', $request->input('order_by', 'name')),
-                    $request->input('order_direction', 'ASC')
-                )
+                if ($request->input('order_by') == 'process.alternative') {
+                    $query->orderByRaw('process_version_alternative '. $request->input('order_direction'));
+                } else {
+                    $query->orderBy(
+                        str_ireplace('.', '->', $request->input('order_by', 'name')),
+                        $request->input('order_direction', 'ASC')
+                    );
+                }
+                $response = $query
                     ->select('process_requests.*')
                     ->withAggregate('processVersion', 'alternative')
                     ->paginate($request->input('per_page', 10));
