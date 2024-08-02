@@ -75,8 +75,6 @@ class CustomAuthorize extends Middleware
 
     private function getProjectsForUser($userId)
     {
-        // TODO: Cache user projects and project assets / invalidate cache when user is addded to projects and an asset added/removed from the project
-        // TODO: Ensure that the cache does not get to big
         if (!hasPackage('package-projects')) {
             return [];
         }
