@@ -152,6 +152,16 @@
   @endif
 @endforeach
 @endisset
+<!-- Document360 knowledge base assistant start -->
+<script>
+    (function (w,d,s,o,f,js,fjs) {
+        w['JS-Widget']=o;w[o] = w[o] || function () { (w[o].q = w[o].q || []).push(arguments) };
+        js = d.createElement(s), fjs = d.getElementsByTagName(s)[0];
+        js.id = o; js.src = f; js.async = 1; fjs.parentNode.insertBefore(js, fjs);
+    }(window, document, 'script', 'mw', 'https://cdn.document360.io/static/js/widget.js'));
+    mw('init', { apiKey: 'M1XbCrQnV47mHjZcYnpsUEGOn3CzdZVWi/o5iFD0Yd4oB3vaEfOqwHM+xnA+0CpxdRfJ92ReDLEn8M54Wrg5C7S7FdhxtRzC5q9SZVCkpth+bI0mAoJcZXjH4vTxbAsWIRWmYgr2KiAuZvm54Hk9bg==' });
+</script>
+<!-- Document360 knowledge base assistant end -->
     <!--javascript!-->
     @yield('js')
 </body>
