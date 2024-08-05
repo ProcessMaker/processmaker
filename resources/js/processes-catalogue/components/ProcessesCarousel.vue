@@ -1,7 +1,8 @@
 <template>
   <div
+    id="carouselwrapper"
     v-show="imagesLoaded"
-    class="h-100 w-100"
+    class="h-100 w-100 custom-fit"
   >
     <button
       :class="[fullPage ? 'prev-full' : 'prev']"
@@ -273,8 +274,6 @@ export default {
   margin-bottom: 2%;
 }
 
-</style>
-<style>
 .carousel {
   position: relative;
   overflow: hidden;
@@ -297,8 +296,11 @@ export default {
   background-color: #ccc;
 }
 
-.prev,
-.next {
+
+
+.prev {
+  left: 0px;
+  background-color: #fff;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -306,19 +308,11 @@ export default {
   cursor: pointer;
   color: #556271;
 }
-.prev {
-  left: -10px;
-  background-color: #fff;
-}
 .next {
-  right: 4px;
+  right: 0%;
   background-color: #fff;
-}
-
-.prev-full,
-.next-full {
   position: absolute;
-  top: 60%;
+  top: 50%;
   transform: translateY(-50%);
   border: none;
   cursor: pointer;
@@ -326,54 +320,44 @@ export default {
 }
 
 .prev-full {
-  left: 80px;
+  left: -6px;
   background-color: #f7f9fb;
-}
-.next-full {
-  right: 16px;
-  background-color: #f7f9fb;
-}
-</style>
-<style>
-.carousel {
-  position: relative;
-  overflow: hidden;
-  container-type: inline-size;
-}
-.slides {
-  display: flex;
-  transition: transform 0.3s ease;
-}
-.slide {
-  flex: 0 0 auto;
-  width: 100%;
-  padding-left: 10px;
-  padding-right: 10px;
-}
-.content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #ccc;
-}
-
-.prev,
-.next {
   position: absolute;
-  top: 50%;
+  top: 60%;
   transform: translateY(-50%);
   border: none;
   cursor: pointer;
   color: #556271;
 }
-.prev {
-  left: -10px;
-  background-color: #fff;
+.next-full {
+  right: 2px;
+  background-color: #f7f9fb;
+  position: absolute;
+  top: 60%;
+  transform: translateY(-50%);
+  border: none;
+  cursor: pointer;
+  color: #556271;
+  z-index: 1;
 }
-.next {
-  right: 4px;
-  background-color: #fff;
+
+#carouselwrapper:hover .prev,
+#carouselwrapper:hover .next,
+#carouselwrapper:hover .prev-full,
+#carouselwrapper:hover .next-full {
+  display: block;
 }
+
+.prev, .next,
+.prev-full, .next-full {
+  font-size: 20px;
+  display: none;
+}
+
+.custom-fit {
+  padding-left: 1%;
+}
+
 @media (min-width: 640px) {
   .slide {
     width: var(--var-sizes-sm);

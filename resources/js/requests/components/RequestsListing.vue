@@ -15,7 +15,7 @@
         <!-- Slot Table Header -->
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
           <div
-            :key="index"
+            :key="`requests-table-column-${index}`"
             :id="`requests-table-column-${column.field}`"
             class="pm-table-column-header-text"
           >
@@ -76,6 +76,10 @@
                 :target="`element-${rowIndex}-${colIndex}`"
                 custom-class="pm-table-tooltip"
                 @show="checkIfTooltipIsNeeded"
+                placement="topright"
+                trigger="hover"
+                boundary="viewport"
+                :delay="{'show':0,'hide':0}"
               >
                 {{ sanitizeTooltip(getNestedPropertyValue(row, header)) }}
               </b-tooltip>
@@ -100,6 +104,10 @@
                     :target="`element-${rowIndex}-${colIndex}`"
                     custom-class="pm-table-tooltip"
                     @show="checkIfTooltipIsNeeded"
+                    placement="topright"
+                    trigger="hover"
+                    boundary="viewport"
+                    :delay="{'show':0,'hide':0}"
                   >
                     {{ getNestedPropertyValue(row, header) }}
                   </b-tooltip>
@@ -111,14 +119,21 @@
       </filter-table>
     </div>
     <data-loading
-      v-show="shouldShowLoader"
+      v-show="shouldShowLoader && noResultsMessage === 'cases'"
       :for="/requests\?page|results\?page/"
       :empty="$t('No results have been found')"
       :empty-desc="$t(`We apologize, but we were unable to find any results that match your search.
 Please consider trying a different search. Thank you`)"
       empty-icon="noData"
     />
+    <default-tab
+      v-if="shouldShowLoader && noResultsMessage === 'launchpad'"
+      :alt-text="$t('No Image')"
+      :title-text="$t('No items to show.')"
+      :description-text="$t('You have to start a Case of this process.')"
+    />
     <pagination-table
+      v-show="!shouldShowLoader"
       :meta="data.meta"
       @page-change="changePage"
       @per-page-change="changePerPage"
@@ -142,6 +157,7 @@ import paginationTable from "../../components/shared/PaginationTable.vue";
 import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
 import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
 import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
+import DefaultTab from "../../processes-catalogue/components/DefaultTab.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -152,7 +168,8 @@ export default {
     PMColumnFilterPopover,
     paginationTable,
     PMColumnFilterIconAsc,
-    PMColumnFilterIconDesc
+    PMColumnFilterIconDesc,
+    DefaultTab
   },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin, PMColumnFilterPopoverCommonMixin, FilterTableBodyMixin],
   props: {
@@ -161,6 +178,10 @@ export default {
     pmql: {},
     savedSearch: {
       default: false,
+    },
+    noResultsMessage: {
+      type: String,
+      default: "cases",
     },
   },
   data() {
@@ -260,7 +281,7 @@ export default {
           field: "case_number",
           sortable: true,
           default: true,
-          width: 80,
+          width: 95,
         },
         {
           label: "Case title",
@@ -268,14 +289,14 @@ export default {
           sortable: true,
           default: true,
           truncate: true,
-          width: 220,
+          width: 375,
         },
         {
           label: "Process",
           field: "name",
           sortable: true,
           default: true,
-          width: 220,
+          width: 145,
           truncate: true,
         },
         {
@@ -283,7 +304,7 @@ export default {
           field: "active_tasks",
           sortable: false,
           default: true,
-          width: 140,
+          width: 175,
           truncate: true,
           tooltip: this.$t("This column can not be sorted or filtered."),
         },
@@ -292,7 +313,7 @@ export default {
           field: "participants",
           sortable: true,
           default: true,
-          width: 160,
+          width: 175,
           truncate: true,
           filter_subject: { type: 'ParticipantsFullName' },
           hideSortingButtons: true,
@@ -302,7 +323,7 @@ export default {
           field: "status",
           sortable: true,
           default: true,
-          width: 100,
+          width: 115,
           filter_subject: { type: 'Status' },
         },
         {
@@ -470,7 +491,8 @@ export default {
             "&order_direction=" +
             this.orderDirection +
             this.additionalParams +
-            advancedFilter,
+            advancedFilter +
+            "&row_format=",
             {
               cancelToken: new CancelToken((c) => {
                 this.cancelToken = c;

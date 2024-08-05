@@ -1,5 +1,31 @@
 const ListMixin = {
+  mounted() {
+    const requestListCard = document.querySelector(".mobile-container");
+    if (requestListCard) {
+      requestListCard.addEventListener("scrollend", this.onScroll);
+    } 
+  },
+  beforeDestroy() {
+    const requestListCard = document.querySelector(".mobile-container");
+    if (requestListCard) {
+      requestListCard.removeEventListener("scrollend", this.onScroll);
+    }
+  },
   methods: {
+    onScroll() {
+      const container = document.querySelector(".mobile-container");
+      if (container.scrollTop + container.clientHeight >= container.scrollHeight - 10) {
+        if(this.totalCards>=this.perPage) {
+         this.cardMessage = "show-page";
+         this.sumCards = this.sumCards + this.perPage;
+         this.fetch();
+        }
+       }
+    },
+    calculateTotalPages(totalItems, itemsPerPage) {
+      if (itemsPerPage <= 0) return 0;
+      return Math.ceil(totalItems / itemsPerPage);
+    },
     formatStatus(status) {
       let color = "success";
       let label = "In Progress";
@@ -79,8 +105,8 @@ const ListMixin = {
             `${this.endpoint}?page=${
               this.page
             }&per_page=${
-              this.perPage
-            }&include=process,participants,data`
+              this.perPage + this.sumCards
+            }&include=process,participants,data,activeTasks`
                   + `&pmql=${
                     encodeURIComponent(pmql)
                   }&filter=${
@@ -93,6 +119,8 @@ const ListMixin = {
           )
           .then((response) => {
             this.data = this.transform(response.data);
+            this.totalCards = response.data.meta.total;
+            this.totalPages = this.calculateTotalPages(this.totalCards, this.perPage);
           }).catch((error) => {
             if (_.has(error, "response.data.message")) {
               ProcessMaker.alert(error.response.data.message, "danger");

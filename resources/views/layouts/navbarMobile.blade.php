@@ -17,7 +17,9 @@
         @php
           $loginLogo = \ProcessMaker\Models\Setting::getLogo();
         @endphp
-        <a href="#" class="navbar-brand pl-2"><img alt= "Login logo" class="navbar-logo" src={{$loginLogo}}></a>
+        <a href="#" class="navbar-brand pl-2" style="width: 108px;">
+          <img alt= "Login logo" class="navbar-logo" src={{$loginLogo}}>
+        </a>
         <div class="content-nav">
           <ul class="nav justify-content-end">
             <li class="nav-item">
@@ -81,10 +83,10 @@
       @endphp
       <!-- Nav tabs -->
       <div>
-        <b-navbar-nav class="nav-tabs nav-fill" id="nav-tab" role="tablist">
+        <b-navbar-nav class="mobile-nav-tabs nav-tabs" id="nav-tab" role="tablist">
           <template v-for="(item, index) in {{ json_encode($menuItems) }}">
             <b-nav-item 
-              class="nav-item nav-link p-0"
+              class="mobile-nav-item nav-item nav-link p-0"
               role="presentation"
               :href="item.url"
               :active="item.isActive"
@@ -114,13 +116,19 @@
   }
   .nav-tabs {
     list-style-type: none;
-    background-color: #EFF5FF;
+    background-color: #FFFFFF;
     flex-direction: row;
   }
+  .mobile-nav-tabs {
+    background-color: #FFFFFF;
+  }
+  .nav-tabs .nav-link{
+    border: none !important;
+    margin-bottom: 0;
+    justify-content: center;
+    padding: 1rem 1rem;
+  }
   .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
-    color: black;
-    background-color: transparent;
-    border-color: transparent transparent #f3f3f3;
     border-bottom: 3px solid #1572C2;
     font-size: 16px;
     font-weight: 600;

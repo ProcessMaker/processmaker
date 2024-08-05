@@ -23,6 +23,7 @@
             <asset
               :color="asset.color"
               :icon="asset.icon"
+              :image_icon="asset.image_icon"
               :asset_name="asset.asset_name"
             />
           </template>
@@ -52,6 +53,7 @@
             <asset
               :color="asset.color"
               :icon="asset.icon"
+              :image_icon="asset.image_icon"
               :asset_name="asset.asset_name"
             />
           </template>
@@ -131,11 +133,11 @@ export default {
           urlAsset: "/designer/data-sources?create=true",
         },
         {
-          color: "#4B667C",
-          icon: "fas fa-magic",
-          asset_name: "Flow Genies",
-          asset_name_all: `${this.$t("View All")} Flow Genies`,
-          asset_name_new: `${this.$t("New")} Flow Genie`,
+          color: "#556271",
+          image_icon: require("../../../img/flowGenieIcon.svg"),
+          asset_name: "FlowGenie",
+          asset_name_all: `${this.$t("View All")} Genies`,
+          asset_name_new: `${this.$t("New")} Genie`,
           urlPath: "/designer/flow-genies",
           urlAsset: "/designer/flow-genies?create=true",
         },

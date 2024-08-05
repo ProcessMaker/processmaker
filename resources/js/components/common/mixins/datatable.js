@@ -6,7 +6,6 @@
 import Vuetable from "vuetable-2/src/components/Vuetable";
 import Pagination from "../../../components/common/Pagination";
 import FilterTableBodyMixin from "../../shared/FilterTableBodyMixin";
-
 export default {
   mixins:[FilterTableBodyMixin],
   props: {
@@ -45,7 +44,6 @@ export default {
     // Handler to properly format date/time columns according to configuration of user
     formatDateUser(value, format) {
       let config = "";
-
       if (typeof ProcessMaker !== "undefined" && ProcessMaker.user && ProcessMaker.user.datetime_format) {
         if (format === "datetime") {
           config = ProcessMaker.user.datetime_format;
@@ -54,16 +52,13 @@ export default {
           config = ProcessMaker.user.datetime_format.replace(/[\sHh:msaAzZ]/g, "");
         }
       }
-
       if (value) {
         if (moment(value).isValid()) {
           return window.moment(value)
             .format(config);
         }
-
         return value;
       }
-
       return "n/a";
     },
     // Data manager takes new sorting and calls our fetch method
@@ -91,7 +86,6 @@ export default {
       data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
       data.meta.to = data.meta.from + data.meta.count;
       data.data = this.jsonRows(data.data);
-
       data.data.forEach((record) => {
         // format owner avatar if exists
         if (Object.hasOwn(record, "user")) {
@@ -109,6 +103,9 @@ export default {
     // Some controllers return each row as a json object to preserve integer keys (ie saved search)
     jsonRows(rows) {
       if (rows.length === 0 || !(_.has(_.head(rows), "_json"))) {
+        if (!Array.isArray(rows) && typeof rows === "object") {
+          return Object.values(rows);
+        }
         return rows;
       }
       return rows.map((row) => JSON.parse(row._json));
@@ -134,7 +131,6 @@ export default {
       }
       this.fetch();
     },
-
   },
   data() {
     return {
@@ -167,6 +163,11 @@ export default {
         },
       },
       noDataTemplate() { return "asdfas#####1111"; },
+      totalCards: 0,
+      counterPage: 2,
+      cardMessage: "show-more",
+      sumCards: 0,
+      totalPages: 0,
     };
   },
 };

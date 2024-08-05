@@ -10,6 +10,7 @@
       class="processList d-flex"
       ref="processListContainer"
     >
+      
       <template v-for="(process, index) in processList">
         <Card
           :key="`${index}_${renderKey}`"
@@ -24,27 +25,26 @@
           :hideBookmark="categoryId === 'all_templates'"
         />
 
-          <div v-if="(index % perPage === perPage - 1) && processList.length >= perPage" style="width: 75%;">
-            
-              <Card v-if="((index + 1) === processList.length)"
-              style="width: 100%;"
-              :show-cards="false"
-              :current-page="counterPage + Math.floor(index / perPage)"
-              :total-pages="totalPages"
-              :card-message="'show-more'"
-              :loading="loading"
-              @callLoadCard="loadCard"
-            />
+        <div v-if="(index % perPage === perPage - 1) && processList.length >= perPage" :class="separatorClass">
+          <Card
+            v-if="((index + 1) === processList.length) && ((index + 1) < totalPages * perPage)"
+            :show-cards="false"
+            :current-page="counterPage + Math.floor(index / perPage)"
+            :total-pages="totalPages"
+            :card-message="'show-more'"
+            :loading="loading"
+            @callLoadCard="loadCard"
+          />
 
-              <Card
-              v-else
-              style="width: 100%;"
-              :show-cards="false"
-              :current-page="counterPage + Math.floor(index / perPage)"
-              :total-pages="totalPages"
-              :card-message="cardMessage"
-              :loading="loading"
-              @callLoadCard="loadCard"
+          <div v-else-if="((index + 1) === processList.length) && currentPage === totalPages && ((index + 1) === processList.length)">
+          </div>
+          <Card v-else
+          :show-cards="false"
+            :current-page="counterPage + Math.floor(index / perPage)"
+            :total-pages="totalPages"
+            :card-message="cardMessage"
+            :loading="loading"
+            @callLoadCard="loadCard"
             />
         </div>
       </template>
@@ -93,7 +93,18 @@ export default {
       showMoreVisible: false,
       cardMessage: "show-more",
       sumHeight: 0,
+      isCardProcess: true,
+      sizeChange: false,
     };
+  },
+  computed: {
+    separatorClass() {
+      const classes = {
+        'separator-class': true,
+        'width-changed': this.sizeChange,
+      };
+      return classes;
+    },
   },
   watch: {
     async categoryId() {
@@ -112,19 +123,26 @@ export default {
     this.loadCard(()=>{
       this.$nextTick(()=>{
           const listCard = document.querySelector(".processes-info");
-          
           listCard.addEventListener("scrollend", () => this.handleScroll());
       });
     }, null);
+    this.$root.$on("sizeChanged", (val) => {
+      this.handleSizeChange(val);
+    });
   },
-  destroyed() {
+  beforeDestroy() {
+    this.isCardProcess = false;
     const listCard = document.querySelector(".processes-info");
-    listCard.removeEventListener("scrollend", this.handleScroll);
+    listCard?.removeEventListener("scrollend", this.handleScroll);
   },
   methods: {
+    handleSizeChange(value) {
+      this.sizeChange = value;
+    },
     loadCard(callback, message) {
       if(message === 'bookmark') {
         this.processList = [];
+        this.page = 1;
       }
       this.loading = true;
       const url = this.buildURL();
@@ -218,14 +236,18 @@ export default {
     onFilter(value, showEmpty = false) {
       this.processList = [];
       this.currentPage = 1;
-      this.pmql = `(fulltext LIKE "%${value}%")`;
+      if (value) {
+        this.pmql = `(fulltext LIKE "%${value}%")`;
+      } else {
+        this.pmql = "";
+      }
       this.filter = value;
       this.showEmpty = showEmpty;
       this.loadCard();
     },
     handleScroll() {
       const container =  document.querySelector(".processes-info");
-      if ((container.scrollTop + container.clientHeight >= container.scrollHeight - 5)) {
+      if ((container.scrollTop + container.clientHeight >= container.scrollHeight - 5) && this.isCardProcess) {
         this.cardMessage = "show-page";
         this.onPageChanged(this.currentPage + 1);
       }
@@ -241,11 +263,12 @@ export default {
   display: flex;
   flex-wrap: wrap;
   position: relative;
-  height: 100%;
   overflow: unset;
   justify-content: flex-start;
+
   @media (max-width: $lp-breakpoint) {
     display: block;
+    height: auto;
   }
 }
 .text-custom {
@@ -256,5 +279,73 @@ export default {
   border-right-color: transparent;
   border-radius: 50%;
   animation: 0.75s linear infinite spinner-border;
+}
+.separator-class {
+  @media (max-width: $lp-breakpoint) {
+    display: block;
+    height: auto;
+    width: 95%;
+  }
+
+  @media (min-width: 641px) and (max-width:1075px) {
+    width: 343px;
+  }
+
+  @media (min-width: 1076px) and (max-width:1520px) {
+    width: 772px;
+  }
+
+  @media (min-width: 1521px) and (max-width: 1789px) {
+    width: 1160px;
+  }
+
+  @media (min-width: 1790px) and (max-width: 1879px) {
+    width: 1156px;
+  }
+
+  @media (min-width: 1880px) and (max-width: 2148px){
+    width: 1544px;
+  }
+
+  @media (min-width: 2149px) and (max-width: 2438px){
+    width: 1926px;
+  }
+
+  @media (min-width: 2439px){
+    width: 2308px;
+  }
+}
+.separator-class.width-changed {
+  @media (min-width: 641px) and (max-width:767px) {
+    width: 340px;
+  }
+
+  @media (min-width: 768px) and (max-width:1075px) {
+    width: 678px;
+  }
+
+  @media (min-width: 1076px) and (max-width:1520px) {
+    width: 1156px;
+  }
+
+  @media (min-width: 1521px) and (max-width: 1789px) {
+    width: 1156px;
+  }
+
+  @media (min-width: 1790px) and (max-width: 1879px) {
+    width: 1542px;
+  }
+
+  @media (min-width: 1880px) and (max-width: 2148px){
+    width: 1859px;
+  }
+
+  @media (min-width: 2149px) and (max-width: 2438px){
+    width: 1926px;
+  }
+
+  @media (min-width: 2439px){
+    width: 2308px;
+  }
 }
 </style>

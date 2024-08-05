@@ -40,7 +40,7 @@ class GenerateMenus
                 $request_items->add(
                     __('Cases'),
                     ['route' => 'cases.index', 'id' => 'requests']
-                )->active('requests/*');
+                )->active('cases/*');
             });
             //@TODO change the index to the correct blade
             $menu->group(['prefix' => 'tasks'], function ($request_items) {
@@ -140,7 +140,7 @@ class GenerateMenus
             $submenu = $menu->add(__('Processes'));
         });
         Menu::make('sidebar_request', function ($menu) {
-            $submenu = $menu->add(__('Request'));
+            $submenu = $menu->add(__('Cases'));
             $submenu->add(__('My Cases'), [
                 'route' => ['cases_by_type', ''],
                 'icon' => 'fa-id-badge',

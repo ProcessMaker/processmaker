@@ -30,13 +30,18 @@ class CommentsSubscriber
             return;
         }
 
+        $message = ':user has completed the task :task_name';
+        if ($token->is_actionbyemail) {
+            $message = $message . ' via email';
+        }
+
         Comment::create([
             'type' => 'LOG',
             'user_id' => $user_id,
             'commentable_type' => ProcessRequest::class,
             'commentable_id' => $token->process_request_id,
             'subject' => 'Task Complete',
-            'body' => __(':user has completed the task :task_name', ['user' => $user_name, 'task_name' => $token->element_name]),
+            'body' => __($message, ['user' => $user_name, 'task_name' => $token->element_name]),
         ]);
     }
 

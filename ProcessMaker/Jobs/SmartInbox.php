@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use ProcessMaker\InboxRules\MatchingTasks;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\RecommendationEngine;
 
 class SmartInbox implements ShouldQueue
 {
@@ -31,12 +32,19 @@ class SmartInbox implements ShouldQueue
     {
         $incomingTask = ProcessRequestToken::findOrFail($this->incomingTaskId);
 
+        if (!$incomingTask->user_id) {
+            return;
+        }
+
         $matchingInboxRules = app(MatchingTasks::class)->matchingInboxRules($incomingTask);
 
         foreach ($matchingInboxRules as $inboxRule) {
             SmartInboxApplyAction::dispatchSync($this->incomingTaskId, $inboxRule->id);
         }
 
-        GenerateUserRecommendations::dispatch($incomingTask->user_id)->onQueue('low');
+        // Only generate recommendations after inbox rules have been applied.
+        if (RecommendationEngine::shouldGenerateFor($incomingTask->user)) {
+            GenerateUserRecommendations::dispatch($incomingTask->user_id);
+        }
     }
 }

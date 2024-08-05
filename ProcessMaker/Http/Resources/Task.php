@@ -38,6 +38,7 @@ class Task extends ApiResource
         'interstitial',
         'userRequestPermission',
         'process',
+        'elementDestination',
     ];
 
     private $process = null;
@@ -53,7 +54,7 @@ class Task extends ApiResource
         $array = parent::toArray($request);
         $include = explode(',', $request->input('include', ''));
 
-        $this->process = Process::findOrFail($this->processRequest->process_id);
+        $this->process = $this->resource->process;
 
         foreach ($this->includeMethods as $key) {
             if (!in_array($key, $include)) {
@@ -94,7 +95,7 @@ class Task extends ApiResource
                                                 || count($array['assignable_users']) < 1;
         if (in_array('assignableUsers', $include) && $needToRecalculateAssignableUsers) {
             $definition = $this->getDefinition();
-            $config = json_decode($definition['config'], true) ?: [];
+            $config = isset($definition['config']) ? json_decode($definition['config'], true) : [];
             $isSelfService = $config['selfService'] ?? false;
             if ($isSelfService) {
                 $users = [];
@@ -111,20 +112,6 @@ class Task extends ApiResource
                 $array['assignable_users'] = $users;
             }
         }
-    }
-
-    private function loadUserRequestPermission(ProcessRequest $request, User $user, array $permissions)
-    {
-        $permissions[] = [
-            'process_request_id' => $request->id,
-            'allowed' => $user ? $user->can('view', $request) : false,
-        ];
-
-        if ($request->parentRequest && $user) {
-            $permissions = $this->loadUserRequestPermission($request->parentRequest, $user, $permissions);
-        }
-
-        return $permissions;
     }
 
     /**
@@ -160,17 +147,5 @@ class Task extends ApiResource
     private function addActiveAssignedGroupMembers(array $groups, array $assignedUsers)
     {
         return (new Process)->getConsolidatedUsers($groups, $assignedUsers);
-    }
-
-    private function getData()
-    {
-        if ($this->loadedData) {
-            return $this->loadedData;
-        }
-        $dataManager = new DataManager();
-        $task = $this->resource->loadTokenInstance();
-        $this->loadedData = $dataManager->getData($task);
-
-        return $this->loadedData;
     }
 }

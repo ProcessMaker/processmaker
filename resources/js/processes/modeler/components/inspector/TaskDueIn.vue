@@ -30,6 +30,12 @@
         @keydown="dueInValidate"
       >
       <small class="form-text text-muted">{{ $t("This field supports mustache syntax to send requests variables.") }}</small>
+      <div
+        v-show="showError"
+        :class="showError ? 'showError' : ''"
+      >
+        {{ $t('Must be mustache syntax') }}
+      </div>
     </template>
   </div>
 </template>
@@ -37,6 +43,11 @@
 <script>
 export default {
   props: ["value", "label", "helper", "property"],
+  data() {
+    return {
+      showError: false,
+    };
+  },
   computed: {
     dueInGetter() {
       return _.get(this.node, "dueIn");
@@ -82,10 +93,24 @@ export default {
      */
     dueInVariableSetter(event) {
       this.$set(this.node, "dueInVariable", event.target.value);
+      this.showError = this.validateMustache(event.target.value);
+    },
+    /**
+     * Validate if the value is a correct Mustache Syntaxis.
+     */
+    validateMustache(value) {
+      const regex = /^{{(.*)}}/gm;
+      return !regex.test(value);
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
+.showError {
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875em;
+  color: #e50130;
+}
 </style>

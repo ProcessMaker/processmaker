@@ -55,7 +55,7 @@
                         {{-- Configuration --}}
                         <div
                             class="tab-pane fade show"
-                            :class="{'active': activeTab === ''}"
+                            :class="{'active': activeTab === '' || activeTab === 'nav-config'}"
                             id="nav-config"
                             role="tabpanel"
                             aria-labelledby="nav-config-tab"
@@ -230,7 +230,7 @@
                                                         label="title"
                                                     >
                                                         <span slot="noResult">
-                                                            {{ __('Oops! No elements found. Consider changing the search query.') }}
+                                                            @{{ __(noElementsFoundMsg) }}
                                                         </span>
                                                         <template slot="noOptions">
                                                             {{ __('No Data Available') }}
@@ -261,8 +261,8 @@
                                                         label="title"
                                                     >
                                                         <span slot="noResult">
-                                                            {{
-                                                                __('Oops! No elements found. Consider changing the search query.')
+                                                            @{{
+                                                                __(noElementsFoundMsg)
                                                             }}
                                                         </span>
                                                         <template slot="noOptions">
@@ -293,8 +293,8 @@
                                                         group-label="label"
                                                     >
                                                         <span slot="noResult">
-                                                            {{
-                                                                __('Oops! No elements found. Consider changing the search query.')
+                                                            @{{
+                                                                noElementsFoundMsg
                                                             }}
                                                         </span>
                                                         <template slot="noOptions">
@@ -317,8 +317,8 @@
                                                         group-label="label"
                                                     >
                                                         <span slot="noResult">
-                                                            {{
-                                                                __('Oops! No elements found. Consider changing the search query.')
+                                                            @{{
+                                                                __(noElementsFoundMsg)
                                                             }}
                                                         </span>
                                                         <template slot="noOptions">
@@ -338,16 +338,17 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="d-flex justify-content-end mt-2">
-                            {!! Form::button(__('Cancel'),
-                                ['class'=>'btn btn-outline-secondary button-custom',
-                                '@click' => 'onClose'])
-                            !!}
-                            {!! Form::button(__('Save'),
-                                ['class'=>'btn btn-secondary ml-3 button-custom',
-                                '@click' => 'onUpdate'])
-                            !!}
+
+                            <div class="d-flex justify-content-end mt-2">
+                                {!! Form::button(__('Cancel'),
+                                    ['class'=>'btn btn-outline-secondary button-custom',
+                                    '@click' => 'onClose'])
+                                !!}
+                                {!! Form::button(__('Save'),
+                                    ['class'=>'btn btn-secondary ml-3 button-custom',
+                                    '@click' => 'onUpdate'])
+                                !!}
+                            </div>
                         </div>
 
                         {{-- Translations --}}
@@ -573,7 +574,7 @@
                             </div>
                             <div class="d-flex justify-content-end mt-2">
                                 {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                                {!! Form::button(__('Save and publish'), [
+                                {!! Form::button(__('Save'), [
                                     'class' => 'btn btn-secondary ml-2',
                                     '@click' => 'onUpdate'
                                 ]) !!}
@@ -632,6 +633,7 @@
                     translatedLanguages: [],
                     editTranslation: null,
                     activeTab: "",
+                    noElementsFoundMsg: 'Oops! No elements found. Consider changing the search query.',
                 }
                 },
                 mounted() {

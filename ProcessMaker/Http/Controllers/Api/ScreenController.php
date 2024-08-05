@@ -80,7 +80,13 @@ class ScreenController extends Controller
 
         $query = Screen::nonSystem()
             ->leftJoin('screen_categories as category', 'screens.screen_category_id', '=', 'category.id')
-            ->exclude($exclusions);
+            ->when($request->has('exclude'), function ($query) use ($exclusions) {
+                $query->exclude($exclusions);
+            })
+            ->when(!$request->has('exclude'), function ($query)  {
+                // Return all screen columns by default
+                $query->select('screens.*');
+            });
 
         $include = $request->input('include', '');
 
@@ -272,9 +278,11 @@ class ScreenController extends Controller
      */
     public function update(Screen $screen, Request $request)
     {
+        $lastVersion = $screen->getDraftOrPublishedLatestVersion();
         $request->validate(Screen::rules($screen));
         $screen->fill($request->input());
         $original = $screen->getOriginal();
+        $screen->config = $lastVersion->config;
         $screen->saveOrFail();
         $screen->syncProjectAsset($request, Screen::class);
 

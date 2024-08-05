@@ -12,8 +12,8 @@
       >
         {{ process.description }}
       </p>
-      <span 
-        v-if="readActivated || !largeDescription" 
+      <span
+        v-if="readActivated || !largeDescription"
         class="class-version">
         {{ $t('Version') }} {{ processVersion }}
       </span>
@@ -30,6 +30,11 @@
         <span style="color: #1572C2;">{{ $t('More') }}</span>
         </a>
       </p>
+        <div
+          v-if="!readActivated && largeDescription"
+          class="class-version">
+          {{ $t('Version') }} {{ processVersion }}
+        </div>
     </div>
 </template>
 <script>
@@ -80,8 +85,10 @@ export default {
   font-family: 'Open Sans', sans-serif;
   font-size: 16px;
   font-weight: 700;
+  line-height: 24px;
   letter-spacing: -0.02em;
   text-align: left;
+  margin-top: 15px;
 }
 
 .description {

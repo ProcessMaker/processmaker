@@ -60,6 +60,7 @@ class ProcessVersion extends ProcessMakerModel implements ProcessModelInterface
      */
     protected $hidden = [
         'bpmn',
+        'svg',
     ];
 
     protected static function boot()

@@ -65,6 +65,8 @@ class Media extends MediaLibraryModel
 
     protected $table = 'media';
 
+    const COLLECTION_SLIDESHOW = 'images_slideshow';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -118,6 +120,18 @@ class Media extends MediaLibraryModel
     protected $ids = [
         'model_id',
     ];
+
+    public function determineCollectionName(Process $process, $name)
+    {
+        // In order to differentiate them from other process-related images ['launchpad', 'slideshow']
+        if ($name === 'launchpad') {
+            return $process->uuid . '_' . 'images_carousel';
+        } elseif ($name === 'slideshow') {
+            return self::COLLECTION_SLIDESHOW;
+        }
+
+        return null;
+    }
 
     /**
      * Override the default boot method to allow access to lifecycle hooks
@@ -184,10 +198,11 @@ class Media extends MediaLibraryModel
      * @param  Process $process
      * @param array $properties
      * @param string $key
+     * @param string $mediaType
      *
      * @return void
      */
-    public function saveProcessMedia(Process $process, $properties, $key = 'uuid')
+    public function saveProcessMedia(Process $process, $properties, $key = 'uuid', $mediaType = 'launchpad')
     {
         // Validate if the image smaller than 2MB
         $maxFileSize = 2 * 1024 * 1024;
@@ -200,14 +215,29 @@ class Media extends MediaLibraryModel
         if ($mediaCount > 4) {
             return;
         }
-        // Get information to save
-        $collectionName = $process->uuid . '_images_carousel';
+        // Get collection name to save
+        $collectionName = self::determineCollectionName($process, $mediaType);
+        // Check if exist
         $exist = $process->media()->where($key, $properties[$key])->exists();
         if (!$exist) {
+            // Define the custom properties
+            $customProperties = [
+                'media_type' => $mediaType,
+                'type' => $properties['type'],
+            ];
+            if ($mediaType === 'slideshow') {
+                $customProperties['node_id'] = $properties['node_id'] ?? '';
+                $customProperties['alternative'] = $properties['alternative'] ?? '';
+            }
             // Store the images related move to MEDIA
-            $process->addMediaFromBase64($properties['url'])
-                ->withCustomProperties(['type' => $properties['type']])
-                ->toMediaCollection($collectionName);
+            $media = $process->addMediaFromBase64($properties['url'])
+                ->withCustomProperties($customProperties);
+            // Only if the file_name exist this will save
+            if (isset($properties['file_name']) && !empty($properties['file_name'])) {
+                $media->usingFileName($properties['file_name']);
+            }
+            // Add the media
+            $media->toMediaCollection($collectionName);
         }
     }
 

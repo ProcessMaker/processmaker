@@ -5,6 +5,7 @@
       :category="category ? category.name : ''"
       :process="selectedProcess ? selectedProcess.name : ''"
       :template="guidedTemplates ? 'Guided Templates' : ''"
+      v-if="!mobileApp"
     />
     <div class="menu-mask" :class="{ 'menu-open' : showMenu }"></div>
     <div class="process-catalog-main" :class="{ 'menu-open' : showMenu }">
@@ -30,16 +31,22 @@
         </div>
       </div>
       <div class="slide-control">
-        <a href="#" @click="showMenu = !showMenu">
+        <a href="#" @click="hideMenu">
           <i class="fa" :class="{ 'fa-caret-right' : !showMenu, 'fa-caret-left' : showMenu }"></i>
         </a>
       </div>
-      <div class="processes-info">
+      <div ref="processInfo" class="processes-info">
           <div class="mobile-menu-control" v-show="showMobileMenuControl">
-            <span @click="showMenu = !showMenu">
+            <div class="menu-button" @click="hideMenu">
               <i class="fa fa-bars"></i>
               {{ category?.name || '' }}
-            </span>
+            </div>
+            <div class="bookmark-button" @click="showBookmarks">
+              <i class="fas fa-bookmark"></i>
+            </div>
+            <div class="search-button" @click="$root.mobileSearchVisible = !$root.mobileSearchVisible">
+              <i class="fas fa-search"></i>
+            </div>
           </div>
         
           <router-view @goBackCategory="goBackCategory"></router-view>
@@ -87,7 +94,7 @@ export default {
       category: null,
       selectedProcess: null,
       guidedTemplates: false,
-      numCategories: 100,
+      numCategories: 20,
       page: 1,
       key: 0,
       totalPages: 1,
@@ -95,6 +102,8 @@ export default {
       fromProcessList: false,
       categoryCount: 0,
       hideLaunchpad: true,
+      currentWidth: 0,
+      mobileApp: window.ProcessMaker.mobileApp
     };
   },
   mounted() {
@@ -105,6 +114,10 @@ export default {
     if (!this.isMobile) {
       this.showMenu = true;
     }
+
+    this.$root.$on('filter-categories', (filter) => {
+      this.filterCategories(filter);
+    });
   },
   watch: {
     category: {
@@ -116,9 +129,6 @@ export default {
         }
       }
     },
-    listCategories() {
-      this.$root.categories = this.listCategories;
-    },
   },
   computed: {
     showMobileMenuControl() {
@@ -126,6 +136,10 @@ export default {
     }
   },
   methods: {
+    hideMenu() {
+      this.showMenu = !this.showMenu;
+      this.$root.$emit("sizeChanged", !this.showMenu);
+    },
     /**
      * Add new page of categories
      */
@@ -138,8 +152,10 @@ export default {
      */
     filterCategories(filter = "") {
       this.page = 1;
-      this.listCategories = [];
       this.filter = filter;
+      if (filter === null) {
+        this.$root.filteredCategories = null;
+      }
       this.getCategories();
     },
     /**
@@ -153,8 +169,13 @@ export default {
             + "&order_direction=asc"
             + `&page=${this.page}`
             + `&per_page=${this.numCategories}`
-            + `&filter=${this.filter}`)
+            + `&filter=${this.filter || ''}`)
           .then((response) => {
+
+            if (this.filter) {
+              this.$root.filteredCategories = response.data.data;
+              return;
+            }
 
             const loadedCategories = response.data.data.filter(category => {
               // filter if category exists in the default options
@@ -234,6 +255,13 @@ export default {
     hasTemplateParams(url) {
       return url.search.includes("&template=");
     },
+    showBookmarks() {
+      if (this.$route.query.categoryId !== "bookmarks") {
+        this.$router.push({ name: "index", query: { categoryId: "bookmarks" } });
+      }
+    },
+    showSearch() {
+    }
   },
 };
 </script>
@@ -268,7 +296,7 @@ export default {
     background-color: #F7F9FB;
     flex: 1;
     width: 315px;
-    height: 100%;
+    height: 95%;
     overflow-y: scroll;
   }
 
@@ -322,9 +350,9 @@ export default {
 }
 
 .slide-control {
-  border-left: 0;
-  border-right: 1px solid #DEE0E1;
+  border-left: 1px solid #DEE0E1;
   margin-left: 10px;
+  width: 29px;
   
   @media (max-width: $lp-breakpoint) {
     display: none;
@@ -332,7 +360,7 @@ export default {
 
   a {
     position: relative;
-    left: 10px;
+    left: -11px;
     top: 40px;
     z-index: 5;
 
@@ -344,17 +372,33 @@ export default {
     background-color: #ffffff;
     border-radius: 10px;
     border: 1px solid #DEE0E1;
+    color: #6A7888;
   }
 }
 
 .menu-open .slide-control {
-  border-right: 0;
   border-left: 1px solid #DEE0E1;
 
   a {
-    left: -10px;
+    left: -11px;
+    display: none;
   }
   
+}
+
+.slide-control:hover{
+  border-left: 1px solid rgba(72, 145, 255, 0.40);
+  box-shadow: -1px 0 0 rgba(72, 145, 255, 0.5);
+}
+.menu-open .slide-control:hover {
+  border-left: 1px solid rgba(72, 145, 255, 0.40);
+  box-shadow: -1px 0 0 rgba(72, 145, 255, 0.5);
+  a {
+    display: flex;
+  }
+}
+.slide-control a:hover {
+  background-color: #EAEEF2;
 }
 
 .mobile-menu-control {
@@ -363,11 +407,31 @@ export default {
   font-size: 1.3em;
   margin-top: 10px;
   margin-left: 1em;
-  i {
-    margin-right: 3px;
+  margin-right: 1em;
+  align-items: center;
+
+  .menu-button {
+    flex-grow: 1;
+    i {
+      margin-right: 3px;
+    }
   }
+
+  .bookmark-button {
+    display: flex;
+    padding: 10px;
+    margin-right: 10px;
+    font-size: 1.1em;
+  }
+
+  .search-button {
+    display: flex;
+    padding: 10px;
+    font-size: 1.1em;
+  }
+
   @media (max-width: $lp-breakpoint) {
-    display: block;
+    display: flex;
   }
 }
 
@@ -387,7 +451,7 @@ export default {
 }
 .processes-info {
   width: 100%;
-  margin-right: -16px;
+  margin-right: 0px;
   height: calc(100vh - 145px);
   overflow-x: hidden;
   @media (max-width: $lp-breakpoint) {

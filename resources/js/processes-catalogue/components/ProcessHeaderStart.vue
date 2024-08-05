@@ -19,9 +19,16 @@
             <bookmark :process="process" />
           </div>
           <span class="ellipsis-border">
-            <ellipsis-menu v-if="showEllipsis" :actions="processLaunchpadActions" :data="process" :divider="false"
-              :lauchpad="true" variant="none" @navigate="$emit('onProcessNavigate')"
-              :isDocumenterInstalled="$root.isDocumenterInstalled" :permission="$root.permission" />
+            <ellipsis-menu 
+              v-if="showEllipsis" 
+              :actions="processLaunchpadActions" 
+              :data="process" 
+              :divider="false"
+              :lauchpad="true" 
+              variant="none" 
+              @navigate="ellipsisNavigate"
+              :isDocumenterInstalled="$root.isDocumenterInstalled" 
+              :permission="$root.permission" />
           </span>
           <buttons-start :process="process" :startEvent="singleStartEvent" :processEvents="processEvents" />
         </div>
@@ -68,6 +75,9 @@ export default {
     this.getStartEvents();
   },
   methods: {
+    ellipsisNavigate(action, data) {
+      this.$emit("onProcessNavigate", action, data);
+    },
     toggleInfoCollapsed() {
       this.infoCollapsed = !this.infoCollapsed;
     },
@@ -92,7 +102,11 @@ export default {
   }
 }
 </script>
-
+<style>
+.ellipsis-border div button span {
+  font-size: 16px;
+}
+</style>
 <style lang="scss" scoped>
 @import url("./scss/processes.css");
 @import '~styles/variables';
