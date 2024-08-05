@@ -272,7 +272,14 @@ class SyncGuidedTemplates implements ShouldQueue
 
     private function importTemplateAssets($template, $config, $mediaCollectionName, $guidedTemplate)
     {
+        // Check for template asset changes
+        $assetsHashChanged = $this->checkForTemplateAssetChanges($template, $mediaCollectionName);
+        if (!$assetsHashChanged) {
+            return;
+        }
+
         // Clear the collection to prevent duplicate images
+        // TODO: Option 1: Check if there have been changes to the asset hash, if so run the clearMediaCollection method
         $guidedTemplate->clearMediaCollection($mediaCollectionName);
         // Build asset urls
         $templateIconUrl = $this->buildTemplateUrl($config, $template['assets']['icon']);
@@ -345,5 +352,30 @@ class SyncGuidedTemplates implements ShouldQueue
         }
 
         return [$helperProcessHashChanged, $templateProcessHashChanged];
+    }
+
+    private function checkForTemplateAssetChanges($template, $collectionName)
+    {
+        // Initialize variables to track changes
+        $assetHashChanged = true;
+
+        // Retrieve wizard template details if it exists
+        $wizardTemplate =
+            WizardTemplate::where('unique_template_id', $template['template_details']['unique-template-id'])
+            ->select('template_details')
+            ->first();
+
+        if ($wizardTemplate) {
+            $wizardTemplateDetails = json_decode($wizardTemplate->template_details, true);
+
+            // Check if helper process hash has changed
+            if (isset($wizardTemplateDetails['asset_hash']) &&
+                $template['template_details']['asset_hash'] ===
+                $wizardTemplateDetails['asset_hash']) {
+                $assetHashChanged = false;
+            }
+        }
+
+        return $assetHashChanged;
     }
 }
