@@ -275,7 +275,7 @@ class SyncGuidedTemplates implements ShouldQueue
         return $mediaCollectionName;
     }
 
-    private function importTemplateAssets($template, $config, $mediaCollectionName, $guidedTemplate, $assetsHashChanged)
+    private function importTemplateAssets($template, $config, $mediaCollectionName, $guidedTemplate)
     {
         // Clear the collection to prevent duplicate images
         $guidedTemplate->clearMediaCollection($mediaCollectionName);
