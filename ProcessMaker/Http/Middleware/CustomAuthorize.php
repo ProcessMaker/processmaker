@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
@@ -49,7 +50,6 @@ class CustomAuthorize extends Middleware
             // Check for 'create-projects' permission and validate project access
             if ($this->hasPermission($userPermissions, 'create-projects')) {
                 $projects = $this->getProjectsForUser($user->id);
-
                 if ($projects && $this->isAllowedEndpoint($projects, $request->path(), $permission, $models)) {
                     return $next($request);
                 }
@@ -79,6 +79,9 @@ class CustomAuthorize extends Middleware
             return [];
         }
 
+        // dd(Cache::remember("user_{$userId}_projects_with_assets", 86400, function () use ($userId) {
+        //     return $this->getUserProjectsWithAssets($userId);
+        // }));
         return Cache::remember("user_{$userId}_projects_with_assets", 86400, function () use ($userId) {
             return $this->getUserProjectsWithAssets($userId);
         });
@@ -96,15 +99,36 @@ class CustomAuthorize extends Middleware
      */
     private function fetchUserProjectWithAssets($userId)
     {
+        // Fetch projects where the user is the owner
+        $ownerProjects = DB::table('projects')
+            ->where('user_id', $userId)
+            ->pluck('id')
+            ->toArray();
+
+        // Fetch projects where the user is a member (User::class) or belongs to a group (Group::class)
+        $memberProjects = DB::table('project_members')
+            ->where(function ($query) use ($userId) {
+                $query->where('member_id', $userId)
+                    ->where('member_type', User::class);
+            })
+            ->orWhere(function ($query) use ($userId) {
+                $query->where('member_type', Group::class)
+                    ->whereIn('member_id', function ($subQuery) use ($userId) {
+                        $subQuery->select('group_id')
+                            ->from('group_members')
+                            ->where('member_id', $userId);
+                    });
+            })
+            ->pluck('project_id')
+            ->toArray();
+
+        // Combine both sets of project IDs and remove duplicates
+        $projectIds = array_unique(array_merge($ownerProjects, $memberProjects));
+
+        // Fetch project assets for the combined project IDs
         return DB::table('projects')
         ->join('project_assets', 'projects.id', '=', 'project_assets.project_id')
-        ->leftJoin('project_members', function ($join) use ($userId) {
-            $join->on('projects.id', '=', 'project_members.project_id')
-                ->where('project_members.member_id', '=', $userId)
-                ->where('project_members.member_type', '=', User::class);
-        })
-        ->where('projects.user_id', $userId)
-        ->orWhere('project_members.member_id', $userId)
+        ->whereIn('projects.id', $projectIds)
         ->select('projects.id as project_id', 'project_assets.asset_id as asset_id', 'project_assets.asset_type')
         ->get()
         ->unique()
@@ -151,7 +175,6 @@ class CustomAuthorize extends Middleware
     {
         $allowedEndpoints = ['api'];
         $endpoints = [];
-
         foreach ($projects as $projectId => $assets) {
             foreach ($assets as  $assetType => $assetIds) {
                 foreach ($assetIds as $id) {
@@ -166,7 +189,7 @@ class CustomAuthorize extends Middleware
     private function getEndpointsForAsset($assetType, $assetId)
     {
         $endpoints = [];
-
+        // dd($assetType, $assetId);
         switch ($assetType) {
             case Process::class:
                 $endpoints[] = "modeler/{$assetId}";
