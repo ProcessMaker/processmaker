@@ -10,31 +10,25 @@ class MediaExporter extends ExporterBase
 {
     public function export(): void
     {
-        $media = $this->model;
-        $filePath = $media->id . '/' . $media->file_name;
-        $file = Storage::disk('public')->path($filePath);
-        if (File::exists($file)) {
-            $media->base64 = base64_encode(file_get_contents($file));
+        if (File::exists($this->model->getPath())) {
+            $this->addReference(DependentType::MEDIA, [
+                'base64' => base64_encode(file_get_contents($this->model->getPath())),
+            ]);
         }
-
-        $this->addReference(DependentType::MEDIA, $media->toArray());
     }
 
     public function import(): bool
     {
-        $this->model->save();
-        $mediaModel = $this->model->refresh();
-
-        $mediaElement = $this->getReference(DependentType::MEDIA);
-        if (isset($mediaElement['base64'])) {
-            $modelWithMedia = $mediaModel->model;
-            $modelWithMedia->addMediaFromBase64($mediaElement['base64'])
-                ->usingFileName($mediaElement['file_name'])
-                ->toMediaCollection($mediaElement['collection_name']);
+        $ref = $this->getReference(DependentType::MEDIA);
+        if ($ref && isset($ref['base64'])) {
+            $this->model->model->addMediaFromBase64($ref['base64'])
+                ->usingFileName($this->model->file_name)
+                ->withCustomProperties($this->model->custom_properties)
+                ->toMediaCollection($this->model->collection_name);
         }
 
         // We should delete the model, because the Spatie library recreates it.
-        $mediaModel->delete();
+        $this->model->delete();
 
         return true;
     }
