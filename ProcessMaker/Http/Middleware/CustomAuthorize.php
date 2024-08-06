@@ -79,9 +79,6 @@ class CustomAuthorize extends Middleware
             return [];
         }
 
-        // dd(Cache::remember("user_{$userId}_projects_with_assets", 86400, function () use ($userId) {
-        //     return $this->getUserProjectsWithAssets($userId);
-        // }));
         return Cache::remember("user_{$userId}_projects_with_assets", 86400, function () use ($userId) {
             return $this->getUserProjectsWithAssets($userId);
         });
@@ -189,7 +186,7 @@ class CustomAuthorize extends Middleware
     private function getEndpointsForAsset($assetType, $assetId)
     {
         $endpoints = [];
-        // dd($assetType, $assetId);
+
         switch ($assetType) {
             case Process::class:
                 $endpoints[] = "modeler/{$assetId}";
