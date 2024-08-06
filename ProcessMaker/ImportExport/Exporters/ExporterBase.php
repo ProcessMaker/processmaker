@@ -549,7 +549,7 @@ abstract class ExporterBase implements ExporterInterface
                 $foundCategory = $categoryClass::find($this->model->process_category_id);
 
                 if (!$foundCategory instanceof $categoryClass) {
-                    Log::warning('Import/Export: Unable to find ' . $categoryClass::class .
+                    \Log::warning('Import/Export: Unable to find ' . $categoryClass .
                         " with id {$this->model->process_category_id}, updated to 'Uncategorized'.");
                 }
 
