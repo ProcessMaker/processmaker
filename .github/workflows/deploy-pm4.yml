@@ -264,9 +264,9 @@ jobs:
         run: |          
           cd pm4-k8s-distribution/images/pm4-tools
           docker pull $IMAGE
-          docker-compose down -v
-          docker-compose build phpunit
-          docker-compose run phpunit
+          docker compose down -v
+          docker compose build phpunit
+          docker compose run phpunit
           CONTAINER_ID=$(docker ps -a --filter ancestor=pm4-eks-phpunit:latest --format "{{.ID}}" | head -n 1)
           docker cp $CONTAINER_ID:/opt/processmaker/coverage.xml coverage.xml
       - name: Archive code coverage
