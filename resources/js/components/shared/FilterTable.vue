@@ -448,7 +448,7 @@ export default {
   background-color: rgba(247, 249, 251, 1) !important;
 }
 .pm-table-unread-row {
-  background-color: #FFFDEA;
+  background-color: #FEFDF5;
 }
 .status-success {
   background-color: rgba(200, 240, 207, 1);
