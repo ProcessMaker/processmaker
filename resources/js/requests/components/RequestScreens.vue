@@ -122,7 +122,7 @@ export default {
         "/requests/" +
           this.id +
           "/task/" +
-          data.id +
+          data.task_id +
           "/screen/" +
           data.screen_id
       );

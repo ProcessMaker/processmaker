@@ -773,10 +773,13 @@ class ProcessRequestController extends Controller
                         $dataManager = new DataManager();
                         $screen->data = $dataManager->getData($token, true);
                         $screen->screen_id = $screen->id;
+                        // Assign the task_id from the token object to the screen object
+                        $screen->task_id = $token->id;
 
                         return $screen;
                     }
                 }
+
                 return null;
             })
             ->reject(fn ($item) => $item === null)
