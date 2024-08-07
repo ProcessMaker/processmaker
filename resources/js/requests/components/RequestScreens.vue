@@ -118,14 +118,7 @@ export default {
   },
   methods: {
     preview(data) {
-      window.open(
-        "/requests/" +
-          this.id +
-          "/task/" +
-          data.id +
-          "/screen/" +
-          data.screen_id
-      );
+      window.open(`/requests/${this.id}/task/${data.token_id}/screen/${data.screen_id}`);
     },
     previewScreen(data) {
       data.view = !data.view;

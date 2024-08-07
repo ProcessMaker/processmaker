@@ -771,6 +771,7 @@ class ProcessRequestController extends Controller
                     $screen = $token->getScreenVersion();
                     if ($screen) {
                         $dataManager = new DataManager();
+                        $screen->token_id = $token->id;
                         $screen->data = $dataManager->getData($token, true);
                         $screen->screen_id = $screen->id;
 
