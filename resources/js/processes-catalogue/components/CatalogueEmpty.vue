@@ -8,8 +8,11 @@
           alt="recent projects"
         >
       </div>
-      <h4 class="text-center">
+      <h4 v-show="!isBookmarkEmpty" class="text-center">
         {{ $t("Currently, you don't have any processes created.") }}
+      </h4>
+      <h4 v-show="isBookmarkEmpty" class="text-center">
+        {{ $t("Currently, you don’t have any processes bookmarked.") }}
       </h4>
       <p class="text-center">
         {{ $t('We encourage you to create new processes using our templates.') }}
@@ -34,7 +37,7 @@ import EmptySearch from "./utils/EmptySearch.vue";
 
 export default {
   components: { EmptySearch },
-  props: ["showEmpty"],
+  props: ["showEmpty", "isBookmarkEmpty"],
   methods: {
     /**
      * go to wizard templates section
