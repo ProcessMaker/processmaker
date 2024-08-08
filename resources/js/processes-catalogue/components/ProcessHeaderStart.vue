@@ -90,6 +90,9 @@ export default {
         .get(`process_bookmarks/processes/${this.process.id}/start_events`)
         .then((response) => {
           this.processEvents = response.data.data;
+          if (this.processEvents.length === 0) {
+            ProcessMaker.alert(this.$t('The current user does not have permission to start this process'), "danger");
+          }
           const nonWebEntryStartEvents = this.processEvents.filter(e => !("webEntry" in e) || !e.webEntry);
           if (nonWebEntryStartEvents.length === 1) {
             this.singleStartEvent = nonWebEntryStartEvents[0].id;
