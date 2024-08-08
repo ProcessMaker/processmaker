@@ -91,7 +91,7 @@ export default {
         .then((response) => {
           this.processEvents = response.data.data;
           if (this.processEvents.length === 0) {
-            ProcessMaker.alert(this.$t('The current user does not have permission to start this process'), "danger");
+            ProcessMaker.alert(this.$t("The current user does not have permission to start this process"), "danger");
           }
           const nonWebEntryStartEvents = this.processEvents.filter(e => !("webEntry" in e) || !e.webEntry);
           if (nonWebEntryStartEvents.length === 1) {

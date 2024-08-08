@@ -81,9 +81,6 @@ export default {
       anonUserId: "2",
     };
   },
-  mounted() {
-    console.log(this.processEvents);
-  },
   computed: {
     isStartButtonDisabled() {
       return this.processEvents.length === 0;
