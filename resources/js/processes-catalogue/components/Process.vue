@@ -117,7 +117,6 @@ export default {
 <style lang="scss" scoped>
 @import '~styles/variables';
 .process-info-main {
-  overflow-y: auto;
   position: relative;
 }
 .mobile-process-nav {

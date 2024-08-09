@@ -152,7 +152,7 @@ export default {
   },
   computed: {
     hasGuidedTemplateParams() {
-      return window.location.search.includes('?guided_templates=true&template=');
+      return window.location.search.includes('?categoryId=guided_templates');
     }
   },
   watch: {
@@ -234,7 +234,8 @@ export default {
       } else if ($event && $event.type === "wizard") {  // Handle different scenarios based on $event type 
         // Add template parameter to the URL if guided templates are selected
         let url = new URL(window.location.href);
-        if (url.search.includes('?guided_templates=true')) {
+        if (url.search.includes('?categoryId=guided_templates')) {
+          url.searchParams.append('guided_templates', true);
           url.searchParams.append('template', $event.template.unique_template_id);
           history.pushState(null, '', url); // Update the URL without triggering a page reload
         }

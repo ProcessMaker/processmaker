@@ -2,6 +2,11 @@
 @section('title')
 {{__($title)}}
 @endsection
+
+@section('meta')
+  <meta name="request-id" content="">
+@endsection
+
 @section('content_mobile')
   <div class="page-content mb-0" id="processes-catalogue">
     <processes-catalogue

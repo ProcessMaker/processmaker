@@ -146,6 +146,10 @@ export default {
     EventBus.$on('templates-selected', (obj) => {
       this.openTemplate(obj);
     });
+
+    window.ProcessMaker.EventBus.$on("wizard-templates-selected", (obj) => {
+      this.selectTemplateItem(obj);
+    });
   },
   computed: {
     /**
