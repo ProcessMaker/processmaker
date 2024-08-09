@@ -31,6 +31,11 @@ div.main {
   height: 100%;
   max-height: 100%;
 }
+a {
+  color: #0872C2 !important;
+  text-decoration: none;
+  background-color: transparent;
+}
 </style>
 @yield('extra_css')
 @endsection
