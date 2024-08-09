@@ -52,7 +52,6 @@
     <CatalogueEmpty
       v-if="!loading && processList.length === 0"
       :show-empty="showEmpty"
-      @wizardLinkSelect="wizardLinkSelected"
     />
   </div>
 </template>
@@ -165,12 +164,6 @@ export default {
             });
           } 
         });
-    },
-    /**
-     * Go to wizard templates section
-     */
-    wizardLinkSelected() {
-      this.$emit("wizardLinkSelect");
     },
     /**
      * Build URL for Process Cards
