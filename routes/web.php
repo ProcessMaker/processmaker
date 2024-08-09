@@ -98,7 +98,7 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('process-browser/{process?}', [ProcessesCatalogueController::class, 'index'])
        ->name('process.browser.index')
        ->middleware('can:view-process-catalog');
-    //------------------------------------------------------------------------------------------
+    //--------------------------------------------------------------------------------------------
     // Below route is for backward compatibility with old format routes. PLEASE DO NOT REMOVE
     //------------------------------------------------------------------------------------------
     Route::get('processes-catalogue/{process?}', function ($process = null) {
