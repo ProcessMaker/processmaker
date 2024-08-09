@@ -100,8 +100,9 @@ export default {
       
       // Remove template parameter from the URL
       let url = new URL(window.location.href);
-      if (url.search.includes('?guided_templates=true&template=')) {
+      if (url.search.includes('?categoryId=guided_templates')) {
         url.searchParams.delete('template');
+        url.searchParams.delete('guided_templates');
         history.pushState(null, '', url); // Update the URL without triggering a page reload
       }
       

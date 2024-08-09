@@ -52,7 +52,7 @@ class TokenRepository implements TokenRepositoryInterface
     /**
      * Creates an instance of Token.
      *
-     * @return \ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface
+     * @return TokenInterface
      */
     public function createTokenInstance(): TokenInterface
     {
@@ -62,7 +62,7 @@ class TokenRepository implements TokenRepositoryInterface
         return $token;
     }
 
-    public function loadTokenByUid($uid): ? TokenInterface
+    public function loadTokenByUid($uid): ?TokenInterface
     {
         if (is_numeric($uid)) {
             return Token::find($uid);
@@ -185,16 +185,21 @@ class TokenRepository implements TokenRepositoryInterface
                 if (!empty($configEmail)) {
                     Log::info('Activity configEmail: ', $configEmail);
                     $abeRequestToken = new ProcessAbeRequestToken();
+                    $requireLogin = ($configEmail['requireLogin']) ? 1 : 0;
+                    $screenCompleted = !empty($configEmail['screenCompleteRef'])
+                        ? $configEmail['screenCompleteRef']
+                        : null;
                     $tokenAbe = $abeRequestToken->updateOrCreate([
-                        'process_request_id' => $token->process_request_id,
-                        'process_request_token_id' => $token->getKey(),
-                        'require_login' => $configEmail['requireLogin'] === 'true' ? 1 : 0,
-                        'completed_screen_id' => $configEmail['screenCompleteRef'] ?? 0,
+                        'process_request_id' => $token->process_request_id ?? null,
+                        'process_request_token_id' => $token->getKey() ?? null,
+                        'require_login' => $requireLogin,
+                        'completed_screen_id' => $screenCompleted,
                     ]);
                     $data = $token->getInstance()->getDataStore()->getData();
                     // Set custom variables defined in the link
                     $data['abe_uri'] = config('app.url');
                     $data['token_abe'] = $tokenAbe->uuid;
+
                     // Send Email
                     return (new TaskActionByEmail())->sendAbeEmail($configEmail, $to, $data);
                 }
@@ -213,18 +218,20 @@ class TokenRepository implements TokenRepositoryInterface
      * @param ActivityInterface $activity
      * @param TokenInterface $token
      *
-     * @return integer
+     * @return int
      */
     private function getDueVariable(ActivityInterface $activity, TokenInterface $token)
     {
         $isDueVariable = $activity->getProperty('isDueInVariable', false);
         $dueVariable = $activity->getProperty('dueInVariable');
         if ($isDueVariable && !empty($dueVariable)) {
-            $instanceData= $token->getInstance()->getDataStore()->getData();
+            $instanceData = $token->getInstance()->getDataStore()->getData();
             $mustache = new Mustache_Engine();
             $mustacheDueVariable = $mustache->render($dueVariable, $instanceData);
+
             return is_numeric($mustacheDueVariable) ? $mustacheDueVariable : '72';
         }
+
         return $activity->getProperty('dueIn', '72');
     }
 
@@ -648,9 +655,9 @@ class TokenRepository implements TokenRepositoryInterface
     /**
      * Persists instance and token data when a token is consumed in a event based gateway
      *
-     * @param \ProcessMaker\Nayra\Contracts\Bpmn\EventBasedGatewayInterface $eventBasedGateway
-     * @param \ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface $passedToken
-     * @param \ProcessMaker\Nayra\Contracts\Bpmn\CollectionInterface $consumedTokens
+     * @param EventBasedGatewayInterface $eventBasedGateway
+     * @param TokenInterface $passedToken
+     * @param CollectionInterface $consumedTokens
      *
      * @return mixed
      */

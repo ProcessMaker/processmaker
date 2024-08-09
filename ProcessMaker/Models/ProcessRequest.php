@@ -30,6 +30,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\SqlsrvSupportTrait;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use stdClass;
 use Throwable;
 
 /**
@@ -766,11 +767,11 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      * PMQL value alias for the alternative field in the process version
      *
      * @param string value
-     * @param ProcessMaker\Query\Expression expression
+     * @param ProcessMaker\Query\Expression | stdClass $expression
      *
      * @return callable
      */
-    public function valueAliasAlternative(string $value, Expression $expression): callable
+    public function valueAliasAlternative(string $value, Expression | stdClass $expression): callable
     {
         return function ($query) use ($expression, $value) {
             $query->whereHas('processVersion', function ($query) use ($expression, $value) {
