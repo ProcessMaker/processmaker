@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Jobs;
 
-use Exception;
 use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
@@ -49,6 +48,7 @@ class ImportScreen extends ImportProcess
         $this->prepareStatus('screens', count($this->file->screens));
         foreach ($this->file->screens as $screen) {
             $newScreen = $this->saveScreen($screen);
+
             $this->status['screens']['id'] = $newScreen->id;
 
             $new[Screen::class][$screen->id] = $newScreen;
