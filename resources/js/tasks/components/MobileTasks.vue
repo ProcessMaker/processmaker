@@ -76,7 +76,8 @@ export default {
     };
   },
   mounted() {
-    this.pmql = `(user_id = ${ProcessMaker.user.id}) AND (status = "In Progress") AND (process_id = ${this.process.id})`;
+    const filter = this.process ? ` AND (process_id = ${this.process.id})` : "";
+    this.pmql = `(user_id = ${ProcessMaker.user.id}) AND (status = "In Progress")${filter}`;
   },
   methods: {
     updatePmql(value) {
