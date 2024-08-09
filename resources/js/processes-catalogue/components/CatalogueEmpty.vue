@@ -43,7 +43,14 @@ export default {
      * go to wizard templates section
      */
     wizardLinkSelected() {
-      this.$emit("wizardLinkSelect");
+      window.ProcessMaker.EventBus.$emit(
+        "wizard-templates-selected",
+        {
+          label: this.$t("Guided Templates"),
+          selected: false,
+          id: "guided_templates",
+        },
+      );
     },
   },
 };

@@ -41,6 +41,7 @@
       data-cy="processes-table"
     >
       <vuetable
+        id="core-custom-project-table"
         :data-manager="dataManager"
         :sort-order="sortOrder"
         :css="css"
@@ -281,5 +282,11 @@ export default {
   justify-content: center;
   width: 100%;
   display: flex;
+}
+</style>
+<style>
+
+#core-custom-project-table tr td.vuetable-slot:last-child {
+    text-align: right;
 }
 </style>

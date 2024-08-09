@@ -448,7 +448,7 @@ export default {
   background-color: rgba(247, 249, 251, 1) !important;
 }
 .pm-table-unread-row {
-  background-color: #FFFDEA;
+  background-color: #FEFDF5;
 }
 .status-success {
   background-color: rgba(200, 240, 207, 1);
@@ -496,8 +496,17 @@ export default {
     white-space: nowrap;
   }
 }
+.ellipsis-dropdown-main ul.dropdown-menu.dropdown-menu.show {
+  max-height: 250px;
+  overflow-y: auto;
+}
 .pm-table-selected-row {
   background-color: #E8F0F9;
   color: #1572C2;
+}
+.custom-wrap {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

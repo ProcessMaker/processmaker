@@ -10,6 +10,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\V1_1\TaskInterstitialResource;
 use ProcessMaker\Http\Resources\V1_1\TaskResource;
 use ProcessMaker\Http\Resources\V1_1\TaskScreen;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 
 class TaskController extends Controller
@@ -34,6 +35,7 @@ class TaskController extends Controller
             ->where('element_type', 'task');
 
         $this->processFilters(request(), $query);
+
         $pagination = $query->paginate(request()->get('per_page', 10));
         $perPage = $pagination->perPage();
         $page = $pagination->currentPage();
@@ -64,10 +66,24 @@ class TaskController extends Controller
         }
 
         if ($request->has('process_request_id')) {
-            $query->where('process_request_id', $request->input('process_request_id'));
+            $query->where(function ($q) use ($request) {
+                $q->where('process_request_id', $request->input('process_request_id'));
+                $this->addSubprocessTasks($request, $q);
+            });
         }
         if ($request->has('status')) {
             $query->where('status', $request->input('status'));
+        }
+    }
+
+    private function addSubprocessTasks(Request $request, Builder &$q)
+    {
+        if ($request->has('include_sub_tasks')) {
+            $q->orWhereIn(
+                'process_request_id',
+                ProcessRequest::select('id')
+                    ->where('parent_request_id', $request->input('process_request_id'))
+            );
         }
     }
 

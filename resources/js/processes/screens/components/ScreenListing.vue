@@ -165,7 +165,7 @@ const uniqIdsMixin = createUniqIdsMixin();
 export default {
   components: { EllipsisMenu, AddToProjectModal, CreateTemplateModal, PaginationTable },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ellipsisMenuMixin, screenNavigationMixin],
-  props: ["filter", "id", "permission", "currentUserId", 'types'],
+  props: ["filter", "id", "permission", "currentUserId", "types"],
   data() {
     return {
       orderBy: "title",
@@ -260,7 +260,13 @@ export default {
       ]
     };
   },
-
+  created () {
+    ProcessMaker.EventBus.$on("api-data-process", () => {
+      this.fetch();
+      this.apiDataLoading = false;
+      this.apiNoResults = false;
+    });
+  },
   methods: {
     formatType(type) {
       return this.$t(_.startCase(_.toLower(type)));

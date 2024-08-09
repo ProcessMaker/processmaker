@@ -168,12 +168,6 @@ export default {
         });
     },
     /**
-     * Go to wizard templates section
-     */
-    wizardLinkSelected() {
-      this.$emit("wizardLinkSelect");
-    },
-    /**
      * Build URL for Process Cards
      */
     buildURL() {
@@ -312,41 +306,80 @@ export default {
     width: 1926px;
   }
 
-  @media (min-width: 2439px){
-    width: 2308px;
+  @media (min-width: 2439px) and (max-width: 2602px){ //n
+    width: 1932px;
+  }
+
+  @media (min-width: 2603px) and (max-width: 2961px){
+    width: 2312px;
+  }
+
+  @media (min-width: 2962px) and (max-width: 3320px){
+    width: 2700px;
+  }
+
+  @media (min-width: 3321px) and (max-width: 3440px){
+    width: 3087px;
+    margin-right: -200px;
+  }
+
+  @media (min-width: 3441px) and (max-width: 3680px){
+    width: 3075px;
+    margin-right: -200px;
+  }
+
+  @media (min-width: 3681px){
+    width: 100%;
   }
 }
 .separator-class.width-changed {
-  @media (min-width: 641px) and (max-width:767px) {
+  @media (min-width: 641px) and (max-width:775px) {
     width: 340px;
   }
 
-  @media (min-width: 768px) and (max-width:1075px) {
+  @media (min-width: 776px) and (max-width:1083px) {
     width: 678px;
   }
 
-  @media (min-width: 1076px) and (max-width:1520px) {
-    width: 1156px;
+  @media (min-width: 1084px) and (max-width:1572px) {
+    width: 1154px;
   }
 
-  @media (min-width: 1521px) and (max-width: 1789px) {
-    width: 1156px;
+  @media (min-width: 1573px) and (max-width:1669px) {
+    width: 1544px;
+    margin-right: -95px;
   }
 
-  @media (min-width: 1790px) and (max-width: 1879px) {
-    width: 1542px;
+  @media (min-width: 1670px) and (max-width: 1931px) {
+    width: 1544px;
   }
 
-  @media (min-width: 1880px) and (max-width: 2148px){
-    width: 1859px;
+  @media (min-width: 1932px) and (max-width: 2290px){
+    width: 1932px;
   }
 
-  @media (min-width: 2149px) and (max-width: 2438px){
-    width: 1926px;
-  }
-
-  @media (min-width: 2439px){
+  @media (min-width: 2291px) and (max-width: 2438px){
     width: 2308px;
+  }
+
+  @media (min-width: 2439px) and (max-width: 2649px){ //n
+    width: 2318px;
+  }
+
+  @media (min-width: 2650px) and (max-width: 3008px){
+    width: 2685px;
+  }
+
+  @media (min-width: 3009px) and (max-width: 3367px){
+    width: 3076px;
+  }
+
+  @media (min-width: 3368px) and (max-width: 3726px){
+    width: 3470px;
+  }
+
+  @media (min-width: 3727px){
+    width: 100%;
   }
 }
 </style>
