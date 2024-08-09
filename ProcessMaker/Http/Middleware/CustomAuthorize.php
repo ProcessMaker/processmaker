@@ -64,7 +64,7 @@ class CustomAuthorize extends Middleware
     private function getUserPermissions($user)
     {
         return Cache::remember("user_{$user->id}_permissions", 86400, function () use ($user) {
-            return $user->permissions->pluck('name')->toArray();
+            return $user->permissions()->pluck('name')->toArray();
         });
     }
 

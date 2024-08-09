@@ -332,7 +332,7 @@ class LoginController extends Controller
             }
             // Cache user permissions for a day to improve performance
             Cache::remember("user_{$user->id}_permissions", 86400, function () use ($user) {
-                return $user->permissions->pluck('name')->toArray();
+                return $user->permissions()->pluck('name')->toArray();
             });
 
             return $this->sendLoginResponse($request);

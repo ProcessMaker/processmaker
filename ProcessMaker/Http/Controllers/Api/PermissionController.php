@@ -124,7 +124,7 @@ class PermissionController extends Controller
     private function clearAndRebuildCache($user)
     {
         // Rebuild and update the permissions cache
-        $permissions = $user->permissions->pluck('name')->toArray();
+        $permissions = $user->permissions()->pluck('name')->toArray();
         Cache::put("user_{$user->id}_permissions", $permissions, 86400);
     }
 }
