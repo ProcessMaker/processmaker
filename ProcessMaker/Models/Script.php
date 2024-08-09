@@ -197,6 +197,11 @@ class Script extends ProcessMakerModel implements ScriptInterface
             $values[] = $key;
         }
 
+        // If "php" format is included also include "php-nayra"
+        if (in_array('php', $values)) {
+            $values[] = 'php-nayra';
+        }
+
         return $values;
     }
 
