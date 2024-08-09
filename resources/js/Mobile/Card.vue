@@ -136,6 +136,24 @@ export default {
       return null;
     },
   },
+  watch: {
+    item() {
+      this.formatItem = cloneDeep(this.item);
+      if (this.type === "requests") {
+        this.splitText(this.sanitize(this.item.case_title_formatted));
+      } else if (this.type === "tasks") {
+        this.splitText(this.sanitize(this.item.process_request.case_title_formatted));
+      }
+      this.fields.forEach((row) => {
+        if (row.field === "tasks") {
+          this.formatItem[row.field] = this.formatActiveTasks(this.formatItem.active_tasks);
+        }
+        if (row.format && row.format === "dateTime") {
+          this.formatItem[row.field] = this.formatDate(this.formatItem[row.field]);
+        }
+      });
+    },
+  },
   mounted() {
     this.formatItem = cloneDeep(this.item);
     this.callbackResize = () => {
@@ -171,7 +189,7 @@ export default {
       const statusMap = {
         "DRAFT": { color: "#F9E8C3", label: this.$t("Draft") },
         "CANCELED": { color: "#FFC7C7", label: this.$t("Canceled") },
-        "COMPLETED": { color: "#B8DCF7", label: this.$t("Completed") },
+        "CLOSED": { color: "#B8DCF7", label: this.$t("Completed") },
         "ERROR": { color: "#FFC7C7", label: this.$t("Error") },
         "ACTIVE": {
           "overdue": { color: "#FFC7C7", label: this.$t("Overdue") },

@@ -213,6 +213,10 @@ abstract class ExporterBase implements ExporterInterface
 
     public function runImport($existingAssetInDatabase = null, $importingFromTemplate = false)
     {
+        // Ensure we have the latest version of the model because some attributes
+        // may have changed with updateDuplicateAttributes()
+        $this->model->refresh();
+
         $extensions = app()->make(Extension::class);
         $extensions->runExtensions($this, 'preImport', $this->logger);
         $this->logger->log('Running Import ' . static::class);
@@ -249,7 +253,7 @@ abstract class ExporterBase implements ExporterInterface
         } elseif ($this->getClassName() === 'LaunchpadSetting') {
             $name = 'Setting';
         }
-       
+
         return $name;
     }
 
@@ -545,7 +549,7 @@ abstract class ExporterBase implements ExporterInterface
                 $foundCategory = $categoryClass::find($this->model->process_category_id);
 
                 if (!$foundCategory instanceof $categoryClass) {
-                    Log::warning('Import/Export: Unable to find ' . $categoryClass::class .
+                    \Log::warning('Import/Export: Unable to find ' . $categoryClass .
                         " with id {$this->model->process_category_id}, updated to 'Uncategorized'.");
                 }
 

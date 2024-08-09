@@ -193,6 +193,7 @@
         class="justify-content-center align-items-center"
       >
         <div
+          :class="{'small-text': longText.includes(lang)}"
           class="input-file-custom dropdown-toggle"
           @dragover.prevent
           type="button"
@@ -320,7 +321,12 @@ export default {
       notURL: false,
       newEmbed: "",
       showNewEmbed: false,
+      longText: ["fr", "de"],
+      lang: "en",
     };
+  },
+  mounted() {
+    this.lang = window.ProcessMaker.user.lang;
   },
   methods: {
     /**
@@ -832,5 +838,8 @@ label {
 }
 .popover-embed {
   width: 432px;
+}
+.small-text {
+  font-size: 12px;
 }
 </style>

@@ -120,7 +120,7 @@ trait ScriptDockerNayraTrait
     {
         $docker = Docker::command();
         $instanceName = config('app.instance');
-        if (!$restart && $this->findNayraAddresses($docker, $instanceName, 3)) {
+        if (!$restart && self::findNayraAddresses($docker, $instanceName, 3)) {
             // The container is already running
             return;
         }
@@ -170,7 +170,7 @@ trait ScriptDockerNayraTrait
      */
     private function waitContainerNetwork($docker, $instanceName)
     {
-        if (!$this->findNayraAddresses($docker, $instanceName, 30)) {
+        if (!self::findNayraAddresses($docker, $instanceName, 30)) {
             throw new ScriptException('Could not get address of the nayra container');
         }
     }
@@ -182,7 +182,7 @@ trait ScriptDockerNayraTrait
      * @param string $instanceName The name of the container instance.
      * @return bool Returns true if the Nayra addresses were found, false otherwise.
      */
-    private function findNayraAddresses($docker, $instanceName, $times): bool
+    private static function findNayraAddresses($docker, $instanceName, $times): bool
     {
         $ip = '';
         $nayraDockerNetwork = config('app.nayra_docker_network');
@@ -283,38 +283,24 @@ trait ScriptDockerNayraTrait
     public static function bringUpNayraExecutor(BuildScriptExecutors $builder, string $image)
     {
         $instanceName = config('app.instance');
+        $docker = Docker::command();
         $builder->info('Stop existing nayra container');
-        $builder->execCommand(Docker::command() . " stop {$instanceName}_nayra 2>&1 || true");
-        $builder->execCommand(Docker::command() . " rm {$instanceName}_nayra 2>&1 || true");
+        $builder->execCommand("{$docker} stop {$instanceName}_nayra 2>&1 || true");
+        $builder->execCommand("{$docker} rm {$instanceName}_nayra 2>&1 || true");
         $builder->info('Bring up the nayra container');
         $builder->execCommand(
-            Docker::command() . ' run -d --name ' . $instanceName . '_nayra '
+            $docker . ' run -d --name ' . $instanceName . '_nayra '
             . (config('app.nayra_docker_network')
                 ? '--network=' . config('app.nayra_docker_network') . ' '
                 : '')
             . $image
         );
         $builder->info('Get IP address of the nayra container');
-        $ip = '';
-        for ($i = 0; $i < 10; $i++) {
-            $ip = exec(
-                Docker::command()
-                . ' inspect --format '
-                . (config('app.nayra_docker_network')
-                    ? "'{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'"
-                    : "'{{ .NetworkSettings.IPAddress }}'"
-                  )
-                . " {$instanceName}_nayra 2>/dev/null"
-            );
-            if ($ip) {
-                $builder->info('Nayra container IP: ' . $ip);
-                static::setNayraAddresses([$ip]);
-                $builder->sendEvent(0, 'done');
-                break;
-            }
-            sleep(1);
-        }
-        if (!$ip) {
+        $ip = self::findNayraAddresses($docker, $instanceName, 30);
+        if ($ip) {
+            $builder->info('Nayra container IP: ' . $ip);
+            $builder->sendEvent(0, 'done');
+        } else {
             throw new UnexpectedValueException('Could not get IP address of the nayra container');
         }
     }
