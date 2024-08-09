@@ -104,10 +104,7 @@ class ProcessRequestController extends Controller
      */
     public function index(Request $request, $getTotal = false, User $user = null)
     {
-        // If a specific user is specified, use it; otherwise use the authorized user
-        if (!$user) {
-            $user = Auth::user();
-        }
+        $this->getUser($user);
 
         // Filter request with user permissions
         $query = ProcessRequest::forUser($user);
@@ -137,13 +134,12 @@ class ProcessRequestController extends Controller
         }
 
         $filter = $request->input('filter', '');
+
         if (!empty($filter)) {
             $query->filter($filter);
         }
 
-        if ($advancedFilter = $request->input('advanced_filter', '')) {
-            Filter::filter($query, $advancedFilter);
-        }
+        $this->initializeAdvancedFilters($request, $query);
 
         $query->nonSystem();
 
@@ -164,14 +160,13 @@ class ProcessRequestController extends Controller
             } elseif ($request->input('total') == 'true') {
                 return ['meta' => ['total' => $query->count()]];
             } else {
-                if ($request->input('order_by') == 'process.alternative') {
-                    $query->orderByRaw('process_version_alternative '. $request->input('order_direction'));
-                } else {
-                    $query->orderBy(
-                        str_ireplace('.', '->', $request->input('order_by', 'name')),
-                        $request->input('order_direction', 'ASC')
-                    );
-                }
+                $request->input('order_by') == 'process.alternative'
+                    ? $query->orderByRaw('process_version_alternative '. $request->input('order_direction'))
+                    :  $query->orderBy(
+                            str_ireplace('.', '->', $request->input('order_by', 'name')),
+                            $request->input('order_direction', 'ASC')
+                        );
+
                 $response = $query
                     ->select('process_requests.*')
                     ->withAggregate('processVersion', 'alternative')
@@ -181,25 +176,40 @@ class ProcessRequestController extends Controller
         } catch (QueryException $e) {
             throw $e;
             $rawMessage = $e->getMessage();
-            if (preg_match("/Column not found: 1054 (.*) in 'where clause'/", $rawMessage, $matches)) {
-                $message = $matches[1];
-            } else {
-                $message = $rawMessage;
-            }
+            $message = $this->getMatches($rawMessage, $matches);
 
             return response(['message' => $message], 400);
         }
 
-        if (isset($response)) {
+        $response = isset($response)
             // Map each item through its resource
-            $response = $response->map(function ($processRequest) use ($request) {
+            ? $response->map(function ($processRequest) use ($request) {
                 return new ProcessRequestResource($processRequest);
-            });
-        } else {
-            $response = collect([]);
-        }
+            })
+            : collect([]);
 
         return new ApiCollection($response, $total);
+    }
+
+    public function getUser($user) {
+        // If a specific user is specified, use it; otherwise use the authorized user
+        if (!$user) {
+            $user = Auth::user();
+        }
+    }
+
+    public function initializeAdvancedFilters($request, $query) {
+        if ($advancedFilter = $request->input('advanced_filter', '')) {
+            Filter::filter($query, $advancedFilter);
+        }
+    }
+
+    public function getMatches($rawMessage, $matches) {
+        if (preg_match("/Column not found: 1054 (.*) in 'where clause'/", $rawMessage, $matches)) {
+            return $matches[1];
+        } else {
+            return $rawMessage;
+        }
     }
 
     public function getCount(Request $request, $process)
