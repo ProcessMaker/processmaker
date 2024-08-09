@@ -2,12 +2,12 @@
 
 namespace Tests\Feature\Api\V1_1;
 
+use ProcessMaker\Jobs\ImportProcess;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
-use ProcessMaker\Jobs\ImportProcess;
-use ProcessMaker\Models\Process;
 
 class TaskControllerTest extends TestCase
 {
@@ -44,5 +44,35 @@ class TaskControllerTest extends TestCase
         $this->assertIsArray($response->json());
         $this->assertNotNull($response->headers->get('Cache-Control'));
         $this->assertNotNull($response->headers->get('Expires'));
+    }
+
+    public function testIncludeSubprocessTasks()
+    {
+        $mainRequest = ProcessRequest::factory()->create();
+        $subprocessRequest1 = ProcessRequest::factory()->create([
+            'parent_request_id' => $mainRequest->id,
+        ]);
+        $subprocessRequest2 = ProcessRequest::factory()->create([
+            'parent_request_id' => $mainRequest->id,
+        ]);
+        $mainTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $mainRequest->id,
+        ]);
+        $subTask1 = ProcessRequestToken::factory()->create([
+            'process_request_id' => $subprocessRequest1->id,
+        ]);
+        $subTask2 = ProcessRequestToken::factory()->create([
+            'process_request_id' => $subprocessRequest2->id,
+        ]);
+
+        $response = $this->apiCall('GET', route('api.1.1.tasks.index', [
+            'process_request_id' => $mainRequest->id,
+            'include_sub_tasks' => 1,
+        ]));
+        $tasks = $response->json()['data'];
+
+        $this->assertEquals($mainTask->id, $tasks[0]['id']);
+        $this->assertEquals($subTask1->id, $tasks[1]['id']);
+        $this->assertEquals($subTask2->id, $tasks[2]['id']);
     }
 }

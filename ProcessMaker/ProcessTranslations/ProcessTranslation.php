@@ -31,7 +31,7 @@ class ProcessTranslation
         'nl' => 'Dutch',
     ];
 
-    public function __construct(Process $process, $includeImages = false)
+    public function __construct($process, $includeImages = false)
     {
         $this->process = $process;
         $this->includeImages = $includeImages;
@@ -163,7 +163,7 @@ class ProcessTranslation
                     $string);
             }
             else {
-                $result[] = $string;
+                $result[] = $string ?? '';
             }
         }
 

@@ -24,6 +24,7 @@
               <button
               :href="getNewRequestLinkHref(process, event)"
               @click.prevent="newRequestLink(process, event);"
+              :disabled="disabled"
               class="btn btn-primary btn-sm"
               v-uni-aria-describedby="event.id.toString()"
               data-test="new-request-modal-process-start-button"
@@ -51,11 +52,12 @@
 <script>
 import { TooltipPlugin } from "bootstrap-vue";
 import { createUniqIdsMixin } from "vue-uniq-ids";
+
 const uniqIdsMixin = createUniqIdsMixin();
 Vue.use(TooltipPlugin);
 
 export default {
-  mixins:[uniqIdsMixin],
+  mixins: [uniqIdsMixin],
   props: ["name", "description", "filter", "id", "process"],
   data() {
     return {
@@ -69,6 +71,8 @@ export default {
     newRequestLink(process, event) {
       if (this.disabled) return;
       this.disabled = true;
+
+      ProcessMaker.EventBus.$emit("start-request");
 
       // Start a process
       this.spin = process.id + "." + event.id;

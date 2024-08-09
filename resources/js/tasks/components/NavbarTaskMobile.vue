@@ -60,7 +60,7 @@
         @click="addPriority()"
       >
         <img
-          :src="task.is_priority
+          :src="isPriority
             ? '/img/priority.svg'
             : '/img/priority-mobile.svg'
           "
@@ -85,9 +85,11 @@ export default {
       nextTask: -1,
       existPrev: false,
       existNext: false,
+      isPriority: false,
     };
   },
   mounted() {
+    this.isPriority = this.task.is_priority;
     const indexTask = this.data.indexOf(this.task.id);
     if ((indexTask - 1) >= 0) {
       this.existPrev = true;
@@ -112,9 +114,9 @@ export default {
     },
     addPriority() {
       ProcessMaker.apiClient
-        .put(`tasks/${this.task.id}/setPriority`, { is_priority: !this.task.is_priority })
+        .put(`tasks/${this.task.id}/setPriority`, { is_priority: !this.isPriority })
         .then(() => {
-          this.task.is_priority = !this.task.is_priority;
+          this.isPriority = !this.isPriority;
         });
     },
     handleReloadTask(value) {

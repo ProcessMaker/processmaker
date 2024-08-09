@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd" xmlns:tns="http://sourceforge.net/bpmn/definitions/_1530553328908" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bpmn.io/schema/bpmn" exporter="ProcessMaker Modeler" exporterVersion="1.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <bpmn:process id="ProcessId" name="ProcessName" isExecutable="true">
+    <bpmn:startEvent id="node_1" name="Start Event" pm:allowInterstitial="true" pm:interstitialScreenRef="1">
+      <bpmn:outgoing>node_19</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="node_2" name="Form Task" pm:allowInterstitial="false" pm:assignment="requester" pm:assignmentLock="false" pm:allowReassignment="false" pm:configEmail="{&#34;subject&#34;:&#34;RE: Form Task&#34;,&#34;requireLogin&#34;:false,&#34;emailServer&#34;:&#34;&#34;,&#34;screenEmailRef&#34;:6,&#34;email_notifications&#34;:{&#34;notifications&#34;:[]}}" pm:isActionsByEmail="true" pm:elementDestination="{&#34;type&#34;:&#34;taskSource&#34;,&#34;value&#34;:null}">
+      <bpmn:incoming>node_19</bpmn:incoming>
+      <bpmn:outgoing>node_28</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="node_18" name="End Event" pm:elementDestination="{&#34;type&#34;:&#34;summaryScreen&#34;,&#34;value&#34;:null}">
+      <bpmn:incoming>node_28</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_19" name="" sourceRef="node_1" targetRef="node_2" />
+    <bpmn:sequenceFlow id="node_28" name="" sourceRef="node_2" targetRef="node_18" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagramId">
+    <bpmndi:BPMNPlane id="BPMNPlaneId" bpmnElement="ProcessId">
+      <bpmndi:BPMNShape id="node_1_di" bpmnElement="node_1">
+        <dc:Bounds x="271" y="86" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_2_di" bpmnElement="node_2">
+        <dc:Bounds x="424" y="68" width="116" height="76" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_18_di" bpmnElement="node_18">
+        <dc:Bounds x="630" y="90" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_19_di" bpmnElement="node_19">
+        <di:waypoint x="289" y="104" />
+        <di:waypoint x="482" y="106" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_28_di" bpmnElement="node_28">
+        <di:waypoint x="482" y="106" />
+        <di:waypoint x="648" y="108" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

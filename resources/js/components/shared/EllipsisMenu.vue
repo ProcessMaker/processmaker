@@ -8,6 +8,7 @@
     lazy
     no-caret
     class="ellipsis-dropdown-main static-header"
+    :popper-opts="{ placement: 'bottom-end' }"
     :dropleft="!lauchpad"
     @show="onShow"
     @hide="onHide"
