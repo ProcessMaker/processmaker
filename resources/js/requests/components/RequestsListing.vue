@@ -558,6 +558,12 @@ export default {
     },
     handleRowClick(row) {
     },
+    /**
+     * This method is used in PMColumnFilterPopoverCommonMixin.js
+     * Returns the available alternatives for the process version
+     *
+     * @returns {Array}
+     */
     getAlternatives() {
       return [
         {value: "A", text: this.$t("Alternative A")},
@@ -574,18 +580,6 @@ export default {
         {value: "Completed", text: this.$t("Completed")},
         {value: "Error", text: this.$t("Error")},
         {value: "Canceled", text: this.$t("Canceled")}
-      ];
-    },
-    /**
-     * This method is used in PMColumnFilterPopoverCommonMixin.js
-     * Returns the available alternatives for the process version
-     *
-     * @returns {Array}
-     */
-    getAlternatives() {
-      return [
-        { value: 'A', text: 'A' },
-        { value: 'B', text: 'B' },
       ];
     },
     /**
