@@ -7,4 +7,8 @@ abstract class Psudomodel
     public function preventSavingDiscardedModel()
     {
     }
+
+    public function refresh()
+    {
+    }
 }

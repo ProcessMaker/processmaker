@@ -59,7 +59,7 @@ class ScriptController extends Controller
     {
         $selectedUser = $script->runAsUser;
         $assignedProjects = json_decode($script->projects, true);
-        $scriptExecutors = ScriptExecutor::list($script->scriptExecutor->language);
+        $scriptExecutors = ScriptExecutor::list($script->scriptExecutor->language, true);
         $addons = $this->getPluginAddons('edit', compact(['script']));
 
         return view('processes.scripts.edit', compact('script', 'selectedUser', 'scriptExecutors', 'addons', 'assignedProjects'));

@@ -47,6 +47,7 @@ class TaskResource extends ApiResource
         'status',
         'due_at',
         'process_request_id',
+        'is_self_service'
     ];
 
     protected static $defaultIncludes = [

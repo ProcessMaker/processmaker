@@ -37,7 +37,7 @@ export default {
     isTemplateCategory() {
       return ['guided_templates'].includes(this.categoryId)
     },
-  }
+  },
 };
 </script>
 

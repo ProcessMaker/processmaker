@@ -155,6 +155,7 @@ class ProcessExporterTest extends TestCase
         $media = $process->media()->first();
         $fakeFilePath = $media->id . '/' . $media->file_name;
         $this->assertFileExists(Storage::disk('public')->path($fakeFilePath));
+        $this->assertEquals('a value', $media->getCustomProperty('a_custom_property'));
     }
 
     public function testSignals()
@@ -468,6 +469,7 @@ class ProcessExporterTest extends TestCase
             'collection_name' => 'images_carousel',
             'name' => 'image',
             'file_name' => 'image.png',
+            'custom_properties' => ['a_custom_property' => 'a value'],
         ]);
 
         // Create a fake image and save it directly to the fake storage.
