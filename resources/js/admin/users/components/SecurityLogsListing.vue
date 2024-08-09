@@ -181,7 +181,7 @@ export default {
       ProcessMaker.apiClient
         .get(
           `security-logs?pmql=${
-            this.pmql
+            encodeURIComponent(this.pmql)
           }&filter=${
             this.searchFilter
           }&page=${
