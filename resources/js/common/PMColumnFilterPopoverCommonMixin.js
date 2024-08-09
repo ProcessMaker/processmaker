@@ -221,16 +221,29 @@ const PMColumnFilterCommonMixin = {
           format = "string";
         }
       }
-      if (column.field === "status" || column.field === "process_version_alternative") {
+
+      if (['status', 'process_version_alternative'].includes(column.field)) {
         format = "stringSelect";
       }
-      
+
       return format;
     },
     getFormatRange(column) {
-      let formatRange = [];
-      if (column.field === "status") {
-        formatRange = this.getStatus();
+      let formatRange;
+
+      switch (column.field) {
+        case 'status':
+          formatRange = this.getStatus();
+          break;
+        case 'process_version_alternative':
+          formatRange = this.getAlternatives();
+          break;
+        default:
+          formatRange = [];
+          break;
+      }
+      if (column.field === "process_version_alternative") {
+        formatRange = this.getAlternatives();
       }
       if (column.field === "process_version_alternative") {
         formatRange = this.getAlternatives();
@@ -242,7 +255,8 @@ const PMColumnFilterCommonMixin = {
       if (column.field === "case_title" || column.field === "name" || column.field === "process" || column.field === "task_name" || column.field === "element_name" || column.field === "participants" || column.field === "assignee") {
         operators = ["=", "in", "contains", "regex"];
       }
-      if (column.field === "status") {
+
+      if (['status', 'process_version_alternative'].includes(column.field)) {
         operators = ["=", "in"];
       }
       if (column.field === "process_version_alternative") {
@@ -251,6 +265,7 @@ const PMColumnFilterCommonMixin = {
       if (column.field === "initiated_at" || column.field === "completed_at" || column.field === "due_at") {
         operators = ["<", "<=", ">", ">=", "between"];
       }
+
       return operators;
     },
     getAssignee(filter) {

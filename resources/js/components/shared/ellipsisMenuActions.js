@@ -108,7 +108,7 @@ export default {
         {
           value: "download-bpmn",
           content: "Download BPMN",
-          permission: ["view-processes", "view-additional-asset-actions"],
+          permission: ["export-processes"],
           icon: "fas fa-file-download",
         },
       ],

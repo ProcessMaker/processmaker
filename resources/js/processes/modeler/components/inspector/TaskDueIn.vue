@@ -64,7 +64,9 @@ export default {
       },
     },
     dueInVariableGetter() {
-      return _.get(this.node, "dueInVariable");
+      const dueVar = _.get(this.node, "dueInVariable");
+      this.verifyValue(dueVar);
+      return dueVar;
     },
   },
   methods: {
@@ -99,8 +101,11 @@ export default {
      * Validate if the value is a correct Mustache Syntaxis.
      */
     validateMustache(value) {
-      const regex = /^{{(.*)}}/gm;
+      const regex = /^\{\{.*\}\}$/gm;
       return !regex.test(value);
+    },
+    verifyValue(value) {
+      this.showError = this.validateMustache(value);
     },
   },
 };

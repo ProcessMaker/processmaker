@@ -737,11 +737,25 @@ class ProcessRequestController extends Controller
             ->where([
                 'element_id' => $httpRequest->element_id,
                 'process_request_id' => $request->id,
-            ])->count();
+            ])
+            ->count();
         $token->count = $countFlag ? $tokensCount - 1 : $tokensCount;
         if ($token->count === 0) {
             throw new ModelNotFoundException();
         }
+        $repeatMessage = trans_choice(
+            '{1} The path was repeated one time|[2,*] The path was repeated :count times',
+            $token->count,
+            ['count' => $token->count]
+        );
+        $token->setAttribute('repeat_message', $repeatMessage);
+
+        // Format dates.
+        $token->setAttribute('created_at_formatted', $token->created_at->format('m/d/y H:i'));
+        $token->setAttribute(
+            'completed_at_formatted',
+            $token->completed_at ? $token->completed_at->format('m/d/y H:i') : '-'
+        );
 
         return new ApiResource($token);
     }
@@ -778,10 +792,12 @@ class ProcessRequestController extends Controller
                         $dataManager = new DataManager();
                         $screen->data = $dataManager->getData($token, true);
                         $screen->screen_id = $screen->id;
+                        $screen->id = $token->id;
 
                         return $screen;
                     }
                 }
+
                 return null;
             })
             ->reject(fn ($item) => $item === null)

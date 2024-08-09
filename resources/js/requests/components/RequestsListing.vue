@@ -436,7 +436,7 @@ export default {
       }
 
       return `
-        <span 
+        <span
           class="badge badge-${color} status-${badge}"
         >
           ${this.$t('Alternative')} ${value}
@@ -574,6 +574,18 @@ export default {
         {value: "Completed", text: this.$t("Completed")},
         {value: "Error", text: this.$t("Error")},
         {value: "Canceled", text: this.$t("Canceled")}
+      ];
+    },
+    /**
+     * This method is used in PMColumnFilterPopoverCommonMixin.js
+     * Returns the available alternatives for the process version
+     *
+     * @returns {Array}
+     */
+    getAlternatives() {
+      return [
+        { value: 'A', text: 'A' },
+        { value: 'B', text: 'B' },
       ];
     },
     /**
