@@ -220,7 +220,7 @@ class ModelerController extends Controller
     /**
      * Load PMBlock list
      */
-    private function getPmBlockList()
+    public function getPmBlockList()
     {
         $pmBlockList = null;
         if (hasPackage('package-pm-blocks')) {
