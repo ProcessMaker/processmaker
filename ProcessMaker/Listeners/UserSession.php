@@ -30,7 +30,8 @@ class UserSession
         $configDevice = Setting::configByKey('session-control.device_restriction');
 
         // Get the IP address and device information
-        $ip = request()->getClientIp() ?? request()->ip();
+        $ip = request()->header('X-Forwarded-For') ?? request()->getClientIp() ?? request()->ip();
+
         $agentDevice = $agent->device() ? $agent->device() : 'Unknown';
         $agentDeviceType = $agent->deviceType();
         $agentPlatform = $agent->platform();
