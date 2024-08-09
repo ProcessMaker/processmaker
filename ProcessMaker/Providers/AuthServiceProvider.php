@@ -112,7 +112,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     private function getProjectsForUser(int $userId): array
     {
-        if (!Schema::hasTable('projects')) {
+        if (!hasPackage('package-projects')) {
             return [];
         }
 
