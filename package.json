@@ -17,7 +17,9 @@
         "production": "mix --production",
         "test": "cross-env NODE_ENV=test jest",
         "test-watch": "npm run test -- --watch --notify",
-        "lint": "eslint --fix --ignore-path .eslintignore resources/"
+        "lint": "eslint --fix --ignore-path .eslintignore resources/",
+        "font": "node ./devhub/pm-font/svgtofont.js && cp -f ./devhub/pm-font/dist/*.* ./resources/fonts/pm-font",
+        "dev-font": "node ./devhub/pm-font/svgtofont.js && cp -f ./devhub/pm-font/dist/*.* ./resources/fonts/pm-font && http-server ./devhub/pm-font/dist -p 7771"
     },
     "devDependencies": {
         "@babel/eslint-parser": "^7.15.8",
@@ -39,6 +41,7 @@
         "resolve-url-loader": "^3.1.2",
         "sass": "^1.77.4",
         "sass-loader": "^12.6.0",
+        "svgtofont": "^4.2.2",
         "vue-loader": "^15.10.0"
     },
     "dependencies": {
@@ -66,6 +69,7 @@
         "bpmn-moddle": "^6.0.2",
         "chart.js": "^2.9.4",
         "country-json": "^1.1.0",
+        "http-server": "^14.1.1",
         "i18next": "^15.0.8",
         "i18next-chained-backend": "^1.0.1",
         "i18next-localstorage-backend": "^2.1.2",
