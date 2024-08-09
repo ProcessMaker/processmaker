@@ -47,7 +47,7 @@ class BuildScriptExecutor implements ShouldQueue
 
     /**
      * Prevent job overlaps
-     * 
+     *
      * @return WithoutOverlapping[]
      */
     public function middleware(): array
