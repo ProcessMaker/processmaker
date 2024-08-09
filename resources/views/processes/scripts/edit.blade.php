@@ -152,6 +152,7 @@
         data() {
           return {
             formData: @json($script),
+            scriptExecutors: @json($scriptExecutors),
             selectedUser: @json($selectedUser),
             assignedProjects: @json($assignedProjects),
             selectedProjects: '',
@@ -192,7 +193,7 @@
             this.resetErrors();
             ProcessMaker.apiClient.put('scripts/' + this.formData.id, {
               title: this.formData.title,
-              language: this.formData.language,
+              language: this.scriptExecutors[this.formData.script_executor_id].language,
               script_category_id: this.formData.script_category_id,
               description: this.formData.description,
               run_as_user_id: this.selectedUser === null ? null : this.selectedUser.id,
