@@ -245,6 +245,7 @@ class LoginController extends Controller
             //Clear the user permissions
             $userId = Auth::user()->id;
             Cache::forget("user_{$userId}_permissions");
+            Cache::forget("user_{$userId}_projects_with_assets");
 
             // Clear the user session
             $this->forgetUserSession();
