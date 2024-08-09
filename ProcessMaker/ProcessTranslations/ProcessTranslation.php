@@ -163,7 +163,7 @@ class ProcessTranslation
                     $string);
             }
             else {
-                $result[] = $string;
+                $result[] = $string ?? '';
             }
         }
 
