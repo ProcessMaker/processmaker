@@ -16,7 +16,7 @@
       <PMDropdownSuggest v-model="idSavedSearch"
                          :options="options"
                          @onInput="onInput"
-                         @onSelectedOption="$emit('onSelectedOption',$event)"
+                         @onSelectedOption="onSelectedOption"
                          :state="stateIdSavedSearch"
                          :placeholder="$t('Type here to search')">
       </PMDropdownSuggest>
@@ -73,6 +73,7 @@
         tabName: "",
         filter: "",
         pmql: "",
+        advanced_filter: null,
         columns: [],
         idSavedSearch: null,
         seeTabOnMobile: false,
@@ -117,6 +118,7 @@
           name: this.tabName,
           filter: this.filter,
           pmql: this.pmql,
+          advanced_filter: this.advanced_filter,
           columns: this.columns,
           idSavedSearch: this.idSavedSearch,
           seeTabOnMobile: this.seeTabOnMobile
@@ -144,7 +146,8 @@
                   response?.data?.data?.forEach(item => {
                     this.options.push({
                       text: item.title,
-                      value: item.id
+                      value: item.id,
+                      advanced_filter: item.advanced_filter
                     });
                   });
                 });
@@ -155,6 +158,7 @@
         this.tabName = tab.name;
         this.filter = tab.filter;
         this.pmql = tab.pmql;
+        this.advanced_filter = tab.advanced_filter;
         this.columns = tab.columns;
         this.hideSelectSavedSearch = tab.type === "myCases" || tab.type === "myTasks";
         if (!this.hideSelectSavedSearch) {
@@ -162,6 +166,10 @@
           this.idSavedSearch = tab.idSavedSearch;
         }
         this.seeTabOnMobile = tab.seeTabOnMobile === true;
+      },
+      onSelectedOption(option) {
+        this.advanced_filter = option.advanced_filter;
+        this.$emit('onSelectedOption', option);
       }
     }
   }
