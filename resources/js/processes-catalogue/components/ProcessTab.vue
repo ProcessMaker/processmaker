@@ -86,6 +86,7 @@
                       :fetch-on-created="false"
                       :saved-search="item.idSavedSearch"
                       no-results-message="launchpad"
+                      :advancedFilterProp="item.advanced_filter"
                       @in-overdue="setInOverdueMessage">
           </tasks-list>
         </template>
@@ -175,6 +176,7 @@
             name: this.$t("My Cases"),
             filter: "",
             pmql: `(user_id = ${ProcessMaker.user.id}) AND (process_id = ${this.process.id})`,
+            advanced_filter: null,
             columns: [
               {
                 label: "Case #",
@@ -222,6 +224,7 @@
             name: this.$t("My Tasks"),
             filter: "",
             pmql: `(user_id = ${ProcessMaker.user.id}) AND (process_id = ${this.process.id})`,
+            advanced_filter: null,
             columns: window.Processmaker.defaultColumns || [],
             seeTabOnMobile: true
           }

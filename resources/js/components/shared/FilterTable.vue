@@ -504,4 +504,9 @@ export default {
   background-color: #E8F0F9;
   color: #1572C2;
 }
+.custom-wrap {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 </style>
