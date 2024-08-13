@@ -104,7 +104,9 @@ class ProcessRequestController extends Controller
      */
     public function index(Request $request, $getTotal = false, User $user = null)
     {
-        $user = $this->getUser($user);
+        if (!$user) {
+            $user = Auth::user();
+        }
 
         // Filter request with user permissions
         $query = ProcessRequest::forUser($user);
@@ -189,13 +191,6 @@ class ProcessRequestController extends Controller
             : collect([]);
 
         return new ApiCollection($response, $total);
-    }
-
-    public function getUser($user) {
-        // If a specific user is specified, use it; otherwise use the authorized user
-        if (!$user) {
-            return Auth::user();
-        }
     }
 
     public function initializeAdvancedFilters($request, $query) {
