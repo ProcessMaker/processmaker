@@ -3,7 +3,6 @@
 namespace ProcessMaker\Http\Middleware;
 
 use Closure;
-use Illuminate\Auth\Access\AuthenticationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Middleware\Authorize as Middleware;
 use Illuminate\Http\Request;
@@ -29,8 +28,6 @@ class CustomAuthorize extends Middleware
             return parent::handle($request, $next, $ability, ...$models);
         } catch (AuthorizationException $e) {
             return $this->handleCustomLogic($request, $next, $permission, $e, ...$models);
-        } catch (AuthenticationException $e) {
-            return $this->handleCustomLogic($request, $next, $permission, $e, ...$models);
         } catch (\Exception $e) {
             Log::error('An unexpected error occurred in CustomAuthorize middleware.', [
                 'exception' => $e,
@@ -49,7 +46,7 @@ class CustomAuthorize extends Middleware
         if (!$this->hasPermission($userPermissions, $permission)) {
             // Check for 'create-projects' permission and validate project access
             if ($this->hasPermission($userPermissions, 'create-projects')) {
-                $projects = $this->getProjectsForUser($user->id);
+                $projects = $this->getProjectAssetsForUser($user->id);
                 if ($projects && $this->isAllowedEndpoint($projects, $request->path(), $permission, $models)) {
                     return $next($request);
                 }
@@ -73,28 +70,28 @@ class CustomAuthorize extends Middleware
         return in_array($permission, $userPermissions);
     }
 
-    private function getProjectsForUser($userId)
+    private function getProjectAssetsForUser($userId)
     {
         if (!hasPackage('package-projects')) {
             return [];
         }
 
-        return Cache::remember("user_{$userId}_projects_with_assets", 86400, function () use ($userId) {
-            return $this->getUserProjectsWithAssets($userId);
+        return Cache::remember("user_{$userId}_project_assets", 86400, function () use ($userId) {
+            return $this->getUserProjectsAssets($userId);
         });
     }
 
-    private function getUserProjectsWithAssets($userId)
+    private function getUserProjectsAssets($userId)
     {
-        $userProjectsWithAssets = $this->fetchUserProjectWithAssets($userId);
+        $userProjectsWithAssets = $this->fetchUserProjectAssets($userId);
 
-        return $this->formatProjectsWithAssets($userProjectsWithAssets);
+        return $this->formatProjectAssetsArray($userProjectsWithAssets);
     }
 
     /**
      * Fetch projects with assets for the given user.
      */
-    private function fetchUserProjectWithAssets($userId)
+    private function fetchUserProjectAssets($userId)
     {
         // Fetch projects where the user is the owner
         $ownerProjects = DB::table('projects')
@@ -126,7 +123,7 @@ class CustomAuthorize extends Middleware
         return DB::table('projects')
         ->join('project_assets', 'projects.id', '=', 'project_assets.project_id')
         ->whereIn('projects.id', $projectIds)
-        ->select('projects.id as project_id', 'project_assets.asset_id as asset_id', 'project_assets.asset_type')
+        ->select('project_assets.asset_id as asset_id', 'project_assets.asset_type')
         ->get()
         ->unique()
         ->toArray();
@@ -135,24 +132,24 @@ class CustomAuthorize extends Middleware
     /**
      * Format projects with assets into the desired structure.
      */
-    private function formatProjectsWithAssets($projectsWithAssets)
+    // TODO: Check if the user permissions are cleared when being added/remove from project
+    private function formatProjectAssetsArray($projectsWithAssets)
     {
         $formattedArray = [];
 
         foreach ($projectsWithAssets as $project) {
-            $projectId = $project->project_id;
             $assetType = $project->asset_type;
             $assetId = $project->asset_id;
 
-            if (!isset($formattedArray[$projectId])) {
-                $formattedArray[$projectId] = [];
+            if (!isset($formattedArray[$assetType])) {
+                $formattedArray[$assetType] = [];
             }
 
-            if (!isset($formattedArray[$projectId][$assetType])) {
-                $formattedArray[$projectId][$assetType] = [];
+            if (!isset($formattedArray[$assetType])) {
+                $formattedArray[$assetType] = [];
             }
 
-            $formattedArray[$projectId][$assetType][] = $assetId;
+            $formattedArray[$assetType][] = $assetId;
         }
 
         return $formattedArray;
@@ -168,20 +165,23 @@ class CustomAuthorize extends Middleware
         return false;
     }
 
-    private function getAllowedEndpoints($projects) : array
+    private function getAllowedEndpoints($assets) : array
     {
         $allowedEndpoints = ['api'];
         $endpoints = [];
-        foreach ($projects as $projectId => $assets) {
-            foreach ($assets as  $assetType => $assetIds) {
-                foreach ($assetIds as $id) {
-                    $endpoints = array_merge($endpoints, $this->getEndpointsForAsset($assetType, $id));
-                }
+        // foreach ($projects as $projectId => $assets) {
+        foreach ($assets as  $assetType => $assetIds) {
+            foreach ($assetIds as $id) {
+                $endpoints = array_merge($endpoints, $this->getEndpointsForAsset($assetType, $id));
             }
         }
+        // }
 
         return array_merge($allowedEndpoints, $endpoints);
     }
+
+    // TODO: Check for second parameter in the api and check against the returned project assets array.
+    // TODO: Add trait to asset policies to implement this code
 
     private function getEndpointsForAsset($assetType, $assetId)
     {
