@@ -53,6 +53,7 @@ trait HasAuthorization
 
     public function hasPermission($permissionString)
     {
+        // TODO: Check to see if this can use the user_{user_id}_permissions cache and where session permissions are being set
         if (\Auth::user() == $this) {
             if (session('permissions')) {
                 $permissionStrings = session('permissions');
