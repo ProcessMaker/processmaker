@@ -37,14 +37,14 @@ abstract class Base
     /**
      * Set the user to run this script as
      *
-     * @var \ProcessMaker\Models\User
+     * @var User
      */
     private $user;
 
     /**
      * Set the script executor
      *
-     * @var \ProcessMaker\Models\ScriptExecutor
+     * @var ScriptExecutor
      */
     private $scriptExecutor;
 
@@ -60,10 +60,10 @@ abstract class Base
      * @param array $data
      * @param array $config
      * @param int $timeout
-     * @param \ProcessMaker\Models\User $user
+     * @param User $user
      *
      * @return array
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function run($code, array $data, array $config, $timeout, ?User $user)
     {
@@ -78,10 +78,18 @@ abstract class Base
         // Create tokens for the SDK if a user is set
         $token = null;
         if ($user) {
+            if (config('multitenancy.tenant_model')) {
+                $tenant = \Spatie\Multitenancy\Models\Tenant::current();
+                $cacheKey = "script-runner-{$tenant->name}-{$user->id}";
+            } else {
+                $cacheKey = 'script-runner-' . $user->id;
+            }
+            \Log::debug('Cache Key: ' . $cacheKey);
             $expires = Carbon::now()->addWeek();
-            $accessToken = Cache::remember('script-runner-' . $user->id, $expires, function () use ($user) {
+            $accessToken = Cache::remember($cacheKey, $expires, function () use ($user) {
                 $user->removeOldRunScriptTokens();
                 $token = new GenerateAccessToken($user);
+
                 return $token->getToken();
             });
             $environmentVariables[] = 'API_TOKEN=' . (!$isNayra ? escapeshellarg($accessToken) : $accessToken);
@@ -93,6 +101,7 @@ abstract class Base
         // Nayra Executor
         if ($isNayra) {
             $response = $this->handleNayraDocker($code, $data, $config, $timeout, $environmentVariables);
+
             return json_decode($response, true);
         }
 
