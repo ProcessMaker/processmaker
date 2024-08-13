@@ -185,7 +185,7 @@ class ProcessRequestController extends Controller
 
         $response = isset($response)
             // Map each item through its resource
-            ? $response->map(function ($processRequest) use ($request) {
+            ? $response->map(function ($processRequest) {
                 return new ProcessRequestResource($processRequest);
             })
             : collect([]);
