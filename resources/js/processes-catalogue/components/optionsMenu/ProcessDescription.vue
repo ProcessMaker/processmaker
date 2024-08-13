@@ -104,4 +104,11 @@ export default {
   font-size: 1em;
   color:#B1B8BF;
 }
+@media (min-width: 641px) and (max-width: 768px) {
+  #processDescription {
+    width: 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
 </style>

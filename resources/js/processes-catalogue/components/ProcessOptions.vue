@@ -4,7 +4,7 @@
       <process-description :process="process" />
       <process-counter :process="process" />
     </div>
-    <chart-save-search :process="process" />
+    <chart-save-search class="section-chart" :process="process" />
   </div>
 </template>
 
@@ -37,6 +37,12 @@ export default {
   .section-options {
     flex-direction: row;
     justify-content: space-between;
+  }
+}
+@media (min-width: 641px) and (max-width: 768px) {
+  .section-chart {
+    margin-top:40px ;
+    margin-left: 15px;
   }
 }
 </style>
