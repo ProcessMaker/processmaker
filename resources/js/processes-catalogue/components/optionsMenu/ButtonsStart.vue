@@ -30,7 +30,9 @@
       >
         <div v-if="event.webEntry" 
              class="start-event"
-             @click="copyLink(event)">
+             @click="copyLink(event)"
+             v-b-tooltip.hover.top.options="{ boundary: 'viewport' }" 
+             :title=" sizeEventName(event.name) ? event.name : '' ">
           <button class="btn button-start-event">
             <i class="fas fa-link pr-1" />
           </button>
@@ -41,7 +43,9 @@
         </div>
         <div v-else
              class="start-event"
-             @click="goToNewRequest(event.id)">
+             @click="goToNewRequest(event.id)"
+             v-b-tooltip.hover.top.options="{ boundary: 'viewport' }" 
+             :title=" sizeEventName(event.name) ? event.name: '' ">
           <button class="btn button-start-event">
             <i class="fas fa-play-circle pr-1" />  
           </button>
@@ -122,8 +126,11 @@ export default {
         ProcessMaker.alert(this.$t("Link copied"), "success");
       }
     },
+    sizeEventName(string){
+      return string.length > 25;
+    },
     formatEventName(string) {
-      if (string.length > 25) {
+      if (this.sizeEventName(string)) {
         string = string.slice(0, 25) + "...";
       }
       return string;
