@@ -44,13 +44,30 @@ class CustomAuthorize extends Middleware
         $user = $request->user();
         $userPermissions = $this->getUserPermissions($user);
         if (!$this->hasPermission($userPermissions, $permission)) {
+            if (empty($model)) {
+                dd($request->route()->middlware());
+                $result = array_intersect(['can:view-processes', 'can:view-screens', 'can:view-scripts', 'can:view-flow_genies'], $request->route()->middleware());
+                if ($result) {
+                    return $next($request);
+                }
+                // if (in_array($request->route()->middleware()))
+            }
             // Check for 'create-projects' permission and validate project access
             if ($this->hasPermission($userPermissions, 'create-projects')) {
-                $projects = $this->getProjectAssetsForUser($user->id);
-                if ($projects && $this->isAllowedEndpoint($projects, $request->path(), $permission, $models)) {
+                $projectAssets = $this->getProjectAssetsForUser($user->id);
+
+                // Extract the first model from the route parameters
+                $model = $request->route()->parameter(...$models);
+
+                // Verify if the user has access to the project asset
+                $modelClass = get_class($model);
+                $modelId = $model->id;
+
+                if (isset($projectAssets[$modelClass]) && in_array($modelId, $projectAssets[$modelClass])) {
                     return $next($request);
                 }
             }
+
             // Re-throw the original exception if permission is not allowed
             throw $error;
         }
@@ -132,7 +149,6 @@ class CustomAuthorize extends Middleware
     /**
      * Format projects with assets into the desired structure.
      */
-    // TODO: Check if the user permissions are cleared when being added/remove from project
     private function formatProjectAssetsArray($projectsWithAssets)
     {
         $formattedArray = [];
@@ -155,105 +171,105 @@ class CustomAuthorize extends Middleware
         return $formattedArray;
     }
 
-    private function isAllowedEndpoint($projects, $currentPath, $permission, $models)
-    {
-        $allowedEndpoints = $this->getAllowedEndpoints($projects);
-        if (Str::contains($currentPath, $allowedEndpoints) && $this->isProjectAsset($permission, $models)) {
-            return true;
-        }
+    // private function isAllowedEndpoint($projects, $currentPath, $permission, $models)
+    // {
+    //     $allowedEndpoints = $this->getAllowedEndpoints($projects);
+    //     if (Str::contains($currentPath, $allowedEndpoints) && $this->isProjectAsset($permission, $models)) {
+    //         return true;
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 
-    private function getAllowedEndpoints($assets) : array
-    {
-        $allowedEndpoints = ['api'];
-        $endpoints = [];
-        // foreach ($projects as $projectId => $assets) {
-        foreach ($assets as  $assetType => $assetIds) {
-            foreach ($assetIds as $id) {
-                $endpoints = array_merge($endpoints, $this->getEndpointsForAsset($assetType, $id));
-            }
-        }
-        // }
+    // private function getAllowedEndpoints($assets) : array
+    // {
+    //     $allowedEndpoints = ['api'];
+    //     $endpoints = [];
+    //     // foreach ($projects as $projectId => $assets) {
+    //     foreach ($assets as  $assetType => $assetIds) {
+    //         foreach ($assetIds as $id) {
+    //             $endpoints = array_merge($endpoints, $this->getEndpointsForAsset($assetType, $id));
+    //         }
+    //     }
+    //     // }
 
-        return array_merge($allowedEndpoints, $endpoints);
-    }
+    //     return array_merge($allowedEndpoints, $endpoints);
+    // }
 
     // TODO: Check for second parameter in the api and check against the returned project assets array.
     // TODO: Add trait to asset policies to implement this code
 
-    private function getEndpointsForAsset($assetType, $assetId)
-    {
-        $endpoints = [];
+    // private function getEndpointsForAsset($assetType, $assetId)
+    // {
+    //     $endpoints = [];
 
-        switch ($assetType) {
-            case Process::class:
-                $endpoints[] = "modeler/{$assetId}";
-                break;
-            case Screen::class:
-                $endpoints[] = "designer/screen-builder/{$assetId}/edit";
-                $endpoints[] = "designer/screens/{$assetId}/edit";
-                $endpoints[] = 'designer/screens/preview';
-                break;
-            case Script::class:
-                $endpoints[] = "designer/scripts/{$assetId}/builder";
-                $endpoints[] = "designer/scripts/{$assetId}/edit";
-                $endpoints[] = 'designer/scripts/preview';
-                break;
-            default:
-                if (class_exists('ProcessMaker\Packages\Connectors\DataSources\Models\DataSource')
-                    && $assetType === 'ProcessMaker\Packages\Connectors\DataSources\Models\DataSource') {
-                    $endpoints[] = "designer/data-sources/{$assetId}/edit";
-                }
-                if (class_exists('ProcessMaker\Package\PackageDecisionEngine\Models\DecisionTable')
-                    && $assetType === 'ProcessMaker\Package\PackageDecisionEngine\Models\DecisionTable') {
-                    $endpoints[] = "decision-tables/table-builder/{$assetId}/edit";
-                }
-                break;
-        }
+    //     switch ($assetType) {
+    //         case Process::class:
+    //             $endpoints[] = "modeler/{$assetId}";
+    //             break;
+    //         case Screen::class:
+    //             $endpoints[] = "designer/screen-builder/{$assetId}/edit";
+    //             $endpoints[] = "designer/screens/{$assetId}/edit";
+    //             $endpoints[] = 'designer/screens/preview';
+    //             break;
+    //         case Script::class:
+    //             $endpoints[] = "designer/scripts/{$assetId}/builder";
+    //             $endpoints[] = "designer/scripts/{$assetId}/edit";
+    //             $endpoints[] = 'designer/scripts/preview';
+    //             break;
+    //         default:
+    //             if (class_exists('ProcessMaker\Packages\Connectors\DataSources\Models\DataSource')
+    //                 && $assetType === 'ProcessMaker\Packages\Connectors\DataSources\Models\DataSource') {
+    //                 $endpoints[] = "designer/data-sources/{$assetId}/edit";
+    //             }
+    //             if (class_exists('ProcessMaker\Package\PackageDecisionEngine\Models\DecisionTable')
+    //                 && $assetType === 'ProcessMaker\Package\PackageDecisionEngine\Models\DecisionTable') {
+    //                 $endpoints[] = "decision-tables/table-builder/{$assetId}/edit";
+    //             }
+    //             break;
+    //     }
 
-        return $endpoints;
-    }
+    //     return $endpoints;
+    // }
 
-    private function isProjectAsset($permission, $params)
-    {
-        return $params && $params[0]
-            ? $this->handleUpdateDeleteOperations($permission, class_basename($params[0]))
-            : $this->checkForListCreateOperations($permission);
-    }
+    // private function isProjectAsset($permission, $params)
+    // {
+    //     return $params && $params[0]
+    //         ? $this->handleUpdateDeleteOperations($permission, class_basename($params[0]))
+    //         : $this->checkForListCreateOperations($permission);
+    // }
 
-    private function handleUpdateDeleteOperations($permission, $modelClass)
-    {
-        return $this->checkPermissionForAsset($permission, $this->getAssetName($modelClass));
-    }
+    // private function handleUpdateDeleteOperations($permission, $modelClass)
+    // {
+    //     return $this->checkPermissionForAsset($permission, $this->getAssetName($modelClass));
+    // }
 
-    private function getAssetName($modelClass)
-    {
-        $asset = Str::snake(class_basename($modelClass));
+    // private function getAssetName($modelClass)
+    // {
+    //     $asset = Str::snake(class_basename($modelClass));
 
-        if ($modelClass === 'DataSource') {
-            $asset = 'data-source';
-        }
+    //     if ($modelClass === 'DataSource') {
+    //         $asset = 'data-source';
+    //     }
 
-        return $asset;
-    }
+    //     return $asset;
+    // }
 
-    private function checkForListCreateOperations($permission)
-    {
-        $projectAssetTypes = ['process', 'screen', 'script', 'data-source', 'decision_table', 'pm-block'];
+    // private function checkForListCreateOperations($permission)
+    // {
+    //     $projectAssetTypes = ['process', 'screen', 'script', 'data-source', 'decision_table', 'pm-block'];
 
-        foreach ($projectAssetTypes as $asset) {
-            if (Str::contains($permission, $asset)) {
-                return true;
-            }
-        }
+    //     foreach ($projectAssetTypes as $asset) {
+    //         if (Str::contains($permission, $asset)) {
+    //             return true;
+    //         }
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 
-    private function checkPermissionForAsset($permission, $asset)
-    {
-        return Str::contains($permission, $asset);
-    }
+    // private function checkPermissionForAsset($permission, $asset)
+    // {
+    //     return Str::contains($permission, $asset);
+    // }
 }
