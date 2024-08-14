@@ -4,12 +4,14 @@ namespace Tests\Feature\ImportExport\Exporters;
 
 use Database\Seeders\CategorySystemSeeder;
 use Illuminate\Support\Facades\DB;
+use PHPUnit\Framework\ExpectationFailedException;
 use ProcessMaker\ImportExport\Exporters\ScriptExporter;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
+use SebastianBergmann\RecursionContext\InvalidArgumentException;
 use Tests\Feature\ImportExport\HelperTrait;
 use Tests\TestCase;
 
@@ -150,4 +152,45 @@ class ScriptExporterTest extends TestCase
         $script = Script::where('title', 'test')->firstOrFail();
         $this->assertNull($script->run_as_user_id);
     }
-}
+
+    /**
+     * Test that the environment variables are duplicated when they are used in the script
+     * and the import options are set to create a copy
+     */
+    public function testWithDuplicatedEnvVariable()
+    {
+        $environmentVariable1 = EnvironmentVariable::factory()->create(['name' => 'AWS_ACCESS_KEY_ID']);
+        $environmentVariable2 = EnvironmentVariable::factory()->create(['name' => 'AWS_SECRET_ACCESS_KEY']);
+        $environmentVariable3 = EnvironmentVariable::factory()->create(['name' => 'MY_VAR']);
+
+        $category = ScriptCategory::factory()->create(['name' => 'test category']);
+        $scriptUser = User::factory()->create(['username' => 'scriptuser']);
+        $script = Script::factory()->create([
+            'title' => 'test',
+            'code' => '<?php $var1 = getenv(\'AWS_ACCESS_KEY_ID\'); $var2 = getenv(\'AWS_SECRET_ACCESS_KEY\') return [];',
+            'run_as_user_id' => $scriptUser->id,
+        ]);
+        $script->categories()->sync($category);
+
+        $payload = $this->export($script, ScriptExporter::class);
+        $options = new Options([
+            $environmentVariable1->uuid => ['mode' => 'copy'],
+            $environmentVariable2->uuid => ['mode' => 'copy'],
+            $environmentVariable3->uuid => ['mode' => 'copy'],
+        ]);
+        $this->import($payload, $options);
+
+        $script = Script::where('title', 'test')->firstOrFail();
+        $this->assertEquals('test category', $script->categories[0]->name);
+        $this->assertEquals('scriptuser', $script->runAsUser->username);
+
+        // The original environment variables should be present
+        $this->assertDatabaseHas('environment_variables', ['name' => $environmentVariable1->name]);
+        $this->assertDatabaseHas('environment_variables', ['name' => $environmentVariable2->name]);
+        $this->assertDatabaseHas('environment_variables', ['name' => $environmentVariable3->name]);
+
+        // The duplicated environment variables should be suffixed with _2
+        $this->assertDatabaseHas('environment_variables', ['name' => $environmentVariable1->name . '_2']);
+        $this->assertDatabaseHas('environment_variables', ['name' => $environmentVariable2->name . '_2']);
+        $this->assertDatabaseMissing('environment_variables', ['name' => $environmentVariable3->name . '_2']);
+    }}
