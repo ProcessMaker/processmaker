@@ -242,9 +242,6 @@ const PMColumnFilterCommonMixin = {
           formatRange = [];
           break;
       }
-      if (column.field === "process_version_alternative") {
-        formatRange = this.getAlternatives();
-      }
       return formatRange;
     },
     getOperators(column) {
@@ -256,9 +253,7 @@ const PMColumnFilterCommonMixin = {
       if (['status', 'process_version_alternative'].includes(column.field)) {
         operators = ["=", "in"];
       }
-      if (column.field === "process_version_alternative") {
-        operators = ["="];
-      }
+
       if (column.field === "initiated_at" || column.field === "completed_at" || column.field === "due_at") {
         operators = ["<", "<=", ">", ">=", "between"];
       }
