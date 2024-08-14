@@ -34,7 +34,7 @@
           <button class="btn button-start-event">
             <i class="fas fa-link pr-1" />
           </button>
-          {{ event.name }}
+          {{ formatEventName(event.name) }}
           <div class="start-event-label">
             {{ $t('Copy link') }}  
           </div>
@@ -45,7 +45,7 @@
           <button class="btn button-start-event">
             <i class="fas fa-play-circle pr-1" />  
           </button>
-          {{ event.name }}
+          {{ formatEventName(event.name) }}
           <div class="start-event-label">
             {{ $t('Start') }}
           </div>
@@ -121,6 +121,12 @@ export default {
       } else {
         ProcessMaker.alert(this.$t("Link copied"), "success");
       }
+    },
+    formatEventName(string) {
+      if (string.length > 25) {
+        string = string.slice(0, 25) + "...";
+      }
+      return string;
     },
   },
 };
