@@ -4,7 +4,7 @@
       v-if="startEvent"
       class="btn btn-success start-button"
       type="button"
-      :disabled="processEvents.length === 0"
+      :disabled='isStartButtonDisabled'
       @click="goToNewRequest(startEvent)"
     >
       <i class="fa fa-play-circle" />
@@ -17,6 +17,7 @@
       data-toggle="dropdown"
       aria-haspopup="true"
       aria-expanded="false"
+      :disabled='isStartButtonDisabled'
     >
       <i class="fa fa-play-circle" />
       <span class="pl-2"> {{ displayTitle }} </span>
@@ -80,9 +81,10 @@ export default {
       anonUserId: "2",
     };
   },
-  mounted() {
-  },
   computed: {
+    isStartButtonDisabled() {
+      return this.processEvents.length === 0;
+    },
     displayTitle() {
       if (this.title) {
         return this.title;

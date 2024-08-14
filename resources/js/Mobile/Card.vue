@@ -190,6 +190,7 @@ export default {
         "DRAFT": { color: "#F9E8C3", label: this.$t("Draft") },
         "CANCELED": { color: "#FFC7C7", label: this.$t("Canceled") },
         "CLOSED": { color: "#B8DCF7", label: this.$t("Completed") },
+        "COMPLETED": { color: "#B8DCF7", label: this.$t("Completed") },
         "ERROR": { color: "#FFC7C7", label: this.$t("Error") },
         "ACTIVE": {
           "overdue": { color: "#FFC7C7", label: this.$t("Overdue") },

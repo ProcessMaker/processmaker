@@ -52,6 +52,8 @@
     <CatalogueEmpty
       v-if="!loading && processList.length === 0"
       :show-empty="showEmpty"
+      :is-bookmark-empty="categoryId === 'bookmarks'"
+      @wizardLinkSelect="wizardLinkSelected"
     />
   </div>
 </template>

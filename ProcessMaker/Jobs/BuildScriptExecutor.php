@@ -19,7 +19,7 @@ class BuildScriptExecutor implements ShouldQueue
     protected $userId;
 
     // Do not retry this job if it fails
-    public $tries = 20;
+    public $tries = 10;
 
     // Building can take some time
     public $timeout = 600;
@@ -47,9 +47,11 @@ class BuildScriptExecutor implements ShouldQueue
 
     /**
      * Prevent job overlaps
+     *
+     * @return WithoutOverlapping[]
      */
     public function middleware(): array
     {
-        return [(new WithoutOverlapping())->releaseAfter(10)];
+        return [(new WithoutOverlapping())->releaseAfter(30)->expireAfter(630)];
     }
 }
