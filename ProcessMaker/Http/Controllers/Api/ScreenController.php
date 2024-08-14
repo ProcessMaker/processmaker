@@ -83,7 +83,7 @@ class ScreenController extends Controller
             ->when($request->has('exclude'), function ($query) use ($exclusions) {
                 $query->exclude($exclusions);
             })
-            ->when(!$request->has('exclude'), function ($query)  {
+            ->when(!$request->has('exclude'), function ($query) {
                 // Return all screen columns by default
                 $query->select('screens.*');
             });
@@ -282,7 +282,9 @@ class ScreenController extends Controller
         $request->validate(Screen::rules($screen));
         $screen->fill($request->input());
         $original = $screen->getOriginal();
-        $screen->config = $lastVersion->config;
+
+        $this->updateScreenDetails($request, $screen, $original, $lastVersion);
+
         $screen->saveOrFail();
         $screen->syncProjectAsset($request, Screen::class);
 
@@ -295,6 +297,40 @@ class ScreenController extends Controller
         $this->updateScreenTemplate($screen);
 
         return response([], 204);
+    }
+
+    public function updateScreenDetails($request, $screen, $original, $lastVersion)
+    {
+        // Extract original values for comparison
+        $originalTitle = $original['title'];
+        $originalDescription = $original['description'];
+        $originalScreenCategoryId = $original['screen_category_id'];
+        $originalProjects = collect(json_decode($screen->getProjectsAttribute(), true))
+            ->pluck('id')
+            ->map(fn ($id) => (string) $id)
+            ->toArray();
+
+        // Extract request values
+        $title = $request->input('title');
+        $description = $request->input('description');
+        $screenCategoryId = $request->input('screen_category_id');
+        $differentProjects = [];
+
+        // Check if projects are provided and parse them
+        $projects = json_decode($request->input('projects', true));
+        if (!is_array($projects)) {
+            $projects = explode(',', $request->input('projects'));
+            // Find differing projects
+            $differentProjects = array_diff($projects, $originalProjects);
+        }
+
+        // Check if any updates are needed
+        if ($originalTitle !== $title ||
+            $originalDescription !== $description ||
+            ($screenCategoryId !== null && $originalScreenCategoryId !== $screenCategoryId) ||
+            !empty($differentProjects)) {
+            $screen->config = $lastVersion->config;
+        }
     }
 
     /**

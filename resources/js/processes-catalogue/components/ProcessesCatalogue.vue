@@ -94,7 +94,7 @@ export default {
       category: null,
       selectedProcess: null,
       guidedTemplates: false,
-      numCategories: 20,
+      numCategories: 100,
       page: 1,
       key: 0,
       totalPages: 1,
@@ -452,7 +452,6 @@ export default {
 .processes-info {
   width: 100%;
   margin-right: 0px;
-  height: calc(100vh - 145px);
   overflow-x: hidden;
   @media (max-width: $lp-breakpoint) {
     padding-left: 0;

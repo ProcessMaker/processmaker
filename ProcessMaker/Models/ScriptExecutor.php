@@ -142,7 +142,7 @@ class ScriptExecutor extends ProcessMakerModel
         ];
     }
 
-    public static function list($language = null)
+    public static function list($language = null, $forEditMode = false)
     {
         $list = [];
         $executors =
@@ -151,6 +151,16 @@ class ScriptExecutor extends ProcessMakerModel
 
         if ($language) {
             $executors->where('language', $language);
+
+            // If the list is for edition mode and "php" language is selected also include "php-nayra"
+            if ($language === 'php' && $forEditMode) {
+                $executors->orWhere('language', 'php-nayra');
+            }
+
+            // If the list is for edition mode and "php-nayra" language is selected also include "php"
+            if ($language === 'php-nayra' && $forEditMode) {
+                $executors->orWhere('language', 'php');
+            }
         }
 
         foreach ($executors->get() as $executor) {

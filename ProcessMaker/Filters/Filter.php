@@ -21,6 +21,8 @@ class Filter
 
     public const TYPE_STATUS = 'Status';
 
+    public const TYPE_ALTERNATIVE = 'Alternative';
+
     public const TYPE_FIELD = 'Field';
 
     public const TYPE_PROCESS = 'Process';
@@ -153,7 +155,14 @@ class Filter
             $value = DB::connection()->getPdo()->quote($value);
         }
 
-        $query->whereRaw("json_unquote(json_extract(`data`, '$.\"{$selector}\"')) {$operator} {$value}");
+        if ($operator === 'like') {
+            // For JSON data is required to do a CAST in order to make insensitive the comparison
+            $query->whereRaw(
+                "cast(json_unquote(json_extract(`data`, '$.\"{$selector}\"')) as CHAR) {$operator} {$value}"
+            );
+        } else {
+            $query->whereRaw("json_unquote(json_extract(`data`, '$.\"{$selector}\"')) {$operator} {$value}");
+        }
     }
 
     private function operator()
@@ -262,6 +271,9 @@ class Filter
                 break;
             case self::TYPE_STATUS:
                 $method = 'valueAliasStatus';
+                break;
+            case self::TYPE_ALTERNATIVE:
+                $method = 'valueAliasAlternative';
                 break;
         }
 

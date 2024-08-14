@@ -16,7 +16,7 @@
             left: `${tooltip.newX}px`,
             top: `${tooltip.newY}px`
           }"
-          @is-loading="getIsLoading"
+          @is-loading="isTooltipLoading"
         />
         <Modeler
           ref="modeler"
@@ -152,7 +152,7 @@ export default {
         this.tooltip.newX = window.innerWidth - this.rectTooltip.width;
       }
     },
-    getIsLoading(value) {
+    isTooltipLoading(value) {
       this.tooltip.isLoading = value;
     },
   },

@@ -459,6 +459,7 @@ class ProcessExporter extends ExporterBase
     {
         foreach ($this->getDependents(DependentType::MEDIA) as $media) {
             $media->model->setAttribute('model_id', $this->model->id);
+            $media->model->saveOrFail();
         }
     }
 
@@ -484,6 +485,7 @@ class ProcessExporter extends ExporterBase
     {
         foreach ($this->getDependents('process_launchpad') as $launchpad) {
             $launchpad->model->setAttribute('process_id', $this->model->id);
+            $launchpad->model->saveOrFail();
         }
     }
 
