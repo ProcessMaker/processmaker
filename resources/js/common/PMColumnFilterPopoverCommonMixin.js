@@ -245,9 +245,6 @@ const PMColumnFilterCommonMixin = {
       if (column.field === "process_version_alternative") {
         formatRange = this.getAlternatives();
       }
-      if (column.field === "process_version_alternative") {
-        formatRange = this.getAlternatives();
-      }
       return formatRange;
     },
     getOperators(column) {
