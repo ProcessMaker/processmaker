@@ -5,8 +5,6 @@ namespace ProcessMaker\Console\Commands;
 use File;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
-use Storage;
-use Tests\Performance\RequestListingPerformanceData;
 
 class SyncTranslations extends Command
 {
@@ -25,16 +23,6 @@ class SyncTranslations extends Command
     protected $description = 'Sync translations when exists folder lang.orig';
 
     private $files = [];
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     /**
      * Execute the console command.
@@ -85,15 +73,12 @@ class SyncTranslations extends Command
         $lines = [];
 
         try {
-            switch ($pathInfo['extension']) {
-                case 'json':
-                    $lines = json_decode(file_get_contents($path));
-                    break;
-                case 'php':
-                    $lines = include $path;
-                    break;
+            if ($pathInfo['extension'] === 'json') {
+                $lines = json_decode(file_get_contents($path));
+            } elseif ($pathInfo['extension'] === 'php') {
+                $lines = include_once $path;
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->line($path . '. Not found.');
         }
 
@@ -130,21 +115,18 @@ class SyncTranslations extends Command
             $array[$key] = $line;
         }
 
-        switch ($type) {
-            case 'json':
-                return json_encode($array);
-                break;
-            case 'php':
-                $contents = "<?php\n\nreturn [\n\n";
-                foreach ($array as $key => $value) {
-                    $key = addslashes($key);
-                    $value = addslashes($value);
-                    $contents .= "\t'$key' => '$value',\n";
-                }
-                $contents .= '];';
+        if ($type === 'json') {
+            return json_encode($array);
+        } elseif ($type === 'php') {
+            $contents = "<?php\n\nreturn [\n\n";
+            foreach ($array as $key => $value) {
+                $key = addslashes($key);
+                $value = addslashes($value);
+                $contents .= "\t'$key' => '$value',\n";
+            }
+            $contents .= '];';
 
-                return $contents;
-                break;
+            return $contents;
         }
     }
 
