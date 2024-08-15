@@ -241,10 +241,11 @@ export default {
   letter-spacing: -0.4px;
   text-transform: uppercase;
   display: -webkit-box;
-  -webkit-line-clamp: 4;
-  line-clamp: 4;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  text-overflow: ellipsis;
   word-break: break-word;
 }
 .b-popover-custom.popover {
