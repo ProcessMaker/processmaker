@@ -241,12 +241,16 @@ export default {
   letter-spacing: -0.4px;
   text-transform: uppercase;
   display: -webkit-box;
-  -webkit-line-clamp: 1;
-  line-clamp: 1;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-word;
+  @media (max-width: $lp-breakpoint) {
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+  }
 }
 .b-popover-custom.popover {
   background-color: #F6F9FB;
