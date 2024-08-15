@@ -2,8 +2,8 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" >
 <svg xmlns="http://www.w3.org/2000/svg">
 <defs>
-  <font id="processmaker-font" horiz-adv-x="1555.6640625">
-    <font-face font-family="processmaker-font"
+  <font id="fp" horiz-adv-x="1555.6640625">
+    <font-face font-family="fp"
       units-per-em="1000" ascent="1000"
       descent="0" />
     <missing-glyph horiz-adv-x="0" />

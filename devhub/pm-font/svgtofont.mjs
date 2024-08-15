@@ -2,8 +2,8 @@
 // npx svgtofont --sources ./resources/icons --output ./resources/fonts/font-pm --fontName fp
 // But this command generates other unnecessary files
 
-const svgtofont = require("svgtofont");
-const path = require("path");
+import svgtofont from "svgtofont";
+import path from "path";
 
 svgtofont({
   src: path.resolve(process.cwd(), "./devhub/pm-font/svg"), // svg path
