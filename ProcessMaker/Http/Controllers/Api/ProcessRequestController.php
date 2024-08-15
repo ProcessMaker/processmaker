@@ -104,6 +104,7 @@ class ProcessRequestController extends Controller
      */
     public function index(Request $request, $getTotal = false, User $user = null)
     {
+         // If a specific user is specified, use it; otherwise use the authorized user
         if (!$user) {
             $user = Auth::user();
         }
