@@ -18,8 +18,8 @@
         "test": "cross-env NODE_ENV=test jest",
         "test-watch": "npm run test -- --watch --notify",
         "lint": "eslint --fix --ignore-path .eslintignore resources/",
-        "font": "node ./devhub/pm-font/svgtofont.js && cp -f ./devhub/pm-font/dist/*.* ./resources/fonts/pm-font",
-        "dev-font": "node ./devhub/pm-font/svgtofont.js && cp -f ./devhub/pm-font/dist/*.* ./resources/fonts/pm-font && http-server ./devhub/pm-font/dist -p 7771"
+        "font": "node ./devhub/pm-font/svgtofont.mjs && cp -f ./devhub/pm-font/dist/*.* ./resources/fonts/pm-font",
+        "dev-font": "node ./devhub/pm-font/svgtofont.mjs && cp -f ./devhub/pm-font/dist/*.* ./resources/fonts/pm-font && http-server ./devhub/pm-font/dist -p 7771"
     },
     "devDependencies": {
         "@babel/eslint-parser": "^7.15.8",
@@ -41,7 +41,6 @@
         "resolve-url-loader": "^3.1.2",
         "sass": "^1.77.4",
         "sass-loader": "^12.6.0",
-        "svgtofont": "^4.2.2",
         "vue-loader": "^15.10.0"
     },
     "dependencies": {
@@ -90,6 +89,7 @@
         "snapsvg": "^0.5.1",
         "splitpanes": "^2.4.1",
         "svg-pan-zoom": "^3.6.1",
+        "svgtofont": "^5.0.3",
         "timezones.json": "^1.5.2",
         "tinycolor2": "^1.4.2",
         "tinymce": "5.10.0",
