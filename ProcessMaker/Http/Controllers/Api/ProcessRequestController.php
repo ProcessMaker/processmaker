@@ -162,13 +162,14 @@ class ProcessRequestController extends Controller
             } elseif ($request->input('total') == 'true') {
                 return ['meta' => ['total' => $query->count()]];
             } else {
-                $request->input('order_by') == 'process.alternative'
-                    ? $query->orderByRaw('process_version_alternative '. $request->input('order_direction'))
-                    :  $query->orderBy(
-                            str_ireplace('.', '->', $request->input('order_by', 'name')),
-                            $request->input('order_direction', 'ASC')
-                        );
-
+                if ($request->input('order_by') == 'process.alternative') {
+                    $query->orderByRaw('process_version_alternative '. $request->input('order_direction'));
+                } else {
+                    $query->orderBy(
+                        str_ireplace('.', '->', $request->input('order_by', 'name')),
+                        $request->input('order_direction', 'ASC')
+                    );
+                }
                 $response = $query
                     ->select('process_requests.*')
                     ->withAggregate('processVersion', 'alternative')
@@ -183,12 +184,14 @@ class ProcessRequestController extends Controller
             return response(['message' => $message], 400);
         }
 
-        $response = isset($response)
+        if (isset($response)) {
             // Map each item through its resource
-            ? $response->map(function ($processRequest) {
+            $response = $response->map(function ($processRequest) use ($request) {
                 return new ProcessRequestResource($processRequest);
-            })
-            : collect([]);
+            });
+        } else {
+            $response = collect([]);
+        }
 
         return new ApiCollection($response, $total);
     }
