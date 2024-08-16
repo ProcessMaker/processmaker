@@ -47,12 +47,13 @@ class CustomAuthorize extends Middleware
     {
         $user = $request->user();
         $userPermissions = $this->getUserPermissions($user);
-        if (!$this->hasPermission($userPermissions, $permission) &&
-            $this->hasPermission($userPermissions, 'create-projects')) {
-            // Handle middleware-based logic if no models are provided (indexes)
-            if (empty($models) && $this->passesMiddlewareCheck($request) ||
-                !empty($models) && $this->userHasAccessToProject($request, $user->id, ...$models)) {
-                return $next($request);
+        if (!$this->hasPermission($userPermissions, $permission)) {
+            if ($this->hasPermission($userPermissions, 'create-projects')) {
+                // Handle middleware-based logic if no models are provided (indexes)
+                if (empty($models) && $this->passesMiddlewareCheck($request) ||
+                    !empty($models) && $this->userHasAccessToProject($request, $user->id, ...$models)) {
+                    return $next($request);
+                }
             }
             // Re-throw the original exception if permission is not allowed
             throw $error;
