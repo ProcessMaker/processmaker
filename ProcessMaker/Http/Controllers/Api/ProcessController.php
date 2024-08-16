@@ -39,10 +39,13 @@ use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 use ProcessMaker\Rules\BPMNValidation;
+use ProcessMaker\Traits\ProjectAssetTrait;
 use Throwable;
 
 class ProcessController extends Controller
 {
+    use ProjectAssetTrait;
+
     const CAROUSEL_TYPES = [
         'IMAGE' => 'image',
         'EMBED' => 'embed',
@@ -390,6 +393,7 @@ class ProcessController extends Controller
                 422
             );
         }
+        self::clearAndRebuildUserProjectAssetsCache();
         // Register the Event
         ProcessCreated::dispatch($process->refresh(), $processCreated);
 
