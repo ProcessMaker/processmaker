@@ -544,12 +544,12 @@
               return;
             }
 
-            if (endEventDestination) {
-              this.redirect(endEventDestination);
-              return;
-            }
-
-            this.redirect(`/requests/${processRequestId}`);
+            //if (endEventDestination) {
+            //  this.redirect(endEventDestination);
+            //  return;
+            //}
+//
+            // this.redirect(`/requests/${processRequestId}`);
           },
           error(processRequestId) {
             this.$refs.task.showSimpleErrorMessage();
