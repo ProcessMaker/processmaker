@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Middleware\Authorize as Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -15,10 +16,13 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
+use ProcessMaker\Traits\ProjectAssetTrait;
 use Symfony\Component\HttpFoundation\Response;
 
 class CustomAuthorize extends Middleware
 {
+    use ProjectAssetTrait;
+
     public function handle($request, Closure $next, $ability, ...$models)
     {
         $modelsString = implode('-', $models);
@@ -43,36 +47,47 @@ class CustomAuthorize extends Middleware
     {
         $user = $request->user();
         $userPermissions = $this->getUserPermissions($user);
-        if (!$this->hasPermission($userPermissions, $permission)) {
-            if (empty($model)) {
-                dd($request->route()->middlware());
-                $result = array_intersect(['can:view-processes', 'can:view-screens', 'can:view-scripts', 'can:view-flow_genies'], $request->route()->middleware());
-                if ($result) {
-                    return $next($request);
-                }
-                // if (in_array($request->route()->middleware()))
+        if (!$this->hasPermission($userPermissions, $permission) &&
+            $this->hasPermission($userPermissions, 'create-projects')) {
+            // Handle middleware-based logic if no models are provided (indexes)
+            if (empty($models) && $this->passesMiddlewareCheck($request) ||
+                !empty($models) && $this->userHasAccessToProject($request, $user->id, ...$models)) {
+                return $next($request);
             }
-            // Check for 'create-projects' permission and validate project access
-            if ($this->hasPermission($userPermissions, 'create-projects')) {
-                $projectAssets = $this->getProjectAssetsForUser($user->id);
-
-                // Extract the first model from the route parameters
-                $model = $request->route()->parameter(...$models);
-
-                // Verify if the user has access to the project asset
-                $modelClass = get_class($model);
-                $modelId = $model->id;
-
-                if (isset($projectAssets[$modelClass]) && in_array($modelId, $projectAssets[$modelClass])) {
-                    return $next($request);
-                }
-            }
-
             // Re-throw the original exception if permission is not allowed
             throw $error;
         }
 
         return $next($request);
+    }
+
+    private function passesMiddlewareCheck($request)
+    {
+        $projectAssets = ['process', 'screen', 'script', 'flow_genie', 'decision_table', 'data-source'];
+        $middlewares = array_filter($request->route()->middleware(), function ($m) {
+            return str_contains($m, 'can:');
+        });
+
+        $middleware = array_shift($middlewares);
+
+        return Str::contains($middleware, $projectAssets);
+    }
+
+    private function userHasAccessToProject($request, $userId, $models)
+    {
+        $projectAssets = self::getProjectAssetsForUser($userId);
+
+        // Extract the first model from the route parameters
+        $model = $request->route()->parameter($models);
+
+        if ($model) {
+            $modelClass = get_class($model);
+            $modelId = $model->id;
+
+            return isset($projectAssets[$modelClass]) && in_array($modelId, $projectAssets[$modelClass]);
+        }
+
+        return false;
     }
 
     private function getUserPermissions($user)
@@ -86,190 +101,4 @@ class CustomAuthorize extends Middleware
     {
         return in_array($permission, $userPermissions);
     }
-
-    private function getProjectAssetsForUser($userId)
-    {
-        if (!hasPackage('package-projects')) {
-            return [];
-        }
-
-        return Cache::remember("user_{$userId}_project_assets", 86400, function () use ($userId) {
-            return $this->getUserProjectsAssets($userId);
-        });
-    }
-
-    private function getUserProjectsAssets($userId)
-    {
-        $userProjectsWithAssets = $this->fetchUserProjectAssets($userId);
-
-        return $this->formatProjectAssetsArray($userProjectsWithAssets);
-    }
-
-    /**
-     * Fetch projects with assets for the given user.
-     */
-    private function fetchUserProjectAssets($userId)
-    {
-        // Fetch projects where the user is the owner
-        $ownerProjects = DB::table('projects')
-            ->where('user_id', $userId)
-            ->pluck('id')
-            ->toArray();
-
-        // Fetch projects where the user is a member (User::class) or belongs to a group (Group::class)
-        $memberProjects = DB::table('project_members')
-            ->where(function ($query) use ($userId) {
-                $query->where('member_id', $userId)
-                    ->where('member_type', User::class);
-            })
-            ->orWhere(function ($query) use ($userId) {
-                $query->where('member_type', Group::class)
-                    ->whereIn('member_id', function ($subQuery) use ($userId) {
-                        $subQuery->select('group_id')
-                            ->from('group_members')
-                            ->where('member_id', $userId);
-                    });
-            })
-            ->pluck('project_id')
-            ->toArray();
-
-        // Combine both sets of project IDs and remove duplicates
-        $projectIds = array_unique(array_merge($ownerProjects, $memberProjects));
-
-        // Fetch project assets for the combined project IDs
-        return DB::table('projects')
-        ->join('project_assets', 'projects.id', '=', 'project_assets.project_id')
-        ->whereIn('projects.id', $projectIds)
-        ->select('project_assets.asset_id as asset_id', 'project_assets.asset_type')
-        ->get()
-        ->unique()
-        ->toArray();
-    }
-
-    /**
-     * Format projects with assets into the desired structure.
-     */
-    private function formatProjectAssetsArray($projectsWithAssets)
-    {
-        $formattedArray = [];
-
-        foreach ($projectsWithAssets as $project) {
-            $assetType = $project->asset_type;
-            $assetId = $project->asset_id;
-
-            if (!isset($formattedArray[$assetType])) {
-                $formattedArray[$assetType] = [];
-            }
-
-            if (!isset($formattedArray[$assetType])) {
-                $formattedArray[$assetType] = [];
-            }
-
-            $formattedArray[$assetType][] = $assetId;
-        }
-
-        return $formattedArray;
-    }
-
-    // private function isAllowedEndpoint($projects, $currentPath, $permission, $models)
-    // {
-    //     $allowedEndpoints = $this->getAllowedEndpoints($projects);
-    //     if (Str::contains($currentPath, $allowedEndpoints) && $this->isProjectAsset($permission, $models)) {
-    //         return true;
-    //     }
-
-    //     return false;
-    // }
-
-    // private function getAllowedEndpoints($assets) : array
-    // {
-    //     $allowedEndpoints = ['api'];
-    //     $endpoints = [];
-    //     // foreach ($projects as $projectId => $assets) {
-    //     foreach ($assets as  $assetType => $assetIds) {
-    //         foreach ($assetIds as $id) {
-    //             $endpoints = array_merge($endpoints, $this->getEndpointsForAsset($assetType, $id));
-    //         }
-    //     }
-    //     // }
-
-    //     return array_merge($allowedEndpoints, $endpoints);
-    // }
-
-    // TODO: Check for second parameter in the api and check against the returned project assets array.
-    // TODO: Add trait to asset policies to implement this code
-
-    // private function getEndpointsForAsset($assetType, $assetId)
-    // {
-    //     $endpoints = [];
-
-    //     switch ($assetType) {
-    //         case Process::class:
-    //             $endpoints[] = "modeler/{$assetId}";
-    //             break;
-    //         case Screen::class:
-    //             $endpoints[] = "designer/screen-builder/{$assetId}/edit";
-    //             $endpoints[] = "designer/screens/{$assetId}/edit";
-    //             $endpoints[] = 'designer/screens/preview';
-    //             break;
-    //         case Script::class:
-    //             $endpoints[] = "designer/scripts/{$assetId}/builder";
-    //             $endpoints[] = "designer/scripts/{$assetId}/edit";
-    //             $endpoints[] = 'designer/scripts/preview';
-    //             break;
-    //         default:
-    //             if (class_exists('ProcessMaker\Packages\Connectors\DataSources\Models\DataSource')
-    //                 && $assetType === 'ProcessMaker\Packages\Connectors\DataSources\Models\DataSource') {
-    //                 $endpoints[] = "designer/data-sources/{$assetId}/edit";
-    //             }
-    //             if (class_exists('ProcessMaker\Package\PackageDecisionEngine\Models\DecisionTable')
-    //                 && $assetType === 'ProcessMaker\Package\PackageDecisionEngine\Models\DecisionTable') {
-    //                 $endpoints[] = "decision-tables/table-builder/{$assetId}/edit";
-    //             }
-    //             break;
-    //     }
-
-    //     return $endpoints;
-    // }
-
-    // private function isProjectAsset($permission, $params)
-    // {
-    //     return $params && $params[0]
-    //         ? $this->handleUpdateDeleteOperations($permission, class_basename($params[0]))
-    //         : $this->checkForListCreateOperations($permission);
-    // }
-
-    // private function handleUpdateDeleteOperations($permission, $modelClass)
-    // {
-    //     return $this->checkPermissionForAsset($permission, $this->getAssetName($modelClass));
-    // }
-
-    // private function getAssetName($modelClass)
-    // {
-    //     $asset = Str::snake(class_basename($modelClass));
-
-    //     if ($modelClass === 'DataSource') {
-    //         $asset = 'data-source';
-    //     }
-
-    //     return $asset;
-    // }
-
-    // private function checkForListCreateOperations($permission)
-    // {
-    //     $projectAssetTypes = ['process', 'screen', 'script', 'data-source', 'decision_table', 'pm-block'];
-
-    //     foreach ($projectAssetTypes as $asset) {
-    //         if (Str::contains($permission, $asset)) {
-    //             return true;
-    //         }
-    //     }
-
-    //     return false;
-    // }
-
-    // private function checkPermissionForAsset($permission, $asset)
-    // {
-    //     return Str::contains($permission, $asset);
-    // }
 }
