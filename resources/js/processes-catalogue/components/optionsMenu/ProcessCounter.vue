@@ -28,13 +28,13 @@
     <span class="text-summary">{{ count }} {{ $t('Cases started') }}</span>
     <div class="charts">
       <mini-pie-chart
-        :count="process.counts.completed"
+        :count="process.counts.in_progress"
         :total="process.counts.total"
         :name="$t('In Progress')"
         color="#4EA075"
       />
       <mini-pie-chart
-        :count="process.counts.in_progress"
+        :count="process.counts.completed"
         :total="process.counts.total"
         :name="$t('Completed')"
         color="#478FCC"
