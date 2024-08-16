@@ -4,6 +4,7 @@ namespace ProcessMaker\Traits;
 
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\Exception\ProjectAssetSyncException;
@@ -115,13 +116,14 @@ trait ProjectAssetTrait
         if (!hasPackage('package-projects')) {
             return;
         }
+        if (Auth::user()) {
+            $userId = Auth::user()->id;
+            Cache::forget("user_{$userId}_project_assets");
 
-        $userId = \Auth::user()->id;
-        Cache::forget("user_{$userId}_project_assets");
-
-        Cache::remember("user_{$userId}_project_assets", 86400, function () use ($userId) {
-            return self::getUserProjectsAssets($userId);
-        });
+            Cache::remember("user_{$userId}_project_assets", 86400, function () use ($userId) {
+                return self::getUserProjectsAssets($userId);
+            });
+        }
     }
 
     private static function getProjectAssetsForUser($userId)
