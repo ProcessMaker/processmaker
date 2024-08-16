@@ -106,7 +106,7 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     })->name('processes.catalogue.index');
     //------------------------------------------------------------------------------------------
 
-    Route::get('processes', [ProcessController::class, 'index'])->name('processes.index');
+    Route::get('processes', [ProcessController::class, 'index'])->name('processes.index')->middleware('can:view-processes');
     Route::get('processes/{process}/edit', [ProcessController::class, 'edit'])->name('processes.edit')->middleware('can:edit-processes');
     Route::get('processes/{process}/export/{page?}', [ProcessController::class, 'export'])->name('processes.export')->middleware('can:export-processes');
     Route::get('processes/import/{page?}', [ProcessController::class, 'import'])->name('processes.import')->middleware('can:import-processes');
