@@ -18,8 +18,8 @@
         "test": "cross-env NODE_ENV=test jest",
         "test-watch": "npm run test -- --watch --notify",
         "lint": "eslint --fix --ignore-path .eslintignore resources/",
-        "font": "node ./devhub/pm-font/svgtofont.mjs && cp -f ./devhub/pm-font/dist/*.* ./resources/fonts/pm-font",
-        "dev-font": "node ./devhub/pm-font/svgtofont.mjs && cp -f ./devhub/pm-font/dist/*.* ./resources/fonts/pm-font && http-server ./devhub/pm-font/dist -p 7771"
+        "font": "node ./devhub/pm-font/svgtofont.js && cp -f ./devhub/pm-font/dist/*.* ./resources/fonts/pm-font",
+        "dev-font": "node ./devhub/pm-font/svgtofont.js && http-server ./devhub/pm-font/dist -p 7771 && cp -f ./devhub/pm-font/dist/*.* ./resources/fonts/pm-font "
     },
     "devDependencies": {
         "@babel/eslint-parser": "^7.15.8",
@@ -68,6 +68,7 @@
         "bpmn-moddle": "^6.0.2",
         "chart.js": "^2.9.4",
         "country-json": "^1.1.0",
+        "cheerio": "1.0.0-rc.12",
         "http-server": "^14.1.1",
         "i18next": "^15.0.8",
         "i18next-chained-backend": "^1.0.1",
@@ -89,7 +90,7 @@
         "snapsvg": "^0.5.1",
         "splitpanes": "^2.4.1",
         "svg-pan-zoom": "^3.6.1",
-        "svgtofont": "^5.0.3",
+        "svgtofont": "4.2.2",
         "timezones.json": "^1.5.2",
         "tinycolor2": "^1.4.2",
         "tinymce": "5.10.0",

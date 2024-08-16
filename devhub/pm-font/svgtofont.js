@@ -2,8 +2,8 @@
 // npx svgtofont --sources ./resources/icons --output ./resources/fonts/font-pm --fontName fp
 // But this command generates other unnecessary files
 
-import svgtofont from "svgtofont";
-import path from "path";
+const svgtofont = require("svgtofont");
+const path = require("path");
 
 svgtofont({
   src: path.resolve(process.cwd(), "./devhub/pm-font/svg"), // svg path
@@ -15,6 +15,10 @@ svgtofont({
     fontHeight: 1000,
     normalize: true,
   },
+  outSVGReact: false,
+  outSVGReactNative: false,
+  generateInfoData: false,
+  emptyDist: true,
   classNamePrefix: "fp",
   website: {
     template: path.join(process.cwd(), "./devhub/pm-font/template.ejs"),
