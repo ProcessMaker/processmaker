@@ -202,6 +202,7 @@ class ProcessesTest extends TestCase
             $this->user->permissions()->attach(Permission::byName($perm));
         }
         $this->user->refresh();
+        $this->clearAndRebuildUserPermissionsCache();
 
         $response = $this->webCall('GET', '/processes');
         $response->assertViewIs('processes.index');

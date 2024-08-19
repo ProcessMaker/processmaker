@@ -3,6 +3,7 @@
 namespace Tests\Feature\Shared;
 
 use Database\Seeders\PermissionSeeder;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\User;
@@ -101,5 +102,13 @@ trait RequestHelper
                 : error_log($trace['class'] . '::' . $trace['function']);
             }
         }
+    }
+
+    protected function clearAndRebuildUserPermissionsCache()
+    {
+        Cache::forget("user_{$this->user->id}_permissions");
+        Cache::remember("user_{$this->user->id}_permissions", 86400, function () {
+            return $this->user->permissions()->pluck('name')->toArray();
+        });
     }
 }

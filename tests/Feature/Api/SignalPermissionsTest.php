@@ -3,7 +3,6 @@
 namespace Tests\Feature\Api;
 
 use Database\Seeders\SignalSeeder;
-use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
@@ -138,13 +137,5 @@ class SignalPermissionsTest extends TestCase
         $this->givePermission('edit-signals');
         $response = $this->webCall('GET', $indexRoute);
         $response->assertStatus(200);
-    }
-
-    private function clearAndRebuildUserPermissionsCache()
-    {
-        Cache::forget("user_{$this->user->id}_permissions");
-        Cache::remember("user_{$this->user->id}_permissions", 86400, function () {
-            return $this->user->permissions()->pluck('name')->toArray();
-        });
     }
 }
