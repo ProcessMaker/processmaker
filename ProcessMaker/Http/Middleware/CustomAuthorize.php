@@ -26,7 +26,8 @@ class CustomAuthorize extends Middleware
     public function handle($request, Closure $next, $ability, ...$models)
     {
         $modelsString = implode('-', $models);
-        $permission = $ability . '-' . $modelsString;
+        // Set the permission based on whether $modelsString is empty or not
+        $permission = $modelsString ? $ability . '-' . $modelsString : $ability;
 
         try {
             return parent::handle($request, $next, $ability, ...$models);
