@@ -91,6 +91,14 @@ class ProcessExporter extends ExporterBase
             $process->user_id = $dependent->model->id;
         }
 
+        // The process must have a user ID. If it does not, use the first admin
+        // user. Note that this could also be another fallbackMatchColumn in the
+        // user exporter however we're doing it here to maintain backwards
+        // compatibility with old exports.
+        if (!$process->user_id) {
+            $process->user_id = User::where('is_administrator', true)->firstOrFail()->id;
+        }
+
         foreach ($this->getDependents('manager') as $dependent) {
             $process->manager_id = $dependent->model->id;
         }
