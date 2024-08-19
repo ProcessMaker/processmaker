@@ -41,7 +41,7 @@ class SignalPermissionsTest extends TestCase
     {
         $this->user->giveDirectPermission($permission);
         $this->user->refresh();
-        $this->clearAndRebuildUserPermissionsCache();
+        $this->clearPermissionsCache();
         $this->flushSession();
     }
 
