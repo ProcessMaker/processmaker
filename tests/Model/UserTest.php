@@ -79,6 +79,8 @@ class UserTest extends TestCase
         $user->permissions()->attach($p3);
         $user->refresh();
 
+        $this->clearPermissionsCache($user);
+
         $this->assertTrue($user->can('bar'));
         $this->assertEquals('bar', $user->canAnyFirst('foo|bar'));
         $this->assertEquals('baz', $user->canAnyFirst('foo|baz'));
