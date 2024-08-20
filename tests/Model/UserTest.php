@@ -68,8 +68,6 @@ class UserTest extends TestCase
         $p2 = Permission::factory()->create(['name' => 'bar']);
         $p3 = Permission::factory()->create(['name' => 'baz']);
 
-        $this->clearPermissionsCache($user);
-
         (new AuthServiceProvider(app()))->boot();
 
         $this->assertFalse($user->can('bar'));
@@ -78,8 +76,6 @@ class UserTest extends TestCase
         $user->permissions()->attach($p2);
         $user->permissions()->attach($p3);
         $user->refresh();
-
-        $this->clearPermissionsCache($user);
 
         $this->assertTrue($user->can('bar'));
         $this->assertEquals('bar', $user->canAnyFirst('foo|bar'));

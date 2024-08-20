@@ -103,12 +103,4 @@ trait RequestHelper
             }
         }
     }
-
-    protected function clearPermissionsCache($user = null)
-    {
-        Cache::forget('permissions');
-
-        $user = !is_null($user) ? $user : $this->user;
-        Cache::forget("user_{$user->id}_permissions");
-    }
 }

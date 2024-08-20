@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Laravel\Passport\HasApiTokens;
@@ -571,5 +572,13 @@ class User extends Authenticatable implements HasMedia
         }
 
         return false;
+    }
+
+    public function refresh()
+    {
+        parent::refresh();
+
+        Cache::forget('permissions');
+        Cache::forget("user_{$this->id}_permissions");
     }
 }

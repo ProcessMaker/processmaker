@@ -202,7 +202,6 @@ class ProcessesTest extends TestCase
             $this->user->permissions()->attach(Permission::byName($perm));
         }
         $this->user->refresh();
-        $this->clearPermissionsCache();
 
         $response = $this->webCall('GET', '/processes');
         $response->assertViewIs('processes.index');
@@ -211,7 +210,6 @@ class ProcessesTest extends TestCase
             $this->user->permissions()->detach(Permission::byName($perm));
             $this->user->refresh();
             $this->flushSession();
-            $this->clearPermissionsCache();
             $response = $this->webCall('GET', '/processes');
             $response->assertRedirect(route($nextRoute));
         };
