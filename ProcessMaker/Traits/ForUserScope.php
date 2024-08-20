@@ -52,7 +52,8 @@ trait ForUserScope
         ])->whereIn('processable_id', $stringGroupIds->toArray())->pluck('process_id')->toArray();
 
         return $query->userStarted($user)
-            ->orWhereIn('id', array_unique(array_merge($userParticipated, $userHasSelfServiceTasks, $userHasSelfServiceTasksGroups)))
+            ->orWhereIn('id',
+                array_unique(array_merge($userParticipated, $userHasSelfServiceTasks, $userHasSelfServiceTasksGroups)))
             ->orWhereIn('process_id', array_unique(array_merge($processableUser, $processableGroups)));
     }
 
