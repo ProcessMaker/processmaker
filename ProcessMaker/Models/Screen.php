@@ -109,7 +109,7 @@ class Screen extends ProcessMakerModel implements ScreenInterface
     {
         parent::boot();
 
-        $clearCacheCallback = function ($model) {
+        $clearCacheCallback = function () {
             self::clearAndRebuildUserProjectAssetsCache();
         };
 

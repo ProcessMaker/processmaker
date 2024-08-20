@@ -98,7 +98,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
     {
         parent::boot();
 
-        $clearCacheCallback = function ($model) {
+        $clearCacheCallback = function () {
             self::clearAndRebuildUserProjectAssetsCache();
         };
 
