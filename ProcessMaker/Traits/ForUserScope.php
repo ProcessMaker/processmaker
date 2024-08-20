@@ -21,10 +21,39 @@ trait ForUserScope
             return $query;
         }
 
+        $userParticipated = ProcessRequestToken::where('user_id', $user->id)->pluck('process_request_id')->toArray();
+
+        $userHasSelfServiceTasks = ProcessRequestToken::where('is_self_service', true)
+            ->whereJsonContains('self_service_groups->users', (string) $user->id)
+            ->pluck('process_request_id')->toArray();
+
+        $stringGroupIds = $user->groups()
+            ->pluck('groups.id')
+            ->map(fn ($id) => (string) $id);
+
+        $userHasSelfServiceTasksGroups = ProcessRequestToken::where('is_self_service', true)
+            ->whereRaw(
+                'JSON_OVERLAPS(JSON_EXTRACT(`self_service_groups`, \'$."groups"\'), ?)',
+                [
+                    $stringGroupIds->toJson(),
+                ]
+            )
+            ->pluck('process_request_id')->toArray();
+
+        $processableUser = DB::table('processables')->where([
+            'processable_type' => User::class,
+            'processable_id' => $user->id,
+            'method' => 'EDIT_DATA',
+        ])->pluck('process_id')->toArray();
+
+        $processableGroups = DB::table('processables')->where([
+            'processable_type' => Group::class,
+            'method' => 'EDIT_DATA',
+        ])->whereIn('processable_id', $stringGroupIds->toArray())->pluck('process_id')->toArray();
+
         return $query->userStarted($user)
-            ->orWhere(fn ($q) => $q->userParticipated($user))
-            ->orWhere(fn ($q) => $q->userHasSelfServiceTasks($user))
-            ->orWhere(fn ($q) => $q->userHasEditProcessDataPermission($user));
+            ->orWhereIn('id', array_unique(array_merge($userParticipated, $userHasSelfServiceTasks, $userHasSelfServiceTasksGroups)))
+            ->orWhereIn('process_id', array_unique(array_merge($processableUser, $processableGroups)));
     }
 
     public function scopeUserStarted($query, $user)
