@@ -7,8 +7,10 @@ use ProcessMaker\Models\ProcessRequest;
 
 class HandleRedirectListener
 {
-    private static $processRequest;
+    private static $processRequest = null;
+
     private static $redirectionMethod = '';
+
     private static $redirectionParams = [];
 
     protected function setRedirectTo(ProcessRequest $processRequest, string $method, ...$params): void
@@ -23,7 +25,14 @@ class HandleRedirectListener
         $method = self::$redirectionMethod;
         $params = self::$redirectionParams;
         $processRequest = self::$processRequest;
-        $event = new RedirectToEvent($processRequest, $method, $params);
-        event($event);
+
+        if ($processRequest !== null) {
+            $event = new RedirectToEvent($processRequest, $method, $params);
+            event($event);
+            // clean params to prevent send the same redirect multiple times
+            self::$redirectionParams = [];
+            self::$redirectionMethod = '';
+            self::$processRequest = null;
+        }
     }
 }

@@ -555,7 +555,8 @@
             this.$refs.task.showSimpleErrorMessage();
           },
           redirectToTask(task, force = false) {
-            this.redirect(`/tasks/${task}/edit`, force);
+            console.log('redirectToTask');
+            this.redirect(`/tasks/${task} /edit`, force);
           },
           closed(taskId, elementDestination = null) {
             // avoid redirection if using a customized renderer
@@ -567,7 +568,7 @@
               this.redirect(elementDestination);
               return;
             }
-
+            console.log('closed');
             this.redirect("/tasks");
           },
           claimTask() {

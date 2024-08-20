@@ -4,13 +4,18 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use ProcessMaker\Models\ProcessRequest;
 
-class RedirectToEvent
+class RedirectToEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
+
+    public $payloadUrl;
+
+    private $processRequestToken;
 
     /**
      * Create a new event instance.
@@ -18,17 +23,17 @@ class RedirectToEvent
     public function __construct(
         private ProcessRequest $processRequest,
         public string $method,
-        public array $params,
+        public array $params
     ) {
         //
     }
 
     /**
-     * Get the Event name with the syntax ‘[Past-test Action] [Object]’
+     * Set the event name
      *
      * @return string
      */
-    public function getEventName(): string
+    public function broadcastAs()
     {
         return 'RedirectTo';
     }
