@@ -2,6 +2,7 @@
 
 namespace Tests\Model;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
@@ -67,6 +68,9 @@ class UserTest extends TestCase
         $p1 = Permission::factory()->create(['name' => 'foo']);
         $p2 = Permission::factory()->create(['name' => 'bar']);
         $p3 = Permission::factory()->create(['name' => 'baz']);
+
+        Cache::forget('permissions');
+        Cache::forget("user_{$user->id}_permissions");
 
         (new AuthServiceProvider(app()))->boot();
 
