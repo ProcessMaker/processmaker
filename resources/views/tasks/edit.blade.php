@@ -543,13 +543,6 @@
             if (this.task.component && this.task.component === 'AdvancedScreenFrame') {
               return;
             }
-
-            //if (endEventDestination) {
-            //  this.redirect(endEventDestination);
-            //  return;
-            //}
-//
-            // this.redirect(`/requests/${processRequestId}`);
           },
           error(processRequestId) {
             this.$refs.task.showSimpleErrorMessage();
@@ -563,12 +556,6 @@
             if (this.task.component && this.task.component === 'AdvancedScreenFrame') {
               return;
             }
-
-            if (elementDestination) {
-              this.redirect(elementDestination);
-              return;
-            }
-            console.log('closed');
             this.redirect("/tasks");
           },
           claimTask() {
