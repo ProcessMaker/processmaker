@@ -28,7 +28,10 @@ class HandleActivityAssignedInterstitialRedirect extends HandleRedirectListener
         if ($allowInterstitial) {
             $payloadUrl = route('tasks.edit', ['task' => $event->getProcessRequestToken()->id]);
         } else {
-            $payloadUrl = route('requests.show', ['request' => $event->getProcessRequestToken()->getAttribute('process_request_id')]);
+            $payloadUrl = route('requests.show', [
+                'request' => $event->getProcessRequestToken()
+                    ->getAttribute('process_request_id')
+            ]);
         }
         $this->setRedirectTo($request,
             'javascript:redirectToTask',

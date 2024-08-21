@@ -15,8 +15,6 @@ class RedirectToEvent implements ShouldBroadcastNow
 
     public $payloadUrl;
 
-    private $processRequestToken;
-
     /**
      * Create a new event instance.
      */
