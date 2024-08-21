@@ -21,6 +21,10 @@ class HandleEndEventRedirect extends HandleRedirectListener
     public function handle(ProcessCompleted $event): void
     {
         $request = $event->getProcessRequest();
+        if (empty($request)) {
+            return;
+        }
+
         $userId = Auth::id();
         $requestId = $event->getProcessRequest()->id;
         $this->setRedirectTo($request, 'javascript:processCompletedRedirect', $event, $userId, $requestId);

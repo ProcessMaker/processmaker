@@ -20,6 +20,10 @@ class HandleActivityAssignedInterstitialRedirect extends HandleRedirectListener
     public function handle(ActivityAssigned $event): void
     {
         $request = $event->getProcessRequestToken()->getInstance();
+        if (empty($request)) {
+            return;
+        }
+
         $allowInterstitial = $event->getProcessRequestToken()->getInterstitial()['allow_interstitial'];
         if ($allowInterstitial) {
             $payloadUrl = route('tasks.edit', ['task' => $event->getProcessRequestToken()->id]);
