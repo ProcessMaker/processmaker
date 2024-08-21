@@ -577,6 +577,9 @@
                 is_self_service: 0,
               })
               .then(response => {
+                // Save the current URL to redirect after the task is claimed
+                sessionStorage.setItem('sessionUrlSelfService', document.referrer);
+
                 window.location.reload();
               });
           },
