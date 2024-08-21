@@ -27,6 +27,6 @@ class HandleEndEventRedirect extends HandleRedirectListener
 
         $userId = Auth::id();
         $requestId = $event->getProcessRequest()->id;
-        $this->setRedirectTo($request, 'javascript:processCompletedRedirect', $event, $userId, $requestId);
+        $this->setRedirectTo($request, 'processCompletedRedirect', $event, $userId, $requestId);
     }
 }

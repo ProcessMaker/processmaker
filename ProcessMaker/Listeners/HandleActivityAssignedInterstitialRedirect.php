@@ -34,7 +34,7 @@ class HandleActivityAssignedInterstitialRedirect extends HandleRedirectListener
             ]);
         }
         $this->setRedirectTo($request,
-            'javascript:redirectToTask',
+            'redirectToTask',
             [
                 'payloadUrl' => $payloadUrl,
                 'tokenId' => $event->getProcessRequestToken()->id,

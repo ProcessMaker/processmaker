@@ -17,6 +17,6 @@ class HandleActivityCompletedRedirect extends HandleRedirectListener
             return;
         }
 
-        $this->setRedirectTo($request, 'javascript:processUpdated', $event);
+        $this->setRedirectTo($request, 'processUpdated', $event);
     }
 }
