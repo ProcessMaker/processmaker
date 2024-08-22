@@ -7,13 +7,6 @@ use ProcessMaker\Events\ProcessCompleted;
 
 class HandleEndEventRedirect extends HandleRedirectListener
 {
-    /**
-     * Create the event listener.
-     */
-    public function __construct()
-    {
-        //
-    }
 
     /**
      * Handle the event.
