@@ -548,7 +548,7 @@
             this.$refs.task.showSimpleErrorMessage();
           },
           redirectToTask(task, force = false) {
-            this.redirect(`/tasks/${task} /edit`, force);
+            this.redirect(`/tasks/${task}/edit`, force);
           },
           closed(taskId, elementDestination = null) {
             // avoid redirection if using a customized renderer
