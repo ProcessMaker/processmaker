@@ -3,6 +3,8 @@
 namespace ProcessMaker\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use ProcessMaker\Events\ActivityAssigned;
+use ProcessMaker\Events\ActivityCompleted;
 use ProcessMaker\Events\ActivityReassignment;
 use ProcessMaker\Events\AuthClientCreated;
 use ProcessMaker\Events\AuthClientDeleted;
@@ -25,6 +27,7 @@ use ProcessMaker\Events\GroupUpdated;
 use ProcessMaker\Events\GroupUsersUpdated;
 use ProcessMaker\Events\PermissionUpdated;
 use ProcessMaker\Events\ProcessArchived;
+use ProcessMaker\Events\ProcessCompleted;
 use ProcessMaker\Events\ProcessCreated;
 use ProcessMaker\Events\ProcessPublished;
 use ProcessMaker\Events\ProcessRestored;
@@ -58,6 +61,9 @@ use ProcessMaker\Events\UserDeleted;
 use ProcessMaker\Events\UserGroupMembershipUpdated;
 use ProcessMaker\Events\UserRestored;
 use ProcessMaker\Events\UserUpdated;
+use ProcessMaker\Listeners\HandleActivityAssignedInterstitialRedirect;
+use ProcessMaker\Listeners\HandleActivityCompletedRedirect;
+use ProcessMaker\Listeners\HandleEndEventRedirect;
 use ProcessMaker\Listeners\SecurityLogger;
 use ProcessMaker\Listeners\SessionControlSettingsUpdated;
 
@@ -90,6 +96,15 @@ class EventServiceProvider extends ServiceProvider
         ],
         SettingsUpdated::class => [
             SessionControlSettingsUpdated::class,
+        ],
+        ProcessCompleted::class => [
+            HandleEndEventRedirect::class,
+        ],
+        ActivityCompleted::class => [
+            HandleActivityCompletedRedirect::class,
+        ],
+        ActivityAssigned::class => [
+            HandleActivityAssignedInterstitialRedirect::class,
         ],
     ];
 

@@ -57,6 +57,7 @@ import PaginationTable from "./PaginationTable.vue";
 import { ellipsisSortClick } from "./UtilsTable";
 import TaskTooltip from "../../tasks/components/TaskTooltip.vue";
 import Recommendations from "../../components/Recommendations.vue"
+import ProgressLoader from "../common/ProgressLoader.vue";
 
 export {
   AddToProjectModal,
@@ -118,4 +119,5 @@ export {
   ellipsisSortClick,
   TaskTooltip,
   Recommendations,
+  ProgressLoader,
 };

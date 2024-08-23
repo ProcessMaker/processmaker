@@ -36,7 +36,17 @@
                 <recent-assets
                     :current-user-id="{{ \Auth::user()->id }}"
                     project="{{ $listConfig->hasPackage }}"
-                    :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'data-sources', 'projects', 'screens', 'scripts', 'decision_tables') }}"
+                    :permission="{{ \Auth::user()->hasPermissionsFor(
+                        'processes',
+                        'process-templates',
+                        'pm-blocks',
+                        'data-sources',
+                        'projects',
+                        'screens',
+                        'scripts',
+                        'decision_tables',
+                        'flow_genies'
+                    ) }}"
                     is-documenter-installed="{{\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled()}}"
                 />
             </div>

@@ -275,15 +275,26 @@ export default {
   border-radius: 16px;
   border: 0.883px solid rgba(205, 221, 238, 0.50);
   background: linear-gradient(0deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.92) 100%), #57D490;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .custom-settings {
   margin-top: 32px;
   background-color: white;
 }
-@media (width < 1360px) {
+@media (width < 1360px) and (width > 768px) {
   .default-chart {
     margin-top: 0;
     margin-left: 32px;
+  }
+}
+@media (min-width: 641px) and (max-width: 768px) {
+  .default-chart {
+    width: 100%;
+    max-width: 100%;
+    margin-right: 32px;
+    margin-top: 24px;
   }
 }
 </style>

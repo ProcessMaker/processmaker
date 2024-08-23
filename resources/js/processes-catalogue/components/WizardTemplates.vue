@@ -6,6 +6,7 @@
       package-ai="false"
       :component="currentComponent"
       :show-template-options-action-bar="false"
+      :fetch-on-created="false"
       @show-details="showDetails($event)"
     />
   </div>
