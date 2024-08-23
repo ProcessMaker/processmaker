@@ -10,6 +10,7 @@
       v-show="hideLaunchpad"
       :current-user="currentUser"
       :process="process"
+      class="process-tab-container"
     />
 
     <div w-100 h-100 v-show="!hideLaunchpad">
@@ -80,3 +81,12 @@ export default {
   },
 };
 </script>
+<style lang="scss" scoped>
+@import '~styles/variables';
+.process-tab-container {
+  @media (min-width: $lp-breakpoint) {
+    margin-top: 16px;
+    margin-right: 20px;
+  }
+}
+</style>

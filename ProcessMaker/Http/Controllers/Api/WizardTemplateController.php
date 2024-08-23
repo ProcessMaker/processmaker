@@ -21,7 +21,7 @@ class WizardTemplateController extends Controller
 
         $direction = $request->input('order_direction', 'asc');
 
-        $query = WizardTemplate::with('process', 'process_template')->filter($filter)
+        $query = WizardTemplate::with('process')->filter($filter)
             ->orderBy($column, $direction);
 
         $data = $query->paginate($perPage);
