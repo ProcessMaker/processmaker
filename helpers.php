@@ -50,6 +50,43 @@ if (!function_exists('settings')) {
     }
 }
 
+if (!function_exists('default_color')) {
+    /**
+     * Returns the default color value.
+     *
+     * @param $key
+     *
+     * @return string
+     */
+    function default_color($key)
+    {
+        return config('app.default_colors.' . $key);
+    }
+}
+
+if (!function_exists('color')) {
+    /**
+     * Returns the color value from the settings.
+     *
+     * @param $key
+     *
+     * @return string
+     */
+    function color($key)
+    {
+        if ($colors = config('css-override.variables')) {
+            $colors = json_decode($colors);
+            foreach ($colors as $color) {
+                if ($color->id === '$' . $key) {
+                    return $color->value;
+                }
+            }
+        }
+        
+        return default_color($key);
+    }
+}
+
 if (!function_exists('refresh_artisan_caches')) {
     /**
      * Re-caches artisan config, routes, and/or events when they are already cached.
