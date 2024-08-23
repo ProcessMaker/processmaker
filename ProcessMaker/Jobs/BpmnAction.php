@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\BpmnEngine;
 use ProcessMaker\Exception\HttpABTestingException;
+use ProcessMaker\Listeners\HandleRedirectListener;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestLock;
@@ -66,6 +67,8 @@ abstract class BpmnAction implements ShouldQueue
 
             // Run engine to the next state
             $this->engine->runToNextState();
+            // call to redirect when user task is assigned
+            HandleRedirectListener::sendRedirectToEvent();
         } catch (HttpABTestingException $exception) {
             Log::error($exception->getMessage());
             throw $exception;

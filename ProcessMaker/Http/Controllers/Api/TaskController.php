@@ -19,6 +19,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\Task as Resource;
 use ProcessMaker\Http\Resources\TaskCollection;
+use ProcessMaker\Listeners\HandleRedirectListener;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -245,6 +246,7 @@ class TaskController extends Controller
             $instance = $task->processRequest;
             TaskDraft::moveDraftFiles($task);
             WorkflowManager::completeTask($process, $instance, $task, $data);
+            HandleRedirectListener::sendRedirectToEvent();
 
             return new Resource($task->refresh());
         } elseif (!empty($request->input('user_id'))) {
