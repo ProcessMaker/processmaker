@@ -4,14 +4,12 @@ namespace Tests\Feature\ImportExport\Exporters;
 
 use Database\Seeders\CategorySystemSeeder;
 use Illuminate\Support\Facades\DB;
-use PHPUnit\Framework\ExpectationFailedException;
 use ProcessMaker\ImportExport\Exporters\ScriptExporter;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
-use SebastianBergmann\RecursionContext\InvalidArgumentException;
 use Tests\Feature\ImportExport\HelperTrait;
 use Tests\TestCase;
 
