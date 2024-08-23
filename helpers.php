@@ -87,6 +87,25 @@ if (!function_exists('color')) {
     }
 }
 
+if (!function_exists('sidebar_class')) {
+    /**
+     * Returns the class for the sidebar based on admin settings.
+     *
+     * @return boolean
+     */
+    function sidebar_class()
+    {
+        if (config('css-override.variables')) {
+            $defaults = ['#0872C2', '#2773F3'];
+            if (! in_array(color('primary'), $defaults)) {
+                return 'sidebar-custom';
+            }
+        }
+        
+        return 'sidebar-default';
+    }
+}
+
 if (!function_exists('refresh_artisan_caches')) {
     /**
      * Re-caches artisan config, routes, and/or events when they are already cached.
