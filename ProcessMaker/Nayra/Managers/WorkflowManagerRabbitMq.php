@@ -687,6 +687,8 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         $environmentVariables = [];
         EnvironmentVariable::chunk(50, function ($variables) use (&$environmentVariables) {
             foreach ($variables as $variable) {
+                // Fix variables that have spaces
+                $variable['name'] = str_replace(' ', '_', $variable['name']);
                 $environmentVariables[$variable['name']] = $variable['value'];
             }
         });
