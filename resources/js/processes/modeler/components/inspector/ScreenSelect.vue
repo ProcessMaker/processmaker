@@ -183,7 +183,11 @@ export default {
       }
 
       ProcessMaker.apiClient
-        .get("screens", { params: { key: this.defaultKey } })
+        .get("screens", { params: { 
+          key: this.defaultKey,
+          order_by: "id",
+          order_direction: "ASC"
+        }})
         .then(({ data }) => {
           this.content = data.data[0];
         });

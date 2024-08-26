@@ -419,7 +419,7 @@ class ScreenController extends Controller
         $request->validate(Screen::rules());
         $newScreen = new Screen();
 
-        $exclude = ['id', 'uuid', 'created_at', 'updated_at'];
+        $exclude = ['id', 'uuid', 'created_at', 'updated_at', 'key'];
         foreach ($screen->getAttributes() as $attribute => $value) {
             if (!in_array($attribute, $exclude)) {
                 $newScreen->{$attribute} = $screen->{$attribute};
