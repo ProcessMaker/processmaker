@@ -29,7 +29,7 @@ class ProcessCompleted implements ShouldBroadcastNow
         $this->payloadUrl = route('api.requests.show', ['request' => $processRequest->getKey()]);
         $this->processRequest = $processRequest;
 
-        if ($processRequest->asset_type !== 'GUIDED_HELPER_PROCESS') {
+        if ($processRequest->process->asset_type !== 'GUIDED_HELPER_PROCESS') {
             $this->endEventDestination = $processRequest->getElementDestination();
         }
     }
