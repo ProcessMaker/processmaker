@@ -16,7 +16,10 @@
 
 </head>
 <body>
-  <div class="background-cover"></div>
+  <div class="background-cover">
+    <img class="background-wave-left" src="/img/gradient-wave-left.svg">
+    <img class="background-wave-right" src="/img/gradient-wave-right.svg">
+  </div>
   <div class="content" id="app">
     <div class="d-flex flex-column" style="min-height: 100vh">
       <div class="flex-fill small-screen">
@@ -30,26 +33,17 @@
           @endphp
           @if (!$isMobile)
             <div class="slogan">
-              <h1 class="title">{{ __("Smarter processes,") }}</h1>
-              <h1 class="title emphasis">{{ __("easier than ever") }}</h1>
-              <div class="typewriter-container d-flex align-items-center my-5">
-                <img src="/img/proceC2.svg" class="mr-2 procesC2-icon" alt="ProceC2" />
-                <div class="typewriter">
-                  <p>{{ __('Have you tried the new AI Assistant?') }}</p>
-                </div>
+              <h2 class="title">{{ __("Business process automation") }}</h2>
+              <h1 class="title">{{ __("made") }} <span class="emphasis">{{ __("efficient") }}</span></h1>
+              <div class="subhead">
+                {{ __("All the tools to empower anyone to quickly automate processes, from custom forms to unique enterprise workflows and complex business rules.") }}
               </div>
-              <ul class="list">
-                <li>{{ __("Create processes from a written description.") }}</li>
-                <li>{{ __("Translate into multiple languages.") }}</li>
-                <li>{{ __("Search faster.") }}</li>
-              </ul>
-              <img class="sub_logo" src="/img/processmaker_do_more.svg" alt="ProcessMaker" />
             </div>
           @endif
           </div>
           <div class="col-md-6 col-lg-6 col-xl-4 col-xxl-3">
-            <div class="card card-body p-3 small-screen login-container">
-              <div align="center" class="p-5">
+            <div class="card card-body p-2 small-screen login-container">
+              <div align="center" class="p-3 pb-4">
                 @component('components.logo')
                 @endcomponent
               </div>
@@ -64,10 +58,10 @@
 
                 @samlidp
 
-                <div class="form-group">
+                <div class="form-group mb-3">
                   <label for="username">{{ __('Username') }}</label>
                   <div class="password-container">
-                    <input id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" placeholder="{{__('Enter your username')}}" required>
+                    <input id="username" type="text" class="form-control form-control-login {{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" placeholder="{{__('Enter your username')}}" required>
                     @if ($errors->has('username'))
                     <span class="invalid-feedback" role="alert">
                       <strong>{{ $errors->first('username') }}</strong>
@@ -75,10 +69,10 @@
                     @endif
                   </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group mb-3">
                   <label for="password">{{ __('Password') }}</label>
                   <div class="password-container">
-                    <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{__('Enter your password')}}" required>
+                    <input id="password" type="password" class="form-control form-control-login {{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{__('Enter your password')}}" required>
                     <i class="fa fa-eye" id="togglePassword"></i>
                     @if ($errors->has('password'))
                     <span class="invalid-feedback" role="alert">
@@ -88,19 +82,19 @@
                   </div>
                 </div>
                 <div class="row justify-content-between mb-3">
-                  <div class="form-check">
+                  <div class="form-check mb-0">
                     <label class="form-check-label">
                     <input id="remember" class="form-check-input" type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }} aria-label="{{__('Remember me')}}">
                     {{ __('Remember me') }}</label>
                   </div>
-                  <div class="form-group">
+                  <div class="form-group mb-0">
                     <a href="{{ route('password.request') }}">
                       {{ __('Forgot Password?') }}
                     </a>
                   </div>
                 </div>
-                <div class="form-group">
-                  <button type="submit" name="login" class="btn btn-primary btn-block text-uppercase" dusk="login">{{ __('Log In') }}</button>
+                <div class="form-group mb-0">
+                  <button type="submit" name="login" class="btn btn-primary btn-block button-login form-control-login" dusk="login">{{ __('Sign In') }}</button>
                 </div>
               </form>
               @endif
@@ -154,7 +148,7 @@
   }
   .login-logo-custom,
   .login-logo-default {
-    width: 100%;
+    width: 60%;
   }
   .form {
     padding: 0 17px 17px 17px;
@@ -167,7 +161,7 @@
     text-align: left
   }
   .background-cover {
-    background-image: url(/img/new_background.png);
+    background-color: black;
     background-repeat: no-repeat;
     background-size: cover;
     position: fixed;
@@ -177,6 +171,26 @@
     left: 0;
     width: 100%;
   }
+  
+  .form-control-login {
+    height: 45px;
+    padding-bottom: 0;
+    padding-top: 0;
+  }
+  
+  .background-wave-left {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+  }
+  
+  .background-wave-right {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 50%;
+  }
+  
   body {
     background: transparent;
   }
@@ -187,21 +201,27 @@
     display: inline-flex;
     flex-direction: column;
     align-items: flex-start;
+    text-transform: uppercase;
+    text-shadow: 0 0 20px rgba(0, 0, 0, 0.95);
   }
 
   .slogan .title {
-    font-size: 3.4rem;
-    font-weight: 300;
+    font-weight: 900;
     color: #ffffff;
   }
-
-  .slogan .title.emphasis{
-    font-weight: 500;
-    color: #FFCA2B;
+  
+  .slogan h2.title {
+      font-size: 1.4rem;
   }
-  .slogan .list {
-    list-style: none;
-    padding: 0;
+  
+  .slogan h1.title {
+      font-size: 3.4rem;
+  }
+
+  .slogan .emphasis{
+    color: #3982ff;
+  }
+  .slogan .subhead {
     color: #ffffff;
     font-size: 1.23rem;
     font-weight: 100;
@@ -211,7 +231,7 @@
   }
   #togglePassword{
     position: absolute;
-    top: 28%;
+    top: 32%;
     right: 4%;
     cursor: pointer;
     color: #51585E;
@@ -243,93 +263,9 @@
     font-size: 24.017px;
     font-family: 'Poppins', sans-serif;
   }
-  .sub_logo {
-    margin-top: 7%;
-  }
-  .procesC2-icon {
-    width: 1.8rem;
-  }
-  .typewriter-container {
-    background: #ffffff;
-    border-radius: 34px;
-    height: 3.5rem;
-    padding: 3px 18px;
-    width: 100%;
-    max-width: 600px;
-    animation: slidedown 1s cubic-bezier(0.8, 0.3, 0.01, 1), 3s;
-  }
-  @keyframes cursor {
-    from, to {
-      border-color: transparent;
-    }
-    50% {
-      border-color: black;
-    }
-  }
-  @keyframes typing {
-    from {
-      width: 100%;
-    }
-    3%, to {
-      width: 0;
-    }
-  }
-  @keyframes slidedown {
-    from {
-      height: 0px;
-      visibility: hidden;
-      opacity: 0;
-    }
-    to {
-      height: 3.5rem;
-      visibility: visible;
-      opacity: 1;
-    }
-  }
-
-  @keyframes slide {
-    33.3333333333% {
-      font-size: 1.1rem;
-    }
-    to {
-      font-size: 1.1rem;
-    }
-  }
-  .typewriter {
-    text-align: center;
-    white-space: nowrap;
-  }
-
-  .typewriter p {
-    position: relative;
-    display: inline;
-    font-size: 0;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    animation: slide 15s step-start infinite;
-  }
-
-  .typewriter p::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: -3px;
-    bottom: 0;
-    border-left: 2px solid black;
-    background-color: #ffffff;
-    animation: typing 18s infinite, cursor 1s infinite;
-  }
-
-  .typewriter p:nth-child(1) {
-    animation-delay: 1s;
-  }
-  .typewriter p:nth-child(1)::after {
-    animation-delay: 1s;
-    animation-timing-function: steps(40), step-end;
-  }
-  .typewriter p:nth-child(1)::before {
-    animation-delay: 0s;
-    animation-timing-function: steps(40), step-end;
+  
+  .button-login {
+      text-transform: none;
   }
 
   .login-container {
@@ -353,4 +289,3 @@ body {
 }
 </style>
 </html>
-

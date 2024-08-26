@@ -173,6 +173,8 @@ abstract class Base
         $variablesParameter = [];
         EnvironmentVariable::chunk(50, function ($variables) use (&$variablesParameter, $useEscape) {
             foreach ($variables as $variable) {
+                // Fix variables that have spaces
+                $variable['name'] = str_replace(' ', '_', $variable['name']);
                 if ($useEscape) {
                     $variablesParameter[] = escapeshellarg($variable['name']) . '=' . escapeshellarg($variable['value']);
                 } else {

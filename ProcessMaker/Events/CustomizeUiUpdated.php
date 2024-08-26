@@ -21,19 +21,29 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
 
     private bool $reset;
 
-    private string $defaultVariables = '[
-        {"id":"$primary","value":"#0872C2","title":"Primary"},
-        {"id":"$secondary","value":"#6C757D","title":"Secondary"},
-        {"id":"$success","value":"#00875A","title":"Success"},
-        {"id":"$info","value":"#104A75","title":"Info"},
-        {"id":"$warning","value":"#FFAB00","title":"Warning"},
-        {"id":"$danger","value":"#E50130","title":"Danger"},
-        {"id":"$dark","value":"#000000","title":"Dark"},
-        {"id":"$light","value":"#FFFFFF","title":"Light"}
-    ]';
-
     private string $defaultFont = '{"id":"\'Open Sans\'","title":"Default Font"}';
 
+    /**
+     * Default color variables
+     *
+     * @return string
+     */
+    private function defaultVariables(): string
+    {
+        $defaults = config('app.default_colors');
+        
+        $objects = [];
+        foreach ($defaults as $name => $value) {
+            $objects[] = [
+                'id' => '$' . $name,
+                'value' => $value,
+                'title' => ucfirst($name),
+            ];
+        }
+        
+        return json_encode($objects);
+    }
+    
     /**
      * Create a new event instance.
      *
@@ -62,10 +72,10 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
     public function buildData()
     {
         if (!isset($this->original['variables'])) {
-            $this->original['variables'] = $this->defaultVariables;
+            $this->original['variables'] = $this->defaultVariables();
         }
         if (!isset($this->changes['variables'])) {
-            $this->changes['variables'] = $this->defaultVariables;
+            $this->changes['variables'] = $this->defaultVariables();
         }
         if (isset($this->changes['variables']) && isset($this->original['variables'])) {
             $varChanges = [];
