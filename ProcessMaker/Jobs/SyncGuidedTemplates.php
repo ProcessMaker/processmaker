@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Log;
@@ -207,6 +208,10 @@ class SyncGuidedTemplates implements ShouldQueue
             if (in_array($asset['type'], ['Process', 'Screen', 'Script',
                 'Collections', 'DataConnector', 'ProcessTemplates'])) {
                 $payload['export'][$key]['attributes']['asset_type'] = $assetType;
+            }
+
+            if (Arr::get($asset, 'type') === 'Screen' && Arr::get($asset, 'attributes.key') === 'interstitial') {
+                $payload['export'][$key]['attributes']['key'] = null;
             }
         }
 
