@@ -257,4 +257,7 @@ return [
         'dark' => '#20242A',
         'light' => '#FFFFFF',
     ],
+
+    // The key to be used for encrypted data
+    'encrypted_data_key' => env('ENCRYPTED_DATA_KEY', ''),
 ];
