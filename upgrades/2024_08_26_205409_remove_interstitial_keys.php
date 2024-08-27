@@ -41,6 +41,10 @@ class RemoveInterstitialKeys extends Upgrade
         Screen::where('key', 'interstitial')
             ->whereNot('id', $firstInterstitial->id)
             ->update(['key' => null]);
+
+        $firstInterstitial->title = 'Screen Interstitial';
+        $firstInterstitial->asset_type = null;
+        $firstInterstitial->save();
     }
 
     /**
