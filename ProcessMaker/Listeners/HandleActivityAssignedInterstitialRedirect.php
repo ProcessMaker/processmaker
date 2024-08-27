@@ -6,7 +6,6 @@ use ProcessMaker\Events\ActivityAssigned;
 
 class HandleActivityAssignedInterstitialRedirect extends HandleRedirectListener
 {
-
     /**
      * Handle the event.
      */
@@ -23,7 +22,7 @@ class HandleActivityAssignedInterstitialRedirect extends HandleRedirectListener
         } else {
             $payloadUrl = route('requests.show', [
                 'request' => $event->getProcessRequestToken()
-                    ->getAttribute('process_request_id')
+                    ->getAttribute('process_request_id'),
             ]);
         }
         $this->setRedirectTo($request,
@@ -31,6 +30,7 @@ class HandleActivityAssignedInterstitialRedirect extends HandleRedirectListener
             [
                 'payloadUrl' => $payloadUrl,
                 'tokenId' => $event->getProcessRequestToken()->id,
+                'nodeId' => $event->getProcessRequestToken()->element_id,
                 'allowInterstitial' => $event->getProcessRequestToken()->getInterstitial()['allow_interstitial'],
             ]
         );
