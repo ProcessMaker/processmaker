@@ -32,7 +32,9 @@ class RemoveInterstitialKeys extends Upgrade
      */
     public function up()
     {
-        $firstInterstitial = Screen::where('key', 'interstitial')->orderBy('id', 'ASC')->first();
+        $firstInterstitial = Screen::where('key', 'interstitial')
+            ->where('description', 'Screen for the interstitial')
+            ->orderBy('id', 'ASC')->first();
         if (!$firstInterstitial) {
             return;
         }
