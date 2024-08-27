@@ -29,7 +29,9 @@
           :screen="screen"
           :render-controls="displayBuilder"
           :process-id="processId"
+          :show-templates-panel="showTemplatesPanel"
           @change="updateConfig"
+          @close-templates-panel="closeTemplatesPanel"
         >
           <data-loading-basic :is-loaded="false" />
         </vue-form-builder>
@@ -603,6 +605,7 @@ export default {
         ],
       },
       iframeHeight: "600px",
+      showTemplatesPanel: false,
     };
   },
   computed: {
@@ -1028,6 +1031,11 @@ export default {
     },
     openTemplatesPanel() {
       console.log('HIT OPEN TEMPLATE PANEL');
+      this.showTemplatesPanel = true;
+    },
+    closeTemplatesPanel() {
+      console.log('HIT CLOSE TEMPLATE PANEL');
+      this.showTemplatesPanel = false;
     },
     openComputedProperties() {
       this.$refs.computedProperties.show();
