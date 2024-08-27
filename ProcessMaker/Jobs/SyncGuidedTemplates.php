@@ -211,7 +211,7 @@ class SyncGuidedTemplates implements ShouldQueue
             }
 
             if (Arr::get($asset, 'type') === 'Screen' && Arr::get($asset, 'attributes.key') === 'interstitial') {
-                $payload['export'][$key]['attributes']['key'] = null;
+                Arr::set($payload, "export.{$key}.attributes.key", null);
             }
         }
 
