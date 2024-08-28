@@ -832,4 +832,43 @@ class TasksTest extends TestCase
 
         $this->assertEquals($expectedFields, $jsonResponse);
     }
+
+    public function testGetAllTaskTypes()
+    {
+        $request = ProcessRequest::factory()->create();
+
+        $taskAttributes = [
+            'process_request_id' => $request->id,
+            'process_id' => $request->process_id,
+            'element_type' => 'task',
+            'user_id' => $this->user->id,
+        ];
+
+        $userTask = ProcessRequestToken::factory()->create($taskAttributes);
+        $scriptTask = ProcessRequestToken::factory()->create([...$taskAttributes, 'element_type' => 'scriptTask']);
+        $gatewayTask = ProcessRequestToken::factory()->create([...$taskAttributes, 'element_type' => 'gateway']);
+
+        $queryString = http_build_query([
+            'pmql' => "process_request_id = {$request->id}",
+        ]);
+        $response = $this->apiCall('GET', '/tasks?' . $queryString);
+
+        // Assert default behavior: only human tasks
+        $response = $response->json();
+        $this->assertCount(1, $response['data']);
+        $this->assertEquals($userTask->id, $response['data'][0]['id']);
+
+        $queryString = http_build_query([
+            'pmql' => "process_request_id = {$request->id}",
+            'all_tasks' => 1,
+        ]);
+        $response = $this->apiCall('GET', '/tasks?' . $queryString);
+
+        // Assert all tasks returned
+        $response = $response->json();
+        $this->assertCount(3, $response['data']);
+        $this->assertEquals($userTask->id, $response['data'][0]['id']);
+        $this->assertEquals($scriptTask->id, $response['data'][1]['id']);
+        $this->assertEquals($gatewayTask->id, $response['data'][2]['id']);
+    }
 }
