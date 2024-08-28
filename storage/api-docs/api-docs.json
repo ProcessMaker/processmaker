@@ -4536,6 +4536,15 @@
                         }
                     },
                     {
+                        "name": "all_tasks",
+                        "in": "query",
+                        "description": "Return all task types. Not just user tasks.",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
                         "$ref": "#/components/parameters/filter"
                     },
                     {
