@@ -31,6 +31,7 @@ class HandleActivityAssignedInterstitialRedirect extends HandleRedirectListener
                 'payloadUrl' => $payloadUrl,
                 'tokenId' => $event->getProcessRequestToken()->id,
                 'nodeId' => $event->getProcessRequestToken()->element_id,
+                'userId' => $event->getProcessRequestToken()->user_id,
                 'allowInterstitial' => $event->getProcessRequestToken()->getInterstitial()['allow_interstitial'],
             ]
         );
