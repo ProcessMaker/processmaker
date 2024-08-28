@@ -197,6 +197,7 @@ trait ScriptDockerNayraTrait
                     $output,
                     $status
                 );
+                $ip = explode(' ', trim($ip))[0];
             } else {
                 $ip = exec(
                     $docker . ' inspect --format '
@@ -296,9 +297,9 @@ trait ScriptDockerNayraTrait
             . $image
         );
         $builder->info('Get IP address of the nayra container');
-        $ip = self::findNayraAddresses($docker, $instanceName, 30);
-        if ($ip) {
-            $builder->info('Nayra container IP: ' . $ip);
+        $found = self::findNayraAddresses($docker, $instanceName, 30);
+        if ($found) {
+            $builder->info('Nayra container IP: ' . self::getNayraAddresses()[0]);
             $builder->sendEvent(0, 'done');
         } else {
             throw new UnexpectedValueException('Could not get IP address of the nayra container');
