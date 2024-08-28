@@ -273,8 +273,8 @@ export default {
   margin-top: 16px;
   padding: 16px 0;
   border-radius: 16px;
-  border: 0.883px solid rgba(205, 221, 238, 0.50);
-  background: linear-gradient(0deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.92) 100%), #57D490;
+  border: 0.88px solid #CDDDEE;
+  background: white;
   display: flex;
   justify-content: center;
   align-items: center;
