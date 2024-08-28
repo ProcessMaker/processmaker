@@ -4,7 +4,7 @@
       v-if="startEvent"
       class="btn btn-success start-button"
       type="button"
-      :disabled="processEvents.length === 0"
+      :disabled='isStartButtonDisabled'
       @click="goToNewRequest(startEvent)"
     >
       <i class="fa fa-play-circle" />
@@ -17,6 +17,7 @@
       data-toggle="dropdown"
       aria-haspopup="true"
       aria-expanded="false"
+      :disabled='isStartButtonDisabled'
     >
       <i class="fa fa-play-circle" />
       <span class="pl-2"> {{ displayTitle }} </span>
@@ -30,22 +31,26 @@
       >
         <div v-if="event.webEntry" 
              class="start-event"
-             @click="copyLink(event)">
+             @click="copyLink(event)"
+             v-b-tooltip.hover.top.options="{ boundary: 'viewport' }" 
+             :title=" sizeEventName(event.name) ? event.name : '' ">
           <button class="btn button-start-event">
             <i class="fas fa-link pr-1" />
           </button>
-          {{ event.name }}
+          {{ formatEventName(event.name) }}
           <div class="start-event-label">
             {{ $t('Copy link') }}  
           </div>
         </div>
         <div v-else
              class="start-event"
-             @click="goToNewRequest(event.id)">
+             @click="goToNewRequest(event.id)"
+             v-b-tooltip.hover.top.options="{ boundary: 'viewport' }" 
+             :title=" sizeEventName(event.name) ? event.name: '' ">
           <button class="btn button-start-event">
             <i class="fas fa-play-circle pr-1" />  
           </button>
-          {{ event.name }}
+          {{ formatEventName(event.name) }}
           <div class="start-event-label">
             {{ $t('Start') }}
           </div>
@@ -80,9 +85,10 @@ export default {
       anonUserId: "2",
     };
   },
-  mounted() {
-  },
   computed: {
+    isStartButtonDisabled() {
+      return this.processEvents.length === 0;
+    },
     displayTitle() {
       if (this.title) {
         return this.title;
@@ -121,6 +127,15 @@ export default {
       } else {
         ProcessMaker.alert(this.$t("Link copied"), "success");
       }
+    },
+    sizeEventName(string){
+      return string.length > 25;
+    },
+    formatEventName(string) {
+      if (this.sizeEventName(string)) {
+        string = string.slice(0, 25) + "...";
+      }
+      return string;
     },
   },
 };

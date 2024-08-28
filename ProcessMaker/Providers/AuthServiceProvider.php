@@ -145,6 +145,7 @@ class AuthServiceProvider extends ServiceProvider
 
         $dataSourceClass = 'ProcessMaker\Packages\Connectors\DataSources\Models\DataSource';
         $decisionTableClass = 'ProcessMaker\Package\PackageDecisionEngine\Models\DecisionTable';
+        $flowGenieTableClass = 'ProcessMaker\Package\PackageAi\Models\FlowGenie';
 
         // Get the assets associated with the user's projects
         $projectAssets = DB::table('project_assets')
@@ -176,6 +177,9 @@ class AuthServiceProvider extends ServiceProvider
             }
             if (class_exists($decisionTableClass) && $assetType === $decisionTableClass) {
                 $allowedEndpoints[] = "decision-tables/table-builder/{$assetId}/edit";
+            }
+            if (class_exists($flowGenieTableClass) && $assetType === $flowGenieTableClass) {
+                $allowedEndpoints[] = "designer/flow-genies/{$assetId}/edit";
             }
         }
 
@@ -218,7 +222,15 @@ class AuthServiceProvider extends ServiceProvider
 
     private function checkForListCreateOperations($permission)
     {
-        $projectAssetTypes = ['process', 'screen', 'script', 'data-source', 'decision_table', 'pm-block'];
+        $projectAssetTypes = [
+            'process',
+            'screen',
+            'script',
+            'data-source',
+            'decision_table',
+            'pm-block',
+            'flow_genies'
+        ];
 
         foreach ($projectAssetTypes as $asset) {
             if (Str::contains($permission->name, $asset)) {

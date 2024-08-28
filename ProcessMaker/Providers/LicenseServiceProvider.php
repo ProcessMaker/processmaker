@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\ServiceProvider;
 use Predis\Connection\ConnectionException;
 use ProcessMaker\LicensedPackageManifest;
+use RedisException;
 
 /**
  * Provide our ProcessMaker specific services.
@@ -27,7 +28,7 @@ class LicenseServiceProvider extends ServiceProvider
 
         try {
             $expires = Cache::get(LicensedPackageManifest::EXPIRE_CACHE_KEY);
-        } catch (ConnectionException $e) {
+        } catch (ConnectionException | RedisException $e) {
             $expires = null;
         }
 

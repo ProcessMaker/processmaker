@@ -45,6 +45,7 @@ import StartPermission from "./components/inspector/StartPermission";
 import Interstitial from "./components/inspector/Interstitial";
 import SelectUserGroup from "../../components/SelectUserGroup";
 import validateScreenRef from "./validateScreenRef";
+import validateFlowGenieRef from "./validateFlowGenieRef";
 import ErrorHandlingTimeout from "./components/inspector/ErrorHandlingTimeout";
 import ErrorHandlingRetryAttempts from "./components/inspector/ErrorHandlingRetryAttempts";
 import ErrorHandlingRetryWaitTime from "./components/inspector/ErrorHandlingRetryWaitTime";
@@ -489,3 +490,4 @@ ProcessMaker.EventBus.$on(
   });
 
 validateScreenRef();
+validateFlowGenieRef();

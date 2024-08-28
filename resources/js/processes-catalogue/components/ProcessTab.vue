@@ -86,6 +86,7 @@
                       :fetch-on-created="false"
                       :saved-search="item.idSavedSearch"
                       no-results-message="launchpad"
+                      :advancedFilterProp="item.advanced_filter"
                       @in-overdue="setInOverdueMessage">
           </tasks-list>
         </template>
@@ -171,10 +172,20 @@
     data() {
       return {
         tabsList: [{
+            type: "myTasks",
+            name: this.$t("My Tasks"),
+            filter: "",
+            pmql: `(user_id = ${ProcessMaker.user.id}) AND (process_id = ${this.process.id})`,
+            advanced_filter: null,
+            columns: window.Processmaker.defaultColumns || [],
+            seeTabOnMobile: true
+          },
+          {
             type: "myCases",
             name: this.$t("My Cases"),
             filter: "",
             pmql: `(user_id = ${ProcessMaker.user.id}) AND (process_id = ${this.process.id})`,
+            advanced_filter: null,
             columns: [
               {
                 label: "Case #",
@@ -216,13 +227,6 @@
                 width: 160
               }
             ],
-            seeTabOnMobile: true
-          }, {
-            type: "myTasks",
-            name: this.$t("My Tasks"),
-            filter: "",
-            pmql: `(user_id = ${ProcessMaker.user.id}) AND (process_id = ${this.process.id})`,
-            columns: window.Processmaker.defaultColumns || [],
             seeTabOnMobile: true
           }
         ],

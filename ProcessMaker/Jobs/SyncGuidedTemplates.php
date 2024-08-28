@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Log;
@@ -109,6 +110,9 @@ class SyncGuidedTemplates implements ShouldQueue
         // Check for template changes and determine if helper process and template process need to be imported
         [$importHelperProcess, $importTemplateProcess] = $this->checkForTemplateChanges($template);
 
+        // Check for template asset hash changes
+        $assetsHashChanged = $this->checkForTemplateAssetChanges($template);
+
         // Fetch payloads if necessary
         $helperProcessPayload = $importHelperProcess ?
             $this->fetchPayload($this->buildTemplateUrl($config, $template['helper_process'])) : null;
@@ -138,8 +142,10 @@ class SyncGuidedTemplates implements ShouldQueue
         // Create a media collection for template assets
         $mediaCollectionName = $this->createMediaCollection($guidedTemplate);
 
-        // Import template assets and associate with the media collection
-        $this->importTemplateAssets($template, $config, $mediaCollectionName, $guidedTemplate);
+        if ($assetsHashChanged) {
+            // Import template assets and associate with the media collection
+            $this->importTemplateAssets($template, $config, $mediaCollectionName, $guidedTemplate);
+        }
 
         // Save the media collection name to the guided template and persist changes
         $guidedTemplate->media_collection = $mediaCollectionName;
@@ -202,6 +208,10 @@ class SyncGuidedTemplates implements ShouldQueue
             if (in_array($asset['type'], ['Process', 'Screen', 'Script',
                 'Collections', 'DataConnector', 'ProcessTemplates'])) {
                 $payload['export'][$key]['attributes']['asset_type'] = $assetType;
+            }
+
+            if (Arr::get($asset, 'type') === 'Screen' && Arr::get($asset, 'attributes.key') === 'interstitial') {
+                Arr::set($payload, "export.{$key}.attributes.key", null);
             }
         }
 
@@ -274,6 +284,7 @@ class SyncGuidedTemplates implements ShouldQueue
     {
         // Clear the collection to prevent duplicate images
         $guidedTemplate->clearMediaCollection($mediaCollectionName);
+
         // Build asset urls
         $templateIconUrl = $this->buildTemplateUrl($config, $template['assets']['icon']);
         $templateCardBackgroundUrl = $this->buildTemplateUrl($config, $template['assets']['card-background']);
@@ -345,5 +356,29 @@ class SyncGuidedTemplates implements ShouldQueue
         }
 
         return [$helperProcessHashChanged, $templateProcessHashChanged];
+    }
+
+    private function checkForTemplateAssetChanges($template)
+    {
+        // Initialize variables to track changes
+        $assetHashChanged = true;
+        // Retrieve wizard template details if it exists
+        $wizardTemplate =
+            WizardTemplate::where('unique_template_id', $template['template_details']['unique-template-id'])
+            ->select('template_details')
+            ->first();
+
+        if ($wizardTemplate) {
+            $wizardTemplateDetails = json_decode($wizardTemplate->template_details, true);
+            // Check if helper process hash has changed
+            if (isset($wizardTemplateDetails['asset_hash']) &&
+                $template['template_details']['asset_hash'] ===
+                $wizardTemplateDetails['asset_hash'] ||
+                !isset($wizardTemplateDetails['asset_hash'])) {
+                $assetHashChanged = false;
+            }
+        }
+
+        return $assetHashChanged;
     }
 }

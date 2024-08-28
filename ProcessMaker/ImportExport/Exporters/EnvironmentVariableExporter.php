@@ -12,6 +12,8 @@ class EnvironmentVariableExporter extends ExporterBase
 
     public $handleDuplicatesByIncrementing = ['name'];
 
+    public $incrementStringSeparator = '_';
+
     public function export() : void
     {
         $this->addReference(DependentType::ENVIRONMENT_VARIABLE_VALUE, $this->model->value);
