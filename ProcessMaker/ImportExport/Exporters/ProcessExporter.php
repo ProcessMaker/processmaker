@@ -317,10 +317,10 @@ class ProcessExporter extends ExporterBase
             $screenId = $element->getAttribute('pm:screenRef');
             $interstitialScreenId = $element->getAttribute('pm:interstitialScreenRef');
             $allowInterstitial = $element->getAttribute('pm:allowInterstitial');
-            
+
             // Geting object screens ABE parameters [screenEmailRef, screenCompleteRef]
             $configEmail = json_decode($element->getAttribute('pm:configEmail'), true);
-            $screenEmailRefId =  $configEmail['screenEmailRef'] ?? null;
+            $screenEmailRefId = $configEmail['screenEmailRef'] ?? null;
             $screenCompleteRefId = $configEmail['screenCompleteRef'] ?? null;
 
             if (is_numeric($screenId)) {
@@ -378,7 +378,7 @@ class ProcessExporter extends ExporterBase
         }
 
         //  Config ABE Screens
-        $this->importABEScreens();        
+        $this->importABEScreens();
     }
 
     private function importABEScreens()

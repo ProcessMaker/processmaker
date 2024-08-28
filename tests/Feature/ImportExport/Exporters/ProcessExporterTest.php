@@ -492,7 +492,7 @@ class ProcessExporterTest extends TestCase
         $screenB = Screen::factory()->create(['title' => 'Screen B', 'type' => 'DISPLAY']);
 
         // Set id's of screens
-        $path ='/bpmn:definitions/bpmn:process/bpmn:task';
+        $path = '/bpmn:definitions/bpmn:process/bpmn:task';
         $configEmail = json_decode(Utils::getAttributeAtXPath($process, $path, 'pm:configEmail'), true);
         $configEmail['screenEmailRef'] = $screenA->id;
         $configEmail['screenCompleteRef'] = $screenB->id;
@@ -526,14 +526,14 @@ class ProcessExporterTest extends TestCase
         $element = Utils::getElementByPath($definitions, $path);
 
         $configEmail = json_decode($element->getAttribute('pm:configEmail'), true);
-        $screenEmailRefId =  $configEmail['screenEmailRef'];
+        $screenEmailRefId = $configEmail['screenEmailRef'];
         $screenCompleteRefId = $configEmail['screenCompleteRef'];
 
         $importedScreenEmail = Screen::where('id', $screenEmailRefId)->firstOrFail();
         $importedScreenCompleted = Screen::where('id', $screenCompleteRefId)->firstOrFail();
 
-        $this->assertEquals($importedScreenEmail->title, $screenA->title);   
-        $this->assertEquals($importedScreenCompleted->title, $screenB->title);        
+        $this->assertEquals($importedScreenEmail->title, $screenA->title);
+        $this->assertEquals($importedScreenCompleted->title, $screenB->title);
     }
 
     // Process without defined ABE screens
@@ -550,7 +550,7 @@ class ProcessExporterTest extends TestCase
         });
 
         // Assert that the process and screen exist in the database
-        $this->assertDatabaseHas('processes', ['name' => $process->name]);      
+        $this->assertDatabaseHas('processes', ['name' => $process->name]);
     }
 
     // Process without ABE properties
@@ -567,6 +567,6 @@ class ProcessExporterTest extends TestCase
         });
 
         // Assert that the process and screen exist in the database
-        $this->assertDatabaseHas('processes', ['name' => $process->name]);      
+        $this->assertDatabaseHas('processes', ['name' => $process->name]);
     }
 }
