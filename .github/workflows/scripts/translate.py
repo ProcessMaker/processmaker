@@ -53,7 +53,7 @@ def main():
             while retry_count < max_retries:
                 try:
                     start_time = time.time()
-                    response=client.chat.completions.create(model='gpt-4',
+                    response=client.chat.completions.create(model='gpt-4o',
                     messages=[
                       {
                         "role": "user",

@@ -66,6 +66,11 @@ class ScreenExporter extends ExporterBase
         $this->associateCategories(ScreenCategory::class, 'screen_category_id');
         $screen->watchers = $watchers;
 
+        // There should only be one default interstitial screen
+        if ($screen->key === 'interstitial') {
+            $screen->key = null;
+        }
+
         $success = $screen->saveOrFail();
 
         return $success;

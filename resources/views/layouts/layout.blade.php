@@ -93,7 +93,7 @@
 <a class="skip-navigation alert alert-info" role="link" href="#main" tabindex="1">{{ __('Skip to Content') }}</a>
 <div class="d-flex w-100 mw-100 h-100 mh-100" id="app-container">
   @if (shouldShow('leftSideBar'))
-  <div id="sidebar" class="d-print-none" :class="{expanded: expanded}">
+  <div id="sidebar" class="d-print-none {{sidebar_class()}}" :class="{expanded: expanded}">
       @yield('sidebar')
   </div>
   @else
