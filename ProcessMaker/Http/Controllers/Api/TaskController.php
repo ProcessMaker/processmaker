@@ -27,6 +27,7 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\User;
+use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Notifications\TaskReassignmentNotification;
 use ProcessMaker\Query\SyntaxError;
 use ProcessMaker\SanitizeHelper;
@@ -282,6 +283,11 @@ class TaskController extends Controller
     {
         // Authorized in policy
         return new ApiResource($screen->versionFor($task->processRequest));
+    }
+
+    public function setViewed(Request $request, ProcessRequestToken $task)
+    {
+        return UserResourceView::setViewed(Auth::user(), $task);
     }
 
     public function eligibleRollbackTask(Request $request, ProcessRequestToken $task)
