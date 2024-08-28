@@ -481,4 +481,92 @@ class ProcessExporterTest extends TestCase
 
         return $media;
     }
+
+    // Process with ABE screens
+    public function testProcessABEScreen()
+    {
+        // Create process from template
+        $process = $this->createProcess('process-with-abe-screen', ['name' => 'Process with abe']);
+        // Create screens
+        $screenA = Screen::factory()->create(['title' => 'Screen A', 'type' => 'EMAIL']);
+        $screenB = Screen::factory()->create(['title' => 'Screen B', 'type' => 'DISPLAY']);
+
+        // Set id's of screens
+        $path ='/bpmn:definitions/bpmn:process/bpmn:task';
+        $configEmail = json_decode(Utils::getAttributeAtXPath($process, $path, 'pm:configEmail'), true);
+        $configEmail['screenEmailRef'] = $screenA->id;
+        $configEmail['screenCompleteRef'] = $screenB->id;
+        Utils::setAttributeAtXPath($process, $path, 'pm:configEmail', json_encode($configEmail));
+
+        $process->save();
+
+        // Export and Import process
+        $this->runExportAndImport($process, ProcessExporter::class, function () use ($process, $screenA, $screenB) {
+            $process->forceDelete();
+            $screenA->forceDelete();
+            $screenB->forceDelete();
+            $this->assertDatabaseMissing('processes', ['name' => $process->name]);
+            $this->assertDatabaseMissing('screens', ['title' => $screenA->title]);
+            $this->assertDatabaseMissing('screens', ['title' => $screenB->title]);
+        });
+
+        // Assert that the process and screen exist in the database
+        $this->assertDatabaseHas('processes', ['name' => $process->name]);
+        $this->assertDatabaseHas('screens', ['title' => $screenA->title]);
+        $this->assertDatabaseHas('screens', ['title' => $screenB->title]);
+
+        // Get imported process
+        $process = Process::where('name', 'Process with abe')->firstOrFail();
+
+        // Get task config
+        $path = '/bpmn:definitions/bpmn:process/bpmn:task';
+
+        // Assert that screens have been imported properly
+        $definitions = $process->getDefinitions(true);
+        $element = Utils::getElementByPath($definitions, $path);
+
+        $configEmail = json_decode($element->getAttribute('pm:configEmail'), true);
+        $screenEmailRefId =  $configEmail['screenEmailRef'];
+        $screenCompleteRefId = $configEmail['screenCompleteRef'];
+
+        $importedScreenEmail = Screen::where('id', $screenEmailRefId)->firstOrFail();
+        $importedScreenCompleted = Screen::where('id', $screenCompleteRefId)->firstOrFail();
+
+        $this->assertEquals($importedScreenEmail->title, $screenA->title);   
+        $this->assertEquals($importedScreenCompleted->title, $screenB->title);        
+    }
+
+    // Process without defined ABE screens
+    public function testProcessWithoutABEScreen()
+    {
+        // Create process from template
+        $process = $this->createProcess('process-without-abe-screen', ['name' => 'Process without abe screens']);
+        $process->save();
+
+        // Export and Import process
+        $this->runExportAndImport($process, ProcessExporter::class, function () use ($process) {
+            $process->forceDelete();
+            $this->assertDatabaseMissing('processes', ['name' => $process->name]);
+        });
+
+        // Assert that the process and screen exist in the database
+        $this->assertDatabaseHas('processes', ['name' => $process->name]);      
+    }
+
+    // Process without ABE properties
+    public function testProcessWithoutABEProperties()
+    {
+        // Create process from template
+        $process = $this->createProcess('process-without-abe-properties', ['name' => 'Process without abe properties']);
+        $process->save();
+
+        // Export and Import process
+        $this->runExportAndImport($process, ProcessExporter::class, function () use ($process) {
+            $process->forceDelete();
+            $this->assertDatabaseMissing('processes', ['name' => $process->name]);
+        });
+
+        // Assert that the process and screen exist in the database
+        $this->assertDatabaseHas('processes', ['name' => $process->name]);      
+    }
 }
