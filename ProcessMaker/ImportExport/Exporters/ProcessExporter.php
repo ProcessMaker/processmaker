@@ -564,7 +564,7 @@ class ProcessExporter extends ExporterBase
                     // Set the new attribute value at the specified XPath
                     Utils::setAttributeAtXPath(
                         $this->model, $path, self::PM_ELEMENT_DESTINATION,
-                        htmlspecialchars($newElementDestination, ENT_QUOTES)
+                        $newElementDestination
                     );
                 }
             }
