@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Str;
 use ProcessMaker\Models\ProcessMakerModel;
 
 class DevLink extends ProcessMakerModel
@@ -27,8 +28,18 @@ class DevLink extends ProcessMakerModel
             'client_id' => $this->client_id,
             'redirect_url' => route('devlink.index'),
             'resource_type' => 'code',
+            'state' => $this->generateNewState(),
         ]);
 
         return $this->url . '/oauth/authorize?' . $params;
+    }
+
+    private function generateNewState()
+    {
+        $uuid = (string) Str::orderedUuid();
+        $this->state = $uuid;
+        $this->saveOrFail();
+
+        return $uuid;
     }
 }

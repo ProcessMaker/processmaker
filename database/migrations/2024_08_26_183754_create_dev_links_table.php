@@ -22,6 +22,7 @@ class CreateDevLinksTable extends Migration
             $table->text('access_token')->nullable();
             $table->text('refresh_token')->nullable();
             $table->integer('expires_in')->nullable();
+            $table->uuid('state')->unique()->nullable();
             $table->timestamps();
         });
     }

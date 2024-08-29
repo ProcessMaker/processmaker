@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
+use Illuminate\Support\Facades\Http;
 use Laravel\Passport\Client;
 use ProcessMaker\Models\DevLink;
 use Tests\Feature\Shared\RequestHelper;
@@ -11,9 +12,10 @@ class DevLinkTest extends TestCase
 {
     use RequestHelper;
 
-    public function testIndex()
+    public function testIndexStoreClientCredentials()
     {
         $devLink = DevLink::factory()->create();
+
         $params = [
             'devlink_id' => $devLink->id,
             'client_id' => 123,
@@ -21,11 +23,51 @@ class DevLinkTest extends TestCase
         ];
 
         $response = $this->webCall('GET', route('devlink.index', $params));
-        $response->assertRedirect($devLink->getOauthRedirectUrl());
 
         $devLink->refresh();
+
+        $expectedRedirectParams = [
+            'client_id' => 123,
+            'redirect_url' => route('devlink.index'),
+            'resource_type' => 'code',
+            'state' => $devLink->state,
+        ];
+        $expectedRedirectUrl = $devLink->url . '/oauth/authorize?' . http_build_query($expectedRedirectParams);
+        $response->assertRedirect($expectedRedirectUrl);
+
         $this->assertEquals($devLink->client_id, $params['client_id']);
         $this->assertEquals($devLink->client_secret, $params['client_secret']);
+    }
+
+    public function testIndexStoreOauthCredentials()
+    {
+        $devLink = DevLink::factory()->create([
+            'url' => 'http://remote-instance.test',
+        ]);
+
+        // Generate state uuid
+        $devLink->getOauthRedirectUrl();
+
+        $getTokenUrl = $devLink->url . '/oauth/token';
+        Http::fake([
+            $getTokenUrl => Http::response([
+                'access_token' => '123abc',
+                'refresh_token' => '456def',
+                'expires_in' => 3600,
+            ]),
+        ]);
+
+        $params = [
+            'state' => $devLink->state,
+            'code' => '12345',
+        ];
+        $response = $this->webCall('GET', route('devlink.index', $params));
+        $response->assertStatus(200);
+
+        $devLink->refresh();
+        $this->assertEquals($devLink->access_token, '123abc');
+        $this->assertEquals($devLink->refresh_token, '456def');
+        $this->assertEquals($devLink->expires_in, 3600);
     }
 
     public function testGetOauthClient()

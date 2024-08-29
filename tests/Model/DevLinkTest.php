@@ -31,15 +31,22 @@ class DevLinkTest extends TestCase
             'client_id' => 123,
         ]);
 
+        $actualUrl = $devLink->getOauthRedirectUrl();
+
+        // Refresh devlink to get state created by getOauthRedirectUrl
+        $devLink->refresh();
+        $state = $devLink->state;
+
         $expectedQueryString = http_build_query([
             'client_id' => 123,
             'redirect_url' => route('devlink.index'),
             'resource_type' => 'code',
+            'state' => $state,
         ]);
 
         $this->assertEquals(
-            $devLink->getOauthRedirectUrl(),
-            $devLink->url . '/oauth/authorize?' . $expectedQueryString
+            $devLink->url . '/oauth/authorize?' . $expectedQueryString,
+            $actualUrl,
         );
     }
 }
