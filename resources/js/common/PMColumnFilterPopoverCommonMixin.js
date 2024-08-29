@@ -14,9 +14,7 @@ const PMColumnFilterCommonMixin = {
   data() {
     return {
       advancedFilter: {},
-      userId: window.Processmaker.userId,
-      viewAssignee: [],
-      viewParticipants: [],
+      userId: window.Processmaker.userId
     };
   },
   watch: {
