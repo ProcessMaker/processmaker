@@ -18,24 +18,32 @@ class DevLinkController extends Controller
             return redirect($updatedDevLink->getOauthRedirectUrl());
         }
 
-        $this->storeOauthCredentials($request);
+        $updatedDevLink = $this->storeOauthCredentials($request);
+        if ($updatedDevLink) {
+            return redirect(route('devlink.index'));
+        }
 
         return view('admin.devlink.index');
     }
 
     public function getOauthClient(Request $request)
     {
+        $request->validate([
+            'devlink_id' => 'required',
+            'redirect_uri' => ['required', 'url'],
+        ]);
+
         $devLinkId = $request->input('devlink_id');
-        $redirectUrl = $request->input('redirect_url');
+        $redirectUri = $request->input('redirect_uri');
 
         $client = Client::where([
             'name' => 'devlink',
-            'redirect' => $redirectUrl,
+            'redirect' => $redirectUri,
         ])->first();
 
         if (!$client) {
             $clientRepository = app('Laravel\Passport\ClientRepository');
-            $client = $clientRepository->create(null, 'devlink', $redirectUrl);
+            $client = $clientRepository->create(null, 'devlink', $redirectUri);
         }
 
         $query = http_build_query([
@@ -44,7 +52,7 @@ class DevLinkController extends Controller
             'client_secret' => $client->secret,
         ]);
 
-        return redirect($redirectUrl . '?' . $query);
+        return redirect($redirectUri . '?' . $query);
     }
 
     private function storeClientCredentials(Request $request)
@@ -88,6 +96,10 @@ class DevLinkController extends Controller
                 'refresh_token' => $response['refresh_token'],
                 'expires_in' => $response['expires_in'],
             ]);
+
+            return $devlink;
         }
+
+        return false;
     }
 }

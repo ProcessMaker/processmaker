@@ -28,8 +28,8 @@ class DevLinkTest extends TestCase
 
         $expectedRedirectParams = [
             'client_id' => 123,
-            'redirect_url' => route('devlink.index'),
-            'resource_type' => 'code',
+            'redirect_uri' => route('devlink.index'),
+            'response_type' => 'code',
             'state' => $devLink->state,
         ];
         $expectedRedirectUrl = $devLink->url . '/oauth/authorize?' . http_build_query($expectedRedirectParams);

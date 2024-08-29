@@ -6,6 +6,7 @@ use ProcessMaker\Http\Controllers\Api\ChangePasswordController;
 use ProcessMaker\Http\Controllers\Api\CommentController;
 use ProcessMaker\Http\Controllers\Api\CssOverrideController;
 use ProcessMaker\Http\Controllers\Api\DebugController;
+use ProcessMaker\Http\Controllers\Api\DevLinkController;
 use ProcessMaker\Http\Controllers\Api\EnvironmentVariablesController;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\Http\Controllers\Api\FileController;
@@ -362,4 +363,12 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // Recommendations
     Route::get('recommendations', [RecommendationsController::class, 'index'])->name('recommendations.index');
     Route::put('recommendations/{recommendationUser}', [RecommendationsController::class, 'update'])->name('recommendations.update');
+
+    // DevLink
+    Route::middleware('admin')->group(function () {
+        Route::get('devlink', [DevLinkController::class, 'index'])->name('devlink.index');
+        Route::post('devlink', [DevLinkController::class, 'store'])->name('devlink.store');
+        Route::get('devlink/{devLink}/ping', [DevLinkController::class, 'ping'])->name('devlink.ping');
+        Route::get('devlink/pong', [DevLinkController::class, 'ping'])->name('devlink.pong');
+    });
 });

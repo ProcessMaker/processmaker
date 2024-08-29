@@ -15,7 +15,7 @@ class DevLinkTest extends TestCase
 
         $expectedQueryString = http_build_query([
             'devlink_id' => $devLink->id,
-            'redirect_url' => route('devlink.index'),
+            'redirect_uri' => route('devlink.index'),
         ]);
 
         $this->assertEquals(
@@ -39,8 +39,8 @@ class DevLinkTest extends TestCase
 
         $expectedQueryString = http_build_query([
             'client_id' => 123,
-            'redirect_url' => route('devlink.index'),
-            'resource_type' => 'code',
+            'redirect_uri' => route('devlink.index'),
+            'response_type' => 'code',
             'state' => $state,
         ]);
 

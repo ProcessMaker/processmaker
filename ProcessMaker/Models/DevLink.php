@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use ProcessMaker\Models\ProcessMakerModel;
 
@@ -16,7 +17,7 @@ class DevLink extends ProcessMakerModel
     {
         $params = [
             'devlink_id' => $this->id,
-            'redirect_url' => route('devlink.index'),
+            'redirect_uri' => route('devlink.index'),
         ];
 
         return $this->url . route('devlink.oauth-client', $params, false);
@@ -26,12 +27,17 @@ class DevLink extends ProcessMakerModel
     {
         $params = http_build_query([
             'client_id' => $this->client_id,
-            'redirect_url' => route('devlink.index'),
-            'resource_type' => 'code',
+            'redirect_uri' => route('devlink.index'),
+            'response_type' => 'code',
             'state' => $this->generateNewState(),
         ]);
 
         return $this->url . '/oauth/authorize?' . $params;
+    }
+
+    public function client()
+    {
+        return Http::withToken($this->access_token)->baseUrl($this->url);
     }
 
     private function generateNewState()
