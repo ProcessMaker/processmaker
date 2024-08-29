@@ -260,26 +260,6 @@ const PMColumnFilterCommonMixin = {
 
       return operators;
     },
-    getAssignee(filter) {
-      ProcessMaker.apiClient.get(this.getUrlUsers(filter)).then(response => {
-        for (let i in response.data.data) {
-          this.viewAssignee.push({
-            text: response.data.data[i].username,
-            value: response.data.data[i].id
-          });
-        }
-      });
-    },
-    getParticipants(filter) {
-      ProcessMaker.apiClient.get(this.getUrlUsers(filter)).then(response => {
-        for (let i in response.data.data) {
-          this.viewParticipants.push({
-            text: response.data.data[i].username,
-            value: response.data.data[i].id
-          });
-        }
-      });
-    },
     advancedFilterInit() {
       for (let i in this.tableHeaders) {
         if (!(this.tableHeaders[i].field in this.advancedFilter)) {
