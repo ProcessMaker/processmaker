@@ -1,7 +1,7 @@
 <template>
   <div>
     <span class="title">
-      {{ $t('Process Chart') }}
+      {{ $t('Analytics') }}
     </span>
     <base-chart ref="baseChart" :process="process"></base-chart>
   </div>
