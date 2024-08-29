@@ -9,6 +9,8 @@ class DevLink extends ProcessMakerModel
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     public function getClientUrl()
     {
         $params = [
@@ -17,5 +19,16 @@ class DevLink extends ProcessMakerModel
         ];
 
         return $this->url . route('devlink.oauth-client', $params, false);
+    }
+
+    public function getOauthRedirectUrl()
+    {
+        $params = http_build_query([
+            'client_id' => $this->client_id,
+            'redirect_url' => route('devlink.index'),
+            'resource_type' => 'code',
+        ]);
+
+        return $this->url . '/oauth/authorize?' . $params;
     }
 }

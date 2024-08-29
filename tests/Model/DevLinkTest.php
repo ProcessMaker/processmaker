@@ -23,4 +23,23 @@ class DevLinkTest extends TestCase
             $devLink->getClientUrl()
         );
     }
+
+    public function testGetOauthRedirectUrl()
+    {
+        $devLink = DevLink::factory()->create([
+            'url' => 'https://remote-instance.test',
+            'client_id' => 123,
+        ]);
+
+        $expectedQueryString = http_build_query([
+            'client_id' => 123,
+            'redirect_url' => route('devlink.index'),
+            'resource_type' => 'code',
+        ]);
+
+        $this->assertEquals(
+            $devLink->getOauthRedirectUrl(),
+            $devLink->url . '/oauth/authorize?' . $expectedQueryString
+        );
+    }
 }

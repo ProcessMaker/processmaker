@@ -3,7 +3,6 @@
 namespace Tests\Feature\Admin;
 
 use Laravel\Passport\Client;
-use Laravel\Passport\Passport;
 use ProcessMaker\Models\DevLink;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
@@ -14,7 +13,19 @@ class DevLinkTest extends TestCase
 
     public function testIndex()
     {
-        // Stores the client credentials if they are present in the request
+        $devLink = DevLink::factory()->create();
+        $params = [
+            'devlink_id' => $devLink->id,
+            'client_id' => 123,
+            'client_secret' => 'abc123',
+        ];
+
+        $response = $this->webCall('GET', route('devlink.index', $params));
+        $response->assertRedirect($devLink->getOauthRedirectUrl());
+
+        $devLink->refresh();
+        $this->assertEquals($devLink->client_id, $params['client_id']);
+        $this->assertEquals($devLink->client_secret, $params['client_secret']);
     }
 
     public function testGetOauthClient()

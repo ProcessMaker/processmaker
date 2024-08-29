@@ -11,7 +11,11 @@ class DevLinkController extends Controller
 {
     public function index(Request $request)
     {
-        $this->storeClientCredentials($request);
+        $updatedDevLink = $this->storeClientCredentials($request);
+
+        if ($updatedDevLink) {
+            return redirect($updatedDevLink->getOauthRedirectUrl());
+        }
 
         return view('admin.devlink.index');
     }
@@ -21,7 +25,6 @@ class DevLinkController extends Controller
         $devLinkId = $request->input('devlink_id');
         $redirectUrl = $request->input('redirect_url');
 
-        // Get the client with the name "devlink" or create it if it doesn't exist
         $client = Client::where([
             'name' => 'devlink',
             'redirect' => $redirectUrl,
@@ -49,13 +52,14 @@ class DevLinkController extends Controller
             $request->has('client_secret')
         ) {
             $devlink = DevLink::findOrFail($request->input('devlink_id'));
-            $devlink->url = $request->input('url');
-            $devlink->client_id = $request->input('client_id');
-            $devlink->client_secret = $request->input('client_secret');
-            $devlink->access_token = $request->input('access_token');
-            $devlink->refresh_token = $request->input('refresh_token');
-            $devlink->expires_in = $request->input('expires_in');
-            $devlink->save();
+            $devlink->update([
+                'client_id' => $request->input('client_id'),
+                'client_secret' => $request->input('client_secret'),
+            ]);
+
+            return $devlink;
         }
+
+        return false;
     }
 }
