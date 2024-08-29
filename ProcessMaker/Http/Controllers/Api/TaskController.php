@@ -74,6 +74,15 @@ class TaskController extends Controller
      *           type="integer",
      *         )
      *     ),
+     *     @OA\Parameter(
+     *         description="Return all task types. Not just user tasks.",
+     *         in="query",
+     *         name="all_tasks",
+     *         required=false,
+     *         @OA\Schema(
+     *           type="boolean",
+     *         )
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
