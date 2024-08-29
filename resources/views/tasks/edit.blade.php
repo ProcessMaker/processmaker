@@ -715,7 +715,6 @@
               return ProcessMaker.apiClient
               .put("drafts/" + this.task.id, draftData)
               .then((response) => {
-                // ProcessMaker.alert(this.$t('Saved'), 'success')
                 this.task.draft = _.merge(
                   {},
                   this.task.draft,
