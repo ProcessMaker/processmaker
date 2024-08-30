@@ -13,6 +13,14 @@ class DevLink extends ProcessMakerModel
 
     protected $guarded = [];
 
+    // Do not send these to the frontend
+    protected $hidden = [
+        'client_secret',
+        'access_token',
+        'refresh_token',
+        'state',
+    ];
+
     public function getClientUrl()
     {
         $params = [

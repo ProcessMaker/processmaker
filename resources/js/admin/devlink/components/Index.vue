@@ -29,8 +29,8 @@ onMounted(() => {
     });
 });
 
-const newName = ref('test');
-const newUrl = ref('http://processmaker-b.test');
+const newName = ref('');
+const newUrl = ref('');
 
 const clear = () => {
   newName.value = '';
@@ -48,7 +48,7 @@ const create = () => {
       const newId = result.data.id;
       const params = {
         devlink_id: newId,
-        redirect_url: window.location.href,
+        redirect_uri: window.location.href,
       };
       window.location.href = `${newUrl}/admin/devlink/oauth-client?${new URLSearchParams(params).toString()}`;
     });

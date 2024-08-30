@@ -36,7 +36,7 @@ class DevLinkController extends Controller
     {
     }
 
-    public function ping(Request $request, DevLink $devLink)
+    public function ping(DevLink $devLink)
     {
         return $devLink->client()->get(route('api.devlink.pong', [], false));
     }

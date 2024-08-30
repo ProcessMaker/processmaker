@@ -369,6 +369,6 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         Route::get('devlink', [DevLinkController::class, 'index'])->name('devlink.index');
         Route::post('devlink', [DevLinkController::class, 'store'])->name('devlink.store');
         Route::get('devlink/{devLink}/ping', [DevLinkController::class, 'ping'])->name('devlink.ping');
-        Route::get('devlink/pong', [DevLinkController::class, 'ping'])->name('devlink.pong');
+        Route::get('devlink/pong', [DevLinkController::class, 'pong'])->name('devlink.pong');
     });
 });
