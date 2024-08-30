@@ -23,6 +23,10 @@
   <div class="content" id="app">
     <div class="d-flex flex-column" style="min-height: 100vh">
       <div class="flex-fill small-screen">
+        <div id="language-selector"
+          class="d-flex justify-content-end position-absolute language-button-container">
+          <language-selector-button></language-selector-button>
+        </div>
         <div class="d-flex justify-content-center align-items-center h-100-vh" align-v="center">
           <div class="col-md-6 col-lg-6 col-xl-7 d-none d-lg-block">
           @php
@@ -134,6 +138,16 @@
     this.classList.toggle('fa-eye-slash');
 });
 </script>
+<script src="{{ mix('login/js/manifest.js') }}"></script>
+<script src="{{ mix('login/js/vendor.js') }}"></script>
+<script src="{{ mix('login/js/app-login.js') }}"></script>
+@foreach(GlobalScripts::getScripts() as $script)
+  <script src="{{$script}}"></script>
+@endforeach
+<script>
+  window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+</script>
+<script src="{{ mix('js/translations/index.js') }}"></script>
 <style>
   .row {
     display: flex;
@@ -286,6 +300,10 @@ body {
 }
 .h-100-vh {
   height: 100vh;
+}
+.language-button-container {
+  right: 0;
+  margin: 3rem 4rem;
 }
 </style>
 </html>
