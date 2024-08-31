@@ -623,15 +623,6 @@ export default {
   }
 };
 </script>
-<style>
-  .pm-table-ellipsis-column{
-    text-transform: uppercase;
-  }
-  .pm-table-column-header-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-</style>
 <style lang="scss" scoped>
   @import url("../../../sass/_scrollbar.scss");
 </style>
