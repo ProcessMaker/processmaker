@@ -1,25 +1,56 @@
 <template>
   <div>
-    <span class="title">
-      {{ $t('Process Chart') }}
-    </span>
-    <base-chart ref="baseChart" :process="process"></base-chart>
+    <div class="d-flex justify-content-between align-items-center">
+      <!-- Title -->
+      <span class="title">
+        {{ $t('Analytics') }}
+      </span>
+
+      <!-- View More Link -->
+      <a
+        v-if="isProcessIntelligenceEnabled"
+        :href="viewMoreUrl"
+        class="btn btn-link title-case"
+      >
+        <span>
+          {{ $t('View More') }}
+        </span>
+        <i class="fas fa-external-link-alt" />
+      </a>
+    </div>
+    <BaseChart
+      ref="baseChart"
+      :process="process"
+    />
   </div>
 </template>
 
 <script>
 import BaseChart from "../BaseChart.vue";
+
 export default {
-  props: ["process"],
   components: {
     BaseChart,
+  },
+  props: {
+    process: {
+      type: Object,
+      default: () => ({}),
+    },
   },
   data() {
     return {
       chart: true,
       selectedSavedChart: "",
       selectedSavedChartId: "",
+      isProcessIntelligenceEnabled: window.ProcessMaker.isProcessIntelligenceEnabled,
     };
+  },
+  computed: {
+    viewMoreUrl() {
+      const processId = encodeURIComponent(this.process.name);
+      return `/analytics/process-intelligence?process_id=${processId}`;
+    },
   },
 };
 </script>
@@ -41,10 +72,14 @@ export default {
 
 .image-container img {
   position: absolute;
-  width: 90%; 
+  width: 90%;
   height: 90%;
   top: 5%;
-  left: 5%; 
-  object-fit: cover; 
+  left: 5%;
+  object-fit: cover;
+}
+
+.title-case {
+  text-transform: capitalize;
 }
 </style>
