@@ -435,7 +435,7 @@ class ProcessRequestFileController extends Controller
 
         foreach ($jsKeywords as $keyword) {
             if (strpos($text, $keyword) !== false) {
-                $errors[] = __('Dangerous PDF file content.');
+                $errors[] = __('Dangerous PDF file content');
                 break;
             }
         }
