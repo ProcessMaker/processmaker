@@ -343,6 +343,8 @@ class LoginController extends Controller
                 return $user->permissions()->pluck('name')->toArray();
             });
 
+            $this->setupLanguage($request, $user);
+            
             return $this->sendLoginResponse($request);
         }
 
@@ -369,5 +371,13 @@ class LoginController extends Controller
     public function showLoginFailed(Request $request)
     {
         return view('errors.login-failed');
+    }
+
+    private function setupLanguage(Request $request, User $user) {
+        $language = $request->cookies->get('language');
+        if ($language) {
+            $user->language = json_decode($language)->code;
+            $user->save();
+        }
     }
 }
