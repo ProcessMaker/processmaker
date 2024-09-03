@@ -10,6 +10,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Models\Media;
+use ProcessMaker\Models\MediaLog;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\TaskDraft;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -366,5 +367,13 @@ class FileController extends Controller
         FilesDeleted::dispatch($file->id, $file->file_name);
 
         return response([], 204);
+    }
+
+    public function showLogs(Media $file) {
+        $response = MediaLog::with('user')
+                        ->where('media_id', $file->id)
+                        ->orderBy('created_at', 'desc')
+                        ->get();
+        return new ApiCollection($response);
     }
 }

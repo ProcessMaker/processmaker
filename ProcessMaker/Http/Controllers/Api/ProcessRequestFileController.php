@@ -95,7 +95,7 @@ class ProcessRequestFileController extends Controller
 
         // Register the Event
         if (!empty($filter)) {
-            FilesAccessed::dispatch($filter, $request);
+            FilesAccessed::dispatch($filter, $request, $media);
         }
 
         if ($id && $media instanceof \ProcessMaker\Models\Media) {

@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\Media;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class FilesDownloaded implements SecurityLogEventInterface
@@ -22,7 +23,7 @@ class FilesDownloaded implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct(string $file, ProcessRequest $data = null)
+    public function __construct(Media $media, ProcessRequest $data = null)
     {
         // Check if the file is related to the request
         if (!is_null($data)) {
@@ -35,8 +36,9 @@ class FilesDownloaded implements SecurityLogEventInterface
         } else {
             // Link to file in the package
             $this->name = [
-                'label' => $file,
-                'link' => route('file-manager.index', ['public/' . $file]),
+                'label' => $media['name'],
+                'link' => route('file-manager.index', ['public/' . $media['name']]),
+                'id' => $media['id'],
             ];
         }
     }

@@ -234,6 +234,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // Files
     Route::get('files', [FileController::class, 'index'])->name('files.index')->middleware('can:view-files');
     Route::get('files/{file}', [FileController::class, 'show'])->name('files.show')->middleware('can:view,file');
+    Route::get('files/{file}/logs', [FileController::class, 'showLogs'])->name('file_logs.show')->middleware('can:view,file');
     Route::get('files/{file}/contents', [FileController::class, 'download'])->name('files.download')->middleware('can:view,file');
     Route::post('files', [FileController::class, 'store'])->name('files.store')->middleware('can:create,ProcessMaker\Models\Media');
     Route::put('files/{file}', [FileController::class, 'update'])->name('files.update')->middleware('can:update,file');
