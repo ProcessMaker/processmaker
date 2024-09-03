@@ -5,9 +5,7 @@ const fs = require("fs");
 const manifestPath = path.resolve(__dirname, "public/mix-manifest.json");
 let existingContent = {};
 
-// mix.setPublicPath('public/login');
 require("laravel-mix-polyfill");
-// const packageJson = require("./package.json");
 
 /*
  |--------------------------------------------------------------------------
