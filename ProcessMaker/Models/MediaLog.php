@@ -21,7 +21,8 @@ class MediaLog extends ProcessMakerModel
         'event_type',
     ];
 
-    public function media() {
+    public function media()
+    {
         return $this->belongsTo(Media::class, 'media_id');
     }
 
@@ -29,5 +30,4 @@ class MediaLog extends ProcessMakerModel
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-
 }

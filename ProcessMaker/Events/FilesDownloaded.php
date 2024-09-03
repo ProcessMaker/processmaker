@@ -5,8 +5,8 @@ namespace ProcessMaker\Events;
 use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
-use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Media;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class FilesDownloaded implements SecurityLogEventInterface

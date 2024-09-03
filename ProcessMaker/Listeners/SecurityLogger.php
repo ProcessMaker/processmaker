@@ -5,9 +5,9 @@ namespace ProcessMaker\Listeners;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Helpers\SensitiveDataHelper;
-use ProcessMaker\Models\SecurityLog;
-use ProcessMaker\Models\MediaLog;
 use ProcessMaker\Models\Media;
+use ProcessMaker\Models\MediaLog;
+use ProcessMaker\Models\SecurityLog;
 use WhichBrowser\Parser;
 
 class SecurityLogger
@@ -26,7 +26,7 @@ class SecurityLogger
      */
     public function handle($event)
     {
-        $specificEvents = ['FilesDownloaded','FilesAccessed','FilesCreated','FilesDeleted', 'FilesUpdated'];
+        $specificEvents = ['FilesDownloaded', 'FilesAccessed', 'FilesCreated', 'FilesDeleted', 'FilesUpdated'];
         $class = get_class($event);
 
         if ($event instanceof SecurityLogEventInterface) {
@@ -41,12 +41,11 @@ class SecurityLogger
                 'changes' => $changes ? SensitiveDataHelper::parseArray($changes) : null,
             ]);
             if (in_array($event->getEventName(), $specificEvents)) {
-                
                 MediaLog::create([
                     'event_type' => $event->getEventName(),
                     'media_id' => $data['name']['id'],
                     'user_id' => isset($event->user) ? $event->user->id : Auth::id(),
-                ]);   
+                ]);
             }
         } elseif (array_key_exists($class, $this->eventTypes)) {
             $eventType = $this->eventTypes[$class];

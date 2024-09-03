@@ -98,7 +98,7 @@ class ProcessRequestFileController extends Controller
             FilesAccessed::dispatch($filter, $request, $media);
         }
 
-        if ($id && $media instanceof \ProcessMaker\Models\Media) {
+        if ($id && $media instanceof Media) {
             // We retrieved a single item by ID, so no need to filter.
             // Just return a collection with one item.
             $media = [$media];
