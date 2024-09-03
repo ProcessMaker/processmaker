@@ -107,6 +107,13 @@ window.ProcessMaker.navbar = new Vue({
         window.ProcessMaker.globalSearchComponentResolve = resolve;
       }
     },
+    LanguageSelectorButton: (resolve) => {
+      if (window.ProcessMaker.languageSelectorButtonComponent) {
+        resolve(window.ProcessMaker.languageSelectorButtonComponent);
+      } else {
+        window.ProcessMaker.languageSelectorButtonComponentResolve = resolve;
+      }
+    },
   },
   data() {
     return {
