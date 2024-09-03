@@ -644,6 +644,7 @@
             this.$set(this, 'task', val);
           },
           processTaskData(task) {
+            const results = [];
             // Verify if object "screen" exists
             if (task.screen) {
                 // Verify if "config" array exists and it has at least one element
@@ -670,15 +671,15 @@
                                       recordId = parseInt(record, 10);
                                     }
                                     const collectionId = config.collection.collectionId;
-                                    // Return values
-                                    return { submitCollectionChecked, recordId, collectionId };
+                                    // Save the values into the results array
+                                    results.push({ submitCollectionChecked, recordId, collectionId });
                                 }
                             }
                         }
                     }
                 }
             }
-            return null;
+            return results.length > 0 ? results : null;
           },
           isMustache(record) {
             return /\{\{.*\}\}/.test(record);
@@ -691,17 +692,23 @@
                 return;
               }
 
-              // If screen has CollectionControl component saves collection data if submit check is true
+              // If screen has CollectionControl components saves collection data (if submit check is true)
               const resultCollectionComponent = this.processTaskData(this.task);
               let messageCollection = this.$t('Collection data was updated');
-              if(resultCollectionComponent && resultCollectionComponent.submitCollectionChecked){
-                ProcessMaker.apiClient
-                .put("collections/" + resultCollectionComponent.collectionId+ "/records/" + resultCollectionComponent.recordId,
-                    {data: this.formData, uploads: []})
-                .then(() => {
-                    window.ProcessMaker.alert(messageCollection, 'success', 5, true);
-                });
 
+              if (resultCollectionComponent && resultCollectionComponent.length > 0) {
+                resultCollectionComponent.forEach(result => {
+                  if (result.submitCollectionChecked) {
+                    ProcessMaker.apiClient
+                      .put("collections/" + result.collectionId + "/records/" + result.recordId, {
+                        data: this.formData,
+                        uploads: []
+                      })
+                      .then(() => {
+                        window.ProcessMaker.alert(messageCollection, 'success', 5, true);
+                      });
+                  }
+                });
               }
 
               let message = this.$t('Task Completed Successfully');
