@@ -643,12 +643,65 @@
           updateTask(val) {
             this.$set(this, 'task', val);
           },
+          processTaskData(task) {
+            // Verify if object "screen" exists
+            if (task.screen) {
+                // Verify if "config" array exists and it has at least one element
+                if (Array.isArray(task.screen.config) && task.screen.config.length > 0) {
+                    // Iteration on "config" array
+                    for (let configItem of task.screen.config) {
+                        // Verify if "items" array exists
+                        if (Array.isArray(configItem.items)) {
+                            // Iteration over each "items" element
+                            for (let item of configItem.items) {
+                                // Verify if component "FormCollectionRecordControl" is inside the screen
+                                if (item.component === "FormCollectionRecordControl") {
+                                    // Access to FormCollectionRecordControl "config" object
+                                    const config = item.config;
+
+                                    // Saving values into variables
+                                    const submitCollectionChecked = config.submitCollectionCheck;
+                                    let recordId = "";
+                                    const record = config.record;
+
+                                    if (this.isMustache(record)) {
+                                      recordId = Mustache.render(record, this.formData);
+                                    } else {
+                                      recordId = parseInt(record, 10);
+                                    }
+                                    const collectionId = config.collection.collectionId;
+                                    // Return values
+                                    return { submitCollectionChecked, recordId, collectionId };
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
+          },
+          isMustache(record) {
+            return /\{\{.*\}\}/.test(record);
+          },
           submit(task) {
             if (this.isSelfService) {
               ProcessMaker.alert(this.$t('Claim the Task to continue.'), 'warning');
             } else {
               if (this.submitting) {
                 return;
+              }
+
+              // If screen has CollectionControl component saves collection data if submit check is true
+              const resultCollectionComponent = this.processTaskData(this.task);
+              let messageCollection = this.$t('Collection data was updated');
+              if(resultCollectionComponent && resultCollectionComponent.submitCollectionChecked){
+                ProcessMaker.apiClient
+                .put("collections/" + resultCollectionComponent.collectionId+ "/records/" + resultCollectionComponent.recordId,
+                    {data: this.formData, uploads: []})
+                .then(() => {
+                    window.ProcessMaker.alert(messageCollection, 'success', 5, true);
+                });
+
               }
 
               let message = this.$t('Task Completed Successfully');
