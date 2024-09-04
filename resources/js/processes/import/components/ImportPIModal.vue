@@ -13,7 +13,7 @@
       <template>
         <div class="card-body">
           <div id="pre-import">
-            <draggable-file-upload class="text-center" v-if="!file || file && !fileIsValid" ref="file" v-model="file" :options="{singleFile: true}" :displayUploaderList="false" :accept="['image/png', 'image/jpg', 'image/jpeg']"></draggable-file-upload>
+            <draggable-file-upload class="text-center" v-if="!file || file && !fileIsValid" ref="file" v-model="file" :options="{singleFile: true}" :displayUploaderList="false" :accept="['application/json']"></draggable-file-upload>
             <div v-else class="text-left">
               <h5> {{ $t("You are about to import") }} <strong>{{processName}}</strong></h5>
               <div class="border-dotted p-3 col-4 text-center font-weight-bold my-3">
@@ -93,7 +93,7 @@ export default {
       return this.$t('Import Process');
     },
     subtitle() {
-      return this.$t('Import a process from Workfellow PI (.jpg, .jpeg, .png) to this ProcessMaker environment');
+      return this.$t('Import a process from Workfellow PI (.json) to this ProcessMaker environment');
     },
     buttons() {
       return [
