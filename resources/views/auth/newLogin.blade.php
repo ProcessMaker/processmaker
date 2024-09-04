@@ -144,7 +144,9 @@
 <script src="{{ mix('builds/login/js/vendor.js') }}"></script>
 <script src="{{ mix('builds/login/js/app-login.js') }}"></script>
 @foreach(GlobalScripts::getScripts() as $script)
-  <script src="{{$script}}"></script>
+  @if (strpos($script, '/vendor/processmaker/packages/package-dynamic-ui/js/global.js') !== 0)
+    <script src="{{$script}}"></script>
+  @endif
 @endforeach
 <script>
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
