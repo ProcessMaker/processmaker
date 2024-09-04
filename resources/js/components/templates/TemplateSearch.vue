@@ -154,7 +154,7 @@ export default {
       },
       processIntelligenceButton: {
         title: this.$t("Import a PI Process"),
-        description: this.$t("Workfellow Process Intelligence"),
+        description: this.$t("Process Intelligence"),
         svgIcon: "../../../img/wf-to-pm.svg",
         svgIconStyle: "height: 2em;",
       },
