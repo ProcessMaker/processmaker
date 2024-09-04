@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Resources\ScreenVersion as ScreenVersionResource;
 use ProcessMaker\Http\Resources\Users;
 use ProcessMaker\Managers\DataManager;
-use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\User;
 use ProcessMaker\ProcessTranslations\ProcessTranslation;
@@ -16,7 +16,6 @@ use StdClass;
 trait TaskResourceIncludes
 {
     use TaskScreenResourceTrait;
-
 
     private function getData()
     {
@@ -86,7 +85,7 @@ trait TaskResourceIncludes
             $array['screen'] = null;
         }
 
-        if ($array['screen']) {
+        if (is_array($array['screen']) && $array['screen']) {
             // Apply translations to screen
             $processTranslation = new ProcessTranslation($this->processRequest->process);
             $array['screen']['config'] = $processTranslation->applyTranslations($array['screen']);

@@ -39,7 +39,7 @@ class TaskScreen extends ApiResource
             $array['screen'] = null;
         }
 
-        if ($array['screen']) {
+        if (is_array($array['screen']) && $array['screen']) {
             // Apply translations to screen
             $processTranslation = new ProcessTranslation($this->process);
             $array['screen']['config'] = $processTranslation->applyTranslations($array['screen']);

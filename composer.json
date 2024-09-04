@@ -47,6 +47,9 @@
         "processmaker/docker-executor-php": "1.2.0",
         "processmaker/laravel-i18next": "dev-master",
         "processmaker/nayra": "1.12.0",
+        "processmaker/package-advancedforms": "^1.2",
+        "processmaker/package-ai": "^1.11",
+        "processmaker/package-versions": "^1.12",
         "processmaker/pmql": "1.12.1",
         "psr/http-message": "^1.1",
         "psr/log": "^2.0",
@@ -209,6 +212,126 @@
         {
             "type": "vcs",
             "url": "https://github.com/ProcessMaker/SocialiteProviders"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/packages"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/connector-send-email"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/connector-pdf-print"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-ai"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-collections"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-savedsearch"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/connector-idp"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-auth"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-advanced-user-manager"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-webentry"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-files"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-data-sources"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-testing"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-ab-testing"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-versions"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-files"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-dynamic-ui"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-collections"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-savedsearch"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-auth"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-projects"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-ellucian-ethos"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-decision-engine"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-process-documenter"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/docker-executor-node-ssr"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-translations"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-pm-blocks"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-saved-search-filters"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-actions-by-email"
+        },
+        {
+            "type": "path",
+            "url": "/Users/marconina/Herd/develop/package-advancedforms"
         }
     ],
     "config": {

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "59aee06e801781c5f79afd9d5f6e66fe",
+    "content-hash": "b5d4ad5d63e686f1f5e5bbd06ae05884",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -7525,6 +7525,113 @@
             "time": "2024-07-01T02:14:36+00:00"
         },
         {
+            "name": "processmaker/package-advancedforms",
+            "version": "1.2.0",
+            "dist": {
+                "type": "path",
+                "url": "/Users/marconina/Herd/develop/package-advancedforms",
+                "reference": "8ac43fc1591513764724108dd14d24b2bd97252a"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\AdvancedForms\\AdvancedFormsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\AdvancedForms\\": "src"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Nolan Ehrstrom",
+                    "email": "nolan.ehrstrom@processmaker.com"
+                }
+            ],
+            "description": "Allow a PM4 screen to use custom HTML",
+            "transport-options": {
+                "relative": false
+            }
+        },
+        {
+            "name": "processmaker/package-ai",
+            "version": "1.11.1",
+            "dist": {
+                "type": "path",
+                "url": "/Users/marconina/Herd/develop/package-ai",
+                "reference": "2ef678c249aed1d27f3948745d5356cfdf26f5b6"
+            },
+            "require": {
+                "processmaker/processmaker": "^4.7",
+                "spatie/pdf-to-image": "^1.2"
+            },
+            "type": "project",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\PackageAi\\AiServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\PackageAi\\": "src",
+                    "ProcessMaker\\Package\\PackageAi\\Database\\Seeds\\": "database/seeds",
+                    "Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "AGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Agustin Nicolas Busso",
+                    "email": "agustin.busso@processmaker.com"
+                }
+            ],
+            "description": "This package provides AI features to the users",
+            "transport-options": {
+                "relative": false
+            }
+        },
+        {
+            "name": "processmaker/package-versions",
+            "version": "1.12.0",
+            "dist": {
+                "type": "path",
+                "url": "/Users/marconina/Herd/develop/package-versions",
+                "reference": "335d8f5810b51caa56099ce390053791ac7fdc08"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\Versions\\PluginServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\Versions\\": "src",
+                    "Tests\\Versions\\": "tests/",
+                    "Database\\Factories\\ProcessMaker\\Package\\Versions\\": "database/factories"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Marco A. Nina Mena",
+                    "email": "marco.antonio.nina@processmaker.com"
+                }
+            ],
+            "description": "ProcessMaker Versions",
+            "transport-options": {
+                "relative": false
+            }
+        },
+        {
             "name": "processmaker/pmql",
             "version": "1.12.1",
             "source": {
@@ -8940,6 +9047,66 @@
                 }
             ],
             "time": "2023-08-23T09:04:39+00:00"
+        },
+        {
+            "name": "spatie/pdf-to-image",
+            "version": "1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/pdf-to-image.git",
+                "reference": "8deb3d899ecbef7e8e1dad16e3e7b57997582abc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/pdf-to-image/zipball/8deb3d899ecbef7e8e1dad16e3e7b57997582abc",
+                "reference": "8deb3d899ecbef7e8e1dad16e3e7b57997582abc",
+                "shasum": ""
+            },
+            "require": {
+                "ext-imagick": "*",
+                "php": ">=5.5.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\PdfToImage\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Freek Van der Herten",
+                    "email": "freek@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Convert a pdf to an image",
+            "homepage": "https://github.com/spatie/pdf-to-image",
+            "keywords": [
+                "convert",
+                "image",
+                "pdf",
+                "pdf-to-image",
+                "spatie"
+            ],
+            "support": {
+                "issues": "https://github.com/spatie/pdf-to-image/issues",
+                "source": "https://github.com/spatie/pdf-to-image/tree/1.4.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/spatie",
+                    "type": "github"
+                }
+            ],
+            "time": "2017-06-15T18:15:09+00:00"
         },
         {
             "name": "spatie/temporary-directory",
