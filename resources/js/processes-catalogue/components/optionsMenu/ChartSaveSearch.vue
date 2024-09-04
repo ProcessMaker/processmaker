@@ -1,19 +1,34 @@
 <template>
   <div>
-    <span class="title">
-      {{ $t('Analytics') }}
-    </span>
-    <base-chart ref="baseChart" :process="process"></base-chart>
+    <div class="title">
+      <span>
+        {{ $t('Analytics') }}
+      </span>
+      <a
+        class="btn btn-link button-view"
+        href="../analytics/process-intelligence"
+      >
+        <span>
+          {{ $t('View More') }}
+        </span>
+        <i class="fas fa-external-link-alt" />
+      </a>
+    </div>
+    <base-chart
+      ref="baseChart"
+      :process="process"
+    />
   </div>
 </template>
 
 <script>
 import BaseChart from "../BaseChart.vue";
+
 export default {
-  props: ["process"],
   components: {
     BaseChart,
   },
+  props: ["process"],
   data() {
     return {
       chart: true,
@@ -26,10 +41,27 @@ export default {
 
 <style scoped>
 .title {
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
   color: #1572C2;
   font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.02em;
+  font-family: Open Sans, 'sans-serif';
+  line-height: 27px;
+  letter-spacing: -0.02em;
+}
+
+.button-view {
+  color: #1572C2;
+  text-transform: capitalize;
+  font-family: Open Sans, 'sans-serif';
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: -0.02em;
+  padding: 0px;
 }
 
 .image-container {
@@ -46,5 +78,17 @@ export default {
   top: 5%;
   left: 5%; 
   object-fit: cover; 
+}
+
+@media (width < 1360px) and (width > 768px) {
+  .title {
+    margin-left: 32px;
+  }
+}
+@media (min-width: 641px) and (max-width: 768px) {
+  .default-chart {
+    margin-right: 32px;
+    margin-top: 24px;
+  }
 }
 </style>
