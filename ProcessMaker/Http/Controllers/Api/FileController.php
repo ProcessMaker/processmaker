@@ -286,7 +286,7 @@ class FileController extends Controller
 
         // Register the Event
         if (!empty($file->file_name)) {
-            FilesDownloaded::dispatch($file->file_name);
+            FilesDownloaded::dispatch($file);
         }
 
         return response()->download($path);

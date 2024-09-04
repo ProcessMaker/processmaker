@@ -20,6 +20,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\Media as MediaModel;
 use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Package\PackageComments\PackageServiceProvider;
@@ -256,11 +257,12 @@ class RequestController extends Controller
 
     public function downloadFiles(ProcessRequest $request, $media)
     {
+        $model = MediaModel::find($media);
         $file = $request->downloadFile($media);
 
         if ($file) {
             // Register the Event
-            FilesDownloaded::dispatch(basename($file), $request);
+            FilesDownloaded::dispatch($model, $request);
 
             return response()->download($file);
         }

@@ -32,6 +32,7 @@ class FilesDownloaded implements SecurityLogEventInterface
             $this->name = [
                 'label' => $data->getAttribute('id'),
                 'link' => route('requests.show', $data),
+                'id' => $media['id'],
             ];
         } else {
             // Link to file in the package
