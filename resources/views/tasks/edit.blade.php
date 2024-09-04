@@ -661,7 +661,7 @@
                                     const config = item.config;
 
                                     // Saving values into variables
-                                    const submitCollectionChecked = config.submitCollectionCheck;
+                                    const submitCollectionChecked = config.collectionmode.submitCollectionCheck;
                                     let recordId = "";
                                     const record = config.record;
 
