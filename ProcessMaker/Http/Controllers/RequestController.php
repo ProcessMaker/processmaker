@@ -16,11 +16,11 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Comment;
+use ProcessMaker\Models\Media as MediaModel;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\Media as MediaModel;
 use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Package\PackageComments\PackageServiceProvider;
@@ -124,7 +124,7 @@ class RequestController extends Controller
 
         $requestMedia = $request->media()->get()->pluck('id');
 
-        $userHasCommentsForMedia = Comment::where('commentable_type', \ProcessMaker\Models\Media::class)
+        $userHasCommentsForMedia = Comment::where('commentable_type', MediaModel::class)
                 ->whereIn('commentable_id', $requestMedia)
                 ->where('body', 'like', '%{{' . \Auth::user()->id . '}}%')
                 ->count() > 0;
@@ -157,7 +157,7 @@ class RequestController extends Controller
                 !$retry->isChildRequest();
         }
 
-        $files = \ProcessMaker\Models\Media::getFilesRequest($request);
+        $files = MediaModel::getFilesRequest($request);
 
         $canPrintScreens = $this->canUserPrintScreen($request);
 
