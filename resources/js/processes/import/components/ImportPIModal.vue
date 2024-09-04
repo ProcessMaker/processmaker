@@ -93,7 +93,7 @@ export default {
       return this.$t('Import Process');
     },
     subtitle() {
-      return this.$t('Import a process from Workfellow PI (.json) to this ProcessMaker environment');
+      return this.$t('Import a process from Process Intelligence to this ProcessMaker environment');
     },
     buttons() {
       return [
