@@ -49,6 +49,10 @@ window.ProcessMaker = {
     this.missingTranslations.add(value);
     console.warn("Missing Translation:", value);
   },
+
+  $notifications: {
+    icons: {},
+  },
 };
 
 window.ProcessMaker.i18nPromise = i18next.use(Backend).init({
