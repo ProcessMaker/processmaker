@@ -20,7 +20,7 @@ require("laravel-mix-polyfill");
 
 mix.webpackConfig({
   plugins: [],
-  externals: ["monaco-editor", "SharedComponents", "ModelerInspector"],
+  externals: [],
   resolve: {
     extensions: [".*", ".js", ".ts", ".mjs", ".vue", ".json"],
     symlinks: false,
@@ -40,12 +40,12 @@ mix.options({
 mix
   .extract([
     "vue",
-  ], "public/login/js/vendor.js");
+  ], "public/builds/login/js/vendor.js");
 
 mix
   .js("resources/js/admin/auth/passwords/change.js", "public/js/admin/auth/passwords/change.js")
   .js("resources/js/translations/index.js", "public/js/translations")
-  .js("resources/js/app-login.js", "public/login/js");
+  .js("resources/js/app-login.js", "public/builds/login/js");
 
 mix
   .sass("resources/sass/sidebar/sidebar.scss", "public/css")
