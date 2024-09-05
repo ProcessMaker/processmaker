@@ -152,7 +152,6 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         'self_service_groups' => 'array',
         'token_properties' => 'array',
         'is_priority' => 'boolean',
-        'is_actionbyemail' => 'boolean',
     ];
 
     /**
