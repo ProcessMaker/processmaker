@@ -1037,11 +1037,9 @@ export default {
     openTemplatesPanel() {
       //Filter to retrieve my templates. When select shared templates, refetch.
       this.fetchMyTemplates();
-      console.log('HIT OPEN TEMPLATE PANEL');
       this.showTemplatesPanel = true;
     },
     closeTemplatesPanel() {
-      console.log('HIT CLOSE TEMPLATE PANEL');
       this.showTemplatesPanel = false;
     },
     fetchMyTemplates() {
@@ -1051,7 +1049,6 @@ export default {
         )
         .then((response) => {
           this.myTemplatesData = response.data.data;
-          console.log('myTemplatesData RETRIEVED', this.myTemplatesData);
         })
         .catch((error) => {
           console.error(error);
@@ -1064,7 +1061,6 @@ export default {
         )
         .then((response) => {
           this.sharedTemplatesData = response.data.data;
-          console.log('sharedTemplatesData RETRIEVED', this.sharedTemplatesData);
           this.$emit('shared-templates-loaded');
         })
         .catch((error) => {
