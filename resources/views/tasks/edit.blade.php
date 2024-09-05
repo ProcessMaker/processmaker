@@ -643,7 +643,7 @@
           updateTask(val) {
             this.$set(this, 'task', val);
           },
-          processTaskData(task) {
+          processCollectionData(task) {
             const results = [];
             // Verify if object "screen" exists
             if (task.screen) {
@@ -693,7 +693,7 @@
               }
 
               // If screen has CollectionControl components saves collection data (if submit check is true)
-              const resultCollectionComponent = this.processTaskData(this.task);
+              const resultCollectionComponent = this.processCollectionData(this.task);
               let messageCollection = this.$t('Collection data was updated');
 
               if (resultCollectionComponent && resultCollectionComponent.length > 0) {
