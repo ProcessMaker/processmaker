@@ -2349,5 +2349,7 @@
   "No items to show": "Keine Artikel zu zeigen",
   "Copy link": "Kopieren Link",
   "This actions is taking longer than expected. We will continue updating your tasks in the background.": "Diese Aktion dauert länger als erwartet. Wir werden Ihre Aufgaben weiterhin im Hintergrund aktualisieren.",
-  "No user selected": "Kein Benutzer ausgewählt"
+  "No user selected": "Kein Benutzer ausgewählt",
+  "Encrypted": "Verschlüsselt",
+  "Users/Groups to View": "Benutzer/Gruppen zum Anzeigen"
 }
