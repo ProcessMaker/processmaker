@@ -280,7 +280,7 @@ export default {
 <style scoped>
 .default-chart {
   width: 325px;
-  margin-top: 16px;
+  margin-top: 24px;
   padding: 20px 0;
   border-radius: 16px;
   border: 0.88px solid #CDDDEE;
@@ -296,7 +296,6 @@ export default {
 }
 @media (width < 1360px) and (width > 768px) {
   .default-chart {
-    margin-top: 0;
     margin-left: 32px;
   }
 }
@@ -305,7 +304,6 @@ export default {
     width: 100%;
     max-width: 100%;
     margin-right: 32px;
-    margin-top: 24px;
   }
 }
 </style>
