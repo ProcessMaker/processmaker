@@ -661,6 +661,7 @@
                                     const config = item.config;
 
                                     // Saving values into variables
+                                    const collectionFields = config.collection.data[0];
                                     const submitCollectionChecked = config.collectionmode.submitCollectionCheck;
                                     let recordId = "";
                                     const record = config.record;
@@ -672,7 +673,7 @@
                                     }
                                     const collectionId = config.collection.collectionId;
                                     // Save the values into the results array
-                                    results.push({ submitCollectionChecked, recordId, collectionId });
+                                    results.push({ submitCollectionChecked, recordId, collectionId, collectionFields });
                                 }
                             }
                         }
@@ -699,9 +700,13 @@
               if (resultCollectionComponent && resultCollectionComponent.length > 0) {
                 resultCollectionComponent.forEach(result => {
                   if (result.submitCollectionChecked) {
+                    let collectionKeys = Object.keys(result.collectionFields);
+                    let matchingKeys = _.intersection(Object.keys(this.formData), collectionKeys);
+                    let collectionsData = _.pick(this.formData, matchingKeys);
+                    
                     ProcessMaker.apiClient
                       .put("collections/" + result.collectionId + "/records/" + result.recordId, {
-                        data: this.formData,
+                        data: collectionsData,
                         uploads: []
                       })
                       .then(() => {
