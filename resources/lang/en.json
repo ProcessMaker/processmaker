@@ -2343,5 +2343,7 @@
   "Start": "Start",
   "Copy link": "Copy link",
   "This actions is taking longer than expected. We will continue updating your tasks in the background.": "This actions is taking longer than expected. We will continue updating your tasks in the background.",
-  "No user selected": "No user selected"
+  "No user selected": "No user selected",
+  "Encrypted": "Encrypted",
+  "Users/Groups to View": "Users/Groups to View"
 }
