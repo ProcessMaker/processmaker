@@ -476,6 +476,15 @@ export default {
             action: "redoAction()",
           },
           {
+            id: "button_templates",
+            type: "button",
+            title: this.$t("Screen Templates"),
+            name: this.$t("Templates"),
+            variant: "link",
+            icon: "fas fa-palette",
+            action: "openTemplatesPanel()",
+          },
+          {
             id: "button_calcs",
             type: "button",
             title: this.$t("Calculated Properties"),
@@ -1016,6 +1025,9 @@ export default {
     },
     redoAction() {
       this.$refs.builder.redo();
+    },
+    openTemplatesPanel() {
+      console.log('HIT OPEN TEMPLATE PANEL');
     },
     openComputedProperties() {
       this.$refs.computedProperties.show();
