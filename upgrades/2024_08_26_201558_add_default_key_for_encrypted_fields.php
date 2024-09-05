@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Encryption\Encrypter;
+use ProcessMaker\Models\EncryptedData;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Upgrades\UpgradeMigration as Upgrade;
 
@@ -67,7 +68,7 @@ class AddDefaultKeyForEncryptedFields extends Upgrade
     protected function generateRandomKey()
     {
         return 'base64:'.base64_encode(
-            Encrypter::generateKey('AES-256-GCM')
+            Encrypter::generateKey(EncryptedData::ENCRYPTION_METHOD)
         );
     }
 
