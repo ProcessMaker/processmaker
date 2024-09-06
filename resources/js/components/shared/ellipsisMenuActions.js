@@ -62,7 +62,7 @@ export default {
           value: "add-to-project",
           content: "Add to Project",
           icon: "fas fa-folder-plus",
-          permission: "create-projects",
+          permission: "edit-processes",
         },
         {
           value: "edit-item",
