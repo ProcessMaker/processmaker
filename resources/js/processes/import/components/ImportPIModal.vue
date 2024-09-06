@@ -77,16 +77,33 @@ export default {
       }
       this.$root.file = this.file;
 
-      let formData = new FormData();
-      formData.append('file', this.file);
-
       this.fileIsValid = true;
     },
     removeFile() {
       this.file = '';
       this.fileIsValid = false;
     },
-    importNewPI() {}
+    importNewPI() {
+      console.log('> ', this.file);
+      if (!this.file) {
+        return;
+      }
+
+      let formData = new FormData();
+      formData.append('file', this.file);
+
+      ProcessMaker.apiClient
+        .post(`/package-ai/pi_process/import`, formData)
+        .then((response) => {
+          // TODO: Make import and redirect to Modeler
+        })
+        .catch((error) => {
+          window.ProcessMaker.alert(
+            this.$t("An error ocurred while importing the current PI Process."),
+            "danger",
+          );
+        });
+    }
   },
   computed: {
     title() {
