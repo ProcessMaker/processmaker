@@ -84,7 +84,6 @@ export default {
       this.fileIsValid = false;
     },
     importNewPI() {
-      console.log('> ', this.file);
       if (!this.file) {
         return;
       }
