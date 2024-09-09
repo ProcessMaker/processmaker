@@ -28,6 +28,7 @@ class TranslationTest extends TestCase
         $fileName = __DIR__ . '/../../Fixtures/translation_test.json';
         $file = new UploadedFile($fileName, 'translation_test.json', null, null, true);
         Storage::putFileAs('import', $file, 'payload.json');
+        Storage::put('import/options.json', '{}');
         $hash = md5_file(Storage::path(ImportV2::FILE_PATH));
         ImportV2::dispatchSync($this->user->id, null, $hash, false);
 
@@ -98,6 +99,7 @@ class TranslationTest extends TestCase
         $fileName = __DIR__ . '/../../Fixtures/translation_test.json';
         $file = new UploadedFile($fileName, 'translation_test.json', null, null, true);
         Storage::putFileAs('import', $file, 'payload.json');
+        Storage::put('import/options.json', '{}');
         $hash = md5_file(Storage::path(ImportV2::FILE_PATH));
         ImportV2::dispatchSync($this->user->id, null, $hash, false);
 
@@ -138,6 +140,7 @@ class TranslationTest extends TestCase
         $fileName = __DIR__ . '/../../Fixtures/translation_test.json';
         $file = new UploadedFile($fileName, 'translation_test.json', null, null, true);
         Storage::putFileAs('import', $file, 'payload.json');
+        Storage::put('import/options.json', '{}');
         $hash = md5_file(Storage::path(ImportV2::FILE_PATH));
         ImportV2::dispatchSync($this->user->id, null, $hash, false);
 
