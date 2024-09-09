@@ -4,15 +4,15 @@
       <span>
         {{ $t('Analytics') }}
       </span>
-      <a
+      <button
         class="btn btn-link button-view"
-        href="../analytics/process-intelligence"
+        @click="openAnalytics"
       >
         <span>
           {{ $t('View More') }}
         </span>
         <i class="fas fa-external-link-alt" />
-      </a>
+      </button>
     </div>
     <base-chart
       ref="baseChart"
@@ -35,6 +35,11 @@ export default {
       selectedSavedChart: "",
       selectedSavedChartId: "",
     };
+  },
+  methods: {
+    openAnalytics() {
+      window.open('../analytics/process-intelligence', '_blank').focus();
+    },
   },
 };
 </script>
