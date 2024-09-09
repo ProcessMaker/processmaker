@@ -22,7 +22,6 @@ class TaskDraft extends ProcessMakerModel implements HasMedia
     protected $fillable = [
         'task_id',
         'data',
-        'updated_at',
     ];
 
     protected $casts = [
@@ -112,9 +111,5 @@ class TaskDraft extends ProcessMakerModel implements HasMedia
     public static function draftsEnabled()
     {
         return config('app.task_drafts_enabled');
-    }
-    protected static function getDraft()
-    {
-        return $this->belongsTo(ProcessRequestToken::class, 'task_id');
     }
 }

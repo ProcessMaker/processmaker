@@ -146,7 +146,10 @@
                         <div class="card collapse-content">
                           <ul class="list-group list-group-flush w-100">
                             <li class="list-group-item">
-                            <div class="row justify-content-start pb-1">
+                            <div
+                              v-if="taskDraftsEnabled"
+                              class="row justify-content-start pb-1"
+                            >
                               <task-save-notification
                                 :options="options"
                                 :task="task"
@@ -395,6 +398,7 @@
     );
 
     const task = @json($task);
+    let draftTask = task.draft[0];
     const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
     const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
@@ -428,6 +432,7 @@
           filter: "",
           showReassignment: false,
           task,
+          draftTask,
           userHasAccessToTask,
           selectedUser: [],
           hasErrors: false,
@@ -456,13 +461,15 @@
           task: {
             deep: true,
             handler(task, oldTask) {
+              console.log('fas');
+              
               window.ProcessMaker.breadcrumbs.taskTitle = task.element_name;
               if (task && oldTask && task.id !== oldTask.id) {
                 history.replaceState(null, null, `/tasks/${task.id}/edit`);
               }
               if (task.draft) {
-                this.lastAutosave = moment(task.draft.updated_at).format("DD MMMM YYYY | HH:mm");
-                this.lastAutosaveNav = moment(task.draft.updated_at).format("MMM DD, YYYY / HH:mm");
+                this.lastAutosave = moment(this.draftTask.updated_at).format("DD MMMM YYYY | HH:mm");
+                this.lastAutosaveNav = moment(this.draftTask.updated_at).format("MMM DD, YYYY / HH:mm");
               } else {
                 this.lastAutosave = "-";
                 this.lastAutosaveNav = "-"
@@ -720,6 +727,7 @@
                   this.task.draft,
                   response.data
                 );
+                this.draftTask = structuredClone(response.data);
               })
               .catch(() => {
                 this.errorAutosave = true;
