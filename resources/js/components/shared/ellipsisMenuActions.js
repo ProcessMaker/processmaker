@@ -78,7 +78,7 @@ export default {
           content: "View Documentation",
           link: true,
           href: ProcessMaker.packages.includes('package-ai') ? "/modeler/{{id}}/documentation" : "/modeler/{{id}}/print",
-          permission: ["view-processes", "view-additional-asset-actions"],
+          permission: ["view-documentation", "view-additional-asset-actions"],
           icon: "fas fa-sign",
           conditional: "isDocumenterInstalled",
         },
