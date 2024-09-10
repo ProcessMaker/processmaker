@@ -92,7 +92,7 @@ class TaskController extends Controller
         $task->allow_interstitial = $interstitial['allow_interstitial'];
         $task->definition = $task->getDefinition();
         $task->requestor = $task->processRequest->user;
-        $task->draft = TaskDraft::where('task_id', $task->id)->get();
+        $task->draft = $task->draft;
         $element = $task->getDefinition(true);
         $screenFields = $screenVersion ? $screenVersion->screenFilteredFields() : [];
         $taskDraftsEnabled = TaskDraft::draftsEnabled();
