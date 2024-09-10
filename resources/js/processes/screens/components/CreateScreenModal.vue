@@ -271,6 +271,10 @@ export default {
       this.resetErrors();
       this.showTemplatePreview = false;
       this.selectedTemplate = null;
+      if (this.isQuickCreate === true) {
+        // reload without query params
+        window.location.href = window.location.pathname;
+      }
     },
     close() {
       this.$bvModal.hide("createScreen");
