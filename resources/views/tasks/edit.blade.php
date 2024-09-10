@@ -493,7 +493,6 @@
             return dueLabels[this.task.advanceStatus] || '';
           },
           isSelfService() {
-            console.log(this.task.process_request.status === 'ACTIVE' && this.task.is_self_service);
             return this.task.process_request.status === 'ACTIVE' && this.task.is_self_service;
           },
           dateDueAt () {
