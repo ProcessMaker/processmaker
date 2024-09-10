@@ -83,7 +83,7 @@ export default {
       this.file = '';
       this.fileIsValid = false;
     },
-    importNewPI() {
+    async importNewPI() {
       if (!this.file) {
         return;
       }
@@ -93,16 +93,14 @@ export default {
 
       ProcessMaker.apiClient
         .post(`/package-ai/pi_process/import`, formData)
-        .then((response) => {
-          // TODO: Make import and redirect to Modeler
+        .then(response => {
+          ProcessMaker.alert(this.$t("The PI process was created."), "success");
+          window.location = `/modeler/${response.data.id}`;
         })
-        .catch((error) => {
-          window.ProcessMaker.alert(
-            this.$t("An error ocurred while importing the current PI Process."),
-            "danger",
-          );
+        .catch(error => {
+          console.error(error);
         });
-    }
+    },
   },
   computed: {
     title() {
