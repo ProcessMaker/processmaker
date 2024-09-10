@@ -84,6 +84,7 @@ class PermissionSeeder extends Seeder
             'edit-user-and-password',
         ],
         'Requests' => [
+            'view-all_cases',
             'view-all_requests',
             'edit-request_data',
             'edit-task_data',
