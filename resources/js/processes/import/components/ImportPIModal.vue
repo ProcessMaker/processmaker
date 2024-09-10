@@ -6,6 +6,7 @@
       :subtitle="subtitle"
       :setCustomButtons="true"
       :customButtons="buttons"
+      data-test="import-pi-modal"
       @importNewPI="importNewPI()"
       @hidden="onClose()"
       size="lg"
@@ -83,7 +84,7 @@ export default {
       this.file = '';
       this.fileIsValid = false;
     },
-    async importNewPI() {
+    importNewPI() {
       if (!this.file) {
         return;
       }
