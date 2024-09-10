@@ -65,8 +65,7 @@ const PMColumnFilterCommonMixin = {
         filters: this.formattedFilter(),
         order
       };
-
-      if (!this.autosaveFilter) {
+      if (this.autosaveFilter) {
         ProcessMaker.apiClient.put(url, config);
       }
       window.ProcessMaker.advanced_filter = config;
