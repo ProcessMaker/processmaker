@@ -165,7 +165,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         'participants',
     ];
 
-    const DEFAULT_CASE_TITLE = 'Case #{{_request.case_number}}';
+    const DEFAULT_CASE_TITLE = '{{_request.name}}';
 
     /**
      * Determine whether the item should be indexed.
@@ -1018,9 +1018,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         if ($formatted) {
             $mustache = new MustacheExpressionEvaluator([
                 'escape' => function ($value) {
-                    return '<b>' .
-                        htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') .
-                        '</b>';
+                    return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
                 },
             ]);
             $title = $mustache->render($mustacheTitle, $data);
