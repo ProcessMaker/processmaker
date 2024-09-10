@@ -215,7 +215,6 @@ export default {
     },
   },
   mounted() {
-    this.getParticipants("");
     this.setupColumns();
     this.getFilterConfiguration();
   },

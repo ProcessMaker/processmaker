@@ -456,7 +456,6 @@ export default {
     },
   },
   mounted: function mounted() {
-    this.getAssignee("");
     this.setupColumns();
     this.getFilterConfiguration();
 
