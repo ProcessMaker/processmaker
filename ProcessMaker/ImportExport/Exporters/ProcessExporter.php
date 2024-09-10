@@ -326,6 +326,11 @@ class ProcessExporter extends ExporterBase
             $interstitialScreenId = $element->getAttribute('pm:interstitialScreenRef');
             $allowInterstitial = $element->getAttribute('pm:allowInterstitial');
 
+            // Geting object screens ABE parameters [screenEmailRef, screenCompleteRef]
+            $configEmail = json_decode($element->getAttribute('pm:configEmail'), true);
+            $screenEmailRefId = $configEmail['screenEmailRef'] ?? null;
+            $screenCompleteRefId = $configEmail['screenCompleteRef'] ?? null;
+
             if (is_numeric($screenId)) {
                 $screen = Screen::find($screenId);
                 if ($screen) {
@@ -344,6 +349,25 @@ class ProcessExporter extends ExporterBase
                     Log::debug("Interstitial screenId: {$interstitialScreenId} not exists");
                 }
             }
+
+            // Let's check if ABE screens exist
+            if (is_numeric($screenEmailRefId)) {
+                $screenEmailRef = Screen::find($screenEmailRefId);
+                if ($screenEmailRef) {
+                    $this->addDependent(DependentType::ABE_EMAIL_SCREEN, $screenEmailRef, ScreenExporter::class, $meta);
+                } else {
+                    Log::debug("Interstitial screenId: {$screenEmailRef} not exists");
+                }
+            }
+
+            if (is_numeric($screenCompleteRefId)) {
+                $screenCompleteRef = Screen::find($screenCompleteRefId);
+                if ($screenCompleteRef) {
+                    $this->addDependent(DependentType::ABE_COMPLETED_SCREEN, $screenCompleteRef, ScreenExporter::class, $meta);
+                } else {
+                    Log::debug("Interstitial screenId: {$screenCompleteRef} not exists");
+                }
+            }
         }
     }
 
@@ -358,6 +382,30 @@ class ProcessExporter extends ExporterBase
             foreach ($this->getDependents(DependentType::INTERSTITIAL_SCREEN) as $interDependent) {
                 $path = $interDependent->meta['path'];
                 Utils::setAttributeAtXPath($this->model, $path, 'pm:interstitialScreenRef', $interDependent->model->id);
+            }
+        }
+
+        //  Config ABE Screens
+        $this->importABEScreens();
+    }
+
+    private function importABEScreens()
+    {
+        if ($this->getDependents(DependentType::ABE_EMAIL_SCREEN)) {
+            foreach ($this->getDependents(DependentType::ABE_EMAIL_SCREEN) as $interDependent) {
+                $path = $interDependent->meta['path'];
+                $configEmail = json_decode(Utils::getAttributeAtXPath($this->model, $path, 'pm:configEmail'), true);
+                $configEmail['screenEmailRef'] = $interDependent->model->id;
+                Utils::setAttributeAtXPath($this->model, $path, 'pm:configEmail', json_encode($configEmail));
+            }
+        }
+
+        if ($this->getDependents(DependentType::ABE_COMPLETED_SCREEN)) {
+            foreach ($this->getDependents(DependentType::ABE_COMPLETED_SCREEN) as $interDependent) {
+                $path = $interDependent->meta['path'];
+                $configEmail = json_decode(Utils::getAttributeAtXPath($this->model, $path, 'pm:configEmail'), true);
+                $configEmail['screenCompleteRef'] = $interDependent->model->id;
+                Utils::setAttributeAtXPath($this->model, $path, 'pm:configEmail', json_encode($configEmail));
             }
         }
     }
