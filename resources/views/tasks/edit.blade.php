@@ -197,6 +197,7 @@
                                       v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
                                       type="button"
                                       class="btn btn-block button-actions"
+                                      :disabled="isSelfService"
                                       @click="show"
                                     >
                                       <i class="fas fa-user-friends"></i> {{__('Reassign')}}
