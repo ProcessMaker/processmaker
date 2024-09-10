@@ -149,14 +149,14 @@ export default {
     return {
       assetId: null,
       assetName: "",
-      orderBy: "title",
-
+      orderBy: "updated_at",
+      orderDirection: "desc",
       sortOrder: [
         {
-          field: "title",
-          sortField: "title",
-          direction: "asc"
-        }
+          field: "updated_at",
+          sortField: "updated_at",
+          direction: "desc",
+        },
       ],
 
       fields: [
@@ -211,7 +211,7 @@ export default {
           label: this.$t("Modified"),
           field: "updated_at",
           sortable: true,
-          direction: "none",
+          direction: "desc",
           format: "datetime",
           width: 140,
           callback: "formatDate",
