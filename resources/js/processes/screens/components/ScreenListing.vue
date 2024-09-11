@@ -168,7 +168,8 @@ export default {
   props: ["filter", "id", "permission", "currentUserId", "types"],
   data() {
     return {
-      orderBy: "title",
+      orderBy: "updated_at",
+      orderDirection: "desc",
       screenId: null,
       assetName: " ",
       assignedProjects: [],
@@ -176,10 +177,10 @@ export default {
       screenType: "",
       sortOrder: [
         {
-          field: "title",
-          sortField: "title",
-          direction: "asc"
-        }
+          field: "updated_at",
+          sortField: "updated_at",
+          direction: "desc",
+        },
       ],
 
       fields: [
@@ -233,7 +234,7 @@ export default {
           label: this.$t("Modified"),
           field: "updated_at",
           sortable: true,
-          direction: "none",
+          direction: "desc",
           format: "datetime",
           width: 140,
           sortField: "updated_at",
@@ -300,7 +301,7 @@ export default {
     fetch() {
       this.loading = true;
       //change method sort by slot name
-      this.orderBy = this.orderBy === "__slot:title" ? "title" : this.orderBy;
+      this.orderBy = this.orderBy === "__slot:updated_at" ? "updated_at" : this.orderBy;
       // Load from our api client
       ProcessMaker.apiClient
         .get(
