@@ -219,6 +219,7 @@
       ref="preview"
       @mark-selected-row="markSelectedRow"
       :tooltip-button="tooltipFromButton"
+      @onSetViewed="setViewed"
       @onWatchShowPreview="onWatchShowPreview"
     >
       <template v-slot:header="{ close, screenFilteredTaskData, taskReady }">
@@ -455,7 +456,6 @@ export default {
     },
   },
   mounted: function mounted() {
-    this.getAssignee("");
     this.setupColumns();
     this.getFilterConfiguration();
 
@@ -647,6 +647,21 @@ export default {
       this.tooltipFromButton = fromButton;
       this.selectedRow = info.id;
       this.$refs.preview.showSideBar(info, this.data.data, true, size);
+    },
+    setViewed(task) {
+      const url = `tasks/${task.id}/setViewed`;
+      const params = {
+        id: task.id
+      };
+      ProcessMaker.apiClient
+        .post(url, params)
+        .then(
+          (response) => {
+            let taskToUpdate = this.data.data.findIndex(data => data.uuid === task.uuid);
+            this.data.data[taskToUpdate].user_viewed_at = response.data.created_at;
+          }
+        )
+        .catch((err) => {});
     },
     formatStatus(props) {
       let color = "success";

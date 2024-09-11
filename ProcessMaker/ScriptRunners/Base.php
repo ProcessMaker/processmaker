@@ -184,7 +184,11 @@ abstract class Base
         });
 
         // Add the url to the host
-        $variablesParameter[] = 'HOST_URL=' . escapeshellarg(config('app.docker_host_url'));
+        if ($useEscape) {
+            $variablesParameter[] = 'HOST_URL=' . escapeshellarg(config('app.docker_host_url'));
+        } else {
+            $variablesParameter[] = 'HOST_URL=' . config('app.docker_host_url');
+        }
 
         return $variablesParameter;
     }
