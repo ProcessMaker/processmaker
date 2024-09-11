@@ -67,6 +67,7 @@ export default {
       this.$bvModal.show('importPI');
     },
     hide() {
+      this.removeFile();
       this.$bvModal.hide('importPI');
     },
     onClose() {
