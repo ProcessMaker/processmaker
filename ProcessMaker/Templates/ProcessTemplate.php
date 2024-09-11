@@ -6,12 +6,14 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Events\TemplateCreated;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ProcessExporter;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
+use ProcessMaker\Jobs\ImportV2;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
@@ -205,103 +207,163 @@ class ProcessTemplate implements TemplateInterface
      */
     public function create($request) : JsonResponse
     {
-        $templateId = (int) $request->id;
-        $template = ProcessTemplates::where('id', $templateId)->firstOrFail();
+        \Log::debug('======= CREATING PROCESS TEMPLATE ====');
+
+        // Retrieve and update the template
+        $template = ProcessTemplates::findOrFail((int) $request->id);
         $template->fill($request->except('id'));
 
+        $requestData = $request->existingAssets ? $request->toArray()['request'] : $request->all();
+
+        // Prepare the payload
+        $payload = $this->preparePayload($requestData, $template);
+
+        // Handle the import process
+        $processId = $this->handleImport($request, $payload, $request->existingAssets);
+
+        // Sync launchpad assets if necessary
+        $process = Process::findOrFail($processId);
+        // $this->syncLaunchpadAssets($request, $process);
+
+        // Associate assets with projects
+        // $this->associateAssetsWithProjects($requestData['projects'], $processId);
+
+        \Log::debug('======= COMPLETED PROCESS TEMPLATE CREATION ====');
+
+        return response()->json(['processId' => $processId, 'processName' => $process->name]);
+    }
+
+    private function preparePayload($requestData, $template)
+    {
         $payload = json_decode($template->manifest, true);
-        // Check for existing assets
-        $existingAssets = $request->existingAssets;
-        $requestData = $existingAssets ? $request->toArray()['request'] : $request;
 
-        $payload['name'] = $requestData['name'];
-        $payload['description'] = $requestData['description'];
+        // $payload['name'] = $requestData['name'];
+        // $payload['description'] = $requestData['description'];
 
+        // foreach ($payload['export'] as $key => $asset) {
+        //     if ($this->shouldSkipAsset($asset, $key)) {
+        //         unset($payload['export'][$key]);
+        //         continue;
+        //     }
+
+        //     $payload['export'][$key] = $this->updateAssetAttributes($asset, $requestData,  $key, $payload['root']);
+        // }
+
+        return $payload;
+    }
+
+    private function shouldSkipAsset($asset, $key)
+    {
+        if ($asset['model'] === 'ProcessMaker\Package\PackageComments\Models\CommentConfiguration') {
+            return true;
+        }
+
+        if ($asset['model'] === 'ProcessMaker\Models\ProcessCategory') {
+            return ProcessCategory::where('uuid', $key)->exists();
+        }
+
+        return false;
+    }
+
+    private function updateAssetAttributes($asset, $requestData, $key, $rootKey)
+    {
+        if ($key === $rootKey) {
+            $asset['attributes']['name'] = $requestData['name'];
+            $asset['attributes']['description'] = $requestData['description'];
+            $asset['attributes']['process_category_id'] = $requestData['process_category_id'];
+
+            $asset['attributes']['properties'] = $this->updateAssetProperties(
+                $asset['attributes']['properties'],
+                $requestData
+            );
+        }
+
+        if (in_array($asset['type'], ['Process', 'Screen', 'Scripts', 'Collections', 'DataConnector'])) {
+            $asset['attributes']['is_template'] = false;
+            $asset['is_template'] = false;
+        }
+
+        return $asset;
+    }
+
+    private function updateAssetProperties($properties, $requestData)
+    {
+        $propertiesArray = json_decode($properties, true);
+
+        if (isset($requestData['wizardTemplateUuid'])) {
+            $propertiesArray['wizardTemplateUuid'] = $requestData['wizardTemplateUuid'];
+        }
+
+        if (isset($requestData['helperProcessRequestId'])) {
+            $propertiesArray['helperProcessRequestId'] = $requestData['helperProcessRequestId'];
+        }
+
+        return json_encode($propertiesArray);
+    }
+
+    private function handleImport(Request $request, $payload, $existingAssets)
+    {
+        // Original code
+        // $options = new Options($this->buildPostOptions($payload, $existingAssets));
+        // $importer = new Importer($payload, $options);
+        // $manifest = $importer->doImport(null, true);
+        // return $manifest[$payload['root']]->log['newId'];
+
+        $options = new Options($this->buildPostOptions($payload, $existingAssets));
+        // define the file name and path
+        $directory = 'import';
+        $fileName = 'payload.json';
+        $filePath = $directory . '/' . $fileName;
+
+        // Store the payload as a file
+        Storage::put($filePath, json_encode($payload));
+        $hash = md5_file(Storage::path(ImportV2::FILE_PATH));
+        $result = ImportV2::dispatchSync($request->user()->id, null, $hash, false);
+
+        \Log::debug('IMPORTV2 JOB COMPLETED', ['result' => $result]);
+    }
+
+    private function buildPostOptions($payload, $existingAssets)
+    {
         $postOptions = [];
+
         foreach ($payload['export'] as $key => $asset) {
-            // Exclude the import of comment configurations to account for the unavailability
-            // of the comment configuration table in the database.
-            if ($asset['model'] === 'ProcessMaker\Package\PackageComments\Models\CommentConfiguration') {
-                unset($payload['export'][$key]);
-                continue;
-            }
-
-            // Exclude the import of process categories if the category already exists in the database
-            if ($asset['model'] === 'ProcessMaker\Models\ProcessCategory') {
-                $processCategory = ProcessCategory::where('uuid', $key)->first();
-                if ($processCategory !== null) {
-                    unset($payload['export'][$key]);
-                    continue;
-                }
-            }
-
             $postOptions[$key] = [
-                'mode' => 'copy',
+                'mode' => $this->determineAssetMode($existingAssets, $key),
                 'isTemplate' => false,
                 'saveAssetsMode' => 'saveAllAssets',
             ];
+        }
 
-            if ($existingAssets) {
-                foreach ($existingAssets as $item) {
-                    $uuid = $item['uuid'];
-                    if (isset($postOptions[$uuid])) {
-                        $postOptions[$uuid]['mode'] = $item['mode'];
-                    }
-                }
-            }
+        return $postOptions;
+    }
 
-            if ($payload['root'] === $key) {
-                // Set name and description for the new process
-                $payload['export'][$key]['attributes']['name'] = $requestData['name'];
-                $payload['export'][$key]['attributes']['description'] = $requestData['description'];
-                $payload['export'][$key]['attributes']['process_category_id'] = $requestData['process_category_id'];
-                // Store the wizard template uuid on the process to rerun the helper process
-                if (isset($requestData['wizardTemplateUuid'])) {
-                    $properties = json_decode($payload['export'][$key]['attributes']['properties'], true);
-                    $properties['wizardTemplateUuid'] = $requestData['wizardTemplateUuid'];
-                    $payload['export'][$key]['attributes']['properties'] = json_encode($properties);
+    private function determineAssetMode($existingAssets, $key)
+    {
+        if ($existingAssets) {
+            foreach ($existingAssets as $item) {
+                if ($item['uuid'] === $key) {
+                    return $item['mode'];
                 }
-                // Store the helper process request id that initiated the process creation
-                if (isset($requestData['helperProcessRequestId'])) {
-                    $properties = json_decode($payload['export'][$key]['attributes']['properties'], true);
-                    $properties['helperProcessRequestId'] = $requestData['helperProcessRequestId'];
-                    $payload['export'][$key]['attributes']['properties'] = json_encode($properties);
-                }
-
-                $payload['export'][$key]['name'] = $requestData['name'];
-                $payload['export'][$key]['description'] = $requestData['description'];
-                $payload['export'][$key]['process_category_id'] = $requestData['process_category_id'];
-
-                if (!isset($existingAssets)) {
-                    $payload['export'][$key]['process_manager_id'] = $requestData['manager_id'];
-                }
-            }
-            if (in_array($asset['type'], ['Process', 'Screen', 'Scripts', 'Collections', 'DataConnector'])) {
-                $payload['export'][$key]['attributes']['is_template'] = false;
-                $payload['export'][$key]['is_template'] = false;
             }
         }
-        $options = new Options($postOptions);
 
-        $importer = new Importer($payload, $options);
-        $existingAssetsInDatabase = null;
-        $importingFromTemplate = true;
-        $manifest = $importer->doImport($existingAssetsInDatabase, $importingFromTemplate);
-        $rootLog = $manifest[$payload['root']]->log;
-        $processId = $rootLog['newId'];
+        return 'copy';
+    }
 
-        $process = Process::findOrFail($processId);
+    private function associateAssetsWithProjects($projects, $processId)
+    {
+        if (!class_exists(self::PROJECT_ASSET_MODEL_CLASS) || empty($projects)) {
+            return;
+        }
 
-        $this->syncLaunchpadAssets($request, $process);
+        $manifest = $this->getManifest('process', $processId);
 
-        if (class_exists(self::PROJECT_ASSET_MODEL_CLASS) && !empty($requestData['projects'])) {
-            $manifest = $this->getManifest('process', $processId);
-
-            foreach (explode(',', $requestData['projects']) as $project) {
-                foreach ($manifest['export'] as $asset) {
-                    $model = $asset['model']::find($asset['attributes']['id']);
-                    $projectAsset = new (self::PROJECT_ASSET_MODEL_CLASS);
-                    $projectAsset->create([
+        foreach (explode(',', $projects) as $project) {
+            foreach ($manifest['export'] as $asset) {
+                $model = $asset['model']::find($asset['attributes']['id']);
+                if ($model) {
+                    (new (self::PROJECT_ASSET_MODEL_CLASS))->create([
                         'project_id' => $project,
                         'asset_id' => $model->id,
                         'asset_type' => get_class($model),
@@ -309,9 +371,117 @@ class ProcessTemplate implements TemplateInterface
                 }
             }
         }
-
-        return response()->json(['processId' => $processId, 'processName' => $process->name]);
     }
+    // public function create($request) : JsonResponse
+    // {
+    //     \Log::debug("======= CREATING PROCESS TEMPLATE ====");
+    //     $templateId = (int) $request->id;
+    //     $template = ProcessTemplates::where('id', $templateId)->firstOrFail();
+    //     $template->fill($request->except('id'));
+
+    //     $payload = json_decode($template->manifest, true);
+    //     // Check for existing assets
+    //     $existingAssets = $request->existingAssets;
+    //     $requestData = $existingAssets ? $request->toArray()['request'] : $request;
+
+    //     $payload['name'] = $requestData['name'];
+    //     $payload['description'] = $requestData['description'];
+
+    //     $postOptions = [];
+    //     foreach ($payload['export'] as $key => $asset) {
+    //         // Exclude the import of comment configurations to account for the unavailability
+    //         // of the comment configuration table in the database.
+    //         if ($asset['model'] === 'ProcessMaker\Package\PackageComments\Models\CommentConfiguration') {
+    //             unset($payload['export'][$key]);
+    //             continue;
+    //         }
+
+    //         // Exclude the import of process categories if the category already exists in the database
+    //         if ($asset['model'] === 'ProcessMaker\Models\ProcessCategory') {
+    //             $processCategory = ProcessCategory::where('uuid', $key)->first();
+    //             if ($processCategory !== null) {
+    //                 unset($payload['export'][$key]);
+    //                 continue;
+    //             }
+    //         }
+
+    //         $postOptions[$key] = [
+    //             'mode' => 'copy',
+    //             'isTemplate' => false,
+    //             'saveAssetsMode' => 'saveAllAssets',
+    //         ];
+
+    //         if ($existingAssets) {
+    //             foreach ($existingAssets as $item) {
+    //                 $uuid = $item['uuid'];
+    //                 if (isset($postOptions[$uuid])) {
+    //                     $postOptions[$uuid]['mode'] = $item['mode'];
+    //                 }
+    //             }
+    //         }
+
+    //         if ($payload['root'] === $key) {
+    //             // Set name and description for the new process
+    //             $payload['export'][$key]['attributes']['name'] = $requestData['name'];
+    //             $payload['export'][$key]['attributes']['description'] = $requestData['description'];
+    //             $payload['export'][$key]['attributes']['process_category_id'] = $requestData['process_category_id'];
+    //             // Store the wizard template uuid on the process to rerun the helper process
+    //             if (isset($requestData['wizardTemplateUuid'])) {
+    //                 $properties = json_decode($payload['export'][$key]['attributes']['properties'], true);
+    //                 $properties['wizardTemplateUuid'] = $requestData['wizardTemplateUuid'];
+    //                 $payload['export'][$key]['attributes']['properties'] = json_encode($properties);
+    //             }
+    //             // Store the helper process request id that initiated the process creation
+    //             if (isset($requestData['helperProcessRequestId'])) {
+    //                 $properties = json_decode($payload['export'][$key]['attributes']['properties'], true);
+    //                 $properties['helperProcessRequestId'] = $requestData['helperProcessRequestId'];
+    //                 $payload['export'][$key]['attributes']['properties'] = json_encode($properties);
+    //             }
+
+    //             $payload['export'][$key]['name'] = $requestData['name'];
+    //             $payload['export'][$key]['description'] = $requestData['description'];
+    //             $payload['export'][$key]['process_category_id'] = $requestData['process_category_id'];
+
+    //             if (!isset($existingAssets)) {
+    //                 $payload['export'][$key]['process_manager_id'] = $requestData['manager_id'];
+    //             }
+    //         }
+    //         if (in_array($asset['type'], ['Process', 'Screen', 'Scripts', 'Collections', 'DataConnector'])) {
+    //             $payload['export'][$key]['attributes']['is_template'] = false;
+    //             $payload['export'][$key]['is_template'] = false;
+    //         }
+    //     }
+    //     $options = new Options($postOptions);
+
+    //     $importer = new Importer($payload, $options);
+    //     $existingAssetsInDatabase = null;
+    //     $importingFromTemplate = true;
+    //     $manifest = $importer->doImport($existingAssetsInDatabase, $importingFromTemplate);
+    //     $rootLog = $manifest[$payload['root']]->log;
+    //     $processId = $rootLog['newId'];
+
+    //     $process = Process::findOrFail($processId);
+
+    //     $this->syncLaunchpadAssets($request, $process);
+
+    //     if (class_exists(self::PROJECT_ASSET_MODEL_CLASS) && !empty($requestData['projects'])) {
+    //         $manifest = $this->getManifest('process', $processId);
+
+    //         foreach (explode(',', $requestData['projects']) as $project) {
+    //             foreach ($manifest['export'] as $asset) {
+    //                 $model = $asset['model']::find($asset['attributes']['id']);
+    //                 $projectAsset = new (self::PROJECT_ASSET_MODEL_CLASS);
+    //                 $projectAsset->create([
+    //                     'project_id' => $project,
+    //                     'asset_id' => $model->id,
+    //                     'asset_type' => get_class($model),
+    //                 ]);
+    //             }
+    //         }
+    //     }
+    //     \Log::debug("======= COMPLETED CREATION PROCESS TEMPLATE ====");
+    //     return response()->json(['processId' => $processId, 'processName' => $process->name]);
+    // }
 
     /**
      *  Update process template bpmn.

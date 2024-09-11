@@ -273,41 +273,93 @@ class TemplateController extends Controller
         $template = ProcessTemplates::findOrFail($request->id);
         $payload = json_decode($template->manifest, true);
 
-        // Get assets form the template
-        $existingOptions = [];
-
-        foreach ($payload['export'] as $key => $asset) {
-            if (Str::contains($asset['model'], 'CommentConfiguration')
-            ) {
-                unset($payload['export'][$key]);
-                continue;
+        // Collect all UUIDs form the payload that are not excluded
+        $uuids = array_filter(
+            array_keys($payload['export']),
+            function ($key) use ($payload) {
+                return !Str::contains($payload['export'][$key]['model'], 'CommentConfiguration')
+                    && !Str::contains($payload['export'][$key]['type'], 'Category');
             }
+        );
 
-            if (!$asset['model']::where('uuid', $key)->exists()
-                || $payload['root'] === $asset['attributes']['uuid']
-                || Str::contains($asset['type'], 'Category')
-            ) {
-                continue;
-            }
+        // Retrieve all the models from the database in a single query
+        $models = collect($payload['export'])
+            ->filter(function ($asset, $key) use ($uuids, $payload) {
+                return in_array($key, $uuids) && !$this->isRootOrCategory($payload, $asset);
+            })
+            ->mapWithKeys(function ($asset, $key) {
+                return [$key => $asset['model']];
+            });
+        // Fetch existing assets
+        $existingModels = collect($models)->mapWithKeys(function ($model, $uuid) {
+            return [$uuid => $model::where('uuid', $uuid)->exists()];
+        });
 
-            $item = [
-                'type' => ($asset['type'] === 'Process') ? 'SubProcess' : $asset['type'],
-                'uuid' => $key,
-                'model' => $asset['model'],
+        // Prepare the result array
+        return $models->filter(function ($exists, $uuid) use ($existingModels) {
+            return $existingModels[$uuid];
+        })->map(function ($model, $uuid) use ($payload) {
+            $asset = $payload['export'][$uuid];
+
+            return [
+                'type' => $asset['type'] === 'Process' ? 'SubProcess' : asset['type'],
+                'uuid' => $uuid,
+                'model' => $model,
                 'name' => $asset['name'],
                 'mode' => 'copy',
             ];
-
-            $existingOptions[] = $item;
-        }
-
-        return $existingOptions;
+        })->values()->toArray();
     }
+
+    private function isRootOrCategory($payload, $asset)
+    {
+        return $payload['root'] === $asset['attributes']['uuid']
+            || Str::contains($asset['type'], 'Category');
+    }
+
+    // private function checkIfAssetsExist($request)
+    // {
+    //     $template = ProcessTemplates::findOrFail($request->id);
+    //     $payload = json_decode($template->manifest, true);
+
+    //     // Get assets form the template
+    //     $existingOptions = [];
+
+    //     foreach ($payload['export'] as $key => $asset) {
+    //         if (Str::contains($asset['model'], 'CommentConfiguration')
+    //         ) {
+    //             unset($payload['export'][$key]);
+    //             continue;
+    //         }
+
+    //         if (!$asset['model']::where('uuid', $key)->exists()
+    //             || $payload['root'] === $asset['attributes']['uuid']
+    //             || Str::contains($asset['type'], 'Category')
+    //         ) {
+    //             continue;
+    //         }
+
+    //         $item = [
+    //             'type' => ($asset['type'] === 'Process') ? 'SubProcess' : $asset['type'],
+    //             'uuid' => $key,
+    //             'model' => $asset['model'],
+    //             'name' => $asset['name'],
+    //             'mode' => 'copy',
+    //         ];
+
+    //         $existingOptions[] = $item;
+    //     }
+
+    //     return $existingOptions;
+    // }
 
     protected function createProcess(Request $request)
     {
+        \Log::debug('==== CREATE PROCESS =====');
         $request->validate(Template::rules($request->id, $this->types['process'][4]));
+        \Log::debug('==== CREATE PROCESS VALIDATION RAN =====');
         $postOptions = $this->checkIfAssetsExist($request);
+        \Log::debug('==== CREATE PROCESS CHECK IF ASSETS EXIST COMPLETED =====', ['postOptions' => $postOptions]);
 
         if (!empty($postOptions)) {
             $response = [
@@ -317,6 +369,7 @@ class TemplateController extends Controller
             ];
         } else {
             $response = $this->template->create('process', $request);
+            \Log::debug('==== CREATE PROCESS RESPONSE =====', ['response' => $response]);
         }
 
         if ($request->has('projects')) {

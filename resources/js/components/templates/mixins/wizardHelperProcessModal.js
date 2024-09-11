@@ -104,6 +104,7 @@ export default {
       });
     },
     importProcessTemplate() {
+      console.log("importprocess template");
       this.importingProcessTemplate = true;
       ProcessMaker.apiClient.post(`template/create/process/${this.template.process_template_id}`, {
         name: this.template.name,
