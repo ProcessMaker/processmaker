@@ -2,11 +2,16 @@
 
 namespace ProcessMaker\Models;
 
+use Database\Factories\CaseStartedFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use ProcessMaker\Models\ProcessMakerModel;
 
 class CaseStarted extends ProcessMakerModel
 {
+    use HasFactory;
+
     protected $table = 'cases_started';
 
     protected $fillable = [
@@ -34,6 +39,11 @@ class CaseStarted extends ProcessMakerModel
         'initiated_at' => 'datetime',
         'completed_at' => 'datetime',
     ];
+
+    protected static function newFactory(): Factory
+    {
+        return CaseStartedFactory::new();
+    }
 
     /**
      * Get the user that owns the case.

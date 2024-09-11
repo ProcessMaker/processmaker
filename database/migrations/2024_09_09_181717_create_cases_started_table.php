@@ -28,9 +28,12 @@ return new class extends Migration
             $table->text('keywords');
 
             $table->foreign('user_id')->references('id')->on('users');
+
             $table->index(['user_id', 'case_status', 'created_at']);
             $table->index(['user_id', 'case_status', 'updated_at']);
-            $table->index(['case_title']);
+
+            $table->fullText('case_title');
+            $table->fullText('keywords');
         });
     }
 
