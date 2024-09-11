@@ -169,6 +169,9 @@ mix
   .sass("resources/sass/sidebar/sidebar.scss", "public/css")
   .sass("resources/sass/app.scss", "public/css")
   .sass("resources/sass/admin/queues.scss", "public/css/admin")
+  .postCss("resources/sass/tailwind.css", "public/css", [
+    require("tailwindcss"),
+  ])
   .version();
 
 mix.vue({ version: 2 });
