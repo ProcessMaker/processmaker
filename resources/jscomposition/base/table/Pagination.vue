@@ -1,5 +1,6 @@
 <template>
-  <div class="tw-flex tw-items-center tw-justify-start tw-space-x-2 tw-bg-white tw-tw-px-4 tw-py-3 sm:tw-px-6">
+  <div
+    class="tw-flex tw-items-center tw-justify-start tw-space-x-2 tw-bg-white tw-tw-px-4 tw-py-3 sm:tw-px-6">
     <div>
       <svg
         class="tw-h-5 tw-w-5"
@@ -27,7 +28,8 @@
     </div>
 
     <div>
-      <div class="tw-flex tw-border-1 tw-rounded-md tw-ring-1 tw-ring-inset tw-ring-gray-300">
+      <div
+        class="tw-flex tw-border-1 tw-rounded-md tw-ring-1 tw-ring-inset tw-ring-gray-300">
         <input
           class="tw-block tw-flex-1 tw-border-0 tw-bg-transparent tw-pl-1 focus-visible:tw-outline-none placeholder:tw-text-gray-400"
           placeholder="1" />
@@ -78,4 +80,3 @@ export default defineComponent({
   },
 });
 </script>
-<style lang=""></style>

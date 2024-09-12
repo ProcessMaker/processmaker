@@ -1,5 +1,3 @@
-import ThreeSectionCard from "./ThreeSectionCard.vue"
+import ThreeSectionCard from "./ThreeSectionCard.vue";
 
-export {
-    ThreeSectionCard
-}
+export { ThreeSectionCard };
