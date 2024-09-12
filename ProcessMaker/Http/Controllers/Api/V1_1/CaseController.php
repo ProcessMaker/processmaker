@@ -4,7 +4,6 @@ namespace ProcessMaker\Http\Controllers\Api\V1_1;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Requests\GetAllCasesRequest;
 use ProcessMaker\Http\Resources\V1_1\CaseResource;
@@ -12,6 +11,9 @@ use ProcessMaker\Models\CaseStarted;
 
 class CaseController extends Controller
 {
+    /**
+     * Default fields used in the query select statement.
+     */
     protected $defaultFields = [
         'case_number',
         'user_id',
@@ -57,6 +59,8 @@ class CaseController extends Controller
         'created_at',
         'updated_at',
     ];
+
+    const DEFAULT_SORT_DIRECTION = 'asc';
 
     /**
      * Get a list of all started cases.
@@ -136,7 +140,7 @@ class CaseController extends Controller
 
             $sort = explode(':', $value);
             $field = $sort[0];
-            $order = $sort[1] ?? 'asc';
+            $order = $sort[1] ?? self::DEFAULT_SORT_DIRECTION;
 
             if (in_array($field, $this->sortableFields)) {
                 $query->orderBy($field, $order);
@@ -189,7 +193,7 @@ class CaseController extends Controller
             $query->where(function ($q) use ($search) {
                 foreach ($this->searchableFields as $field) {
                     if ($field === 'case_number') {
-                        $q->orWhere($field, 'like', "%$search%");
+                        $q->orWhere($field, $search);
                     } else {
                         $q->orWhereFullText($field, $search . '*', ['mode' => 'boolean']);
                     }

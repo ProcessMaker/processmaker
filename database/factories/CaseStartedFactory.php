@@ -24,7 +24,7 @@ class CaseStartedFactory extends Factory
             'user_id' => fake()->randomElement([1, 3]),
             'case_title' => fake()->words(3, true),
             'case_title_formatted' => fake()->words(3, true),
-            'case_status' => fake()->randomElement(['in_progress', 'completed']),
+            'case_status' => fake()->randomElement(['IN_PROGRESS', 'COMPLETED']),
             'processes' => array_map(function() {
                 return [
                     'id' => fake()->randomNumber(),

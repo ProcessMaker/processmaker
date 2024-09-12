@@ -15,7 +15,7 @@ return new class extends Migration
             $table->unsignedInteger('case_number')->primary();
             $table->unsignedInteger('user_id');
             $table->string('case_title', 255);
-            $table->string('case_title_formatted', 255);
+            $table->text('case_title_formatted');
             $table->string('case_status', 20);
             $table->json('processes');
             $table->json('requests');

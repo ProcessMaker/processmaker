@@ -6,6 +6,9 @@ use ProcessMaker\Http\Resources\ApiResource;
 
 class CaseResource extends ApiResource
 {
+    /**
+     * Default fields that will be included in the response.
+     */
     protected static $defaultFields = [
         'case_number',
         'user_id',

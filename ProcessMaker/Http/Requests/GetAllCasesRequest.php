@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use ProcessMaker\Rules\SortBy;
 
 class GetAllCasesRequest extends FormRequest
 {
@@ -23,8 +24,8 @@ class GetAllCasesRequest extends FormRequest
     {
         return [
             'userId' => 'sometimes|integer',
-            'status' => 'sometimes|in:in_progress,completed',
-            'sortBy' => 'sometimes|string',
+            'status' => 'sometimes|in:IN_PROGRESS,COMPLETED',
+            'sortBy' => ['sometimes', 'string', new SortBy],
             'filterBy' => 'sometimes|array',
             'search' => 'sometimes|string',
             'pageSize' => 'sometimes|integer|min:1',
