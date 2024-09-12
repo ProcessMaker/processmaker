@@ -1,7 +1,5 @@
 @extends('layouts.layout')
 
-<link href="{{ mix('css/tailwind.css') }}" rel="stylesheet">
-
 @section('title')
 @endsection
 
