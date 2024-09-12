@@ -488,6 +488,7 @@ export default {
             variant: "link",
             icon: "fas fa-palette",
             action: "openTemplatesPanel()",
+            dataCy: "button-templates",
           },
           {
             id: "button_calcs",
@@ -732,6 +733,14 @@ export default {
     this.setEllipsisMenu();
     ProcessMaker.EventBus.$on("show-create-template-modal", () => {
       this.$refs["create-template-modal"].show();
+    });
+
+    ProcessMaker.EventBus.$on("open-templates-panel", () => {
+      this.openMyTemplates();
+    });
+
+    ProcessMaker.EventBus.$on("close-templates-panel", () => {
+      this.closeTemplatesPanel();
     });
   },
   methods: {
