@@ -32,6 +32,7 @@ use ProcessMaker\Http\Controllers\ProcessController;
 use ProcessMaker\Http\Controllers\ProcessesCatalogueController;
 use ProcessMaker\Http\Controllers\ProfileController;
 use ProcessMaker\Http\Controllers\RequestController;
+use ProcessMaker\Http\Controllers\CasesController;
 use ProcessMaker\Http\Controllers\Saml\MetadataController;
 use ProcessMaker\Http\Controllers\TaskController;
 use ProcessMaker\Http\Controllers\TemplateController;
@@ -136,6 +137,11 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::post('/keep-alive', [LoginController::class, 'keepAlive'])->name('keep-alive');
     // Cases
     Route::get('cases', [RequestController::class, 'index'])->name('cases.index')->middleware('no-cache');
+    Route::get('cases-main', [CasesController::class, 'index'])->name('cases-main.index')->middleware('no-cache');
+
+
+
+
     Route::get('cases/{type?}', [RequestController::class, 'index'])->name('cases_by_type')
         ->where('type', 'all|in_progress|completed')
         ->middleware('no-cache');
