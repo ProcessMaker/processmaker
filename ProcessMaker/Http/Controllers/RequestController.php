@@ -281,4 +281,9 @@ class RequestController extends Controller
             $request->summary_screen['config'] = $translatedConf;
         }
     }
+
+    public function edit(ProcessRequest $request)
+    {
+        return view('cases.edit');
+    }
 }
