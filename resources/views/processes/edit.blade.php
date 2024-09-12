@@ -117,21 +117,6 @@
                                                     :errors="errors.category"
                                                 >
                                                 </category-select>
-                                                <div class="form-group">
-                                                    <label class="typo__label">{{__('Process Manager')}}</label>
-                                                    <select-user
-                                                        v-model="manager"
-                                                        :multiple="false"
-                                                        :class="{'is-invalid': errors.manager_id}"
-                                                    />
-                                                    <div
-                                                        v-if="errors.manager_id"
-                                                        class="invalid-feedback"
-                                                        role="alert"
-                                                    >
-                                                        @{{errors.manager_id[0]}}
-                                                    </div>
-                                                </div>
                                             </b-col>
                                             <b-col>
                                                 <div class="form-group">
@@ -169,6 +154,67 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="card card-custom-info">
+                              <div class="card-header"
+                                   id="headingProcessPermissions">
+                                <button
+                                  class="btn btn-custom-info"
+                                  type="button"
+                                  data-toggle="collapse"
+                                  data-target="#collapseProcessPermissions"
+                                  aria-expanded="true"
+                                  aria-controls="collapseProcessPermissions"
+                                  >
+                                  <span>
+                                    {{__('Process Permissions')}}
+                                  </span>
+                                </button>
+                              </div>
+                              <div id="collapseProcessPermissions"
+                                   class="collapse show"
+                                   aria-labelledby="headingProcessPermissions">
+                                <div class="card-body">
+                                  <b-row>
+                                    <b-col>
+                                      <div class="form-group">
+                                        <label class="typo__label">{{__('Process Manager')}}</label>
+                                        <select-user
+                                          v-model="manager"
+                                          :multiple="false"
+                                          :class="{'is-invalid': errors.manager_id}"
+                                          />
+                                        <div
+                                          v-if="errors.manager_id"
+                                          class="invalid-feedback"
+                                          role="alert"
+                                          >
+                                          @{{errors.manager_id[0]}}
+                                        </div>
+                                      </div>
+                                    </b-col>
+                                    <b-col>
+                                      <div class="form-group">
+                                        <div class="d-flex justify-content-between">
+                                          <label class="typo__label">{{__('Reassignment')}}</label>
+                                          <b-button size="sm"
+                                                    variant="outline-light"
+                                                    class="p-0"
+                                                    @click="reassignmentClicked"
+                                                    pill>
+                                            <img src="/img/button-small-plus-blue.svg" :alt="$t('Clear unsaved filters')"/>
+                                          </b-button>
+                                        </div>
+                                        <processes-permissions ref="listReassignment"
+                                                               :reassignments="reassignmentUsers">
+                                        </processes-permissions>
+                                      </div>
+                                    </b-col>
+                                  </b-row>
+                                </div>
+                              </div>
+                            </div>
+                          
                             <div class="card card-custom-info">
                                 <div
                                     class="card-header"
@@ -634,12 +680,17 @@
                     editTranslation: null,
                     activeTab: "",
                     noElementsFoundMsg: 'Oops! No elements found. Consider changing the search query.',
+                    reassignmentUsers: []
                 }
                 },
                 mounted() {
                     this.activeTab = "";
                     if (_.get(this.formData, 'properties.manager_can_cancel_request')) {
                         this.canCancel.push(this.processManagerOption());
+                    }
+                    
+                    if (_.get(this.formData, 'properties.reassignment_users')) {
+                        this.reassignmentUsers = _.get(this.formData, 'properties.reassignment_users');
                     }
 
                     this.selectedProjects = this.assignedProjects.length > 0 ? this.assignedProjects.map(project => project.id) : null;
@@ -757,6 +808,8 @@
                     this.formData.cancel_screen_id = this.formatValueScreen(this.screenCancel);
                     this.formData.request_detail_screen_id = this.formatValueScreen(this.screenRequestDetail);
                     this.formData.manager_id = this.formatValueScreen(this.manager);
+                    this.formData.reassignment_users = this.$refs["listReassignment"].getItems();
+                    console.log(this.formData)
                     ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
                     .then(response => {
                         ProcessMaker.alert(this.$t('The process was saved.'), 'success', 5, true);
@@ -783,6 +836,9 @@
                 importTranslation() {
                     window.location = `/processes/${this.formData.id}/import/translation`
                 },
+                reassignmentClicked() {
+                    this.$refs["listReassignment"].add();
+                }
                 },
             });
         });
