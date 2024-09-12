@@ -1,5 +1,5 @@
 <template>
-  <div class="hidden sm:tw-block">
+  <div class="tw-block">
     <div class="tw-border-b tw-border-gray-200">
       <nav
         class="tw-mb-px tw-flex tw-space-x-8"
