@@ -3,6 +3,7 @@
 namespace Tests\Feature\Shared;
 
 use Database\Seeders\PermissionSeeder;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\User;

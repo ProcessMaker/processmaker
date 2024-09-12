@@ -387,6 +387,51 @@ To interact with web elements [https://laravel.com/docs/6.x/dusk#interacting-wit
 
 List of available assertions [https://laravel.com/docs/6.x/dusk#available-assertions](https://laravel.com/docs/6.x/dusk#available-assertions)
 
+
+# ICONS
+
+Please follow the steps:
+1. Execute the command in root processmaker
+```text
+npm install
+```
+2. Add the new svg icon file in the /processmaker/resources/icons
+```text
+/processmaker/resources/icons/my-new-icon.svg
+```
+3.Run the follow command
+```text
+npm run font
+```
+4.Run the follow command
+```text
+npm run dev
+```
+5.To use your new icon, in any template or component, add the icon as follows:
+```text
+<i class="fp-my-new-icon" />
+```
+
+### RECOMMENDATIONS ABOUT ICONS
+1. We recommend using the file name with '-' for example: 
+```text
+"left-arrow.svg"
+```
+2. To use the icon, we should use the same name of the file,  for example: 
+```text
+File name: "my-jonas-custom-icon.svg"
+How to use icon: <i class="fp-my-jonas-custom-icon" />
+```
+3. To check all the icons
+```text
+npm run dev-font
+```
+
+
+# Message broker driver, possible values: rabbitmq, kafka, this is optional, if not exists or is empty, the Nayra will be work as normally with local execution
+MESSAGE_BROKER_DRIVER=rabbitmq
+
+
 #### License
 
 Distributed under the [AGPL Version 3](https://www.gnu.org/licenses/agpl-3.0.en.html)

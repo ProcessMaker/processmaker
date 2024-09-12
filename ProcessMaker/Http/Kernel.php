@@ -65,7 +65,7 @@ class Kernel extends HttpKernel
         'auth' => Middleware\ProcessMakerAuthenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        'can' => \Illuminate\Auth\Middleware\Authorize::class,
+        'can' => Middleware\CustomAuthorize::class,
         'force_change_password' => Middleware\VerifyChangePasswordNeeded::class,
         'guest' => Middleware\RedirectIfAuthenticated::class,
         'permission' => Middleware\PermissionCheck::class,
