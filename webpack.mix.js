@@ -121,7 +121,7 @@ mix
   .js("resources/js/requests/mobile.js", "public/js/requests/mobile.js")
   .js("resources/js/requests/show.js", "public/js/requests")
   .js("resources/js/requests/preview.js", "public/js/requests")
-
+  .js("resources/jscomposition/cases/casesMain/main.js", "public/js/composition/cases/casesMain/main.js")
   .js("resources/js/processes/translations/import.js", "public/js/processes/translations")
 
   .js("resources/js/processes-catalogue/index.js", "public/js/processes-catalogue/index.js")
