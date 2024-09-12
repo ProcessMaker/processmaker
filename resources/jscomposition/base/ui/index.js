@@ -1,7 +1,5 @@
-import Badge from "./Badge.vue"
+import Badge from "./Badge.vue";
 
-export default {}
+export default {};
 
-export {
-    Badge
-}
+export { Badge };

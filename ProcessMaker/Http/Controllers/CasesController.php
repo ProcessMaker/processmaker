@@ -31,14 +31,14 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class CasesController extends Controller
 {
-        /**
+    /**
      * Get the list of requests.
      *
      * @return \Illuminate\View\View|\Illuminate\Contracts\View
      */
     public function index($type = null)
     {
-   
+       // This is a temporary API the engine team will provide the new
         return view('cases.casesMain');
     }
 }

@@ -1,2 +1,2 @@
-export * from './columns'
-export * from './badges'
+export * from "./columns";
+export * from "./badges";

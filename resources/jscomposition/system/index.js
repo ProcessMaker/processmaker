@@ -1,7 +1,5 @@
 import Breadcrums from "./Breadcrums.vue";
 
-export default {}
+export default {};
 
-export {
-    Breadcrums
-}
+export { Breadcrums };

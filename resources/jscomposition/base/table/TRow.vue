@@ -1,14 +1,15 @@
 <template>
   <tr class="tw-border-b">
-   <slot></slot>
+    <slot></slot>
   </tr>
 </template>
 
 <script>
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
+
 export default defineComponent({
- setup(){
-    return {}
- }
+  setup() {
+    return {};
+  },
 });
 </script>

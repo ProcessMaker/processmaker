@@ -1,28 +1,27 @@
-import CasesMain from "./CasesMain.vue"
-import CasesDataSection from "./CasesDataSection.vue"
+import CasesMain from "./CasesMain.vue";
+import CasesDataSection from "./CasesDataSection.vue";
 
-export default {}
+export default {};
 
 export const routes = [
-    {
-        name: "cases",
-        path: "/cases-main",
-        component: CasesMain,
+  {
+    name: "cases",
+    path: "/cases-main",
+    component: CasesMain,
+    props(route) {
+      return {};
+    },
+    children: [
+      {
+        name: "cases-request",
+        path: ":id?",
+        component: CasesDataSection,
         props(route) {
-            return {};
+          return {
+            listId: route.params?.id || "my-cases",
+          };
         },
-        children:[
-            {
-                name: "cases-request",
-                path: ":id?",
-                component: CasesDataSection,
-                props(route) {
-                    return {
-                        listId: route.params?.id || 'my-cases',
-                    };
-                }
-            }
-        ]
-    
-    }
-]
+      },
+    ],
+  },
+];

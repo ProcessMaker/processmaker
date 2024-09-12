@@ -1,7 +1,7 @@
 import BadgeContainer from "../components/BadgeContainer.vue";
 import AvatarContainer from "../components/AvatarContainer.vue";
 
-export default {}
+export default {};
 /**
  * Example Column
  * field: String
@@ -20,73 +20,71 @@ export default {}
 // AllCases : [Case#, Case Title, Process, Task, Participants, Status, Started, Completed]
 // AllRequest : [Case#, Case Title, Process, Task, Participants, Status, Started, Completed]
 
-
-export const caseNumberColumn = ()=>({
+export const caseNumberColumn = () => ({
   field: "caseNumber",
   headerName: "Case #",
   resizable: true,
   width: 200,
-})
+});
 
-export const caseTitleColumn = ()=>({
+export const caseTitleColumn = () => ({
   field: "caseTitle",
   headerName: "Case Title",
   resizable: true,
   width: 200,
-})
+});
 
-export const processColumn = ()=>({
+export const processColumn = () => ({
   field: "process",
   headerName: "Process",
   resizable: true,
-  width: 200
-})
+  width: 200,
+});
 
-export const taskColumn = ()=>({
+export const taskColumn = () => ({
   field: "task",
   headerName: "Task",
   resizable: true,
-  width: 200
-})
+  width: 200,
+});
 
-
-export const participantsColumn = ()=>({
+export const participantsColumn = () => ({
   field: "participants",
   headerName: "Participants",
   resizable: true,
   width: 200,
   cellRenderer: () => {
     return AvatarContainer;
-  }
-})
+  },
+});
 
-export const statusColumn = ()=>({
+export const statusColumn = () => ({
   field: "status",
   headerName: "Status",
   resizable: true,
   width: 200,
   cellRenderer: () => {
     return BadgeContainer;
-  }
-})
+  },
+});
 
-export const startedColumn = ()=>({
+export const startedColumn = () => ({
   field: "started",
   headerName: "Started",
   resizable: true,
-  width: 200
-})
+  width: 200,
+});
 
-export const completedColumn = ()=>({
+export const completedColumn = () => ({
   field: "completed",
   headerName: "Completed",
   resizable: true,
-  width: 200
-})
+  width: 200,
+});
 
 export const getColumns = (type) => {
   const columnsDefinition = {
-    'my-cases': [
+    "my-cases": [
       caseNumberColumn(),
       caseTitleColumn(),
       processColumn(),
@@ -94,18 +92,9 @@ export const getColumns = (type) => {
       participantsColumn(),
       statusColumn(),
       startedColumn(),
-      completedColumn()
+      completedColumn(),
     ],
-    'in-progress': [
-      caseNumberColumn(),
-      caseTitleColumn(),
-      processColumn(),
-      taskColumn(),
-      participantsColumn(),
-      statusColumn(),
-      startedColumn()
-    ],
-    'completed': [
+    "in-progress": [
       caseNumberColumn(),
       caseTitleColumn(),
       processColumn(),
@@ -113,9 +102,8 @@ export const getColumns = (type) => {
       participantsColumn(),
       statusColumn(),
       startedColumn(),
-      completedColumn()
     ],
-    'all-cases': [
+    completed: [
       caseNumberColumn(),
       caseTitleColumn(),
       processColumn(),
@@ -123,10 +111,19 @@ export const getColumns = (type) => {
       participantsColumn(),
       statusColumn(),
       startedColumn(),
-      completedColumn()
-    ]
-  }
+      completedColumn(),
+    ],
+    "all-cases": [
+      caseNumberColumn(),
+      caseTitleColumn(),
+      processColumn(),
+      taskColumn(),
+      participantsColumn(),
+      statusColumn(),
+      startedColumn(),
+      completedColumn(),
+    ],
+  };
 
   return columnsDefinition[type] || columnsDefinition.myCases;
-}
-
+};

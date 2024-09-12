@@ -138,10 +138,6 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     // Cases
     Route::get('cases', [RequestController::class, 'index'])->name('cases.index')->middleware('no-cache');
     Route::get('cases-main', [CasesController::class, 'index'])->name('cases-main.index')->middleware('no-cache');
-
-
-
-
     Route::get('cases/{type?}', [RequestController::class, 'index'])->name('cases_by_type')
         ->where('type', 'all|in_progress|completed')
         ->middleware('no-cache');

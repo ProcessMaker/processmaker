@@ -10,7 +10,7 @@
       <button
         @click.prevent.stop="show = !show"
         class="t-flex t-w-full t-justify-between t-items-center t-py-2 t-px-3 t-ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-400">
-        <span>{{ data?.label || data?.value }} </span>
+        <span>{{ data?.label || data?.value || ""}} </span>
 
         <i class="fas fa-chevron-down" />
       </button>

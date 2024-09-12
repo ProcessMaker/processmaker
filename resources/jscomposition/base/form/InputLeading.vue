@@ -5,12 +5,11 @@
                 <i :class="icon"></i>
             </slot>
         </div>
-        <input
-            class="tw-block tw-w-full tw-rounded-md tw-border-0 tw-py-2 tw-pl-10 
+        <input class="tw-block tw-w-full tw-rounded-md tw-border-0 tw-py-2 tw-pl-10 
                 tw-text-gray-900 tw-ring-1 tw-ring-inset tw-ring-gray-300 
                 placeholder:tw-text-gray-400 focus:tw-ring-2 focus:tw-ring-inset
-                 focus-visible:tw-outline-none
-                 sm:tw-text-sm sm:tw-leading-6" :placeholder="placeholder">
+                focus-visible:tw-outline-none
+                sm:tw-text-sm sm:tw-leading-6" :placeholder="placeholder">
     </div>
 </template>
 <script>
@@ -27,7 +26,7 @@ export default defineComponent({
             default: () => ("fa-solid fa-magnifying-glass")
         }
     },
-    setup(props, {emit}) {
+    setup(props, { emit }) {
         return {};
     }
 });
