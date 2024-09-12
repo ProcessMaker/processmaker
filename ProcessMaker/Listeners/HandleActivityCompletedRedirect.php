@@ -12,11 +12,16 @@ class HandleActivityCompletedRedirect extends HandleRedirectListener
      */
     public function handle(ActivityCompleted $event): void
     {
-        $request = $event->getProcessRequestToken()->getInstance();
+        $token = $event->getProcessRequestToken();
+        $request = $token->getInstance();
+
         if (empty($request)) {
             return;
         }
 
-        $this->setRedirectTo($request, 'processUpdated', $event);
+        $this->setRedirectTo($request, 'processUpdated', [
+            'tokenId' => $token->id,
+            'requestStatus' => $request->status,
+        ]);
     }
 }
