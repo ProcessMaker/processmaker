@@ -22,454 +22,450 @@
   ])
 @endsection
 @section('content')
-  <div id="request" class="container-fluid px-3">
-    <div class="d-flex flex-column flex-md-row">
-      <div class="flex-grow-1">
-        <div class="container-fluid">
-          <ul class="nav nav-tabs" id="requestTab" role="tablist">
-            <template v-if="status">
-              @if ($request->status === 'ERROR')
-                <li class="nav-item">
-                  <a class="nav-link active" id="errors-tab" data-toggle="tab" href="#errors" role="tab"
-                    @click="switchTab('errors')" aria-controls="errors" aria-selected="false">{{ __('Errors') }}</a>
-                </li>
-              @endif
-              <li class="nav-item" v-if="showTasks">
-                <a class="nav-link" :class="{ active: activePending }" id="pending-tab" data-toggle="tab"
-                  @click="switchTab('pending')" href="#pending" role="tab" aria-controls="pending"
-                  aria-selected="true">{{ __('Tasks') }}</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" id="overview-tab" data-toggle="tab" href="#overview" role="tab"
-                  aria-controls="overview" aria-selected="false" @click="switchTab('overview')">
-                  {{ __('Overview') }}
-                </a>
-              </li>
-              <li class="nav-item" v-if="showSummary">
-                <a id="summary-tab" data-toggle="tab" href="#summary" role="tab" aria-controls="summary"
-                  @click="switchTab('summary')" aria-selected="false"
-                  v-bind:class="{ 'nav-link':true, active: showSummary && !activePending }">
-                  {{ __('Summary') }}
-                </a>
-              </li>
-              @if ($request->status === 'COMPLETED' && !$request->errors)
-                @can('editData', $request)
+  <div id="request">
+    <div class="menu-mask" :class="{ 'menu-open': showMenu }"></div>
+    <div class="process-catalog-main" :class="{ 'menu-open': showMenu }">
+      <div class="container-fluid px-3">
+        <div class="d-flex flex-column flex-md-row">
+          <div class="flex-grow-1">
+            <div class="container-fluid">
+              <ul class="nav nav-tabs" id="requestTab" role="tablist">
+                <template v-if="status">
+                  @if ($request->status === 'ERROR')
+                    <li class="nav-item">
+                      <a class="nav-link active" id="errors-tab" data-toggle="tab" href="#errors" role="tab"
+                        @click="switchTab('errors')" aria-controls="errors" aria-selected="false">{{ __('Errors') }}</a>
+                    </li>
+                  @endif
+                  <li class="nav-item" v-if="showTasks">
+                    <a class="nav-link" :class="{ active: activePending }" id="pending-tab" data-toggle="tab"
+                      @click="switchTab('pending')" href="#pending" role="tab" aria-controls="pending"
+                      aria-selected="true">{{ __('Tasks') }}</a>
+                  </li>
                   <li class="nav-item">
-                    <a id="editdata-tab" data-toggle="tab" href="#editdata" role="tab" aria-controls="editdata"
-                      aria-selected="false" class="nav-link" @click="switchTab('editdata')">
-                      {{ __('Data') }}
+                    <a class="nav-link" id="overview-tab" data-toggle="tab" href="#overview" role="tab"
+                      aria-controls="overview" aria-selected="false" @click="switchTab('overview')">
+                      {{ __('Overview') }}
                     </a>
                   </li>
-                @endcan
-              @endif
-              <li class="nav-item">
-                <a class="nav-link" id="completed-tab" data-toggle="tab" href="#completed" role="tab"
-                  aria-controls="completed" aria-selected="false"
-                  @click="switchTab('completed')">{{ __('Completed') }}</a>
-              </li>
-              @if (count($files) > 0 && !hasPackage('package-files'))
-                <li class="nav-item">
-                  <a class="nav-link" id="files-tab" data-toggle="tab" href="#files" role="tab" aria-controls="files"
-                    aria-selected="false" @click="switchTab('files')">{{ __('Files') }}</a>
-                </li>
-              @endif
-
-              <template v-for="{ tab } in packages">
-                <li class="nav-item">
-                  <a class="nav-link" :id="tab.id" data-toggle="tab" :href="'#' + tab.target" role="tab"
-                    @click="switchTab(tab.target)">
-                    @{{ tab.name }}
-                  </a>
-                </li>
-              </template>
-
-              <li class="nav-item" v-show="canViewPrint">
-                <a class="nav-link" id="forms-tab" data-toggle="tab" href="#forms" role="tab" aria-controls="forms"
-                  aria-selected="false" @click="switchTab('forms')">
-                  {{ __('Forms') }}
-                </a>
-              </li>
-              @isset($addons)
-                @foreach ($addons as $addon) @if (!empty($addon['title']))
-                  <li class="nav-item">
-                    <a class="nav-link" id="{{ $addon['id'] . '-tab' }}" data-toggle="tab" href="{{ '#' . $addon['id'] }}"
-                      role="tab" aria-controls="{{ $addon['id'] }}" aria-selected="false">
-                      {{ __($addon['title']) }}
+                  <li class="nav-item" v-if="showSummary">
+                    <a id="summary-tab" data-toggle="tab" href="#summary" role="tab" aria-controls="summary"
+                      @click="switchTab('summary')" aria-selected="false"
+                      v-bind:class="{ 'nav-link':true, active: showSummary && !activePending }">
+                      {{ __('Summary') }}
                     </a>
                   </li>
-                @endif @endforeach
-              @endisset
-            </template>
-          </ul>
-          <div class="tab-content" id="requestTabContent">
-            <div class="tab-pane card card-body border-top-0 p-0" :class="{ active: activeErrors }" id="errors"
-              role="tabpanel" aria-labelledby="errors-tab">
-              <request-errors :errors="errorLogs"></request-errors>
-            </div>
-            <div class="tab-pane fade show card card-body border-top-0 p-0" :class="{ active: activePending }"
-              id="pending" role="tabpanel" aria-labelledby="pending-tab">
-              <request-detail ref="pending" :process-request-id="requestId" status="ACTIVE"
-                :is-process-manager="{{ $isProcessManager ? 'true' : 'false' }}"
-                :is-admin="{{ Auth::user()->is_administrator ? 'true' : 'false' }}">
-              </request-detail>
-            </div>
-            <div class="card card-body border-top-0 p-0"
-              v-bind:class="{ 'tab-pane':true, active: showSummary && !activePending}" id="summary" role="tabpanel"
-              aria-labelledby="summary-tab">
-              <template v-if="showSummary">
-                <template v-if="showScreenSummary">
-                  <div class="p-3">
-                    <vue-form-renderer ref="screen" :config="screenSummary.config" v-model="dataSummary"
-                      :computed="screenSummary.computed" />
-                  </div>
+                  @if ($request->status === 'COMPLETED' && !$request->errors)
+                    @can('editData', $request)
+                      <li class="nav-item">
+                        <a id="editdata-tab" data-toggle="tab" href="#editdata" role="tab" aria-controls="editdata"
+                          aria-selected="false" class="nav-link" @click="switchTab('editdata')">
+                          {{ __('Data') }}
+                        </a>
+                      </li>
+                    @endcan
+                  @endif
+                  <li class="nav-item">
+                    <a class="nav-link" id="completed-tab" data-toggle="tab" href="#completed" role="tab"
+                      aria-controls="completed" aria-selected="false"
+                      @click="switchTab('completed')">{{ __('Completed') }}</a>
+                  </li>
+                  @if (count($files) > 0 && !hasPackage('package-files'))
+                    <li class="nav-item">
+                      <a class="nav-link" id="files-tab" data-toggle="tab" href="#files" role="tab" aria-controls="files"
+                        aria-selected="false" @click="switchTab('files')">{{ __('Files') }}</a>
+                    </li>
+                  @endif
+
+                  <template v-for="{ tab } in packages">
+                    <li class="nav-item">
+                      <a class="nav-link" :id="tab.id" data-toggle="tab" :href="'#' + tab.target" role="tab"
+                        @click="switchTab(tab.target)">
+                        @{{ tab.name }}
+                      </a>
+                    </li>
+                  </template>
+
+                  <li class="nav-item" v-show="canViewPrint">
+                    <a class="nav-link" id="forms-tab" data-toggle="tab" href="#forms" role="tab" aria-controls="forms"
+                      aria-selected="false" @click="switchTab('forms')">
+                      {{ __('Forms') }}
+                    </a>
+                  </li>
+                  @isset($addons)
+                    @foreach ($addons as $addon) @if (!empty($addon['title']))
+                      <li class="nav-item">
+                        <a class="nav-link" id="{{ $addon['id'] . '-tab' }}" data-toggle="tab" href="{{ '#' . $addon['id'] }}"
+                          role="tab" aria-controls="{{ $addon['id'] }}" aria-selected="false">
+                          {{ __($addon['title']) }}
+                        </a>
+                      </li>
+                    @endif @endforeach
+                  @endisset
                 </template>
-                <template v-if="showScreenRequestDetail && !showScreenSummary">
-                  <div class="card">
-                    <div class="card-body">
-                      <vue-form-renderer ref="screenRequestDetail" :config="screenRequestDetail"
-                        v-model="dataSummary" />
-                    </div>
-                  </div>
-                </template>
-                <template v-if="!showScreenSummary && !showScreenRequestDetail">
-                  <template v-if="summary.length > 0">
-                    <template v-if="!activePending">
-                      <div class="card border-0">
-                        <data-summary :summary="dataSummary"></data-summary>
+              </ul>
+              <div class="tab-content" id="requestTabContent">
+                <div class="tab-pane card card-body border-top-0 p-0" :class="{ active: activeErrors }" id="errors"
+                  role="tabpanel" aria-labelledby="errors-tab">
+                  <request-errors :errors="errorLogs"></request-errors>
+                </div>
+                <div class="tab-pane fade show card card-body border-top-0 p-0" :class="{ active: activePending }"
+                  id="pending" role="tabpanel" aria-labelledby="pending-tab">
+                  <request-detail ref="pending" :process-request-id="requestId" status="ACTIVE"
+                    :is-process-manager="{{ $isProcessManager ? 'true' : 'false' }}"
+                    :is-admin="{{ Auth::user()->is_administrator ? 'true' : 'false' }}">
+                  </request-detail>
+                </div>
+                <div class="card card-body border-top-0 p-0"
+                  v-bind:class="{ 'tab-pane':true, active: showSummary && !activePending}" id="summary" role="tabpanel"
+                  aria-labelledby="summary-tab">
+                  <template v-if="showSummary">
+                    <template v-if="showScreenSummary">
+                      <div class="p-3">
+                        <vue-form-renderer ref="screen" :config="screenSummary.config" v-model="dataSummary"
+                          :computed="screenSummary.computed" />
                       </div>
                     </template>
-                    <template v-else>
-                      <div class="card border-0">
-                        <div class="card-header bg-white">
-                          <h5 class="m-0">
-                            {{ __('Request In Progress') }}
-                          </h5>
-                        </div>
-
+                    <template v-if="showScreenRequestDetail && !showScreenSummary">
+                      <div class="card">
                         <div class="card-body">
-                          <p class="card-text">
-                            {{ __('This Request is currently in progress.') }}
-                            {{ __('This screen will be populated once the Request is completed.') }}
-                          </p>
+                          <vue-form-renderer ref="screenRequestDetail" :config="screenRequestDetail"
+                            v-model="dataSummary" />
                         </div>
                       </div>
                     </template>
-                  </template>
-                  <template v-else>
-                    <div class="card border-0">
-                      <div class="card-header bg-white">
-                        <h5 class="m-0">
-                          {{ __('No Data Found') }}
-                        </h5>
-                      </div>
+                    <template v-if="!showScreenSummary && !showScreenRequestDetail">
+                      <template v-if="summary.length > 0">
+                        <template v-if="!activePending">
+                          <div class="card border-0">
+                            <data-summary :summary="dataSummary"></data-summary>
+                          </div>
+                        </template>
+                        <template v-else>
+                          <div class="card border-0">
+                            <div class="card-header bg-white">
+                              <h5 class="m-0">
+                                {{ __('Request In Progress') }}
+                              </h5>
+                            </div>
 
-                      <div class="card-body">
-                        <p class="card-text">
-                          {{ __("Sorry, this request doesn't contain any information.") }}
-                        </p>
-                      </div>
-                    </div>
-                  </template>
+                            <div class="card-body">
+                              <p class="card-text">
+                                {{ __('This Request is currently in progress.') }}
+                                {{ __('This screen will be populated once the Request is completed.') }}
+                              </p>
+                            </div>
+                          </div>
+                        </template>
+                      </template>
+                      <template v-else>
+                        <div class="card border-0">
+                          <div class="card-header bg-white">
+                            <h5 class="m-0">
+                              {{ __('No Data Found') }}
+                            </h5>
+                          </div>
 
-                </template>
-              </template>
-            </div>
-            @if ($request->status === 'COMPLETED')
-              @can('editData', $request)
-                <div id="editdata" role="tabpanel" aria-labelledby="editdata"
-                  class="tab-pane card card-body border-top-0 p-3">
-                  @include('tasks.editdata')
-                </div>
-              @endcan
-            @endif
-            <div class="tab-pane fade card card-body border-top-0 p-0" id="completed" role="tabpanel"
-              aria-labelledby="completed-tab">
-              <request-detail ref="completed" :process-request-id="requestId" status="CLOSED"
-                :is-admin="{{ Auth::user()->is_administrator ? 'true' : 'false' }}">
-              </request-detail>
-            </div>
-
-            <template v-for="{ tab, component } in packages">
-              <div class="tab-pane fade card card-body border-top-0 p-0" :id="tab.target" role="tabpanel">
-                <component :is="component" :process-request-id="requestId"></component>
-              </div>
-            </template>
-
-            <div class="tab-pane fade card card-body border-top-0 p-3" id="files" role="tabpanel"
-              aria-labelledby="files-tab">
-              <div class="card">
-                <div>
-                  <table class="vuetable table-hover table">
-                    <thead>
-                      <tr>
-                        <th>{{ __('File Name') }}</th>
-                        <th>{{ __('MIME Type') }}</th>
-                        <th>{{ __('Created At') }}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      @foreach ($files as $file)
-                        <tr>
-                          <td>
-                            <a
-                              href="{{ url('request/' . $request->id . '/files/' . $file->id) }}">{{ $file->file_name }}</a>
-                          </td>
-                          <td>{{ $file->mime_type }}</td>
-                          <td>{{ $file->created_at->format('m/d/y h:i a') }}</td>
-                        </tr>
-                      @endforeach
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-            <div class="tab-pane fade card card-body border-top-0 p-0" id="forms" role="tabpanel"
-              aria-labelledby="forms-tab" v-show="canViewPrint">
-              <request-screens :id="requestId" :information="dataSummary" ref="forms">
-              </request-screens>
-            </div>
-            <div v-if="activeTab === 'overview'" class="tab-pane fade p-0" id="overview" role="tabpanel"
-              aria-labelledby="overview-tab">
-              <div class="card" style="border-top: none !important;">
-                <div class="card-body">
-                  <h4>
-                    {{ __(':name In-Flight Map', ['name' => $request->process->name]) }}
-                  </h4>
-                  <div v-if="isObjectLoading" class="d-flex justify-content-center">
-                    <div class="spinner-border text-primary" role="status"></div>
-                  </div>
-                  <div :class="{ 'hidden': isObjectLoading }">
-                    <object ref="processMap" class="card"
-                      data="{{ route('modeler.inflight', [
-                        'process' => $request->process->id,
-                        'request' => $request->id
-                      ]) }}"
-                      width="100%"
-                      :height="isObjectLoading ? 'auto' : '640px'"
-                      frameborder="0"
-                      type="text/html"
-                      style="border-radius: 4px;"
-                      @load="onLoadedObject">
-                      <!-- Accessible Alternative Content -->
-                      <p>
-                        {{ __('Content not available. Check settings or try a different device.') }}
-                      </p>
-                    </object>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            @isset($addons)
-              @foreach ($addons as $addon)
-                <div class="tab-pane fade show" id="{{ $addon['id'] }}" role="tabpanel"
-                  aria-labelledby="{{ $addon['id'] }}">
-                  {!! $addon['content'] !!}
-                </div>
-              @endforeach
-            @endisset
-          </div>
-        </div>
-          <timeline commentable_id="{{ $request->getKey() }}" commentable_type="{{ get_class($request) }}"
-            :adding="false" :readonly="request.status === 'COMPLETED'" 
-            :timeline="false" />
-      </div>
-      @if (shouldShow('requestStatusContainer'))
-        <div>
-          <template v-if="statusLabel">
-            <button
-              role="button"
-              class="btn d-block mr-0 ml-auto button-collapse"
-              data-toggle="collapse"
-              data-target="#collapse-info"
-              @click="showTabs = !showTabs"
-            >
-              <template v-if="showTabs">
-                <i class="fas fa-angle-right"></i>
-              </template>
-              <template v-else>
-                <i class="fas fa-angle-left"></i>
-              </template>
-            </button>
-            <ul v-if="showTabs" class="nav nav-tabs nav-collapse" role="tablist">
-              <li class="nav-item" role="presentation">
-                <button
-                  id="details-tab"
-                  :class="{'nav-link': true, active: showInfo }"
-                  data-bs-toggle="tab"
-                  data-bs-target="#details"
-                  type="button"
-                  role="tab"
-                  aria-controls="details"
-                  aria-selected="true"
-                  @click="switchTabInfo('details')"
-                >
-                  @{{ __('Details') }}
-                </button>
-              </li>
-              <li class="nav-item" role="presentation">
-                <button
-                  id="comments-tab"
-                  :class="{'nav-link': true, active: !showInfo }"
-                  data-bs-toggle="tab"
-                  data-bs-target="#comments"
-                  type="button"
-                  role="tab"
-                  aria-controls="comments"
-                  aria-selected="false"
-                  @click="switchTabInfo('comments')"
-                >
-                  @{{ __('Comments') }}
-                </button>
-              </li>
-            </ul>
-          </template>
-          <div class="tab-content">
-            <div id="collapse-info" class="collapse show width">
-              <div
-                v-if="showInfo"
-                id="details"
-                v-bind:class="{ 'tab-pane':true, fade: true, show: showInfo, active: showInfo }"
-                role="tabpanel"
-                aria-labelledby="details-tab"
-              >
-                <div class="ml-md-3 mt-md-0 mt-3">
-                  <template v-if="statusLabel">
-                    <div class="card collapse-content">
-                      <ul class="list-group list-group-flush w-100">
-                        @if ($canCancel == true && $request->status === 'ACTIVE')
-                          <li class="list-group-item">
-                            <button type="button" class="btn btn-outline-custom btn-block" @click="onCancel"
-                              aria-haspopup="dialog">
-                              {{ __('Cancel Request') }}
-                            </button>
-                          </li>
-                        @endif
-                        <div :class="classStatusCard">
-                          <span style="margin:0; padding:0; line-height:1">@{{ __(statusLabel) }}</span>
+                          <div class="card-body">
+                            <p class="card-text">
+                              {{ __("Sorry, this request doesn't contain any information.") }}
+                            </p>
+                          </div>
                         </div>
-                        @if ($request->participants->count())
-                          <li class="list-group-item">
-                            <p class="section-title">{{ __('Participants') }}:</p>
-                            <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
-                              :input-data="participants" hide-name="true"></avatar-image>
-                          </li>
-                        @endif
-                        <li class="list-group-item">
-                          <p class="section-title">@{{ __(labelDate) }}:</p>
-                          <i class="far fa-calendar-alt"></i>
-                          <small>@{{ moment(statusDate).format() }}</small>
-                        </li>
-                        <li class="list-group-item">
-                          <p class="section-title">{{ __('Process') }}</p>
-                          {{ $request->name }}
-                          <p class="launchpad-link">
-                            <a href="{{route('process.browser.index', [$request->process_id])}}">
-                              {{ __('Open Process Launchpad') }}
-                            </a>
-                          </p>
-                        </li>
-                        @if ($request->user_id)
-                          <li class="list-group-item">
-                            <p class="section-title">{{ __('Requested By') }}:</p>
-                            <avatar-image
-                              v-if="userRequested"
-                              size="32"
-                              class="d-inline-flex pull-left align-items-center"
-                              :input-data="requestBy"
-                              display-name="true"
-                            ></avatar-image>
-                            <span v-if="!userRequested">{{ __('Web Entry') }}</span>
-                          </li>
-                        @endif
-                        @if ($canManuallyComplete == true)
-                          <li class="list-group-item">
-                            <p class="section-title">{{ __('Manually Complete Request') }}</p>
-                            <button type="button" class="btn btn-outline-success btn-block" data-toggle="modal"
-                              @click="completeRequest">
-                              <i class="fas fa-stop-circle"></i> {{ __('Complete') }}
-                            </button>
-                          </li>
-                        @endif
-                        @if ($canRetry === true)
-                          <li class="list-group-item">
-                            <p class="section-title">{{ __('Retry Request') }}</p>
-                            <button id="retryRequestButton" type="button" class="btn btn-outline-info btn-block"
-                              data-toggle="modal" :disabled="retryDisabled" @click="retryRequest">
-                              <i class="fas fa-sync"></i> {{ __('Retry') }}
-                            </button>
-                          </li>
-                        @endif
-                        @if ($eligibleRollbackTask)
-                          @can('rollback', $errorTask)
-                            <li
-                              v-if="{{ $isProcessManager ? 'true' : 'false' }} ||
-                                {{ Auth::user()->is_administrator ? 'true' : 'false' }}"
-                              class="list-group-item"
-                            >
-                              <p class="section-title">{{ __('Rollback Request') }}</p>
-                              <button
-                                id="retryRequestButton"
-                                type="button"
-                                class="btn btn-outline-info btn-block"
-                                data-toggle="modal"
-                                @click="rollback({{ $errorTask->id }}, '{{ $eligibleRollbackTask->element_name }}')"
-                              >
-                                <i class="fas fa-undo"></i> {{ __('Rollback') }}
-                              </button>
-                              <small>{{ __('Rollback to task') }}: <b>{{ $eligibleRollbackTask->element_name }}</b> ({{ $eligibleRollbackTask->element_id }})</small>
-                            </li>
-                          @endcan
-                        @endif
-                        @if ($request->parentRequest)
-                          <li class="list-group-item">
-                            <p class="section-title">{{ __('Parent Request') }}</p>
-                            <i :class="requestStatusClass('{{ $request->parentRequest->status }}')"></i>
-                            <a href="/requests/{{ $request->parentRequest->getKey() }}">{{ $request->parentRequest->name }}</a>
-                          </li>
-                        @endif
-                        @if (count($request->childRequests))
-                          <li class="list-group-item">
-                            <p class="section-title">{{ __('Child Requests') }}</p>
-                            @foreach ($request->childRequests as $childRequest)
-                              <div>
-                                <i :class="requestStatusClass('{{ $childRequest->status }}')"></i>
-                                <a href="/requests/{{ $childRequest->getKey() }}">{{ $childRequest->name }}</a>
-                              </div>
-                            @endforeach
-                          </li>
-                        @endif
-                      </ul>
-                    </div>
+                      </template>
+
+                    </template>
                   </template>
                 </div>
+                @if ($request->status === 'COMPLETED')
+                  @can('editData', $request)
+                    <div id="editdata" role="tabpanel" aria-labelledby="editdata"
+                      class="tab-pane card card-body border-top-0 p-3">
+                      @include('tasks.editdata')
+                    </div>
+                  @endcan
+                @endif
+                <div class="tab-pane fade card card-body border-top-0 p-0" id="completed" role="tabpanel"
+                  aria-labelledby="completed-tab">
+                  <request-detail ref="completed" :process-request-id="requestId" status="CLOSED"
+                    :is-admin="{{ Auth::user()->is_administrator ? 'true' : 'false' }}">
+                  </request-detail>
+                </div>
+
+                <template v-for="{ tab, component } in packages">
+                  <div class="tab-pane fade card card-body border-top-0 p-0" :id="tab.target" role="tabpanel">
+                    <component :is="component" :process-request-id="requestId"></component>
+                  </div>
+                </template>
+
+                <div class="tab-pane fade card card-body border-top-0 p-3" id="files" role="tabpanel"
+                  aria-labelledby="files-tab">
+                  <div class="card">
+                    <div>
+                      <table class="vuetable table-hover table">
+                        <thead>
+                          <tr>
+                            <th>{{ __('File Name') }}</th>
+                            <th>{{ __('MIME Type') }}</th>
+                            <th>{{ __('Created At') }}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @foreach ($files as $file)
+                            <tr>
+                              <td>
+                                <a
+                                  href="{{ url('request/' . $request->id . '/files/' . $file->id) }}">{{ $file->file_name }}</a>
+                              </td>
+                              <td>{{ $file->mime_type }}</td>
+                              <td>{{ $file->created_at->format('m/d/y h:i a') }}</td>
+                            </tr>
+                          @endforeach
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-pane fade card card-body border-top-0 p-0" id="forms" role="tabpanel"
+                  aria-labelledby="forms-tab" v-show="canViewPrint">
+                  <request-screens :id="requestId" :information="dataSummary" ref="forms">
+                  </request-screens>
+                </div>
+                <div v-if="activeTab === 'overview'" class="tab-pane fade p-0" id="overview" role="tabpanel"
+                  aria-labelledby="overview-tab">
+                  <div class="card" style="border-top: none !important;">
+                    <div class="card-body">
+                      <h4>
+                        {{ __(':name In-Flight Map', ['name' => $request->process->name]) }}
+                      </h4>
+                      <div v-if="isObjectLoading" class="d-flex justify-content-center">
+                        <div class="spinner-border text-primary" role="status"></div>
+                      </div>
+                      <div :class="{ 'hidden': isObjectLoading }">
+                        <object ref="processMap" class="card"
+                          data="{{ route('modeler.inflight', [
+                            'process' => $request->process->id,
+                            'request' => $request->id
+                          ]) }}"
+                          width="100%"
+                          :height="isObjectLoading ? 'auto' : '640px'"
+                          frameborder="0"
+                          type="text/html"
+                          style="border-radius: 4px;"
+                          @load="onLoadedObject">
+                          <!-- Accessible Alternative Content -->
+                          <p>
+                            {{ __('Content not available. Check settings or try a different device.') }}
+                          </p>
+                        </object>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                @isset($addons)
+                  @foreach ($addons as $addon)
+                    <div class="tab-pane fade show" id="{{ $addon['id'] }}" role="tabpanel"
+                      aria-labelledby="{{ $addon['id'] }}">
+                      {!! $addon['content'] !!}
+                    </div>
+                  @endforeach
+                @endisset
               </div>
-              <div
-                v-if="!showInfo"
-                id="comments"
-                v-bind:class="{ 'tab-pane':true, fade: true, show: !showInfo, active: !showInfo }"
-                role="tabpanel"
-                aria-labelledby="comments-tab"
-              >
-                <div class="ml-md-3 mt-md-0 mt-3 collapse-content">
-                  <template v-if="panCommentInVueOptionsComponents">
-                    <comment-container
-                      :commentable_id="request.id"
-                      commentable_type="{{ get_class($request) }}"
-                      name="{{ $request->name }}"
-                      :readonly="request.status === 'COMPLETED'"
-                      :header="false"
-                    />
-                  </template>
+            </div>
+              <timeline commentable_id="{{ $request->getKey() }}" commentable_type="{{ get_class($request) }}"
+                :adding="false" :readonly="request.status === 'COMPLETED'" 
+                :timeline="false" />
+          </div>
+
+          @if (shouldShow('requestStatusContainer'))
+            <div class="slide-control">
+              <a href="#" @click="hideMenu">
+                <i class="fa" :class="{ 'fa-caret-left' : !showMenu, 'fa-caret-right' : showMenu }"></i>
+              </a>
+            </div>
+            <div class="menu">
+              <template v-if="statusLabel">
+                <ul class="nav nav-tabs nav-collapse" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button
+                      id="details-tab"
+                      :class="{'nav-link': true, active: showInfo }"
+                      data-bs-toggle="tab"
+                      data-bs-target="#details"
+                      type="button"
+                      role="tab"
+                      aria-controls="details"
+                      aria-selected="true"
+                      @click="switchTabInfo('details')"
+                    >
+                      @{{ __('Details') }}
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button
+                      id="comments-tab"
+                      :class="{'nav-link': true, active: !showInfo }"
+                      data-bs-toggle="tab"
+                      data-bs-target="#comments"
+                      type="button"
+                      role="tab"
+                      aria-controls="comments"
+                      aria-selected="false"
+                      @click="switchTabInfo('comments')"
+                    >
+                      @{{ __('Comments') }}
+                    </button>
+                  </li>
+                </ul>
+              </template>
+              <div class="menu-tab-content">
+                <div id="collapse-info" class="collapse show width">
+                  <div
+                    v-if="showInfo"
+                    id="details"
+                    v-bind:class="{ 'tab-pane':true, fade: true, show: showInfo, active: showInfo }"
+                    role="tabpanel"
+                    aria-labelledby="details-tab"
+                  >
+                    <div class="ml-md-3 mt-md-0 mt-3">
+                      <template v-if="statusLabel">
+                        <div class="card collapse-content">
+                          <ul class="list-group list-group-flush w-100">
+                            @if ($canCancel == true && $request->status === 'ACTIVE')
+                              <li class="list-group-item">
+                                <button type="button" class="btn btn-outline-custom btn-block" @click="onCancel"
+                                  aria-haspopup="dialog">
+                                  {{ __('Cancel Request') }}
+                                </button>
+                              </li>
+                            @endif
+                            <div :class="classStatusCard">
+                              <span style="margin:0; padding:0; line-height:1">@{{ __(statusLabel) }}</span>
+                            </div>
+                            @if ($request->participants->count())
+                              <li class="list-group-item">
+                                <p class="section-title">{{ __('Participants') }}:</p>
+                                <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
+                                  :input-data="participants" hide-name="true"></avatar-image>
+                              </li>
+                            @endif
+                            <li class="list-group-item">
+                              <p class="section-title">@{{ __(labelDate) }}:</p>
+                              <i class="far fa-calendar-alt"></i>
+                              <small>@{{ moment(statusDate).format() }}</small>
+                            </li>
+                            <li class="list-group-item">
+                              <p class="section-title">{{ __('Process') }}</p>
+                              {{ $request->name }}
+                              <p class="launchpad-link">
+                                <a href="{{route('process.browser.index', [$request->process_id])}}">
+                                  {{ __('Open Process Launchpad') }}
+                                </a>
+                              </p>
+                            </li>
+                            @if ($request->user_id)
+                              <li class="list-group-item">
+                                <p class="section-title">{{ __('Requested By') }}:</p>
+                                <avatar-image
+                                  v-if="userRequested"
+                                  size="32"
+                                  class="d-inline-flex pull-left align-items-center"
+                                  :input-data="requestBy"
+                                  display-name="true"
+                                ></avatar-image>
+                                <span v-if="!userRequested">{{ __('Web Entry') }}</span>
+                              </li>
+                            @endif
+                            @if ($canManuallyComplete == true)
+                              <li class="list-group-item">
+                                <p class="section-title">{{ __('Manually Complete Request') }}</p>
+                                <button type="button" class="btn btn-outline-success btn-block" data-toggle="modal"
+                                  @click="completeRequest">
+                                  <i class="fas fa-stop-circle"></i> {{ __('Complete') }}
+                                </button>
+                              </li>
+                            @endif
+                            @if ($canRetry === true)
+                              <li class="list-group-item">
+                                <p class="section-title">{{ __('Retry Request') }}</p>
+                                <button id="retryRequestButton" type="button" class="btn btn-outline-info btn-block"
+                                  data-toggle="modal" :disabled="retryDisabled" @click="retryRequest">
+                                  <i class="fas fa-sync"></i> {{ __('Retry') }}
+                                </button>
+                              </li>
+                            @endif
+                            @if ($eligibleRollbackTask)
+                              @can('rollback', $errorTask)
+                                <li
+                                  v-if="{{ $isProcessManager ? 'true' : 'false' }} ||
+                                    {{ Auth::user()->is_administrator ? 'true' : 'false' }}"
+                                  class="list-group-item"
+                                >
+                                  <p class="section-title">{{ __('Rollback Request') }}</p>
+                                  <button
+                                    id="retryRequestButton"
+                                    type="button"
+                                    class="btn btn-outline-info btn-block"
+                                    data-toggle="modal"
+                                    @click="rollback({{ $errorTask->id }}, '{{ $eligibleRollbackTask->element_name }}')"
+                                  >
+                                    <i class="fas fa-undo"></i> {{ __('Rollback') }}
+                                  </button>
+                                  <small>{{ __('Rollback to task') }}: <b>{{ $eligibleRollbackTask->element_name }}</b> ({{ $eligibleRollbackTask->element_id }})</small>
+                                </li>
+                              @endcan
+                            @endif
+                            @if ($request->parentRequest)
+                              <li class="list-group-item">
+                                <p class="section-title">{{ __('Parent Request') }}</p>
+                                <i :class="requestStatusClass('{{ $request->parentRequest->status }}')"></i>
+                                <a href="/requests/{{ $request->parentRequest->getKey() }}">{{ $request->parentRequest->name }}</a>
+                              </li>
+                            @endif
+                            @if (count($request->childRequests))
+                              <li class="list-group-item">
+                                <p class="section-title">{{ __('Child Requests') }}</p>
+                                @foreach ($request->childRequests as $childRequest)
+                                  <div>
+                                    <i :class="requestStatusClass('{{ $childRequest->status }}')"></i>
+                                    <a href="/requests/{{ $childRequest->getKey() }}">{{ $childRequest->name }}</a>
+                                  </div>
+                                @endforeach
+                              </li>
+                            @endif
+                          </ul>
+                        </div>
+                      </template>
+                    </div>
+                  </div>
+                  <div
+                    v-if="!showInfo"
+                    id="comments"
+                    v-bind:class="{ 'tab-pane':true, fade: true, show: !showInfo, active: !showInfo }"
+                    role="tabpanel"
+                    aria-labelledby="comments-tab"
+                  >
+                    <div class="ml-md-3 mt-md-0 mt-3 collapse-content">
+                      <template v-if="panCommentInVueOptionsComponents">
+                        <comment-container
+                          :commentable_id="request.id"
+                          commentable_type="{{ get_class($request) }}"
+                          name="{{ $request->name }}"
+                          :readonly="request.status === 'COMPLETED'"
+                          :header="false"
+                        />
+                      </template>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          @endif
         </div>
-      @endif
+      </div>
     </div>
   </div>
-
 @endsection
 
 @section('js')
@@ -522,8 +518,8 @@
           canViewComments: @json($canViewComments),
           isObjectLoading: false,
           showTree: false,
-          showTabs: true,
           showInfo: true,
+          showMenu: true,
         };
       },
       computed: {
@@ -653,6 +649,10 @@
         },
       },
       methods: {
+        hideMenu() {
+          this.showMenu = !this.showMenu;
+          this.$root.$emit("sizeChanged", !this.showMenu);
+        },
         switchTab(tab) {
           this.activeTab = tab;
           if (tab === 'overview') {
@@ -857,6 +857,97 @@
 
 @section('css')
 <style>
+  @import '~styles/variables';
+
+  .process-catalog-main {
+    display: flex;
+    @media (max-width: $lp-breakpoint) {
+        display: block;
+    }
+  }
+  .menu {
+    overflow: hidden;
+    transition: flex 0.3s;
+    flex: 0 0 0px;
+    @media (max-width: $lp-breakpoint) {
+      position: absolute;
+      z-index: 4;
+      display: flex;
+      margin-top: 0;
+      width: 85%;
+      transition: left 0.3s;
+    }
+  }
+  .menu-mask {
+    display: none;
+    position: absolute;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0);
+    z-index: 3;
+    transition: background-color 0.3s;
+    
+    @media (max-width: $lp-breakpoint) {
+      display: block;
+    }
+  }
+  .menu-mask.menu-open {
+    @media (max-width: $lp-breakpoint) {
+      left: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: block;
+    }
+  }
+  .menu-open .menu {
+    flex: 0 0 315px;
+    @media (max-width: $lp-breakpoint) {
+      left: 0%;
+    }
+  }
+  .slide-control {
+    border-left: 1px solid #DEE0E1;
+    margin-left: 15px;
+    width: 16px;
+    @media (max-width: $lp-breakpoint) {
+      display: none;
+    }
+    a {
+      position: relative;
+      left: -11px;
+      top: 40px;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 60px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      border: 1px solid #DEE0E1;
+      color: #6A7888;
+    }
+  }
+  .menu-open .slide-control {
+    border-left: 1px solid #DEE0E1;
+    a {
+      left: -11px;
+      display: none;
+    }
+    
+  }
+  .slide-control:hover{
+    border-left: 1px solid rgba(72, 145, 255, 0.40);
+    box-shadow: -1px 0 0 rgba(72, 145, 255, 0.5);
+  }
+  .menu-open .slide-control:hover {
+    border-left: 1px solid rgba(72, 145, 255, 0.40);
+    box-shadow: -1px 0 0 rgba(72, 145, 255, 0.5);
+    a {
+      display: flex;
+    }
+  }
+  .slide-control a:hover {
+    background-color: #EAEEF2;
+  }
   .hidden {
     visibility: hidden;
     opacity: 0;
@@ -887,16 +978,7 @@
     text-transform: uppercase;
   }
   .nav-collapse {
-    padding: 0 16px;
     border: none;
-  }
-  .button-collapse {
-    height: 32px;
-    padding: 0 8px;
-    border-radius: 4px;
-    border: 1px solid var(--borders, #CDDDEE);
-    background: var(--white-w24, #FFF);
-    color: #6a7888;
   }
   .section-title {
     color: var(--text-only, #556271);
@@ -911,8 +993,7 @@
   .collapse-content {
     min-width:0px;
     max-width:400px;
-    width:317px;
-    height:calc(100vh - 215px)
+    width:315px;
   }
   .active-style {
     background-color: #4ea075;
@@ -925,6 +1006,9 @@
   }
   .launchpad-link {
     margin-top: 5px;
+  }
+  .menu-tab-content {
+    margin-left: -16px;
   }
 </style>
 @endsection
