@@ -99,6 +99,29 @@
           console.warn("Screen builder version does not have watchers");
         }
       });
+      window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
+    
+        ProcessMaker.apiClient.get('/api/1.1/clipboard/get_by_user')
+          .then(response => {
+            if (response && response.data && response.data.config) {
+              try {
+                const clipboardData = JSON.parse(response.data.config);
+                if (clipboardData && typeof clipboardData === 'object') {
+                  screen.$store.dispatch("clipboardModule/addToClipboard", clipboardData);
+                } else {
+                  console.error("Clipboard data is not in the expected format.");
+                }
+              } catch (e) {
+                console.error("Failed to parse clipboard config data: ", e);
+              }
+            } else {
+              console.error("No valid clipboard config data in response.");
+            }
+          })
+          .catch(error => {
+            console.error("Error fetching clipboard data: ", error);
+          });
+      });
       window.Processmaker.user = @json($currentUser);
     </script>
     <script src="{{mix('js/leave-warning.js')}}"></script>
