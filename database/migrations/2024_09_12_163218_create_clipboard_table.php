@@ -13,7 +13,8 @@ return new class extends Migration {
         Schema::create('clipboards', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('user_id')->nullable();
-            $table->json('config')->nullable();
+            $table->mediumText('config');
+            $table->string('type', 20)->default('FORM');
             $table->timestamps();
             // Foreign keys
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
