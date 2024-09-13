@@ -47,7 +47,7 @@ class TaskResource extends ApiResource
         'status',
         'due_at',
         'process_request_id',
-        'is_self_service'
+        'is_self_service',
     ];
 
     protected static $defaultIncludes = [
@@ -56,7 +56,39 @@ class TaskResource extends ApiResource
     ];
 
     protected static $defaultFieldsFor = [
-        'user' => ['id', 'firstname', 'lastname', 'email', 'username', 'avatar'],
+        'user' => [
+            'id',
+            'uuid',
+            'email',
+            'firstname',
+            'lastname',
+            'username',
+            'status',
+            'address',
+            'city',
+            'state',
+            'postal',
+            'country',
+            'phone',
+            'fax',
+            'cell',
+            'title',
+            'birthdate',
+            'timezone',
+            'datetime_format',
+            'language',
+            'meta',
+            'is_administrator',
+            'expires_at',
+            'loggedin_at',
+            'active_at',
+            'created_at',
+            'updated_at',
+            'delegation_user_id',
+            'manager_id',
+            'schedule',
+            'avatar',
+        ],
         'requestor' => ['id', 'first_name', 'last_name', 'email'],
         'processRequest' => [
             'id',

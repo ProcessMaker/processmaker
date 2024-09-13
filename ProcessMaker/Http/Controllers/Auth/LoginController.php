@@ -6,6 +6,7 @@ use App;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Validation\ValidationException;
 use ProcessMaker\Events\Logout;
@@ -241,6 +242,11 @@ class LoginController extends Controller
             //Clear the user permissions
             $request->session()->forget('permissions');
 
+            //Clear the user permissions
+            $userId = Auth::user()->id;
+            Cache::forget("user_{$userId}_permissions");
+            Cache::forget("user_{$userId}_project_assets");
+
             // Clear the user session
             $this->forgetUserSession();
 
@@ -325,6 +331,10 @@ class LoginController extends Controller
 
                 return redirect()->route('password.change');
             }
+            // Cache user permissions for a day to improve performance
+            Cache::remember("user_{$user->id}_permissions", 86400, function () use ($user) {
+                return $user->permissions()->pluck('name')->toArray();
+            });
 
             $this->setupLanguage($request, $user);
             
