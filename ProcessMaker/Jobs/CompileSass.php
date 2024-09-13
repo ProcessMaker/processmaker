@@ -90,6 +90,7 @@ class CompileSass implements ShouldQueue
         $file = str_replace('public/css/precompiled/poppins/500.css', 'css/precompiled/poppins/500.css', $file);
         $file = str_replace('url("../webfonts/', 'url("/fonts/', $file);
         $file = str_replace('url("../fonts/', 'url("/fonts/', $file);
+        $file = str_replace('url("processmaker-font', 'url("/fonts/processmaker-font', $file);        
         $file = str_replace('url("fonts/', 'url("/fonts/', $file);
         $file = str_replace('content: /; }', 'content: "/"; }', $file);
         $re = '/(content:\s)\\\\\"(\\\\[0-9abcdef]+)\\\\\"/m';
