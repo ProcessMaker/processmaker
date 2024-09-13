@@ -17,9 +17,13 @@ class HandleEndEventRedirect extends HandleRedirectListener
         if (empty($request)) {
             return;
         }
+        // Do not redirect to child request summary if there is a previous redirect
+        if ($request->parent_request_id && self::$redirectionMethod !== '') {
+            return;
+        }
 
         $userId = Auth::id();
-        $requestId = $event->getProcessRequest()->id;
+        $requestId = $request->id;
         $this->setRedirectTo($request, 'processCompletedRedirect', $event, $userId, $requestId);
     }
 }
