@@ -3,6 +3,7 @@
 namespace ProcessMaker\Traits;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
@@ -21,7 +22,10 @@ trait HasAuthorization
 
     public function loadUserPermissions()
     {
-        $permissions = $this->permissions->pluck('name')->toArray();
+        $user = $this;
+        $permissions = Cache::remember("user_{$user->id}_permissions", 86400, function () use ($user) {
+            return $user->permissions()->pluck('name')->toArray();
+        });
 
         return $this->addCategoryViewPermissions($permissions);
     }
@@ -53,16 +57,7 @@ trait HasAuthorization
 
     public function hasPermission($permissionString)
     {
-        if (\Auth::user() == $this) {
-            if (session('permissions')) {
-                $permissionStrings = session('permissions');
-            } else {
-                $permissionStrings = $this->loadPermissions();
-                session(['permissions' => $permissionStrings]);
-            }
-        } else {
-            $permissionStrings = $this->loadPermissions();
-        }
+        $permissionStrings = $this->loadPermissions();
 
         return in_array($permissionString, $permissionStrings);
     }

@@ -47,13 +47,17 @@ class Importer
             Schema::disableForeignKeyConstraints();
 
             $count = count(Arr::where($this->manifest->all(), fn ($exporter) => $exporter->mode !== 'discard'));
-            $this->logger->log("Importing $count assets");
+            $this->logger->log("Importing {$count} assets");
             foreach ($this->manifest->all() as $exporter) {
                 if ($exporter->mode !== 'discard') {
                     $this->logger->log('Importing ' . get_class($exporter->model));
                     if ($exporter->disableEventsWhenImporting) {
                         $exporter->model->saveQuietly();
                     } else {
+                        // Set script_id to null before saving data source scripts to prevent conflicts during postImport process.
+                        if (get_class($exporter->model) === 'ProcessMaker\Packages\Connectors\DataSources\Models\Script') {
+                            $exporter->model->script_id = null;
+                        }
                         $exporter->model->save();
                     }
                     $exporter->log('newId', $exporter->model->id);
