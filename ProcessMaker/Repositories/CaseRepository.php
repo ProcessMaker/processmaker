@@ -5,6 +5,7 @@ namespace ProcessMaker\Repositories;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use ProcessMaker\Contracts\CaseRepositoryInterface;
+use ProcessMaker\Exception\CaseValidationException;
 use ProcessMaker\Models\CaseParticipated;
 use ProcessMaker\Models\CaseStarted;
 
@@ -143,10 +144,10 @@ class CaseRepository implements CaseRepositoryInterface
 
             $query->where(function ($q) use ($search) {
                 foreach ($this->searchableFields as $field) {
-                    if ($field === 'case_number') {
-                        $q->where($field, $search);
-                    } else {
+                    if ($field === 'case_title') {
                         $q->orWhereFullText($field, $search . '*', ['mode' => 'boolean']);
+                    } else {
+                        $q->where($field, $search);
                     }
                 }
             });
@@ -169,7 +170,7 @@ class CaseRepository implements CaseRepositoryInterface
 
             foreach ($filterByValue as $key => $value) {
                 if (!in_array($key, $this->filterableFields)) {
-                    continue;
+                    throw new CaseValidationException("Filter by field $key is not allowed.");
                 }
 
                 if (in_array($key, $this->dateFields)) {
@@ -192,14 +193,18 @@ class CaseRepository implements CaseRepositoryInterface
      */
     public function sortBy(Request $request, Builder $query): void
     {
-        $sort = explode(',', $request->get('sortBy'));
+        if ($request->has('sortBy')) {
+            $sort = explode(',', $request->get('sortBy'));
 
-        foreach ($sort as $value) {
-            $sort = explode(':', $value);
-            $field = $sort[0];
-            $order = $sort[1] ?? self::DEFAULT_SORT_DIRECTION;
+            foreach ($sort as $value) {
+                $sort = explode(':', $value);
+                $field = $sort[0];
+                $order = $sort[1] ?? self::DEFAULT_SORT_DIRECTION;
 
-            if (in_array($field, $this->sortableFields)) {
+                if (!in_array($field, $this->sortableFields)) {
+                    throw new CaseValidationException("Sort by field $field is not allowed.");
+                }
+
                 $query->orderBy($field, $order);
             }
         }
