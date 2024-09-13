@@ -578,6 +578,7 @@
                 if (this.formData.id == window.ProcessMaker.user.id) {
                   window.ProcessMaker.events.$emit('update-profile-avatar');
                   this.originalEmail = this.formData.email;
+                  this.formData.valpassword = "";
                 }
               })
               .catch(error => {

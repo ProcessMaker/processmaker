@@ -257,6 +257,7 @@
                             ProcessMaker.alert(this.$t('Your profile was saved.'), 'success')
                             window.ProcessMaker.events.$emit('update-profile-avatar');
                             this.originalEmail = this.formData.email;
+                            this.formData.valpassword = "";
                         })
                         .catch(error => {
                             this.errors = error.response.data.errors;

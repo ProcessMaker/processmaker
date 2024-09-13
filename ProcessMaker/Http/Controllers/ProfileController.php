@@ -52,7 +52,7 @@ class ProfileController extends Controller
         );
 
         $ssoUser = false;
-        if (!class_exists(SsoUser::class)) {
+        if (class_exists(SsoUser::class)) {
             $ssoUser = SsoUser::where('user_id', $user->id)->exists();
         }
 
