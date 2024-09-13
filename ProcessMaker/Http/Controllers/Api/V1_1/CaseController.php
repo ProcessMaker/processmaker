@@ -3,10 +3,12 @@
 namespace ProcessMaker\Http\Controllers\Api\V1_1;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Requests\GetAllCasesRequest;
 use ProcessMaker\Http\Resources\V1_1\CaseResource;
+use ProcessMaker\Models\CaseParticipated;
 use ProcessMaker\Models\CaseStarted;
 
 class CaseController extends Controller
@@ -60,7 +62,11 @@ class CaseController extends Controller
         'updated_at',
     ];
 
+    const DEFAULT_PAGE_SIZE = 15;
+
     const DEFAULT_SORT_DIRECTION = 'asc';
+
+    public function __construct(private Request $request) {}
 
     /**
      * Get a list of all started cases.
@@ -82,6 +88,52 @@ class CaseController extends Controller
         $pageSize = $request->get('pageSize', 15);
 
         $query = CaseStarted::select($this->defaultFields);
+
+        $this->filters($request, $query);
+
+        $pagination = CaseResource::collection($query->paginate($pageSize));
+
+        return [
+            'data' => $pagination->items(),
+            'meta' => [
+                'total' => $pagination->total(),
+                'perPage' => $pagination->perPage(),
+                'currentPage' => $pagination->currentPage(),
+                'lastPage' => $pagination->lastPage(),
+            ],
+        ];
+    }
+
+    public function getInProgress(GetAllCasesRequest $request): array
+    {
+        // CaseParticipated::factory()->count(1000)->create();
+
+        $pageSize = $request->get('pageSize', 15);
+
+        $query = CaseParticipated::select($this->defaultFields)
+            ->where('case_status', 'IN_PROGRESS');
+
+        $this->filters($request, $query);
+
+        $pagination = CaseResource::collection($query->paginate($pageSize));
+
+        return [
+            'data' => $pagination->items(),
+            'meta' => [
+                'total' => $pagination->total(),
+                'perPage' => $pagination->perPage(),
+                'currentPage' => $pagination->currentPage(),
+                'lastPage' => $pagination->lastPage(),
+            ],
+        ];
+    }
+
+    public function getCompleted(GetAllCasesRequest $request): array
+    {
+        $pageSize = $request->get('pageSize', 15);
+
+        $query = CaseParticipated::select($this->defaultFields)
+            ->where('case_status', 'COMPLETED');
 
         $this->filters($request, $query);
 
@@ -200,5 +252,24 @@ class CaseController extends Controller
                 }
             });
         }
+    }
+
+    /**
+     * Handle pagination and return JSON response.
+     */
+    private function paginateResponse($query): JsonResponse
+    {
+        $pageSize = $this->request->get('pageSize', self::DEFAULT_PAGE_SIZE);
+        $pagination = CaseResource::collection($query->paginate($pageSize));
+
+        return response()->json([
+            'data' => $pagination->items(),
+            'meta' => [
+                'total' => $pagination->total(),
+                'perPage' => $pagination->perPage(),
+                'currentPage' => $pagination->currentPage(),
+                'lastPage' => $pagination->lastPage(),
+            ],
+        ]);
     }
 }

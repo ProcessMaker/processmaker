@@ -3,12 +3,15 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use ProcessMaker\Models\CaseParticipated;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\ProcessMaker\Models\CaseParticipated>
  */
 class CaseParticipatedFactory extends Factory
 {
+    protected $model = CaseParticipated::class;
+
     /**
      * Define the model's default state.
      *
@@ -19,8 +22,8 @@ class CaseParticipatedFactory extends Factory
         return [
             'user_id' => fake()->randomElement([1, 3]),
             'case_number' => fake()->unique()->randomNumber(),
-            'case_title' => fake()->words(3, true),,
-            'case_title_formatted' => fake()->words(3, true),,
+            'case_title' => fake()->words(3, true),
+            'case_title_formatted' => fake()->words(3, true),
             'case_status' => fake()->randomElement(['IN_PROGRESS', 'COMPLETED']),
             'processes' => array_map(function() {
                 return [
@@ -71,7 +74,7 @@ class CaseParticipatedFactory extends Factory
             ],
             'initiated_at' => fake()->dateTime(),
             'completed_at' => fake()->dateTime(),
-            'keywords' => fake(),
+            'keywords' => '',
         ];
     }
 }
