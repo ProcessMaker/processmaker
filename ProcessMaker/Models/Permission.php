@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class Permission extends ProcessMakerModel
@@ -16,6 +17,19 @@ class Permission extends ProcessMakerModel
     ];
 
     const DEFAULT_PERMISSIONS = ['Projects', 'Process Catalog'];
+
+    public static function boot()
+    {
+        parent::boot();
+
+        $clearCacheCallback = function () {
+            self::clearAndRebuildCache();
+        };
+
+        static::saving($clearCacheCallback);
+        static::updating($clearCacheCallback);
+        static::deleting($clearCacheCallback);
+    }
 
     public function getResourceTitleAttribute()
     {
@@ -130,5 +144,12 @@ class Permission extends ProcessMakerModel
                 ->get();
 
         return $users;
+    }
+
+    private static function clearAndRebuildCache()
+    {
+        // Rebuild and update the permissions cache
+        $permissions = self::pluck('name')->toArray();
+        Cache::put('permissions', $permissions, 86400);
     }
 }

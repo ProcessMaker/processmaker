@@ -44,6 +44,8 @@ abstract class BpmnAction implements ShouldQueue
 
     protected $data;
 
+    protected $processId;
+
     /**
      * @var ProcessRequestLock
      */
@@ -67,8 +69,12 @@ abstract class BpmnAction implements ShouldQueue
 
             // Run engine to the next state
             $this->engine->runToNextState();
-            // call to redirect when user task is assigned
-            HandleRedirectListener::sendRedirectToEvent();
+            // call to redirect after all events are completed
+            // (e.g. completed, assigned, process completed, etc)
+            // excluding system process (non_persistent_process)
+            if ($this->processId !== 'non_persistent_process') {
+                HandleRedirectListener::sendRedirectToEvent();
+            }
         } catch (HttpABTestingException $exception) {
             Log::error($exception->getMessage());
             throw $exception;

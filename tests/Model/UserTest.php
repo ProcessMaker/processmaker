@@ -2,6 +2,7 @@
 
 namespace Tests\Model;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
@@ -9,10 +10,13 @@ use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\PermissionAssignment;
 use ProcessMaker\Models\User;
 use ProcessMaker\Providers\AuthServiceProvider;
+use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
 class UserTest extends TestCase
 {
+    use RequestHelper;
+
     public function testPermissions()
     {
         $president_user = User::factory()->create(['password' => Hash::make('password')]);
@@ -64,6 +68,9 @@ class UserTest extends TestCase
         $p1 = Permission::factory()->create(['name' => 'foo']);
         $p2 = Permission::factory()->create(['name' => 'bar']);
         $p3 = Permission::factory()->create(['name' => 'baz']);
+
+        Cache::forget('permissions');
+        Cache::forget("user_{$user->id}_permissions");
 
         (new AuthServiceProvider(app()))->boot();
 
