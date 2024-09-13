@@ -6,68 +6,22 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Http\Requests\GetAllCasesRequest;
+use ProcessMaker\Http\Requests\CaseListRequest;
 use ProcessMaker\Http\Resources\V1_1\CaseResource;
-use ProcessMaker\Models\CaseParticipated;
-use ProcessMaker\Models\CaseStarted;
+use ProcessMaker\Repositories\CaseRepository;
 
 class CaseController extends Controller
 {
-    /**
-     * Default fields used in the query select statement.
-     */
-    protected $defaultFields = [
-        'case_number',
-        'user_id',
-        'case_title',
-        'case_title_formatted',
-        'case_status',
-        'processes',
-        'requests',
-        'request_tokens',
-        'tasks',
-        'participants',
-        'initiated_at',
-        'completed_at',
-    ];
-
-    protected $sortableFields = [
-        'case_number',
-        'initiated_at',
-        'completed_at',
-    ];
-
-    protected $filterableFields = [
-        'case_number',
-        'case_title',
-        'case_status',
-        'processes',
-        'requests',
-        'request_tokens',
-        'tasks',
-        'participants',
-        'initiated_at',
-        'completed_at',
-    ];
-
-    protected $searchableFields = [
-        'case_number',
-        'case_title',
-    ];
-
-    protected $dateFields = [
-        'initiated_at',
-        'completed_at',
-        'created_at',
-        'updated_at',
-    ];
+    protected $caseRepository;
 
     const DEFAULT_PAGE_SIZE = 15;
 
-    const DEFAULT_SORT_DIRECTION = 'asc';
+    public function __construct(private Request $request, CaseRepository $caseRepository) {
+        $this->caseRepository = $caseRepository;
+    }
 
-    public function __construct(private Request $request) {}
-
+    /* The comment block you provided is a PHPDoc block. It is used to document the purpose and usage of a method in PHP
+    code. In this specific block: */
     /**
      * Get a list of all started cases.
      *
@@ -83,181 +37,60 @@ class CaseController extends Controller
      *
      * @return array
      */
-    public function getAllCases(GetAllCasesRequest $request): array
+    public function getAllCases(CaseListRequest $request): JSonResponse
     {
-        $pageSize = $request->get('pageSize', 15);
-
-        $query = CaseStarted::select($this->defaultFields);
-
-        $this->filters($request, $query);
-
-        $pagination = CaseResource::collection($query->paginate($pageSize));
-
-        return [
-            'data' => $pagination->items(),
-            'meta' => [
-                'total' => $pagination->total(),
-                'perPage' => $pagination->perPage(),
-                'currentPage' => $pagination->currentPage(),
-                'lastPage' => $pagination->lastPage(),
-            ],
-        ];
-    }
-
-    public function getInProgress(GetAllCasesRequest $request): array
-    {
-        // CaseParticipated::factory()->count(1000)->create();
-
-        $pageSize = $request->get('pageSize', 15);
-
-        $query = CaseParticipated::select($this->defaultFields)
-            ->where('case_status', 'IN_PROGRESS');
-
-        $this->filters($request, $query);
-
-        $pagination = CaseResource::collection($query->paginate($pageSize));
-
-        return [
-            'data' => $pagination->items(),
-            'meta' => [
-                'total' => $pagination->total(),
-                'perPage' => $pagination->perPage(),
-                'currentPage' => $pagination->currentPage(),
-                'lastPage' => $pagination->lastPage(),
-            ],
-        ];
-    }
-
-    public function getCompleted(GetAllCasesRequest $request): array
-    {
-        $pageSize = $request->get('pageSize', 15);
-
-        $query = CaseParticipated::select($this->defaultFields)
-            ->where('case_status', 'COMPLETED');
-
-        $this->filters($request, $query);
-
-        $pagination = CaseResource::collection($query->paginate($pageSize));
-
-        return [
-            'data' => $pagination->items(),
-            'meta' => [
-                'total' => $pagination->total(),
-                'perPage' => $pagination->perPage(),
-                'currentPage' => $pagination->currentPage(),
-                'lastPage' => $pagination->lastPage(),
-            ],
-        ];
+        $query = $this->caseRepository->getAllCases($request);
+        return $this->paginateResponse($query);
     }
 
     /**
-     * Apply filters to the query.
+     * Get a list of all started cases.
      *
      * @param Request $request
-     * @param Builder $query
      *
-     * @return void
+     * @queryParam userId int Filter by user ID.
+     * @queryParam sortBy string Sort by field:asc,field2:desc,...
+     * @queryParam filterBy array Filter by field=value&field2=value2&...
+     * @queryParam search string Search by case number or case title.
+     * @queryParam pageSize int Number of items per page.
+     * @queryParam page int Page number.
+     *
+     * @return array
      */
-    private function filters(Request $request, Builder $query): void
+    public function getInProgress(CaseListRequest $request): JSonResponse
     {
-        if ($request->has('userId')) {
-            $query->where('user_id', $request->get('userId'));
-        }
-
-        if ($request->has('status')) {
-            $query->where('case_status', $request->get('status'));
-        }
-
-        $this->search($request, $query);
-        $this->filterBy($request, $query);
-        $this->sortBy($request, $query);
+        $query = $this->caseRepository->getInProgressCases($request);
+        return $this->paginateResponse($query);
     }
 
     /**
-     * Sort the query.
+     * Get a list of all started cases.
      *
-     * @param Request $request: Query parameter format: sortBy=field:asc,field2:desc,...
-     * @param Builder $query
+     * @param Request $request
      *
-     * @return void
+     * @queryParam userId int Filter by user ID.
+     * @queryParam sortBy string Sort by field:asc,field2:desc,...
+     * @queryParam filterBy array Filter by field=value&field2=value2&...
+     * @queryParam search string Search by case number or case title.
+     * @queryParam pageSize int Number of items per page.
+     * @queryParam page int Page number.
+     *
+     * @return array
      */
-    private function sortBy(Request $request, Builder $query): void
+    public function getCompleted(CaseListRequest $request): JSonResponse
     {
-        $sort = explode(',', $request->get('sortBy'));
-
-        foreach ($sort as $value) {
-            if (!preg_match('/^[a-zA-Z_]+:(asc|desc)$/', $value)) {
-                continue;
-            }
-
-            $sort = explode(':', $value);
-            $field = $sort[0];
-            $order = $sort[1] ?? self::DEFAULT_SORT_DIRECTION;
-
-            if (in_array($field, $this->sortableFields)) {
-                $query->orderBy($field, $order);
-            }
-        }
-    }
-
-    /**
-     * Filter the query.
-     *
-     * @param Request $request: Query parameter format: filterBy[field]=value&filterBy[field2]=value2&...
-     * @param Builder $query
-     * @param array $dateFields List of date fields in current model
-     *
-     * @return void
-     */
-    private function filterBy(Request $request, Builder $query): void
-    {
-        if ($request->has('filterBy')) {
-            $filterByValue = $request->get('filterBy');
-
-            foreach ($filterByValue as $key => $value) {
-                if (!in_array($key, $this->filterableFields)) {
-                    continue;
-                }
-
-                if (in_array($key, $this->dateFields)) {
-                    $query->whereDate($key, $value);
-                    continue;
-                }
-
-                $query->where($key, $value);
-            }
-        }
-    }
-
-    /**
-     * Search by case number or case title.
-
-     * @param Request $request: Query parameter format: search=keyword
-     * @param Builder $query
-     *
-     * @return void
-     */
-    private function search(Request $request, Builder $query): void
-    {
-        if ($request->has('search')) {
-            $search = $request->get('search');
-
-            $query->where(function ($q) use ($search) {
-                foreach ($this->searchableFields as $field) {
-                    if ($field === 'case_number') {
-                        $q->orWhere($field, $search);
-                    } else {
-                        $q->orWhereFullText($field, $search . '*', ['mode' => 'boolean']);
-                    }
-                }
-            });
-        }
+        $query = $this->caseRepository->getCompletedCases($request);
+        return $this->paginateResponse($query);
     }
 
     /**
      * Handle pagination and return JSON response.
+     *
+     * @param Builder $query
+     *
+     * @return JsonResponse
      */
-    private function paginateResponse($query): JsonResponse
+    private function paginateResponse(Builder $query): JsonResponse
     {
         $pageSize = $this->request->get('pageSize', self::DEFAULT_PAGE_SIZE);
         $pagination = CaseResource::collection($query->paginate($pageSize));
