@@ -29,7 +29,6 @@
           :screen="screen"
           :render-controls="displayBuilder"
           :process-id="processId"
-          :show-templates-panel="showTemplatesPanel"
           @change="updateConfig"
         >
           <data-loading-basic :is-loaded="false" />
@@ -605,7 +604,6 @@ export default {
         ],
       },
       iframeHeight: "600px",
-      showTemplatesPanel: false,
       myTemplatesData: null,
       sharedTemplatesData: null,
     };
@@ -729,10 +727,6 @@ export default {
     this.setEllipsisMenu();
     ProcessMaker.EventBus.$on("show-create-template-modal", () => {
       this.$refs["create-template-modal"].show();
-    });
-
-    ProcessMaker.EventBus.$on("close-templates-panel", () => {
-      this.closeTemplatesPanel();
     });
   },
   methods: {
@@ -1036,10 +1030,7 @@ export default {
       this.$refs.builder.redo();
     },
     openTemplatesPanel() {
-      this.showTemplatesPanel = true;
-    },
-    closeTemplatesPanel() {
-      this.showTemplatesPanel = false;
+      this.$refs.builder.openTemplatesPanel();
     },
     openComputedProperties() {
       this.$refs.computedProperties.show();
