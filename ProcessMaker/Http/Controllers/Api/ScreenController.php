@@ -18,9 +18,12 @@ use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\ScreenType;
 use ProcessMaker\Query\SyntaxError;
+use ProcessMaker\Traits\ProjectAssetTrait;
 
 class ScreenController extends Controller
 {
+    use ProjectAssetTrait;
+
     /**
      * A whitelist of attributes that should not be
      * sanitized by our SanitizeInput middleware.
@@ -238,6 +241,7 @@ class ScreenController extends Controller
 
         // Creating temporary Key to store multiple id categories
         $newScreen['tmp_screen_category_id'] = $request->input('screen_category_id');
+        self::clearAndRebuildUserProjectAssetsCache();
         // Call event to store New Screen data in LOG
         ScreenCreated::dispatch($newScreen->getAttributes());
 
@@ -419,7 +423,7 @@ class ScreenController extends Controller
         $request->validate(Screen::rules());
         $newScreen = new Screen();
 
-        $exclude = ['id', 'uuid', 'created_at', 'updated_at'];
+        $exclude = ['id', 'uuid', 'created_at', 'updated_at', 'key'];
         foreach ($screen->getAttributes() as $attribute => $value) {
             if (!in_array($attribute, $exclude)) {
                 $newScreen->{$attribute} = $screen->{$attribute};

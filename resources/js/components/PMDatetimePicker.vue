@@ -1,5 +1,5 @@
 <template>
-  <b-input-group class="pm-datetime-picker">
+  <b-input-group class="pm-datetime-picker position-static">
     <b-form-input v-model="input"
                   type="text"
                   autocomplete="off"
@@ -34,6 +34,7 @@
                          button-variant="light"
                          class="pm-datetime-picker-button-datetime"
                          :class="{'pm-datetime-picker-button-border-right': withTime}"
+                         :hour12="false"
                          show-seconds>
         <template v-slot:button-content
                   v-if="$slots['button-content-timepicker']">
@@ -70,21 +71,29 @@
       format: {
         type: null,
         default: "YYYY-MM-DD HH:mm:ss"
+      },
+      timeZone: {
+        type: null,
+        default: Intl.DateTimeFormat().resolvedOptions().timeZone
+      },
+      guestTimeZone: {
+        type: null,
+        default: Intl.DateTimeFormat().resolvedOptions().timeZone
       }
     },
     data() {
       return {
         input: "",
         selectedDate: "",
-        selectedTime: "",
-        timeZone: window.ProcessMaker.user.timezone,
-        guestTimeZone: moment.tz.guess()
+        selectedTime: ""
       };
     },
     watch: {
       value: {
         handler(newValue) {
           this.input = this.convertFromISOString(newValue);
+          this.selectedDate = this.getValueFromFormat(this.input, "YYYY-MM-DD");
+          this.selectedTime = this.getValueFromFormat(this.input, "HH:mm:ss", "00:00:00");
         },
         immediate: true
       },
@@ -98,16 +107,13 @@
         this.setInput();
       }
     },
-    mounted() {
-      this.selectedDate = this.getValueFromFormat(this.input, "YYYY-MM-DD");
-      this.selectedTime = this.getValueFromFormat(this.input, "HH:mm:ss", "00:00:00");
-    },
     methods: {
       emitInput() {
         this.$emit("input", this.convertToISOString(this.input));
       },
       setInput() {
         let datetime = this.selectedDate + " " + this.selectedTime;
+        datetime = datetime.trim();
         this.input = moment(datetime).tz(this.guestTimeZone).format(this.format);
       },
       getValueFromFormat(string, format, defaultValue) {
@@ -115,7 +121,7 @@
           return string;
         }
         if (this.isDatetime(string)) {
-          return moment(string).tz(this.guestTimeZone).format(format);
+          return moment(string, this.format).tz(this.guestTimeZone).format(format);
         } else {
           if (defaultValue !== undefined) {
             return defaultValue;
@@ -133,7 +139,7 @@
         if (!this.isDatetime(dateString)) {
           return dateString;
         }
-        return moment(dateString).tz("UTC").toISOString();
+        return moment(dateString, this.format).tz("UTC").toISOString();
       },
       isDatetime(string) {
         if (!string) {
