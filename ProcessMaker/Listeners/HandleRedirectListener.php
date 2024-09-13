@@ -9,7 +9,7 @@ class HandleRedirectListener
 {
     private static $processRequest = null;
 
-    private static $redirectionMethod = '';
+    protected static $redirectionMethod = '';
 
     private static $redirectionParams = [];
 

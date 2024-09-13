@@ -79,6 +79,10 @@ const PreviewMixin = {
       if (size) {
         this.splitpaneSize = size;
       }
+
+      // Set Task as read upon preview
+      this.$emit('onSetViewed', info);
+
       let param = "";
       this.stopFrame = false;
       this.taskTitle = info.element_name;

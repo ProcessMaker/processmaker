@@ -254,6 +254,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         static::updating(function ($model) {
             $user = Auth::user();
             $model->updated_by = $user?->id;
+            self::clearAndRebuildUserProjectAssetsCache();
         });
     }
 
