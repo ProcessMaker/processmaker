@@ -12,6 +12,7 @@ class Clipboard extends ProcessMakerModel
     protected $fillable = [
         'config',
         'user_id',
+        'type',
     ];
 
     /**

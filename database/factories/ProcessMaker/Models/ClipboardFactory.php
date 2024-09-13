@@ -19,6 +19,7 @@ class ClipboardFactory extends Factory
         return [
             'config' => null,
             'user_id' => 1,
+            'type' => 'FORM',
         ];
     }
 }
