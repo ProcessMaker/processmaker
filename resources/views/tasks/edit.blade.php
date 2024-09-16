@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('meta')
-    <meta name="request-id" content="{{ $task->processRequest->id }}">
+  <meta name="request-id" content="{{ $task->processRequest->id }}">
 @endsection
 
 @section('title')
@@ -29,7 +29,7 @@
 @section('content')
   <div id="task">
     <div class="menu-mask" :class="{ 'menu-open': showMenu }"></div>
-    <div class="tasks-info-main" :class="{ 'menu-open': showMenu }">
+    <div class="info-main" :class="{ 'menu-open': showMenu }">
       <div v-cloak class="container-fluid px-3">
           <div class="d-flex flex-column flex-md-row">
               <div class="flex-grow-1">
@@ -785,98 +785,8 @@
 @endsection
 
 @section('css')
+<link href="{{ mix('css/collapseDetails.css') }}" rel="stylesheet">
 <style>
-  @import '~styles/variables';
-
-  .tasks-info-main {
-    display: flex;
-    @media (max-width: $lp-breakpoint) {
-        display: block;
-    }
-  }
-  .menu {
-    overflow: hidden;
-    transition: flex 0.3s;
-    flex: 0 0 0px;
-    @media (max-width: $lp-breakpoint) {
-      position: absolute;
-      z-index: 4;
-      display: flex;
-      margin-top: 0;
-      width: 85%;
-      transition: left 0.3s;
-    }
-  }
-  .menu-mask {
-    display: none;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0);
-    z-index: 3;
-    transition: background-color 0.3s;
-    @media (max-width: $lp-breakpoint) {
-      display: block;
-    }
-  }
-  .menu-mask.menu-open {
-    @media (max-width: $lp-breakpoint) {
-      left: 0;
-      background-color: rgba(0, 0, 0, 0.5);
-      display: block;
-    }
-  }
-  .menu-open .menu {
-    flex: 0 0 315px;
-    @media (max-width: $lp-breakpoint) {
-      left: 0%;
-    }
-  }
-  .slide-control {
-    border-left: 1px solid #DEE0E1;
-    margin-left: 15px;
-    width: 16px;
-    @media (max-width: $lp-breakpoint) {
-      display: none;
-    }
-    a {
-      position: relative;
-      left: -11px;
-      top: 40px;
-      z-index: 5;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 20px;
-      height: 60px;
-      background-color: #ffffff;
-      border-radius: 10px;
-      border: 1px solid #DEE0E1;
-      color: #6A7888;
-    }
-  }
-  .menu-open .slide-control {
-    border-left: 1px solid #DEE0E1;
-    a {
-      left: -11px;
-      display: none;
-    }
-    
-  }
-  .slide-control:hover{
-    border-left: 1px solid rgba(72, 145, 255, 0.40);
-    box-shadow: -1px 0 0 rgba(72, 145, 255, 0.5);
-  }
-  .menu-open .slide-control:hover {
-    border-left: 1px solid rgba(72, 145, 255, 0.40);
-    box-shadow: -1px 0 0 rgba(72, 145, 255, 0.5);
-    a {
-      display: flex;
-    }
-  }
-  .slide-control a:hover {
-    background-color: #EAEEF2;
-  }
   .menu-tab-content {
     margin-left: -16px;
   }
