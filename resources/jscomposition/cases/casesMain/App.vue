@@ -1,5 +1,5 @@
 <template>
-  <div class="tw-p-4">
+  <div class="tw-flex tw-h-[90vh] ">
     <RouterView></RouterView>
   </div>
 </template>

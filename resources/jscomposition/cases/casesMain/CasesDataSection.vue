@@ -1,10 +1,10 @@
 <template>
-  <div class="tw-w-full tw-space-y-4">
+  <div class="tw-w-full tw-space-y-3 tw-flex tw-flex-col tw-overflow-hidden">
     <CaseFilter />
 
     <BadgesSection v-model="badgesData" />
 
-    <BaseTable :columns="columnsConfig" :data="data" />
+    <BaseTable :columns="columnsConfig" :data="data" class="tw-grow tw-overflow-y-scroll" />
 
     <Pagination />
   </div>
@@ -17,7 +17,7 @@ import { BaseTable, Pagination } from "../../base";
 import { getColumns } from "./config/columns";
 import { Breadcrums } from "../../system";
 import { badges } from "./config/badges";
-import { getData } from "./api";
+import { getData, getAllData } from "./api";
 
 export default defineComponent({
   props: {
@@ -39,7 +39,7 @@ export default defineComponent({
     const data = ref();
 
     onMounted(async () => {
-      data.value = await getData();
+      data.value = await getAllData({type: props.listId, page:15});
 
       columnsConfig.value = getColumns(props.listId);
     });

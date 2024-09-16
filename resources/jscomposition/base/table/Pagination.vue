@@ -1,6 +1,6 @@
 <template>
   <div
-    class="tw-flex tw-items-center tw-justify-start tw-space-x-2 tw-bg-white tw-tw-px-4 tw-py-3 sm:tw-px-6">
+    class="tw-flex tw-items-center tw-justify-start tw-space-x-2 tw-bg-white">
     <div>
       <svg
         class="tw-h-5 tw-w-5"

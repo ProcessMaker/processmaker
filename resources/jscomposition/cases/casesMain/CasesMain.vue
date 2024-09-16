@@ -1,13 +1,16 @@
 <template>
-  <div class="tw-w-full tw-space-y-4">
-    <Breadcrums />
+  <div class="tw-w-full tw-space-y-4 tw-flex-col tw-flex tw-grow">
+    <Breadcrums class="tw-bg-white tw-py-3 tw-border-gray-200 tw-border-b tw-shadow-md" />
 
-    <AppCounters
-      class="tw-w-full"
-      v-model="countersData"
-      @change="onChangeCounter" />
+    <div class="tw-mx-4 tw-p-4 tw-bg-white tw-rounded-2xl 
+      tw-border-gray-200 tw-border tw-space-y-4 tw-flex tw-flex-col tw-overflow-hidden tw-grow tw-shadow-md">
+      <AppCounters
+        class="tw-w-full"
+        v-model="countersData"
+        @change="onChangeCounter" />
 
-    <RouterView :key="route.fullPath" />
+      <RouterView :key="route.fullPath" />
+    </div>
   </div>
 </template>
 <script>

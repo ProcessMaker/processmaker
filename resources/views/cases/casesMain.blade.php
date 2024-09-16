@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layout',['content_margin' => '', 'overflow-auto' => ''])
 
 @section('title')
 @endsection

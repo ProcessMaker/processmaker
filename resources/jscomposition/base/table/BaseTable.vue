@@ -2,7 +2,7 @@
   <div class="tw-w-full tw-relative tw-text-gray-600 tw-text-sm
       tw-border tw-rounded-xl tw-border-gray-300 tw-overflow-hidden tw-overflow-x-auto">
     <table class="tw-w-full tw-border-collapse">
-      <thead class="tw-border-b tw-sticky tw-top-0 tw-bg-gray-100">
+      <thead class="tw-border-b tw-sticky tw-top-0 tw-z-10 tw-bg-gray-100">
         <tr>
           <THeader
             v-for="(column, index) in columns"
