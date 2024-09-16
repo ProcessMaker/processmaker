@@ -818,4 +818,25 @@ class ProcessRequestController extends Controller
 
         return $affectedRows > 0;
     }
+
+    /**
+     * This endpoint returns the destination of the last end event of a process request
+     *
+     * @param ProcessRequest $request
+     */
+    public function endEventDestination(ProcessRequest $request)
+    {
+        $lastEndEvent = $request->tokens()
+            ->where('element_type', 'end_event')
+            ->orderBy('id', 'desc')
+            ->first();
+        if (!$lastEndEvent) {
+            return response()->json(['message' => __('No end event found'), 'data' => null]);
+        }
+        $data = [
+            'endEventDestination' => $lastEndEvent->element_destination,
+        ];
+
+        return response()->json(['message' => __('End event found'), 'data' => $data]);
+    }
 }
