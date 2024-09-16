@@ -369,7 +369,15 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::middleware('admin')->group(function () {
         Route::get('devlink', [DevLinkController::class, 'index'])->name('devlink.index');
         Route::post('devlink', [DevLinkController::class, 'store'])->name('devlink.store');
+        Route::put('devlink/{devLink}', [DevLinkController::class, 'update'])->name('devlink.update');
+        Route::delete('devlink/{devLink}', [DevLinkController::class, 'destroy'])->name('devlink.destroy');
         Route::get('devlink/{devLink}/ping', [DevLinkController::class, 'ping'])->name('devlink.ping');
         Route::get('devlink/pong', [DevLinkController::class, 'pong'])->name('devlink.pong');
+        Route::get('devlink/{devLink}/remote-bundles', [DevLinkController::class, 'remoteBundles'])->name('devlink.remote-bundles');
+
+        Route::get('devlink/local-bundles', [DevLinkController::class, 'localBundles'])->name('devlink.local-bundles');
+        Route::post('devlink/local-bundles', [DevLinkController::class, 'createBundle'])->name('devlink.create-bundle');
+        Route::put('devlink/local-bundles/{bundle}', [DevLinkController::class, 'updateBundle'])->name('devlink.update-bundle');
+        Route::delete('devlink/local-bundles/{bundle}', [DevLinkController::class, 'deleteBundle'])->name('devlink.delete-bundle');
     });
 });

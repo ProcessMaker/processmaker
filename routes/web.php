@@ -63,8 +63,8 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
 
         // DevLink
         Route::middleware('admin')->group(function () {
-            Route::get('devlink', [DevLinkController::class, 'index'])->name('devlink.index');
             Route::get('devlink/oauth-client', [DevLinkController::class, 'getOauthClient'])->name('devlink.oauth-client');
+            Route::get('devlink/{router?}', [DevLinkController::class, 'index'])->where(['router' => '.*'])->name('devlink.index');
         });
 
         // temporary, should be removed

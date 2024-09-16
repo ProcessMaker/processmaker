@@ -1,8 +1,10 @@
 <script setup>
-import { ref, onMounted, useTemplateRef } from 'vue';
+import { ref, onMounted } from 'vue';
 import Status from './Status.vue';
-import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
+import { useRouter, useRoute } from 'vue-router/composables';
 
+const router = useRouter();
+const route = useRoute();
 const devlinks = ref([]);
 const confirmDeleteModal = ref(null);
 const editModal = ref(null);
@@ -59,17 +61,13 @@ const create = () => {
     .then((result) => {
       const newUrl = result.data.url;
       const newId = result.data.id;
+      const redirectUri = result.data.redirect_uri;
       const params = {
         devlink_id: newId,
-        redirect_uri: window.location.href,
+        redirect_uri: redirectUri,
       };
       window.location.href = `${newUrl}/admin/devlink/oauth-client?${new URLSearchParams(params).toString()}`;
     });
-};
-
-const selectInstance = (devlink) => {
-  // navigate using the vue router
-  $router.push({ path: `/admin/devlink/${devlink.id}` });
 };
 
 const selected = ref(null);
@@ -107,7 +105,7 @@ const executeDelete = () => {
 
 <template>
   <div>
-    <b-button variant="primary" v-b-modal.create>Create</b-button>
+    <b-button variant="primary" v-b-modal.create>New Instance</b-button>
 
     <b-modal ref="confirmDeleteModal" title="Delete DevLink" @ok="executeDelete">
       <p>Are you sure you want to delete {{ selected?.name }}?</p>
@@ -132,15 +130,15 @@ const executeDelete = () => {
   
     <b-table :items="devlinks" :fields="fields">
       <template #cell(name)="data">
-        <a href="#" @click="edit(data.item)">{{ data.item.name }}</a>
+        <a href="#" @click.prevent="router.push({ name: 'instance', params: { id: data.item.id } })">{{ data.item.name }}</a>
       </template>
       <template #cell(status)="data">
         <Status :id="data.item.id" />
       </template>
       <template #cell(menu)="data">
-        <a href="#" @click="editDevLink(data.item)">Edit</a>
+        <a href="#" @click.prevent="editDevLink(data.item)">Edit</a>
         |
-        <a href="#" @click="deleteDevLink(data.item)">Delete</a>
+        <a href="#" @click.prevent="deleteDevLink(data.item)">Delete</a>
       </template>
     </b-table>
   </div>

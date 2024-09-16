@@ -56,4 +56,11 @@ class DevLink extends ProcessMakerModel
 
         return $uuid;
     }
+
+    public function remoteBundles()
+    {
+        return $this->client()->get(
+            route('api.devlink.local-bundles', ['published' => true], false)
+        );
+    }
 }
