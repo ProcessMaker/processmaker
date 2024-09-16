@@ -81,6 +81,48 @@ window.ProcessMaker.i18nPromise = i18next.use(Backend).init({
 
 window.ProcessMaker.i18nPromise.then(() => { translationsLoaded = true; });
 
+/**
+ * Create a axios instance which any vue component can bring in to call
+ * REST api endpoints through oauth authentication
+ *
+ */
+window.ProcessMaker.apiClient = require("axios");
+
+window.ProcessMaker.apiClient.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
+
+// Setup api versions
+const apiVersionConfig = [
+  { version: "1.0", baseURL: "/api/1.0/" },
+  { version: "1.1", baseURL: "/api/1.1/" },
+];
+
+window.ProcessMaker.apiClient.defaults.baseURL = apiVersionConfig[0].baseURL;
+window.ProcessMaker.apiClient.interceptors.request.use((config) => {
+  if (typeof config.url !== "string" || !config.url) {
+    throw new Error("Invalid URL in the request configuration");
+  }
+
+  apiVersionConfig.forEach(({ version, baseURL }) => {
+    const versionPrefix = `/api/${version}/`;
+    if (config.url.startsWith(versionPrefix)) {
+      // eslint-disable-next-line no-param-reassign
+      config.baseURL = baseURL;
+      // eslint-disable-next-line no-param-reassign
+      config.url = config.url.replace(versionPrefix, "");
+    }
+  });
+
+  return config;
+});
+
+// Set the default API timeout
+let apiTimeout = 5000;
+if (window.Processmaker && window.Processmaker.apiTimeout !== undefined) {
+  apiTimeout = window.Processmaker.apiTimeout;
+}
+window.ProcessMaker.apiClient.defaults.timeout = apiTimeout;
+
+
 // click an active tab after all components have mounted
 Vue.use({
   install(vue) {
