@@ -3,9 +3,11 @@
 namespace Tests\Feature\Api;
 
 use Faker\Factory as Faker;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -18,13 +20,19 @@ class EncryptedDataTest extends TestCase
         // Initialize Faker
         $faker = Faker::create();
 
+        // Prepare screen config
+        $content = file_get_contents(__DIR__ . '/screens/test encrypted field.json');
+        $content = str_replace('"9999999999"', $this->user->id, $content);
+        $content = str_replace('"8888888888"', '', $content);
+        $config = json_decode($content, true);
+
         // Create required dummy objects
-        $screen = Screen::factory()->create();
+        $screen = Screen::factory()->create(['config' => $config]);
         $request = ProcessRequest::factory()->create();
         
         // Build data to send
         $data = [
-            'field_name' => $faker->word(),
+            'field_name' => 'form_input_1',
             'request_id' => $request->id,
             'plain_text' => $faker->sentence(),
             'screen_id' => $screen->id,

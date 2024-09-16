@@ -367,6 +367,6 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('recommendations/{recommendationUser}', [RecommendationsController::class, 'update'])->name('recommendations.update');
 
     // Encrypted data
-    Route::post('encrypted_data/encryptText', [EncryptedDataController::class, 'encryptText'])->name('encrypted_data.encrypt_text')->middleware('can:update,request');
-    Route::post('encrypted_data/decryptText', [EncryptedDataController::class, 'decryptText'])->name('encrypted_data.decrypt_text')->middleware('can:view,request');
+    Route::post('encrypted_data/encryptText', [EncryptedDataController::class, 'encryptText'])->name('encrypted_data.encrypt_text');
+    Route::post('encrypted_data/decryptText', [EncryptedDataController::class, 'decryptText'])->name('encrypted_data.decrypt_text');
 });
