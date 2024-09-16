@@ -28,12 +28,17 @@ class DevLinkController extends Controller
         return $devLink;
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, DevLink $devLink)
     {
+        $devLink->name = $request->input('name');
+        $devLink->saveOrFail();
+
+        return $devLink;
     }
 
-    public function destroy(string $id)
+    public function destroy(DevLink $devLink)
     {
+        $devLink->delete();
     }
 
     public function ping(DevLink $devLink)

@@ -1,8 +1,11 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, useTemplateRef } from 'vue';
 import Status from './Status.vue';
+import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 
-let devlinks = ref([]);
+const devlinks = ref([]);
+const confirmDeleteModal = ref(null);
+const editModal = ref(null);
 
 const fields = [
   {
@@ -17,20 +20,30 @@ const fields = [
     key: 'url',
     label: 'URL'
   },
-  'status'
+  {
+    key: 'status',
+    label: 'Status'
+  },
+  {
+    key: 'menu',
+    label: ''
+  },
 ];
 
 onMounted(() => {
-  ProcessMaker.apiClient
-    .get('/devlink')
-    .then((result) => {
-      console.log("Got result", result);
-      devlinks.value = result.data;
-    });
+  load();
 });
 
 const newName = ref('');
 const newUrl = ref('');
+
+const load = () => {
+  ProcessMaker.apiClient
+    .get('/devlink')
+    .then((result) => {
+      devlinks.value = result.data;
+    });
+};
 
 const clear = () => {
   newName.value = '';
@@ -54,11 +67,52 @@ const create = () => {
     });
 };
 
+const selectInstance = (devlink) => {
+  // navigate using the vue router
+  $router.push({ path: `/admin/devlink/${devlink.id}` });
+};
+
+const selected = ref(null);
+const editDevLink = (devlink) => {
+  selected.value = { ...devlink }; // copy the object
+  editModal.value.show();
+};
+
+const updateDevLink = () => {
+  ProcessMaker.apiClient
+    .put(`/devlink/${selected.value.id}`, {
+      name: selected.value.name
+    })
+    .then((result) => {
+      editModal.value.hide();
+      load();
+    });
+};
+
+const deleteDevLink = (devlink) => {
+  selected.value = devlink;
+  confirmDeleteModal.value.show();
+};
+
+const executeDelete = () => {
+  ProcessMaker.apiClient
+    .delete(`/devlink/${selected.value.id}`)
+    .then((result) => {
+      confirmDeleteModal.value.hide();
+      load();
+    });
+}
+
 </script>
 
 <template>
   <div>
     <b-button variant="primary" v-b-modal.create>Create</b-button>
+
+    <b-modal ref="confirmDeleteModal" title="Delete DevLink" @ok="executeDelete">
+      <p>Are you sure you want to delete {{ selected?.name }}?</p>
+    </b-modal>
+
     <b-modal id="create" title="Create new devlink" @hidden="clear" @ok="create">
       <b-form-group label="Name">
         <b-form-input v-model="newName"></b-form-input>
@@ -67,10 +121,33 @@ const create = () => {
         <b-form-input v-model="newUrl"></b-form-input>
       </b-form-group>
     </b-modal>
+
+    <b-modal ref="editModal" title="Edit DevLink" @ok="updateDevLink">
+      <template v-if="selected">
+        <b-form-group label="Name">
+          <b-form-input v-model="selected.name"></b-form-input>
+        </b-form-group>
+      </template>
+    </b-modal>
+  
     <b-table :items="devlinks" :fields="fields">
+      <template #cell(name)="data">
+        <a href="#" @click="edit(data.item)">{{ data.item.name }}</a>
+      </template>
       <template #cell(status)="data">
         <Status :id="data.item.id" />
+      </template>
+      <template #cell(menu)="data">
+        <a href="#" @click="editDevLink(data.item)">Edit</a>
+        |
+        <a href="#" @click="deleteDevLink(data.item)">Delete</a>
       </template>
     </b-table>
   </div>
 </template>
+
+<style lang="scss" scoped>
+tr:hover {
+  cursor: pointer;
+}
+</style>
