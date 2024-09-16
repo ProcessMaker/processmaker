@@ -4,12 +4,12 @@ namespace ProcessMaker\Repositories;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use ProcessMaker\Contracts\CaseRepositoryInterface;
+use ProcessMaker\Contracts\CaseApiRepositoryInterface;
 use ProcessMaker\Exception\CaseValidationException;
 use ProcessMaker\Models\CaseParticipated;
 use ProcessMaker\Models\CaseStarted;
 
-class CaseRepository implements CaseRepositoryInterface
+class CaseApiRepository implements CaseApiRepositoryInterface
 {
     /**
      * Default fields used in the query select statement.

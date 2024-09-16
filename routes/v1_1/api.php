@@ -32,14 +32,14 @@ Route::prefix('api/1.1')
         Route::name('cases.')->prefix('cases')->group(function () {
             // Route to list all cases
             Route::get('get_all_cases', [CaseController::class, 'getAllCases'])
-                ->name('cases.all_cases');
+                ->name('all_cases');
 
             // Route to list all in-progress cases
             Route::get('get_in_progress', [CaseController::class, 'getInProgress'])
-                ->name('cases.in_progress');
+                ->name('in_progress');
 
                 // Route to list all completed cases
             Route::get('get_completed', [CaseController::class, 'getCompleted'])
-                ->name('cases.completed');
+                ->name('completed');
         });
     });

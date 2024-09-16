@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Requests\CaseListRequest;
 use ProcessMaker\Http\Resources\V1_1\CaseResource;
-use ProcessMaker\Repositories\CaseRepository;
+use ProcessMaker\Repositories\CaseApiRepository;
 
 class CaseController extends Controller
 {
@@ -16,7 +16,7 @@ class CaseController extends Controller
 
     const DEFAULT_PAGE_SIZE = 15;
 
-    public function __construct(private Request $request, CaseRepository $caseRepository) {
+    public function __construct(private Request $request, CaseApiRepository $caseRepository) {
         $this->caseRepository = $caseRepository;
     }
 

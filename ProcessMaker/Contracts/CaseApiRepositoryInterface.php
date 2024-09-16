@@ -5,7 +5,7 @@ namespace ProcessMaker\Contracts;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
-interface CaseRepositoryInterface
+interface CaseApiRepositoryInterface
 {
     /**
      * Get all cases
