@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { ref, watch, onMounted, nextTick } from "vue";
+import { ref, watch, onMounted, nextTick, onUnmounted } from "vue";
 
 export default {
   props: {
@@ -59,8 +59,7 @@ export default {
       switch (props.position) {
         case "top":
           top = wrapperRect.top - tooltipRect.height - 10;
-          left =
-            wrapperRect.left + wrapperRect.width / 2 - tooltipRect.width / 2;
+          left = wrapperRect.left + wrapperRect.width / 2 - tooltipRect.width / 2;
           // Verify space top
           if (top < 0) {
             calculatedPosition.value = "bottom";
@@ -69,8 +68,7 @@ export default {
           break;
         case "bottom":
           top = wrapperRect.bottom + 10;
-          left =
-            wrapperRect.left + wrapperRect.width / 2 - tooltipRect.width / 2;
+          left = wrapperRect.left + wrapperRect.width / 2 - tooltipRect.width / 2;
           // Verify space bottom
           if (top + tooltipRect.height > viewportHeight) {
             calculatedPosition.value = "top";
@@ -78,8 +76,7 @@ export default {
           }
           break;
         case "left":
-          top =
-            wrapperRect.top + wrapperRect.height / 2 - tooltipRect.height / 2;
+          top = wrapperRect.top + wrapperRect.height / 2 - tooltipRect.height / 2;
           left = wrapperRect.left - tooltipRect.width - 10;
           // Verify space left
           if (left < 0) {
@@ -88,8 +85,7 @@ export default {
           }
           break;
         case "right":
-          top =
-            wrapperRect.top + wrapperRect.height / 2 - tooltipRect.height / 2;
+          top = wrapperRect.top + wrapperRect.height / 2 - tooltipRect.height / 2;
           left = wrapperRect.right + 10;
           // Verify space right
           if (left + tooltipRect.width > viewportWidth) {
@@ -100,14 +96,8 @@ export default {
       }
 
       //Verify if tooltip leaves the viewport
-      top = Math.max(
-        10,
-        Math.min(top, viewportHeight - tooltipRect.height - 10)
-      );
-      left = Math.max(
-        10,
-        Math.min(left, viewportWidth - tooltipRect.width - 10)
-      );
+      top = Math.max(10, Math.min(top, viewportHeight - tooltipRect.height - 10));
+      left = Math.max(10, Math.min(left, viewportWidth - tooltipRect.width - 10));
 
       tooltipPosition.value = { top, left };
     };
@@ -124,9 +114,7 @@ export default {
     };
 
     // Recalculated position when property visible changes
-    watch(
-      () => props.visible,
-      (newVal) => {
+    const unwatch = watch(() => props.visible, (newVal) => {
         if (newVal) {
           showTooltip();
         } else {
@@ -139,6 +127,10 @@ export default {
       if (props.visible) {
         showTooltip();
       }
+    });
+
+    onUnmounted(() => {
+      unwatch();
     });
 
     return {
