@@ -29,7 +29,7 @@
 @section('content')
   <div id="task">
     <div class="menu-mask" :class="{ 'menu-open': showMenu }"></div>
-    <div class="process-catalog-main" :class="{ 'menu-open': showMenu }">
+    <div class="tasks-info-main" :class="{ 'menu-open': showMenu }">
       <div v-cloak class="container-fluid px-3">
           <div class="d-flex flex-column flex-md-row">
               <div class="flex-grow-1">
@@ -788,7 +788,7 @@
 <style>
   @import '~styles/variables';
 
-  .process-catalog-main {
+  .tasks-info-main {
     display: flex;
     @media (max-width: $lp-breakpoint) {
         display: block;
@@ -954,6 +954,7 @@
     min-width:0px;
     max-width:400px;
     width:315px;
+    min-height: calc(100vh - 200px);
   }
   .open-style {
     background-color: #4ea075;

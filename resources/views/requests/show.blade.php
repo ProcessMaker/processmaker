@@ -24,7 +24,7 @@
 @section('content')
   <div id="request">
     <div class="menu-mask" :class="{ 'menu-open': showMenu }"></div>
-    <div class="process-catalog-main" :class="{ 'menu-open': showMenu }">
+    <div class="requests-info-main" :class="{ 'menu-open': showMenu }">
       <div class="container-fluid px-3">
         <div class="d-flex flex-column flex-md-row">
           <div class="flex-grow-1">
@@ -859,7 +859,7 @@
 <style>
   @import '~styles/variables';
 
-  .process-catalog-main {
+  .requests-info-main {
     display: flex;
     @media (max-width: $lp-breakpoint) {
         display: block;
@@ -994,6 +994,7 @@
     min-width:0px;
     max-width:400px;
     width:315px;
+    min-height: calc(100vh - 200px);
   }
   .active-style {
     background-color: #4ea075;
