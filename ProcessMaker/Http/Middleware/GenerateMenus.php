@@ -70,51 +70,53 @@ class GenerateMenus
         // Build the menus
         Menu::make('sidebar_admin', function ($menu) {
             $submenu = $menu->add(__('admin'));
-            if (\Auth::check() && \Auth::user()->can('view-users')) {
+
+            if (!\Auth::check()) {
+                return;
+            }
+
+            if (\Auth::user()->can('view-users')) {
                 $submenu->add(__('Users'), [
                     'route' => 'users.index',
                     'icon' => 'fa-user',
                     'id' => 'homeid',
                 ]);
             }
-            if (\Auth::check() && \Auth::user()->can('view-groups')) {
+            if (\Auth::user()->can('view-groups')) {
                 $submenu->add(__('Groups'), [
                     'route' => 'groups.index',
                     'icon' => 'fa-users',
                     'id' => 'homeid',
                 ]);
             }
-            if (\Auth::check() && \Auth::user()->can('view-settings') && Setting::notHidden()->count()) {
+            if (\Auth::user()->can('view-settings') && Setting::notHidden()->count()) {
                 $submenu->add(__('Settings'), [
                     'route' => 'settings.index',
                     'icon' => 'fa-sliders-h',
                     'id' => 'homeid',
                 ]);
             }
-            if (\Auth::check() && \Auth::user()->can('view-auth_clients')) {
+            if (\Auth::user()->can('view-auth_clients')) {
                 $submenu->add(__('Auth Clients'), [
                     'route' => 'auth-clients.index',
                     'icon' => 'fa-key',
                     'id' => 'auth-login',
                 ]);
             }
-            if (\Auth::check() && \Auth::user()->is_administrator) {
+            if (\Auth::user()->is_administrator) {
                 $submenu->add(__('Customize UI'), [
                     'route' => 'customize-ui.edit',
                     'icon' => 'fa-palette',
                 ]);
-            }
-            if (\Auth::check() && \Auth::user()->is_administrator) {
+
                 $submenu->add(__('Queue Management'), [
                     'route' => 'queues.index',
                     'icon' => 'fa-infinity',
                 ]);
-            }
 
-            if (\Auth::check() && \Auth::user()->is_administrator) {
-                $submenu->add(__('Script Executors'), [
-                    'route' => 'script-executors.index',
-                    'icon' => 'fa-code',
+                $submenu->add(__('DevLink'), [
+                    'route' => 'devlink.index',
+                    'icon' => 'fa-link',
                 ]);
             }
         });
