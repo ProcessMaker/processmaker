@@ -16,16 +16,18 @@
 		
 		<SimplePopover :show="show" @close="onClose">
 			<ul class="tw-list-none tw-overflow-hidden tw-rounded tw-w-50 tw-text-sm">
-            <li
-              v-for="(option, index ) in optionsModel"
-              :key="index"
-              class="hover:tw-bg-gray-200"
-              @click.prevent.stop="onClickOption(option, index)"
-            >
-                <span
-                  class="tw-flex tw-py-2 tw-px-4 transition duration-300 hover:tw-bg-gray-200 hover:tw-cursor-pointer"
-                >{{ option.name || option.id }}</span>    
-            </li>
+				<li
+					v-for="(option, index ) in optionsModel"
+					:key="index"
+					class="hover:tw-bg-gray-200"
+					@click.prevent.stop="onClickOption(option, index)"
+				>
+					<span
+							class="tw-flex tw-py-2 tw-px-4 transition 
+							duration-300 hover:tw-bg-gray-200 hover:tw-cursor-pointer">
+						{{ option.name || option.id }}
+					</span>    
+				</li>
         </ul>
 		</SimplePopover>
 	</div>
