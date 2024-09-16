@@ -29,12 +29,7 @@
           :screen="screen"
           :render-controls="displayBuilder"
           :process-id="processId"
-          :show-templates-panel="showTemplatesPanel"
-          :my-templates-data="myTemplatesData"
-          :shared-templates-data="sharedTemplatesData"
           @change="updateConfig"
-          @close-templates-panel="closeTemplatesPanel"
-          @show-shared-templates="fetchSharedTemplates"
         >
           <data-loading-basic :is-loaded="false" />
         </vue-form-builder>
@@ -488,6 +483,7 @@ export default {
             variant: "link",
             icon: "fas fa-palette",
             action: "openTemplatesPanel()",
+            dataCy: "button-templates",
           },
           {
             id: "button_calcs",
@@ -608,7 +604,6 @@ export default {
         ],
       },
       iframeHeight: "600px",
-      showTemplatesPanel: false,
       myTemplatesData: null,
       sharedTemplatesData: null,
     };
@@ -1035,37 +1030,7 @@ export default {
       this.$refs.builder.redo();
     },
     openTemplatesPanel() {
-      //Filter to retrieve my templates. When select shared templates, refetch.
-      this.fetchMyTemplates();
-      this.showTemplatesPanel = true;
-    },
-    closeTemplatesPanel() {
-      this.showTemplatesPanel = false;
-    },
-    fetchMyTemplates() {
-      ProcessMaker.apiClient
-        .get(
-          "templates/screen?is_public=0",
-        )
-        .then((response) => {
-          this.myTemplatesData = response.data.data;
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    },
-    fetchSharedTemplates() {
-      ProcessMaker.apiClient
-        .get(
-          "templates/screen?is_public=1",
-        )
-        .then((response) => {
-          this.sharedTemplatesData = response.data.data;
-          this.$emit('shared-templates-loaded');
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      this.$refs.builder.openTemplatesPanel();
     },
     openComputedProperties() {
       this.$refs.computedProperties.show();
