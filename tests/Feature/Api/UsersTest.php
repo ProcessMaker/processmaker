@@ -802,8 +802,12 @@ class UsersTest extends TestCase
         $this->assertEquals(1, RecommendationUser::where('user_id', $this->user->id)->count());
 
         $url = self::API_TEST_URL . '/' . $this->user->id;
+
+        $updateData = $this->getUpdatedData();
+        $updateData['email'] = $this->user->email;
+
         $data = [
-            ...$this->getUpdatedData(),
+            ...$updateData,
             'meta' => [
                 'disableRecommendations' => true,
             ],
