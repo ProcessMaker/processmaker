@@ -53,7 +53,7 @@ class ProfileController extends Controller
 
         $ssoUser = false;
         if (class_exists(SsoUser::class)) {
-            $ssoUser = SsoUser::where('user_id', $user->id)->exists();
+            $ssoUser = SsoUser::where('user_id', $currentUser->id)->exists();
         }
 
         // Get global and valid 2FA preferences for the user
