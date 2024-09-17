@@ -1109,6 +1109,14 @@ nav {
   background-color: #9c9c9c;
 }
 
+
+// Screen Builder Template Card Styling
 .screenbuilder-template-card .card-body {
   padding: 0px !important;
+}
+
+.apply-options-container .custom-control-label {
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 2px;
 }
