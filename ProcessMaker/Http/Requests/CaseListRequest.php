@@ -5,7 +5,7 @@ namespace ProcessMaker\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use ProcessMaker\Rules\SortBy;
 
-class GetAllCasesRequest extends FormRequest
+class CaseListRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
