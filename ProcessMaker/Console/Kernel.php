@@ -22,25 +22,47 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('bpmn:timer')
-                 ->everyMinute()
-                 ->onOneServer();
+        if (config('multitenancy.tenant_model')) {
+            $schedule->command('tenant:artisan', ['bpmn:timer'])
+                ->everyMinute()
+                ->onOneServer();
 
-        $schedule->command('processmaker:sync-recommendations --queue')
-                 ->daily()
-                 ->onOneServer();
+            $schedule->command('tenant:artisan', ['processmaker:sync-recommendations --queue'])
+                ->daily()
+                ->onOneServer();
 
-        $schedule->command('package-data-sources:delete-logs')
-                 ->weekly();
+            $schedule->command('tenant:artisan', ['package-data-sources:delete-logs'])
+                ->weekly();
 
-        $schedule->command('processmaker:sync-default-templates --queue')
-                 ->daily();
+            $schedule->command('tenant:artisan', ['processmaker:sync-default-templates --queue'])
+                ->daily();
 
-        $schedule->command('processmaker:sync-guided-templates --queue')
-                 ->daily();
+            $schedule->command('tenant:artisan', ['processmaker:sync-guided-templates --queue'])
+                ->daily();
 
-        $schedule->command('processmaker:sync-screen-templates --queue')
-                 ->daily();
+            $schedule->command('tenant:artisan', ['processmaker:sync-screen-templates --queue'])
+                ->daily();
+        } else {
+            $schedule->command('bpmn:timer')
+                ->everyMinute()
+                ->onOneServer();
+
+            $schedule->command('processmaker:sync-recommendations --queue')
+                ->daily()
+                ->onOneServer();
+
+            $schedule->command('package-data-sources:delete-logs')
+                ->weekly();
+
+            $schedule->command('processmaker:sync-default-templates --queue')
+                ->daily();
+
+            $schedule->command('processmaker:sync-guided-templates --queue')
+                ->daily();
+
+            $schedule->command('processmaker:sync-screen-templates --queue')
+                ->daily();
+        }
     }
 
     /**
