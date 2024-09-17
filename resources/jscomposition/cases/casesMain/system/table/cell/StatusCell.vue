@@ -12,7 +12,7 @@ import { defineComponent, computed } from "vue";
 
 export const statuses = {
   DRAFT: {
-    color: "red",
+    color: "yellow",
     label: "Draft",
   },
   CANCELED: {
