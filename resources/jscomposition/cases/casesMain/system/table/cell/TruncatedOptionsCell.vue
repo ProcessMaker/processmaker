@@ -13,7 +13,7 @@
       <div
         class="hover:tw-bg-gray-200 tw-bg-white tw-px-2 tw-rounded-md hover:tw-cursor-pointer"
         @click.prevent.stop="onClick">
-        <i class="fas fa-ellipsis-v"></i>
+        <i class="fa-solid fa-ellipsis-vertical"></i>
       </div>
 
       <template #content>

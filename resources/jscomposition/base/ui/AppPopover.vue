@@ -2,8 +2,8 @@
   <div
     class="tooltip-wrapper"
     ref="tooltipWrapper"
-    @mouseenter="showTooltip"
-    @mouseleave="hideTooltip">
+    @mouseenter="($event) => hover && showTooltip($event)"
+    @mouseleave="($event) => hover && hideTooltip($event)">
     <slot name="default"></slot>
     <div
       v-if="visible"
@@ -22,28 +22,41 @@
 </template>
 
 <script>
-import { ref, watch, onMounted, nextTick, onUnmounted } from "vue";
+import { ref, watch, onMounted, nextTick, onUnmounted, computed } from "vue";
 
 export default {
   props: {
     content: {
       type: String,
     },
+    hover: {
+      type: Boolean,
+      default: false,
+    },
     position: {
       type: String,
       default: "top", // options: 'top', 'bottom', 'left', 'right'
       validator: (value) => ["top", "bottom", "left", "right"].includes(value),
     },
-    visible: {
+    value: {
       type: Boolean,
       default: false,
     },
   },
-  setup(props) {
+  setup(props, { emit }) {
     const tooltip = ref(null);
     const tooltipWrapper = ref(null);
     const tooltipPosition = ref({ top: 0, left: 0 });
-    const visible = ref(false);
+    const visible = props.hover
+      ? ref(false)
+      : computed({
+          get: () => {
+            return props.value;
+          },
+          set: (val) => {
+            emit("input", val);
+          },
+        });
     const calculatedPosition = ref(props.position);
 
     const calculatePosition = () => {
@@ -114,7 +127,9 @@ export default {
     };
 
     // Recalculated position when property visible changes
-    const unwatch = watch(() => props.visible, (newVal) => {
+    const unwatch = watch(
+      () => props.value,
+      (newVal) => {
         if (newVal) {
           showTooltip();
         } else {
@@ -127,9 +142,12 @@ export default {
       if (props.visible) {
         showTooltip();
       }
+
+      !props.hover && document.body.addEventListener("click", hideTooltip);
     });
 
     onUnmounted(() => {
+      !props.hover && document.body.removeEventListener("click", hideTooltip);
       unwatch();
     });
 

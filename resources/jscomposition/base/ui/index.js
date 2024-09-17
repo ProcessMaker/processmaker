@@ -1,8 +1,8 @@
 import Badge from "./Badge.vue";
 import SimplePopover from "./SimplePopover.vue";
 import AppAvatar from "./AppAvatar.vue";
-import AppTooltip from "./AppTooltip.vue";
+import AppPopover from "./AppPopover.vue";
 
 export default {};
 
-export { Badge, SimplePopover, AppAvatar, AppTooltip};
+export { Badge, SimplePopover, AppAvatar, AppPopover};
