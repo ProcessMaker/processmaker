@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd" xmlns:tns="http://sourceforge.net/bpmn/definitions/_1530553328908" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bpmn.io/schema/bpmn" exporter="ProcessMaker Modeler" exporterVersion="1.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <bpmn:process id="ProcessId" name="ProcessName" isExecutable="true">
+    <bpmn:startEvent id="node_1" name="Start Event" pm:allowInterstitial="true" pm:interstitialScreenRef="11" pm:config="{&quot;web_entry&quot;:null}">
+      <bpmn:outgoing>node_21</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="node_2" name="Form Task" pm:screenRef="15" pm:allowInterstitial="false" pm:assignment="requester" pm:assignmentLock="false" pm:allowReassignment="false" pm:config="{&quot;web_entry&quot;:null,&quot;email_notifications&quot;:{&quot;notifications&quot;:[]}}">
+      <bpmn:incoming>node_21</bpmn:incoming>
+      <bpmn:outgoing>node_79</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="node_20" name="End Event">
+      <bpmn:incoming>node_79</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_21" name="" sourceRef="node_1" targetRef="node_2"/>
+    <bpmn:sequenceFlow id="node_79" name="" sourceRef="node_2" targetRef="node_20"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagramId">
+    <bpmndi:BPMNPlane id="BPMNPlaneId" bpmnElement="ProcessId">
+      <bpmndi:BPMNShape id="node_1_di" bpmnElement="node_1">
+        <dc:Bounds x="447" y="140" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_2_di" bpmnElement="node_2">
+        <dc:Bounds x="580" y="120" width="116" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_20_di" bpmnElement="node_20">
+        <dc:Bounds x="769" y="144" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_21_di" bpmnElement="node_21">
+        <di:waypoint x="465" y="158"/>
+        <di:waypoint x="638" y="158"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_79_di" bpmnElement="node_79">
+        <di:waypoint x="638" y="158"/>
+        <di:waypoint x="787" y="162"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

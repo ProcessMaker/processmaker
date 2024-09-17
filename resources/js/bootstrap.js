@@ -179,7 +179,9 @@ window.ProcessMaker = {
   missingTranslation(value) {
     if (this.missingTranslations.has(value)) { return; }
     this.missingTranslations.add(value);
-    console.warn("Missing Translation:", value);
+    if (!isProd) {
+      console.warn("Missing Translation:", value);
+    }
   },
 
   RequestChannel,
@@ -231,6 +233,7 @@ window.ProcessMaker.apiClient.defaults.headers.common["X-Requested-With"] = "XML
  */
 
 const token = document.head.querySelector("meta[name=\"csrf-token\"]");
+const isProd = document.head.querySelector("meta[name=\"is-prod\"]")?.content === "true";
 
 if (token) {
   window.ProcessMaker.apiClient.defaults.headers.common["X-CSRF-TOKEN"] = token.content;

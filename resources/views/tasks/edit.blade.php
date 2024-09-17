@@ -206,7 +206,7 @@
                                 <div class="col-6">
                                   <template v-if="isAllowReassignment || userIsAdmin || userIsProcessManager">
                                     <button
-                                      v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
+                                      v-if="!isSelfService && (task.advanceStatus === 'open' || task.advanceStatus === 'overdue')"
                                       type="button"
                                       class="btn btn-block button-actions"
                                       @click="show"
