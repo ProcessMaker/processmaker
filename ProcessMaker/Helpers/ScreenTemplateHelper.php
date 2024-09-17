@@ -252,7 +252,7 @@ class ScreenTemplateHelper
     }
 
     // Parse the CSS string into an associative array
-    private static function parseCss($cssString)
+    public static function parseCss($cssString)
     {
         $rules = [];
         // Regex to match complex CSS selectors, allowing for any selector pattern
@@ -286,7 +286,7 @@ class ScreenTemplateHelper
     }
 
     // Merge the two CSS arrays
-    private static function mergeCss($currentCss, $templateCss)
+    public static function mergeCss($currentCss, $templateCss)
     {
         foreach ($templateCss as $selector => $properties) {
             if (isset($currentCss[$selector])) {
@@ -301,7 +301,7 @@ class ScreenTemplateHelper
         return $currentCss;
     }
 
-    private static function generateCss($cssArray)
+    public static function generateCss($cssArray)
     {
         $cssString = '';
 
