@@ -677,6 +677,59 @@ class ScreenTemplate implements TemplateInterface
         }
     }
 
+    // Applies the template to an existing screen in screen builder
+    public function applyTemplate($request)
+    {
+        // Get the selected template
+        $templateId = (int) $request->id;
+        $template = ScreenTemplates::findOrFail($templateId);
+
+        // Get the selected template options
+        $templateOptions = $request->get('templateOptions');
+        // Get the current screen to apply the template
+        $screenId = $request->get('screenId');
+        $screen = Screen::where('id', $screenId)->first();
+        // Define available options and their corresponding components
+        $availableOptions = ScreenComponents::getComponents();
+
+        if (is_array($templateOptions)) {
+            // Iterate through available options to handle each one
+            foreach ($availableOptions as $option => $components) {
+                // Apply the CSS to the current screen
+                if ($option == 'CSS' && in_array($option, $templateOptions)) {
+                    // $screen->custom_css = $screen->custom_css . ' ' . $template->screen_custom_css;
+
+                    $currentScreenCss = ScreenTemplateHelper::parseCss($screen->custom_css);
+                    $templateCss = ScreenTemplateHelper::parseCss($template->screen_custom_css);
+
+                    $mergedCss = ScreenTemplateHelper::mergeCss($currentScreenCss, $templateCss);
+
+                    $finalCss = ScreenTemplateHelper::generateCss($mergedCss);
+                    $screen->custom_css = $finalCss;
+                }
+
+                // Check if the current options is in the template options
+                // if (!in_array($option, $templateOptions)) {
+                //     // Remove the option configs/components from the new screen config
+                //     switch($option) {
+                //         case 'CSS':
+                //             $newScreen->custom_css = null;
+                //             break;
+                //         case 'Fields':
+                //         case 'Layout':
+                //             $newConfig = ScreenTemplateHelper::removeScreenComponents($newScreen->config, $components);
+                //             $newScreen->config = $newConfig;
+                //             break;
+                //         default:
+                //             break;
+                //     }
+                // }
+
+                $screen->save();
+            }
+        }
+    }
+
     private function syncTemplateMedia($template, $media)
     {
         // Get the UUIDs of updated media
