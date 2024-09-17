@@ -69,22 +69,22 @@ class EncryptedData extends ProcessMakerModel
         // Run validations
         if (is_null($encryptedField)) {
             throw ValidationException::withMessages([
-                'encrypted_field_not_exists' => 'Not exists a field with name "' . $fieldName . '".',
+                'encrypted_field_not_exists' => __("There is no field with the name ':fieldName'.", ['fieldName' => $fieldName]),
             ]);
         }
         if (is_null($encryptedField->encryptedConfig)) {
             throw ValidationException::withMessages([
-                'encrypted_field_config_empty' => 'Config related to encryption is not found for this field.',
+                'encrypted_field_config_empty' => __('Configuration related to encryption is not found for this field.'),
             ]);
         }
         if (is_null($encryptedField->encryptedConfig['encrypted'])) {
             throw ValidationException::withMessages([
-                'encrypted_field_encryption_disabled' => 'Config related to encryption is not enabled for this field.',
+                'encrypted_field_encryption_disabled' => __('Encryption is not enabled for this field.'),
             ]);
         }
         if (empty($encryptedField->encryptedConfig['assignments']['users']) && empty($encryptedField->encryptedConfig['assignments']['groups'])) {
             throw ValidationException::withMessages([
-                'encrypted_field_assignments_empty' => 'Config related to assignments is missing for this field.',
+                'encrypted_field_assignments_empty' => __('Configuration related to assignments is missing for this field.'),
             ]);
         }
 
@@ -99,7 +99,7 @@ class EncryptedData extends ProcessMakerModel
         // Validate if current user have permissions for this cencrypted field
         if (!in_array($userId, $usersAssigned)) {
             throw ValidationException::withMessages([
-                'encrypted_field_assignments_invalid' => 'User is not assigned to this encrypted field.',
+                'encrypted_field_assignments_invalid' => __('You are not assigned to this encrypted field.'),
             ]);
         }
     }

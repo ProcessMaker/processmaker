@@ -2354,5 +2354,10 @@
   "Encrypted": "Chiffrée",
   "Users/Groups to View": "Utilisateurs/Groupes à afficher",
   "Conceal": "Cacher",
-  "Reveal": "Révéler"
+  "Reveal": "Révéler",
+  "There is no field with the name ':fieldName'.": "Il n'y a pas de champ avec le nom ':fieldName'.",
+  "Configuration related to encryption is not found for this field.": "La configuration relative au chiffrement est introuvable pour ce champ.",
+  "Encryption is not enabled for this field.": "Le chiffrement n'est pas activé pour ce champ.",
+  "Configuration related to assignments is missing for this field.": "La configuration relative aux attributions est manquante pour ce champ.",
+  "You are not assigned to this encrypted field.": "Vous n'êtes pas attribué à ce champ chiffré."
 }
