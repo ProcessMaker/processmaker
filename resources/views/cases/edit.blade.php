@@ -21,5 +21,5 @@
 @endsection
 
 @section('js')
-  <script src="{{mix('js/cases/edit.js')}}"></script>
+  <script src="{{mix('js/composition/cases/casesDetail/edit.js')}}"></script>
 @endsection

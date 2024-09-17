@@ -47,7 +47,7 @@ export default defineComponent({
         return props.column?.headerFormatter(props.columns);
       }
 
-      return props.column.headerName || props.column.field || "";
+      return props.column.header || props.column.field || "";
     };
     return {
       getValue,

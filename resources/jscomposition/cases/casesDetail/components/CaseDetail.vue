@@ -10,6 +10,8 @@
 <script>
 import { defineComponent, ref } from "vue";
 import Tabs from "./Tabs.vue";
+import TaskTable from "./TaskTable.vue";
+import RequestTable from "./RequestTable.vue";
 
 export default defineComponent({
   components: { Tabs },
@@ -20,7 +22,7 @@ export default defineComponent({
 
     const tabs = [
       {
-        name: translate.t("Tasks"), href: "#tasks", current: "tasks", show: true, content: "",
+        name: translate.t("Tasks"), href: "#tasks", current: "tasks", show: true, content: TaskTable,
       },
       {
         name: translate.t("Overview"), href: "#overview", current: "overview", show: true, content: "",
@@ -35,7 +37,7 @@ export default defineComponent({
         name: translate.t("History"), href: "#history", current: "history", show: true, content: "",
       },
       {
-        name: translate.t("Requests"), href: "#requests", current: "requests", show: true, content: "",
+        name: translate.t("Requests"), href: "#requests", current: "requests", show: true, content: RequestTable,
       },
     ];
 

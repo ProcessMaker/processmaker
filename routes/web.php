@@ -137,6 +137,7 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::post('/keep-alive', [LoginController::class, 'keepAlive'])->name('keep-alive');
     // Cases
     Route::get('cases', [RequestController::class, 'index'])->name('cases.index')->middleware('no-cache');
+    Route::get('cases/{request}', [RequestController::class, 'edit'])->name('cases.edit');
     // This is a temporary API the engine team will create the API
     Route::get('cases-main', [CasesController::class, 'index'])->name('cases-main.index')->middleware('no-cache');
     Route::get('cases/{type?}', [RequestController::class, 'index'])->name('cases_by_type')
