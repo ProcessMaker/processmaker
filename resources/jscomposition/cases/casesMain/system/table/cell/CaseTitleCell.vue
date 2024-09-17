@@ -1,28 +1,21 @@
 <template>
-  <td class="tw-p-3">
+  <div>
     <div
-      v-if="!column.cellRenderer"
-      :style="{ maxWidth: `${column.width}px` }">
-      <slot
-        :columns="columns"
-        :column="column"
-        :row="row">
-        {{ getValue() }}
-      </slot>
-    </div>
-    <component
+      v-if="row.case_title_formatted"
+      class="tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis"
+      :style="{ width: column.width + 'px' }"
+      v-html="row.case_title_formatted" />
+    <slot
       v-else
-      :is="column.cellRenderer()"
       :columns="columns"
       :column="column"
-      :row="row" />
-  </td>
+      :row="row">
+      {{ getValue() }}
+    </slot>
+  </div>
 </template>
-
 <script>
 import { defineComponent } from "vue";
-import { isFunction, get } from "lodash";
-
 export default defineComponent({
   props: {
     columns: {
@@ -31,14 +24,14 @@ export default defineComponent({
     },
     column: {
       type: Object,
-      default: () => {},
+      default: () => ({}),
     },
     row: {
       type: Object,
-      default: () => {},
+      default: () => ({}),
     },
   },
-  setup(props, { emit }) {
+  setup() {
     const getValue = () => {
       if (isFunction(props.column?.formatter)) {
         return props.column?.formatter(props.row, props.column, props.columns);

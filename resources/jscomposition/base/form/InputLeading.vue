@@ -5,7 +5,7 @@
                 <i :class="icon"></i>
             </slot>
         </div>
-        <input class="tw-block tw-w-full tw-rounded-md tw-border-0 tw-py-2 tw-pl-10 
+        <input class="tw-block tw-w-full tw-rounded-lg tw-border-0 tw-py-2 tw-pl-10 
                 tw-text-gray-900 tw-ring-1 tw-ring-inset tw-ring-gray-300 
                 placeholder:tw-text-gray-400 focus:tw-ring-2 focus:tw-ring-inset
                 focus-visible:tw-outline-none
@@ -23,7 +23,7 @@ export default defineComponent({
         },
         icon: {
             type: String,
-            default: () => ("fa-solid fa-magnifying-glass")
+            default: () => ("fas fa-search")
         }
     },
     setup(props, { emit }) {
