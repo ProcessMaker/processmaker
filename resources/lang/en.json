@@ -2347,5 +2347,10 @@
   "Encrypted": "Encrypted",
   "Users/Groups to View": "Users/Groups to View",
   "Conceal": "Conceal",
-  "Reveal": "Reveal"
+  "Reveal": "Reveal",
+  "There is no field with the name ':fieldName'.": "There is no field with the name ':fieldName'.",
+  "Configuration related to encryption is not found for this field.": "Configuration related to encryption is not found for this field.",
+  "Encryption is not enabled for this field.": "Encryption is not enabled for this field.",
+  "Configuration related to assignments is missing for this field.": "Configuration related to assignments is missing for this field.",
+  "You are not assigned to this encrypted field.": "You are not assigned to this encrypted field."
 }
