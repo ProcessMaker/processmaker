@@ -147,7 +147,8 @@ class BuildScriptExecutors extends Command
             $this->info("SDK is at {$sdkDir}");
         }
 
-        $dockerfile = ScriptExecutor::initDockerfile($lang) . "\n" . $scriptExecutor->config;
+        // add the first lines for the Docker file, then the script executor config and then the rest last part of the Dockerfile
+        $dockerfile = $this->getDockerfileContent($scriptExecutor);
 
         $this->info("Dockerfile:\n  " . implode("\n  ", explode("\n", $dockerfile)));
         file_put_contents($packagePath . '/Dockerfile.custom', $dockerfile);
@@ -164,6 +165,15 @@ class BuildScriptExecutors extends Command
         if ($isNayra) {
             Base::bringUpNayraExecutor($this, $image);
         }
+    }
+
+    public function getDockerfileContent(ScriptExecutor $scriptExecutor): string
+    {
+        $lang = $scriptExecutor->language;
+
+        return ScriptExecutor::initDockerfile($lang) . "\n"
+            . $scriptExecutor->config . "\n"
+            . ScriptExecutor::finalInstructions($lang);
     }
 
     public function execCommand(string $command)

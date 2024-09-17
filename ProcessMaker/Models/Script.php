@@ -97,11 +97,22 @@ class Script extends ProcessMakerModel implements ScriptInterface
     public static function boot()
     {
         parent::boot();
-        self::saving(function ($script) {
+
+        $clearCacheCallback = function () {
+            self::clearAndRebuildUserProjectAssetsCache();
+        };
+
+        self::saving(function ($script) use ($clearCacheCallback) {
             // If a script executor has not been set, choose one
             // automatically based on the scripts set language
             $script->setDefaultExecutor();
+
+            // Execute the clear cache callback
+            $clearCacheCallback($script);
         });
+
+        static::updating($clearCacheCallback);
+        static::deleting($clearCacheCallback);
     }
 
     /**
