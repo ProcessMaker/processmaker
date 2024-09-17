@@ -167,6 +167,7 @@ mix.copyDirectory(`${monacoSource}language`, `${monacoDestination}language`);
 
 mix
   .sass("resources/sass/sidebar/sidebar.scss", "public/css")
+  .sass("resources/sass/collapseDetails.scss", "public/css")
   .sass("resources/sass/app.scss", "public/css")
   .sass("resources/sass/admin/queues.scss", "public/css/admin")
   .version();
