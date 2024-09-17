@@ -94,7 +94,7 @@ class EncryptedData extends ProcessMakerModel
 
         // Get consolidated users list
         $process = new Process();
-        $process->getConsolidatedUsers($groupsAssigned, $usersAssigned);
+        $usersAssigned = $process->getConsolidatedUsers($groupsAssigned, $usersAssigned);
 
         // Validate if current user have permissions for this cencrypted field
         if (!in_array($userId, $usersAssigned)) {
