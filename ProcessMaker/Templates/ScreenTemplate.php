@@ -679,6 +679,17 @@ class ScreenTemplate implements TemplateInterface
         }
     }
 
+    /**
+     * Apply a selected template to the specified screen in screen builder
+     * @param Request $request
+     * The request should contain:
+     * - 'id': The ID of the selected template to apply
+     * - 'screenId': The ID of the screen where the template will be applied
+     * - 'templateOptions': An array of options that specify how to apply the template.
+     * @return void
+     * @throws ModelNotFoundException If the template or screen is not found in the database
+     * @throws Exception If there is an error during the template application process.
+     */
     public function applyTemplate(Request $request)
     {
         try {

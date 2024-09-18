@@ -28,7 +28,20 @@ class ScreenTemplateHelper
     }
 
     /**
-     * Gets screen components from the configuration based on the provided components that will be added to the screen configurations.
+     * Filters and retrieves screen components from the provided configuration.
+     *
+     * This method processes the given screen configuration, iterating through each page
+     * to filter its items based on the specified components. It can optionally remove
+     * components from the configuration or keep only the specified components.
+     * @param array $config The full screen configuration
+     * @param array $components An array of component names that will be used to filter
+     *                          the items in the configuration.
+     * @param bool $removeComponents (optional) Determines the filtering behavior:
+     *        - If 'true', the components in the `$components` array will be removed from the configuration
+     *        - If 'false', only the components in the `$components` array will be retained
+     *        Defaults to `true`.
+     *
+     * @return array The updated configuration after filtering the components.
      */
     public static function getScreenComponents($config, $components, $removeComponents = true)
     {
@@ -50,6 +63,7 @@ class ScreenTemplateHelper
      *
      * @param array $items The items of a page to filter.
      * @param array $components The components to filter the items against.
+     * @param bool $removeComponents Whether to remove.
      * @return array The filtered items of the page.
      */
     private static function filterPageItems($items, $components, $removeComponents = true)
@@ -82,6 +96,7 @@ class ScreenTemplateHelper
      *
      * @param array $item The item to filter.
      * @param array $components The components to filter against.
+     * @param bool $removeComponents Whether to remove.
      * @return array|null The filtered item or null if it should be removed.
      */
     private static function filterItemByComponent($item, $components, $removeComponents = true)
@@ -103,6 +118,7 @@ class ScreenTemplateHelper
      *
      * @param array $item The 'FormMultiColumn' item to filter.
      * @param array $components The components to filter against.
+     * @param bool $removeComponents Whether to remove.
      * @return array The filtered 'FormMultiColumn' item.
      */
     private static function filterFormMultiColumn($item, $components, $removeComponents = true)
@@ -132,6 +148,7 @@ class ScreenTemplateHelper
      *
      * @param array $item The item to check for removal.
      * @param array $components The screen components to filter against.
+     * @param bool $removeComponents Whether to remove.
      * @return bool Whether the item should be removed.
      */
     private static function removeNestedComponents($item, $components, $removeComponents = true)
@@ -162,6 +179,7 @@ class ScreenTemplateHelper
      * @param array $column The column items to filter.
      * @param array $components The components to filter against.
      * @param bool $removeMultiColumn Whether the entire 'FormMultiColumn' should be removed.
+     * @param bool $removeComponents Whether to remove.
      * @return array The filtered column items.
      */
     private static function filterColumnItems($column, $components, $removeMultiColumn, $removeComponents = true)
