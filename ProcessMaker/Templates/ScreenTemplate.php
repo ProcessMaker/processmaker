@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Events\TemplateCreated;
 use ProcessMaker\Helpers\ScreenTemplateHelper;
 use ProcessMaker\ImportExport\Importer;
@@ -686,16 +687,7 @@ class ScreenTemplate implements TemplateInterface
             $template = ScreenTemplates::findOrFail($templateId);
 
             // Import the template to get the screen config
-            $payload = json_decode($template->manifest, true);
-            $payload = $this->filterPayload($payload);
-
-            $options = new Options($this->generatePostOptions($payload));
-            $importer = new Importer($payload, $options);
-
-            $manifest = $importer->doImport(null, true);
-            $rootLog = $manifest[$payload['root']]->log;
-            $newScreenId = $rootLog['newId'];
-
+            $newScreenId = $this->handleTemplateImport($template);
             $newTemplateScreen = Screen::select('config')->where('id', $newScreenId)->firstOrFail();
 
             // Get the current screen to apply the template
@@ -706,67 +698,82 @@ class ScreenTemplate implements TemplateInterface
             $templateOptions = $request->get('templateOptions', []);
             $supportedOptionComponents = ScreenComponents::getComponents();
 
+            // Apply template options
             if (is_array($templateOptions)) {
                 foreach ($templateOptions as $option) {
-                    $this->applyTemplateOption($option, $supportedOptionComponents, $template, $newTemplateScreen, $screen, $templateOptions);
+                    $this->applyTemplateOption($option, $supportedOptionComponents, $template,
+                        $newTemplateScreen, $screen, $templateOptions);
                 }
-
                 $screen->save(); // Save the updated screen
             }
 
-            Screen::where('id', $newScreenId)->delete(); // Clean up the temporary imported template screen
+            // Clean up the temporary imported template screen
+            Screen::where('id', $newScreenId)->delete();
+        } catch (ModelNotFoundException $e) {
+            Log::error('Template or screen not found: ' . $e->getMessage());
+            throw new ModelNotFoundException('Template or screen not found.');
         } catch (Exception $e) {
-            // TODO: Determine which exceptions are thrown and handle them appropriately
-            \Log::error('Error applying template: ' . $e->getMessage());
-            throw new \Exception('Failed to apply template.');
+            Log::error('Error applying template: ' . $e->getMessage());
+            throw new Exception('Failed to apply template.');
         }
+    }
+
+    private function handleTemplateImport($template)
+    {
+        $payload = $this->filterPayload(json_decode($template->manifest, true));
+
+        $options = new Options($this->generatePostOptions($payload));
+        $importer = new Importer($payload, $options);
+        $manifest = $importer->doImport(null, true);
+
+        // Return the new screen ID from import log
+        return $manifest[$payload['root']]->log['newId'];
     }
 
     private function filterPayload($payload)
     {
-        foreach ($payload['export'] as $key => $asset) {
-            // Exclude the import of screen categories
-            if ($asset['model'] === 'ProcessMaker\Models\ScreenCategory') {
-                unset($payload['export'][$key]);
-            }
-        }
+        // Exclude screen categories from payload
+        $payload['export'] = array_filter($payload['export'], function ($asset) {
+            return $asset['model'] !== 'ProcessMaker\Models\ScreenCategory';
+        });
 
         return $payload;
     }
 
     private function generatePostOptions($payload)
     {
-        $postOptions = [];
-        foreach ($payload['export'] as $key => $asset) {
-            $postOptions[$key] = [
+        return array_map(function () {
+            return [
                 'mode' => 'copy',
                 'isTemplate' => true,
                 'saveAssetMode' => 'saveAllAssets',
             ];
-        }
-
-        return $postOptions;
+        }, $payload['export']);
     }
 
-    private function applyTemplateOption($option, $supportedOptionComponents, $template, $newTemplateScreen, $screen, $templateOptions)
+    private function applyTemplateOption($option, $supportedOptionComponents,
+        $template, $newTemplateScreen, $screen, $templateOptions)
     {
         $currentScreenPage = 0; // TODO: Implement dynamic page selection logic
 
+        // Check if the option is supported before applying
+        if (!array_key_exists($option, $supportedOptionComponents)) {
+            return;
+        }
+
         switch ($option) {
             case 'CSS':
-                if (array_key_exists($option, $supportedOptionComponents)) {
-                    $this->mergeCss($screen, $template);
-                }
+                $this->mergeCss($screen, $template);
                 break;
             case 'Layout':
-                if (array_key_exists($option, $supportedOptionComponents)) {
-                    $this->mergeLayout($screen, $currentScreenPage, $newTemplateScreen, $templateOptions, $supportedOptionComponents[$option]);
-                }
+                $this->mergeLayout($screen, $currentScreenPage, $newTemplateScreen,
+                    $templateOptions, $supportedOptionComponents[$option]);
                 break;
             case 'Fields':
-                if (array_key_exists($option, $supportedOptionComponents)) {
-                    $this->mergeFields($screen, $currentScreenPage, $newTemplateScreen, $templateOptions, $supportedOptionComponents[$option]);
-                }
+                $this->mergeFields($screen, $currentScreenPage, $newTemplateScreen,
+                    $templateOptions, $supportedOptionComponents[$option]);
+                break;
+            default:
                 break;
         }
     }
@@ -777,38 +784,44 @@ class ScreenTemplate implements TemplateInterface
         $templateCss = ScreenTemplateHelper::parseCss($template->screen_custom_css);
 
         $mergedCss = ScreenTemplateHelper::mergeCss($currentScreenCss, $templateCss);
-        $finalCss = ScreenTemplateHelper::generateCss($mergedCss);
-
-        $screen->custom_css = $finalCss;
+        $screen->custom_css = ScreenTemplateHelper::generateCss($mergedCss);
     }
 
-    private function mergeLayout($screen, $currentScreenPage, $newTemplateScreen, $templateOptions, $supportedComponents)
+    private function mergeLayout($screen, $currentScreenPage, $newTemplateScreen,
+        $templateOptions, $supportedComponents)
     {
-        $newTemplateConfig = !in_array('Fields', $templateOptions) ?
-            ScreenTemplateHelper::getScreenComponents($newTemplateScreen->config, $supportedComponents, false) :
-            $newTemplateScreen->config;
+        $templateComponents = $this->getTemplateComponents($newTemplateScreen, $templateOptions, $supportedComponents);
 
-        $templateComponents = $newTemplateConfig[0]['items'] ?? [];
+        $screenConfig = $screen->config;
+        $screenConfig[$currentScreenPage]['items'] =
+            array_merge($screenConfig[$currentScreenPage]['items'], $templateComponents);
 
-        $newScreenItems = array_merge($screen->config[$currentScreenPage]['items'], $templateComponents);
-        $newConfig = $screen->config;
-        $newConfig[$currentScreenPage]['items'] = $newScreenItems;
-
-        $screen->config = $newConfig;
+        $screen->config = $screenConfig;
     }
 
-    private function mergeFields($screen, $currentScreenPage, $newTemplateScreen, $templateOptions, $supportedComponents)
+    private function mergeFields($screen, $currentScreenPage, $newTemplateScreen,
+        $templateOptions, $supportedComponents)
     {
+        // Skip merging layout if 'Layout' is part of template options
         if (!in_array('Layout', $templateOptions)) {
-            $newTemplateConfig = ScreenTemplateHelper::getScreenComponents($newTemplateScreen->config, $supportedComponents, false);
-            $templateComponents = $newTemplateConfig[0]['items'] ?? [];
+            $templateComponents =
+                $this->getTemplateComponents($newTemplateScreen, $templateOptions, $supportedComponents);
 
-            $newScreenItems = array_merge($screen->config[$currentScreenPage]['items'], $templateComponents);
-            $newConfig = $screen->config;
-            $newConfig[$currentScreenPage]['items'] = $newScreenItems;
+            $screenConfig = $screen->config;
+            $screenConfig[$currentScreenPage]['items'] =
+                array_merge($screenConfig[$currentScreenPage]['items'], $templateComponents);
 
-            $screen->config = $newConfig;
+            $screen->config = $screenConfig;
         }
+    }
+
+    private function getTemplateComponents($newTemplateScreen, $templateOptions, $supportedComponents)
+    {
+        return !in_array('Fields', $templateOptions)
+            ? ScreenTemplateHelper::getScreenComponents($newTemplateScreen->config,
+                $supportedComponents, false)[0]['items']
+            ?? []
+                : $newTemplateScreen->config[0]['items'] ?? [];
     }
 
     private function syncTemplateMedia($template, $media)
