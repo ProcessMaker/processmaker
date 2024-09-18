@@ -37,7 +37,7 @@ export const formatCounters = (data) => {
       color: "gray",
       icon: "fas fa-play",
       url: () => {
-        window.location.href = "/cases";
+        window.location.href = "/requests";
       },
     },
   ];

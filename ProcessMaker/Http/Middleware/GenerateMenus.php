@@ -36,12 +36,18 @@ class GenerateMenus
                     ['route' => 'process.browser.index', 'id' => 'process-browser']
                 )->active('process-browser/*');
             });
-            $menu->group(['prefix' => 'requests'], function ($request_items) {
+            $menu->group(['prefix' => 'cases'], function ($request_items) {
+                $request_items->add(
+                    __('Cases'),
+                    ['route' => 'cases-main.index', 'id' => 'cases']
+                )->active('cases/*');
+            });
+            /*$menu->group(['prefix' => 'requests'], function ($request_items) {
                 $request_items->add(
                     __('Requests'),
                     ['route' => 'requests.index', 'id' => 'requests']
                 )->active('requests/*');
-            });
+            });*/
             //@TODO change the index to the correct blade
             $menu->group(['prefix' => 'tasks'], function ($request_items) {
                 $request_items->add(

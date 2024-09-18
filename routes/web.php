@@ -17,6 +17,7 @@ use ProcessMaker\Http\Controllers\Auth\ForgotPasswordController;
 use ProcessMaker\Http\Controllers\Auth\LoginController;
 use ProcessMaker\Http\Controllers\Auth\ResetPasswordController;
 use ProcessMaker\Http\Controllers\Auth\TwoFactorAuthController;
+use ProcessMaker\Http\Controllers\CasesController;
 use ProcessMaker\Http\Controllers\Designer\DesignerController;
 use ProcessMaker\Http\Controllers\HomeController;
 use ProcessMaker\Http\Controllers\InboxRulesController;
@@ -32,7 +33,6 @@ use ProcessMaker\Http\Controllers\ProcessController;
 use ProcessMaker\Http\Controllers\ProcessesCatalogueController;
 use ProcessMaker\Http\Controllers\ProfileController;
 use ProcessMaker\Http\Controllers\RequestController;
-use ProcessMaker\Http\Controllers\CasesController;
 use ProcessMaker\Http\Controllers\Saml\MetadataController;
 use ProcessMaker\Http\Controllers\TaskController;
 use ProcessMaker\Http\Controllers\TemplateController;
@@ -136,20 +136,18 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
 
     Route::post('/keep-alive', [LoginController::class, 'keepAlive'])->name('keep-alive');
     // Cases
-    Route::get('cases', [RequestController::class, 'index'])->name('cases.index')->middleware('no-cache');
+    // Route::get('cases', [CasesController::class, 'index'])->name('cases.index')->middleware('no-cache');
     // This is a temporary API the engine team will create the API
     Route::get('cases-main', [CasesController::class, 'index'])->name('cases-main.index')->middleware('no-cache');
     Route::get('cases/{type?}', [RequestController::class, 'index'])->name('cases_by_type')
         ->where('type', 'all|in_progress|completed')
         ->middleware('no-cache');
     // Requests
-    Route::get('requests', function () {
-        return redirect()->route('cases.index');
-    })->name('requests.index')->middleware('no-cache');
-    Route::get('requests/{type?}', function ($type = null) {
-        return redirect()->route('cases_by_type', ['type' => $type]);
-    })->where('type', 'all|in_progress|completed')->name('requests_by_type')->middleware('no-cache');
-
+    Route::get('requests', [RequestController::class, 'index'])
+        ->name('requests.index')
+        ->middleware('no-cache');
+    Route::get('requests/{type?}', [RequestController::class, 'index'])
+    ->where('type', 'all|in_progress|completed')->name('requests_by_type')->middleware('no-cache');
     Route::get('requests/{request}', [RequestController::class, 'show'])->name('requests.show');
     Route::get('request/{request}/files/{media}', [RequestController::class, 'downloadFiles'])->middleware('can:view,request');
     Route::get('requests/search', [RequestController::class, 'search'])->name('requests.search');
