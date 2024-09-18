@@ -250,4 +250,72 @@ class ScreenTemplateHelper
 
         return $flattenedItems;
     }
+
+    // Parse the CSS string into an associative array
+    public static function parseCss($cssString)
+    {
+        $rules = [];
+        // Regex to match complex CSS selectors, allowing for any selector pattern
+        preg_match_all('/\[selector="([\w-]+)"\]\s*([^{]+)\s*{([^}]+)}/', $cssString, $matches, PREG_SET_ORDER);
+
+        foreach ($matches as $match) {
+            $baseSelector = $match[1];
+            $additionalSelector = trim($match[2]);
+            $fullSelector = "[selector=\"$baseSelector\"] " . $additionalSelector;
+            $propertiesString = trim($match[3]);
+
+            // Split properties into key-value pairs
+            $propertiesArray = explode(';', $propertiesString);
+            $properties = [];
+
+            foreach ($propertiesArray as $property) {
+                $propertyParts = explode(':', $property);
+                if (count($propertyParts) == 2) {
+                    $key = trim($propertyParts[0]);
+                    $value = trim($propertyParts[1]);
+                    if (!empty($key) && !empty($value)) {
+                        $properties[$key] = $value;
+                    }
+                }
+            }
+
+            $rules[$fullSelector] = $properties;
+        }
+
+        return $rules;
+    }
+
+    // Merge the two CSS arrays
+    public static function mergeCss($currentCss, $templateCss)
+    {
+        foreach ($templateCss as $selector => $properties) {
+            if (isset($currentCss[$selector])) {
+                // Merge properties from Template CSS into the Current Screen CSS for the same selector
+                $currentCss[$selector] = array_merge($currentCss[$selector], $properties);
+            } else {
+                // Add new selector and properties from Template CSS
+                $currentCss[$selector] = $properties;
+            }
+        }
+
+        return $currentCss;
+    }
+
+    public static function generateCss($cssArray)
+    {
+        // Convert the CSS array back into a string and output the final CSS
+        $cssString = '';
+
+        foreach ($cssArray as $selector => $properties) {
+            $cssString .= "$selector {\n";
+
+            foreach ($properties as $key => $value) {
+                $cssString .= " $key: $value;\n";
+            }
+
+            $cssString .= "}\n\n";
+        }
+
+        return $cssString;
+    }
 }

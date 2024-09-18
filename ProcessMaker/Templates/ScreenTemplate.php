@@ -677,6 +677,39 @@ class ScreenTemplate implements TemplateInterface
         }
     }
 
+    // Applies the template to an existing screen in screen builder
+    public function applyTemplate($request)
+    {
+        // Get the selected template
+        $templateId = (int) $request->id;
+        $template = ScreenTemplates::findOrFail($templateId);
+
+        // Get the selected template options
+        $templateOptions = $request->get('templateOptions');
+        // Get the current screen to apply the template
+        $screenId = $request->get('screenId');
+        $screen = Screen::where('id', $screenId)->first();
+        // Define available options and their corresponding components
+        $availableOptions = ScreenComponents::getComponents();
+
+        if (is_array($templateOptions)) {
+            // Iterate through available options to handle each one
+            foreach ($availableOptions as $option => $components) {
+                // Apply the CSS to the current screen
+                if ($option == 'CSS' && in_array($option, $templateOptions)) {
+                    $currentScreenCssArray = ScreenTemplateHelper::parseCss($screen->custom_css);
+                    $templateCssArray = ScreenTemplateHelper::parseCss($template->screen_custom_css);
+                    $mergedCss = ScreenTemplateHelper::mergeCss($currentScreenCssArray, $templateCssArray);
+
+                    $finalCss = ScreenTemplateHelper::generateCss($mergedCss);
+                    $screen->custom_css = $finalCss;
+                }
+
+                $screen->save();
+            }
+        }
+    }
+
     private function syncTemplateMedia($template, $media)
     {
         // Get the UUIDs of updated media
