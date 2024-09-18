@@ -678,98 +678,137 @@ class ScreenTemplate implements TemplateInterface
         }
     }
 
-    // Applies the template to an existing screen in screen builder
-    public function applyTemplate($request)
+    public function applyTemplate(Request $request)
     {
-        // Get the selected template
-        $templateId = (int) $request->id;
-        $template = ScreenTemplates::findOrFail($templateId);
+        try {
+            // Get the selected template
+            $templateId = (int) $request->id;
+            $template = ScreenTemplates::findOrFail($templateId);
 
-        // Import the template to get the screen config (wish we didn't have to do this)
-        $payload = json_decode($template->manifest, true);
+            // Import the template to get the screen config
+            $payload = json_decode($template->manifest, true);
+            $payload = $this->filterPayload($payload);
 
-        $postOptions = [];
+            $options = new Options($this->generatePostOptions($payload));
+            $importer = new Importer($payload, $options);
 
+            $manifest = $importer->doImport(null, true);
+            $rootLog = $manifest[$payload['root']]->log;
+            $newScreenId = $rootLog['newId'];
+
+            $newTemplateScreen = Screen::select('config')->where('id', $newScreenId)->firstOrFail();
+
+            // Get the current screen to apply the template
+            $screenId = $request->get('screenId');
+            $screen = Screen::where('id', $screenId)->firstOrFail();
+
+            // Get the selected template options
+            $templateOptions = $request->get('templateOptions', []);
+            $supportedOptionComponents = ScreenComponents::getComponents();
+
+            if (is_array($templateOptions)) {
+                foreach ($templateOptions as $option) {
+                    $this->applyTemplateOption($option, $supportedOptionComponents, $template, $newTemplateScreen, $screen, $templateOptions);
+                }
+
+                $screen->save(); // Save the updated screen
+            }
+
+            Screen::where('id', $newScreenId)->delete(); // Clean up the temporary imported template screen
+        } catch (Exception $e) {
+            // TODO: Determine which exceptions are thrown and handle them appropriately
+            \Log::error('Error applying template: ' . $e->getMessage());
+            throw new \Exception('Failed to apply template.');
+        }
+    }
+
+    private function filterPayload($payload)
+    {
         foreach ($payload['export'] as $key => $asset) {
             // Exclude the import of screen categories
             if ($asset['model'] === 'ProcessMaker\Models\ScreenCategory') {
                 unset($payload['export'][$key]);
-                continue;
             }
+        }
 
+        return $payload;
+    }
+
+    private function generatePostOptions($payload)
+    {
+        $postOptions = [];
+        foreach ($payload['export'] as $key => $asset) {
             $postOptions[$key] = [
                 'mode' => 'copy',
                 'isTemplate' => true,
-                'saveAssetsMode' => 'saveAllAssets',
+                'saveAssetMode' => 'saveAllAssets',
             ];
         }
 
-        $options = new Options($postOptions);
-        $importer = new Importer($payload, $options);
-        $existingAssetsInDatabase = null;
-        $importingFromTemplate = true;
-        $manifest = $importer->doImport($existingAssetsInDatabase, $importingFromTemplate);
-        $rootLog = $manifest[$payload['root']]->log;
-        $newScreenId = $rootLog['newId'];
+        return $postOptions;
+    }
 
-        $newTemplateScreen = Screen::select('config')->where('id', $newScreenId)->first();
+    private function applyTemplateOption($option, $supportedOptionComponents, $template, $newTemplateScreen, $screen, $templateOptions)
+    {
+        $currentScreenPage = 0; // TODO: Implement dynamic page selection logic
 
-        // Get the selected template options
-        $templateOptions = $request->get('templateOptions');
-        // Get the current screen to apply the template
-        $screenId = $request->get('screenId');
-        $screen = Screen::where('id', $screenId)->first();
-        // Define available options and their corresponding components
-        $availableOptions = ScreenComponents::getComponents();
-
-        if (is_array($templateOptions)) {
-            foreach ($templateOptions as $option) {
-                if ($option == 'CSS' && array_key_exists($option, $availableOptions)) {
-                    $currentScreenCss = ScreenTemplateHelper::parseCss($screen->custom_css);
-                    $templateCss = ScreenTemplateHelper::parseCss($template->screen_custom_css);
-
-                    $mergedCss = ScreenTemplateHelper::mergeCss($currentScreenCss, $templateCss);
-
-                    $finalCss = ScreenTemplateHelper::generateCss($mergedCss);
-                    $screen->custom_css = $finalCss;
+        switch ($option) {
+            case 'CSS':
+                if (array_key_exists($option, $supportedOptionComponents)) {
+                    $this->mergeCss($screen, $template);
                 }
-
-                if ($option === 'Layout' && array_key_exists($option, $availableOptions)) {
-                    $screenPage = 0; // TODO: We need to check what page the in the current screen the template is being applied to
-
-                    if (!in_array('Fields', $templateOptions)) {
-                        $newTemplateConfig = ScreenTemplateHelper::getScreenComponents($newTemplateScreen->config, $availableOptions[$option], false);
-                        $templateComponents = $newTemplateConfig[0]['items'];
-                    } else {
-                        $templateComponents = $newTemplateScreen->config[0]['items'];
-                    }
-
-                    $newScreenItems = array_merge($screen->config[$screenPage]['items'], $templateComponents);
-                    $newConfig = $screen->config;
-                    $newConfig[$screenPage]['items'] = $newScreenItems;
-
-                    $screen->config = $newConfig;
+                break;
+            case 'Layout':
+                if (array_key_exists($option, $supportedOptionComponents)) {
+                    $this->mergeLayout($screen, $currentScreenPage, $newTemplateScreen, $templateOptions, $supportedOptionComponents[$option]);
                 }
-
-                if ($option === 'Fields' && array_key_exists($option, $availableOptions)) {
-                    $screenPage = 0; // TODO: We need to check what page the in the current screen the template is being applied to
-
-                    if (!in_array('Layout', $templateOptions)) {
-                        $newTemplateConfig = ScreenTemplateHelper::getScreenComponents($newTemplateScreen->config, $availableOptions[$option], false);
-                        $templateComponents = $newTemplateConfig[0]['items'];
-
-                        $newScreenItems = array_merge($screen->config[$screenPage]['items'], $templateComponents);
-                        $newConfig = $screen->config;
-                        $newConfig[$screenPage]['items'] = $newScreenItems;
-
-                        $screen->config = $newConfig;
-                    }
+                break;
+            case 'Fields':
+                if (array_key_exists($option, $supportedOptionComponents)) {
+                    $this->mergeFields($screen, $currentScreenPage, $newTemplateScreen, $templateOptions, $supportedOptionComponents[$option]);
                 }
-            }
-
-            $screen->save();
+                break;
         }
-        Screen::where('id', $newScreenId)->delete();
+    }
+
+    private function mergeCss($screen, $template)
+    {
+        $currentScreenCss = ScreenTemplateHelper::parseCss($screen->custom_css);
+        $templateCss = ScreenTemplateHelper::parseCss($template->screen_custom_css);
+
+        $mergedCss = ScreenTemplateHelper::mergeCss($currentScreenCss, $templateCss);
+        $finalCss = ScreenTemplateHelper::generateCss($mergedCss);
+
+        $screen->custom_css = $finalCss;
+    }
+
+    private function mergeLayout($screen, $currentScreenPage, $newTemplateScreen, $templateOptions, $supportedComponents)
+    {
+        $newTemplateConfig = !in_array('Fields', $templateOptions) ?
+            ScreenTemplateHelper::getScreenComponents($newTemplateScreen->config, $supportedComponents, false) :
+            $newTemplateScreen->config;
+
+        $templateComponents = $newTemplateConfig[0]['items'] ?? [];
+
+        $newScreenItems = array_merge($screen->config[$currentScreenPage]['items'], $templateComponents);
+        $newConfig = $screen->config;
+        $newConfig[$currentScreenPage]['items'] = $newScreenItems;
+
+        $screen->config = $newConfig;
+    }
+
+    private function mergeFields($screen, $currentScreenPage, $newTemplateScreen, $templateOptions, $supportedComponents)
+    {
+        if (!in_array('Layout', $templateOptions)) {
+            $newTemplateConfig = ScreenTemplateHelper::getScreenComponents($newTemplateScreen->config, $supportedComponents, false);
+            $templateComponents = $newTemplateConfig[0]['items'] ?? [];
+
+            $newScreenItems = array_merge($screen->config[$currentScreenPage]['items'], $templateComponents);
+            $newConfig = $screen->config;
+            $newConfig[$currentScreenPage]['items'] = $newScreenItems;
+
+            $screen->config = $newConfig;
+        }
     }
 
     private function syncTemplateMedia($template, $media)
