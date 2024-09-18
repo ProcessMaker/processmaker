@@ -22,22 +22,46 @@ export default defineComponent({
 
     const tabs = [
       {
-        name: translate.t("Tasks"), href: "#tasks", current: "tasks", show: true, content: TaskTable,
+        name: translate.t("Tasks"),
+        href: "#tasks",
+        current: "tasks",
+        show: true,
+        content: TaskTable,
       },
       {
-        name: translate.t("Overview"), href: "#overview", current: "overview", show: true, content: "",
+        name: translate.t("Overview"),
+        href: "#overview",
+        current: "overview",
+        show: true,
+        content: "",
       },
       {
-        name: translate.t("Completed & Form"), href: "#completed_form", current: "completed", show: true, content: "",
+        name: translate.t("Completed & Form"),
+        href: "#completed_form",
+        current: "completed",
+        show: true,
+        content: "",
       },
       {
-        name: translate.t("File Manager"), href: "#file_manager", current: "file_manager", show: false, content: "",
+        name: translate.t("File Manager"),
+        href: "#file_manager",
+        current: "file_manager",
+        show: false,
+        content: "",
       },
       {
-        name: translate.t("History"), href: "#history", current: "history", show: true, content: "",
+        name: translate.t("History"),
+        href: "#history",
+        current: "history",
+        show: true,
+        content: "",
       },
       {
-        name: translate.t("Requests"), href: "#requests", current: "requests", show: true, content: RequestTable,
+        name: translate.t("Requests"),
+        href: "#requests",
+        current: "requests",
+        show: true,
+        content: RequestTable,
       },
     ];
 
