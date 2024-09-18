@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Events\TemplateCreated;
 use ProcessMaker\Helpers\ScreenTemplateHelper;
@@ -684,6 +685,35 @@ class ScreenTemplate implements TemplateInterface
         $templateId = (int) $request->id;
         $template = ScreenTemplates::findOrFail($templateId);
 
+        // Import the template to get the screen config (wish we didn't have to do this)
+        $payload = json_decode($template->manifest, true);
+
+        $postOptions = [];
+
+        foreach ($payload['export'] as $key => $asset) {
+            // Exclude the import of screen categories
+            if ($asset['model'] === 'ProcessMaker\Models\ScreenCategory') {
+                unset($payload['export'][$key]);
+                continue;
+            }
+
+            $postOptions[$key] = [
+                'mode' => 'copy',
+                'isTemplate' => true,
+                'saveAssetsMode' => 'saveAllAssets',
+            ];
+        }
+
+        $options = new Options($postOptions);
+        $importer = new Importer($payload, $options);
+        $existingAssetsInDatabase = null;
+        $importingFromTemplate = true;
+        $manifest = $importer->doImport($existingAssetsInDatabase, $importingFromTemplate);
+        $rootLog = $manifest[$payload['root']]->log;
+        $newScreenId = $rootLog['newId'];
+
+        $newTemplateScreen = Screen::select('config')->where('id', $newScreenId)->first();
+
         // Get the selected template options
         $templateOptions = $request->get('templateOptions');
         // Get the current screen to apply the template
@@ -693,12 +723,8 @@ class ScreenTemplate implements TemplateInterface
         $availableOptions = ScreenComponents::getComponents();
 
         if (is_array($templateOptions)) {
-            // Iterate through available options to handle each one
-            foreach ($availableOptions as $option => $components) {
-                // Apply the CSS to the current screen
-                if ($option == 'CSS' && in_array($option, $templateOptions)) {
-                    // $screen->custom_css = $screen->custom_css . ' ' . $template->screen_custom_css;
-
+            foreach ($templateOptions as $option) {
+                if ($option == 'CSS' && array_key_exists($option, $availableOptions)) {
                     $currentScreenCss = ScreenTemplateHelper::parseCss($screen->custom_css);
                     $templateCss = ScreenTemplateHelper::parseCss($template->screen_custom_css);
 
@@ -708,26 +734,42 @@ class ScreenTemplate implements TemplateInterface
                     $screen->custom_css = $finalCss;
                 }
 
-                // Check if the current options is in the template options
-                // if (!in_array($option, $templateOptions)) {
-                //     // Remove the option configs/components from the new screen config
-                //     switch($option) {
-                //         case 'CSS':
-                //             $newScreen->custom_css = null;
-                //             break;
-                //         case 'Fields':
-                //         case 'Layout':
-                //             $newConfig = ScreenTemplateHelper::removeScreenComponents($newScreen->config, $components);
-                //             $newScreen->config = $newConfig;
-                //             break;
-                //         default:
-                //             break;
-                //     }
-                // }
+                if ($option === 'Layout' && array_key_exists($option, $availableOptions)) {
+                    $screenPage = 0; // TODO: We need to check what page the in the current screen the template is being applied to
 
-                $screen->save();
+                    if (!in_array('Fields', $templateOptions)) {
+                        $newTemplateConfig = ScreenTemplateHelper::getScreenComponents($newTemplateScreen->config, $availableOptions[$option], false);
+                        $templateComponents = $newTemplateConfig[0]['items'];
+                    } else {
+                        $templateComponents = $newTemplateScreen->config[0]['items'];
+                    }
+
+                    $newScreenItems = array_merge($screen->config[$screenPage]['items'], $templateComponents);
+                    $newConfig = $screen->config;
+                    $newConfig[$screenPage]['items'] = $newScreenItems;
+
+                    $screen->config = $newConfig;
+                }
+
+                if ($option === 'Fields' && array_key_exists($option, $availableOptions)) {
+                    $screenPage = 0; // TODO: We need to check what page the in the current screen the template is being applied to
+
+                    if (!in_array('Layout', $templateOptions)) {
+                        $newTemplateConfig = ScreenTemplateHelper::getScreenComponents($newTemplateScreen->config, $availableOptions[$option], false);
+                        $templateComponents = $newTemplateConfig[0]['items'];
+
+                        $newScreenItems = array_merge($screen->config[$screenPage]['items'], $templateComponents);
+                        $newConfig = $screen->config;
+                        $newConfig[$screenPage]['items'] = $newScreenItems;
+
+                        $screen->config = $newConfig;
+                    }
+                }
             }
+
+            $screen->save();
         }
+        Screen::where('id', $newScreenId)->delete();
     }
 
     private function syncTemplateMedia($template, $media)
