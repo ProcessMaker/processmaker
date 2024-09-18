@@ -256,13 +256,11 @@ class ScreenTemplateHelper
     {
         $rules = [];
         // Regex to match complex CSS selectors, allowing for any selector pattern
-        preg_match_all('/\[selector="([\w-]+)"\]\s*([^{]+)\s*{([^}]+)}/', $cssString, $matches, PREG_SET_ORDER);
+        preg_match_all('/([^{}]+)\s*\{([^}]*)\}/', $cssString, $matches, PREG_SET_ORDER);
 
         foreach ($matches as $match) {
-            $baseSelector = $match[1];
-            $additionalSelector = trim($match[2]);
-            $fullSelector = "[selector=\"$baseSelector\"] " . $additionalSelector;
-            $propertiesString = trim($match[3]);
+            $fullSelector = trim($match[1]); // Full CSS selector
+            $propertiesString = trim($match[2]); // Properties between the brackets
 
             // Split properties into key-value pairs
             $propertiesArray = explode(';', $propertiesString);
@@ -279,6 +277,7 @@ class ScreenTemplateHelper
                 }
             }
 
+            // Add rule for the selector
             $rules[$fullSelector] = $properties;
         }
 
