@@ -289,7 +289,7 @@ class ScreenTemplateHelper
     {
         $rules = [];
         // Regex to match complex CSS selectors, allowing for any selector pattern
-        preg_match_all('/([^{}]+)\s*\{([^}]*)\}/', $cssString, $matches, PREG_SET_ORDER);
+        preg_match_all('/(?:\/\*.*?\*\*\/|([^{}]+))\s*\{(?:\/\*.*?\*\*\/|([^}]*))\}/', $cssString, $matches, PREG_SET_ORDER);
 
         foreach ($matches as $match) {
             $fullSelector = trim($match[1]); // Full CSS selector
