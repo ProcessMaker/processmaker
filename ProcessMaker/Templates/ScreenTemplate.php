@@ -790,27 +790,34 @@ class ScreenTemplate implements TemplateInterface
         $screen->custom_css = ScreenTemplateHelper::generateCss($mergedCss);
     }
 
-    private function mergeLayout($screen, $currentScreenPage, $newTemplateScreen,
-        $templateOptions, $supportedComponents)
+    private function mergeLayout($screen, $currentScreenPage, $newTemplateScreen, $templateOptions, $supportedComponents)
     {
         $templateComponents = $this->getTemplateComponents($newTemplateScreen, $templateOptions, $supportedComponents);
 
+        if (is_null($screen->config)) {
+            $this->setScreenConfig($screen);
+        }
+
         $screenConfig = $screen->config;
+
         $screenConfig[$currentScreenPage]['items'] =
             array_merge($screenConfig[$currentScreenPage]['items'], $templateComponents);
-
         $screen->config = $screenConfig;
     }
 
-    private function mergeFields($screen, $currentScreenPage, $newTemplateScreen,
-        $templateOptions, $supportedComponents)
+    private function mergeFields($screen, $currentScreenPage, $newTemplateScreen, $templateOptions, $supportedComponents)
     {
         // Skip merging layout if 'Layout' is part of template options
         if (!in_array('Layout', $templateOptions)) {
             $templateComponents =
                 $this->getTemplateComponents($newTemplateScreen, $templateOptions, $supportedComponents);
 
+            if (is_null($screen->config)) {
+                $this->setScreenConfig($screen);
+            }
+
             $screenConfig = $screen->config;
+
             $screenConfig[$currentScreenPage]['items'] =
                 array_merge($screenConfig[$currentScreenPage]['items'], $templateComponents);
 
@@ -825,6 +832,18 @@ class ScreenTemplate implements TemplateInterface
                 $supportedComponents, false)[0]['items']
             ?? []
                 : $newTemplateScreen->config[0]['items'] ?? [];
+    }
+
+    private function setScreenConfig($screen)
+    {
+        $screen->config =
+        [
+            [
+                'items' => [],
+            ],
+        ];
+
+        return $screen->config;
     }
 
     private function syncTemplateMedia($template, $media)
