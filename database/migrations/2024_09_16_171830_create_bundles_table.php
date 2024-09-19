@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->foreignId('dev_link_id')->nullable()->index();
+            $table->unsignedBigInteger('remote_id')->nullable();
             $table->boolean('published');
             $table->boolean('locked');
             $table->string('version');

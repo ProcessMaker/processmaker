@@ -3,7 +3,9 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\DevLink;
 
@@ -64,6 +66,11 @@ class DevLinkController extends Controller
         return Bundle::get();
     }
 
+    public function showBundle(Bundle $bundle)
+    {
+        return $bundle->load('assets');
+    }
+
     public function remoteBundles(DevLink $devLink)
     {
         return $devLink->remoteBundles();
@@ -95,5 +102,34 @@ class DevLinkController extends Controller
     public function deleteBundle(Bundle $bundle)
     {
         $bundle->delete();
+    }
+
+    public function installRemoteBundle(DevLink $devLink, $remoteBundleId)
+    {
+        return $devLink->installRemoteBundle($remoteBundleId);
+    }
+
+    public function exportLocalBundle(Bundle $bundle)
+    {
+        return ['payloads' => $bundle->export()];
+    }
+
+    public function addAsset(Request $request, Bundle $bundle)
+    {
+        $request->validate([
+            'type' => ['required', 'string'],
+            'id' => Rule::unique('bundle_assets', 'asset_id')->where(function ($query) use ($request) {
+                $query->where([
+                    'asset_id' => $request->input('id'),
+                    'asset_type' => $request->input('type'),
+                ]);
+            }),
+        ],
+            [
+                'id.unique' => __('Asset already exists in bundle'),
+            ]);
+
+        $asset = $request->input('type')::findOrFail($request->input('id'));
+        $bundle->addAsset($asset);
     }
 }

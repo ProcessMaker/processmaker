@@ -377,8 +377,13 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         Route::get('devlink/{devLink}/remote-bundles', [DevLinkController::class, 'remoteBundles'])->name('devlink.remote-bundles');
 
         Route::get('devlink/local-bundles', [DevLinkController::class, 'localBundles'])->name('devlink.local-bundles');
+        Route::get('devlink/local-bundles/{bundle}', [DevLinkController::class, 'showBundle'])->name('devlink.local-bundle');
         Route::post('devlink/local-bundles', [DevLinkController::class, 'createBundle'])->name('devlink.create-bundle');
         Route::put('devlink/local-bundles/{bundle}', [DevLinkController::class, 'updateBundle'])->name('devlink.update-bundle');
+        Route::post('devlink/local-bundles/{bundle}/add-assets', [DevLinkController::class, 'addAsset'])->name('devlink.add-asset');
         Route::delete('devlink/local-bundles/{bundle}', [DevLinkController::class, 'deleteBundle'])->name('devlink.delete-bundle');
+        Route::get('devlink/export-local-bundle/{bundle}', [DevLinkController::class, 'localBundles'])->name('devlink.export-local-bundle');
+
+        Route::post('devlink/{devLink}/remote-bundles/{removeBundleId}/install', [DevLinkController::class, 'installRemoteBundle'])->name('devlink.install-remote-bundle');
     });
 });

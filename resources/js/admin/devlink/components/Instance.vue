@@ -45,7 +45,7 @@ const install = (bundle) => {
   ProcessMaker.apiClient
     .post(`/devlink/${route.params.id}/remote-bundles/${bundle.id}/install`)
     .then((result) => {
-      load();
+      window.ProcessMaker.alert('Bundle successfully installed', "success");
     });
 };
 
