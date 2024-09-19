@@ -41,4 +41,8 @@ class CasesController extends Controller
        // This is a temporary API the engine team will provide the new
         return view('cases.casesMain');
     }
+    public function edit(ProcessRequest $request)
+    {
+        return view('cases.edit');
+    }
 }
