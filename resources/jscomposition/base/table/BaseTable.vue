@@ -9,7 +9,7 @@
             :key="index"
             :columns="columns"
             :column="column">
-            <slot :name="`theader-${column.field}`"> </slot>
+            <slot :name="`theader-${column.header}`"> </slot>
           </THeader>
         </tr>
       </thead>
