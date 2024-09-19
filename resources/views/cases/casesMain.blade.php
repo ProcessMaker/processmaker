@@ -7,9 +7,6 @@
 @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_request')])
 @endsection
 
-@section('breadcrumbs')
-@endsection
-
 @section('content')
 <div id="cases-main"></div>
 @endsection
