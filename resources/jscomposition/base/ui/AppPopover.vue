@@ -87,6 +87,13 @@ export default {
             calculatedPosition.value = "top";
             top = wrapperRect.top - tooltipRect.height - 10;
           }
+
+          const leftaux = wrapperRect.left - tooltipRect.width - 10;
+          // Verify space left
+          if (leftaux < 0) {
+            calculatedPosition.value = "right-bottom";
+            left = wrapperRect.right + 100;
+          }
           break;
         case "left":
           top = wrapperRect.top + wrapperRect.height / 2 - tooltipRect.height / 2;
@@ -126,6 +133,12 @@ export default {
       visible.value = false;
     };
 
+    const clickIntoPopover = (event) => {
+      if (!tooltipWrapper.value.contains(event.target)) {
+        hideTooltip();
+      }
+    };
+
     // Recalculated position when property visible changes
     const unwatch = watch(
       () => props.value,
@@ -143,11 +156,11 @@ export default {
         showTooltip();
       }
 
-      !props.hover && document.body.addEventListener("click", hideTooltip);
+      !props.hover && document.body.addEventListener("click", clickIntoPopover);
     });
 
     onUnmounted(() => {
-      !props.hover && document.body.removeEventListener("click", hideTooltip);
+      document.body.removeEventListener("click", clickIntoPopover);
       unwatch();
     });
 
@@ -189,5 +202,10 @@ export default {
 
 .tooltip-content.right {
   transform: translateY(-50%);
+}
+
+.tooltip-content.right-bottom {
+  transform: translateY(-50%);
+  transform: translateX(-50%);
 }
 </style>

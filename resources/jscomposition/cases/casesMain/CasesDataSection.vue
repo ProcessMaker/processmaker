@@ -1,10 +1,21 @@
 <template>
-  <div class="tw-w-full tw-space-y-3 tw-flex tw-flex-col tw-overflow-hidden">
+  <div
+    class="tw-w-full tw-space-y-3 tw-flex tw-flex-col tw-overflow-hidden">
     <CaseFilter />
 
     <BadgesSection v-model="badgesData" />
 
-    <BaseTable :columns="columnsConfig" :data="data" class="tw-grow tw-overflow-y-scroll" />
+    <FilterableTable
+      :columns="columnsConfig"
+      :data="data"
+      class="tw-grow tw-overflow-y-scroll">
+    </FilterableTable>
+
+    <!-- <BaseTable :columns="columnsConfig" :data="data" class="tw-grow tw-overflow-y-scroll">
+      <template v-for="(column, index) in columnsConfig" v-slot:[`theader-filter-${column.field}`]>
+        <FilterColumn></FilterColumn>
+      </template>
+    </BaseTable>   -->
 
     <Pagination />
   </div>
@@ -13,11 +24,12 @@
 import { defineComponent, ref, onMounted } from "vue";
 import CaseFilter from "./components/CaseFilter.vue";
 import BadgesSection from "./components/BadgesSection.vue";
-import { BaseTable, Pagination } from "../../base";
+import { Pagination } from "../../base";
 import { getColumns } from "./config/columns";
 import { Breadcrums } from "../../system";
 import { badges } from "./config/badges";
 import { getData, getAllData } from "./api";
+import { FilterableTable } from "../../system";
 
 export default defineComponent({
   props: {
@@ -29,9 +41,9 @@ export default defineComponent({
   components: {
     CaseFilter,
     BadgesSection,
-    BaseTable,
     Pagination,
     Breadcrums,
+    FilterableTable,
   },
   setup(props, { emit }) {
     const badgesData = ref(badges);
@@ -39,7 +51,7 @@ export default defineComponent({
     const data = ref();
 
     onMounted(async () => {
-      data.value = await getAllData({type: props.listId, page:15});
+      data.value = await getAllData({ type: props.listId, page: 15 });
 
       columnsConfig.value = getColumns(props.listId);
     });

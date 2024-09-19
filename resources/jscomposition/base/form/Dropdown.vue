@@ -1,18 +1,16 @@
 <template>
-  <div class="tw-relative">
+  <div
+    class="tw-relative"
+    ref="inputRef">
     <slot
       v-bind="{
         toogleShow,
-        data
+        data,
       }"
-      name="input"
-    >
+      name="input">
       <button
-        class="tw-flex tw-w-full tw-justify-between tw-items-center
-          tw-py-2 tw-px-3 tw-ring-1 tw-ring-inset tw-ring-gray-300 tw-rounded-lg
-          focus:tw-ring-2 focus:tw-ring-inset focus:tw-ring-primary-400"
-        @click.prevent.stop="toogleShow"
-      >
+        class="tw-flex tw-w-full tw-justify-between tw-items-center tw-py-2 tw-px-3 tw-ring-1 tw-ring-inset tw-ring-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-inset focus:tw-ring-primary-400"
+        @click.prevent.stop="toogleShow">
         <span>{{ data?.label || data?.value }} </span>
 
         <i class="fas fa-chevron-down" />
@@ -22,36 +20,34 @@
     <transition :name="animation">
       <div
         v-if="show"
-        class="tw-block tw-mt-1 tw-rounded-lg tw-absolute tw-z-10 tw-shadow-lg tw-bg-white tw-ring-1 tw-ring-inset tw-ring-gray-300"
-      >
+        class="tw-fixed tw-mt-1 tw-rounded-lg tw-z-10 tw-shadow-lg tw-bg-white tw-ring-1 tw-ring-inset tw-ring-gray-300"
+        :style="{ width: `${widthContainer}px`, top: `${top}px` }">
         <ul class="tw-list-none tw-overflow-hidden tw-rounded">
           <slot
             name="options"
             v-bind="{
               options: optionsModel,
               data,
-              onClick
-            }"
-          >
+              onClick,
+            }">
             <li
-              v-for="(option, index ) in optionsModel"
+              v-for="(option, index) in optionsModel"
               :key="index"
               class="hover:tw-bg-gray-200"
-              @click.prevent.stop="onClick(option, index)"
-            >
+              @click.prevent.stop="onClick(option, index)">
               <slot
                 name="option"
                 v-bind="{
                   option,
-                  data
-                }"
-              >
+                  data,
+                }">
                 <span
                   :class="{
-                    'tw-bg-gray-300': option?.value === data?.value
+                    'tw-bg-gray-300': option?.value === data?.value,
                   }"
                   class="tw-flex tw-py-2 tw-px-4 transition duration-300"
-                >{{ option.label || option.value }}</span>
+                  >{{ option.label || option.value }}</span
+                >
               </slot>
             </li>
           </slot>
@@ -62,10 +58,7 @@
 </template>
 
 <script>
-import {
-  defineComponent, ref, computed, onMounted, onUnmounted,
-} from "vue";
-
+import { defineComponent, ref, computed, onMounted, onUnmounted, nextTick } from "vue";
 /**
  * <Dropdown
  *  animation="fade"
@@ -95,7 +88,10 @@ export default defineComponent({
   },
   emits: ["input", "change"],
   setup(props, { emit }) {
+    const inputRef = ref();
     const show = ref(false);
+    const widthContainer = ref(100);
+    const top = ref(0);
 
     const data = computed({
       get() {
@@ -122,12 +118,37 @@ export default defineComponent({
       emit("change", option);
     };
 
+    const calculatePosition = () => {
+      const rect = inputRef.value?.getBoundingClientRect();
+
+      widthContainer.value = rect.width || 100;
+
+      let container = inputRef.value.parentElement;
+      let topPosition = 0;
+
+      while (container && container !== document.body) {
+        // Si el container tiene scroll, sumamos sus desplazamientos
+        if (container.scrollTop || container.scrollLeft) {
+          topPosition = topPosition + container.scrollTop;
+          // left += container.scrollLeft;
+        }
+        // Continuamos subiendo en la jerarquía de containeres
+        container = container.parentElement;
+      }
+
+      top.value = inputRef.value.offsetTop - topPosition;
+    };
+
     const addBodyListener = () => {
       show.value = false;
     };
 
-    const toogleShow = () => {
-      show.value = !show.value;
+    const toogleShow = ($event) => {
+      calculatePosition($event);
+
+      nextTick(() => {
+        show.value = !show.value;
+      });
     };
 
     onMounted(() => {
@@ -141,7 +162,10 @@ export default defineComponent({
     return {
       show,
       data,
+      inputRef,
       optionsModel,
+      top,
+      widthContainer,
       onClick,
       toogleShow,
     };
@@ -151,59 +175,71 @@ export default defineComponent({
 
 <style scoped>
 /* Animations */
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .1s;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.1s;
 }
-.fade-enter, .fade-leave-to {
+.fade-enter,
+.fade-leave-to {
   opacity: 0;
 }
 
 /* Slide-in-up animation*/
-.slide-in-up-enter-active, .slide-in-up-leave-active {
-  transition: all .5s;
+.slide-in-up-enter-active,
+.slide-in-up-leave-active {
+  transition: all 0.5s;
   transform: translateY(0);
 }
-.slide-in-up-enter, .slide-in-up-leave-to {
+.slide-in-up-enter,
+.slide-in-up-leave-to {
   opacity: 0;
   transform: translateY(20px);
 }
 
 /* Slide-in-right animation*/
-.slide-in-right-enter-active, .slide-in-right-leave-active {
-  transition: all .5s;
+.slide-in-right-enter-active,
+.slide-in-right-leave-active {
+  transition: all 0.5s;
   transform: translateX(0);
 }
-.slide-in-right-enter, .slide-in-right-leave-to {
+.slide-in-right-enter,
+.slide-in-right-leave-to {
   opacity: 0;
   transform: translateX(20px);
 }
 
 /* Slide-in-left animation*/
-.slide-in-left-enter-active, .slide-in-left-leave-active {
-  transition: all .5s;
+.slide-in-left-enter-active,
+.slide-in-left-leave-active {
+  transition: all 0.5s;
   transform: translateX(0);
 }
-.slide-in-left-enter, .slide-in-left-leave-to {
+.slide-in-left-enter,
+.slide-in-left-leave-to {
   opacity: 0;
   transform: translateX(-20px);
 }
 
 /* Scale animation*/
-.scale-enter-active, .scale-leave-active {
-  transition: all .5s;
+.scale-enter-active,
+.scale-leave-active {
+  transition: all 0.5s;
   transform: scale(1);
 }
-.scale-enter, .scale-leave-to {
+.scale-enter,
+.scale-leave-to {
   opacity: 0;
   transform: scale(0);
 }
 
 /* Rotate animation*/
-.rotate-enter-active, .rotate-leave-active {
-  transition: all .5s;
+.rotate-enter-active,
+.rotate-leave-active {
+  transition: all 0.5s;
   transform: scale(1) rotate(-360deg);
 }
-.rotate-enter, .rotate-leave-to {
+.rotate-enter,
+.rotate-leave-to {
   opacity: 0;
   transform: scale(0) rotate(360deg);
 }

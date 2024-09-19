@@ -1,4 +1,3 @@
-import AvatarContainer from "../components/AvatarContainer.vue";
 import {
   CaseTitleCell,
   TruncatedOptionsCell,
@@ -34,13 +33,14 @@ export default {};
 /**
  * Example Column
  * field: String
- * headerName: String
+ * header: String
  * headerFormatter: callback
  * resizable: Boolean
  * visible: Callback
  * formatter: Callback - Build the value in the cell
  * width: Number
  * cellRenderer: Object Vue to custom the cell
+ * filter: This attribute is optional
  */
 
 // My cases: [Case#, Case Title, Process, Task, Participants, Status, Started, Completed]
@@ -51,79 +51,111 @@ export default {};
 
 export const caseNumberColumn = () => ({
   field: "case_number",
-  headerName: "Case #",
+  header: "Case #",
   resizable: true,
   width: 100,
+  filter:{
+    type:'string',
+    operators:['=','>','>=','in','between']
+  }
 });
 
 export const caseTitleColumn = () => ({
   field: "case_title",
-  headerName: "Case Title",
+  header: "Case Title",
   resizable: true,
   width: 200,
   cellRenderer: () => {
     return CaseTitleCell;
   },
+  filter:{
+    type:'string',
+    operators:['=','>','>=','in','between']
+  }
 });
 
 export const processColumn = () => ({
   field: "processes",
-  headerName: "Process",
+  header: "Process",
   resizable: true,
   width: 200,
   cellRenderer: () => {
     return TruncatedOptionsCell;
   },
+  filter:{
+    type:'string',
+    operators:['=']
+  }
 });
 
 export const taskColumn = () => ({
   field: "tasks",
-  headerName: "Task",
+  header: "Task",
   resizable: true,
   width: 200,
   cellRenderer: () => {
     return TruncatedOptionsCell;
   },
+  filter:{
+    type:'string',
+    operators:['=']
+  }
 });
 
 export const participantsColumn = () => ({
   field: "participants",
-  headerName: "Participants",
+  header: "Participants",
   resizable: true,
   width: 200,
   cellRenderer: () => {
     return ParticipantsCell;
   },
+  filter:{
+    type:'string',
+    operators:['=']
+  }
 });
 
 export const statusColumn = () => ({
   field: "case_status",
-  headerName: "Status",
+  header: "Status",
   resizable: true,
   width: 200,
   cellRenderer: () => {
     return StatusCell;
   },
+  filter:{
+    type:'string',
+    operators:['=']
+  }
 });
 
 export const startedColumn = () => ({
   field: "initiated_at",
-  headerName: "Started",
+  header: "Started",
   resizable: true,
   width: 200,
   formatter: (row, column, columns) => {
     return formatDate(row.initiated_at, "datetime");
   },
+  filter:{
+    type:'string',
+    operators:['=']
+  }
 });
 
 export const completedColumn = () => ({
   field: "completed_at",
-  headerName: "Completed",
+  header: "Completed",
   resizable: true,
   width: 200,
   formatter: (row, column, columns) => {
     return formatDate(row.completed_at, "datetime");
   },
+  filter:{
+    type:'string',
+    operators:['=']
+  }
 });
 
 export const getColumns = (type) => {

@@ -9,7 +9,10 @@
             :key="index"
             :columns="columns"
             :column="column">
-            <slot :name="`theader-${column.header}`"> </slot>
+            <slot :name="`theader-${column.field}`"> </slot>
+            <template #filter>
+              <slot :name="`theader-filter-${column.field}`"></slot>
+            </template>
           </THeader>
         </tr>
       </thead>
