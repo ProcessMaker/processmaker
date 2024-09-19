@@ -1,46 +1,51 @@
 <template>
-  <nav class="tw-flex tw-text-xs tw-text-gray-400 hover:tw-text-gray-500">
+  <nav class="tw-py-3 tw-px-4 tw-flex tw-text-sm tw-bg-white tw-w-full tw-border-gray-200 tw-border-y">
     <ol class="tw-flex tw-items-center tw-space-x-1">
-      <li>
-        <div>
-          <a href="#" class="">
-            <i class="fa-solid fa-house"></i>
-            <span class="sr-only">Home</span>
-          </a>
-        </div>
-      </li>
-      <li v-for="page in pages" :key="page.name">
+      <li
+        v-for="page in model"
+        :key="page.name"
+      >
         <div class="tw-flex tw-items-center">
-          <svg
-            class="tw-h-5 tw-w-5 tw-flex-shrink-0"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            aria-hidden="true">
-            <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
-          </svg>
+          <i
+            v-if="!page.first"
+            class="fas fa-slash fa-xs tw-rotate-90 tw-mr-1"
+          />
           <a
+            v-if="!page.current"
             :href="page.href"
-            class="tw-text-gray-500 hover:tw-text-gray-700"
+            class="tw-text-sky-600"
             :aria-current="page.current ? 'page' : undefined"
-            >{{ page.name }}</a
           >
+            <i
+              :class="page.icon"
+              class="tw-mr-1"
+            />
+            {{ page.name }}
+          </a>
+          <span
+            v-else
+            class="tw-text-black"
+          >
+            {{ page.name }}
+          </span>
         </div>
       </li>
     </ol>
   </nav>
 </template>
 <script>
-import { defineComponent } from "vue";
+import { computed, defineComponent } from "vue";
 
 export default defineComponent({
-  setup() {
-    const pages = [
-      { name: "Projects", href: "#", current: false },
-      { name: "Project Nero", href: "#", current: true },
-    ];
-    return {
-      pages,
-    };
+  props: {
+    pages: {
+      type: Array,
+      default: () => [],
+    },
+  },
+  setup(props, { emit }) {
+    const model = computed(() => props.pages);
+    return { model };
   },
 });
 </script>
