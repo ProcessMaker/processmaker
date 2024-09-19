@@ -46,8 +46,9 @@ export default defineComponent({
 
     onMounted(async () => {
       const resCounters = await getCounters();
-      countersData.value = formatCounters(resCounters);
       const currentCounter = countersData.value.find((counter) => counter.url === route.path);
+      
+      countersData.value = formatCounters(resCounters);
       pages.value = [
         configHomeBreadcrum(),
         { name: "Cases", href: "/cases", current: false },
