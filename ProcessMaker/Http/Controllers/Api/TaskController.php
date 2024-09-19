@@ -19,6 +19,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\Task as Resource;
 use ProcessMaker\Http\Resources\TaskCollection;
+use ProcessMaker\Jobs\CaseUpdate;
 use ProcessMaker\Listeners\HandleRedirectListener;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
@@ -253,7 +254,11 @@ class TaskController extends Controller
             $userToAssign = $request->input('user_id');
             $task->reassign($userToAssign, $request->user());
 
-            return new Resource($task->refresh());
+            $taskRefreshed = $task->refresh();
+
+            CaseUpdate::dispatch($task->processRequest, $taskRefreshed);
+
+            return new Resource($taskRefreshed);
         } else {
             return abort(422);
         }
