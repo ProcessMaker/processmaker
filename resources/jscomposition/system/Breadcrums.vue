@@ -3,29 +3,24 @@
     <ol class="tw-flex tw-items-center tw-space-x-1">
       <li
         v-for="page in model"
-        :key="page.name"
-      >
+        :key="page.name" >
         <div class="tw-flex tw-items-center">
           <i
             v-if="!page.first"
-            class="fas fa-slash fa-xs tw-rotate-90 tw-mr-1"
-          />
+            class="fas fa-slash fa-xs tw-rotate-90 tw-mr-1" />
           <a
             v-if="!page.current"
             :href="page.href"
             class="tw-text-sky-600"
-            :aria-current="page.current ? 'page' : undefined"
-          >
+            :aria-current="page.current ? 'page' : undefined" >
             <i
               :class="page.icon"
-              class="tw-mr-1"
-            />
+              class="tw-mr-1" />
             {{ page.name }}
           </a>
           <span
             v-else
-            class="tw-text-black"
-          >
+            class="tw-text-black" >
             {{ page.name }}
           </span>
         </div>
