@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Managers;
 
+use File;
+
 class PackageManager
 {
     private $packages;
@@ -82,6 +84,25 @@ class PackageManager
                     // Create file in package
                     file_put_contents("{$package}/{$code}.json", $baseFile);
                 }
+            }
+        }
+    }
+
+    /**
+     * Delete a language file form all currently installed packages
+     * 
+     * @param $code The language code of which to delete the language file 
+     */
+    public function deleteLanguageFile($code)
+    {
+         // Get current packages
+         $packages = app()->translator->getLoader()->jsonPaths();
+
+         foreach ($packages as $package) {
+            // Check if file exists in package
+            if (File::exists("{$package}/{$code}.json")) {
+                // Delete file
+                File::delete("{$package}/{$code}.json");
             }
         }
     }
