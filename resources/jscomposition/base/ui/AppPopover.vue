@@ -1,19 +1,19 @@
 <template>
   <div
-    class="tooltip-wrapper"
     ref="tooltipWrapper"
+    class="tooltip-wrapper"
     @mouseenter="($event) => hover && showTooltip($event)"
     @mouseleave="($event) => hover && hideTooltip($event)">
-    <slot name="default"></slot>
+    <slot name="default" />
     <div
       v-if="visible"
+      ref="tooltip"
       class="tooltip-content"
       :style="{
         top: `${tooltipPosition.top}px`,
         left: `${tooltipPosition.left}px`,
       }"
-      :class="calculatedPosition"
-      ref="tooltip">
+      :class="calculatedPosition">
       <slot name="content">
         {{ content }}
       </slot>
@@ -22,7 +22,9 @@
 </template>
 
 <script>
-import { ref, watch, onMounted, nextTick, onUnmounted, computed } from "vue";
+import {
+  ref, watch, onMounted, nextTick, onUnmounted, computed,
+} from "vue";
 
 export default {
   props: {
@@ -50,13 +52,11 @@ export default {
     const visible = props.hover
       ? ref(false)
       : computed({
-          get: () => {
-            return props.value;
-          },
-          set: (val) => {
-            emit("input", val);
-          },
-        });
+        get: () => props.value,
+        set: (val) => {
+          emit("input", val);
+        },
+      });
     const calculatedPosition = ref(props.position);
 
     const calculatePosition = () => {
@@ -115,7 +115,7 @@ export default {
           break;
       }
 
-      //Verify if tooltip leaves the viewport
+      // Verify if tooltip leaves the viewport
       top = Math.max(10, Math.min(top, viewportHeight - tooltipRect.height - 10));
       left = Math.max(10, Math.min(left, viewportWidth - tooltipRect.width - 10));
 
@@ -148,7 +148,7 @@ export default {
         } else {
           hideTooltip();
         }
-      }
+      },
     );
 
     onMounted(() => {

@@ -5,12 +5,12 @@
         class="tw-py-4 tw-px-3 tw-text-left tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis"
         :style="{ width: width + 'px' }">
         <slot>
-            {{ getValue() }}
+          {{ getValue() }}
         </slot>
       </div>
 
       <div class="tw-h-auto tw-flex tw-items-center">
-        <slot name="filter"></slot>
+        <slot name="filter" />
       </div>
 
       <div
@@ -42,9 +42,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const columnResize = columnResizeComposable(props.column);
 
-    const width = computed(() => {
-      return props.column.width || 200;
-    });
+    const width = computed(() => props.column.width || 200);
 
     const getValue = () => {
       if (isFunction(props.column?.headerFormatter)) {

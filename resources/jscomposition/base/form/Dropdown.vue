@@ -1,7 +1,7 @@
 <template>
   <div
-    class="tw-relative"
-    ref="inputRef">
+    ref="inputRef"
+    class="tw-relative">
     <slot
       v-bind="{
         toogleShow,
@@ -9,7 +9,8 @@
       }"
       name="input">
       <button
-        class="tw-flex tw-w-full tw-justify-between tw-items-center tw-py-2 tw-px-3 tw-ring-1 tw-ring-inset tw-ring-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-inset focus:tw-ring-primary-400"
+        class="tw-flex tw-w-full tw-justify-between tw-items-center tw-py-2 tw-px-3 tw-ring-1 tw-ring-inset
+        tw-ring-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-inset focus:tw-ring-primary-400"
         @click.prevent.stop="toogleShow">
         <span>{{ data?.label || data?.value }} </span>
 
@@ -45,9 +46,9 @@
                   :class="{
                     'tw-bg-gray-300': option?.value === data?.value,
                   }"
-                  class="tw-flex tw-py-2 tw-px-4 transition duration-300"
-                  >{{ option.label || option.value }}</span
-                >
+                  class="tw-flex tw-py-2 tw-px-4 transition duration-300">
+                  {{ option.label || option.value }}
+                </span>
               </slot>
             </li>
           </slot>
@@ -58,7 +59,9 @@
 </template>
 
 <script>
-import { defineComponent, ref, computed, onMounted, onUnmounted, nextTick } from "vue";
+import {
+  defineComponent, ref, computed, onMounted, onUnmounted, nextTick,
+} from "vue";
 /**
  * <Dropdown
  *  animation="fade"
@@ -111,7 +114,7 @@ export default defineComponent({
       },
     });
 
-    const onClick = (option, index) => {
+    const onClick = (option) => {
       show.value = false;
       data.value = option;
 
@@ -127,9 +130,9 @@ export default defineComponent({
       let topPosition = 0;
 
       while (container && container !== document.body) {
-        // If the container has scroll, we add their offsets 
+        // If the container has scroll, we add their offsets
         if (container.scrollTop || container.scrollLeft) {
-          topPosition = topPosition + container.scrollTop;
+          topPosition += container.scrollTop;
         }
         container = container.parentElement;
       }

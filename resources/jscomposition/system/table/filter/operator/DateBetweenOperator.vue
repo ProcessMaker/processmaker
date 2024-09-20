@@ -3,25 +3,26 @@
     <input
       v-for="(element, index) in inputs"
       :key="index"
-      :placeholder="placeholder"
       v-model="inputs[index].value"
-      @change="onChange()"
+      :placeholder="placeholder"
       type="datetime-local"
       class="tw-p-2 tw-rounded-md tw-border-0
         tw-ring-1 tw-ring-inset tw-ring-gray-300 placeholder:tw-text-gray-400
-        focus:tw-ring-2 focus:tw-ring-inset"  />
+        focus:tw-ring-2 focus:tw-ring-inset"
+      @change="onChange()">
   </div>
 </template>
 <script>
 import { defineComponent, ref } from "vue";
+
 export default defineComponent({
-  emits: ["change"],
-  props:{
+  props: {
     placeholder: {
       type: String,
-      default: ()=> ('value')
-    }
+      default: () => ("value"),
+    },
   },
+  emits: ["change"],
   setup(props, { emit }) {
     const inputs = ref([
       {

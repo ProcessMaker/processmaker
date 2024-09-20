@@ -7,5 +7,5 @@ export * from "./operator";
 export {
   FilterColumn,
   FooterButtons,
-  SortingButtons
+  SortingButtons,
 };

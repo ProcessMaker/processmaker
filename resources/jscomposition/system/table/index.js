@@ -1,8 +1,8 @@
-import FilterableTable from "./FilterableTable.vue"
+import FilterableTable from "./FilterableTable.vue";
 
-export * from "./cell/index"
-export * from "./filter/index"
+export * from "./cell/index";
+export * from "./filter/index";
 
 export {
-  FilterableTable
-}
+  FilterableTable,
+};

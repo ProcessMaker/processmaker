@@ -15,8 +15,9 @@
   </div>
 </template>
 <script>
-import { OutlineButton } from "../../../base/index";
 import { defineComponent } from "vue";
+import { OutlineButton } from "../../../base/index";
+
 export default defineComponent({
   components: {
     OutlineButton,

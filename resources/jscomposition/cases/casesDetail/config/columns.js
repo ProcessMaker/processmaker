@@ -1,8 +1,6 @@
 import {
-  ParticipantsCell,
   StatusCell,
 } from "../../../system/index";
-
 
 export default {};
 
@@ -32,7 +30,7 @@ const assignedColumn = () => ({
   field: "assigned",
   header: "Assigned",
   resizable: true,
-  width: 200
+  width: 200,
 });
 
 const dueDateColumn = () => ({

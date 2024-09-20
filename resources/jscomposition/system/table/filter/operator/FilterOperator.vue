@@ -1,23 +1,24 @@
 <template>
   <div class="tw-space-y-2 tw-text-xs">
-    <slot name="header"></slot>
+    <slot name="header" />
 
     <Dropdown
       v-model="operator"
-      @change="onChangeOperator"
-      :options="operatorsModel">
-    </Dropdown>
+      :options="operatorsModel"
+      @change="onChangeOperator" />
 
     <component
+      :is="operatorType?.component()"
       placeholder="Type value"
       class="tw-flex-1"
-      :is="operatorType?.component()"
       @change="onChangeValue" />
   </div>
 </template>
 <script>
+import {
+  defineComponent, ref, onMounted,
+} from "vue";
 import { Dropdown } from "../../../../base";
-import { defineComponent, computed, ref, onMounted } from "vue";
 import { getOperatorType } from "./operatorConfig";
 
 const defaultOperators = [
@@ -96,7 +97,7 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      //Selecting the operators to show in dropdown
+      // Selecting the operators to show in dropdown
       operatorsModel.value = defaultOperators.filter((op) => {
         if (!props.operators.length) {
           return op;
@@ -108,7 +109,7 @@ export default defineComponent({
       // Load first operator with its components
       operatorType.value = getOperatorType(
         operatorsModel.value[0].value,
-        props.type
+        props.type,
       );
     });
 

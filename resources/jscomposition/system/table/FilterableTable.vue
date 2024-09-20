@@ -8,7 +8,8 @@
       v-slot:[`theader-filter-${column.field}`]>
       <FilterColumn
         v-if="column.filter"
-        :filter="column.filter"></FilterColumn>
+        :key="index"
+        :filter="column.filter"/>
     </template>
   </BaseTable>
 </template>

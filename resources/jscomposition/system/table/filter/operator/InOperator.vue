@@ -1,17 +1,17 @@
 <template>
   <div class="tw-space-y-2 tw-items-center">
     <div
-      class="tw-flex tw-space-x-1 tw-items-center"
       v-for="(element, index) in inputs"
-      :key="index">
+      :key="index"
+      class="tw-flex tw-space-x-1 tw-items-center">
       <input
-        type="text"
         v-model="inputs[index].value"
-        @change="onChange"
+        type="text"
         class="tw-px-2 tw-block tw-w-full tw-rounded-md tw-border-0
           tw-py-2 tw-text-gray-900 tw-shadow-sm tw-ring-1 tw-ring-inset
           tw-ring-gray-300 placeholder:tw-text-gray-400 focus:tw-ring-2
-          focus:tw-ring-inset focus:tw-ring-indigo-600" />
+          focus:tw-ring-inset focus:tw-ring-indigo-600"
+        @change="onChange">
 
       <span
         class="tw-h-5 tw-w-6 tw-text-[10px] tw-justify-center
@@ -34,9 +34,11 @@
   </div>
 </template>
 <script>
-import { defineComponent, computed, ref } from "vue";
+
+import { defineComponent, ref } from "vue";
+
 export default defineComponent({
-  setup(props, {emit}) {
+  setup(props, { emit }) {
     const inputs = ref([
       {
         id: new Date().getTime(),
@@ -55,15 +57,15 @@ export default defineComponent({
       inputs.value.splice(index, 1);
     };
 
-    const onChange = ()=>{
-      emit('change',inputs.value)
-    }
+    const onChange = () => {
+      emit("change", inputs.value);
+    };
 
     return {
       inputs,
       addInput,
       removeInput,
-      onChange
+      onChange,
     };
   },
 });
