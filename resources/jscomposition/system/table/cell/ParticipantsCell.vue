@@ -1,6 +1,5 @@
 <template>
-  <div
-    class="tw-overflow-hidden tw-flex -tw-space-x-1 tw-items-center tw-justify-center">
+  <div class="tw-overflow-hidden tw-flex -tw-space-x-1 tw-items-center tw-justify-center">
     <div
       v-for="(participant, index) in participants"
       class="tw-group">
@@ -15,8 +14,7 @@
         </AppAvatar>
 
         <template #content>
-          <div
-            class="tw-p-2 tw-rounded-lg tw-border tw-border-gray-300 tw-bg-white">
+          <div class="tw-p-2 tw-rounded-lg tw-border tw-border-gray-300 tw-bg-white">
             {{ participant.name }}
           </div>
         </template>

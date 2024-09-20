@@ -127,12 +127,10 @@ export default defineComponent({
       let topPosition = 0;
 
       while (container && container !== document.body) {
-        // Si el container tiene scroll, sumamos sus desplazamientos
+        // If the container has scroll, we add their offsets 
         if (container.scrollTop || container.scrollLeft) {
           topPosition = topPosition + container.scrollTop;
-          // left += container.scrollLeft;
         }
-        // Continuamos subiendo en la jerarquía de containeres
         container = container.parentElement;
       }
 

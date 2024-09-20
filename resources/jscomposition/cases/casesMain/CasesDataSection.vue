@@ -11,12 +11,6 @@
       class="tw-grow tw-overflow-y-scroll">
     </FilterableTable>
 
-    <!-- <BaseTable :columns="columnsConfig" :data="data" class="tw-grow tw-overflow-y-scroll">
-      <template v-for="(column, index) in columnsConfig" v-slot:[`theader-filter-${column.field}`]>
-        <FilterColumn></FilterColumn>
-      </template>
-    </BaseTable>   -->
-
     <Pagination />
   </div>
 </template>
