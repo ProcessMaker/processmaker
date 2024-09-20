@@ -24,6 +24,7 @@
         "jenssegers/agent": "^2.6",
         "laravel/framework": "^10.19",
         "laravel/horizon": "^5.12",
+        "laravel/pail": "*",
         "laravel/passport": "^11.5",
         "laravel/scout": "^9.8",
         "laravel/telescope": "^4.12",

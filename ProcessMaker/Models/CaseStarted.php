@@ -14,8 +14,6 @@ class CaseStarted extends ProcessMakerModel
 
     protected $table = 'cases_started';
 
-    protected $primaryKey = 'case_number';
-
     protected $fillable = [
         'case_number',
         'user_id',

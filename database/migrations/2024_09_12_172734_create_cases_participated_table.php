@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cases_participated', function (Blueprint $table) {
+            $table->id();
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('case_number');
             $table->string('case_title', 255);
@@ -27,9 +28,9 @@ return new class extends Migration
             $table->timestamps();
             $table->text('keywords');
 
-            $table->primary(['user_id', 'case_number']);
             $table->foreign('user_id')->references('id')->on('users');
 
+            $table->index(['user_id', 'case_number']);
             $table->index(['user_id', 'case_status', 'created_at']);
             $table->index(['user_id', 'case_status', 'completed_at']);
 
