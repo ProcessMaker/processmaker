@@ -58,7 +58,6 @@ class TaskControllerTest extends TestCase
 
         // Call the endpoint with the 'case_number' parameter
         $response = $this->apiCall('GET', self::API_TASK_BY_CASE . '?case_number=81');
-        print_r($response);
 
         // Check if the response is successful and contains the expected tasks
         $response->assertStatus(200);
