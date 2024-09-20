@@ -76,7 +76,7 @@ class ChangeKeyEncryptedData extends Command
 
                 $this->info('Key for encrypted data succesfully changed.');
             }
-        } catch (Exception $e) {dd($e->getMessage());
+        } catch (Exception $e) {
             Log::error($e->getMessage());
             Log::error($e->getTraceAsString());
         }
