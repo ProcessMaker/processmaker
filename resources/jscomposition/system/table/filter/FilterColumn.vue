@@ -18,8 +18,8 @@
           <div class="tw-grow tw-overflow-auto tw-space-y-4">
             <FilterOperator
               ref="filterOperatorsRef"
-              v-model="filterOperator"
               :operators="filter.operators"
+              :type="filter.type"
               @change="(e) => onChangeFilterOperator(e)">
             </FilterOperator>
           </div>
@@ -37,11 +37,6 @@ import SortingButtons from "./SortingButtons.vue";
 import FilterOperator from "./operator/FilterOperator.vue";
 import FooterButtons from "./FooterButtons.vue";
 
-// interface FilterInterface {
-//   operators = []; // Array
-//   type = null; // String
-// }
-
 export default defineComponent({
   components: {
     AppPopover,
@@ -51,15 +46,19 @@ export default defineComponent({
     FooterButtons,
   },
   props: {
-    filter: Object // FilterInterface,
+    // FilterInterface {
+    //   operators = []  Array
+    //   type = null String
+    // }
+    filter: Object,
   },
   setup(props, { emit }) {
     const show = ref(false);
+
+    // Model that saves the values
     const filterOperator = ref({
-      operator: "=",
       id: new Date().getTime(),
       value: null,
-      type: "string",
     });
 
     const onClick = () => {

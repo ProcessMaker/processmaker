@@ -12,7 +12,7 @@
       placeholder="Type value"
       class="tw-flex-1"
       :is="operatorType?.component()"
-      @change="(e) => $emit('change', e)" />
+      @change="onChangeValue" />
   </div>
 </template>
 <script>
@@ -64,31 +64,17 @@ export default defineComponent({
     Dropdown,
   },
   props: {
-    /**
-     * operator: "="
-     * value: null
-     * type: 'string' || 'number'
-     * 
-     * {
-        operator: String,
-        value: Object,
-        type: String,
-      }
-     */
-    value: {
-      type: [Array, Object],
-    },
     operators: {
       type: Array,
       default: () => [],
     },
+    type: {
+      type: String,
+      default: () => "string", // string , number , datetime
+    },
   },
   setup(props, { emit }) {
     const operatorsModel = ref(defaultOperators);
-
-    const model = computed(() => {
-      return props.value;
-    });
 
     const operator = ref({
       value: "=",
@@ -98,20 +84,32 @@ export default defineComponent({
     const operatorType = ref();
 
     const onChangeOperator = (val) => {
-      operatorType.value = getOperatorType(val.value, "string");
+      operatorType.value = getOperatorType(val.value, props.type);
+    };
+
+    // Get the values of the input, datetime, between etc and emit the change to the parent
+    const onChangeValue = (e) => {
+      emit("change", {
+        operator: operator.value.value,
+        value: e,
+      });
     };
 
     onMounted(() => {
-      operatorType.value = getOperatorType();
-
-      operatorsModel.value = 
-      defaultOperators.filter((op) => {
+      //Selecting the operators to show in dropdown
+      operatorsModel.value = defaultOperators.filter((op) => {
         if (!props.operators.length) {
           return op;
         }
 
         return props.operators.includes(op.value);
       });
+
+      // Load first operator with its components
+      operatorType.value = getOperatorType(
+        operatorsModel.value[0].value,
+        props.type
+      );
     });
 
     return {
@@ -119,6 +117,7 @@ export default defineComponent({
       operatorType,
       operatorsModel,
       onChangeOperator,
+      onChangeValue,
     };
   },
 });

@@ -54,9 +54,9 @@ export const caseNumberColumn = () => ({
   header: "Case #",
   resizable: true,
   width: 100,
-  filter:{
-    type:'string',
-    operators:['=','>','>=','in','between']
+  filter: {
+    type: 'string',
+    operators: ['=', '>', '>=', 'in', 'between']
   }
 });
 
@@ -68,9 +68,9 @@ export const caseTitleColumn = () => ({
   cellRenderer: () => {
     return CaseTitleCell;
   },
-  filter:{
-    type:'string',
-    operators:['=','>','>=','in','between']
+  filter: {
+    type: 'string',
+    operators: ['=', '>', '>=', 'in', 'between']
   }
 });
 
@@ -82,9 +82,9 @@ export const processColumn = () => ({
   cellRenderer: () => {
     return TruncatedOptionsCell;
   },
-  filter:{
-    type:'string',
-    operators:['=']
+  filter: {
+    type: 'string',
+    operators: ['=']
   }
 });
 
@@ -96,9 +96,9 @@ export const taskColumn = () => ({
   cellRenderer: () => {
     return TruncatedOptionsCell;
   },
-  filter:{
-    type:'string',
-    operators:['=']
+  filter: {
+    type: 'string',
+    operators: ['=']
   }
 });
 
@@ -110,9 +110,9 @@ export const participantsColumn = () => ({
   cellRenderer: () => {
     return ParticipantsCell;
   },
-  filter:{
-    type:'string',
-    operators:['=']
+  filter: {
+    type: 'string',
+    operators: ['=']
   }
 });
 
@@ -124,9 +124,9 @@ export const statusColumn = () => ({
   cellRenderer: () => {
     return StatusCell;
   },
-  filter:{
-    type:'string',
-    operators:['=']
+  filter: {
+    type: 'string',
+    operators: ['=']
   }
 });
 
@@ -138,9 +138,9 @@ export const startedColumn = () => ({
   formatter: (row, column, columns) => {
     return formatDate(row.initiated_at, "datetime");
   },
-  filter:{
-    type:'string',
-    operators:['=']
+  filter: {
+    type: 'datetime',
+    operators: ['between', '>', '>=', '<', '<=']
   }
 });
 
@@ -152,9 +152,9 @@ export const completedColumn = () => ({
   formatter: (row, column, columns) => {
     return formatDate(row.completed_at, "datetime");
   },
-  filter:{
-    type:'string',
-    operators:['=']
+  filter: {
+    type: 'datetime',
+    operators: ['between', '>', '>=', '<', '<=']
   }
 });
 
