@@ -242,6 +242,11 @@ class TemplateController extends Controller
         return $this->template->deleteMediaImages($type, $request);
     }
 
+    public function applyTemplate(string $type, Request $request)
+    {
+        return $this->template->applyTemplate($type, $request);
+    }
+
     private function validateImportedFile($content, $request, $type)
     {
         $decoded = null;
