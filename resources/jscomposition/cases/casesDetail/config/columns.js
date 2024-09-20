@@ -1,5 +1,6 @@
-import BadgeContainer from "../../casesMain/components/BadgesSection.vue";
-import AvatarContainer from "../../casesMain/components/AvatarContainer.vue";
+import {
+  StatusCell,
+} from "../../../system/index";
 
 export default {};
 
@@ -30,7 +31,6 @@ const assignedColumn = () => ({
   header: "Assigned",
   resizable: true,
   width: 200,
-  cellRenderer: () => AvatarContainer,
 });
 
 const dueDateColumn = () => ({
@@ -67,7 +67,7 @@ const statusColumn = () => ({
   header: "Status",
   resizable: true,
   width: 200,
-  cellRenderer: () => BadgeContainer,
+  cellRenderer: () => StatusCell,
 });
 
 const startedColumn = () => ({

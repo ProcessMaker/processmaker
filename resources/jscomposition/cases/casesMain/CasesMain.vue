@@ -1,14 +1,15 @@
 <template>
   <div class="tw-w-full tw-space-y-4 tw-flex-col tw-flex tw-grow">
-    <Breadcrums :pages="pages"/>
+    <Breadcrums :pages="pages" />
 
-    <div class="tw-mx-4 tw-p-4 tw-bg-white tw-rounded-2xl 
-      tw-border-gray-200 tw-border tw-space-y-4 tw-flex tw-flex-col tw-overflow-hidden tw-grow tw-shadow-md">
+    <div
+      class="tw-mx-4 tw-p-4 tw-bg-white tw-rounded-2xl
+      tw-border-gray-200 tw-border tw-space-y-4 tw-flex
+      tw-flex-col tw-overflow-hidden tw-grow tw-shadow-md">
       <AppCounters
-        class="tw-w-full"
         v-model="countersData"
+        class="tw-w-full"
         @change="onChangeCounter" />
-
       <RouterView :key="route.fullPath" />
     </div>
   </div>
@@ -34,7 +35,7 @@ export default defineComponent({
     const pages = ref([]);
 
     const onChangeCounter = (counter) => {
-      if (typeof counter.url == "function") {
+      if (typeof counter.url === "function") {
         return counter.url();
       }
 
@@ -47,7 +48,7 @@ export default defineComponent({
     onMounted(async () => {
       const resCounters = await getCounters();
       const currentCounter = countersData.value.find((counter) => counter.url === route.path);
-      
+
       countersData.value = formatCounters(resCounters);
       pages.value = [
         configHomeBreadcrum(),

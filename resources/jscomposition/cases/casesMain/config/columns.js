@@ -1,18 +1,17 @@
-import AvatarContainer from "../components/AvatarContainer.vue";
+import moment from "moment";
 import {
   CaseTitleCell,
   TruncatedOptionsCell,
   ParticipantsCell,
   StatusCell,
 } from "../../../system/index";
-import moment from "moment";
 
 const formatDate = (value, format) => {
   let config = "DD/MM/YYYY hh:mm";
   if (
-    typeof ProcessMaker !== "undefined" &&
-    ProcessMaker.user &&
-    ProcessMaker.user.datetime_format
+    typeof ProcessMaker !== "undefined"
+    && ProcessMaker.user
+    && ProcessMaker.user.datetime_format
   ) {
     if (format === "datetime") {
       config = ProcessMaker.user.datetime_format;
@@ -34,13 +33,14 @@ export default {};
 /**
  * Example Column
  * field: String
- * headerName: String
+ * header: String
  * headerFormatter: callback
  * resizable: Boolean
  * visible: Callback
  * formatter: Callback - Build the value in the cell
  * width: Number
  * cellRenderer: Object Vue to custom the cell
+ * filter: This attribute is optional
  */
 
 // My cases: [Case#, Case Title, Process, Task, Participants, Status, Started, Completed]
@@ -51,78 +51,96 @@ export default {};
 
 export const caseNumberColumn = () => ({
   field: "case_number",
-  headerName: "Case #",
+  header: "Case #",
   resizable: true,
   width: 100,
+  filter: {
+    type: "string",
+    operators: ["=", ">", ">=", "in", "between"],
+  },
 });
 
 export const caseTitleColumn = () => ({
   field: "case_title",
-  headerName: "Case Title",
+  header: "Case Title",
   resizable: true,
   width: 200,
-  cellRenderer: () => {
-    return CaseTitleCell;
+  cellRenderer: () => CaseTitleCell,
+  filter: {
+    type: "string",
+    operators: ["=", ">", ">=", "in", "between"],
   },
 });
 
 export const processColumn = () => ({
   field: "processes",
-  headerName: "Process",
+  header: "Process",
   resizable: true,
   width: 200,
-  cellRenderer: () => {
-    return TruncatedOptionsCell;
+  cellRenderer: () => TruncatedOptionsCell,
+  filter: {
+    type: "string",
+    operators: ["="],
   },
 });
 
 export const taskColumn = () => ({
   field: "tasks",
-  headerName: "Task",
+  header: "Task",
   resizable: true,
   width: 200,
-  cellRenderer: () => {
-    return TruncatedOptionsCell;
+  cellRenderer: () => TruncatedOptionsCell,
+  filter: {
+    type: "string",
+    operators: ["="],
   },
 });
 
 export const participantsColumn = () => ({
   field: "participants",
-  headerName: "Participants",
+  header: "Participants",
   resizable: true,
   width: 200,
-  cellRenderer: () => {
-    return ParticipantsCell;
+  cellRenderer: () => ParticipantsCell,
+  filter: {
+    type: "string",
+    operators: ["="],
   },
 });
 
 export const statusColumn = () => ({
   field: "case_status",
-  headerName: "Status",
+  header: "Status",
   resizable: true,
   width: 200,
-  cellRenderer: () => {
-    return StatusCell;
+  cellRenderer: () => StatusCell,
+  filter: {
+    type: "string",
+    operators: ["="],
   },
 });
 
 export const startedColumn = () => ({
   field: "initiated_at",
-  headerName: "Started",
+  header: "Started",
   resizable: true,
   width: 200,
-  formatter: (row, column, columns) => {
-    return formatDate(row.initiated_at, "datetime");
+  formatter: (row, column, columns) => formatDate(row.initiated_at, "datetime"),
+  filter: {
+    type: "datetime",
+    operators: ["between", ">", ">=", "<", "<="],
   },
 });
 
 export const completedColumn = () => ({
   field: "completed_at",
-  headerName: "Completed",
+  header: "Completed",
   resizable: true,
   width: 200,
-  formatter: (row, column, columns) => {
-    return formatDate(row.completed_at, "datetime");
+  formatter: (row, column, columns) => formatDate(row.completed_at, "datetime"),
+  filter: {
+    type: "datetime",
+    operators: ["between", ">", ">=", "<", "<="],
   },
 });
 

@@ -1,10 +1,14 @@
 <template>
-  <div class="tw-w-full tw-space-y-3 tw-flex tw-flex-col tw-overflow-hidden">
+  <div
+    class="tw-w-full tw-space-y-3 tw-flex tw-flex-col tw-overflow-hidden">
     <CaseFilter />
 
     <BadgesSection v-model="badgesData" />
 
-    <BaseTable :columns="columnsConfig" :data="data" class="tw-grow tw-overflow-y-scroll" />
+    <FilterableTable
+      :columns="columnsConfig"
+      :data="data"
+      class="tw-grow tw-overflow-y-scroll" />
 
     <Pagination />
   </div>
@@ -13,33 +17,32 @@
 import { defineComponent, ref, onMounted } from "vue";
 import CaseFilter from "./components/CaseFilter.vue";
 import BadgesSection from "./components/BadgesSection.vue";
-import { BaseTable, Pagination } from "../../base";
+import { Pagination } from "../../base";
 import { getColumns } from "./config/columns";
-import { Breadcrums } from "../../system";
+import { FilterableTable } from "../../system";
 import { badges } from "./config/badges";
-import { getData, getAllData } from "./api";
+import { getAllData } from "./api";
 
 export default defineComponent({
+  components: {
+    CaseFilter,
+    BadgesSection,
+    Pagination,
+    FilterableTable,
+  },
   props: {
     listId: {
       type: String,
       default: () => "myCases",
     },
   },
-  components: {
-    CaseFilter,
-    BadgesSection,
-    BaseTable,
-    Pagination,
-    Breadcrums,
-  },
-  setup(props, { emit }) {
+  setup(props) {
     const badgesData = ref(badges);
     const columnsConfig = ref();
     const data = ref();
 
     onMounted(async () => {
-      data.value = await getAllData({type: props.listId, page:15});
+      data.value = await getAllData({ type: props.listId, page: 15 });
 
       columnsConfig.value = getColumns(props.listId);
     });

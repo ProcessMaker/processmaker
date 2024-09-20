@@ -4,18 +4,21 @@
       v-if="row.case_title_formatted"
       class="tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis"
       :style="{ width: column.width + 'px' }"
-      v-html="row.case_title_formatted" />
+      v-html="row.case_title_formatted" 
+      />
     <slot
       v-else
       :columns="columns"
       :column="column"
-      :row="row">
+      :row="row"
+    >
       {{ getValue() }}
     </slot>
   </div>
 </template>
 <script>
 import { defineComponent } from "vue";
+
 export default defineComponent({
   props: {
     columns: {
