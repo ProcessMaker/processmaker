@@ -1,4 +1,4 @@
-import BadgeContainer from "../../casesMain/components/BadgeContainer.vue";
+import BadgeContainer from "../../casesMain/components/BadgesSection.vue";
 import AvatarContainer from "../../casesMain/components/AvatarContainer.vue";
 
 export default {};
