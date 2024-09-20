@@ -4,7 +4,7 @@ namespace ProcessMaker\Models;
 
 use Database\Factories\CaseStartedFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Casts\AsArrayObject;
+use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use ProcessMaker\Models\ProcessMakerModel;
 
@@ -31,13 +31,20 @@ class CaseStarted extends ProcessMakerModel
     ];
 
     protected $casts = [
-        'processes' => AsArrayObject::class,
-        'requests' => AsArrayObject::class,
-        'request_tokens' => AsArrayObject::class,
-        'tasks' => AsArrayObject::class,
-        'participants' => AsArrayObject::class,
-        'initiated_at' => 'datetime',
-        'completed_at' => 'datetime',
+        'processes' => AsCollection::class,
+        'requests' => AsCollection::class,
+        'request_tokens' => AsCollection::class,
+        'tasks' => AsCollection::class,
+        'participants' => AsCollection::class,
+    ];
+
+    protected $dates = [
+        'initiated_at',
+        'completed_at',
+    ];
+
+    protected $attributes = [
+        'keywords' => '',
     ];
 
     protected static function newFactory(): Factory

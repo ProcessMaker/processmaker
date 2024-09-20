@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cases_started', function (Blueprint $table) {
-            $table->unsignedInteger('case_number')->primary();
+            $table->id();
+            $table->unsignedInteger('case_number')->unique();
             $table->unsignedInteger('user_id');
             $table->string('case_title', 255);
             $table->text('case_title_formatted');
@@ -29,6 +30,7 @@ return new class extends Migration
 
             $table->foreign('user_id')->references('id')->on('users');
 
+            $table->index(['case_number']);
             $table->index(['user_id', 'case_status', 'created_at']);
             $table->index(['user_id', 'case_status', 'updated_at']);
 
