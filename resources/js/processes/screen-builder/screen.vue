@@ -728,6 +728,14 @@ export default {
     ProcessMaker.EventBus.$on("show-create-template-modal", () => {
       this.$refs["create-template-modal"].show();
     });
+
+    ProcessMaker.EventBus.$on("open-templates-panel", () => {
+      this.openMyTemplates();
+    });
+
+    ProcessMaker.EventBus.$on("close-templates-panel", () => {
+      this.closeTemplatesPanel();
+    });
   },
   methods: {
     ...mapMutations("globalErrorsModule", { setStoreMode: "setMode" }),
