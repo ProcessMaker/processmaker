@@ -12,6 +12,7 @@ import { defineComponent, ref } from "vue";
 import Tabs from "./Tabs.vue";
 import TaskTable from "./TaskTable.vue";
 import RequestTable from "./RequestTable.vue";
+import TabHistory from "./TabHistory.vue";
 
 export default defineComponent({
   components: { Tabs },
@@ -34,7 +35,7 @@ export default defineComponent({
         name: translate.t("File Manager"), href: "#file_manager", current: "file_manager", show: false, content: "",
       },
       {
-        name: translate.t("History"), href: "#history", current: "history", show: true, content: "",
+        name: translate.t("History"), href: "#history", current: "history", show: true, content: TabHistory,
       },
       {
         name: translate.t("Requests"), href: "#requests", current: "requests", show: true, content: RequestTable,
