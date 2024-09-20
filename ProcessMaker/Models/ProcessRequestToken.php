@@ -1234,7 +1234,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 ]);
                 break;
             case 'taskSource':
-                $elementDestination = $elementDestinationType;
+                $elementDestination = null;
                 break;
             default:
                 $elementDestination = null;
