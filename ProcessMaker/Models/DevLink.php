@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\ProcessMakerModel;
+use Ramsey\Uuid\Type\Integer;
 
 class DevLink extends ProcessMakerModel
 {
@@ -91,11 +92,26 @@ class DevLink extends ProcessMakerModel
 
         $assets = [];
         foreach ($bundleExport['payloads'] as $payload) {
-            $importer = new Importer($payload, new Options([]));
-            $manifest = $importer->doImport();
-            $assets[] = $manifest[$payload['root']]->model;
+            $assets[] = $this->import($payload);
         }
 
         $bundle->syncAssets($assets);
+    }
+
+    private function import(array $payload)
+    {
+        $importer = new Importer($payload, new Options([]));
+        $manifest = $importer->doImport();
+
+        return $manifest[$payload['root']]->model;
+    }
+
+    public function installRemoteAsset(string $class, int $id) : ProcessMakerModel
+    {
+        $payload = $this->client()->get(
+            route('api.devlink.export-local-asset', ['class' => $class, 'id' => $id], false)
+        )->json();
+
+        return $this->import($payload);
     }
 }

@@ -14,6 +14,8 @@ onMounted(() => {
     } else {
       status.value = "error";
     }
+  }).catch((e) => {
+    status.value = "error";
   });
 });
 </script>

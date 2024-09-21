@@ -382,8 +382,13 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         Route::put('devlink/local-bundles/{bundle}', [DevLinkController::class, 'updateBundle'])->name('devlink.update-bundle');
         Route::post('devlink/local-bundles/{bundle}/add-assets', [DevLinkController::class, 'addAsset'])->name('devlink.add-asset');
         Route::delete('devlink/local-bundles/{bundle}', [DevLinkController::class, 'deleteBundle'])->name('devlink.delete-bundle');
-        Route::get('devlink/export-local-bundle/{bundle}', [DevLinkController::class, 'localBundles'])->name('devlink.export-local-bundle');
+        Route::get('devlink/export-local-bundle/{bundle}', [DevLinkController::class, 'exportLocalBundle'])->name('devlink.export-local-bundle');
+        Route::get('devlink/export-local-asset', [DevLinkController::class, 'exportLocalAsset'])->name('devlink.export-local-asset');
 
         Route::post('devlink/{devLink}/remote-bundles/{removeBundleId}/install', [DevLinkController::class, 'installRemoteBundle'])->name('devlink.install-remote-bundle');
+        Route::post('devlink/{devLink}/install-remote-asset', [DevLinkController::class, 'installRemoteAsset'])->name('devlink.install-remote-asset');
+
+        // Put these last to avoid conflicts with the other devlink routes
+        Route::get('devlink/{devLink}', [DevLinkController::class, 'show'])->name('devlink.show');
     });
 });

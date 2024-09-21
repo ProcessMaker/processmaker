@@ -3,31 +3,27 @@
 namespace Tests\Model;
 
 use ProcessMaker\Exception\ExporterNotSupported;
-use ProcessMaker\ImportExport\Exporters\ProcessExporter;
+use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\BundleAsset;
-use ProcessMaker\Models\Process;
+use ProcessMaker\Models\Group;
+use ProcessMaker\Models\Screen;
 use Tests\TestCase;
 
 class BundleAssetTest extends TestCase
 {
-    public function testExporterClass()
+    public function testCanExport()
     {
-        $bundleAsset = BundleAsset::factory()->create([
-            'asset_type' => Process::class,
-        ]);
+        $screen = Screen::factory()->create();
 
-        $exporterClass = $bundleAsset->exporterClass();
-
-        $this->assertEquals(ProcessExporter::class, $exporterClass);
+        $this->assertTrue(BundleAsset::canExport($screen));
     }
 
     public function testExporterNotSupported()
     {
-        $bundleAsset = BundleAsset::factory()->create([
-            'asset_type' => 'foo',
-        ]);
+        $group = Group::factory()->create();
+        $bundle = Bundle::factory()->create();
 
         $this->expectException(ExporterNotSupported::class);
-        $bundleAsset->exporterClass();
+        $bundle->addAsset($group);
     }
 }

@@ -3,6 +3,8 @@ import DevLink from "./components/DevLink";
 import Index from "./components/Index";
 import Instance from "./components/Instance";
 import LocalBundles from "./components/LocalBundles";
+import Assets from "./components/Assets";
+import AssetListing from "./components/AssetListing";
 
 Vue.use(VueRouter);
 const router = new VueRouter({
@@ -25,6 +27,16 @@ const router = new VueRouter({
       path: "/local-bundles",
       component: LocalBundles,
     },
+    {
+      name: 'assets',
+      path: '/instance/:id/assets',
+      component: Assets,
+    },
+    {
+      name: 'asset-listing',
+      path: '/instance/:id/assets/:type',
+      component: AssetListing,
+    }
   ]
 });
 

@@ -5,7 +5,6 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\DevLink;
 
@@ -14,6 +13,11 @@ class DevLinkController extends Controller
     public function index()
     {
         return DevLink::all();
+    }
+
+    public function show(DevLink $devLink)
+    {
+        return $devLink;
     }
 
     public function store(Request $request)
@@ -114,6 +118,13 @@ class DevLinkController extends Controller
         return ['payloads' => $bundle->export()];
     }
 
+    public function exportLocalAsset(Request $request)
+    {
+        $asset = $request->input('class')::findOrFail($request->input('id'));
+
+        return $asset->export();
+    }
+
     public function addAsset(Request $request, Bundle $bundle)
     {
         $request->validate([
@@ -131,5 +142,13 @@ class DevLinkController extends Controller
 
         $asset = $request->input('type')::findOrFail($request->input('id'));
         $bundle->addAsset($asset);
+    }
+
+    public function installRemoteAsset(Request $request, DevLink $devLink)
+    {
+        return $devLink->installRemoteAsset(
+            $request->input('class'),
+            $request->input('id')
+        );
     }
 }

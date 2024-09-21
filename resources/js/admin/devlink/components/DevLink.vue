@@ -9,33 +9,21 @@ const route = useRoute();
 
 <template>
   <div>
-    <ul class="nav nav-tabs">
-        <li class="nav-item">
-            <a class="nav-item nav-link"
-              :class="{ active: route.name === 'index' }"
-              role="tab"
-              @click="router.push({ name: 'index' })">
-                {{ $t('Linked Instances') }}
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-item nav-link"
-              :class="{ active: route.name === 'local-bundles' }"
-              role="tab"
-              @click="router.push({ name: 'local-bundles' })">
-                {{ $t('Local Bundles') }}
-            </a>
-        </li>
-    </ul>
+    <b-tabs>
+        <b-tab
+          :title="$t('Linked Instances')"
+          :active="route.name === 'index' || route.name === 'instance' || route.name === 'assets' || route.name === 'asset-listing'"
+          @click="router.push({ name: 'index' })"
+        />
+        <b-tab
+          :title="$t('Local Bundles')"
+          :active="route.name === 'local-bundles'"
+          @click="router.push({ name: 'local-bundles' })"
+        />
+    </b-tabs>
 
-    <div>
-        <div class="tab-content">
-            <div class="tab-pane fade show active" id="nav-linked-instances" role="tabpanel">
-                <div class="card card-body p-3 border-top-0">
-                    <router-view></router-view>
-                </div>
-            </div>
-        </div>
-    </div>
+    <b-card>
+      <router-view></router-view>
+    </b-card>
   </div>
 </template>

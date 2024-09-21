@@ -40,9 +40,13 @@ class Bundle extends ProcessMakerModel
         $exports = [];
 
         foreach ($this->assets as $bundleAsset) {
-            $exporter = new Exporter();
-            $exporter->export($bundleAsset->asset, $bundleAsset->exporterClass());
-            $exports[] = $exporter->payload();
+            $asset = $bundleAsset->asset;
+
+            if (!BundleAsset::canExport($asset)) {
+                throw new ExporterNotSupported();
+            }
+
+            $exports[] = $asset->export();
         }
 
         return $exports;
@@ -84,7 +88,7 @@ class Bundle extends ProcessMakerModel
 
     public function addAsset(ProcessMakerModel $asset)
     {
-        if (!BundleAsset::hasExporter($asset::class)) {
+        if (!BundleAsset::canExport($asset)) {
             throw new ExporterNotSupported();
         }
 

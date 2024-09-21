@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import Status from './Status.vue';
 import { useRouter, useRoute } from 'vue-router/composables';
+import { store } from '../common';
 
 const router = useRouter();
 const route = useRoute();
@@ -101,6 +102,11 @@ const executeDelete = () => {
     });
 }
 
+const select = (devlink) => {
+  store.selectedInstance = devlink;
+  router.push({ name: 'instance', params: { id: devlink.id } });
+}
+
 </script>
 
 <template>
@@ -130,7 +136,7 @@ const executeDelete = () => {
   
     <b-table :items="devlinks" :fields="fields">
       <template #cell(name)="data">
-        <a href="#" @click.prevent="router.push({ name: 'instance', params: { id: data.item.id } })">{{ data.item.name }}</a>
+        <a href="#" @click.prevent="select(data.item)">{{ data.item.name }}</a>
       </template>
       <template #cell(status)="data">
         <Status :id="data.item.id" />

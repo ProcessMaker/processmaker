@@ -1,7 +1,9 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, getCurrentInstance } from 'vue';
 import { useRouter, useRoute } from 'vue-router/composables';
+import InstanceTabs from './InstanceTabs.vue';
 
+const vue = getCurrentInstance().proxy;
 const router = useRouter();
 const route = useRoute();
 
@@ -42,24 +44,32 @@ const load = () => {
 };
 
 const install = (bundle) => {
-  ProcessMaker.apiClient
-    .post(`/devlink/${route.params.id}/remote-bundles/${bundle.id}/install`)
-    .then((result) => {
-      window.ProcessMaker.alert('Bundle successfully installed', "success");
-    });
+  vue.$bvModal.msgBoxConfirm('Are you sure you want to install this bundle?').then((confirm) => {
+    if (confirm) {
+      ProcessMaker.apiClient
+        .post(`/devlink/${route.params.id}/remote-bundles/${bundle.id}/install`)
+        .then(() => {
+          window.ProcessMaker.alert('Bundle successfully installed', "success");
+        });
+    }
+  })
 };
 
 </script>
 
 <template>
   <div>
-    Instance {{ route.params.id }}
+    <instance-tabs />
+    
     <b-table
       :items="bundles"
       :fields="fields"
     >
       <template #cell(menu)="data">
-        <a href="#" @click.prevent="install(data.item)">Install</a>
+        <a
+          href="#"
+          @click.prevent="install(data.item)"
+        >Install</a>
       </template>
     </b-table>
   </div>
