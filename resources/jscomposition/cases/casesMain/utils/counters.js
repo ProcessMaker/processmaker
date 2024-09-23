@@ -32,7 +32,7 @@ export const formatCounters = (data) => {
       url: "/cases-main/all-cases",
     },
     {
-      header: t("All requests"),
+      header: t("My requests"),
       body: data.allRequests.toString(),
       color: "gray",
       icon: "fas fa-play",
