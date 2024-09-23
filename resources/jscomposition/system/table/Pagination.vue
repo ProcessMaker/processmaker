@@ -129,7 +129,7 @@
 </template>
 <script>
 import { defineComponent, ref, computed } from "vue";
-import { Dropdown } from "../form";
+import { Dropdown } from "../../base/form";
 
 const optionsPerPage = [
   {
