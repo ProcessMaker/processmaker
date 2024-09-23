@@ -13,6 +13,7 @@ import TasksList from "./components/TasksList.vue";
 import TaskSavePanel from "./components/TaskSavePanel.vue";
 import autosaveMixins from "../modules/autosave/autosaveMixin";
 import draftFileUploadMixin from "../modules/autosave/draftFileUploadMixin";
+import Mustache from "mustache";
 
 Vue.use(Vuex);
 Vue.use("task", Task);
@@ -31,3 +32,4 @@ Vue.mixin(draftFileUploadMixin);
 
 window.debounce = debounce;
 window.Vuex = Vuex;
+window.Mustache = Mustache;
