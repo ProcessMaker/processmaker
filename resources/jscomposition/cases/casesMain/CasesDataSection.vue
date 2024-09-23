@@ -14,12 +14,14 @@
       :total="dataPagination.total"
       :page="dataPagination.page"
       :pages="dataPagination.pages"
+      :options="optionsPerPage"
       @perPage="onPerPage"
       @go="onGo" />
   </div>
 </template>
 <script>
 import { defineComponent, ref, onMounted } from "vue";
+import { t } from "i18next";
 import CaseFilter from "./components/CaseFilter.vue";
 import BadgesSection from "./components/BadgesSection.vue";
 import { Pagination } from "../../base";
@@ -53,6 +55,21 @@ export default defineComponent({
       perPage: 15,
     });
 
+    const optionsPerPage = [
+      {
+        value: 15,
+        label: `15 ${t("items")}`,
+      },
+      {
+        value: 30,
+        label: `30 ${t("items")}`,
+      },
+      {
+        value: 50,
+        label: `50 ${t("items")}`,
+      },
+    ];
+
     const getData = () => getAllData({
       type: props.listId,
       page: dataPagination.value.page,
@@ -82,6 +99,7 @@ export default defineComponent({
       columnsConfig,
       data,
       badgesData,
+      optionsPerPage,
       onGo,
       onPerPage,
     };

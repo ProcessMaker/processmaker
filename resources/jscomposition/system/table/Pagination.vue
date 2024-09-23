@@ -3,7 +3,7 @@
     class="tw-flex tw-items-center tw-justify-start tw-space-x-2 tw-text-gray-500 tw-text-sm">
     <svg
       :class="{
-        'hover:tw-cursor-pointer hover:tw-bg-gray-100': pageModel >0
+        'hover:tw-cursor-pointer hover:tw-bg-gray-100': pageModel > 0
       }"
       class=" tw-rounded-md"
       width="20"
@@ -25,7 +25,7 @@
 
     <svg
       :class="{
-        'hover:tw-cursor-pointer hover:tw-bg-gray-100 ': pageModel >0
+        'hover:tw-cursor-pointer hover:tw-bg-gray-100 ': pageModel > 0
       }"
       class="tw-rounded-md"
       width="20"
@@ -59,7 +59,7 @@
 
     <svg
       :class="{
-        'hover:tw-cursor-pointer hover:tw-bg-gray-100': pageModel < pages-1
+        'hover:tw-cursor-pointer hover:tw-bg-gray-100': pageModel < pages - 1
       }"
       class="tw-rounded-md"
       width="20"
@@ -81,7 +81,7 @@
 
     <svg
       :class="{
-        'hover:tw-cursor-pointer hover:tw-bg-gray-100': pageModel < pages-1
+        'hover:tw-cursor-pointer hover:tw-bg-gray-100': pageModel < pages - 1
       }"
       class="tw-rounded-md"
       width="20"
@@ -109,16 +109,15 @@
       <Dropdown
         v-model="selectedOption"
         class="tw-w-40"
-        :options="options"
+        :options="optionsModel"
         @change="onChangeOption">
         <template #input="{toogleShow}">
           <div
             class="tw-flex tw-full tw-items-center tw-space-x-2"
             @click.prevent.stop="toogleShow()">
             <span>
-              {{ `${selectedOption.value} per page` }}
+              {{ `${selectedOption.value} ${$t("per page")}` }}
             </span>
-
             <i
               class=" hover:tw-bg-gray-100 tw-rounded-md hover:tw-cursor-pointer tw-p-1 fas fa-chevron-down" />
           </div>
@@ -130,22 +129,6 @@
 <script>
 import { defineComponent, ref, computed } from "vue";
 import { Dropdown } from "../../base/form";
-
-const optionsPerPage = [
-  {
-    value: 15,
-    label: "15 items",
-  },
-  {
-    value: 30,
-    label: "30 items",
-  },
-  {
-    value: 50,
-    label: "50 items",
-
-  },
-];
 
 export default defineComponent({
   components: {
@@ -164,10 +147,14 @@ export default defineComponent({
       type: Number,
       default: () => (0),
     },
+    options: {
+      type: Array,
+      default: () => [],
+    },
   },
   emits: ["perPage", "go"],
   setup(props, { emit }) {
-    const options = ref(optionsPerPage);
+    const optionsModel = ref(props.options);
     const totalModel = computed(() => props.total);
     const pageModel = ref(props.page);
 
@@ -210,7 +197,7 @@ export default defineComponent({
     };
 
     return {
-      options,
+      optionsModel,
       selectedOption,
       totalModel,
       pageModel,
