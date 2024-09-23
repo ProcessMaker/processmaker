@@ -62,7 +62,9 @@ class DevLinkTest extends TestCase
             'code' => '12345',
         ];
         $response = $this->webCall('GET', route('devlink.index', $params));
-        $response->assertStatus(200);
+
+        // Redirects to devlink index without query string params
+        $response->assertRedirect(route('devlink.index', []));
 
         $devLink->refresh();
         $this->assertEquals($devLink->access_token, '123abc');
