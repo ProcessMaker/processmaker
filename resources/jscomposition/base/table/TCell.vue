@@ -49,10 +49,7 @@ export default defineComponent({
 
     const getComponent = () => props.column.cellRenderer().component;
 
-    const getParams = () => {
-      console.log("BREAK POINT AQUIII renderer");
-      return props.column.cellRenderer().params || {};
-    };
+    const getParams = () => props.column.cellRenderer().params || {};
 
     return {
       getComponent,
