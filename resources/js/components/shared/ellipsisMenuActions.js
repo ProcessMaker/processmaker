@@ -65,6 +65,13 @@ export default {
           permission: "create-projects",
         },
         {
+          value: "add-to-bundle",
+          content: "Add to Bundle",
+          icon: "fas fa-folder-plus",
+          permission: "admin",
+          emit_on_root: 'add-to-bundle',
+        },
+        {
           value: "edit-item",
           content: "Configure",
           link: true,
