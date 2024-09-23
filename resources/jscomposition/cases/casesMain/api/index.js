@@ -14,7 +14,7 @@ export const getCounters = async () => {
 
 // Method to get data case list - change with processmaker API
 export const getData = async () => {
-  let objects_list = [];
+  const objects_list = [];
 
   for (let i = 0; i <= 31; i++) {
     const obj = {
@@ -34,18 +34,7 @@ export const getData = async () => {
   return objects_list;
 };
 
-export const getAllData = async({type, page})=>{
-  const response = allCasesData.data.map(e=> {
-    e.case_title = `${type} ${page} ${e.case_title}`
-    e.case_title_formatted = `${type} ${page} ${e.case_title_formatted}`
-    return e;
-  })
-  
- 
-  return response;
-}
-
-export const allCasesData = {
+export const allCasesData = () => ({
   data: [
     {
       case_number: 0,
@@ -59,18 +48,20 @@ export const allCasesData = {
         { id: 3, name: "accusantium consectetur" },
       ],
       requests: [
-        { id: 92570, name: "delectus voluptatem", parent_request: 24 },
+        {
+          id: 92570,
+          name: "delectus voluptatem",
+          parent_request: 24,
+        },
         { id: 8846, name: "est accusamus culpa", parent_request: 2 },
       ],
       request_tokens: null,
       tasks: [
-        { id: "node_6351", name: "libero tenetur quos quibusdam" },
+        { id: "123", name: "libero tenetur quos quibusdam" },
         { id: "node_2329", name: "modi voluptas quo" },
         { id: "node_4561", name: "asperiores tenetur" },
       ],
-      participants: [
-        { id: 25, name: "Dr. Madie Predovic PhD" }
-      ],
+      participants: [{ id: 25, name: "Dr. Madie Predovic PhD" }],
       initiated_at: "1997-08-01T19:59:17.000000Z",
       completed_at: "2015-11-10T21:25:11.000000Z",
     },
@@ -87,7 +78,11 @@ export const allCasesData = {
       ],
       requests: [
         { id: 689, name: "voluptas aut", parent_request: 185512574 },
-        { id: 3262060, name: "adipisci est qui", parent_request: 93397820 },
+        {
+          id: 3262060,
+          name: "adipisci est qui",
+          parent_request: 93397820,
+        },
       ],
       request_tokens: null,
       tasks: [
@@ -145,7 +140,11 @@ export const allCasesData = {
       ],
       requests: [
         { id: 3, name: "et aliquid", parent_request: 34377361 },
-        { id: 400403, name: "consequatur vel magni", parent_request: 81981614 },
+        {
+          id: 400403,
+          name: "consequatur vel magni",
+          parent_request: 81981614,
+        },
       ],
       request_tokens: null,
       tasks: [
@@ -174,7 +173,11 @@ export const allCasesData = {
       ],
       requests: [
         { id: 845, name: "est voluptates", parent_request: 991 },
-        { id: 6922, name: "repellat deserunt vitae", parent_request: 7 },
+        {
+          id: 6922,
+          name: "repellat deserunt vitae",
+          parent_request: 7,
+        },
       ],
       request_tokens: null,
       tasks: [
@@ -202,7 +205,11 @@ export const allCasesData = {
         { id: 11857, name: "aut occaecati" },
       ],
       requests: [
-        { id: 95, name: "molestias voluptatem", parent_request: 6682658 },
+        {
+          id: 95,
+          name: "molestias voluptatem",
+          parent_request: 6682658,
+        },
         { id: 9706673, name: "et quasi ipsum", parent_request: 2 },
       ],
       request_tokens: null,
@@ -231,8 +238,16 @@ export const allCasesData = {
         { id: 93813951, name: "atque neque" },
       ],
       requests: [
-        { id: 6694520, name: "nihil aperiam", parent_request: 525456 },
-        { id: 9067565, name: "beatae voluptatem dolorem", parent_request: 0 },
+        {
+          id: 6694520,
+          name: "nihil aperiam",
+          parent_request: 525456,
+        },
+        {
+          id: 9067565,
+          name: "beatae voluptatem dolorem",
+          parent_request: 0,
+        },
       ],
       request_tokens: null,
       tasks: [
@@ -261,7 +276,11 @@ export const allCasesData = {
       ],
       requests: [
         { id: 5157906, name: "voluptate ratione", parent_request: 0 },
-        { id: 60923, name: "voluptatem eius ipsa", parent_request: 27 },
+        {
+          id: 60923,
+          name: "voluptatem eius ipsa",
+          parent_request: 27,
+        },
       ],
       request_tokens: null,
       tasks: [
@@ -289,8 +308,16 @@ export const allCasesData = {
         { id: 54, name: "veritatis qui" },
       ],
       requests: [
-        { id: 4444, name: "corrupti adipisci", parent_request: 2310454 },
-        { id: 562211360, name: "voluptatibus id omnis", parent_request: 4 },
+        {
+          id: 4444,
+          name: "corrupti adipisci",
+          parent_request: 2310454,
+        },
+        {
+          id: 562211360,
+          name: "voluptatibus id omnis",
+          parent_request: 4,
+        },
       ],
       request_tokens: null,
       tasks: [
@@ -319,7 +346,11 @@ export const allCasesData = {
       ],
       requests: [
         { id: 3084, name: "tempore incidunt", parent_request: 30470 },
-        { id: 2, name: "neque aut suscipit", parent_request: 81171529 },
+        {
+          id: 2,
+          name: "neque aut suscipit",
+          parent_request: 81171529,
+        },
       ],
       request_tokens: null,
       tasks: [
@@ -347,8 +378,16 @@ export const allCasesData = {
         { id: 294713669, name: "sit dolor" },
       ],
       requests: [
-        { id: 898, name: "voluptatum perferendis", parent_request: 116178 },
-        { id: 96313178, name: "dolor quis ad", parent_request: 480366 },
+        {
+          id: 898,
+          name: "voluptatum perferendis",
+          parent_request: 116178,
+        },
+        {
+          id: 96313178,
+          name: "dolor quis ad",
+          parent_request: 480366,
+        },
       ],
       request_tokens: null,
       tasks: [
@@ -377,7 +416,11 @@ export const allCasesData = {
       ],
       requests: [
         { id: 17469, name: "tenetur temporibus", parent_request: 3 },
-        { id: 94439, name: "odio accusantium sed", parent_request: 189566 },
+        {
+          id: 94439,
+          name: "odio accusantium sed",
+          parent_request: 189566,
+        },
       ],
       request_tokens: null,
       tasks: [
@@ -435,7 +478,11 @@ export const allCasesData = {
       ],
       requests: [
         { id: 346, name: "eum consequatur", parent_request: 78984 },
-        { id: 353990, name: "aut dolorem deleniti", parent_request: 6272 },
+        {
+          id: 353990,
+          name: "aut dolorem deleniti",
+          parent_request: 6272,
+        },
       ],
       request_tokens: null,
       tasks: [
@@ -485,6 +532,24 @@ export const allCasesData = {
       completed_at: "1990-08-24T08:24:20.000000Z",
     },
   ],
-  meta: { total: 1000, perPage: 15, currentPage: 1, lastPage: 67 },
-};
+  meta: {
+    total: 1000, perPage: 15, currentPage: 1, lastPage: 67,
+  },
+});
 
+export const getAllData = async ({ type, page, perPage }) => {
+  const response = [];
+  const allData = allCasesData();
+
+  for (let index = 0; index < perPage; index += 1) {
+    const idxLooper = index % (allData.data.length - 1);
+
+    const item = allData.data[idxLooper];
+    item.case_number = index + 100 * page;
+    item.case_title = `${type} ${page} ${item.case_title}`;
+    item.case_title_formatted = `${type} ${page} ${item.case_title_formatted}`;
+    response.push(item);
+  }
+
+  return response;
+};

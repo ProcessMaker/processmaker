@@ -6,15 +6,12 @@
       class="tw-group">
       <AppPopover
         position="bottom"
-        :hover="true"
-      >
+        :hover="true">
         <AppAvatar
-
           :class="`${participant.color}`"
           :initials="participant.name[0]"
           class="tw-cursor-pointer"
-        />
-
+          @click="onClick(participant)" />
         <template #content>
           <div class="tw-p-2 tw-rounded-lg tw-border tw-border-gray-300 tw-bg-white">
             {{ participant.name }}
@@ -25,8 +22,7 @@
 
     <span
       v-if="participants.length == 1"
-      class="tw-px-2"
-    >
+      class="tw-px-2">
       {{ participants[0].name }}
     </span>
   </div>
@@ -66,6 +62,10 @@ export default defineComponent({
       type: Object,
       default: () => ({}),
     },
+    click: {
+      type: Function,
+      default: new Function(),
+    },
   },
   setup(props) {
     const participants = computed(() => {
@@ -76,8 +76,13 @@ export default defineComponent({
       return response;
     });
 
+    const onClick = (participant) => {
+      props.click && props.click(participant, props.row, props.column, props.columns);
+    };
+
     return {
       participants,
+      onClick,
     };
   },
 });
