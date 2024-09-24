@@ -74,6 +74,10 @@ class ChangeKeyEncryptedData extends Command
                 // Write new key in environment file
                 EncryptedData::addKeyInEnvironmentFile($newKey);
 
+                // Set new key in config
+                $key = 'base64:' . base64_encode($newKey);
+                config(['app.encrypted_data_key' => $key]);
+
                 $this->info('Key for encrypted data succesfully changed.');
             }
         } catch (Exception $e) {
