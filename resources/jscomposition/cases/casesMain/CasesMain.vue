@@ -46,15 +46,17 @@ export default defineComponent({
     };
 
     onMounted(async () => {
+      let currentCounter = [];
       const resCounters = await getCounters();
-      const currentCounter = countersData.value.find((counter) => counter.url === route.path);
-
       countersData.value = formatCounters(resCounters);
+
+      currentCounter = countersData.value.find((counter) => counter.url === route.path);
       pages.value = [
         configHomeBreadcrum(),
         { name: "Cases", href: "/cases", current: false },
-        { name: currentCounter.header, current: true },
       ];
+      currentCounter = currentCounter ?? countersData.value.find((counter) => counter.url.includes("/my-cases"));
+      pages.value.push({ name: currentCounter.header, current: true });
     });
 
     return {
