@@ -79,22 +79,6 @@ export default {
             top = wrapperRect.bottom + 10;
           }
           break;
-        case "bottom":
-          top = wrapperRect.bottom + 10;
-          left = wrapperRect.left + wrapperRect.width / 2 - tooltipRect.width / 2;
-          // Verify space bottom
-          if (top + tooltipRect.height > viewportHeight) {
-            calculatedPosition.value = "top";
-            top = wrapperRect.top - tooltipRect.height - 10;
-          }
-
-          const leftaux = wrapperRect.left - tooltipRect.width - 10;
-          // Verify space left
-          if (leftaux < 0) {
-            calculatedPosition.value = "right-bottom";
-            left = wrapperRect.right + 100;
-          }
-          break;
         case "left":
           top = wrapperRect.top + wrapperRect.height / 2 - tooltipRect.height / 2;
           left = wrapperRect.left - tooltipRect.width - 10;
@@ -113,6 +97,22 @@ export default {
             left = wrapperRect.left - tooltipRect.width - 10;
           }
           break;
+        case "bottom":
+        default:
+          top = wrapperRect.bottom + 10;
+          left = wrapperRect.left + wrapperRect.width / 2 - tooltipRect.width / 2;
+          // Verify space bottom
+          if (top + tooltipRect.height > viewportHeight) {
+            calculatedPosition.value = "top";
+            top = wrapperRect.top - tooltipRect.height - 10;
+          }
+
+          const leftaux = wrapperRect.left - tooltipRect.width - 10;
+          // Verify space left
+          if (leftaux < 0) {
+            calculatedPosition.value = "right-bottom";
+            left = wrapperRect.right + 100;
+          }
       }
 
       // Verify if tooltip leaves the viewport

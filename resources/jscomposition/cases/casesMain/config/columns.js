@@ -1,9 +1,11 @@
 import moment from "moment";
+
 import {
   CaseTitleCell,
   TruncatedOptionsCell,
   ParticipantsCell,
   StatusCell,
+  LinkCell,
 } from "../../../system/index";
 
 const formatDate = (value, format) => {
@@ -17,7 +19,10 @@ const formatDate = (value, format) => {
       config = ProcessMaker.user.datetime_format;
     }
     if (format === "date") {
-      config = ProcessMaker.user.datetime_format.replace(/[\sHh:msaAzZ]/g, "");
+      config = ProcessMaker.user.datetime_format.replace(
+        /[\sHh:msaAzZ]/g,
+        "",
+      );
     }
   }
   if (value) {
@@ -58,6 +63,14 @@ export const caseNumberColumn = () => ({
     type: "string",
     operators: ["=", ">", ">=", "in", "between"],
   },
+  cellRenderer: () => ({
+    component: LinkCell,
+    params: {
+      click: (row, column, columns) => {
+        window.document.location = `cases/${row.case_number}`;
+      },
+    },
+  }),
 });
 
 export const caseTitleColumn = () => ({
@@ -65,7 +78,14 @@ export const caseTitleColumn = () => ({
   header: "Case Title",
   resizable: true,
   width: 200,
-  cellRenderer: () => CaseTitleCell,
+  cellRenderer: () => ({
+    component: CaseTitleCell,
+    params: {
+      click: (row, column, columns) => {
+        window.document.location = `cases/${row.case_number}`;
+      },
+    },
+  }),
   filter: {
     type: "string",
     operators: ["=", ">", ">=", "in", "between"],
@@ -77,7 +97,13 @@ export const processColumn = () => ({
   header: "Process",
   resizable: true,
   width: 200,
-  cellRenderer: () => TruncatedOptionsCell,
+  cellRenderer: () => ({
+    component: TruncatedOptionsCell,
+    params: {
+      click: (option, row, column, columns) => {
+      },
+    },
+  }),
   filter: {
     type: "string",
     operators: ["="],
@@ -89,7 +115,14 @@ export const taskColumn = () => ({
   header: "Task",
   resizable: true,
   width: 200,
-  cellRenderer: () => TruncatedOptionsCell,
+  cellRenderer: () => ({
+    component: TruncatedOptionsCell,
+    params: {
+      click: (option, row, column, columns) => {
+        window.document.location = `tasks/${option.id}/edit`;
+      },
+    },
+  }),
   filter: {
     type: "string",
     operators: ["="],
@@ -101,7 +134,14 @@ export const participantsColumn = () => ({
   header: "Participants",
   resizable: true,
   width: 200,
-  cellRenderer: () => ParticipantsCell,
+  cellRenderer: () => ({
+    component: ParticipantsCell,
+    params: {
+      click: (option, row, column, columns) => {
+        window.document.location = `profile/${option.id}`;
+      },
+    },
+  }),
   filter: {
     type: "string",
     operators: ["="],
@@ -113,7 +153,9 @@ export const statusColumn = () => ({
   header: "Status",
   resizable: true,
   width: 200,
-  cellRenderer: () => StatusCell,
+  cellRenderer: () => ({
+    component: StatusCell,
+  }),
   filter: {
     type: "string",
     operators: ["="],

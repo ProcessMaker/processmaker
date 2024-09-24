@@ -1,18 +1,13 @@
 <template>
   <div
-    class="tw-text-nowrap tw-whitespace-nowrap"
+    v-if="row.case_title_formatted"
+    class="tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis"
     :style="{ width: column.width + 'px' } ">
     <a
-      href="#"
       class="hover:tw-text-blue-500"
+      href="#"
       @click.prevent="onClick">
-      <div
-        v-if="row.case_title_formatted"
-        class="tw-overflow-hidden tw-text-ellipsis"
-        v-html="row.case_title_formatted" />
-      <span
-        v-else
-        class="tw-overflow-hidden tw-text-ellipsis">{{ getValue() }}</span>
+      {{ getValue() }}
     </a>
   </div>
 </template>

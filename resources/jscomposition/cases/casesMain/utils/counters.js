@@ -1,5 +1,6 @@
-export default {};
 import { t } from "i18next";
+
+export default {};
 
 export const formatCounters = (data) => {
   const counters = [
@@ -24,23 +25,29 @@ export const formatCounters = (data) => {
       icon: "far fa-check-circle",
       url: "/cases-main/completed",
     },
-    {
+  ];
+
+  if (data.allCases) {
+    counters.push({
       header: t("All cases"),
       body: data.allCases.toString(),
       color: "purple",
       icon: "far fa-clipboard",
       url: "/cases-main/all-cases",
-    },
-    {
-      header: t("All requests"),
+    });
+  }
+
+  if (data.allRequests) {
+    counters.push({
+      header: t("My requests"),
       body: data.allRequests.toString(),
       color: "gray",
       icon: "fas fa-play",
       url: () => {
         window.location.href = "/requests";
       },
-    },
-  ];
+    });
+  }
 
   return counters;
 };

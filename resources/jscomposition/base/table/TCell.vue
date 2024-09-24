@@ -11,8 +11,9 @@
       </slot>
     </div>
     <component
+      :is="getComponent()"
       v-else
-      :is="column.cellRenderer()"
+      v-bind="getParams()"
       :columns="columns"
       :column="column"
       :row="row" />
@@ -45,7 +46,14 @@ export default defineComponent({
       }
       return get(props.row, props.column?.field) || "";
     };
+
+    const getComponent = () => props.column.cellRenderer().component;
+
+    const getParams = () => props.column.cellRenderer().params || {};
+
     return {
+      getComponent,
+      getParams,
       getValue,
     };
   },

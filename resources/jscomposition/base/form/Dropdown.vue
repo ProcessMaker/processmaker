@@ -21,6 +21,7 @@
     <transition :name="animation">
       <div
         v-if="show"
+        ref="containerRef"
         class="tw-fixed tw-mt-1 tw-rounded-lg tw-z-10 tw-shadow-lg tw-bg-white tw-ring-1 tw-ring-inset tw-ring-gray-300"
         :style="{ width: `${widthContainer}px`, top: `${top}px` }">
         <ul class="tw-list-none tw-overflow-hidden tw-rounded">
@@ -92,6 +93,8 @@ export default defineComponent({
   emits: ["input", "change"],
   setup(props, { emit }) {
     const inputRef = ref();
+    const containerRef = ref();
+
     const show = ref(false);
     const widthContainer = ref(100);
     const top = ref(0);
@@ -121,8 +124,18 @@ export default defineComponent({
       emit("change", option);
     };
 
+    /**
+     * This method calculates the new position for dropdown menu
+     * Considers:
+     * - Space down in relation to viewport
+     *
+     * Increase other use cases
+     */
     const calculatePosition = () => {
       const rect = inputRef.value?.getBoundingClientRect();
+      const containerRect = containerRef.value.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
 
       widthContainer.value = rect.width || 100;
 
@@ -137,6 +150,14 @@ export default defineComponent({
         container = container.parentElement;
       }
 
+      // Check: Does the dropdown menu have space down?
+      if (rect.top + containerRect.height > viewportHeight) {
+        topPosition = rect.top - containerRect.height;
+
+        top.value = topPosition;
+        return;
+      }
+
       top.value = inputRef.value.offsetTop - topPosition;
     };
 
@@ -145,10 +166,10 @@ export default defineComponent({
     };
 
     const toogleShow = ($event) => {
-      calculatePosition($event);
+      show.value = !show.value;
 
       nextTick(() => {
-        show.value = !show.value;
+        calculatePosition($event);
       });
     };
 
@@ -161,6 +182,7 @@ export default defineComponent({
     });
 
     return {
+      containerRef,
       show,
       data,
       inputRef,
