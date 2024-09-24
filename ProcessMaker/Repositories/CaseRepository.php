@@ -75,12 +75,12 @@ class CaseRepository implements CaseRepositoryInterface
             $case->case_title = $instance->case_title;
             $case->case_status = $instance->status === 'ACTIVE' ? 'IN_PROGRESS' : $instance->status;
 
-            $case->request_tokens->push($token->getKey())
+            $case->request_tokens = $case->request_tokens->push($token->getKey())
                 ->unique()
                 ->values();
 
             if (!in_array($token->element_type, ['scriptTask'])) {
-                $case->tasks->push([
+                $case->tasks = $case->tasks->push([
                     'id' => $token->getKey(),
                     'element_id' => $token->element_id,
                     'name' => $token->element_name,
