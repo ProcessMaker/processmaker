@@ -86,6 +86,7 @@ class PermissionSeeder extends Seeder
         'Requests' => [
             'view-all_cases',
             'view-all_requests',
+            'view-my_requests',
             'edit-request_data',
             'edit-task_data',
         ],
