@@ -17,9 +17,13 @@ return [
         'runner' => 'PhpRunner',
         'mime_type' => 'application/x-php',
         'options' => ['invokerPackage' => 'ProcessMaker\\Client'],
-        'init_dockerfile' => [
-        ],
         'package_path' => base_path('/docker-services/nayra'),
+        'init_dockerfile' => [
+            'WORKDIR /opt/executor/src',
+        ],
+        'final_instructions' => [
+            'WORKDIR /app',
+        ],
         'package_version' => '1.0.0',
         'sdk' => '',
     ],

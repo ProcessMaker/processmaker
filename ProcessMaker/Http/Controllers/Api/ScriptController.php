@@ -18,9 +18,12 @@ use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
 use ProcessMaker\Query\SyntaxError;
+use ProcessMaker\Traits\ProjectAssetTrait;
 
 class ScriptController extends Controller
 {
+    use ProjectAssetTrait;
+
     /**
      * A whitelist of attributes that should not be
      * sanitized by our SanitizeInput middleware.
@@ -346,6 +349,9 @@ class ScriptController extends Controller
         $changes = $script->getChanges();
         //Creating temporary Key to store multiple id categories
         $changes['tmp_script_category_id'] = $request->input('script_category_id');
+
+        self::clearAndRebuildUserProjectAssetsCache();
+
         ScriptCreated::dispatch($script, $changes);
 
         return new ScriptResource($script);

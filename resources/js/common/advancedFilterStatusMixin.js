@@ -26,7 +26,8 @@ export default {
   },
   methods: {
     setAdvancedFilter() {
-      this.advancedFilter = get(this.advancedFilterProp, 'filters') || get(window, 'ProcessMaker.advanced_filter.filters', []);
+      this.advancedFilter = get(this.advancedFilterProp, 'filters') || 
+              get(window, 'ProcessMaker.advanced_filter.filters', []);
       this.$refs.pmqlInputFilters?.buildPmql();
     },
     formatForBadge(filters, result) {
@@ -36,7 +37,13 @@ export default {
         }
         result.push([
           this.formatBadgeSubject(filter),
-          [{name: this.formatBadgeValue(filter), operator: filter.operator, advanced_filter: true}]
+          [
+            {
+              name: this.formatBadgeValue(filter),
+              operator: filter.operator,
+              advanced_filter: true
+            }
+          ]
         ]);
 
         if (filter.or && filter.or.length > 0) {
@@ -51,7 +58,29 @@ export default {
       if ('_display_value' in filter) {
         return filter._display_value;
       }
-      return filter.value
+      if (this.isDatetime(filter.value)) {
+        return this.formatDatetime(filter.value);
+      }
+      if (Array.isArray(filter.value)) {
+        let copyArray = [...filter.value];
+        for (let i = 0; i < copyArray.length; i++) {
+          let cell = copyArray[i];
+          if (this.isDatetime(cell)) {
+            copyArray[i] = this.formatDatetime(cell);
+          }
+        }
+        return copyArray;
+      }
+      return filter.value;
+    },
+    isDatetime(value) {
+      let date = moment(value, "YYYY-MM-DDTHH:mm:ss.SSS[Z]", true);
+      return date.isValid();
+    },
+    formatDatetime(value) {
+      return moment(value)
+              .tz(window.ProcessMaker.user.timezone)
+              .format(window.ProcessMaker.user.datetime_format);
     }
   },
   computed: {

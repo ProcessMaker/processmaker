@@ -152,7 +152,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         'self_service_groups' => 'array',
         'token_properties' => 'array',
         'is_priority' => 'boolean',
-        'is_actionbyemail' => 'boolean'
+        'is_actionbyemail' => 'boolean',
     ];
 
     /**
@@ -1234,7 +1234,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 ]);
                 break;
             case 'taskSource':
-                $elementDestination = $elementDestinationType;
+                $elementDestination = null;
                 break;
             default:
                 $elementDestination = null;
@@ -1268,5 +1268,40 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         }
 
         return $this->getElementDestination($elementDestinationType, $elementDestinationProp);
+    }
+
+    /**
+     * Filter by user_id, includes assigned and self-service tasks
+     *
+     * @param mixed $query
+     * @param mixed $userId ID of the user
+     * @return mixed
+     */
+    public static function scopeWhereUserAssigned($query, $userId)
+    {
+        $userColumn = 'user_id';
+        $query->where(function ($query) use ($userColumn, $userId) {
+            $query->where($userColumn, $userId);
+            $query->orWhere(function ($query) use ($userColumn, $userId) {
+                $query->whereNull($userColumn);
+                $query->where('process_request_tokens.is_self_service', 1);
+                $user = User::find($userId);
+                $query->where(function ($query) use ($user) {
+                    foreach ($user->groups as $group) {
+                        $query->orWhereJsonContains(
+                            'process_request_tokens.self_service_groups', strval($group->getKey())
+                        ); // backwards compatibility
+                        $query->orWhereJsonContains(
+                            'process_request_tokens.self_service_groups->groups', strval($group->getKey())
+                        );
+                    }
+                    $query->orWhereJsonContains(
+                        'process_request_tokens.self_service_groups->users', strval($user->getKey())
+                    );
+                });
+            });
+        });
+
+        return $query;
     }
 }
