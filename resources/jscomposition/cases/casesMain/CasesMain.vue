@@ -42,21 +42,32 @@ export default defineComponent({
       pages.value.pop();
       pages.value.push({ name: counter.header, current: true });
 
-      router.push({ path: counter.url }).catch((e) => {});
+      router.push({ path: counter.url }).catch((e) => { });
     };
 
-    onMounted(async () => {
+    const initCounters = async () => {
       let currentCounter = [];
       const resCounters = await getCounters();
-      countersData.value = formatCounters(resCounters);
 
-      currentCounter = countersData.value.find((counter) => counter.url === route.path);
+      countersData.value = formatCounters(resCounters);
+      currentCounter = countersData.value.find((counter) => counter.url === route.path) ?? countersData.value[0];
+
+      currentCounter.active = true;
+    };
+
+    const initBreadcrums = () => {
+      const currentCounter = countersData.value.find((e) => e.active) ?? countersData.value[0];
       pages.value = [
         configHomeBreadcrum(),
         { name: "Cases", href: "/cases", current: false },
       ];
-      currentCounter = currentCounter ?? countersData.value.find((counter) => counter.url.includes("/my-cases"));
+
       pages.value.push({ name: currentCounter.header, current: true });
+    };
+
+    onMounted(async () => {
+      await initCounters();
+      initBreadcrums();
     });
 
     return {

@@ -9,21 +9,21 @@ export const formatCounters = (data) => {
       body: data.myCases.toString(),
       color: "amber",
       icon: "far fa-user",
-      url: "/cases-main/my-cases",
+      url: "/cases",
     },
     {
       header: t("In progress"),
       body: data.inProgress.toString(),
       color: "green",
       icon: "fas fa-list",
-      url: "/cases-main/in-progress",
+      url: "/cases/in_progress",
     },
     {
       header: t("Completed"),
       body: data.completed.toString(),
       color: "blue",
       icon: "far fa-check-circle",
-      url: "/cases-main/completed",
+      url: "/cases/completed",
     },
   ];
 
@@ -33,7 +33,7 @@ export const formatCounters = (data) => {
       body: data.allCases.toString(),
       color: "purple",
       icon: "far fa-clipboard",
-      url: "/cases-main/all-cases",
+      url: "/cases/all",
     });
   }
 

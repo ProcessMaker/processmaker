@@ -139,12 +139,9 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('cases', [CasesController::class, 'index'])->name('cases.index')->middleware('no-cache');
     Route::get('cases/{request}', [CasesController::class, 'edit'])->name('cases.edit');
     // This is a temporary API the engine team will create the API
-    Route::get('cases-main/{type?}', [CasesController::class, 'index'])->name('cases-main.index')
-    ->where('type', 'my-cases|in-progress|completed|all-cases')
+    Route::get('cases/{type?}', [CasesController::class, 'index'])->name('cases-main.index')
+    ->where('type', 'in_progress|completed|all')
     ->middleware('no-cache'); 
-    Route::get('cases/{type?}', [RequestController::class, 'index'])->name('cases_by_type')
-        ->where('type', 'all|in_progress|completed')
-        ->middleware('no-cache');
     // Requests
     Route::get('requests', [RequestController::class, 'index'])
         ->name('requests.index')

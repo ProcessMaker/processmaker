@@ -67,7 +67,7 @@ export const caseNumberColumn = () => ({
     component: LinkCell,
     params: {
       click: (row, column, columns) => {
-        window.document.location = `cases/${row.case_number}`;
+        window.document.location = `/cases/${row.case_number}`;
       },
     },
   }),
@@ -82,7 +82,7 @@ export const caseTitleColumn = () => ({
     component: CaseTitleCell,
     params: {
       click: (row, column, columns) => {
-        window.document.location = `cases/${row.case_number}`;
+        window.document.location = `/cases/${row.case_number}`;
       },
     },
   }),
@@ -119,7 +119,7 @@ export const taskColumn = () => ({
     component: TruncatedOptionsCell,
     params: {
       click: (option, row, column, columns) => {
-        window.document.location = `tasks/${option.id}/edit`;
+        window.document.location = `/tasks/${option.id}/edit`;
       },
     },
   }),
@@ -138,7 +138,7 @@ export const participantsColumn = () => ({
     component: ParticipantsCell,
     params: {
       click: (option, row, column, columns) => {
-        window.document.location = `profile/${option.id}`;
+        window.document.location = `/profile/${option.id}`;
       },
     },
   }),
@@ -188,7 +188,7 @@ export const completedColumn = () => ({
 
 export const getColumns = (type) => {
   const columnsDefinition = {
-    "my-cases": [
+    default: [
       caseNumberColumn(),
       caseTitleColumn(),
       processColumn(),
@@ -198,7 +198,7 @@ export const getColumns = (type) => {
       startedColumn(),
       completedColumn(),
     ],
-    "in-progress": [
+    in_progress: [
       caseNumberColumn(),
       caseTitleColumn(),
       processColumn(),
@@ -217,7 +217,7 @@ export const getColumns = (type) => {
       startedColumn(),
       completedColumn(),
     ],
-    "all-cases": [
+    all: [
       caseNumberColumn(),
       caseTitleColumn(),
       processColumn(),
@@ -229,5 +229,5 @@ export const getColumns = (type) => {
     ],
   };
 
-  return columnsDefinition[type] || columnsDefinition.myCases;
+  return columnsDefinition[type] || columnsDefinition.default;
 };
