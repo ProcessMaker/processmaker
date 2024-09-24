@@ -3,9 +3,11 @@
     <BaseTable
       id="request-table"
       :columns="columnsConfig"
-      :data="data"
-    />
-    <Pagination />
+      :data="data" />
+    <Pagination
+      :total="dataPagination.total"
+      :page="dataPagination.page"
+      :pages="dataPagination.pages" />
   </div>
 </template>
 
@@ -20,6 +22,12 @@ export default defineComponent({
   setup() {
     const data = ref(null);
     const columnsConfig = ref(null);
+    const dataPagination = ref({
+      total: 153,
+      page: 0,
+      pages: 10,
+      perPage: 15,
+    });
 
     onMounted(async () => {
       data.value = await getData();
@@ -28,6 +36,7 @@ export default defineComponent({
 
     return {
       data,
+      dataPagination,
       columnsConfig,
     };
   },

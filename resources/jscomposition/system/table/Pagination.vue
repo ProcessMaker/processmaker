@@ -128,6 +128,7 @@
 </template>
 <script>
 import { defineComponent, ref, computed } from "vue";
+import { t } from "i18next";
 import { Dropdown } from "../../base/form";
 
 export default defineComponent({
@@ -154,9 +155,24 @@ export default defineComponent({
   },
   emits: ["perPage", "go"],
   setup(props, { emit }) {
-    const optionsModel = ref(props.options);
     const totalModel = computed(() => props.total);
     const pageModel = ref(props.page);
+    const optionsPerPage = [
+      {
+        value: 15,
+        label: `15 ${t("items")}`,
+      },
+      {
+        value: 30,
+        label: `30 ${t("items")}`,
+      },
+      {
+        value: 50,
+        label: `50 ${t("items")}`,
+      },
+    ];
+
+    const optionsModel = ref(props.options.length ? props.options : optionsPerPage);
 
     const selectedOption = ref({
       value: 15,
