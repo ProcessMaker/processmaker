@@ -8,6 +8,7 @@ use ProcessMaker\Exception\ConfigurationException;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
+use ProcessMaker\ScriptRunners\RestScriptRunner;
 use ProcessMaker\ScriptRunners\ScriptRunner;
 use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\ExtendedPMQL;
@@ -156,8 +157,10 @@ class Script extends ProcessMakerModel implements ScriptInterface
         if (!$this->scriptExecutor) {
             throw new ScriptLanguageNotSupported($this->language);
         }
-        $runner = new ScriptRunner($this->scriptExecutor);
-        $runner->setTokenId($tokenId);
+
+        $runner = new RestScriptRunner($this->language);
+        //$runner = new ScriptRunner($this->scriptExecutor);
+        //$runner->setTokenId($tokenId);
         $user = User::find($this->run_as_user_id);
         if (!$user) {
             throw new ConfigurationException('A user is required to run scripts');

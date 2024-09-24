@@ -10,7 +10,7 @@ class ScriptRunner
     /**
      * Concrete script runner
      *
-     * @var \ProcessMaker\ScriptRunners\Base
+     * @var Base
      */
     private $runner;
 
@@ -41,17 +41,19 @@ class ScriptRunner
      *
      * @param ScriptExecutor $executor
      *
-     * @return \ProcessMaker\ScriptRunners\Base
-     * @throws \ProcessMaker\Exception\ScriptLanguageNotSupported
+     * @return Base
+     * @throws ScriptLanguageNotSupported
      */
     private function getScriptRunner(ScriptExecutor $executor)
     {
         $language = strtolower($executor->language);
         $runner = config("script-runners.{$language}.runner");
+        \Log::info($runner);
         if (!$runner) {
             throw new ScriptLanguageNotSupported($language);
         } else {
             $class = "ProcessMaker\\ScriptRunners\\{$runner}";
+            \Log::info($class);
 
             return app()->make($class, ['scriptExecutor' => $executor]);
         }
