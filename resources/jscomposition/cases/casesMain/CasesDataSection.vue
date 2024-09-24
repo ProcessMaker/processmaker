@@ -38,7 +38,7 @@ export default defineComponent({
   props: {
     listId: {
       type: String,
-      default: () => "myCases",
+      default: () => "",
     },
   },
   setup(props) {
