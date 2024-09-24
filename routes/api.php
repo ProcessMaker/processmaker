@@ -411,3 +411,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         Route::get('devlink/{devLink}', [DevLinkController::class, 'show'])->name('devlink.show');
     });
 });
+
+Route::prefix('api')->name('api.')->group(function () {
+    Route::post('/scripts/microservice/execution', [ScriptController::class, 'microserviceExecution']);
+});
