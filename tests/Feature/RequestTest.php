@@ -45,7 +45,7 @@ class RequestTest extends TestCase
     public function testIndexRoute()
     {
         // get the URL
-        $response = $this->webCall('GET', '/cases');
+        $response = $this->webCall('GET', '/requests');
         $response->assertStatus(200);
         // check the correct view is called
         $response->assertViewIs('requests.index');

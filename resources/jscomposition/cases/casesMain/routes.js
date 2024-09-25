@@ -6,7 +6,7 @@ export default {};
 export const routes = [
   {
     name: "cases",
-    path: "/cases-main",
+    path: "/cases",
     component: CasesMain,
     props(route) {
       return {};
@@ -18,7 +18,7 @@ export const routes = [
         component: CasesDataSection,
         props(route) {
           return {
-            listId: route.params?.id || "my-cases",
+            listId: route.params?.id || "",
           };
         },
       },
