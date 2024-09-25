@@ -520,17 +520,7 @@ abstract class ExporterBase implements ExporterInterface
         foreach ($this->getDependents(DependentType::CATEGORIES) as $dependent) {
             $categories->push($categoryClass::findOrFail($dependent->model->id));
         }
-        // Get the options from the object, filter them for the `isTemplate` flag and get the first value.
-        $manifest = $this->manifest->toArray(true);
-        $options = (array) $this->options;
-        $isTemplate = collect($options['options'])
-            ->filter(function ($optionValue, $optionKey) use ($manifest) {
-                return Arr::has($manifest, $optionKey);
-            })
-            ->map(function ($optionValue, $optionKey) {
-                return Arr::get($optionValue, 'isTemplate');
-            })
-            ->first();
+        $isTemplate = $this->options->get('isTemplate', $this->model->uuid);
 
         // If the process has a set category, we need to verify the "Uncategorized"
         // category exists for this model and if it doesn't, recreate it
