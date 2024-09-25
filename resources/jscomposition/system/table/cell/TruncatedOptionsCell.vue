@@ -1,19 +1,20 @@
 <template>
-  <div class="tw-flex tw-relative tw-text-nowrap tw-whitespace-nowrap"
-		:style="{ width: column.width + 'px' }">
+  <div
+    class="tw-flex tw-relative tw-text-nowrap tw-whitespace-nowrap"
+    :style="{ width: column.width + 'px' }">
     <div class="tw-overflow-hidden tw-text-ellipsis ">
-			{{ row[column.field][0].name }}
-		</div>
+      {{ row[column.field][0].name }}
+    </div>
 
     <AppPopover
-		  v-model="show"
+      v-model="show"
       :hover="false"
       position="bottom"
       class="!tw-absolute -tw-right-3">
       <div
         class="hover:tw-bg-gray-200 tw-bg-white tw-px-2 tw-rounded-md hover:tw-cursor-pointer"
         @click.prevent.stop="onClick">
-        <i class="fas fa-ellipsis-v"></i>
+        <i class="fas fa-ellipsis-v" />
       </div>
 
       <template #content>
@@ -37,9 +38,7 @@
 import { defineComponent, nextTick, ref } from "vue";
 import { AppPopover } from "../../../base/index";
 
-const isTruncated = (element) => {
-  return element.scrollWidth > element.clientWidth;
-};
+const isTruncated = (element) => element.scrollWidth > element.clientWidth;
 
 export default defineComponent({
   components: {
@@ -58,6 +57,10 @@ export default defineComponent({
       type: Object,
       default: () => ({}),
     },
+    click: {
+      type: Function,
+      default: new Function(),
+    },
   },
   setup(props, { emit }) {
     const show = ref(false);
@@ -67,7 +70,9 @@ export default defineComponent({
       show.value = !show.value;
     };
 
-    const onClickOption = (option, index) => {};
+    const onClickOption = (option, index) => {
+      props.click && props.click(option, props.row, props.column, props.columns);
+    };
 
     const onClose = () => {
       show.value = false;

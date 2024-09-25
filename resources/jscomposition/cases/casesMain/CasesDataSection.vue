@@ -10,7 +10,12 @@
       :data="data"
       class="tw-grow tw-overflow-y-scroll" />
 
-    <Pagination />
+    <Pagination
+      :total="dataPagination.total"
+      :page="dataPagination.page"
+      :pages="dataPagination.pages"
+      @perPage="onPerPage"
+      @go="onGo" />
   </div>
 </template>
 <script>
@@ -33,7 +38,7 @@ export default defineComponent({
   props: {
     listId: {
       type: String,
-      default: () => "myCases",
+      default: () => "",
     },
   },
   setup(props) {
@@ -41,16 +46,44 @@ export default defineComponent({
     const columnsConfig = ref();
     const data = ref();
 
+    const dataPagination = ref({
+      total: 153,
+      page: 0,
+      pages: 10,
+      perPage: 15,
+    });
+
+    const getData = () => getAllData({
+      type: props.listId,
+      page: dataPagination.value.page,
+      perPage: dataPagination.value.perPage,
+    });
+
+    const onGo = async (page) => {
+      dataPagination.value.page = page;
+
+      data.value = await getData();
+    };
+
+    const onPerPage = async (perPage) => {
+      dataPagination.value.perPage = perPage;
+
+      data.value = await getData();
+    };
+
     onMounted(async () => {
-      data.value = await getAllData({ type: props.listId, page: 15 });
+      data.value = await getData();
 
       columnsConfig.value = getColumns(props.listId);
     });
 
     return {
+      dataPagination,
       columnsConfig,
       data,
       badgesData,
+      onGo,
+      onPerPage,
     };
   },
 });
