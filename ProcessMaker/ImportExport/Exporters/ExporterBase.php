@@ -289,14 +289,15 @@ abstract class ExporterBase implements ExporterInterface
 
     public function toArray()
     {
+        $lastModifiedBy = $this->getLastModifiedBy();
         $attributes = [
             'exporter' => get_class($this),
             'type' => $this->getClassName(),
             'type_human' => Str::singular($this->getTypeHuman($this->getClassName())),
             'type_plural' => Str::plural($this->getClassName()),
             'type_human_plural' => Str::plural($this->getTypeHuman($this->getClassName())),
-            'last_modified_by' => $this->getLastModifiedBy()['lastModifiedByName'],
-            'last_modified_by_id' => $this->getLastModifiedBy()['lastModifiedById'],
+            'last_modified_by' => $lastModifiedBy['lastModifiedByName'],
+            'last_modified_by_id' => $lastModifiedBy['lastModifiedById'],
             'model' => get_class($this->model),
             'force_password_protect' => $this->forcePasswordProtect,
             'hidden' => $this->hidden,
