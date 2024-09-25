@@ -6,6 +6,7 @@ const getData = async () => {
   for (let i = 0; i <= 31; i += 1) {
     const obj = {
       id: `${i}`,
+      case_number: 100,
       case_title: `Case Title ${i}`,
       process_name: `Process ${i}`,
       assigned: `Avatar ${i}`,
