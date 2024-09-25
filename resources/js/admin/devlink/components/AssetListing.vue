@@ -79,20 +79,53 @@ const load = () => {
   <div>
     <instance-tabs />
     <h3>{{ typeConfig.name }}</h3>
+    <div class="card asset-listing-card">
     <div v-if="!typeConfig">
       Invalid asset type
     </div>
-    <b-table
-      v-else
-      :items="items"
-      :fields="fields"
-      >
-      <template #cell(menu)="data">
-        <a
-          href="#"
-          @click.prevent="install(data.item)"
-        >Install</a>
-      </template>
-    </b-table>
+      <b-table
+        v-else
+        :items="items"
+        :fields="fields"
+        class="asset-listing-table"
+        >
+        <template #cell(menu)="data">
+          <button
+            class="btn install-asset-btn"
+            @click.prevent="install(data.item)"
+          >
+            <i class="fp-cloud-download-outline"></i>
+          </button>
+        </template>
+      </b-table>
+    </div>
   </div>
 </template>
+<style>
+.asset-listing-table {
+  border-bottom: 1px solid #e9edf1;
+}
+.asset-listing-table th {
+  border-top: none;
+  background-color: #FBFBFC;
+  border-right: 1px solid rgba(0, 0, 0, 0.125);
+  color: #4E5663;
+  font-weight: 600;
+  font-size: 14px;
+}
+.asset-listing-table thead th:last-child {
+  border-right: none !important;
+  border-top-right-radius: 8px;
+}
+.asset-listing-table thead th:first-child {
+  border-top-left-radius: 8px;
+}
+.asset-listing-card {
+  border-radius: 8px;
+  min-height: calc(-355px + 100vh);
+}
+.install-asset-btn {
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+}
+</style>

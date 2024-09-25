@@ -109,8 +109,15 @@ const executeDelete = () => {
 
 <template>
   <div>
-    <b-button variant="primary" @click="createNewBundle">Create New Bundle</b-button>
-
+    <div class="top-options">
+      <b-button 
+        variant="primary" 
+        @click="createNewBundle"
+        class="new-button"
+      >
+      <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>Create Bundle
+      </b-button>
+    </div>
     <b-modal ref="confirmDeleteModal" title="Delete Bundle" @ok="executeDelete">
       <p>Are you sure you want to delete {{ selected?.name }}?</p>
     </b-modal>
@@ -126,24 +133,77 @@ const executeDelete = () => {
         <b-form-checkbox v-model="selected.locked"></b-form-checkbox>
       </b-form-group>
     </b-modal>
-
-    <b-table
-      :items="bundles"
-      :fields="fields"
-    >
-      <template #cell(name)="data">
-        {{ data.item.name }}
-        <i v-if="data.item.locked" class="ml-2 fa fa-lock"></i>
-      </template>
-      <template #cell(published)="data">
-        <b-form-checkbox v-model="data.item.published" switch @change="updatePublished(data.item)">
-        </b-form-checkbox>
-      </template>
-      <template #cell(menu)="data">
-        <a href="#" @click.prevent="edit(data.item)">Edit</a>
-        |
-        <a href="#" @click.prevent="deleteBundle(data.item)">Delete</a>
-      </template>
-    </b-table>
+    <div class="card local-bundles-card">
+      <b-table
+        :items="bundles"
+        :fields="fields"
+        class="local-bundles-table"
+      >
+        <template #cell(name)="data">
+          {{ data.item.name }}
+          <i v-if="data.item.locked" class="ml-2 fa fa-lock"></i>
+        </template>
+        <template #cell(published)="data">
+          <b-form-checkbox v-model="data.item.published" switch @change="updatePublished(data.item)">
+          </b-form-checkbox>
+        </template>
+        <template #cell(menu)="data">
+          <div class="btn-group" role="group" aria-label="Basic example">
+            <button 
+              type="button" 
+              class="btn btn-menu" 
+              @click.prevent="edit(data.item)"
+            >
+              <img src="/img/pencil-fill.svg">
+            </button>
+            <button 
+              type="button" 
+              class="btn btn-menu" 
+              @click.prevent="deleteBundle(data.item)"
+            >
+              <img src="/img/trash-fill.svg">
+            </button>
+          </div>          
+        </template>
+      </b-table>
+    </div>
   </div>
 </template>
+
+<style>
+tr:hover {
+  cursor: pointer;
+}
+.top-options {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 16px;
+}
+.local-bundles-table {
+  border-bottom: 1px solid #e9edf1;
+}
+.local-bundles-table th {
+  border-top: none;
+  background-color: #FBFBFC;
+  border-right: 1px solid rgba(0, 0, 0, 0.125);
+  color: #4E5663;
+  font-weight: 600;
+  font-size: 14px;
+}
+.local-bundles-table thead th:last-child {
+  border-right: none !important;
+  border-top-right-radius: 8px;
+}
+.local-bundles-table thead th:first-child {
+  border-top-left-radius: 8px;
+}
+.local-bundles-card {
+  border-radius: 8px;
+  min-height: calc(-355px + 100vh);
+}
+.new-button {
+  text-transform: none;
+  font-weight: 500;
+  font-size: 14px;
+}
+</style>

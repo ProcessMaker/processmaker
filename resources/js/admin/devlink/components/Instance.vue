@@ -60,18 +60,51 @@ const install = (bundle) => {
 <template>
   <div>
     <instance-tabs />
-    
-    <b-table
-      :items="bundles"
-      :fields="fields"
-    >
-      <template #cell(menu)="data">
-        <a
-          href="#"
-          @click.prevent="install(data.item)"
-        >Install</a>
-      </template>
-    </b-table>
+    <div class="card instance-card">
+      <b-table
+        :items="bundles"
+        :fields="fields"
+        class="instance-table"
+      >
+        <template #cell(menu)="data">
+          <button
+            class="btn install-bundle-btn"
+            @click.prevent="install(data.item)"
+          >
+            <i class="fp-cloud-download-outline"></i>
+          </button>
+        </template>
+      </b-table>
+    </div>
   </div>
 
 </template>
+
+<style>
+.instance-table {
+  border-bottom: 1px solid #e9edf1;
+}
+.instance-table th {
+  border-top: none;
+  background-color: #FBFBFC;
+  border-right: 1px solid rgba(0, 0, 0, 0.125);
+  color: #4E5663;
+  font-weight: 600;
+  font-size: 14px;
+}
+.instance-table thead th:last-child {
+  border-right: none !important;
+  border-top-right-radius: 8px;
+}
+.instance-table thead th:first-child {
+  border-top-left-radius: 8px;
+}
+.instance-card {
+  border-radius: 8px;
+  min-height: calc(-355px + 100vh);
+}
+.install-bundle-btn {
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+}
+</style>
