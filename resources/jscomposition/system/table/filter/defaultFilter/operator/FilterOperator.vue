@@ -18,7 +18,7 @@
 import {
   defineComponent, ref, onMounted,
 } from "vue";
-import { Dropdown } from "../../../../base";
+import { Dropdown } from "../../../../../base";
 import { getOperatorType } from "./operatorConfig";
 
 const defaultOperators = [

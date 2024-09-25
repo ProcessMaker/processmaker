@@ -5,36 +5,26 @@
     class="tw-grow tw-overflow-y-scroll">
     <template
       v-for="(column, index) in columns"
-      v-slot:[`theader-filter-${column.field}`]>
+      #[`theader-filter-${column.field}`]>
       <FilterColumn
         v-if="column.filter"
-        :key="index"
-        :filter="column.filter"/>
+        :key="`default-${index}`"
+        :filter="column.filter" />
     </template>
   </BaseTable>
 </template>
-<script>
-import { defineComponent } from "vue";
+<script setup>
 import { BaseTable } from "../../base";
-import FilterColumn from "./filter/FilterColumn.vue";
+import { FilterColumn } from "./filter/defaultFilter/index";
 
-export default defineComponent({
-  components: {
-    BaseTable,
-    FilterColumn,
+defineProps({
+  columns: {
+    type: Array,
+    default: () => [],
   },
-  props: {
-    columns: {
-      type: Array,
-      default: () => [],
-    },
-    data: {
-      type: Array,
-      default: () => [],
-    },
-  },
-  setup() {
-    return {};
+  data: {
+    type: Array,
+    default: () => [],
   },
 });
 </script>
