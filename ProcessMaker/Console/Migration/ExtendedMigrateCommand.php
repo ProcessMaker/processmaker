@@ -8,10 +8,9 @@ use ProcessMaker\Models\ProcessMakerModel;
 
 class ExtendedMigrateCommand extends BaseMigrateCommand
 {
-
     public function handle(): void
     {
-        Cache::tags(ProcessMakerModel::MIGRATION_COLUMNS_CACHE_KEY)->flush();
+        Cache::flush();
 
         parent::handle();
     }

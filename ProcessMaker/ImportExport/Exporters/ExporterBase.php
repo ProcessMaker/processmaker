@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\ImportExport\Exporters;
 
+use Facades\ProcessMaker\Helpers\CachedSchema;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
@@ -69,7 +70,7 @@ abstract class ExporterBase implements ExporterInterface
         $baseQuery = $class::query();
 
         // If table does not exists for model, continue.
-        if (!Schema::hasTable($baseQuery->getModel()->getTable())) {
+        if (!CachedSchema::hasTable($baseQuery->getModel()->getTable())) {
             return [null, null];
         }
 
@@ -342,7 +343,7 @@ abstract class ExporterBase implements ExporterInterface
 
     public function getDescription()
     {
-        if (!Schema::hasColumn($this->model->getTable(), 'description')) {
+        if (!CachedSchema::hasColumn($this->model->getTable(), 'description')) {
             return null;
         }
 
