@@ -4,11 +4,16 @@ namespace ProcessMaker\ScriptRunners;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Exception\ConfigurationException;
+use ProcessMaker\Exception\ScriptException;
+use ProcessMaker\Models\Script;
 
-class RestScriptRunner
+class ScriptMicroserviceRunner
 {
-    public function __construct(protected string $language)
+    private string $tokenId = '';
+
+    public function __construct(protected Script $script)
     {
     }
 
@@ -18,12 +23,12 @@ class RestScriptRunner
             return Cache::get('keycloak.access_token');
         }
 
-        $response = Http::asForm()->post(config('rest-script-runner.keycloak.base_url'), [
+        $response = Http::asForm()->post(config('script-runners.script-microservice.keycloak.base_url'), [
             'grant_type' => 'password',
-            'client_id' => config('rest-script-runner.keycloak.client_id'),
-            'client_secret' => config('rest-script-runner.keycloak.client_secret'),
-            'username' => config('rest-script-runner.keycloak.username'),
-            'password' => config('rest-script-runner.keycloak.password'),
+            'client_id' => config('script-runners.script-microservice.keycloak.client_id'),
+            'client_secret' => config('script-runners.script-microservice.keycloak.client_secret'),
+            'username' => config('script-runners.script-microservice.keycloak.username'),
+            'password' => config('script-runners.script-microservice.keycloak.password'),
         ]);
 
         if ($response->successful()) {
@@ -35,30 +40,31 @@ class RestScriptRunner
 
     public function getScriptRunner()
     {
-        $response = Http::asForm()
-            ->withToken($this->getAccessToken())
-            ->get(config('rest-script-runner.microservice.base_url') . '/scripts')->collect();
+        $response = Cache::remember('rest-scripts-runners', now()->addDay(), function () {
+            return Http::withToken($this->getAccessToken())
+                ->get(config('script-runners.script-microservice.base_url') . '/scripts')->collect();
+        });
 
         return $response->filter(function ($item) {
-            return $item['language'] == $this->language;
+            return $item['language'] == $this->script->language;
         })->first();
     }
 
     public function run($code, array $data, array $config, $timeout, $user)
     {
-        \Log::info('Language: ' . $this->language);
+        \Log::info('Language: ' . $this->script->language);
 
         $scriptRunner = $this->getScriptRunner();
 
         if (!$scriptRunner) {
-            throw new ConfigurationException('No script executor exists for this language: ' . $this->language);
+            throw new ConfigurationException('No script executor exists for this language: ' . $this->script->language);
         }
         $payload = [
-            'version' => $scriptRunner['version'],
+            'version' => 'v4.11.2',
             'language' => $scriptRunner['language'],
             'metadata'=> [
-                'script_id' => 23455,
-                'instance' => 'test-instance',
+                'script_id' => $this->script->id,
+                'instance' => config('app.url'),
             ],
             'data' => [
                 'name' => 'enrique',
@@ -68,8 +74,7 @@ class RestScriptRunner
                 'status' => 'ok',
                 'geolocation' => 'america/la_paz',
             ],
-            'script' =>$code,
-            //"script" => "<?php\nreturn [\"Hello\"=>\"World!!!\"];",
+            'script' => base64_encode(str_replace("'", "&#39;", $code)),
             'secrets' => [
                 'API_HOST' => 'http://localhost',
                 'API_TOKEN' => '123456789',
@@ -78,14 +83,20 @@ class RestScriptRunner
                 'OTEL_EXPORTER_OTLP_ENDPOINT' => 'api.honeycomb.io:443',
                 'OTEL_EXPORTER_OTLP_TRACES_HEADERS' =>'x-honeycomb-team=LKxDrfqNmFrJnMK71cJwuD',
             ],
-            'callback' => 'https://stm-app.free.beeceptor.com',
+            'callback' => config('script-runners.script-microservice.callback'),
             'debug' => true,
         ];
 
         \Log::info(print_r($payload, true));
 
         return Http::withToken($this->getAccessToken())
-            ->post(config('rest-script-runner.microservice.base_url') . '/requests/create', $payload)
+            ->post(config('script-runners.script-microservice.base_url') . '/requests/create', $payload)
             ->json();
     }
+
+    public function setTokenId($tokenId)
+    {
+        $this->tokenId = $tokenId;
+    }
+
 }

@@ -48,12 +48,10 @@ class ScriptRunner
     {
         $language = strtolower($executor->language);
         $runner = config("script-runners.{$language}.runner");
-        \Log::info($runner);
         if (!$runner) {
             throw new ScriptLanguageNotSupported($language);
         } else {
             $class = "ProcessMaker\\ScriptRunners\\{$runner}";
-            \Log::info($class);
 
             return app()->make($class, ['scriptExecutor' => $executor]);
         }
