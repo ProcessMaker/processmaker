@@ -21,7 +21,7 @@ class CaseRepository implements CaseRepositoryInterface
      */
     public function create(ExecutionInstanceInterface $instance): void
     {
-        if ($this->checkIfCaseStartedExist($instance->case_number)) {
+        if (is_null($instance->case_number) || $this->checkIfCaseStartedExist($instance->case_number)) {
             return;
         }
 
