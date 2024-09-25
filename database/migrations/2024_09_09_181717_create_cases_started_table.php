@@ -28,7 +28,7 @@ return new class extends Migration
             $table->timestamps();
             $table->text('keywords');
 
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 
             $table->index(['case_number']);
             $table->index(['user_id', 'case_status', 'created_at']);

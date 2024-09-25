@@ -21,7 +21,7 @@ class CaseRepository implements CaseRepositoryInterface
      */
     public function create(ExecutionInstanceInterface $instance): void
     {
-        if ($this->checkIfCaseStartedExist($instance->case_number)) {
+        if (is_null($instance->case_number) || $this->checkIfCaseStartedExist($instance->case_number)) {
             return;
         }
 
@@ -72,15 +72,19 @@ class CaseRepository implements CaseRepositoryInterface
         try {
             $case = CaseStarted::where('case_number', $instance->case_number)->first();
 
+            if (is_null($case)) {
+                return;
+            }
+
             $case->case_title = $instance->case_title;
             $case->case_status = $instance->status === 'ACTIVE' ? 'IN_PROGRESS' : $instance->status;
 
-            $case->request_tokens->push($token->getKey())
+            $case->request_tokens = $case->request_tokens->push($token->getKey())
                 ->unique()
                 ->values();
 
             if (!in_array($token->element_type, ['scriptTask'])) {
-                $case->tasks->push([
+                $case->tasks = $case->tasks->push([
                     'id' => $token->getKey(),
                     'element_id' => $token->element_id,
                     'name' => $token->element_name,
