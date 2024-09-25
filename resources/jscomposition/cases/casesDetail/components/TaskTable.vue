@@ -11,34 +11,23 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, ref, onMounted } from "vue";
+<script setup>
+import { ref, onMounted } from "vue";
 import { BaseTable, Pagination } from "../../../base";
 import { getData } from "../api/index";
 import { getColumns } from "../config/columns";
 
-export default defineComponent({
-  components: { BaseTable, Pagination },
-  setup() {
-    const data = ref(null);
-    const columnsConfig = ref(null);
-    const dataPagination = ref({
-      total: 153,
-      page: 0,
-      pages: 10,
-      perPage: 15,
-    });
+const data = ref(null);
+const columnsConfig = ref(null);
+const dataPagination = ref({
+  total: 153,
+  page: 0,
+  pages: 10,
+  perPage: 15,
+});
 
-    onMounted(async () => {
-      data.value = await getData();
-      columnsConfig.value = getColumns("tasks");
-    });
-
-    return {
-      data,
-      dataPagination,
-      columnsConfig,
-    };
-  },
+onMounted(async () => {
+  data.value = await getData();
+  columnsConfig.value = getColumns("tasks");
 });
 </script>

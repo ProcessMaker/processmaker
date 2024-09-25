@@ -1,15 +1,24 @@
 import {
   StatusCell,
+  LinkCell,
 } from "../../../system/index";
 
 export default {};
 
 // Column for Task
 const taskNumberColumn = () => ({
-  field: "id",
+  field: "case_number",
   header: "Tasks #",
   resizable: true,
   width: 200,
+  cellRenderer: () => ({
+    component: LinkCell,
+    params: {
+      click: (row, column, columns) => {
+        window.document.location = `/tasks/${row.case_number}/edit`;
+      },
+    },
+  }),
 });
 
 const taskNameColumn = () => ({
@@ -17,6 +26,14 @@ const taskNameColumn = () => ({
   header: "Task Name",
   resizable: true,
   width: 200,
+  cellRenderer: () => ({
+    component: LinkCell,
+    params: {
+      click: (row, column, columns) => {
+        window.document.location = `/tasks/${row.case_number}/edit`;
+      },
+    },
+  }),
 });
 
 const processNameColumn = () => ({
