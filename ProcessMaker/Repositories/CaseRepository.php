@@ -72,6 +72,10 @@ class CaseRepository implements CaseRepositoryInterface
         try {
             $case = CaseStarted::where('case_number', $instance->case_number)->first();
 
+            if (is_null($case)) {
+                return;
+            }
+
             $case->case_title = $instance->case_title;
             $case->case_status = $instance->status === 'ACTIVE' ? 'IN_PROGRESS' : $instance->status;
 
