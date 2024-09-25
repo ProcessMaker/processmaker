@@ -839,4 +839,19 @@ class ProcessRequestController extends Controller
 
         return response()->json(['message' => __('End event found'), 'data' => $data]);
     }
+
+    /**
+     * This endpoint returns requests by case number
+     *  
+     * @param Request $request
+     *
+     * @return ApiCollection
+     */
+    public function getRequestsByCase(Request $request)
+    {
+        $case_number = $request->input('case_number', 0);
+        $response = ProcessRequest::where('case_number', $case_number)->get();
+        
+        return new ApiCollection($response);
+    }
 }
