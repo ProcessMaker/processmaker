@@ -276,6 +276,13 @@ export default {
       }
       return [
         {
+          label: "Request ID",
+          field: "id",
+          sortable: true,
+          default: true,
+          width: 115,
+        },
+        {
           label: "Case #",
           field: "case_number",
           sortable: true,
