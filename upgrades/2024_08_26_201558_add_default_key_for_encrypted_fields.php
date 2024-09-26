@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Encryption\Encrypter;
-use ProcessMaker\Models\EncryptedData;
+use ProcessMaker\Facades\EncryptedData;
 use ProcessMaker\Upgrades\UpgradeMigration as Upgrade;
 
 
@@ -14,9 +14,10 @@ class AddDefaultKeyForEncryptedFields extends Upgrade
      */
     public function up()
     {
-        if (empty(config('app.encrypted_data_key'))) {
-            $key = Encrypter::generateKey(EncryptedData::ENCRYPTION_METHOD);
-            EncryptedData::addKeyInEnvironmentFile($key);
+        if (empty(config('app.encrypted_data.key'))) {
+            $localInstance = EncryptedData::driver('local');
+            $key = Encrypter::generateKey($localInstance::ENCRYPTION_METHOD);
+            EncryptedData::driver('local')->addKeyInEnvironmentFile($key);
         }
     }
 
@@ -27,8 +28,8 @@ class AddDefaultKeyForEncryptedFields extends Upgrade
      */
     public function down()
     {
-        if (!empty(config('app.encrypted_data_key'))) {
-            EncryptedData::removeKeyFromEnvironmentFile();
+        if (!empty(config('app.encrypted_data.key'))) {
+            EncryptedData::driver('local')->removeKeyFromEnvironmentFile();
         }
     }
 }
