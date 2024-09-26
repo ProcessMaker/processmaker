@@ -847,32 +847,32 @@ class ProcessRequestController extends Controller
      *
      * @return ApiCollection
      */
-    public function getRequestsByCase(Request $request)
+    public function getRequestsByCase(Request $request, User $user = null)
     {
-        $user = Auth::user();
+        if (!$user) {
+            $user = Auth::user();
+        }
 
-        $case_number = $request->input('case_number', 0);
+        // Validate the inputs, including optional ones
+        $request->validate([
+            'case_number' => 'required|integer',
+            'status' => 'nullable|string|in:ACTIVE,COMPLETED,ERROR,CANCELED',
+            'order_by' => 'nullable|string|in:id,name,status,user_id,initiated_at,participants',
+            'order_direction' => 'nullable|string|in:asc,desc',
+            'page' => 'nullable|integer|min:1',
+            'per_page' => 'nullable|integer',
+        ]);
+
         $query = ProcessRequest::forUser($user);
-        $includes = $request->input('include', '');
-        foreach (array_filter(explode(',', $includes)) as $include) {
-            if (in_array($include, ProcessRequest::$allowedIncludes)) {
-                $query->with($include);
-            }
-        }
-
-        if ($advancedFilter = $request->input('advanced_filter', '')) {
-            Filter::filter($query, $advancedFilter);
-        }
-
-        $response = $query->where('case_number', $case_number)
-            ->orderBy(
-                str_ireplace('.', '->', $request->input('order_by', 'name')),
-                $request->input('order_direction', 'ASC')
-            )
-            ->select('process_requests.*')
-            ->withAggregate('processVersion', 'alternative')
-            ->paginate($request->input('per_page', 10));
         
+        // Filter by case_number
+        $query->filterByCaseNumber($request);
+
+        // Apply ordering only if a valid order_by field is provided
+        $query->applyOrdering($request);
+        $response = $query->applyPagination($request);
+        
+        // Get activeTasks and participants
         $response = $response->map(function ($processRequest) use ($request) {
             return new ProcessRequestResource($processRequest);
         });
