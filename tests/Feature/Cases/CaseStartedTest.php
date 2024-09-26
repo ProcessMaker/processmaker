@@ -146,6 +146,7 @@ class CaseStartedTest extends TestCase
         $token = ProcessRequestToken::factory()->create([
             'user_id' => $user->id,
             'process_request_id' => $instance->id,
+            'element_type' => 'task',
         ]);
 
         $repo->update($instance, $token);
@@ -185,6 +186,7 @@ class CaseStartedTest extends TestCase
         $token = ProcessRequestToken::factory()->create([
             'user_id' => $user->id,
             'process_request_id' => $instance->id,
+            'element_type' => 'task',
         ]);
 
         $repo->update($instance, $token);
@@ -202,6 +204,7 @@ class CaseStartedTest extends TestCase
         $token2 = ProcessRequestToken::factory()->create([
             'user_id' => $user->id,
             'process_request_id' => $instance->id,
+            'element_type' => 'task',
         ]);
 
         $repo->update($instance, $token2);
@@ -245,6 +248,7 @@ class CaseStartedTest extends TestCase
         $token = ProcessRequestToken::factory()->create([
             'user_id' => $user->id,
             'process_request_id' => $instance->id,
+            'element_type' => 'task',
         ]);
 
         $repo->update($instance, $token);
@@ -364,6 +368,7 @@ class CaseStartedTest extends TestCase
         $token = ProcessRequestToken::factory()->create([
             'user_id' => $user->id,
             'process_request_id' => $instance->id,
+            'element_type' => 'task',
         ]);
 
         $repo->update($instance, $token);

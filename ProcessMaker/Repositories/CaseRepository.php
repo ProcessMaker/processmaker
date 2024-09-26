@@ -28,6 +28,8 @@ class CaseRepository implements CaseRepositoryInterface
     {
         if (is_null($instance->case_number)) {
             \Log::error('Case number is required. instance: ' . $instance->getKey());
+
+            return;
         }
 
         if ($this->checkIfCaseStartedExist($instance->case_number)) {
@@ -53,7 +55,6 @@ class CaseRepository implements CaseRepositoryInterface
             ]);
         } catch (\Exception $e) {
             \Log::error($e->getMessage());
-            // trace
             \Log::error($e->getTraceAsString());
         }
     }
@@ -67,6 +68,12 @@ class CaseRepository implements CaseRepositoryInterface
      */
     public function update(ExecutionInstanceInterface $instance, TokenInterface $token): void
     {
+        if (is_null($instance->case_number)) {
+            \Log::error('Case number is required. instance: ' . $instance->getKey());
+
+            return;
+        }
+
         try {
             if (!$this->checkIfCaseStartedExist($instance->case_number)) {
                 \Log::error('Case number not found. instance: ' . $instance->id);
