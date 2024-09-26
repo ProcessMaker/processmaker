@@ -1,8 +1,6 @@
 <template>
   <div
-    :class="{
-      'tw-text-blue-500': order
-    }"
+    :class="{ 'tw-text-blue-500': order }"
     class="hover:tw-text-blue-600 tw-cursor-pointer">
     <i
       v-if="!order"

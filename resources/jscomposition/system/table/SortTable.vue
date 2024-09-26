@@ -10,8 +10,7 @@
       <SortableFilter
         v-if="column.filter"
         :key="`sortable-${index}`"
-        :state="indexFilter == index? 'asc': ''"
-
+        :state="indexFilter == index ? 'asc': ''"
         @change="e=> onChangeFilter(column, e, index)" />
     </template>
   </BaseTable>
@@ -38,7 +37,7 @@ const indexFilter = ref(-1);
 
 const onChangeFilter = (columm, val, index) => {
   indexFilter.value = index;
-  
+
   emit("changeFilter", {
     field: columm.field,
     filter: val,
