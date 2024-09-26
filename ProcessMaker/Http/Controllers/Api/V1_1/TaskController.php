@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace ProcessMaker\Http\Controllers\Api\V1_1;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\V1_1\TaskInterstitialResource;
 use ProcessMaker\Http\Resources\V1_1\TaskResource;
@@ -59,6 +62,70 @@ class TaskController extends Controller
         ];
     }
 
+    public function show(ProcessRequestToken $task)
+    {
+        $resource = TaskResource::preprocessInclude(request(), ProcessRequestToken::where('id', $task->id));
+
+        return $resource->toArray(request());
+    }
+
+    /**
+     * Display the screen for a given task.
+     *
+     * @throws ModelNotFoundException If the task is not found.
+     */
+    public function showScreen(Request $request, int $taskId): Response
+    {
+        // Fetch the task data.
+        $task = ProcessRequestToken::select(
+            array_merge($this->defaultFields, ['process_request_id', 'process_id'])
+        )->findOrFail($taskId);
+
+        // Prepare the response.
+        $response = new TaskScreen($task);
+        $screen = $response->toArray($request)['screen'];
+        $now = isset($screen['updated_at'])
+            ? Carbon::parse($screen['updated_at'])->timestamp
+            : time();
+
+        // Create the response object.
+        $response = response($screen, 200);
+
+        // Set Cache-Control headers.
+        $cacheTime = config('screen_task_cache_time', 86400);
+        $response->headers->set('Cache-Control', 'no-cache, must-revalidate, public');
+        $response->headers->set('Expires', gmdate('D, d M Y H:i:s', $now + $cacheTime) . ' GMT');
+
+        // Set Last-Modified header.
+        $response->headers->set('Last-Modified', gmdate('D, d M Y H:i:s', $now) . ' GMT');
+
+        // Return 304 if the resource has not been modified since the provided date.
+        if ($request->headers->has('If-Modified-Since')) {
+            $ifModifiedSince = strtotime($request->headers->get('If-Modified-Since'));
+            if ($ifModifiedSince >= $now) {
+                return response()->noContent(304);
+            }
+        }
+
+        return $response;
+    }
+
+    public function showInterstitial($taskId)
+    {
+        $task = ProcessRequestToken::select(
+            array_merge($this->defaultFields, ['process_request_id', 'process_id'])
+        )->findOrFail($taskId);
+        $response = new TaskInterstitialResource($task);
+        $response = response($response->toArray(request())['screen'], 200);
+        $now = time();
+        // screen cache time
+        $cacheTime = config('screen_task_cache_time', 86400);
+        $response->headers->set('Cache-Control', 'max-age=' . $cacheTime . ', must-revalidate, public');
+        $response->headers->set('Expires', gmdate('D, d M Y H:i:s', $now + $cacheTime) . ' GMT');
+
+        return $response;
+    }
+
     private function processFilters(Request $request, Builder $query)
     {
         if (request()->has('user_id')) {
@@ -85,44 +152,5 @@ class TaskController extends Controller
                     ->where('parent_request_id', $request->input('process_request_id'))
             );
         }
-    }
-
-    public function show(ProcessRequestToken $task)
-    {
-        $resource = TaskResource::preprocessInclude(request(), ProcessRequestToken::where('id', $task->id));
-
-        return $resource->toArray(request());
-    }
-
-    public function showScreen($taskId)
-    {
-        $task = ProcessRequestToken::select(
-            array_merge($this->defaultFields, ['process_request_id', 'process_id'])
-        )->findOrFail($taskId);
-        $response = new TaskScreen($task);
-        $response = response($response->toArray(request())['screen'], 200);
-        $now = time();
-        // screen cache time
-        $cacheTime = config('screen_task_cache_time', 86400);
-        $response->headers->set('Cache-Control', 'max-age=' . $cacheTime . ', must-revalidate, public');
-        $response->headers->set('Expires', gmdate('D, d M Y H:i:s', $now + $cacheTime) . ' GMT');
-
-        return $response;
-    }
-
-    public function showInterstitial($taskId)
-    {
-        $task = ProcessRequestToken::select(
-            array_merge($this->defaultFields, ['process_request_id', 'process_id'])
-        )->findOrFail($taskId);
-        $response = new TaskInterstitialResource($task);
-        $response = response($response->toArray(request())['screen'], 200);
-        $now = time();
-        // screen cache time
-        $cacheTime = config('screen_task_cache_time', 86400);
-        $response->headers->set('Cache-Control', 'max-age=' . $cacheTime . ', must-revalidate, public');
-        $response->headers->set('Expires', gmdate('D, d M Y H:i:s', $now + $cacheTime) . ' GMT');
-
-        return $response;
     }
 }
