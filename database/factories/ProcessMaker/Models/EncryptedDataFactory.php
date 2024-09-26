@@ -3,7 +3,7 @@
 namespace Database\Factories\ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use ProcessMaker\Models\EncryptedData;
+use ProcessMaker\Facades\EncryptedData;
 use ProcessMaker\Models\ProcessRequest;
 
 /**
@@ -18,12 +18,14 @@ class EncryptedDataFactory extends Factory
      */
     public function definition()
     {
-        $iv = EncryptedData::generateIv();
-        $cipherText = EncryptedData::encryptText($this->faker->sentence(3), $iv);
+        // Get configured driver for encrypted data
+        $driver = config('app.encrypted_data.driver');
+
+        $cipherText = EncryptedData::driver($driver)->encryptText($this->faker->sentence(3));
         return [
             'field_name' => $this->faker->word(),
             'request_id' => ProcessRequest::factory()->create()->id,
-            'iv' => base64_encode($iv),
+            'iv' => base64_encode(EncryptedData::driver($driver)->getIv()),
             'data' => $cipherText,
         ];
     }

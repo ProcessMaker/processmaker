@@ -4,9 +4,8 @@ namespace ProcessMaker\Console\Commands;
 
 use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Encryption\Encrypter;
+use ProcessMaker\Facades\EncryptedData;
 use Illuminate\Support\Facades\Log;
-use ProcessMaker\Models\EncryptedData;
 
 class ChangeKeyEncryptedData extends Command
 {
@@ -43,40 +42,11 @@ class ChangeKeyEncryptedData extends Command
     {
         try {
             if ($this->confirm(self::message, false)) {
-                // Get key before change it
-                $oldKey = EncryptedData::getEncryptedDataKey();
+                // Get configured driver for encrypted data
+                $driver = config('app.encrypted_data.driver');
 
-                // Generate new key
-                $newKey = Encrypter::generateKey(EncryptedData::ENCRYPTION_METHOD);
-
-                // Get all encrypted data
-                $records = EncryptedData::select(['id', 'iv', 'data'])->get();
-
-                // Change values in all records
-                foreach ($records as $record) {
-                    // Decrypt text
-                    $oldIv = base64_decode($record->iv);
-                    $plainText = EncryptedData::decryptText($record->data, $oldIv, $oldKey);
-
-                    // Encrypt text with new key
-                    $newIv = EncryptedData::generateIv();
-                    $cipherText = EncryptedData::encryptText($plainText, $newIv, $newKey);
-
-                    // Store new values
-                    $record->iv = base64_encode($newIv);
-                    $record->data = $cipherText;
-                    $record->save();
-                }
-
-                // Remove previous key from environment file
-                EncryptedData::removeKeyFromEnvironmentFile();
-
-                // Write new key in environment file
-                EncryptedData::addKeyInEnvironmentFile($newKey);
-
-                // Set new key in config
-                $key = 'base64:' . base64_encode($newKey);
-                config(['app.encrypted_data_key' => $key]);
+                // Change key and update records
+                EncryptedData::driver($driver)->changeKey();
 
                 $this->info('Key for encrypted data succesfully changed.');
             }

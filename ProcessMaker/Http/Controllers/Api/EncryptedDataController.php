@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Facades\EncryptedData as EncryptedDataManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\EncryptedData;
 
@@ -31,9 +32,11 @@ class EncryptedDataController extends Controller
         // Check if the user is assigned to the encrypted field
         EncryptedData::checkUserPermission($userId, $screenId, $fieldName);
 
+        // Get configured driver for encrypted data
+        $driver = config('app.encrypted_data.driver');
+
         // Encrypt text
-        $iv = EncryptedData::generateIv();
-        $cipherText = EncryptedData::encryptText($plainText, $iv);
+        $cipherText = EncryptedDataManager::driver($driver)->encryptText($plainText);
 
         // Store encrypted data
         $encryptedData = EncryptedData::firstOrNew([
@@ -41,7 +44,7 @@ class EncryptedDataController extends Controller
             'request_id' => $requestId,
         ]);
 
-        $encryptedData->iv = base64_encode($iv);
+        $encryptedData->iv = base64_encode(EncryptedDataManager::driver($driver)->getIv());
         $encryptedData->data = $cipherText;
         $encryptedData->save();
 
@@ -77,8 +80,14 @@ class EncryptedDataController extends Controller
         $cipherText = $encryptedData->data;
         $iv = base64_decode($encryptedData->iv);
 
+        // Get configured driver for encrypted data
+        $driver = config('app.encrypted_data.driver');
+
+        // Set IV
+        EncryptedDataManager::driver($driver)->setIv($iv);
+
         // Decrypt text
-        $plainText = EncryptedData::decryptText($cipherText, $iv);
+        $plainText = EncryptedDataManager::driver($driver)->decryptText($cipherText);
 
         return $plainText;
     }

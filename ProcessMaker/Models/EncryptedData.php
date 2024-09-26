@@ -2,8 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessMakerModel;
@@ -13,8 +11,6 @@ use ProcessMaker\Traits\HasUuids;
 class EncryptedData extends ProcessMakerModel
 {
     use HasUuids;
-
-    const ENCRYPTION_METHOD = 'aes-256-cbc';
 
     protected $connection = 'processmaker';
 
@@ -43,47 +39,6 @@ class EncryptedData extends ProcessMakerModel
         'iv',
         'data',
     ];
-
-    /**
-     * Write key in environment file with the given key.
-     *
-     * @param string $key
-     */
-    public static function addKeyInEnvironmentFile($key)
-    {
-        $key = 'base64:' . base64_encode($key);
-
-        $content = file_get_contents(App::environmentFilePath());
-
-        $content .= "\nENCRYPTED_DATA_KEY=$key\n";
-
-        file_put_contents(App::environmentFilePath(), $content);
-    }
-
-    /**
-     * Get a regex pattern that will match env ENCRYPTED_DATA_KEY with any random key.
-     *
-     * @return string
-     */
-    public static function keyReplacementPattern()
-    {
-        $escaped = preg_quote('=' . config('app.encrypted_data_key'), '/');
-
-        return "/^ENCRYPTED_DATA_KEY{$escaped}/m";
-    }
-
-    /**
-     * Remove key from environment file.
-     */
-    public static function removeKeyFromEnvironmentFile()
-    {
-        $replaced = preg_replace(
-            self::keyReplacementPattern(),
-            '',
-            $input = file_get_contents(App::environmentFilePath())
-        );
-        file_put_contents(App::environmentFilePath(), $replaced);
-    }
 
     /**
      * Check user permission for the encrypted data
@@ -144,70 +99,5 @@ class EncryptedData extends ProcessMakerModel
                 'encrypted_field_assignments_invalid' => __('You are not assigned to this encrypted field.'),
             ]);
         }
-    }
-
-    /**
-     * Get encrypted data key value.
-     *
-     * @return string
-     */
-    public static function getEncryptedDataKey()
-    {
-        $key = config('app.encrypted_data_key');
-        $prefix = 'base64:';
-
-        $key = base64_decode(Str::after($key, $prefix));
-
-        return $key;
-    }
-
-    /**
-     * Generate an iv value.
-     *
-     * @return string
-     */
-    public static function generateIv()
-    {
-        $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length(self::ENCRYPTION_METHOD));
-
-        return $iv;
-    }
-
-    /**
-     * Encrypt text.
-     *
-     * @param string $plainText
-     * @param string $iv
-     * @param string $key
-     * @return string
-     */
-    public static function encryptText($plainText, $iv, $key = null)
-    {
-        if (is_null($key)) {
-            $key = self::getEncryptedDataKey();
-        }
-
-        $cipherText = openssl_encrypt($plainText, self::ENCRYPTION_METHOD, $key, 0, $iv);
-
-        return $cipherText;
-    }
-
-    /**
-     * Decrypt text.
-     *
-     * @param string $cipherText
-     * @param string $iv
-     * @param string $key
-     * @return string
-     */
-    public static function decryptText($cipherText, $iv, $key = null)
-    {
-        if (is_null($key)) {
-            $key = self::getEncryptedDataKey();
-        }
-
-        $plainText = openssl_decrypt($cipherText, self::ENCRYPTION_METHOD, $key, 0, $iv);
-
-        return $plainText;
     }
 }

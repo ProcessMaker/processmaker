@@ -258,6 +258,12 @@ return [
         'light' => '#FFFFFF',
     ],
 
-    // The key to be used for encrypted data
-    'encrypted_data_key' => env('ENCRYPTED_DATA_KEY', ''),
+    // For encrypted fields
+    'encrypted_data' => [
+        'driver' => env('ENCRYPTED_DATA_DRIVER', 'local'),
+        'key' => env('ENCRYPTED_DATA_KEY', ''),
+        'vault_host' => env('ENCRYPTED_DATA_VAULT_HOST', ''),
+        'vault_token' => env('ENCRYPTED_DATA_VAULT_TOKEN', ''),
+        'vault_transit_key' => env('ENCRYPTED_DATA_VAULT_TRANSIT_KEY', ''),
+    ],
 ];
