@@ -1,25 +1,22 @@
 <template>
-  <th>
-    <div class="tw-flex tw-relative tw-text-nowrap tw-whitespace-nowrap tw-justify-between">
-      <div
-        class="tw-py-4 tw-px-3 tw-text-left tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis"
-        :style="{ width: width + 'px' }">
-        <slot>
-          {{ getValue() }}
-        </slot>
-      </div>
-
-      <div class="tw-h-auto tw-flex tw-items-center">
-        <slot name="filter" />
-      </div>
-
-      <div
-        :class="{ '!tw-cursor-col-resize': column.resizable }"
-        class="tw-w-[5px] tw-cursor-default tw-border-r tw-border-gray-400"
-        @mousedown="column.resizable ? columnResize.startResize($event) : null">
-        &nbsp;
-      </div>
+  <th
+    class="tw-relative"
+    :style="{ width: width + 'px' }">
+    <div
+      class="tw-py-4 tw-px-3 tw-text-left tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis">
+      <slot>
+        {{ getValue() }}
+      </slot>
     </div>
+
+    <div class="tw-absolute tw-right-0 tw-top-0 tw-h-full tw-w-5 tw-flex tw-items-center">
+      <slot name="filter" />
+    </div>
+
+    <div
+      class="tw-absolute tw-right-0 tw-top-0 tw-w-1
+        tw-h-full tw-cursor-col-resize tw-select-none tw-border-r tw-border-gray-400"
+      @mousedown="column.resizable ? columnResize.startResize($event) : null" />
   </th>
 </template>
 

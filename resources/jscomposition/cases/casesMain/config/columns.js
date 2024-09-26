@@ -60,7 +60,7 @@ export const caseNumberColumn = () => ({
   resizable: true,
   width: 100,
   filter: {
-    type: "string",
+    dataType: "string",
     operators: ["=", ">", ">=", "in", "between"],
   },
   cellRenderer: () => ({
@@ -87,7 +87,7 @@ export const caseTitleColumn = () => ({
     },
   }),
   filter: {
-    type: "string",
+    dataType: "string",
     operators: ["=", ">", ">=", "in", "between"],
   },
 });
@@ -105,7 +105,7 @@ export const processColumn = () => ({
     },
   }),
   filter: {
-    type: "string",
+    dataType: "string",
     operators: ["="],
   },
 });
@@ -124,7 +124,7 @@ export const taskColumn = () => ({
     },
   }),
   filter: {
-    type: "string",
+    dataType: "string",
     operators: ["="],
   },
 });
@@ -143,7 +143,7 @@ export const participantsColumn = () => ({
     },
   }),
   filter: {
-    type: "string",
+    dataType: "string",
     operators: ["="],
   },
 });
@@ -157,7 +157,7 @@ export const statusColumn = () => ({
     component: StatusCell,
   }),
   filter: {
-    type: "string",
+    dataType: "string",
     operators: ["="],
   },
 });
@@ -169,7 +169,7 @@ export const startedColumn = () => ({
   width: 200,
   formatter: (row, column, columns) => formatDate(row.initiated_at, "datetime"),
   filter: {
-    type: "datetime",
+    dataType: "datetime",
     operators: ["between", ">", ">=", "<", "<="],
   },
 });
@@ -181,7 +181,7 @@ export const completedColumn = () => ({
   width: 200,
   formatter: (row, column, columns) => formatDate(row.completed_at, "datetime"),
   filter: {
-    type: "datetime",
+    dataType: "datetime",
     operators: ["between", ">", ">=", "<", "<="],
   },
 });

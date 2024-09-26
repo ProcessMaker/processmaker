@@ -1,9 +1,8 @@
 <template>
-  <div class="container-fluid">
+  <div class="tw-pb-4">
     <Tabs
       :tab-default="tabDefault"
-      :tabs="tabs"
-    />
+      :tabs="tabs" />
   </div>
 </template>
 

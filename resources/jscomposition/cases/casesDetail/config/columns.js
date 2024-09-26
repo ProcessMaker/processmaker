@@ -7,54 +7,58 @@ export default {};
 
 // Column for Task
 const taskNumberColumn = () => ({
-  field: "case_number",
+  field: "id",
   header: "Tasks #",
   resizable: true,
   width: 200,
+  filter: true,
   cellRenderer: () => ({
     component: LinkCell,
     params: {
       click: (row, column, columns) => {
-        window.document.location = `/tasks/${row.case_number}/edit`;
+        window.document.location = `/tasks/${row.id}/edit`;
       },
     },
   }),
 });
 
 const taskNameColumn = () => ({
-  field: "case_title",
+  field: "element_name",
   header: "Task Name",
   resizable: true,
   width: 200,
+  filter: true,
   cellRenderer: () => ({
     component: LinkCell,
     params: {
       click: (row, column, columns) => {
-        window.document.location = `/tasks/${row.case_number}/edit`;
+        window.document.location = `/tasks/${row.id}/edit`;
       },
     },
   }),
 });
 
 const processNameColumn = () => ({
-  field: "process_name",
+  field: "process.name",
   header: "Process",
   resizable: true,
   width: 200,
 });
 
 const assignedColumn = () => ({
-  field: "assigned",
+  field: "user.fullname",
   header: "Assigned",
   resizable: true,
   width: 200,
+  filter: true,
 });
 
 const dueDateColumn = () => ({
-  field: "due_date",
+  field: "due_at",
   header: "Due Date",
   resizable: true,
   width: 200,
+  filter: true,
 });
 
 // Columns for Requests
@@ -63,6 +67,14 @@ const requestNumberColumn = () => ({
   header: "Request #",
   resizable: true,
   width: 200,
+  cellRenderer: () => ({
+    component: LinkCell,
+    params: {
+      click: (row, column, columns) => {
+        window.document.location = `/requests/${row.id}`;
+      },
+    },
+  }),
 });
 
 const requestNameColumn = () => ({
@@ -70,6 +82,14 @@ const requestNameColumn = () => ({
   header: "Request Name",
   resizable: true,
   width: 200,
+  cellRenderer: () => ({
+    component: LinkCell,
+    params: {
+      click: (row, column, columns) => {
+        window.document.location = `/requests/${row.id}`;
+      },
+    },
+  }),
 });
 
 const currentTaskColumn = () => ({

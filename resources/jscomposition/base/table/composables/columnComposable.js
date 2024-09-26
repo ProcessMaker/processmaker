@@ -16,7 +16,7 @@ export const columnResizeComposable = (column) => {
   const doResize = (event) => {
     if (isResizing.value) {
       const diff = event.pageX - startX.value;
-      const min = 63;
+      const min = 30;
       const currentWidth = Math.max(min, startWidth.value + diff);
 
       column.width = currentWidth;
