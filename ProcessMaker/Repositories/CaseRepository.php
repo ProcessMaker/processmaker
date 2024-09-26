@@ -26,36 +26,25 @@ class CaseRepository implements CaseRepositoryInterface
      */
     public function create(ExecutionInstanceInterface $instance): void
     {
-        if (is_null($instance->case_number) || $this->checkIfCaseStartedExist($instance->case_number)) {
+        if (is_null($instance->case_number)) {
+            \Log::error('Case number is required. instance: ' . $instance->getKey());
+        }
+
+        if ($this->checkIfCaseStartedExist($instance->case_number)) {
             $this->updateSubProcesses($instance);
 
             return;
         }
 
         try {
-            $processes = [
-                [
-                    'id' => $instance->process->id,
-                    'name' => $instance->process->name,
-                ],
-            ];
-
-            $requests = [
-                [
-                    'id' => $instance->id,
-                    'name' => $instance->name,
-                    'parent_request_id' => $instance->parentRequest->id,
-                ],
-            ];
-
-            CaseStarted::create([
+            $this->case = CaseStarted::create([
                 'case_number' => $instance->case_number,
                 'user_id' => $instance->user_id,
                 'case_title' => $instance->case_title,
                 'case_title_formatted' => $instance->case_title_formatted,
-                'case_status' => 'IN_PROGRESS',
-                'processes' => $processes,
-                'requests' => $requests,
+                'case_status' => $instance->status === 'ACTIVE' ? 'IN_PROGRESS' : $instance->status,
+                'processes' => CaseUtils::storeProcesses($instance, collect()),
+                'requests' => CaseUtils::storeRequests($instance, collect()),
                 'request_tokens' => [],
                 'tasks' => [],
                 'participants' => [],
@@ -64,6 +53,8 @@ class CaseRepository implements CaseRepositoryInterface
             ]);
         } catch (\Exception $e) {
             \Log::error($e->getMessage());
+            // trace
+            \Log::error($e->getTraceAsString());
         }
     }
 
@@ -78,26 +69,15 @@ class CaseRepository implements CaseRepositoryInterface
     {
         try {
             if (!$this->checkIfCaseStartedExist($instance->case_number)) {
+                \Log::error('Case number not found. instance: ' . $instance->id);
+
                 return;
             }
 
             $this->case->case_title = $instance->case_title;
             $this->case->case_status = $instance->status === 'ACTIVE' ? 'IN_PROGRESS' : $instance->status;
-
-            $this->case->request_tokens = $this->case->request_tokens->push($token->getKey())
-                ->unique()
-                ->values();
-
-            if (in_array($token->element_type, ['task'])) {
-                $this->case->tasks = $this->case->tasks->push([
-                    'id' => $token->getKey(),
-                    'element_id' => $token->element_id,
-                    'name' => $token->element_name,
-                    'process_id' => $token->process_id,
-                ])
-                ->unique('id')
-                ->values();
-            }
+            $this->case->request_tokens = CaseUtils::storeRequestTokens($token->getKey(), $this->case->request_tokens);
+            $this->case->tasks = CaseUtils::storeTasks($token, $this->case->tasks);
 
             $this->updateParticipants($token);
 
@@ -195,20 +175,8 @@ class CaseRepository implements CaseRepositoryInterface
 
         try {
             // Store the sub-processes and requests
-            $this->case->processes = $this->case->processes->push([
-                'id' => $instance->process->id,
-                'name' => $instance->process->name,
-            ])
-            ->unique('id')
-            ->values();
-
-            $this->case->requests = $this->case->requests->push([
-                'id' => $instance->id,
-                'name' => $instance->name,
-                'parent_request_id' => $instance->parentRequest->id,
-            ])
-            ->unique('id')
-            ->values();
+            $this->case->processes = CaseUtils::storeProcesses($instance, $this->case->processes);
+            $this->case->requests = CaseUtils::storeRequests($instance, $this->case->requests);
 
             $this->case->saveOrFail();
         } catch (\Exception $th) {

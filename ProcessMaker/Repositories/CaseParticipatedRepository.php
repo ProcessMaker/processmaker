@@ -9,6 +9,11 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 class CaseParticipatedRepository
 {
     /**
+     * @var CaseParticipated|null
+     */
+    protected ?CaseParticipated $caseParticipated;
+
+    /**
      * Store a new case participated.
      *
      * @param CaseStarted $case
@@ -17,43 +22,21 @@ class CaseParticipatedRepository
      */
     public function create(CaseStarted $case, TokenInterface $token): void
     {
+        if ($this->checkIfCaseParticipatedExist($token->user->id, $case->case_number)) {
+            return;
+        }
+
         try {
-            $processes = [
-                [
-                    'id' => $token->processRequest->process->id,
-                    'name' => $token->processRequest->process->name,
-                ],
-            ];
-
-            $requests = [
-                [
-                    'id' => $token->processRequest->id,
-                    'name' => $token->processRequest->name,
-                    'parent_request_id' => $token->processRequest->parentRequest->id,
-                ],
-            ];
-
-            $tasks = collect();
-
-            if (in_array($token->element_type, ['task'])) {
-                $tasks->push([
-                    'id' => $token->getKey(),
-                    'element_id' => $token->element_id,
-                    'name' => $token->element_name,
-                    'process_id' => $token->process_id,
-                ]);
-            }
-
-            CaseParticipated::create([
+            $this->caseParticipated = CaseParticipated::create([
                 'user_id' => $token->user->id,
                 'case_number' => $case->case_number,
                 'case_title' => $case->case_title,
                 'case_title_formatted' => $case->case_title_formatted,
                 'case_status' => $case->case_status,
-                'processes' => $processes,
-                'requests' => $requests,
-                'request_tokens' => [$token->getKey()],
-                'tasks' => $tasks,
+                'processes' => CaseUtils::storeProcesses($token->processRequest, collect()),
+                'requests' => CaseUtils::storeRequests($token->processRequest, collect()),
+                'request_tokens' => CaseUtils::storeRequestTokens($token->getKey(), collect()),
+                'tasks' => CaseUtils::storeTasks($token, collect()),
                 'participants' => $case->participants,
                 'initiated_at' => $case->initiated_at,
                 'completed_at' => null,
@@ -73,56 +56,18 @@ class CaseParticipatedRepository
     public function update(CaseStarted $case, TokenInterface $token)
     {
         try {
-            $caseParticipated = CaseParticipated::where('user_id', $token->user->id)
-                ->where('case_number', $case->case_number)
-                ->first();
-
-            if (is_null($caseParticipated)) {
+            if (!$this->checkIfCaseParticipatedExist($token->user->id, $case->case_number)) {
                 return;
             }
 
-            // Store the sub-processes and requests
-            $processes = $caseParticipated->processes->push([
-                'id' => $token->processRequest->process->id,
-                'name' => $token->processRequest->process->name,
-            ])
-            ->unique('id')
-            ->values();
-
-            $requests = $caseParticipated->requests->push([
-                'id' => $token->processRequest->id,
-                'name' => $token->processRequest->name,
-                'parent_request_id' => $token->processRequest->parentRequest->id,
-            ])
-            ->unique('id')
-            ->values();
-
-            // Add the token data to the request_tokens
-            $requestTokens = $caseParticipated->request_tokens->push($token->getKey())
-                ->unique()
-                ->values();
-            // Add the task data to the tasks
-            $tasks = $caseParticipated->tasks;
-
-            if (in_array($token->element_type, ['task'])) {
-                $tasks = $tasks->push([
-                    'id' => $token->getKey(),
-                    'element_id' => $token->element_id,
-                    'name' => $token->element_name,
-                    'process_id' => $token->process_id,
-                ])
-                ->unique('id')
-                ->values();
-            }
-
-            $caseParticipated->update([
+            $this->caseParticipated->updateOrFail([
                 'case_title' => $case->case_title,
                 'case_title_formatted' => $case->case_title_formatted,
                 'case_status' => $case->case_status,
-                'processes' => $processes,
-                'requests' => $requests,
-                'request_tokens' => $requestTokens,
-                'tasks' => $tasks,
+                'processes' => CaseUtils::storeProcesses($token->processRequest, $this->caseParticipated->processes),
+                'requests' => CaseUtils::storeRequests($token->processRequest, $this->caseParticipated->requests),
+                'request_tokens' => CaseUtils::storeRequestTokens($token->getKey(), $this->caseParticipated->request_tokens),
+                'tasks' => CaseUtils::storeTasks($token, $this->caseParticipated->tasks),
                 'participants' => $case->participants,
             ]);
         } catch (\Exception $e) {
@@ -145,5 +90,14 @@ class CaseParticipatedRepository
         } catch (\Exception $e) {
             \Log::error($e->getMessage());
         }
+    }
+
+    private function checkIfCaseParticipatedExist(int $userId, int $caseNumber): bool
+    {
+        $this->caseParticipated = CaseParticipated::where('user_id', $userId)
+            ->where('case_number', $caseNumber)
+            ->first();
+
+        return !is_null($this->caseParticipated);
     }
 }
