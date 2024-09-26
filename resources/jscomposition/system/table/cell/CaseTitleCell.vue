@@ -1,7 +1,6 @@
 <template>
   <div
-    class="tw-text-nowrap tw-whitespace-nowrap"
-    :style="{ width: column.width + 'px' } ">
+    class="tw-text-nowrap tw-whitespace-nowrap tw-p-3">
     <a
       href="#"
       class="hover:tw-text-blue-500"

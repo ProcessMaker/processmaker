@@ -35,10 +35,12 @@ const dataPagination = ref({
 const formatData = (filter) => ({
   params: {
     case_number: getRequestId(),
+    status: "ACTIVE",
     ...filter,
   },
   pagination: {
-    ...dataPagination,
+    page: dataPagination.value.page,
+    perPage: dataPagination.value.perPage,
   },
 });
 
