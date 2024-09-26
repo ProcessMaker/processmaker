@@ -67,6 +67,14 @@ const requestNumberColumn = () => ({
   header: "Request #",
   resizable: true,
   width: 200,
+  cellRenderer: () => ({
+    component: LinkCell,
+    params: {
+      click: (row, column, columns) => {
+        window.document.location = `/requests/${row.id}`;
+      },
+    },
+  }),
 });
 
 const requestNameColumn = () => ({
@@ -74,6 +82,14 @@ const requestNameColumn = () => ({
   header: "Request Name",
   resizable: true,
   width: 200,
+  cellRenderer: () => ({
+    component: LinkCell,
+    params: {
+      click: (row, column, columns) => {
+        window.document.location = `/requests/${row.id}`;
+      },
+    },
+  }),
 });
 
 const currentTaskColumn = () => ({

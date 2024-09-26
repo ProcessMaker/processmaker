@@ -56,15 +56,3 @@ export default defineComponent({
   },
 });
 </script>
-<style>
-    th .resizer {
-      position: absolute;
-      right: 0;
-      top: 0;
-      width: 5px;
-      height: 100%;
-      cursor: col-resize;
-      user-select: none;
-      background-color: transparent;
-    }
-</style>
