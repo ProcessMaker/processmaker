@@ -158,7 +158,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
             throw new ScriptLanguageNotSupported($this->language);
         }
 
-        $runner = (config('script-runners.script-microservice.base_url')) ?
+        $runner = (config('script-runner-microservice.base_url')) ?
             new ScriptMicroserviceRunner($this) :
             new ScriptRunner($this->scriptExecutor);
 

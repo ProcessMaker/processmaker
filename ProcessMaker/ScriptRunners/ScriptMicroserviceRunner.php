@@ -23,12 +23,12 @@ class ScriptMicroserviceRunner
             return Cache::get('keycloak.access_token');
         }
 
-        $response = Http::asForm()->post(config('script-runners.script-microservice.keycloak.base_url'), [
+        $response = Http::asForm()->post(config('script-runner-microservice.keycloak.base_url'), [
             'grant_type' => 'password',
-            'client_id' => config('script-runners.script-microservice.keycloak.client_id'),
-            'client_secret' => config('script-runners.script-microservice.keycloak.client_secret'),
-            'username' => config('script-runners.script-microservice.keycloak.username'),
-            'password' => config('script-runners.script-microservice.keycloak.password'),
+            'client_id' => config('script-runner-microservice.keycloak.client_id'),
+            'client_secret' => config('script-runner-microservice.keycloak.client_secret'),
+            'username' => config('script-runner-microservice.keycloak.username'),
+            'password' => config('script-runner-microservice.keycloak.password'),
         ]);
 
         if ($response->successful()) {
@@ -40,9 +40,9 @@ class ScriptMicroserviceRunner
 
     public function getScriptRunner()
     {
-        $response = Cache::remember('rest-scripts-runners', now()->addDay(), function () {
+        $response = Cache::remember('script-runner-microservice.script-languages', now()->addDay(), function () {
             return Http::withToken($this->getAccessToken())
-                ->get(config('script-runners.script-microservice.base_url') . '/scripts')->collect();
+                ->get(config('script-runner-microservice.base_url') . '/scripts')->collect();
         });
 
         return $response->filter(function ($item) {
@@ -60,7 +60,7 @@ class ScriptMicroserviceRunner
             throw new ConfigurationException('No script executor exists for this language: ' . $this->script->language);
         }
         $payload = [
-            'version' => 'v4.11.2',
+            'version' => 'v4.11.2', //$this->getProcessMakerVersion(),
             'language' => $scriptRunner['language'],
             'metadata'=> [
                 'script_id' => $this->script->id,
@@ -74,7 +74,7 @@ class ScriptMicroserviceRunner
                 'status' => 'ok',
                 'geolocation' => 'america/la_paz',
             ],
-            'script' => base64_encode(str_replace("'", "&#39;", $code)),
+            'script' => base64_encode(str_replace("'", '&#39;', $code)),
             'secrets' => [
                 'API_HOST' => 'http://localhost',
                 'API_TOKEN' => '123456789',
@@ -83,14 +83,14 @@ class ScriptMicroserviceRunner
                 'OTEL_EXPORTER_OTLP_ENDPOINT' => 'api.honeycomb.io:443',
                 'OTEL_EXPORTER_OTLP_TRACES_HEADERS' =>'x-honeycomb-team=LKxDrfqNmFrJnMK71cJwuD',
             ],
-            'callback' => config('script-runners.script-microservice.callback'),
+            'callback' => config('script-runner-microservice.callback'),
             'debug' => true,
         ];
 
         \Log::info(print_r($payload, true));
 
         return Http::withToken($this->getAccessToken())
-            ->post(config('script-runners.script-microservice.base_url') . '/requests/create', $payload)
+            ->post(config('script-runner-microservice.base_url') . '/requests/create', $payload)
             ->json();
     }
 
@@ -99,4 +99,12 @@ class ScriptMicroserviceRunner
         $this->tokenId = $tokenId;
     }
 
+    public function getProcessMakerVersion()
+    {
+        return Cache::remember('script-runner-microservice.processmaker-version', now()->addDay(), function () {
+            $composer_json_path = json_decode(file_get_contents(base_path() . '/composer.json'));
+
+            return $composer_json_path->version;
+        });
+    }
 }
