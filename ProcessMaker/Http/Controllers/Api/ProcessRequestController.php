@@ -860,6 +860,10 @@ class ProcessRequestController extends Controller
             }
         }
 
+        if ($advancedFilter = $request->input('advanced_filter', '')) {
+            Filter::filter($query, $advancedFilter);
+        }
+
         $response = $query->where('case_number', $case_number)
             ->orderBy(
                 str_ireplace('.', '->', $request->input('order_by', 'name')),
