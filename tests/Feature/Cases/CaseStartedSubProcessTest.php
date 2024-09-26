@@ -36,6 +36,8 @@ class CaseStartedSubProcessTest extends TestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->user = User::factory()->create();
         $this->process = Process::factory()->create();
         $this->parentRequest = ProcessRequest::factory()->create([
@@ -67,8 +69,6 @@ class CaseStartedSubProcessTest extends TestCase
             'process_request_id' => $this->childRequest->id,
             'element_type' => 'task',
         ]);
-
-        parent::setUp();
     }
 
     public function test_create_case_sub_process()
