@@ -63,11 +63,13 @@ class DevLinkController extends Controller
 
     public function localBundles(Request $request)
     {
+        $bundlesQuery = Bundle::with('devLink');
+
         if ($request->has('published')) {
-            return Bundle::published()->get();
+            return $bundlesQuery->published()->get();
         }
 
-        return Bundle::get();
+        return $bundlesQuery->get();
     }
 
     public function showBundle(Bundle $bundle)

@@ -144,7 +144,6 @@ const select = (devlink) => {
       <b-table 
         :items="devlinks" 
         :fields="fields"
-        class="linked-instances-table"
       >
         <template #cell(name)="data">
           <a href="#" @click.prevent="select(data.item)">{{ data.item.name }}</a>
@@ -153,21 +152,23 @@ const select = (devlink) => {
           <Status :id="data.item.id" />
         </template>
         <template #cell(menu)="data">
-          <div class="btn-group" role="group" aria-label="Basic example">
-            <button 
-              type="button" 
-              class="btn btn-menu" 
-              @click.prevent="editDevLink(data.item)"
-            >
-              <img src="/img/pencil-fill.svg">
-            </button>
-            <button 
-              type="button" 
-              class="btn btn-menu" 
-              @click.prevent="deleteDevLink(data.item)"
-            >
-              <img src="/img/trash-fill.svg">
-            </button>
+          <div class="btn-menu-container">
+            <div class="btn-group" role="group" aria-label="Basic example">
+              <button 
+                type="button" 
+                class="btn btn-menu" 
+                @click.prevent="editDevLink(data.item)"
+              >
+                <img src="/img/pencil-fill.svg">
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-menu" 
+                @click.prevent="deleteDevLink(data.item)"
+              >
+                <img src="/img/trash-fill.svg">
+              </button>
+            </div>
           </div>
         </template>
       </b-table>
@@ -175,7 +176,7 @@ const select = (devlink) => {
   </div>
 </template>
 
-<style>
+<style lang="scss" scoped>
 tr:hover {
   cursor: pointer;
 }
@@ -184,10 +185,10 @@ tr:hover {
   justify-content: flex-end;
   padding-bottom: 16px;
 }
-.linked-instances-table {
+::v-deep .table {
   border-bottom: 1px solid #e9edf1;
 }
-.linked-instances-table th {
+::v-deep .table > thead > tr > th {
   border-top: none;
   background-color: #FBFBFC;
   border-right: 1px solid rgba(0, 0, 0, 0.125);
@@ -195,11 +196,16 @@ tr:hover {
   font-weight: 600;
   font-size: 14px;
 }
-.linked-instances-table thead th:last-child {
+::v-deep .table > tbody > tr > td {
+  color: #4E5663;
+  font-size: 14px;
+  font-weight: 400;
+}
+::v-deep .table > thead > tr > th:last-child {
   border-right: none !important;
   border-top-right-radius: 8px;
 }
-.linked-instances-table thead th:first-child {
+::v-deep .table > thead > tr > th:first-child {
   border-top-left-radius: 8px;
 }
 .linked-instances-card {
@@ -214,5 +220,9 @@ tr:hover {
   text-transform: none;
   font-weight: 500;
   font-size: 14px;
+}
+.btn-menu-container {
+  display: flex;
+  justify-content: flex-end;
 }
 </style>

@@ -24,7 +24,6 @@ const navigate = (typeConfig) => {
         <!-- Content -->
         <div class="content">
           <h3>{{ type.name }}</h3>
-          <p>{{ type.items }} items</p>
         </div>
         <!-- Button -->
         <div class="button-container">

@@ -101,11 +101,11 @@ const load = () => {
     </div>
   </div>
 </template>
-<style>
-.asset-listing-table {
+<style lang="scss" scoped>
+::v-deep .table {
   border-bottom: 1px solid #e9edf1;
 }
-.asset-listing-table th {
+::v-deep .table > thead > tr > th {
   border-top: none;
   background-color: #FBFBFC;
   border-right: 1px solid rgba(0, 0, 0, 0.125);
@@ -113,11 +113,16 @@ const load = () => {
   font-weight: 600;
   font-size: 14px;
 }
-.asset-listing-table thead th:last-child {
+::v-deep .table > tbody > tr > td {
+  color: #4E5663;
+  font-size: 14px;
+  font-weight: 400;
+}
+::v-deep .table > thead > tr > th:last-child {
   border-right: none !important;
   border-top-right-radius: 8px;
 }
-.asset-listing-table thead th:first-child {
+::v-deep .table > thead > tr > th:first-child {
   border-top-left-radius: 8px;
 }
 .asset-listing-card {

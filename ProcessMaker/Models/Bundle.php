@@ -30,6 +30,11 @@ class Bundle extends ProcessMakerModel
         return $this->hasMany(BundleAsset::class);
     }
 
+    public function devLink()
+    {
+        return $this->belongsTo(DevLink::class, 'dev_link_id');
+    }
+
     public function getAssetCountAttribute()
     {
         return $this->assets()->count();
