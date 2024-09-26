@@ -716,15 +716,6 @@ export default {
     ProcessMaker.EventBus.$on("show-create-template-modal", () => {
       this.$refs["create-template-modal"].show();
     });
-    ProcessMaker.EventBus.$on(
-      "save-clipboard",
-      (items) => {
-        console.log('save-clipboard',items);
-        ProcessMaker.apiClient.post('/api/1.1/clipboard/create_or_update', {
-          config: JSON.stringify(items),
-        });
-      },
-    );
   },
   methods: {
     ...mapMutations("globalErrorsModule", { setStoreMode: "setMode" }),

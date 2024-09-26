@@ -100,43 +100,29 @@
         }
       });
       window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
-        const savedClipboard = localStorage.getItem("savedClipboard");
+        // Register saveToServerFn
+        screen.$store.dispatch("clipboardModule/setupSaveToServerFn", (items) => {
+          return ProcessMaker.apiClient.post('/api/1.1/clipboard/create_or_update', {
+            config: items, // JSON.stringify(items),
+          });
+        });
 
-        if (savedClipboard) {
-          addClipboardToStore(savedClipboard);
-          return;
-        }
-
-        ProcessMaker.apiClient.get('/api/1.1/clipboard/get_by_user')
+        // Register loadFromServerFn
+        screen.$store.dispatch("clipboardModule/setupLoadFromServerFn", () => {
+          return ProcessMaker.apiClient.get('/api/1.1/clipboard/get_by_user')
           .then(handleClipboardResponse)
           .catch(handleClipboardError);
-
-          /**
-           * Helper function to add clipboard data to the store
-           * @param {string|object} clipboardData
-           */
-          function addClipboardToStore(clipboardData) {
-            try {
-              const parsedData = typeof clipboardData === 'string' ? JSON.parse(clipboardData) : clipboardData;
-              if (parsedData && typeof parsedData === 'object') {
-                screen.$store.dispatch("clipboardModule/addToClipboard", parsedData);
-              } else {
-                console.error("Clipboard data is not in the expected format.");
-              }
-            } catch (error) {
-              console.error("Failed to parse clipboard data: ", error);
-            }
-          }
 
           /**
            * Handle clipboard API response
            * @param {object} response
            */
           function handleClipboardResponse(response) {
-            if (response && response.data && response.data.config) {
-              addClipboardToStore(response.data.config);
+            if (response && response.data && response.data.config && Array.isArray(response.data.config)) {
+              // addClipboardToStore(response.data.config);
+              return response.data.config;
             } else {
-              console.error("No valid clipboard config data in response.");
+              throw new Error("No valid clipboard config data in response.");
             }
           }
 
@@ -147,6 +133,7 @@
           function handleClipboardError(error) {
             console.error("Error fetching clipboard data: ", error);
           }
+        });
       });
 
       window.Processmaker.user = @json($currentUser);
