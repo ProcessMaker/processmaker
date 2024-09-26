@@ -986,20 +986,21 @@ class ProcessRequestsTest extends TestCase
         $data = $response->json()['data'];
         $this->assertEmpty($data);
     }
-
-
+    
     /**
      * Get a list of Requests by Cases.
      */
     public function testRequestByCase()
     {
-        $case_number = 10;
-
-        ProcessRequest::factory()->count(10)->create([
-            'case_number' => $case_number,
+        ProcessRequest::query()->delete();
+        $request = ProcessRequest::factory()->create();
+        ProcessRequest::factory()->count(9)->create([
+            'parent_request_id' => $request->id,
         ]);
 
-        $response = $this->apiCall('GET', `requests-by-case?case_number=` . $case_number);
+        $url = '/requests-by-case?case_number=' . $request->case_number;
+        
+        $response = $this->apiCall('GET', $url);
 
         //Validate the header status code
         $response->assertStatus(200);

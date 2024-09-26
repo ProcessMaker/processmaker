@@ -849,9 +849,30 @@ class ProcessRequestController extends Controller
      */
     public function getRequestsByCase(Request $request)
     {
+        $user = Auth::user();
+
         $case_number = $request->input('case_number', 0);
-        $response = ProcessRequest::where('case_number', $case_number)->get();
+        $query = ProcessRequest::forUser($user);
+        $includes = $request->input('include', '');
+        foreach (array_filter(explode(',', $includes)) as $include) {
+            if (in_array($include, ProcessRequest::$allowedIncludes)) {
+                $query->with($include);
+            }
+        }
+
+        $response = $query->where('case_number', $case_number)
+            ->orderBy(
+                str_ireplace('.', '->', $request->input('order_by', 'name')),
+                $request->input('order_direction', 'ASC')
+            )
+            ->select('process_requests.*')
+            ->withAggregate('processVersion', 'alternative')
+            ->paginate($request->input('per_page', 10));
         
+        $response = $response->map(function ($processRequest) use ($request) {
+            return new ProcessRequestResource($processRequest);
+        });
+
         return new ApiCollection($response);
     }
 }
