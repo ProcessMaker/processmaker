@@ -174,40 +174,29 @@ class TaskController extends Controller
         $request->validate([
             'case_number' => 'required|integer',
             'status' => 'nullable|string|in:ACTIVE,INACTIVE',
-            'per_page' => 'nullable|integer',
             'order_by' => 'nullable|string|in:id,element_name,due_at,user.lastname,process.name',
             'order_direction' => 'nullable|string|in:asc,desc',
+            'page' => 'nullable|integer|min:1',
+            'per_page' => 'nullable|integer',
         ]);
-        $caseNumber = $request->input('case_number');
-        $status = $request->input('status', 'ACTIVE'); // Default status to ACTIVE
-        $perPage = $request->input('per_page', 10); // Default items per page
-        $orderBy = $request->input('order_by', 'due_at');
-        $orderDirection = $request->input('order_direction', 'asc'); // Default order direction to 'asc'
 
         // Get only the columns defined
         $query = ProcessRequestToken::select($this->defaultCase);
         // Filter by case_number
-        $query->whereHas('processRequest', function ($query) use ($caseNumber) {
-            $query->where('case_number', $caseNumber);
-        });
+        $query->filterByCaseNumber($request);
         // Filter by status
-        $query->where('status', $status);
+        $query->filterByStatus($request);
         // Return the process information
-        $query->with(['process' => function ($query) {
-            $query->select('id', 'name');
-        }]);
+        $query->getProcess();
         // Return the user information
-        $query->with(['user' => function ($query) {
-            $query->select('id', 'firstname', 'lastname', 'username', 'avatar');
-        }]);
+        $query->getUser();
         // Filter only the task related to the user
         $this->applyForCurrentUser($query, $user);
-
         // Apply ordering only if a valid order_by field is provided
-        $query->orderBy($orderBy, $orderDirection);
+        $query->applyOrdering($request);
 
         try {
-            $response = $query->paginate($perPage);
+            $response = $query->applyPagination($request);
             $response->inOverdue = 0;
         } catch (QueryException $e) {
             return $this->handleQueryException($e);
