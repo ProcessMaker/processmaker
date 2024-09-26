@@ -170,11 +170,19 @@ class TaskController extends Controller
             $user = Auth::user();
         }
 
-        // Review the 'case_number'
+        // Validate the inputs, including optional ones
         $request->validate([
             'case_number' => 'required|integer',
+            'status' => 'nullable|string|in:ACTIVE,INACTIVE',
+            'per_page' => 'nullable|integer',
+            'order_by' => 'nullable|string|in:id,element_name,due_at,user.lastname,process.name',
+            'order_direction' => 'nullable|string|in:asc,desc',
         ]);
         $caseNumber = $request->input('case_number');
+        $status = $request->input('status', 'ACTIVE'); // Default status to ACTIVE
+        $perPage = $request->input('per_page', 10); // Default items per page
+        $orderBy = $request->input('order_by', 'due_at');
+        $orderDirection = $request->input('order_direction', 'asc'); // Default order direction to 'asc'
 
         // Get only the columns defined
         $query = ProcessRequestToken::select($this->defaultCase);
@@ -182,8 +190,8 @@ class TaskController extends Controller
         $query->whereHas('processRequest', function ($query) use ($caseNumber) {
             $query->where('case_number', $caseNumber);
         });
-        // Filter the status
-        $query->where('status', 'ACTIVE');
+        // Filter by status
+        $query->where('status', $status);
         // Return the process information
         $query->with(['process' => function ($query) {
             $query->select('id', 'name');
@@ -194,8 +202,12 @@ class TaskController extends Controller
         }]);
         // Filter only the task related to the user
         $this->applyForCurrentUser($query, $user);
+
+        // Apply ordering only if a valid order_by field is provided
+        $query->orderBy($orderBy, $orderDirection);
+
         try {
-            $response = $query->paginate($request->input('per_page', 10));
+            $response = $query->paginate($perPage);
             $response->inOverdue = 0;
         } catch (QueryException $e) {
             return $this->handleQueryException($e);
