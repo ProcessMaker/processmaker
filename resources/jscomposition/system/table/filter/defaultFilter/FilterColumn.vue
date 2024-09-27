@@ -20,7 +20,7 @@
             <FilterOperator
               ref="filterOperatorsRef"
               :operators="filter.operators"
-              :type="filter.type"
+              :type="filter.dataType"
               @change="(e) => onChangeFilterOperator(e)" />
           </div>
 
@@ -32,7 +32,7 @@
 </template>
 <script>
 import { defineComponent, ref } from "vue";
-import { AppPopover } from "../../../base/index";
+import { AppPopover } from "../../../../base/index";
 import SortingButtons from "./SortingButtons.vue";
 import FilterOperator from "./operator/FilterOperator.vue";
 import FooterButtons from "./FooterButtons.vue";
@@ -47,7 +47,7 @@ export default defineComponent({
   props: {
     // FilterInterface {
     //   operators = []  Array
-    //   type = null String
+    //   dataType = null String
     // }
     filter: Object,
   },

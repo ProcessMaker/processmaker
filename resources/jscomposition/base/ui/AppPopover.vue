@@ -1,7 +1,7 @@
 <template>
   <div
     ref="tooltipWrapper"
-    class="tooltip-wrapper"
+    class="tw-relative"
     @mouseenter="($event) => hover && showTooltip($event)"
     @mouseleave="($event) => hover && hideTooltip($event)">
     <slot name="default" />
@@ -178,11 +178,6 @@ export default {
 </script>
 
 <style scoped>
-.tooltip-wrapper {
-  display: inline-block;
-  position: relative;
-}
-
 .tooltip-content {
   position: fixed;
   z-index: 1000;

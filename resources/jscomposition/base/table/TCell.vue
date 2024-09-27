@@ -1,13 +1,16 @@
 <template>
-  <td class="tw-p-3">
+  <td
+    class="tw-relative"
+    :style="{ width: `${column.width}px` }">
     <div
-      v-if="!column.cellRenderer"
-      :style="{ maxWidth: `${column.width}px` }">
+      v-if="!column.cellRenderer">
       <slot
         :columns="columns"
         :column="column"
         :row="row">
-        {{ getValue() }}
+        <div class="tw-p-3">
+          {{ getValue() }}
+        </div>
       </slot>
     </div>
     <component

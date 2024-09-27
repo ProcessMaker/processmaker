@@ -1,21 +1,27 @@
 <template>
-  <div>
-    <BaseTable
+  <div class="tw-w-full tw-space-y-3 tw-flex tw-flex-col tw-overflow-hidden">
+    <SortTable
       id="task-table"
       :columns="columnsConfig"
-      :data="data" />
+      :data="data"
+      class="tw-grow tw-overflow-y-scroll"
+      @changeFilter="onChangeFilter" />
+
     <Pagination
       :total="dataPagination.total"
       :page="dataPagination.page"
-      :pages="dataPagination.pages" />
+      :pages="dataPagination.pages"
+      @perPage="onPerPage"
+      @go="onGo" />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { BaseTable, Pagination } from "../../../base";
-import { getData } from "../api/index";
+import { SortTable, Pagination } from "../../../system";
+import { getDataTask } from "../api/index";
 import { getColumns } from "../config/columns";
+import { getRequestId } from "../variables";
 
 const data = ref(null);
 const columnsConfig = ref(null);
@@ -26,8 +32,39 @@ const dataPagination = ref({
   perPage: 15,
 });
 
+const formatData = (filter) => ({
+  params: {
+    case_number: getRequestId(),
+    status: "ACTIVE",
+    ...filter,
+  },
+  pagination: {
+    page: dataPagination.value.page,
+    perPage: dataPagination.value.perPage,
+  },
+});
+
+const onGo = async (page) => {
+  dataPagination.value.page = page;
+
+  data.value = await getDataTask(formatData({}));
+};
+
+const onPerPage = async (perPage) => {
+  dataPagination.value.perPage = perPage;
+
+  data.value = await getDataTask(formatData({}));
+};
+
+const onChangeFilter = async (dataFilter) => {
+  data.value = await getDataTask(formatData({
+    order_by: dataFilter.field,
+    order_direction: dataFilter.filter,
+  }));
+};
+
 onMounted(async () => {
-  data.value = await getData();
+  data.value = await getDataTask(formatData({}));
   columnsConfig.value = getColumns("tasks");
 });
 </script>

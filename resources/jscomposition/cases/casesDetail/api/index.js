@@ -1,6 +1,6 @@
-export default {};
+import { api } from "../variables";
 
-const getData = async () => {
+export const getData = async () => {
   const objectsList = [];
 
   for (let i = 0; i <= 31; i += 1) {
@@ -22,4 +22,13 @@ const getData = async () => {
   return objectsList;
 };
 
-export { getData };
+export const getDataTask = async ({ params, pagination }) => {
+  const response = await api.get("tasks-by-case/", {
+    params: {
+      ...params,
+      ...pagination,
+    },
+  });
+
+  return response.data.data;
+};

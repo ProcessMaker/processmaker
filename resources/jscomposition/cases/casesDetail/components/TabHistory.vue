@@ -6,8 +6,7 @@
       :commentable_type="comentableType"
       :adding="false"
       :readonly="status === 'COMPLETED'"
-      :timeline="false"
-    />
+      :timeline="false" />
   </div>
 </template>
 
@@ -16,7 +15,7 @@ import { defineComponent, ref } from "vue";
 import TimeLine from "../../../../js/components/Timeline.vue";
 import {
   getRequestId, getRequestStatus, getComentableType, getProcessName,
-} from "../api/data";
+} from "../variables";
 
 export default defineComponent({
   components: { TimeLine },
