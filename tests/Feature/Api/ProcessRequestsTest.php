@@ -30,6 +30,7 @@ class ProcessRequestsTest extends TestCase
     public $withPermissions = true;
 
     const API_TEST_URL = '/requests';
+    const API_REQUESTS_BY_CASE = '/requests-by-case';
 
     const STRUCTURE = [
         'id',
@@ -998,7 +999,7 @@ class ProcessRequestsTest extends TestCase
             'parent_request_id' => $request->id,
         ]);
 
-        $url = '/requests-by-case?case_number=' . $request->case_number;
+        $url = self::API_REQUESTS_BY_CASE . '?case_number=' . $request->case_number;
         
         $response = $this->apiCall('GET', $url);
 
@@ -1019,10 +1020,8 @@ class ProcessRequestsTest extends TestCase
      * Get a list of Requests by Cases.
      */
     public function testRequestByCaseWithoutCaseNumber()
-    {
-        $url = '/requests-by-case';
-        
-        $response = $this->apiCall('GET', $url);
+    {        
+        $response = $this->apiCall('GET', self::API_REQUESTS_BY_CASE);
 
         //Validate the header status code
         $response->assertStatus(422);
