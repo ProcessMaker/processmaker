@@ -1113,7 +1113,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     }
 
     /**
-     * Scope to filter by case_number through the processRequest relationship
+     * Scope to filter by case_number
      */
     public function scopeFilterByCaseNumber($query, $request)
     {
