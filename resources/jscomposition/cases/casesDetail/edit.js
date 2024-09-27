@@ -1,12 +1,14 @@
 import Vue from "vue";
 import CaseDetail from "./components/CaseDetail.vue";
+import Tabs from "./components/Tabs.vue";
 import Timeline from "../../../js/components/Timeline.vue";
+import { CollapsableContainer } from "../../base";
 
 Vue.component("Timeline", Timeline);
 
 new Vue({
   el: "#case-detail",
-  components: { CaseDetail },
+  components: { CaseDetail, Tabs, CollapsableContainer},
   data() {
     return {
       activeTab: "pending",
@@ -37,6 +39,18 @@ new Vue({
       showTree: false,
       showTabs: true,
       showInfo: true,
+
+      tabDefault: 'details',
+      tabs : [
+        {
+          name: "Details", href: "#tasks", current: "details", show: true, content: null,
+        },
+        {
+          name: "Comments", href: "#comments", current: "comments", show: true, content: null,
+        },
+      ],
+      headerModel: false
+
     };
   },
   computed: {

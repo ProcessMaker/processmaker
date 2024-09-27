@@ -1,8 +1,10 @@
 import Badge from "./Badge.vue";
-import SimplePopover from "./SimplePopover.vue";
 import AppAvatar from "./AppAvatar.vue";
 import AppPopover from "./AppPopover.vue";
+import CollapsableContainer from "./CollapsableContainer.vue";
 
 export default {};
 
-export { Badge, SimplePopover, AppAvatar, AppPopover};
+export {
+  Badge, AppAvatar, AppPopover, CollapsableContainer,
+};
