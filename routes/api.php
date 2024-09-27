@@ -64,8 +64,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('users/{user}/tokens', [UserTokenController::class, 'store'])->name('users.tokens.store'); // Permissions handled in the controller
     Route::delete('users/{user}/tokens/{tokenId}', [UserTokenController::class, 'destroy'])->name('users.tokens.destroy'); // Permissions handled in the controller
     // User Configuration
-    Route::get('users/configuration', [UserConfigurationController::class, 'index'])->name('users.configuration.show');
-    Route::put('users/configuration', [UserConfigurationController::class, 'store'])->name('users.configuration.update');
+    Route::get('users/configuration', [UserConfigurationController::class, 'index'])->name('users.configuration.index');
+    Route::put('users/configuration', [UserConfigurationController::class, 'store'])->name('users.configuration.store');
 
     // Groups//Permissions policy
     Route::get('groups', [GroupController::class, 'index'])->name('groups.index'); // Permissions handled in the controller
