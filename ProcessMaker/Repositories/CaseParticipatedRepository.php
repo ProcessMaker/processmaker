@@ -44,7 +44,8 @@ class CaseParticipatedRepository
                 'completed_at' => null,
             ]);
         } catch (\Exception $e) {
-            \Log::error($e->getMessage());
+            \Log::error('CaseParticipatedException: ', $e->getMessage());
+            \Log::error('CaseParticipatedException: ', $e->getTraceAsString());
         }
     }
 
@@ -73,7 +74,8 @@ class CaseParticipatedRepository
                 'participants' => $case->participants,
             ]);
         } catch (\Exception $e) {
-            \Log::error($e->getMessage());
+            \Log::error('CaseParticipatedException: ', $e->getMessage());
+            \Log::error('CaseParticipatedException: ', $e->getTraceAsString());
         }
     }
 
@@ -90,7 +92,8 @@ class CaseParticipatedRepository
             CaseParticipated::where('case_number', $caseNumber)
                 ->update($statusData);
         } catch (\Exception $e) {
-            \Log::error($e->getMessage());
+            \Log::error('CaseParticipatedException: ', $e->getMessage());
+            \Log::error('CaseParticipatedException: ', $e->getTraceAsString());
         }
     }
 

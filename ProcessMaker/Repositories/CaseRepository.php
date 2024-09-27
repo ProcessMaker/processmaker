@@ -33,7 +33,7 @@ class CaseRepository implements CaseRepositoryInterface
     public function create(ExecutionInstanceInterface $instance): void
     {
         if (is_null($instance->case_number)) {
-            \Log::error('Case number is required. instance: ' . $instance->getKey());
+            \Log::error('CaseStartedError: case number is required, method=create, instance=' . $instance->getKey());
 
             return;
         }
@@ -60,8 +60,8 @@ class CaseRepository implements CaseRepositoryInterface
                 'completed_at' => null,
             ]);
         } catch (\Exception $e) {
-            \Log::error($e->getMessage());
-            \Log::error($e->getTraceAsString());
+            \Log::error('CaseStartedException: ', $e->getMessage());
+            \Log::error('CaseStartedException: ', $e->getTraceAsString());
         }
     }
 
@@ -75,14 +75,14 @@ class CaseRepository implements CaseRepositoryInterface
     public function update(ExecutionInstanceInterface $instance, TokenInterface $token): void
     {
         if (is_null($instance->case_number)) {
-            \Log::error('Case number is required. instance: ' . $instance->getKey());
+            \Log::error('CaseStartedError: case number is required, method=update, instance=' . $instance->getKey());
 
             return;
         }
 
         try {
             if (!$this->checkIfCaseStartedExist($instance->case_number)) {
-                \Log::error('Case number not found. instance: ' . $instance->id);
+                \Log::error('CaseStartedError: case started not found, method=update, instance=' . $instance->getKey());
 
                 return;
             }
@@ -96,7 +96,8 @@ class CaseRepository implements CaseRepositoryInterface
 
             $this->case->saveOrFail();
         } catch (\Exception $e) {
-            \Log::error($e->getMessage());
+            \Log::error('CaseStartedException: ', $e->getMessage());
+            \Log::error('CaseStartedException: ', $e->getTraceAsString());
         }
     }
 
@@ -126,7 +127,8 @@ class CaseRepository implements CaseRepositoryInterface
             CaseStarted::where('case_number', $instance->case_number)->update($data);
             $this->caseParticipatedRepository->updateStatus($instance->case_number, $data);
         } catch (\Exception $e) {
-            \Log::error($e->getMessage());
+            \Log::error('CaseStartedException: ', $e->getMessage());
+            \Log::error('CaseStartedException: ', $e->getTraceAsString());
         }
     }
 
@@ -193,8 +195,10 @@ class CaseRepository implements CaseRepositoryInterface
             $this->case->requests = CaseUtils::storeRequests($instance, $this->case->requests);
 
             $this->case->saveOrFail();
-        } catch (\Exception $th) {
-            \Log::error($th->getMessage());
+        } catch (\Exception $e) {
+            \Log::error('CaseStartedException: ', $e->getMessage());
+            \Log::error('CaseStartedException: ', $e->getTraceAsString());
+
         }
     }
 
