@@ -45,11 +45,11 @@ class TaskControllerTest extends TestCase
     }
 
     /**
-     * Test indexCase returns tasks related to the case_number.
+     * Test indexCase returns active tasks related to the case_number.
      *
      * @return void
      */
-    public function test_index_case_returns_tasks_for_case_number()
+    public function test_index_case_returns_active_tasks_for_case_number()
     {
         // Simulate an authenticated user
         $user = User::factory()->create();
@@ -64,7 +64,40 @@ class TaskControllerTest extends TestCase
         ]);
 
         // Call the endpoint with the 'case_number' parameter
-        $response = $this->apiCall('GET', self::API_TASK_BY_CASE . "?case_number=$processRequest->case_number");
+        $filter = "?case_number=$processRequest->case_number";
+        $response = $this->apiCall('GET', self::API_TASK_BY_CASE . $filter);
+
+        // Check if the response is successful and contains the expected tasks
+        $response->assertStatus(200);
+        $this->assertCount(1, $response->json('data'));
+        $response->assertJsonStructure([
+            'data' => ['*' => self::TASK_BY_CASE_STRUCTURE],
+            'meta',
+        ]);
+    }
+
+    /**
+     * Test indexCase returns completed tasks related to the case_number.
+     *
+     * @return void
+     */
+    public function test_index_case_returns_inactive_tasks_for_case_number()
+    {
+        // Simulate an authenticated user
+        $user = User::factory()->create();
+        Auth::login($user);
+
+        // Create a ProcessRequestToken associated with a specific case_number
+        $processRequest = ProcessRequest::factory()->create();
+        ProcessRequestToken::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'COMPLETED',
+            'process_request_id' => $processRequest->id, // id del ProcessRequest
+        ]);
+
+        // Call the endpoint with the 'case_number' parameter
+        $filter = "?case_number=$processRequest->case_number&status=COMPLETED";
+        $response = $this->apiCall('GET', self::API_TASK_BY_CASE . $filter);
 
         // Check if the response is successful and contains the expected tasks
         $response->assertStatus(200);
