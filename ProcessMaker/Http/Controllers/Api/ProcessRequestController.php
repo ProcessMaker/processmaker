@@ -856,7 +856,6 @@ class ProcessRequestController extends Controller
         // Validate the inputs, including optional ones
         $request->validate([
             'case_number' => 'required|integer',
-            'status' => 'nullable|string|in:ACTIVE,COMPLETED,CANCELED',
             'order_by' => 'nullable|string|in:id,name,status,user_id,initiated_at,participants',
             'order_direction' => 'nullable|string|in:asc,desc',
             'page' => 'nullable|integer|min:1',
