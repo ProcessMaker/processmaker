@@ -83,6 +83,7 @@ class ProcessController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
      *     @OA\Parameter(ref="#/components/parameters/status"),
+     *     @OA\Parameter(ref="#/components/parameters/simplified_data_for_selector"),
      *     @OA\Parameter(ref="#/components/parameters/include"),
      *
      *     @OA\Response(
@@ -141,7 +142,8 @@ class ProcessController extends Controller
         }
 
         if ($request->input('simplified_data_for_selector', false)) {
-            $processes = $processes->select('id', 'name', 'description');
+            $fields = $this->getRequestFields($request);
+            $processes = $processes->select($fields);
             return new ApiCollection($processes->get());
         }
 
@@ -1664,6 +1666,20 @@ class ProcessController extends Controller
     }
 
     /**
+     * Get select fields for simplified_data_for_selector.
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    protected function getRequestFields(Request $request)
+    {
+        $fields = $request->input('fields', 'id,name,description');
+
+        return $fields ? explode(',', $fields) : [];
+    }
+
+    /**
      * Get the size of the page.
      * per_page=# (integer, the page requested) (Default: 10).
      *
@@ -1673,7 +1689,10 @@ class ProcessController extends Controller
     protected function getPerPage(Request $request)
     {
         if ($request->input('simplified_data_for_selector')) {
-            $request->merge(['per_page' => PHP_INT_MAX]);
+            $per_page = $request->input('per_page', null);
+            if (!$per_page) {
+                $request->merge(['per_page' => PHP_INT_MAX]);
+            }
         }
 
         return $request->input('per_page', 10);
