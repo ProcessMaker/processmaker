@@ -83,6 +83,7 @@ class ProcessController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
      *     @OA\Parameter(ref="#/components/parameters/status"),
+     *     @OA\Parameter(ref="#/components/parameters/simplified_data_for_selector"),
      *     @OA\Parameter(ref="#/components/parameters/include"),
      *     @OA\Parameter(
      *         name="simplified_data_for_selector",
