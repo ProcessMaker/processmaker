@@ -51,7 +51,7 @@
     <splitpane-container v-if="showPreview" :size="splitpaneSize">
       <div
         ref="tasks-preview"
-        class="tasks-preview h-100 p-3"
+        class="tasks-preview h-100 p-3 position-relative"
       >
           <div class="d-flex w-100 mb-3">
             <slot name="header" v-bind:close="onClose" v-bind:screenFilteredTaskData="formData" v-bind:taskReady="taskReady">
@@ -168,7 +168,7 @@
           </div>
           <div
             id="reassign-container"
-            class="d-flex mb-3"
+            class="d-flex align-items-center overlay-div position-absolute top-0 start-0 w-100 bg-white shadow-lg p-2 pr-4"
             v-if="showReassignment"
           >
             <div class="mr-3">
@@ -209,10 +209,10 @@
                 </template>
               </select-from-api>
             </div>
-            <button type="button" class="btn btn-secondary ml-2" @click="reassignUser" :disabled="disabled">
+            <button type="button" class="btn btn-primary btn-sm ml-2" @click="reassignUser" :disabled="disabled">
               {{ $t('Assign') }}
             </button>
-            <button type="button" class="btn btn-outline-secondary ml-2" @click="cancelReassign">
+            <button type="button" class="btn btn-outline-secondary btn-sm ml-2" @click="cancelReassign">
               {{ $t('Cancel') }}
             </button>
           </div>
@@ -221,8 +221,7 @@
             'frame-container-full': tooltipButton === 'fullTask',
             'frame-container-inbox': tooltipButton === 'inboxRules'
           }"
-          class="iframe-container"
-          v-show="!showReassignment">
+          class="iframe-container">
             <iframe
               v-if="showFrame1"
               :title="$t('Preview')"
