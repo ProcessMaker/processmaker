@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import Origin from './origin.vue';
+import Origin from './Origin.vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 
 const router = useRouter();
