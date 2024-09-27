@@ -1672,6 +1672,10 @@ class ProcessController extends Controller
      */
     protected function getPerPage(Request $request)
     {
+        if ($request->input('simplified_data_for_selector')) {
+            $request->merge(['per_page' => PHP_INT_MAX]);
+        }
+
         return $request->input('per_page', 10);
     }
 
