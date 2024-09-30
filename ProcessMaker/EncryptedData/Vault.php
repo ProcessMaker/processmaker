@@ -28,11 +28,14 @@ class Vault implements EncryptedDataInterface
     }
 
     /**
-     * Encrypt text.
+     * Encrypting a text
      *
-     * @param string $plainText
-     * @param string $iv
-     * @param string $key
+     * @param string $plainText The text to encrypt.
+     * @param string $iv|null This parameter is always optional when the configured driver is "vault",
+     * as the vault handles it internally.
+     * @param string $key|null This parameter is always optional when the configured driver is "vault",
+     * as the vault manages the keys.
+     *
      * @return string
      */
     public function encryptText(string $plainText, string $iv = null, string $key = null): string
@@ -49,11 +52,14 @@ class Vault implements EncryptedDataInterface
     }
 
     /**
-     * Decrypt text.
+     * Decrypting a text
      *
-     * @param string $cipherText
-     * @param string $iv
-     * @param string $key
+     * @param string $cipherText The cipher text to decrypt.
+     * @param string $iv|null This parameter is always optional when the configured driver is "vault",
+     * as the vault handles it internally
+     * @param string $key|null This parameter is always optional when the configured driver is "vault",
+     * as the vault manages the keys.
+     *
      * @return string
      */
     public function decryptText(string $cipherText, string $iv = null, string $key = null): string
@@ -70,7 +76,8 @@ class Vault implements EncryptedDataInterface
     }
 
     /**
-     * Change key and update encrypted texts
+     * Update the encrypted texts stored in the database using a new key.
+     * The Vault administrator must rotate the key before executing this action.
      */
     public function changeKey(): void
     {
