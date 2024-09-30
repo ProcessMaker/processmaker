@@ -3,8 +3,8 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use ProcessMaker\Traits\HasUuids;
 use ProcessMaker\Traits\Exportable;
+use ProcessMaker\Traits\HasUuids;
 
 class UserConfiguration extends ProcessMakerModel
 {

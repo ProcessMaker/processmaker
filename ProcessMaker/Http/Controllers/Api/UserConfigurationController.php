@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
@@ -13,18 +12,18 @@ use ProcessMaker\Models\UserConfiguration;
 class UserConfigurationController extends Controller
 {
     const DEFAULT_USER_CONFIGURATION = [
-        "launchpad" => [
-           "isMenuCollapse" => true
+        'launchpad' => [
+            'isMenuCollapse' => true,
         ],
-        "cases" => [
-           "isMenuCollapse" => true
+        'cases' => [
+            'isMenuCollapse' => true,
         ],
-        "requests" => [
-           "isMenuCollapse" => true
+        'requests' => [
+            'isMenuCollapse' => true,
         ],
-        "tasks" => [
-           "isMenuCollapse" => true
-        ]
+        'tasks' => [
+            'isMenuCollapse' => true,
+        ],
     ];
 
     public function index()
@@ -36,12 +35,11 @@ class UserConfigurationController extends Controller
 
         if (empty($response)) {
             $response = [
-                'user_id' => $user->id, 
-                'ui_configuration' =>
-                json_encode(self::DEFAULT_USER_CONFIGURATION)
+                'user_id' => $user->id,
+                'ui_configuration' => json_encode(self::DEFAULT_USER_CONFIGURATION),
             ]; // return default
         }
-        
+
         return new ApiResource($response);
     }
 
@@ -56,7 +54,7 @@ class UserConfigurationController extends Controller
             'ui_configuration.requests' => 'required|array',
             'ui_configuration.tasks' => 'required|array',
         ]);
-        $uiConfiguration = json_encode($request->input('ui_configuration')); 
+        $uiConfiguration = json_encode($request->input('ui_configuration'));
 
         try {
             // Store the user configuration
@@ -65,7 +63,6 @@ class UserConfigurationController extends Controller
             ], [
                 'ui_configuration' => $uiConfiguration,
             ]);
-
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }

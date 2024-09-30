@@ -16,7 +16,7 @@ class UserConfigurationTest extends TestCase
 
     const STRUCTURE = [
         'user_id',
-        'ui_configuration'
+        'ui_configuration',
     ];
 
     /**
@@ -43,18 +43,18 @@ class UserConfigurationTest extends TestCase
     {
         // Call the api PUT
         $values = [
-            "launchpad" => [
-               "isMenuCollapse" => false
+            'launchpad' => [
+                'isMenuCollapse' => false,
             ],
-            "cases" => [
-               "isMenuCollapse" => false
+            'cases' => [
+                'isMenuCollapse' => false,
             ],
-            "requests" => [
-               "isMenuCollapse" => false
+            'requests' => [
+                'isMenuCollapse' => false,
             ],
-            "tasks" => [
-               "isMenuCollapse" => false
-            ]
+            'tasks' => [
+                'isMenuCollapse' => false,
+            ],
         ];
 
         $response = $this->apiCall('PUT', self::API_TEST_URL, ['ui_configuration' => $values]);
@@ -90,15 +90,15 @@ class UserConfigurationTest extends TestCase
 
         // An incomplete ui_configuration
         $values = [
-            "cases" => [
-               "isMenuCollapse" => false
+            'cases' => [
+                'isMenuCollapse' => false,
             ],
-            "requests" => [
-               "isMenuCollapse" => false
+            'requests' => [
+                'isMenuCollapse' => false,
             ],
-            "tasks" => [
-               "isMenuCollapse" => false
-            ]
+            'tasks' => [
+                'isMenuCollapse' => false,
+            ],
         ];
         $response = $this->apiCall('PUT', self::API_TEST_URL, ['ui_configuration' => $values]);
         // Validate the header status code
