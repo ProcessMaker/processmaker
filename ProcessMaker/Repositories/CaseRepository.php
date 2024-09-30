@@ -4,7 +4,9 @@ namespace ProcessMaker\Repositories;
 
 use Carbon\Carbon;
 use ProcessMaker\Contracts\CaseRepositoryInterface;
+use ProcessMaker\Models\CaseParticipated;
 use ProcessMaker\Models\CaseStarted;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 
@@ -194,5 +196,70 @@ class CaseRepository implements CaseRepositoryInterface
         } catch (\Exception $th) {
             \Log::error($th->getMessage());
         }
+    }
+
+    public static function syncCases(array $requestIds): array
+    {
+        $requests = ProcessRequest::with(['tokens', 'parentRequest'])->whereIn('id', $requestIds)->get();
+        $successes = [];
+        $errors = [];
+
+        foreach ($requests as $instance) {
+            try {
+                $caseStarted = CaseStarted::updateOrCreate(
+                    ['case_number' => $instance->case_number],
+                    [
+                        'user_id' => $instance->user_id,
+                        'case_title' => $instance->case_title,
+                        'case_title_formatted' => $instance->case_title_formatted,
+                        'case_status' => $instance->status === 'ACTIVE' ? 'IN_PROGRESS' : $instance->status,
+                        'processes' => CaseUtils::storeProcesses($instance, collect()),
+                        'requests' => CaseUtils::storeRequests($instance, collect()),
+                        'request_tokens' => CaseUtils::storeRequestTokens($instance->tokens->first()->getKey(), collect()),
+                        'tasks' => CaseUtils::storeTasks($instance->tokens->first(), collect()),
+                        'participants' => $instance->participants,
+                        'initiated_at' => $instance->initiated_at,
+                        'completed_at' => $instance->completed_at,
+                    ],
+                );
+
+                foreach ($instance->tokens as $token) {
+                    if ($token->element_type === 'task') {
+                        self::syncCasesParticipated($caseStarted, $token);
+                    }
+                }
+
+                $successes[] = $caseStarted->case_number;
+            } catch (\Exception $e) {
+                $errors[] = $instance->case_number . ' ' . $e->getMessage();
+            }
+        }
+
+        return [
+            'successes' => $successes,
+            'errors' => $errors,
+        ];
+    }
+
+    public static function syncCasesParticipated($caseStarted, $token)
+    {
+        CaseParticipated::updateOrCreate(
+            [
+                'case_number' => $caseStarted->case_number,
+                'user_id' => $token->user_id,
+            ],
+            [
+                'case_title' => $caseStarted->case_title,
+                'case_title_formatted' => $caseStarted->case_title_formatted,
+                'case_status' => $caseStarted->case_status,
+                'processes' => CaseUtils::storeProcesses($token->processRequest, collect()),
+                'requests' => CaseUtils::storeRequests($token->processRequest, collect()),
+                'request_tokens' => CaseUtils::storeRequestTokens($token->getKey(), collect()),
+                'tasks' => CaseUtils::storeTasks($token, collect()),
+                'participants' => $caseStarted->participants,
+                'initiated_at' => $caseStarted->initiated_at,
+                'completed_at' => $caseStarted->completed_at,
+            ]
+        );
     }
 }
