@@ -78,7 +78,7 @@ const requestNumberColumn = () => ({
 });
 
 const requestNameColumn = () => ({
-  field: "case_title",
+  field: "name",
   header: "Request Name",
   resizable: true,
   width: 200,
@@ -108,7 +108,7 @@ const statusColumn = () => ({
 });
 
 const startedColumn = () => ({
-  field: "started_date",
+  field: "created_at",
   header: "started",
   resizable: true,
   width: 200,

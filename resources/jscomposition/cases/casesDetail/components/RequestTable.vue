@@ -16,6 +16,7 @@ import { defineComponent, ref, onMounted } from "vue";
 import { BaseTable, Pagination } from "../../../base";
 import { getData } from "../api/index";
 import { getColumns } from "../config/columns";
+import { getRequestId } from "../variables";
 
 export default defineComponent({
   components: { BaseTable, Pagination },
@@ -23,14 +24,25 @@ export default defineComponent({
     const data = ref(null);
     const columnsConfig = ref(null);
     const dataPagination = ref({
-      total: 153,
-      page: 0,
-      pages: 10,
+      total: 15,
+      page: 1,
+      pages: 1,
       perPage: 15,
     });
 
+    const formatData = () => ({
+      params: {
+        case_number: getRequestId(),
+        include: "participants,activeTasks",
+      },
+      pagination: {
+        page: dataPagination.value.page,
+        perPage: dataPagination.value.perPage,
+      },
+    });
+
     onMounted(async () => {
-      data.value = await getData();
+      data.value = await getData(formatData());
       columnsConfig.value = getColumns("requests");
     });
 
@@ -38,6 +50,7 @@ export default defineComponent({
       data,
       dataPagination,
       columnsConfig,
+      formatData,
     };
   },
 });
