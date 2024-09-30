@@ -1,7 +1,7 @@
 <template>
   <div
     class="tw-flex tw-transition-all tw-duration-500"
-    :class="{ 'tw-w-0' : collapse}">
+    :class="{ '!tw-w-0' : collapse}">
     <slot name="left">
       <div class="tw-relative tw-group tw-w-3">
         <div class="tw-transition tw-duration-250 tw-w-[2px] tw-h-full">
