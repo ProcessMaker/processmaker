@@ -15,11 +15,14 @@ class Local implements EncryptedDataInterface
     public static $iv = '';
 
     /**
-     * Encrypt text.
+     * Encrypting a text
      *
-     * @param string $plainText
-     * @param string $iv
-     * @param string $key
+     * @param string $plainText The text to encrypt.
+     * @param string $iv|null This parameter It can be optional when the IV is obtained from the database
+     * instead of generating a new one.
+     * @param string $key|null This parameter It is also optional when performing regular encryption,
+     * the current key is obtained from the environment parameters.
+     *
      * @return string
      */
     public function encryptText(string $plainText, string $iv = null, string $key = null): string
@@ -42,11 +45,14 @@ class Local implements EncryptedDataInterface
     }
 
     /**
-     * Decrypt text.
+     * Decrypting a text
      *
-     * @param string $cipherText
-     * @param string $iv
-     * @param string $key
+     * @param string $cipherText The cipher text to decrypt.
+     * @param string $iv|null This parameter It can be optional when the IV is obtained from the database
+     * instead of generating a new one.
+     * @param string $key|null This parameter It is also optional when performing regular decryption,
+     * the current key is obtained from the environment parameters.
+     *
      * @return string
      */
     public function decryptText(string $cipherText, string $iv = null, string $key = null): string
@@ -66,7 +72,7 @@ class Local implements EncryptedDataInterface
     }
 
     /**
-     * Generate an iv value.
+     * Generate an IV value.
      *
      * @return string
      */
@@ -93,7 +99,8 @@ class Local implements EncryptedDataInterface
     }
 
     /**
-     * Change key and update encrypted texts
+     * Update the encrypted texts stored in the database using a new key.
+     * In the case of the "local" driver, the new key is updated in the environment variables.
      */
     public function changeKey(): void
     {
