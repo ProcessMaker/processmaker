@@ -395,4 +395,27 @@ class CaseStartedTest extends TestCase
             'tasks->[0]->process_id' => $token->process_id,
         ]);
     }
+
+    public function test_try_update_if_case_has_not_been_created()
+    {
+        $user = User::factory()->create();
+        $repoParticipant = Mockery::mock(CaseParticipatedRepository::class);
+        $instance = ProcessRequest::factory()->create([
+            'user_id' => null,
+        ]);
+
+        $repo = new CaseRepository($repoParticipant);
+        $repo->create($instance);
+
+        $this->assertDatabaseCount('cases_started', 0);
+
+        $token = ProcessRequestToken::factory()->create([
+            'user_id' => $user->id,
+            'process_request_id' => $instance->id,
+            'element_type' => 'task',
+        ]);
+
+        $repo->update($instance, $token);
+        $this->assertDatabaseCount('cases_started', 0);
+    }
 }

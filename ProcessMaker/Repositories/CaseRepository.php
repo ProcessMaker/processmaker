@@ -10,7 +10,11 @@ use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 
 class CaseRepository implements CaseRepositoryInterface
 {
+    const CASE_STATUS_ACTIVE = 'ACTIVE';
+
     /**
+     * This property is used to store an instance of `CaseStarted`
+     * when a case started is updated.
      * @var CaseStarted|null
      */
     protected ?CaseStarted $case;
@@ -39,12 +43,12 @@ class CaseRepository implements CaseRepositoryInterface
         }
 
         try {
-            $this->case = CaseStarted::create([
+            CaseStarted::create([
                 'case_number' => $instance->case_number,
                 'user_id' => $instance->user_id,
                 'case_title' => $instance->case_title,
                 'case_title_formatted' => $instance->case_title_formatted,
-                'case_status' => $instance->status === 'ACTIVE' ? 'IN_PROGRESS' : $instance->status,
+                'case_status' => $instance->status === self::CASE_STATUS_ACTIVE ? 'IN_PROGRESS' : $instance->status,
                 'processes' => CaseUtils::storeProcesses($instance, collect()),
                 'requests' => CaseUtils::storeRequests($instance, collect()),
                 'request_tokens' => [],
@@ -82,7 +86,7 @@ class CaseRepository implements CaseRepositoryInterface
             }
 
             $this->case->case_title = $instance->case_title;
-            $this->case->case_status = $instance->status === 'ACTIVE' ? 'IN_PROGRESS' : $instance->status;
+            $this->case->case_status = $instance->status === self::CASE_STATUS_ACTIVE ? 'IN_PROGRESS' : $instance->status;
             $this->case->request_tokens = CaseUtils::storeRequestTokens($token->getKey(), $this->case->request_tokens);
             $this->case->tasks = CaseUtils::storeTasks($token, $this->case->tasks);
 
@@ -102,6 +106,7 @@ class CaseRepository implements CaseRepositoryInterface
      */
     public function updateStatus(ExecutionInstanceInterface $instance): void
     {
+        // If a sub-process is completed, do not update the case started status
         if (!is_null($instance->parent_request_id)) {
             return;
         }

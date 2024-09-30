@@ -9,6 +9,8 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 class CaseParticipatedRepository
 {
     /**
+     * This property is used to store an instance of `CaseParticipated`
+     * when a case participated is updated.
      * @var CaseParticipated|null
      */
     protected ?CaseParticipated $caseParticipated;
@@ -27,7 +29,7 @@ class CaseParticipatedRepository
         }
 
         try {
-            $this->caseParticipated = CaseParticipated::create([
+            CaseParticipated::create([
                 'user_id' => $token->user->id,
                 'case_number' => $case->case_number,
                 'case_title' => $case->case_title,
@@ -92,6 +94,16 @@ class CaseParticipatedRepository
         }
     }
 
+    /**
+     * Check if a case participated exists.
+     * If it exists, store the instance in the property.
+     * The property is used to update the JSON fields of the case participated.
+     *
+     * @param int $userId
+     * @param int $caseNumber
+     *
+     * @return bool
+     */
     private function checkIfCaseParticipatedExist(int $userId, int $caseNumber): bool
     {
         $this->caseParticipated = CaseParticipated::where('user_id', $userId)
