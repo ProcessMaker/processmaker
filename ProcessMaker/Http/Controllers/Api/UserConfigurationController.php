@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
@@ -63,7 +64,7 @@ class UserConfigurationController extends Controller
             ], [
                 'ui_configuration' => $uiConfiguration,
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
 
