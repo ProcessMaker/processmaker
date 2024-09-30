@@ -1089,4 +1089,36 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
 
         return $endEvents->first()->elementDestination;
     }
+
+    /**
+     * Scope apply order
+     */
+    public function scopeApplyOrdering($query, $request)
+    {
+        $orderBy = $request->input('order_by', 'name');
+        $orderDirection = $request->input('order_direction', 'asc');
+
+        return $query->orderBy($orderBy, $orderDirection);
+    }
+
+    /**
+     * Scope apply pagination
+     */
+    public function scopeApplyPagination($query, $request)
+    {
+        $page = $request->input('page', 1);
+        $perPage = $request->input('per_page', 10);
+
+        return $query->paginate($perPage);
+    }
+
+    /**
+     * Scope to filter by case_number
+     */
+    public function scopeFilterByCaseNumber($query, $request)
+    {
+        $caseNumber = $request->input('case_number');
+
+        return $query->where('case_number', $caseNumber);
+    }
 }
