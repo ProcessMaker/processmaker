@@ -66,6 +66,7 @@ const requestNumberColumn = () => ({
   field: "id",
   header: "Request #",
   resizable: true,
+  sortable: true,
   width: 200,
   cellRenderer: () => ({
     component: LinkCell,
@@ -80,6 +81,7 @@ const requestNumberColumn = () => ({
 const requestNameColumn = () => ({
   field: "name",
   header: "Request Name",
+  sortable: true,
   resizable: true,
   width: 200,
   cellRenderer: () => ({
@@ -102,6 +104,7 @@ const currentTaskColumn = () => ({
 const statusColumn = () => ({
   field: "status",
   header: "Status",
+  sortable: true,
   resizable: true,
   width: 200,
   cellRenderer: () => StatusCell,
@@ -110,6 +113,7 @@ const statusColumn = () => ({
 const startedColumn = () => ({
   field: "created_at",
   header: "started",
+  sortable: true,
   resizable: true,
   width: 200,
 });

@@ -42,13 +42,13 @@ export const transformData = (dataInput) => {
   data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
   data.meta.to = data.meta.from + data.meta.count;
   data.data = this.jsonRows(data.data);
-  for (let record of data.data) {
-    if (record["active_tasks"]) {
-      record["active_tasks"] = formatActiveTasks(record["active_tasks"]);
+  data.data.forEach(record => {
+    if (record.active_tasks) {
+      record.active_tasks = formatActiveTasks(record.active_tasks);
     }
-    record["status"] = this.formatStatus(record["status"]);
-    record["participants"] = this.formatParticipants(record["participants"]);
-  }
+    record.status = formatStatus(record.status);
+    record.participants = this.formatParticipants(record.participants);
+  });
   return data;
 };
 
