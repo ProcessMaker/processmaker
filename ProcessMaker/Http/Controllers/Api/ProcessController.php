@@ -83,7 +83,12 @@ class ProcessController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
      *     @OA\Parameter(ref="#/components/parameters/status"),
-     *     @OA\Parameter(ref="#/components/parameters/simplified_data_for_selector"),
+     *     @OA\Parameter(
+     *         name="simplified_data_for_selector",
+     *         in="query",
+     *         description="Comma separated list of fields to include in the response",
+     *         @OA\Schema(type="string", default=""),
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/include"),
      *
      *     @OA\Response(
