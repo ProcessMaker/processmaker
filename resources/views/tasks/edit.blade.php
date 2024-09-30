@@ -436,6 +436,8 @@
           userHasInteracted: false,
           caseTitle: "",
           showMenu: true,
+          userConfiguration: [],
+          urlConfiguration:'users/configuration',
         },
         watch: {
           task: {
@@ -526,9 +528,28 @@
           },
         },
         methods: {
+          getUserConfiguration() {
+            ProcessMaker.apiClient
+              .get(this.urlConfiguration)
+              .then((response) => {
+                this.userConfiguration = JSON.parse(response.data.ui_configuration);
+                this.showMenu = this.userConfiguration.tasks.isMenuCollapse;
+              });
+          },
           hideMenu() {
             this.showMenu = !this.showMenu;
             this.$root.$emit("sizeChanged", !this.showMenu);
+            this.updateUserConfiguration();
+          },
+          updateUserConfiguration() {
+            this.userConfiguration.tasks.isMenuCollapse = this.showMenu;
+            ProcessMaker.apiClient
+            .put(
+              this.urlConfiguration, 
+              {
+                ui_configuration: this.userConfiguration,
+              }
+            );
           },
           createRule() {
             window.location.href = '/tasks/rules/new?' +
@@ -777,6 +798,7 @@
           interactionListener.addEventListener('keydown', (event) => {
             this.sendUserHasInteracted();
           });
+          this.getUserConfiguration();
         }
       });
       window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name);

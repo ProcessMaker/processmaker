@@ -103,7 +103,9 @@ export default {
       categoryCount: 0,
       hideLaunchpad: true,
       currentWidth: 0,
-      mobileApp: window.ProcessMaker.mobileApp
+      mobileApp: window.ProcessMaker.mobileApp,
+      userConfiguration: [],
+      urlConfiguration: "users/configuration",
     };
   },
   mounted() {
@@ -118,6 +120,7 @@ export default {
     this.$root.$on('filter-categories', (filter) => {
       this.filterCategories(filter);
     });
+    this.getUserConfiguration();
   },
   watch: {
     category: {
@@ -136,9 +139,28 @@ export default {
     }
   },
   methods: {
+    getUserConfiguration() {
+      ProcessMaker.apiClient
+        .get(this.urlConfiguration)
+        .then((response) => {
+          this.userConfiguration = JSON.parse(response.data.ui_configuration);
+          this.showMenu = this.userConfiguration.launchpad.isMenuCollapse;
+        });
+    },
     hideMenu() {
       this.showMenu = !this.showMenu;
       this.$root.$emit("sizeChanged", !this.showMenu);
+      this.updateUserConfiguration();
+    },
+    updateUserConfiguration() {
+      this.userConfiguration.launchpad.isMenuCollapse = this.showMenu;
+      ProcessMaker.apiClient
+        .put(
+          this.urlConfiguration,
+          {
+            ui_configuration: this.userConfiguration,
+          },
+        );
     },
     /**
      * Add new page of categories
