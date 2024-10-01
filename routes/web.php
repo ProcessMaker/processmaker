@@ -221,3 +221,13 @@ Route::get('/unavailable', [UnavailableController::class, 'show'])->name('error.
 
 // SAML Metadata Route
 Route::resource('/saml/metadata', MetadataController::class)->only('index');
+
+Route::post('/scripts/microservice/execution', function (Illuminate\Http\Request $request) {
+    $response = $request->all();
+    event(new ProcessMaker\Events\ScriptResponseEvent(
+        ProcessMaker\Models\User::find($response['metadata']['user_id']),
+        200,
+        json_decode($response['script_output'], true),
+        null,
+        $response['metadata']['nonce']));
+});

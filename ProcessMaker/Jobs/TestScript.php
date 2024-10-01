@@ -60,6 +60,7 @@ class TestScript implements ShouldQueue
         try {
             // Just set the code but do not save the object (preview only)
             $this->script->code = $this->code;
+            $this->script->nonce = $this->nonce;
             $response = $this->script->runScript($this->data, $this->configuration);
             $this->sendResponse(200, $response);
         } catch (Throwable $exception) {
