@@ -4,9 +4,8 @@ namespace ProcessMaker\Repositories;
 
 use Carbon\Carbon;
 use ProcessMaker\Contracts\CaseRepositoryInterface;
-use ProcessMaker\Models\CaseParticipated;
+use ProcessMaker\Exception\CaseException;
 use ProcessMaker\Models\CaseStarted;
-use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 
@@ -33,9 +32,7 @@ class CaseRepository implements CaseRepositoryInterface
     public function create(ExecutionInstanceInterface $instance): void
     {
         if (is_null($instance->case_number)) {
-            \Log::error('CaseStartedError: case number is required, method=create, instance=' . $instance->getKey());
-
-            return;
+            throw new CaseException('case number is required, method=create, instance=' . $instance->getKey());
         }
 
         if ($this->checkIfCaseStartedExist($instance->case_number)) {
@@ -60,8 +57,7 @@ class CaseRepository implements CaseRepositoryInterface
                 'completed_at' => null,
             ]);
         } catch (\Exception $e) {
-            \Log::error('CaseStartedException: ', $e->getMessage());
-            \Log::error('CaseStartedException: ', $e->getTraceAsString());
+            throw new CaseException($e->getMessage());
         }
     }
 
@@ -74,19 +70,11 @@ class CaseRepository implements CaseRepositoryInterface
      */
     public function update(ExecutionInstanceInterface $instance, TokenInterface $token): void
     {
-        if (is_null($instance->case_number)) {
-            \Log::error('CaseStartedError: case number is required, method=update, instance=' . $instance->getKey());
-
-            return;
+        if (!$this->checkIfCaseStartedExist($instance->case_number)) {
+            throw new CaseException('case started not found, method=update, instance=' . $instance->getKey());
         }
 
         try {
-            if (!$this->checkIfCaseStartedExist($instance->case_number)) {
-                \Log::error('CaseStartedError: case started not found, method=update, instance=' . $instance->getKey());
-
-                return;
-            }
-
             $this->case->case_title = $instance->case_title;
             $this->case->case_status = $instance->status === self::CASE_STATUS_ACTIVE ? 'IN_PROGRESS' : $instance->status;
             $this->case->request_tokens = CaseUtils::storeRequestTokens($token->getKey(), $this->case->request_tokens);
@@ -96,8 +84,7 @@ class CaseRepository implements CaseRepositoryInterface
 
             $this->case->saveOrFail();
         } catch (\Exception $e) {
-            \Log::error('CaseStartedException: ', $e->getMessage());
-            \Log::error('CaseStartedException: ', $e->getTraceAsString());
+            throw new CaseException($e->getMessage());
         }
     }
 
@@ -127,8 +114,7 @@ class CaseRepository implements CaseRepositoryInterface
             CaseStarted::where('case_number', $instance->case_number)->update($data);
             $this->caseParticipatedRepository->updateStatus($instance->case_number, $data);
         } catch (\Exception $e) {
-            \Log::error('CaseStartedException: ', $e->getMessage());
-            \Log::error('CaseStartedException: ', $e->getTraceAsString());
+            throw new CaseException($e->getMessage());
         }
     }
 
@@ -167,11 +153,15 @@ class CaseRepository implements CaseRepositoryInterface
     /**
      * Check if the case started exist.
      *
-     * @param int $caseNumber
+     * @param int|null $caseNumber
      * @return bool
      */
-    private function checkIfCaseStartedExist(int $caseNumber): bool
+    private function checkIfCaseStartedExist(int | null $caseNumber): bool
     {
+        if (is_null($caseNumber)) {
+            return false;
+        }
+
         $this->case = CaseStarted::where('case_number', $caseNumber)->first();
 
         return !is_null($this->case);
@@ -196,74 +186,7 @@ class CaseRepository implements CaseRepositoryInterface
 
             $this->case->saveOrFail();
         } catch (\Exception $e) {
-            \Log::error('CaseStartedException: ', $e->getMessage());
-            \Log::error('CaseStartedException: ', $e->getTraceAsString());
-
+            throw new CaseException($e->getMessage());
         }
-    }
-
-    public static function syncCases(array $requestIds): array
-    {
-        $requests = ProcessRequest::with(['tokens', 'parentRequest'])->whereIn('id', $requestIds)->get();
-        $successes = [];
-        $errors = [];
-
-        foreach ($requests as $instance) {
-            try {
-                $caseStarted = CaseStarted::updateOrCreate(
-                    ['case_number' => $instance->case_number],
-                    [
-                        'user_id' => $instance->user_id,
-                        'case_title' => $instance->case_title,
-                        'case_title_formatted' => $instance->case_title_formatted,
-                        'case_status' => $instance->status === 'ACTIVE' ? 'IN_PROGRESS' : $instance->status,
-                        'processes' => CaseUtils::storeProcesses($instance, collect()),
-                        'requests' => CaseUtils::storeRequests($instance, collect()),
-                        'request_tokens' => CaseUtils::storeRequestTokens($instance->tokens->first()->getKey(), collect()),
-                        'tasks' => CaseUtils::storeTasks($instance->tokens->first(), collect()),
-                        'participants' => $instance->participants,
-                        'initiated_at' => $instance->initiated_at,
-                        'completed_at' => $instance->completed_at,
-                    ],
-                );
-
-                foreach ($instance->tokens as $token) {
-                    if ($token->element_type === 'task') {
-                        self::syncCasesParticipated($caseStarted, $token);
-                    }
-                }
-
-                $successes[] = $caseStarted->case_number;
-            } catch (\Exception $e) {
-                $errors[] = $instance->case_number . ' ' . $e->getMessage();
-            }
-        }
-
-        return [
-            'successes' => $successes,
-            'errors' => $errors,
-        ];
-    }
-
-    public static function syncCasesParticipated($caseStarted, $token)
-    {
-        CaseParticipated::updateOrCreate(
-            [
-                'case_number' => $caseStarted->case_number,
-                'user_id' => $token->user_id,
-            ],
-            [
-                'case_title' => $caseStarted->case_title,
-                'case_title_formatted' => $caseStarted->case_title_formatted,
-                'case_status' => $caseStarted->case_status,
-                'processes' => CaseUtils::storeProcesses($token->processRequest, collect()),
-                'requests' => CaseUtils::storeRequests($token->processRequest, collect()),
-                'request_tokens' => CaseUtils::storeRequestTokens($token->getKey(), collect()),
-                'tasks' => CaseUtils::storeTasks($token, collect()),
-                'participants' => $caseStarted->participants,
-                'initiated_at' => $caseStarted->initiated_at,
-                'completed_at' => $caseStarted->completed_at,
-            ]
-        );
     }
 }

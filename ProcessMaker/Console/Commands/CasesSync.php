@@ -3,8 +3,7 @@
 namespace ProcessMaker\Console\Commands;
 
 use Illuminate\Console\Command;
-use ProcessMaker\Repositories\CaseRepository;
-use ProcessMaker\Repositories\CaseUtils;
+use ProcessMaker\Repositories\CaseSyncRepository;
 
 class CasesSync extends Command
 {
@@ -32,7 +31,7 @@ class CasesSync extends Command
         $requestIds = $requestIds ? explode(',', $requestIds) : [];
 
         if (count($requestIds) > 0) {
-            $data = CaseRepository::syncCases($requestIds);
+            $data = CaseSyncRepository::syncCases($requestIds);
 
             foreach ($data['successes'] as $value) {
                 $this->info('Case started synced ' . $value);

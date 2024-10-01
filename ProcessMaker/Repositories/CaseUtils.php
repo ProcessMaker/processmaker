@@ -10,6 +10,8 @@ class CaseUtils
 {
     const ALLOWED_ELEMENT_TYPES = ['task'];
 
+    const ALLOWED_REQUEST_TOKENS = ['task', 'scriptTask', 'callActivity'];
+
     /**
      * Store processes.
      *
