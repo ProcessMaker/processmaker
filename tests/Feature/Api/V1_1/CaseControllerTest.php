@@ -155,6 +155,7 @@ class CaseControllerTest extends TestCase
     {
         $userA = $this->createUser('user_a');
         $cases = $this->createCasesStartedForUser($userA->id, 10);
+
         $casesSorted = $cases->sortBy('case_number');
 
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['sortBy' => 'case_number:asc']));
@@ -204,6 +205,7 @@ class CaseControllerTest extends TestCase
         $casesA = $this->createCasesStartedForUser($userA->id, 5);
         $caseNumber = 123456;
         $casesB = $this->createCasesStartedForUser($userA->id, 1, ['case_number' => $caseNumber, 'case_status' => 'IN_PROGRESS']);
+        $initiatedAt = $casesA->first()->initiated_at->format('Y-m-d');
 
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases'));
         $response->assertStatus(200);
@@ -221,6 +223,28 @@ class CaseControllerTest extends TestCase
         $response->assertJsonCount($total, 'data');
         $response->assertJsonFragment(['case_status' => 'IN_PROGRESS']);
         $response->assertJsonMissing(['case_status' => 'COMPLETED']);
+
+        $filterBy = ['filterBy' =>'[{"subject":{"type":"Field","value":"user_id"},"operator":"=","value":"' . $userA->id . '"},{"subject":{"type":"Field","value":"case_status"},"operator":"=","value":"IN_PROGRESS"}]'];
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', $filterBy));
+        $response->assertStatus(200);
+        $total = $casesA->where('user_id', $userA->id)->where('case_status', 'IN_PROGRESS')->count() + $casesB->where('user_id', $userA->id)->where('case_status', 'IN_PROGRESS')->count();
+        $response->assertJsonCount($total, 'data');
+        $response->assertJsonFragment(['case_status' => 'IN_PROGRESS']);
+        $response->assertJsonFragment(['user_id' => $userA->id]);
+
+        $filterBy = ['filterBy' =>'[{"subject":{"type":"Field","value":"user_id"},"operator":"=","value":"' . $userA->id . '"},{"subject":{"type":"Field","value":"case_status"},"operator":"=","value":"IN_PROGRESS"}, {"subject":{"type":"Field","value":"created_at"},"operator":">","value":"2023-02-10"}]'];
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', $filterBy));
+        $response->assertStatus(200);
+        $total = $casesA->where('user_id', $userA->id)->where('case_status', 'IN_PROGRESS')->where('created_at', '>', '2023-02-10')->count() + $casesB->where('user_id', $userA->id)->where('case_status', 'IN_PROGRESS')->where('created_at', '>', '2023-02-10')->count();
+        $response->assertJsonCount($total, 'data');
+        $response->assertJsonFragment(['case_status' => 'IN_PROGRESS']);
+        $response->assertJsonFragment(['user_id' => $userA->id]);
+
+        $filterBy = ['filterBy' =>'[{"subject":{"type":"Field","value":"user_id"},"operator":"=","value":"' . $userA->id . '"},{"subject":{"type":"Field","value":"case_status"},"operator":"=","value":"IN_PROGRESS"}, {"subject":{"type":"Field","value":"created_at"},"operator":">","value":"2023-02-10"}, {"subject":{"type":"Field","value":"completed_at"},"operator":">","value":"2023-04-01"}]'];
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', $filterBy));
+        $response->assertStatus(200);
+        $total = $casesA->where('user_id', $userA->id)->where('case_status', 'IN_PROGRESS')->where('created_at', '>', '2023-02-10')->where('completed_at', '>', '2023-04-01')->count() + $casesB->where('user_id', $userA->id)->where('case_status', 'IN_PROGRESS')->where('created_at', '>', '2023-02-10')->where('completed_at', '>', '2023-04-01')->count();
+        $response->assertJsonCount($total, 'data');
     }
 
     public function test_get_all_cases_filter_by_invalid_field(): void
