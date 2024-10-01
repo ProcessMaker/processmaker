@@ -696,14 +696,6 @@ export default {
     },
   },
   mounted() {
-    // TODO -- traducciones si se desea haciendo postabcks
-    // const queryString = window.location.search;
-    // const urlParams = new URLSearchParams(queryString);
-    //
-    // if (urlParams.get("lang")) {
-    //   this.changeMode("preview");
-    // }
-
     // To include another language in the Validator with variable processmaker
     this.user = window.ProcessMaker?.user;
     if (this.user?.lang) {
