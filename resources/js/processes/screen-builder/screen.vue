@@ -10,6 +10,7 @@
         ref="menuScreen"
         :options="optionsMenu"
         :environment="self"
+        @translate="translateScreen"
       />
 
       <!-- Card Body -->
@@ -719,6 +720,12 @@ export default {
   },
   methods: {
     ...mapMutations("globalErrorsModule", { setStoreMode: "setMode" }),
+    translateScreen(language) {
+      ProcessMaker.apiClient.get(`screens/${this.screen.id}/translate/${language}`)
+        .then((response) => {
+          this.preview.config = response.data;
+        });
+    },
     // eslint-disable-next-line func-names
     updateDataInput: debounce(function () {
       if (this.previewInputValid) {
