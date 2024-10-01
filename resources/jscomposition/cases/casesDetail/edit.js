@@ -1,12 +1,14 @@
 import Vue from "vue";
 import CaseDetail from "./components/CaseDetail.vue";
+import Tabs from "./components/Tabs.vue";
 import Timeline from "../../../js/components/Timeline.vue";
+import { CollapsableContainer } from "../../base";
 
 Vue.component("Timeline", Timeline);
 
 new Vue({
   el: "#case-detail",
-  components: { CaseDetail },
+  components: { CaseDetail, Tabs, CollapsableContainer },
   data() {
     return {
       activeTab: "pending",
@@ -18,25 +20,35 @@ new Vue({
         automaticLayout: true,
       },
       showJSONEditor: false,
-      data: data,
-      requestId: requestId,
-      request: request,
-      files: files,
+      data,
+      requestId,
+      request,
+      files,
       refreshTasks: 0,
-      canCancel: canCancel,
-      canViewPrint: canViewPrint,
+      canCancel,
+      canViewPrint,
       status: "ACTIVE",
       userRequested: [],
-      errorLogs: errorLogs,
+      errorLogs,
       disabled: false,
       retryDisabled: false,
       packages: [],
-      processId: processId,
-      canViewComments: canViewComments,
+      processId,
+      canViewComments,
       isObjectLoading: false,
       showTree: false,
       showTabs: true,
       showInfo: true,
+      tabDefault: "details",
+      tabs: [
+        {
+          name: "Details", href: "#details", current: "details", show: true, content: null,
+        },
+        {
+          name: "Comments", href: "#comments", current: "comments", show: true, content: null,
+        },
+      ],
+      headerModel: false,
     };
   },
   computed: {
@@ -202,7 +214,7 @@ new Vue({
     updateRequestData() {
       const data = JSON.parse(this.jsonData);
       ProcessMaker.apiClient.put(`requests/${this.requestId}`, {
-        data: data,
+        data,
       }).then(() => {
         this.fieldsToUpdate.splice(0);
         ProcessMaker.alert(this.$t("The request data was saved."), "success");
@@ -278,7 +290,7 @@ new Vue({
       }
     },
     okCancel() {
-      //single click
+      // single click
       if (this.disabled) {
         return;
       }
@@ -314,7 +326,8 @@ new Vue({
             ProcessMaker.alert(this.$t("Request Completed"), "success");
             window.location.reload();
           });
-        });
+        },
+      );
     },
     retryRequest() {
       const apiRequest = () => {
@@ -351,12 +364,13 @@ new Vue({
     rollback(errorTaskId, rollbackToName) {
       ProcessMaker.confirmModal(
         this.$t("Confirm"),
-        this.$t("Are you sure you want to rollback to the task @{{name}}? Warning! This request will continue as the current published process version.",
+        this.$t(
+          "Are you sure you want to rollback to the task @{{name}}? Warning! This request will continue as the current published process version.",
           { name: rollbackToName },
         ),
         "default",
         () => {
-          ProcessMaker.apiClient.post(`tasks/${errorTaskId}/rollback`).then(response => {
+          ProcessMaker.apiClient.post(`tasks/${errorTaskId}/rollback`).then((response) => {
             window.location.reload();
           });
         },
