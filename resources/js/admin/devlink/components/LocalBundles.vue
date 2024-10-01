@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import debounce from 'lodash/debounce';
 import Origin from './Origin.vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 
@@ -8,6 +9,7 @@ const route = useRoute();
 const bundles = ref([]);
 const editModal = ref(null);
 const confirmDeleteModal = ref(null);
+const filter = ref("");
 
 onMounted(() => {
   load();
@@ -15,9 +17,9 @@ onMounted(() => {
 
 const load = () => {
   ProcessMaker.apiClient
-    .get(`/devlink/local-bundles`)
+    .get(`/devlink/local-bundles?filter=${filter.value}`)
     .then((result) => {
-      bundles.value = result.data;
+      bundles.value = result.data.data;
     });
 }
 
@@ -109,14 +111,23 @@ const executeDelete = () => {
       confirmDeleteModal.value.hide();
       load();
     });
-}
+};
+
+// Debounced function
+const debouncedLoad = debounce(load, 300);
+
+// Function called on change
+const handleFilterChange = () => {
+  debouncedLoad();
+};
 </script>
 
 <template>
   <div>
     <div class="top-options">
-      <b-button 
-        variant="primary" 
+      <input v-model="filter" class="form-control col-10 search-input" @input="handleFilterChange">
+      <b-button
+        variant="primary"
         @click="createNewBundle"
         class="new-button"
       >
@@ -157,22 +168,22 @@ const executeDelete = () => {
         <template #cell(menu)="data">
           <div class="btn-menu-container">
             <div class="btn-group" role="group" aria-label="Basic example">
-              <button 
-                type="button" 
-                class="btn btn-menu" 
+              <button
+                type="button"
+                class="btn btn-menu"
                 @click.prevent="edit(data.item)"
               >
                 <img src="/img/pencil-fill.svg">
               </button>
-              <button 
-                type="button" 
-                class="btn btn-menu" 
+              <button
+                type="button"
+                class="btn btn-menu"
                 @click.prevent="deleteBundle(data.item)"
               >
                 <img src="/img/trash-fill.svg">
               </button>
             </div>
-          </div>        
+          </div>
         </template>
       </b-table>
     </div>
@@ -185,8 +196,15 @@ tr:hover {
 }
 .top-options {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding-bottom: 16px;
+}
+.search-input {
+  padding-left: 30px;
+  background: url(/img/search-icon.svg) no-repeat left;
+  background-position: 7px 8px;
+  background-size: 15px;
+  border-radius: 8px;
 }
 ::v-deep .table {
   border-bottom: 1px solid #e9edf1;

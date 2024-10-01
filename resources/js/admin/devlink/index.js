@@ -5,6 +5,7 @@ import Instance from "./components/Instance";
 import LocalBundles from "./components/LocalBundles";
 import Assets from "./components/Assets";
 import AssetListing from "./components/AssetListing";
+import SharedAssets from "./components/SharedAssets";
 
 Vue.use(VueRouter);
 const router = new VueRouter({
@@ -36,6 +37,11 @@ const router = new VueRouter({
       name: 'asset-listing',
       path: '/instance/:id/assets/:type',
       component: AssetListing,
+    },
+    {
+      name: 'assets-shared',
+      path: '/assets-shared',
+      component: SharedAssets,
     }
   ]
 });

@@ -88,14 +88,16 @@ const load = () => {
         :items="items"
         :fields="fields"
         class="asset-listing-table"
-        >
+      >
         <template #cell(menu)="data">
-          <button
-            class="btn install-asset-btn"
-            @click.prevent="install(data.item)"
-          >
-            <i class="fp-cloud-download-outline"></i>
-          </button>
+          <div class="btn-menu-container">
+            <button
+              class="btn install-asset-btn"
+              @click.prevent="install(data.item)"
+            >
+              <i class="fp-cloud-download-outline"></i>
+            </button>
+          </div>
         </template>
       </b-table>
     </div>
@@ -132,5 +134,9 @@ const load = () => {
 .install-asset-btn {
   border-radius: 8px;
   border: 1px solid rgba(0, 0, 0, 0.125);
+}
+.btn-menu-container {
+  display: flex;
+  justify-content: center;
 }
 </style>

@@ -1,14 +1,45 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import InstanceTabs from './InstanceTabs.vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 import types from './assetTypes';
 
 const router = useRouter();
+const route = useRoute();
+
+const devlink = ref({});
+const assets = ref([]);
+
+const getAssets = (url) => {
+  ProcessMaker.apiClient
+    .get(`${url}/api/1.0/devlink/shared-assets`)
+    .then((response) => {
+      assets.value = response.data;
+    });
+};
+
+const getDevlink = () => {
+  ProcessMaker.apiClient
+    .get(`devlink/${route.params.id}`)
+    .then((response) => {
+      devlink.value = response.data;
+      getAssets(devlink.value.url);
+    });
+};
 
 const navigate = (typeConfig) => {
   router.push({ name: 'asset-listing', params: { type: typeConfig.type } });
-}
+};
+
+const filteredTypes = computed(() => {
+  return types.filter(type => 
+    assets.value.some(asset => asset.config === type.class) 
+  );
+});
+
+onMounted(() => {
+  getDevlink();
+});
 
 </script>
 
@@ -16,7 +47,7 @@ const navigate = (typeConfig) => {
   <div>
     <instance-tabs />
     <div class="card-grid">
-      <div v-for="(type, index) in types" :key="index" class="card">
+      <div v-for="(type, index) in filteredTypes" :key="index" class="card">
         <!-- Icon -->
         <div class="icon-container">
           <i :class="type.icon"></i>

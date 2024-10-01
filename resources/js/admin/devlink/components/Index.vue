@@ -1,7 +1,8 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import Status from './Status.vue';
 import { useRouter, useRoute } from 'vue-router/composables';
+import debounce from 'lodash/debounce';
+import Status from './Status.vue';
 import { store } from '../common';
 
 const router = useRouter();
@@ -9,6 +10,7 @@ const route = useRoute();
 const devlinks = ref([]);
 const confirmDeleteModal = ref(null);
 const editModal = ref(null);
+const filter = ref("");
 
 const fields = [
   {
@@ -42,9 +44,9 @@ const newUrl = ref('');
 
 const load = () => {
   ProcessMaker.apiClient
-    .get('/devlink')
+    .get(`/devlink?filter=${filter.value}`)
     .then((result) => {
-      devlinks.value = result.data;
+      devlinks.value = result.data.data;
     });
 };
 
@@ -100,25 +102,33 @@ const executeDelete = () => {
       confirmDeleteModal.value.hide();
       load();
     });
-}
+};
 
 const select = (devlink) => {
   store.selectedInstance = devlink;
   router.push({ name: 'instance', params: { id: devlink.id } });
-}
+};
 
+// Debounced function
+const debouncedLoad = debounce(load, 300);
+
+// Function called on change
+const handleFilterChange = () => {
+  debouncedLoad();
+};
 </script>
 
 <template>
   <div>
     <div class="top-options">
-      <b-button 
-        variant="primary" 
+      <input v-model="filter" class="form-control col-10 search-input" @input="handleFilterChange">
+      <b-button
+        variant="primary"
         v-b-modal.create
         class="new-button"
       >
         <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>Add Instance
-    </b-button>
+      </b-button>
     </div>
     <b-modal ref="confirmDeleteModal" title="Delete DevLink" @ok="executeDelete">
       <p>Are you sure you want to delete {{ selected?.name }}?</p>
@@ -141,8 +151,8 @@ const select = (devlink) => {
       </template>
     </b-modal>
     <div class="card linked-instances-card">
-      <b-table 
-        :items="devlinks" 
+      <b-table
+        :items="devlinks"
         :fields="fields"
       >
         <template #cell(name)="data">
@@ -154,16 +164,16 @@ const select = (devlink) => {
         <template #cell(menu)="data">
           <div class="btn-menu-container">
             <div class="btn-group" role="group" aria-label="Basic example">
-              <button 
-                type="button" 
-                class="btn btn-menu" 
+              <button
+                type="button"
+                class="btn btn-menu"
                 @click.prevent="editDevLink(data.item)"
               >
                 <img src="/img/pencil-fill.svg">
               </button>
-              <button 
-                type="button" 
-                class="btn btn-menu" 
+              <button
+                type="button"
+                class="btn btn-menu"
                 @click.prevent="deleteDevLink(data.item)"
               >
                 <img src="/img/trash-fill.svg">
@@ -182,8 +192,15 @@ tr:hover {
 }
 .top-options {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding-bottom: 16px;
+}
+.search-input {
+  padding-left: 30px;
+  background: url(/img/search-icon.svg) no-repeat left;
+  background-position: 7px 8px;
+  background-size: 15px;
+  border-radius: 8px;
 }
 ::v-deep .table {
   border-bottom: 1px solid #e9edf1;

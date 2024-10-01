@@ -20,6 +20,11 @@ const route = useRoute();
           :active="route.name === 'local-bundles'"
           @click="router.push({ name: 'local-bundles' })"
         />
+        <b-tab
+          :title="$t('Shared Assets')"
+          :active="route.name === 'assets-shared'"
+          @click="router.push({ name: 'assets-shared' })"
+        />
     </b-tabs>
 
     <b-card>
