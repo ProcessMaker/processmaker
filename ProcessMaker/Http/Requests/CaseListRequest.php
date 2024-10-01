@@ -26,7 +26,7 @@ class CaseListRequest extends FormRequest
             'userId' => 'sometimes|integer',
             'status' => 'sometimes|in:IN_PROGRESS,COMPLETED',
             'sortBy' => ['sometimes', 'string', new SortBy],
-            'filterBy' => 'sometimes|array',
+            'filterBy' => 'sometimes|json',
             'search' => 'sometimes|string',
             'pageSize' => 'sometimes|integer|min:1',
             'page' => 'sometimes|integer|min:1',

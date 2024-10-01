@@ -208,13 +208,14 @@ class CaseControllerTest extends TestCase
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases'));
         $response->assertStatus(200);
         $response->assertJsonCount(6, 'data');
-
-        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['filterBy' => ['case_number' => $caseNumber]]));
+        $filterBy = ['filterBy' =>'[{"subject":{"type":"Field","value":"case_number"},"operator":"=","value":"' . $caseNumber . '"}]'];
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', $filterBy));
         $response->assertStatus(200);
         $response->assertJsonCount(1, 'data');
         $response->assertJsonFragment(['case_number' => $caseNumber]);
 
-        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['filterBy' => ['case_status' => 'IN_PROGRESS']]));
+        $filterBy = ['filterBy' =>'[{"subject":{"type":"Field","value":"case_status"},"operator":"=","value":"IN_PROGRESS"}]'];
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', $filterBy));
         $response->assertStatus(200);
         $total = $casesA->where('case_status', 'IN_PROGRESS')->count() + $casesB->where('case_status', 'IN_PROGRESS')->count();
         $response->assertJsonCount($total, 'data');
@@ -225,13 +226,12 @@ class CaseControllerTest extends TestCase
     public function test_get_all_cases_filter_by_invalid_field(): void
     {
         $invalidField = 'invalid_field';
-
-        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['filterBy' => '']));
+        $filterBy = ['filterBy' =>''];
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', $filterBy));
         $response->assertStatus(422);
-        $response->assertJsonPath('message', 'The Filter by field must be an array.');
-
+        $response->assertJsonPath('message', 'The Filter by field must be a valid JSON string.');
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['filterBy' => [$invalidField => 'value']]));
         $response->assertStatus(422);
-        $response->assertJsonPath('message', "Filter by field $invalidField is not allowed.");
+        $response->assertJsonPath('message', 'The Filter by field must be a valid JSON string.');
     }
 }

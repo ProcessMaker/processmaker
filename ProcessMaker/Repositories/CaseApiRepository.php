@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use ProcessMaker\Contracts\CaseApiRepositoryInterface;
 use ProcessMaker\Exception\CaseValidationException;
+use ProcessMaker\Filters\V1_1\Filter;
 use ProcessMaker\Models\CaseParticipated;
 use ProcessMaker\Models\CaseStarted;
 
@@ -73,6 +74,7 @@ class CaseApiRepository implements CaseApiRepositoryInterface
     {
         $query = CaseStarted::select($this->defaultFields);
         $this->applyFilters($request, $query);
+
         return $query;
     }
 
@@ -88,6 +90,7 @@ class CaseApiRepository implements CaseApiRepositoryInterface
         $query = CaseParticipated::select($this->defaultFields)
             ->where('case_status', 'IN_PROGRESS');
         $this->applyFilters($request, $query);
+
         return $query;
     }
 
@@ -103,6 +106,7 @@ class CaseApiRepository implements CaseApiRepositoryInterface
         $query = CaseParticipated::select($this->defaultFields)
             ->where('case_status', 'COMPLETED');
         $this->applyFilters($request, $query);
+
         return $query;
     }
 
@@ -165,22 +169,31 @@ class CaseApiRepository implements CaseApiRepositoryInterface
      */
     public function filterBy(Request $request, Builder $query): void
     {
-        if ($request->has('filterBy')) {
-            $filterByValue = $request->get('filterBy');
-
-            foreach ($filterByValue as $key => $value) {
-                if (!in_array($key, $this->filterableFields)) {
-                    throw new CaseValidationException("Filter by field $key is not allowed.");
-                }
-
-                if (in_array($key, $this->dateFields)) {
-                    $query->whereDate($key, $value);
-                    continue;
-                }
-
-                $query->where($key, $value);
-            }
+        // Check if filterBy exists in the request
+        if (!$request->has('filterBy')) {
+            return;
         }
+
+        // Get the filter input and apply the filter only if it's not empty
+        $filters = $request->input('filterBy', '');
+        if (empty($filters)) {
+            return;
+        }
+
+        // Apply the filters to the query
+        $this->executeFilters($query, $filters);
+    }
+
+    /**
+     * Execute advanced filters to the query.
+     *
+     * @param Builder $query
+     * @param array|string $filters
+     * @return void
+     */
+    protected function executeFilters(Builder $query, $filters): void
+    {
+        Filter::filter($query, $filters);
     }
 
     /**
