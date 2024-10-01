@@ -10,6 +10,15 @@ use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 
 class CaseRepository implements CaseRepositoryInterface
 {
+    const CASE_STATUS_ACTIVE = 'ACTIVE';
+
+    /**
+     * This property is used to store an instance of `CaseStarted`
+     * when a case started is updated.
+     * @var CaseStarted|null
+     */
+    protected ?CaseStarted $case;
+
     public function __construct(protected CaseParticipatedRepository $caseParticipatedRepository)
     {
     }
@@ -21,34 +30,27 @@ class CaseRepository implements CaseRepositoryInterface
      */
     public function create(ExecutionInstanceInterface $instance): void
     {
-        if (is_null($instance->case_number) || $this->checkIfCaseStartedExist($instance->case_number)) {
+        if (is_null($instance->case_number)) {
+            \Log::error('Case number is required. instance: ' . $instance->getKey());
+
+            return;
+        }
+
+        if ($this->checkIfCaseStartedExist($instance->case_number)) {
+            $this->updateSubProcesses($instance);
+
             return;
         }
 
         try {
-            $processes = [
-                [
-                    'id' => $instance->process->id,
-                    'name' => $instance->process->name,
-                ],
-            ];
-
-            $requests = [
-                [
-                    'id' => $instance->id,
-                    'name' => $instance->name,
-                    'parent_request_id' => $instance->parentRequest->id ?? 0,
-                ],
-            ];
-
             CaseStarted::create([
                 'case_number' => $instance->case_number,
                 'user_id' => $instance->user_id,
                 'case_title' => $instance->case_title,
                 'case_title_formatted' => $instance->case_title_formatted,
-                'case_status' => 'IN_PROGRESS',
-                'processes' => $processes,
-                'requests' => $requests,
+                'case_status' => $instance->status === self::CASE_STATUS_ACTIVE ? 'IN_PROGRESS' : $instance->status,
+                'processes' => CaseUtils::storeProcesses($instance, collect()),
+                'requests' => CaseUtils::storeRequests($instance, collect()),
                 'request_tokens' => [],
                 'tasks' => [],
                 'participants' => [],
@@ -57,6 +59,7 @@ class CaseRepository implements CaseRepositoryInterface
             ]);
         } catch (\Exception $e) {
             \Log::error($e->getMessage());
+            \Log::error($e->getTraceAsString());
         }
     }
 
@@ -69,34 +72,27 @@ class CaseRepository implements CaseRepositoryInterface
      */
     public function update(ExecutionInstanceInterface $instance, TokenInterface $token): void
     {
-        try {
-            $case = CaseStarted::where('case_number', $instance->case_number)->first();
+        if (is_null($instance->case_number)) {
+            \Log::error('Case number is required. instance: ' . $instance->getKey());
 
-            if (is_null($case)) {
+            return;
+        }
+
+        try {
+            if (!$this->checkIfCaseStartedExist($instance->case_number)) {
+                \Log::error('Case number not found. instance: ' . $instance->id);
+
                 return;
             }
 
-            $case->case_title = $instance->case_title;
-            $case->case_status = $instance->status === 'ACTIVE' ? 'IN_PROGRESS' : $instance->status;
+            $this->case->case_title = $instance->case_title;
+            $this->case->case_status = $instance->status === self::CASE_STATUS_ACTIVE ? 'IN_PROGRESS' : $instance->status;
+            $this->case->request_tokens = CaseUtils::storeRequestTokens($token->getKey(), $this->case->request_tokens);
+            $this->case->tasks = CaseUtils::storeTasks($token, $this->case->tasks);
 
-            $case->request_tokens = $case->request_tokens->push($token->getKey())
-                ->unique()
-                ->values();
+            $this->updateParticipants($token);
 
-            if (!in_array($token->element_type, ['scriptTask'])) {
-                $case->tasks = $case->tasks->push([
-                    'id' => $token->getKey(),
-                    'element_id' => $token->element_id,
-                    'name' => $token->element_name,
-                    'process_id' => $token->process_id,
-                ])
-                ->unique('id')
-                ->values();
-            }
-
-            $this->updateParticipants($case, $token);
-
-            $case->saveOrFail();
+            $this->case->saveOrFail();
         } catch (\Exception $e) {
             \Log::error($e->getMessage());
         }
@@ -110,6 +106,11 @@ class CaseRepository implements CaseRepositoryInterface
      */
     public function updateStatus(ExecutionInstanceInterface $instance): void
     {
+        // If a sub-process is completed, do not update the case started status
+        if (!is_null($instance->parent_request_id)) {
+            return;
+        }
+
         try {
             $data = [
                 'case_status' => $instance->status,
@@ -130,11 +131,10 @@ class CaseRepository implements CaseRepositoryInterface
     /**
      * Update the participants of the case started.
      *
-     * @param CaseStarted $case
      * @param TokenInterface $token
      * @return void
      */
-    private function updateParticipants(CaseStarted $case, TokenInterface $token): void
+    private function updateParticipants(TokenInterface $token): void
     {
         $user = $token->user;
 
@@ -142,22 +142,22 @@ class CaseRepository implements CaseRepositoryInterface
             return;
         }
 
-        $participantExists = $case->participants->contains(function ($participant) use ($user) {
+        $participantExists = $this->case->participants->contains(function ($participant) use ($user) {
             return $participant['id'] === $user->id;
         });
 
         if (!$participantExists) {
-            $case->participants->push([
+            $this->case->participants->push([
                 'id' => $user->id,
                 'name' => $user->getFullName(),
                 'title' => $user->title,
                 'avatar' => $user->avatar,
             ]);
 
-            $this->caseParticipatedRepository->create($case, $token);
+            $this->caseParticipatedRepository->create($this->case, $token);
         }
 
-        $this->caseParticipatedRepository->update($case, $token);
+        $this->caseParticipatedRepository->update($this->case, $token);
     }
 
     /**
@@ -168,6 +168,31 @@ class CaseRepository implements CaseRepositoryInterface
      */
     private function checkIfCaseStartedExist(int $caseNumber): bool
     {
-        return CaseStarted::where('case_number', $caseNumber)->count() > 0;
+        $this->case = CaseStarted::where('case_number', $caseNumber)->first();
+
+        return !is_null($this->case);
+    }
+
+    /**
+     * Update the processes and requests of the case started.
+     *
+     * @param ExecutionInstanceInterface $instance
+     * @return void
+     */
+    private function updateSubProcesses(ExecutionInstanceInterface $instance): void
+    {
+        if (is_null($instance->parent_request_id)) {
+            return;
+        }
+
+        try {
+            // Store the sub-processes and requests
+            $this->case->processes = CaseUtils::storeProcesses($instance, $this->case->processes);
+            $this->case->requests = CaseUtils::storeRequests($instance, $this->case->requests);
+
+            $this->case->saveOrFail();
+        } catch (\Exception $th) {
+            \Log::error($th->getMessage());
+        }
     }
 }

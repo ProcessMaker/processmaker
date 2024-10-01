@@ -38,6 +38,7 @@ class CaseParticipatedTest extends TestCase
         $token = ProcessRequestToken::factory()->create([
             'user_id' => $user->id,
             'process_request_id' => $instance->id,
+            'element_type' => 'task',
         ]);
 
         $repo->update($instance, $token);
@@ -53,7 +54,7 @@ class CaseParticipatedTest extends TestCase
             'processes->[0]->name' => $process->name,
             'requests->[0]->id' => $instance->id,
             'requests->[0]->name' => $instance->name,
-            'requests->[0]->parent_request_id' => $instance->parent_request_id ?? 0,
+            'requests->[0]->parent_request_id' => $instance->parent_request_id,
             'request_tokens->[0]' => $token->id,
             'tasks->[0]->id' => $token->id,
             'tasks->[0]->element_id' => $token->element_id,
@@ -86,6 +87,7 @@ class CaseParticipatedTest extends TestCase
         $token = ProcessRequestToken::factory()->create([
             'user_id' => $user->id,
             'process_request_id' => $instance->id,
+            'element_type' => 'task',
         ]);
 
         $repo->update($instance, $token);
@@ -107,6 +109,7 @@ class CaseParticipatedTest extends TestCase
         $token2 = ProcessRequestToken::factory()->create([
             'user_id' => $user->id,
             'process_request_id' => $instance->id,
+            'element_type' => 'task',
         ]);
 
         $repo->update($instance, $token2);
@@ -156,6 +159,7 @@ class CaseParticipatedTest extends TestCase
         $token = ProcessRequestToken::factory()->create([
             'user_id' => $user->id,
             'process_request_id' => $instance->id,
+            'element_type' => 'task',
         ]);
 
         $repo->update($instance, $token);
@@ -177,6 +181,7 @@ class CaseParticipatedTest extends TestCase
         $token2 = ProcessRequestToken::factory()->create([
             'user_id' => $user2->id,
             'process_request_id' => $instance->id,
+            'element_type' => 'task',
         ]);
 
         $repo->update($instance, $token2);
@@ -215,6 +220,7 @@ class CaseParticipatedTest extends TestCase
         $token = ProcessRequestToken::factory()->create([
             'user_id' => $user->id,
             'process_request_id' => $instance->id,
+            'element_type' => 'task',
         ]);
 
         $repo->update($instance, $token);
@@ -233,6 +239,7 @@ class CaseParticipatedTest extends TestCase
         $token2 = ProcessRequestToken::factory()->create([
             'user_id' => $user2->id,
             'process_request_id' => $instance->id,
+            'element_type' => 'task',
         ]);
 
         $repo->update($instance, $token2);
@@ -251,6 +258,7 @@ class CaseParticipatedTest extends TestCase
         $token3 = ProcessRequestToken::factory()->create([
             'user_id' => $user->id,
             'process_request_id' => $instance->id,
+            'element_type' => 'task',
         ]);
 
         $repo->update($instance, $token3);
@@ -291,6 +299,7 @@ class CaseParticipatedTest extends TestCase
         $token = ProcessRequestToken::factory()->create([
             'user_id' => $user->id,
             'process_request_id' => $instance->id,
+            'element_type' => 'task',
         ]);
 
         $repo->update($instance, $token);
@@ -310,6 +319,7 @@ class CaseParticipatedTest extends TestCase
         $token2 = ProcessRequestToken::factory()->create([
             'user_id' => $user2->id,
             'process_request_id' => $instance->id,
+            'element_type' => 'task',
         ]);
 
         $repo->update($instance, $token2);
@@ -329,6 +339,7 @@ class CaseParticipatedTest extends TestCase
         $token3 = ProcessRequestToken::factory()->create([
             'user_id' => $user->id,
             'process_request_id' => $instance->id,
+            'element_type' => 'task',
         ]);
 
         $repo->update($instance, $token3);
