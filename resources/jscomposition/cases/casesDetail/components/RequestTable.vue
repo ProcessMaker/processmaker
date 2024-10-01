@@ -1,9 +1,10 @@
 <template>
   <div>
-    <BaseTable
+    <SortTable
       id="request-table"
       :columns="columnsConfig"
-      :data="data" />
+      :data="data"
+      @changeFilter="onChangeFilter" />
     <Pagination
       :total="dataPagination.total"
       :page="dataPagination.page"
@@ -13,13 +14,13 @@
 
 <script>
 import { defineComponent, ref, onMounted } from "vue";
-import { BaseTable, Pagination } from "../../../base";
+import { SortTable, Pagination } from "../../../system";
 import { getData } from "../api/index";
 import { getColumns } from "../config/columns";
 import { getRequestId } from "../variables";
 
 export default defineComponent({
-  components: { BaseTable, Pagination },
+  components: { SortTable, Pagination },
   setup() {
     const data = ref(null);
     const columnsConfig = ref(null);
@@ -30,10 +31,11 @@ export default defineComponent({
       perPage: 15,
     });
 
-    const formatData = () => ({
+    const formatData = (filter) => ({
       params: {
         case_number: getRequestId(),
         include: "participants,activeTasks",
+        ...filter,
       },
       pagination: {
         page: dataPagination.value.page,
@@ -41,8 +43,15 @@ export default defineComponent({
       },
     });
 
+    const onChangeFilter = async (dataFilter) => {
+      data.value = await getData(formatData({
+        order_by: dataFilter.field,
+        order_direction: dataFilter.filter,
+      }));
+    };
+
     onMounted(async () => {
-      data.value = await getData(formatData());
+      data.value = await getData(formatData({}));
       columnsConfig.value = getColumns("requests");
     });
 
@@ -51,6 +60,7 @@ export default defineComponent({
       dataPagination,
       columnsConfig,
       formatData,
+      onChangeFilter,
     };
   },
 });

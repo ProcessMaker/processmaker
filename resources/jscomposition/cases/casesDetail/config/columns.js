@@ -1,6 +1,7 @@
 import {
-  StatusCell,
   LinkCell,
+  StatusCell,
+  TruncatedOptionsCell,
 } from "../../../system/index";
 
 export default {};
@@ -12,6 +13,9 @@ const taskNumberColumn = () => ({
   resizable: true,
   width: 200,
   filter: true,
+  formatter:(row, column, columns)=>{
+    return row.element_name;
+  },
   cellRenderer: () => ({
     component: LinkCell,
     params: {
@@ -66,7 +70,7 @@ const requestNumberColumn = () => ({
   field: "id",
   header: "Request #",
   resizable: true,
-  sortable: true,
+  filter: { type: "sortable" },
   width: 200,
   cellRenderer: () => ({
     component: LinkCell,
@@ -81,9 +85,9 @@ const requestNumberColumn = () => ({
 const requestNameColumn = () => ({
   field: "name",
   header: "Request Name",
-  sortable: true,
   resizable: true,
   width: 200,
+  filter: { type: "sortable" },
   cellRenderer: () => ({
     component: LinkCell,
     params: {
@@ -95,25 +99,41 @@ const requestNameColumn = () => ({
 });
 
 const currentTaskColumn = () => ({
-  field: "current_task",
-  header: "Current Task",
+  field: "active_tasks",
+  header: "Task",
   resizable: true,
   width: 200,
+  formatter:(row, column, columns)=>{
+    return row.active_tasks.length? row.active_tasks[0].element_name : "";
+  },
+  cellRenderer: () => ({
+    component: TruncatedOptionsCell,
+    params: {
+      click: (option, row, column, columns) => {
+        window.document.location = `/tasks/${option.id}/edit`;
+      },
+      formatterOptions:(option, row, column, columns)=>{
+        return option.element_name;
+      }
+    },
+  }),
 });
 
 const statusColumn = () => ({
   field: "status",
   header: "Status",
-  sortable: true,
+  filter: { type: "sortable" },
   resizable: true,
   width: 200,
-  cellRenderer: () => StatusCell,
+  cellRenderer: () => ({
+    component: StatusCell,
+  }),
 });
 
 const startedColumn = () => ({
   field: "created_at",
   header: "started",
-  sortable: true,
+  filter: { type: "sortable" },
   resizable: true,
   width: 200,
 });
