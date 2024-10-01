@@ -62,6 +62,7 @@
               class="text-capitalize screen-toolbar-button"
               :title="button.title"
               :data-cy="`toolbar-${button.id}`"
+              :disabled="toolbarDisabled"
               @click="executeFunction(button.action)"
             >
               <i :class="button.icon" />
@@ -117,6 +118,10 @@ export default {
     initialNewItems: {
       type: Array,
       default: () => [],
+    },
+    toolbarDisabled: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
