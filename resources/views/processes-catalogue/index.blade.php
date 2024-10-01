@@ -18,6 +18,7 @@
       :process="{{$process ?? 0}}"
       :current-user-id="{{ \Auth::user()->id }}"
       :current-user="{{ \Auth::user() }}"
+      :user-config="{{$userConfiguration ?? []}}"
     >
     </processes-catalogue>
   </div>

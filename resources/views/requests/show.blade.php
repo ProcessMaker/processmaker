@@ -520,7 +520,7 @@
           showTree: false,
           showInfo: true,
           showMenu: true,
-          userConfiguration: [],
+          userConfiguration: @json($userConfiguration),
           urlConfiguration:'users/configuration',
         };
       },
@@ -651,13 +651,9 @@
         },
       },
       methods: {
-        getUserConfiguration() {
-          ProcessMaker.apiClient
-            .get(this.urlConfiguration)
-            .then((response) => {
-              this.userConfiguration = JSON.parse(response.data.ui_configuration);
-              this.showMenu = this.userConfiguration.requests.isMenuCollapse;
-            });
+        defineUserConfiguration() {
+          this.userConfiguration = JSON.parse(this.userConfiguration.ui_configuration);
+          this.showMenu = this.userConfiguration.requests.isMenuCollapse;
         },
         hideMenu() {
           this.showMenu = !this.showMenu;
@@ -672,7 +668,10 @@
               {
                 ui_configuration: this.userConfiguration,
               }
-            );
+            )
+            .catch((error) => {
+              console.error("Error", error);
+            });
         },
         switchTab(tab) {
           this.activeTab = tab;
@@ -871,7 +870,7 @@
         this.listenRequestUpdates();
         this.cleanScreenButtons();
         this.editJsonData();
-        this.getUserConfiguration();
+        this.defineUserConfiguration();
       },
     });
   </script>

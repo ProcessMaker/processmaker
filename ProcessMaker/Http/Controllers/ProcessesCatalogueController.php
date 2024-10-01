@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Helpers\MobileHelper;
+use ProcessMaker\Http\Controllers\Api\UserConfigurationController;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Bookmark;
@@ -46,7 +47,7 @@ class ProcessesCatalogueController extends Controller
 
             return view('processes-catalogue.mobile', compact('title', 'process', 'currentUser', 'manager'));
         }
-
-        return view('processes-catalogue.index', compact('process', 'currentUser', 'manager'));
+        $userConfiguration = (new UserConfigurationController())->index()['ui_configuration'];
+        return view('processes-catalogue.index', compact('process', 'currentUser', 'manager', 'userConfiguration'));
     }
 }
