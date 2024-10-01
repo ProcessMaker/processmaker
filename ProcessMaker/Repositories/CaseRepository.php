@@ -14,14 +14,19 @@ class CaseRepository implements CaseRepositoryInterface
     const CASE_STATUS_ACTIVE = 'ACTIVE';
 
     /**
+     * @var CaseParticipatedRepository
+     */
+    protected CaseParticipatedRepository $caseParticipatedRepository;
+    /**
      * This property is used to store an instance of `CaseStarted`
      * when a case started is updated.
      * @var CaseStarted|null
      */
     protected ?CaseStarted $case;
 
-    public function __construct(protected CaseParticipatedRepository $caseParticipatedRepository)
+    public function __construct()
     {
+        $this->caseParticipatedRepository = new CaseParticipatedRepository();
     }
     /**
      * Store a new case started.
