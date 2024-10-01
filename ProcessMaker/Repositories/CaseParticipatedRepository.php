@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Repositories;
 
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Exception\CaseException;
 use ProcessMaker\Models\CaseParticipated;
 use ProcessMaker\Models\CaseStarted;
@@ -44,8 +45,9 @@ class CaseParticipatedRepository
                 'initiated_at' => $case->initiated_at,
                 'completed_at' => null,
             ]);
-        } catch (\Exception $e) {
-            throw new CaseException($e->getMessage());
+        } catch (CaseException $e) {
+            Log::error('CaseException: ' . $e->getMessage());
+            Log::error('CaseException: ' . $e->getTraceAsString());
         }
     }
 
@@ -73,8 +75,9 @@ class CaseParticipatedRepository
                 'tasks' => CaseUtils::storeTasks($token, $this->caseParticipated->tasks),
                 'participants' => $case->participants,
             ]);
-        } catch (\Exception $e) {
-            throw new CaseException($e->getMessage());
+        } catch (CaseException $e) {
+            Log::error('CaseException: ' . $e->getMessage());
+            Log::error('CaseException: ' . $e->getTraceAsString());
         }
     }
 
@@ -90,8 +93,9 @@ class CaseParticipatedRepository
         try {
             CaseParticipated::where('case_number', $caseNumber)
                 ->update($statusData);
-        } catch (\Exception $e) {
-            throw new CaseException($e->getMessage());
+        } catch (CaseException $e) {
+            Log::error('CaseException: ' . $e->getMessage());
+            Log::error('CaseException: ' . $e->getTraceAsString());
         }
     }
 
