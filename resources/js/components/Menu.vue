@@ -21,6 +21,14 @@
               <i :class="button.icon" />
               {{ button.name }}
             </b-button>
+            <select v-if="index === 1" v-model="selectedLanguage">
+              <option value="es">Spanish</option>
+              <option value="fr">French</option>
+              <option value="de">German</option>
+            </select>
+            <b-button v-if="index === 1" @click="translateScreen">
+              Translate
+            </b-button>
           </b-button-group>
 
           <b-button
@@ -125,6 +133,7 @@ export default {
       newItems: this.initialNewItems,
       sectionRight: true,
       items: [],
+      selectedLanguage: "es",
     };
   },
   computed: {
@@ -161,6 +170,9 @@ export default {
     },
   },
   methods: {
+    translateScreen() {
+      this.$emit("translate", this.selectedLanguage);
+    },
     handleNavigate(action) {
       switch (action?.value) {
         case "discard-draft":

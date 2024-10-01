@@ -17,6 +17,7 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\ScreenType;
+use ProcessMaker\ProcessTranslations\ProcessTranslation;
 use ProcessMaker\Query\SyntaxError;
 use ProcessMaker\Traits\ProjectAssetTrait;
 
@@ -630,6 +631,53 @@ class ScreenController extends Controller
         $screen->custom_css = $request->post('custom_css');
 
         return new ScreenResource($screen);
+    }
+
+    /**
+     * Translates the controls inside a screen
+     *
+     * @param Screen $screen, the id of the screen that will be translated
+     * @param String $language, language to translate. If the translation does not exist
+     * english is applied by default
+     *
+     * @return ResponseFactory|Response
+     *
+     * @OA\Get(
+     *     path="/screens/{screen_id}/translate/{language}",
+     *     summary="Translates the screen to the desired language",
+     *     operationId="translateScreen",
+     *     tags={"Screens"},
+     *     @OA\Parameter(
+     *         description="ID of the screen",
+     *         in="path",
+     *         name="screen_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         description="Language used for the translation of the string",
+     *         in="path",
+     *         name="language",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully found the screen",
+     *         @OA\JsonContent(ref="#/components/schemas/screens")
+     *     ),
+     * )
+     */
+    public function translate(Screen $screen, $language)
+    {
+        $draft = $screen->versions()->draft()->first();
+        $processTranslation = new ProcessTranslation(null);
+        $transConfig = $processTranslation->translateScreen($draft, $language);
+        return $transConfig;
     }
 
     public function updateDefaultTemplate(string $screenType, int $isPublic)

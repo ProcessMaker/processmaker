@@ -269,6 +269,29 @@ class ProcessTranslation
         return $config;
     }
 
+    public function translateScreen($screen, $language)
+    {
+        if (!$screen) {
+            return;
+        }
+
+        $config = $screen['config'];
+        $translations = $screen['translations'];
+        $targetLanguage = $language;
+
+        if (!$translations) {
+            return $config;
+        }
+
+        if (array_key_exists($targetLanguage, $translations)) {
+            foreach ($translations[$targetLanguage]['strings'] as $translation) {
+                $this->applyTranslationsToScreen($translation['key'], $translation['string'], $config);
+            }
+        }
+
+        return $config;
+    }
+
     public function applyTranslationsToScreen($key, $translatedString, &$config)
     {
         if ($config) {
