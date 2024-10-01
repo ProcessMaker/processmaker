@@ -119,7 +119,6 @@ export const taskColumn = () => ({
     component: TruncatedOptionsCell,
     params: {
       click: (option, row, column, columns) => {
-        console.log("algo?");
         window.document.location = `/tasks/${option.id}/edit`;
       },
     },
