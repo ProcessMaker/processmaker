@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use ProcessMaker\Contracts\CaseApiRepositoryInterface;
 use ProcessMaker\Exception\CaseValidationException;
-use ProcessMaker\Filters\V1_1\Filter;
+use ProcessMaker\Filters\CasesFilter;
 use ProcessMaker\Models\CaseParticipated;
 use ProcessMaker\Models\CaseStarted;
 
@@ -193,7 +193,7 @@ class CaseApiRepository implements CaseApiRepositoryInterface
      */
     protected function executeFilters(Builder $query, $filters): void
     {
-        Filter::filter($query, $filters);
+        CasesFilter::filter($query, $filters);
     }
 
     /**
