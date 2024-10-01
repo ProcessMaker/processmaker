@@ -1,7 +1,7 @@
 <template>
-  <div class="tw-block">
+  <div class="tw-flex tw-flex-col tw-pointer-events-auto">
     <nav
-      class="tw-mb-px tw-flex tw-space-x-8"
+      class="tw-mb-px tw-flex tw-space-x-2 tw-border-b tw-border-gray-300"
       aria-label="Tabs">
       <template v-for="(tab, index) in tabs">
         <a
@@ -18,8 +18,10 @@
         </a>
       </template>
     </nav>
-    <div class="tw-mt-3">
-      <component :is="content" />
+    <div class="tw-grow tw-overflow-hidden">
+      <slot :name="`${tabSelected}`">
+        <component :is="content" />
+      </slot>
     </div>
   </div>
 </template>

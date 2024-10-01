@@ -1,9 +1,7 @@
 <template>
-  <div class="tw-pb-4">
-    <Tabs
-      :tab-default="tabDefault"
-      :tabs="tabs" />
-  </div>
+  <Tabs
+    :tab-default="tabDefault"
+    :tabs="tabs" />
 </template>
 
 <script>

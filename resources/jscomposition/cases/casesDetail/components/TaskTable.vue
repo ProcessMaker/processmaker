@@ -1,10 +1,10 @@
 <template>
-  <div class="tw-w-full tw-space-y-3 tw-flex tw-flex-col tw-overflow-hidden">
+  <div class="tw-flex tw-flex-col tw-w-full tw-py-3 tw-overflow-hidden tw-space-y-3">
     <SortTable
       id="task-table"
       :columns="columnsConfig"
       :data="data"
-      class="tw-grow tw-overflow-y-scroll"
+      class="tw-grow tw-overflow-y-scroll tw-overflow-hidden"
       @changeFilter="onChangeFilter" />
 
     <Pagination
