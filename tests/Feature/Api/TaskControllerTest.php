@@ -91,12 +91,12 @@ class TaskControllerTest extends TestCase
         $processRequest = ProcessRequest::factory()->create();
         ProcessRequestToken::factory()->create([
             'user_id' => $user->id,
-            'status' => 'COMPLETED',
+            'status' => 'CLOSED',
             'process_request_id' => $processRequest->id, // id del ProcessRequest
         ]);
 
         // Call the endpoint with the 'case_number' parameter
-        $filter = "?case_number=$processRequest->case_number&status=COMPLETED";
+        $filter = "?case_number=$processRequest->case_number&status=CLOSED";
         $response = $this->apiCall('GET', self::API_TASK_BY_CASE . $filter);
 
         // Check if the response is successful and contains the expected tasks
