@@ -2,7 +2,7 @@ export default [
   {
     type: 'processes',
     name: 'Processes',
-    url: '/processes',
+    url: 'api.processes.index',
     class: 'ProcessMaker\\Models\\Process',
     icon: 'fp-play-outline',
     nameField: 'name',
@@ -10,7 +10,7 @@ export default [
   {
     type: 'screens',
     name: 'Screens',
-    url: '/screens',
+    url: 'api.screens.index',
     class: 'ProcessMaker\\Models\\Screen',
     icon: 'fp-screen-outline',
     nameField: 'title',
@@ -18,7 +18,7 @@ export default [
   {
     type: 'scripts',
     name: 'Scripts',
-    url: '/scripts',
+    url: 'api.scripts.index',
     class: 'ProcessMaker\\Models\\Script',
     icon: 'fp-script-outline',
     nameField: 'title',
@@ -26,7 +26,7 @@ export default [
   {
     type: 'data_sources',
     name: 'Data Connectors',
-    url: '/data_sources',
+    url: 'api.data-sources.index',
     class: 'ProcessMaker\\Packages\\Connectors\\DataSources\\Models\\DataSource',
     icon: 'fp-script-outline',
     nameField: 'name',
@@ -34,7 +34,7 @@ export default [
   {
     type: 'collections',
     name: 'Collections',
-    url: '/saved-searches/collections',
+    url: 'api.collections.index',
     class: 'ProcessMaker\\Plugins\\Collections\\Models\\Collection',
     icon: 'fp-bpmn-data-store',
     nameField: 'name',
@@ -42,7 +42,7 @@ export default [
   {
     type: 'decision_tables',
     name: 'Decision Tables',
-    url: '/decision_tables',
+    url: 'api.decision-tables.index',
     class: 'ProcessMaker\\Package\\PackageDecisionEngine\\Models\\DecisionTable',
     icon: 'fp-table',
     nameField: 'name',
@@ -50,7 +50,7 @@ export default [
   {
     type: 'flow-genies',
     name: 'FlowGenies',
-    url: '/designer/flow-genies',
+    url: 'api.flow_genie.index',
     class: 'ProcessMaker\\Package\\PackageAi\\Models\\FlowGenie',
     icon: 'fp-flowgenie-outline',
     nameField: 'name',

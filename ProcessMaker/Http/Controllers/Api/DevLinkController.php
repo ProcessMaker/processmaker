@@ -192,6 +192,16 @@ class DevLinkController extends Controller
         return Setting::Where('group', 'Devlink')->get();
     }
 
+    public function remoteAssets(Request $request, DevLink $devLink)
+    {
+        return $devLink->remoteAssets($request);
+    }
+
+    public function remoteAssetsListing(Request $request, DevLink $devLink)
+    {
+        return $devLink->remoteAssetsListing($request);
+    }
+
     public function addSharedAsset(Request $request)
     {
         $sharedAsset = new Setting();

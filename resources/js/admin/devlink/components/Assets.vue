@@ -7,23 +7,13 @@ import types from './assetTypes';
 const router = useRouter();
 const route = useRoute();
 
-const devlink = ref({});
 const assets = ref([]);
 
-const getAssets = (url) => {
+const getAssets = () => {
   ProcessMaker.apiClient
-    .get(`${url}/api/1.0/devlink/shared-assets`)
+    .get(`devlink/${route.params.id}/remote-assets`)
     .then((response) => {
       assets.value = response.data;
-    });
-};
-
-const getDevlink = () => {
-  ProcessMaker.apiClient
-    .get(`devlink/${route.params.id}`)
-    .then((response) => {
-      devlink.value = response.data;
-      getAssets(devlink.value.url);
     });
 };
 
@@ -38,7 +28,7 @@ const filteredTypes = computed(() => {
 });
 
 onMounted(() => {
-  getDevlink();
+  getAssets();
 });
 
 </script>

@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, getCurrentInstance } from 'vue';
 import { useRouter, useRoute } from 'vue-router/composables';
+import debounce from 'lodash/debounce';
 import InstanceTabs from './InstanceTabs.vue';
 import types from './assetTypes';
 import moment from 'moment';
@@ -12,6 +13,7 @@ const vue = getCurrentInstance().proxy;
 const typeConfig = types.find((type) => type.type === route.params.type);
 
 const items = ref([]);
+const filter = ref("");
 
 const dateFormatter = (value) => {
   return moment(value).format(ProcessMaker.user.datetime_format);
@@ -67,11 +69,19 @@ const load = () => {
     return;
   }
   ProcessMaker.apiClient
-    .get(typeConfig.url)
+    .get(`devlink/${route.params.id}/remote-assets-listing?url=${typeConfig.url}&filter=${filter.value}`)
     .then((result) => {
       console.log("Got", result.data.data);
       items.value = result.data.data;
     });
+};
+
+// Debounced function
+const debouncedLoad = debounce(load, 300);
+
+// Function called on change
+const handleFilterChange = () => {
+  debouncedLoad();
 };
 </script>
 
@@ -79,10 +89,13 @@ const load = () => {
   <div>
     <instance-tabs />
     <h3>{{ typeConfig.name }}</h3>
-    <div class="card asset-listing-card">
-    <div v-if="!typeConfig">
-      Invalid asset type
+    <div class="top-options">
+      <input v-model="filter" class="form-control col-10 search-input" @input="handleFilterChange">
     </div>
+    <div class="card asset-listing-card">
+      <div v-if="!typeConfig">
+        Invalid asset type
+      </div>
       <b-table
         v-else
         :items="items"
@@ -104,6 +117,18 @@ const load = () => {
   </div>
 </template>
 <style lang="scss" scoped>
+.top-options {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 16px;
+}
+.search-input {
+  padding-left: 30px;
+  background: url(/img/search-icon.svg) no-repeat left;
+  background-position: 7px 8px;
+  background-size: 15px;
+  border-radius: 8px;
+}
 ::v-deep .table {
   border-bottom: 1px solid #e9edf1;
 }

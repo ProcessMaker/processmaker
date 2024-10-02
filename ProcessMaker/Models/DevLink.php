@@ -70,6 +70,24 @@ class DevLink extends ProcessMakerModel
         );
     }
 
+    public function remoteAssets($request)
+    {
+        return $this->client()->get(
+            route('api.devlink.shared-assets',
+                [],
+                false)
+        );
+    }
+
+    public function remoteAssetsListing($request)
+    {
+        return $this->client()->get(
+            route($request->input('url'),
+                ['filter' => $request->input('filter')],
+                false)
+        );
+    }
+
     public function installRemoteBundle($bundleId)
     {
         $bundleInfo = $this->client()->get(

@@ -377,6 +377,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         Route::get('devlink/{devLink}/remote-bundles', [DevLinkController::class, 'remoteBundles'])->name('devlink.remote-bundles');
 
         Route::get('devlink/shared-assets', [DevLinkController::class, 'sharedAssets'])->name('devlink.shared-assets');
+        Route::get('devlink/{devLink}/remote-assets', [DevLinkController::class, 'remoteAssets'])->name('devlink.remote-assets');
+        Route::get('devlink/{devLink}/remote-assets-listing', [DevLinkController::class, 'remoteAssetsListing'])->name('devlink.remote-assets-listing');
         Route::post('devlink/add-shared-asset', [DevLinkController::class, 'addSharedAsset'])->name('devlink.add-shared-assets');
         Route::delete('devlink/remove-shared-asset/{setting}', [DevLinkController::class, 'removeSharedAsset'])->name('devlink.remove-shared-assets');
 
