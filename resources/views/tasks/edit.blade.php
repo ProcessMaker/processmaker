@@ -865,7 +865,7 @@
     min-width:0px;
     max-width:400px;
     width:315px;
-    min-height: calc(100vh - 200px);
+    height: calc(100vh - 200px);
   }
   .open-style {
     background-color: #4ea075;
