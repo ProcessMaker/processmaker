@@ -116,11 +116,11 @@ class CaseApiRepository implements CaseApiRepositoryInterface
      */
     protected function applyFilters(Request $request, Builder $query): void
     {
-        if ($request->has('userId')) {
+        if ($request->filled('userId')) {
             $query->where('user_id', $request->get('userId'));
         }
 
-        if ($request->has('status')) {
+        if ($request->filled('status')) {
             $query->where('case_status', $request->get('status'));
         }
 
@@ -139,7 +139,7 @@ class CaseApiRepository implements CaseApiRepositoryInterface
      */
     public function search(Request $request, Builder $query): void
     {
-        if ($request->has('search')) {
+        if ($request->filled('search')) {
             $search = $request->get('search');
 
             $query->where(function ($q) use ($search) {
@@ -165,7 +165,7 @@ class CaseApiRepository implements CaseApiRepositoryInterface
      */
     public function filterBy(Request $request, Builder $query): void
     {
-        if ($request->has('filterBy')) {
+        if ($request->filled('filterBy')) {
             $filterByValue = $request->get('filterBy');
 
             foreach ($filterByValue as $key => $value) {
@@ -193,7 +193,7 @@ class CaseApiRepository implements CaseApiRepositoryInterface
      */
     public function sortBy(Request $request, Builder $query): void
     {
-        if ($request->has('sortBy')) {
+        if ($request->filled('sortBy')) {
             $sort = explode(',', $request->get('sortBy'));
 
             foreach ($sort as $value) {
