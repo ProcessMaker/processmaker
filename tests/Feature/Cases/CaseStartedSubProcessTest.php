@@ -9,7 +9,6 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
-use ProcessMaker\Repositories\CaseParticipatedRepository;
 use ProcessMaker\Repositories\CaseRepository;
 
 class CaseStartedSubProcessTest extends TestCase
@@ -73,12 +72,10 @@ class CaseStartedSubProcessTest extends TestCase
 
     public function test_create_case_sub_process()
     {
-        $repoParticipant = Mockery::mock(CaseParticipatedRepository::class);
-
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($this->parentRequest);
 
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($this->childRequest);
 
         $this->assertDatabaseCount('cases_started', 1);
@@ -92,12 +89,10 @@ class CaseStartedSubProcessTest extends TestCase
 
     public function test_create_case_processes()
     {
-        $repoParticipant = Mockery::mock(CaseParticipatedRepository::class);
-
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($this->parentRequest);
 
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($this->childRequest);
 
         $this->assertDatabaseCount('cases_started', 1);
@@ -115,12 +110,10 @@ class CaseStartedSubProcessTest extends TestCase
 
     public function test_create_case_requests()
     {
-        $repoParticipant = Mockery::mock(CaseParticipatedRepository::class);
-
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($this->parentRequest);
 
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($this->childRequest);
 
         $this->assertDatabaseCount('cases_started', 1);
@@ -140,12 +133,10 @@ class CaseStartedSubProcessTest extends TestCase
 
     public function test_create_case_request_tokens()
     {
-        $repoParticipant = new CaseParticipatedRepository();
-
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($this->parentRequest);
 
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($this->childRequest);
         $repo->update($this->parentRequest, $this->parentToken);
         $repo->update($this->childRequest, $this->childToken);
@@ -163,12 +154,10 @@ class CaseStartedSubProcessTest extends TestCase
 
     public function test_create_case_tasks()
     {
-        $repoParticipant = new CaseParticipatedRepository();
-
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($this->parentRequest);
 
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($this->childRequest);
         $repo->update($this->parentRequest, $this->parentToken);
         $repo->update($this->childRequest, $this->childToken);
@@ -192,9 +181,7 @@ class CaseStartedSubProcessTest extends TestCase
 
     public function test_create_case_participated_processes()
     {
-        $repoParticipant = new CaseParticipatedRepository();
-
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($this->parentRequest);
         $repo->create($this->childRequest);
 
@@ -227,9 +214,7 @@ class CaseStartedSubProcessTest extends TestCase
 
     public function test_create_case_participated_requests()
     {
-        $repoParticipant = new CaseParticipatedRepository();
-
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($this->parentRequest);
         $repo->create($this->childRequest);
 
@@ -265,9 +250,7 @@ class CaseStartedSubProcessTest extends TestCase
 
     public function test_create_case_participated_request_tokens()
     {
-        $repoParticipant = new CaseParticipatedRepository();
-
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($this->parentRequest);
         $repo->create($this->childRequest);
 
@@ -297,9 +280,7 @@ class CaseStartedSubProcessTest extends TestCase
 
     public function test_create_case_participated_tasks()
     {
-        $repoParticipant = new CaseParticipatedRepository();
-
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($this->parentRequest);
         $repo->create($this->childRequest);
 
@@ -342,9 +323,7 @@ class CaseStartedSubProcessTest extends TestCase
 
     public function test_update_case_participated_completed()
     {
-        $repoParticipant = new CaseParticipatedRepository();
-
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($this->parentRequest);
         $repo->create($this->childRequest);
 
