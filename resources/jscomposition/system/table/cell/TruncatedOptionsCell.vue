@@ -1,10 +1,21 @@
 <template>
   <div class="tw-flex tw-relative tw-text-nowrap tw-whitespace-nowrap tw-p-3">
     <div class="tw-overflow-hidden tw-text-ellipsis ">
-      {{ row[column.field][0].name }}
+      <a
+        v-if="optionsModel.length <= 1"
+        class="hover:tw-text-blue-500"
+        href="#"
+        @click.prevent.stop="onClickOption(row[column.field][0], 0)">
+        {{ getValue() }}
+
+      </a>
+      <span v-else>
+        {{ getValue() }}
+      </span>
     </div>
 
     <AppPopover
+      v-if="optionsModel.length > 1"
       v-model="show"
       :hover="false"
       position="bottom"
@@ -25,7 +36,7 @@
             class="hover:tw-bg-gray-100"
             @click.prevent.stop="onClickOption(option, index)">
             <span class="tw-flex tw-py-2 tw-px-4 transition duration-300 hover:tw-bg-gray-200 hover:tw-cursor-pointer">
-              {{ option.name || option.id }}
+              {{ getValueOption(option, index) }}
             </span>
           </li>
         </ul>
@@ -35,6 +46,7 @@
 </template>
 <script>
 import { defineComponent, ref } from "vue";
+import { isFunction } from "lodash";
 import { AppPopover } from "../../../base/index";
 
 export default defineComponent({
@@ -58,10 +70,28 @@ export default defineComponent({
       type: Function,
       default: new Function(),
     },
+    formatterOptions: {
+      type: Function,
+      default: new Function(),
+    },
   },
   setup(props) {
     const show = ref(false);
     const optionsModel = ref(props.row[props.column.field]);
+
+    const getValue = () => {
+      if (isFunction(props.column?.formatter)) {
+        return props.column?.formatter(props.row, props.column, props.columns);
+      }
+      return props.row[props.column.field].length ? props.row[props.column.field][0].name : "";
+    };
+
+    const getValueOption = (option, index) => {
+      if (isFunction(props.formatterOptions)) {
+        return props.formatterOptions(option, props.row, props.column, props.columns);
+      }
+      return "";
+    };
 
     const onClick = () => {
       show.value = !show.value;
@@ -81,6 +111,8 @@ export default defineComponent({
       onClose,
       onClickOption,
       onClick,
+      getValue,
+      getValueOption,
     };
   },
 });
