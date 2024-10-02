@@ -9,6 +9,13 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 class CaseParticipatedRepository
 {
     /**
+     * This property is used to store an instance of `CaseParticipated`
+     * when a case participated is updated.
+     * @var CaseParticipated|null
+     */
+    protected ?CaseParticipated $caseParticipated;
+
+    /**
      * Store a new case participated.
      *
      * @param CaseStarted $case
@@ -17,6 +24,10 @@ class CaseParticipatedRepository
      */
     public function create(CaseStarted $case, TokenInterface $token): void
     {
+        if ($this->checkIfCaseParticipatedExist($token->user->id, $case->case_number)) {
+            return;
+        }
+
         try {
             CaseParticipated::create([
                 'user_id' => $token->user->id,
@@ -24,17 +35,10 @@ class CaseParticipatedRepository
                 'case_title' => $case->case_title,
                 'case_title_formatted' => $case->case_title_formatted,
                 'case_status' => $case->case_status,
-                'processes' => $case->processes,
-                'requests' => $case->requests,
-                'request_tokens' => [$token->getKey()],
-                'tasks' => [
-                    [
-                        'id' => $token->getKey(),
-                        'element_id' => $token->element_id,
-                        'name' => $token->element_name,
-                        'process_id' => $token->process_id,
-                    ],
-                ],
+                'processes' => CaseUtils::storeProcesses($token->processRequest, collect()),
+                'requests' => CaseUtils::storeRequests($token->processRequest, collect()),
+                'request_tokens' => CaseUtils::storeRequestTokens($token->getKey(), collect()),
+                'tasks' => CaseUtils::storeTasks($token, collect()),
                 'participants' => $case->participants,
                 'initiated_at' => $case->initiated_at,
                 'completed_at' => null,
@@ -54,32 +58,18 @@ class CaseParticipatedRepository
     public function update(CaseStarted $case, TokenInterface $token)
     {
         try {
-            $caseParticipated = CaseParticipated::where('user_id', $token->user->id)
-                ->where('case_number', $case->case_number)
-                ->first();
+            if (!$this->checkIfCaseParticipatedExist($token->user->id, $case->case_number)) {
+                return;
+            }
 
-            // Add the token data to the request_tokens
-            $requestTokens = $caseParticipated->request_tokens->push($token->getKey())
-                ->unique()
-                ->values();
-            // Add the task data to the tasks
-            $tasks = $caseParticipated->tasks->push([
-                'id' => $token->getKey(),
-                'element_id' => $token->element_id,
-                'name' => $token->element_name,
-                'process_id' => $token->process_id,
-            ])
-            ->unique('id')
-            ->values();
-
-            $caseParticipated->update([
+            $this->caseParticipated->updateOrFail([
                 'case_title' => $case->case_title,
                 'case_title_formatted' => $case->case_title_formatted,
                 'case_status' => $case->case_status,
-                'processes' => $case->processes,
-                'requests' => $case->requests,
-                'request_tokens' => $requestTokens,
-                'tasks' => $tasks,
+                'processes' => CaseUtils::storeProcesses($token->processRequest, $this->caseParticipated->processes),
+                'requests' => CaseUtils::storeRequests($token->processRequest, $this->caseParticipated->requests),
+                'request_tokens' => CaseUtils::storeRequestTokens($token->getKey(), $this->caseParticipated->request_tokens),
+                'tasks' => CaseUtils::storeTasks($token, $this->caseParticipated->tasks),
                 'participants' => $case->participants,
             ]);
         } catch (\Exception $e) {
@@ -102,5 +92,24 @@ class CaseParticipatedRepository
         } catch (\Exception $e) {
             \Log::error($e->getMessage());
         }
+    }
+
+    /**
+     * Check if a case participated exists.
+     * If it exists, store the instance in the property.
+     * The property is used to update the JSON fields of the case participated.
+     *
+     * @param int $userId
+     * @param int $caseNumber
+     *
+     * @return bool
+     */
+    private function checkIfCaseParticipatedExist(int $userId, int $caseNumber): bool
+    {
+        $this->caseParticipated = CaseParticipated::where('user_id', $userId)
+            ->where('case_number', $caseNumber)
+            ->first();
+
+        return !is_null($this->caseParticipated);
     }
 }
