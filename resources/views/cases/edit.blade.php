@@ -5,7 +5,7 @@
 @endsection
 
 @section('sidebar')
-  @include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_request')])
+  @include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_cases')])
 @endsection
 
 @section('breadcrumbs')
