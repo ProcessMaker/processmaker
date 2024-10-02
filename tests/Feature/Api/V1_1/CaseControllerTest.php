@@ -250,7 +250,7 @@ class CaseControllerTest extends TestCase
     public function test_get_all_cases_filter_by_invalid_field(): void
     {
         $invalidField = 'invalid_field';
-        $filterBy = ['filterBy' =>''];
+        $filterBy = ['filterBy' =>'[invalid_json'];
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', $filterBy));
         $response->assertStatus(422);
         $response->assertJsonPath('message', 'The Filter by field must be a valid JSON string.');
