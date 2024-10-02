@@ -37,7 +37,7 @@ class CaseSyncRepository
                 $csRequestTokens = collect();
                 $csTasks = collect();
                 $participants = $instance->participants->map->only('id', 'fullName', 'title', 'avatar');
-                $status = $instance->status === 'ACTIVE' ? 'IN_PROGRESS' : $instance->status;
+                $status = $instance->status === CaseRepository::CASE_STATUS_ACTIVE ? 'IN_PROGRESS' : $instance->status;
 
                 $cpData = self::prepareCaseStartedData($instance, $status, $participants);
 
