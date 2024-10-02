@@ -55,6 +55,7 @@
                               v-model="formData"
                               :initial-task-id="{{ $task->id }}"
                               :initial-request-id="{{ $task->process_request_id }}"
+                              :screen-version="{{ $task->screen['id'] ?? null }}"
                               :user-id="{{ Auth::user()->id }}"
                               csrf-token="{{ csrf_token() }}"
                               initial-loop-context="{{ $task->getLoopContext() }}"

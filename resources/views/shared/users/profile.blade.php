@@ -44,7 +44,8 @@
             {!! Form::email('email', null, ['id' => 'email', 'rows' => 4, 'class'=>
             'form-control', 'v-model'
             => 'formData.email', 'v-bind:class' => '{\'form-control\':true,
-            \'is-invalid\':errors.email}', 'required', 'aria-required' => 'true']) !!}
+            \'is-invalid\':errors.email}', 'required', 'aria-required' => 'true',
+            '@input' => 'checkEmailChange']) !!}
             <div class="invalid-feedback" role="alert" v-if="errors.email">@{{errors.email[0]}}
             </div>
         </div>
@@ -159,3 +160,28 @@
         @endforeach
     @endif
 </div>
+
+<div class="modal fade" id="validateModal" tabindex="-1" role="dialog" aria-labelledby="modalValidate" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel">Confirm Identity</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+            <div class="form-group col">
+                {!! Form::label('valpassword', __('Password')) !!}
+                {!! Form::password('valpassword', ['id' => 'valpassword', 'rows' => 4, 'class'=> 'form-control', 'v-model'
+                        => 'formData.valpassword']) !!}
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
+        <button type="button" class="btn btn-primary" @click="saveProfileChanges">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
