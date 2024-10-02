@@ -68,10 +68,10 @@ const dueDateColumn = () => ({
 // Columns for Requests
 const requestNumberColumn = () => ({
   field: "id",
-  header: "Request #",
+  header: "Request ID",
   resizable: true,
   filter: { type: "sortable" },
-  width: 200,
+  width: 80,
   cellRenderer: () => ({
     component: LinkCell,
     params: {
@@ -82,9 +82,9 @@ const requestNumberColumn = () => ({
   }),
 });
 
-const requestNameColumn = () => ({
+const processNameColumnRequest = () => ({
   field: "name",
-  header: "Request Name",
+  header: "Process Name",
   resizable: true,
   width: 200,
   filter: { type: "sortable" },
@@ -102,7 +102,7 @@ const currentTaskColumn = () => ({
   field: "active_tasks",
   header: "Task",
   resizable: true,
-  width: 200,
+  width: 140,
   formatter:(row, column, columns)=>{
     return row.active_tasks.length? row.active_tasks[0].element_name : "";
   },
@@ -124,14 +124,14 @@ const statusColumn = () => ({
   header: "Status",
   filter: { type: "sortable" },
   resizable: true,
-  width: 200,
+  width: 140,
   cellRenderer: () => ({
     component: StatusCell,
   }),
 });
 
 const startedColumn = () => ({
-  field: "created_at",
+  field: "initiated_at",
   header: "started",
   filter: { type: "sortable" },
   resizable: true,
@@ -149,7 +149,7 @@ export const getColumns = (type) => {
     ],
     requests: [
       requestNumberColumn(),
-      requestNameColumn(),
+      processNameColumnRequest(),
       currentTaskColumn(),
       statusColumn(),
       startedColumn(),

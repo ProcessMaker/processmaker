@@ -15,7 +15,7 @@
 <script>
 import { defineComponent, ref, onMounted } from "vue";
 import { SortTable, Pagination } from "../../../system";
-import { getData } from "../api/index";
+import { getDataRequests } from "../api/index";
 import { getColumns } from "../config/columns";
 import { getRequestId } from "../variables";
 
@@ -44,14 +44,14 @@ export default defineComponent({
     });
 
     const onChangeFilter = async (dataFilter) => {
-      data.value = await getData(formatData({
+      data.value = await getDataRequests(formatData({
         order_by: dataFilter.field,
         order_direction: dataFilter.filter,
       }));
     };
 
     onMounted(async () => {
-      data.value = await getData(formatData({}));
+      data.value = await getDataRequests(formatData({}));
       columnsConfig.value = getColumns("requests");
     });
 
