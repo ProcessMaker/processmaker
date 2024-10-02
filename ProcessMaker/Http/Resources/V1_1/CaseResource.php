@@ -2,7 +2,9 @@
 
 namespace ProcessMaker\Http\Resources\V1_1;
 
+use Illuminate\Support\Collection;
 use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Models\User;
 
 class CaseResource extends ApiResource
 {
@@ -28,10 +30,41 @@ class CaseResource extends ApiResource
     {
         $data = [];
 
+        $users = User::select('id', 'firstname', 'lastname', 'title', 'avatar')
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->fullname,
+                    'title' => $user->title,
+                    'avatar' => $user->avatar,
+                ];
+            })
+            ->keyBy('id');
+
         foreach (static::$defaultFields as $field) {
+            if ($field === 'participants') {
+                $participants = $this->$field->toArray();
+                $data[$field] = $this->getParticipanData($participants, $users);
+
+                continue;
+            }
+
             $data[$field] = $this->$field;
         }
 
         return $data;
+    }
+
+    /**
+     * Transform participants using the users collection.
+     *
+     * @param array $participants The participants array.
+     * @param Collection $users The users collection.
+     * @return array The transformed participants.
+     */
+    private function getParticipanData(array $participants, Collection $users): array
+    {
+        return array_map(fn($participant) => $users->get($participant), $participants);
     }
 }

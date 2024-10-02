@@ -240,7 +240,7 @@ class CaseControllerTest extends TestCase
 
     public function test_get_my_cases_counters_ok(): void
     {
-        /** 
+        /**
          * Creating missing permissions, probably this part should be removed when
          * the permissions were added in another ticket
          */
@@ -267,7 +267,7 @@ class CaseControllerTest extends TestCase
         $casesD = $this->createCasesParticipatedForUser($userA->id, 5, ['case_status' => 'IN_PROGRESS']);
 
         $casesE = $this->createCasesStartedForUser($userB->id, 5, ['case_status' => 'COMPLETED']);
-        $casesF = $this->createCasesStartedForUser($userB->id, 5, ['case_status' => 'IN_PROGRESS']);        
+        $casesF = $this->createCasesStartedForUser($userB->id, 5, ['case_status' => 'IN_PROGRESS']);
         $casesG = $this->createCasesParticipatedForUser($userB->id, 5, ['case_status' => 'COMPLETED']);
         $casesH = $this->createCasesParticipatedForUser($userB->id, 5, ['case_status' => 'IN_PROGRESS']);
 
@@ -284,5 +284,68 @@ class CaseControllerTest extends TestCase
         $response->assertJsonFragment(['totalInProgress' => 5]);
         $response->assertJsonFragment(['totalCompleted' => 5]);
         $response->assertJsonFragment(['totalMyRequest' => 5]);
+    }
+
+    public function test_get_all_cases_participants(): void
+    {
+        $userA = $this->createUser('user_a');
+        $userB = $this->createUser('user_b');
+
+        $casesA = $this->createCasesStartedForUser($userA->id, 1, ['case_status' => 'IN_PROGRESS', 'participants' => [$userA->id, $userB->id]]);
+        $casesB = $this->createCasesStartedForUser($userB->id, 1, ['case_status' => 'COMPLETED', 'participants' => [$userA->id]]);
+        $casesC = $this->createCasesStartedForUser($userA->id, 1, ['case_status' => 'IN_PROGRESS', 'participants' => [$userB->id]]);
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases'));
+
+        $total = $casesA->count() + $casesB->count() + $casesC->count();
+        $response->assertStatus(200);
+        $response->assertJsonCount($total, 'data');
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    'participants' => [
+                        '*' => [
+                            'id',
+                            'name',
+                            'title',
+                            'avatar',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        $response->assertJsonFragment(['participants' => [
+            [
+                'id' => $userA->id,
+                'name' => $userA->fullname,
+                'title' => $userA->title,
+                'avatar' => $userA->avatar,
+            ],
+            [
+                'id' => $userB->id,
+                'name' => $userB->fullname,
+                'title' => $userB->title,
+                'avatar' => $userB->avatar,
+            ],
+        ]]);
+
+        $response->assertJsonPath('data.1.participants', [
+            [
+                'id' => $userA->id,
+                'name' => $userA->fullname,
+                'title' => $userA->title,
+                'avatar' => $userA->avatar,
+            ],
+        ]);
+
+        $response->assertJsonPath('data.2.participants', [
+            [
+                'id' => $userB->id,
+                'name' => $userB->fullname,
+                'title' => $userB->title,
+                'avatar' => $userB->avatar,
+            ],
+        ]);
     }
 }
