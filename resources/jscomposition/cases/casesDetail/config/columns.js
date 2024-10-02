@@ -66,7 +66,7 @@ const dueDateColumn = () => ({
 });
 
 // Columns for Requests
-const requestNumberColumn = () => ({
+const requestIdColumn = () => ({
   field: "id",
   header: "Request ID",
   resizable: true,
@@ -82,7 +82,7 @@ const requestNumberColumn = () => ({
   }),
 });
 
-const processNameColumnRequest = () => ({
+const processRequestColumn = () => ({
   field: "name",
   header: "Process Name",
   resizable: true,
@@ -98,7 +98,7 @@ const processNameColumnRequest = () => ({
   }),
 });
 
-const currentTaskColumn = () => ({
+const taskColumn = () => ({
   field: "active_tasks",
   header: "Task",
   resizable: true,
@@ -132,7 +132,7 @@ const statusColumn = () => ({
 
 const startedColumn = () => ({
   field: "initiated_at",
-  header: "started",
+  header: "Started",
   filter: { type: "sortable" },
   resizable: true,
   width: 200,
@@ -148,9 +148,9 @@ export const getColumns = (type) => {
       dueDateColumn(),
     ],
     requests: [
-      requestNumberColumn(),
-      processNameColumnRequest(),
-      currentTaskColumn(),
+      requestIdColumn(),
+      processRequestColumn(),
+      taskColumn(),
       statusColumn(),
       startedColumn(),
     ],
