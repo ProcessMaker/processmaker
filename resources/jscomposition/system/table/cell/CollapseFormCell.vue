@@ -43,8 +43,6 @@ export default defineComponent({
     return {
       viewScreen,
       showScreen,
-      color: "red",
-      label: "fabio",
     };
   },
 });
