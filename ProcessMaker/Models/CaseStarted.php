@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Models\ProcessMakerModel;
+use ProcessMaker\Traits\HandlesValueAliasStatus;
 
 class CaseStarted extends ProcessMakerModel
 {
     use HasFactory;
+    use HandlesValueAliasStatus;
 
     protected $table = 'cases_started';
 
@@ -58,24 +60,5 @@ class CaseStarted extends ProcessMakerModel
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function valueAliasStatus($value, $expression)
-    {
-        $statusMap = [
-            'in progress' => 'IN_PROGRESS',
-            'completed' => 'COMPLETED',
-            'error' => 'ERROR',
-            'canceled' => 'CANCELED',
-        ];
-
-        $value = mb_strtolower($value);
-
-        return function ($query) use ($value, $statusMap, $expression) {
-            if (array_key_exists($value, $statusMap)) {
-                $value = $statusMap[$value];
-            }
-            $query->where('case_status', $expression->operator, $value);
-        };
     }
 }

@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Models\ProcessMakerModel;
+use ProcessMaker\Traits\HandlesValueAliasStatus;
 
 class CaseParticipated extends ProcessMakerModel
 {
     use HasFactory;
+    use HandlesValueAliasStatus;
 
     protected $table = 'cases_participated';
 
