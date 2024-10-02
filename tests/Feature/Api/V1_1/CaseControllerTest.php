@@ -245,6 +245,9 @@ class CaseControllerTest extends TestCase
 
         $filterBy = ['filterBy' =>'[{"subject":{"type":"Field","value":"user_id"},"operator":"=","value":"' . $userA->id . '"},{"subject":{"type":"Field","value":"case_status"},"operator":"=","value":"IN_PROGRESS"}, {"subject":{"type":"Field","value":"created_at"},"operator":">","value":"2023-02-10"}, {"subject":{"type":"Field","value":"completed_at"},"operator":">","value":"2023-04-01"}]'];
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', $filterBy));
+        $json = $response->json();
+        $metaTotal = $json['meta']['total'];
+        $this->assertEquals($total, $metaTotal, 'The total count of cases does not match the expected value. ' . json_encode($json));
         $response->assertStatus(200);
         $total = $casesA->where('user_id', $userA->id)->where('case_status', 'IN_PROGRESS')->where('created_at', '>', '2023-02-10')->where('completed_at', '>', '2023-04-01')->count() + $casesB->where('user_id', $userA->id)->where('case_status', 'IN_PROGRESS')->where('created_at', '>', '2023-02-10')->where('completed_at', '>', '2023-04-01')->count();
         $response->assertJsonCount($total, 'data');
