@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Validation\ValidationException;
+use Laravel\Passport\HasApiTokens;
+use Laravel\Passport\Passport;
 use ProcessMaker\Events\Logout;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\LoginManager;
@@ -19,6 +21,7 @@ use ProcessMaker\Traits\HasControllerAddons;
 
 class LoginController extends Controller
 {
+    use HasApiTokens;
     use HasControllerAddons;
     /*
     |--------------------------------------------------------------------------
@@ -239,6 +242,10 @@ class LoginController extends Controller
     public function beforeLogout(Request $request)
     {
         if (Auth::check()) {
+            // Remove the Laravel cookie
+            $request->session()->invalidate();
+            Cookie::queue(Cookie::forget(Passport::cookie()));
+
             //Clear the user permissions
             $request->session()->forget('permissions');
 
