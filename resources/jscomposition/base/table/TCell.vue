@@ -1,13 +1,14 @@
 <template>
   <td
     class="tw-relative"
-    :style="{ width: `${column.width}px` }">
-    <div
-      v-if="!column.cellRenderer">
+    :style="{ width: `${column.width}px` }"
+  >
+    <div v-if="!column.cellRenderer">
       <slot
         :columns="columns"
         :column="column"
-        :row="row">
+        :row="row"
+      >
         <div class="tw-p-3">
           {{ getValue() }}
         </div>
@@ -19,7 +20,9 @@
       v-bind="getParams()"
       :columns="columns"
       :column="column"
-      :row="row" />
+      :row="row"
+      @collapseContainer="collapseContainer"
+    />
   </td>
 </template>
 
@@ -50,14 +53,17 @@ export default defineComponent({
       return get(props.row, props.column?.field) || "";
     };
 
-    const getComponent = () => props.column.cellRenderer().component;
+    const getComponent = () => props.column.cellRenderer().component || props.column.cellRenderer();
 
     const getParams = () => props.column.cellRenderer().params || {};
+
+    const collapseContainer = (value) => emit("toogleContainer", value);
 
     return {
       getComponent,
       getParams,
       getValue,
+      collapseContainer,
     };
   },
 });

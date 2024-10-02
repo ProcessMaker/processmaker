@@ -1,18 +1,20 @@
 <template>
-  <div class="tw-w-full tw-space-y-3 tw-flex tw-flex-col tw-overflow-hidden">
+  <div class="tw-flex tw-flex-col tw-w-full tw-py-3 tw-overflow-hidden tw-space-y-3">
     <SortTable
       id="task-table"
       :columns="columnsConfig"
       :data="data"
-      class="tw-grow tw-overflow-y-scroll"
-      @changeFilter="onChangeFilter" />
+      class="tw-grow tw-overflow-y-scroll tw-overflow-hidden"
+      @changeFilter="onChangeFilter"
+    />
 
     <Pagination
       :total="dataPagination.total"
       :page="dataPagination.page"
       :pages="dataPagination.pages"
       @perPage="onPerPage"
-      @go="onGo" />
+      @go="onGo"
+    />
   </div>
 </template>
 
@@ -27,7 +29,7 @@ const data = ref(null);
 const columnsConfig = ref(null);
 const dataPagination = ref({
   total: 153,
-  page: 0,
+  page: 1,
   pages: 10,
   perPage: 15,
 });

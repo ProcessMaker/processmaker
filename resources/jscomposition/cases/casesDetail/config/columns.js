@@ -2,13 +2,14 @@ import {
   LinkCell,
   StatusCell,
   TruncatedOptionsCell,
+  CollapseFormCell,
 } from "../../../system/index";
 
 export default {};
 
 // Column for Task
 const taskNumberColumn = () => ({
-  field: "id",
+  field: "case_number",
   header: "Tasks #",
   resizable: true,
   width: 200,
@@ -138,6 +139,22 @@ const startedColumn = () => ({
   width: 200,
 });
 
+const completedDateColumn = () => ({
+  field: "completed_date",
+  header: "Completed Date",
+  resizable: true,
+  width: 200,
+});
+
+const actionColumn = () => ({
+  field: "",
+  header: "",
+  resizable: false,
+  width: 50,
+  cellRenderer: () => CollapseFormCell,
+  params: {},
+});
+
 export const getColumns = (type) => {
   const columns = {
     tasks: [
@@ -153,6 +170,15 @@ export const getColumns = (type) => {
       taskColumn(),
       statusColumn(),
       startedColumn(),
+    ],
+    completed_forms: [
+      actionColumn(),
+      taskNumberColumn(),
+      taskNameColumn(),
+      processNameColumn(),
+      assignedColumn(),
+      completedDateColumn(),
+      dueDateColumn(),
     ],
   };
 
