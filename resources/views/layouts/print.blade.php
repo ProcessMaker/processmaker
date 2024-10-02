@@ -104,6 +104,7 @@
     </div>
   </div>
 </div>
+<div id="navbar" style="display: none;"></div>
 <div id="api-error" class="error-content">
   <div>
     <h1>{{__('Sorry! API failed to load')}}</h1>

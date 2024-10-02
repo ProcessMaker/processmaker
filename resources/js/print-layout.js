@@ -3,15 +3,7 @@ import { Multiselect } from "@processmaker/vue-multiselect";
 import moment from "moment-timezone";
 import { sanitizeUrl } from "@braintree/sanitize-url";
 import VueHtml2Canvas from "vue-html2canvas";
-import newRequestModal from "./components/requests/requestModal";
-import requestModal from "./components/requests/modal";
-import requestModalMobile from "./components/requests/modalMobile";
-import notifications from "./notifications/components/notifications";
-import sessionModal from "./components/Session";
 import Sidebaricon from "./components/Sidebaricon";
-import ConfirmationModal from "./components/Confirm";
-import MessageModal from "./components/Message";
-import NavbarProfile from "./components/NavbarProfile";
 import SelectStatus from "./components/SelectStatus";
 import SelectUser from "./components/SelectUser";
 import SelectUserGroup from "./components/SelectUserGroup";
@@ -24,7 +16,6 @@ import Required from "./components/shared/Required";
 import { FileUpload, FileDownload } from "./processes/screen-builder/components";
 import RequiredCheckbox from "./processes/screen-builder/components/inspector/RequiredCheckbox";
 import WelcomeModal from "./Mobile/WelcomeModal";
-import Menu from "./components/Menu.vue";
 /** ****
  * Global adjustment parameters for moment.js.
  */
@@ -77,130 +68,11 @@ window.ProcessMaker.nodeTypes.get = function (id) {
 };
 
 // Assign our navbar component to our global ProcessMaker object
-window.ProcessMaker.navbar = new Vue({
-  el: "#navbar",
-  components: {
-    TopMenu: Menu,
-    "b-navbar": BNavbar,
-    requestModal,
-    notifications,
-    sessionModal,
-    ConfirmationModal,
-    MessageModal,
-    NavbarProfile,
-    newRequestModal,
-    GlobalSearch: (resolve) => {
-      if (window.ProcessMaker.globalSearchComponent) {
-        resolve(window.ProcessMaker.globalSearchComponent);
-      } else {
-        window.ProcessMaker.globalSearchComponentResolve = resolve;
-      }
-    },
-  },
-  data() {
-    return {
-      screenBuilder: null,
-      messages: ProcessMaker.notifications,
-      alerts: this.loadLocalAlerts(),
-      confirmTitle: "",
-      confirmMessage: "",
-      confirmVariant: "",
-      confirmCallback: "",
-      confirmSize: "md",
-      confirmDataTestClose: "confirm-btn-close",
-      confirmDataTestOk: "confirm-btn-ok",
-      messageTitle: "",
-      messageMessage: "",
-      messageVariant: "",
-      messageCallback: "",
-      confirmShow: false,
-      sessionShow: false,
-      messageShow: false,
-      sessionTitle: "",
-      sessionMessage: "",
-      sessionTime: "",
-      sessionWarnSeconds: "",
-      taskTitle: "",
-      isMobile: false,
-      isMobileDevice: window.ProcessMaker.mobileApp,
-    };
-  },
-  watch: {
-    alerts(array) {
-      this.saveLocalAlerts(array);
-    },
-  },
-  mounted() {
-    Vue.nextTick() // This is needed to override the default alert method.
-      .then(() => {
-        this.onResize();
-        window.addEventListener("resize", this.onResize, { passive: true });
-
-        if (document.querySelector("meta[name='alert']")) {
-          ProcessMaker.alert(
-            document.querySelector("meta[name='alertMessage']").getAttribute("content"),
-            document.querySelector("meta[name='alertVariant']").getAttribute("content"),
-          );
-        }
-        const findSB = setInterval(() => {
-          this.screenBuilder = window.ProcessMaker.ScreenBuilder;
-          if (this.screenBuilder) {
-            clearInterval(findSB);
-          }
-        }, 80);
-      });
-  },
-  methods: {
-    alertDownChanged(dismissCountDown, item) {
-      item.alertShow = dismissCountDown;
-      this.saveLocalAlerts(this.alerts);
-    },
-    alertDismissed(alert) {
-      alert.alertShow = 0;
-      const index = this.alerts.indexOf(alert);
-      let copy = _.cloneDeep(this.alerts);
-      index > -1 ? copy.splice(index, 1) : null;
-      // remove old alerts
-      copy = copy.filter((item) => ((Date.now() - item.timestamp) / 1000) < item.alertShow);
-      this.saveLocalAlerts(copy);
-    },
-    loadLocalAlerts() {
-      try {
-        return window.localStorage.processmakerAlerts
-                    && window.localStorage.processmakerAlerts.substr(0, 1) === "["
-          ? JSON.parse(window.localStorage.processmakerAlerts) : [];
-      } catch (e) {
-        return [];
-      }
-    },
-    saveLocalAlerts(array) {
-      const nextScreenAlerts = array.filter((alert) => alert.stayNextScreen);
-      window.localStorage.processmakerAlerts = JSON.stringify(nextScreenAlerts);
-    },
-    switchToMobile() {
-      this.$cookies.set("isMobile", true);
-      window.open("/requests", "_self");
-    },
-    getRoutes() {
-      if (this.$refs.breadcrumbs) {
-        return this.$refs.breadcrumbs.list;
-      }
-      return [];
-    },
-    setRoutes(routes) {
-      if (this.$refs.breadcrumbs) {
-        return this.$refs.breadcrumbs.updateRoutes(routes);
-      }
-      return false;
-    },
-    onResize() {
-      this.isMobile = window.innerWidth < 992;
-    },
-  },
-});
+window.ProcessMaker.navbar = {};
 
 // Set our own specific alert function at the ProcessMaker global object that could
 // potentially be overwritten by some custom theme support
+window.ProcessMaker.navbar.alerts = [];
 window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScreen = false, showLoader = false, msgLink = "", msgTitle = "") {
   if (showValue === 0) {
     // Just show it indefinitely, no countdown
