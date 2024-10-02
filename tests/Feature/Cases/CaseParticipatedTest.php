@@ -6,7 +6,6 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
-use ProcessMaker\Repositories\CaseParticipatedRepository;
 use ProcessMaker\Repositories\CaseRepository;
 use Tests\TestCase;
 
@@ -21,8 +20,7 @@ class CaseParticipatedTest extends TestCase
             'process_id' => $process->id,
         ]);
 
-        $repoParticipant = new CaseParticipatedRepository();
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($instance);
 
         $this->assertDatabaseHas('cases_started', [
@@ -72,8 +70,7 @@ class CaseParticipatedTest extends TestCase
             'process_id' => $process->id,
         ]);
 
-        $repoParticipant = new CaseParticipatedRepository();
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($instance);
 
         $this->assertDatabaseHas('cases_started', [
@@ -144,8 +141,7 @@ class CaseParticipatedTest extends TestCase
             'process_id' => $process->id,
         ]);
 
-        $repoParticipant = new CaseParticipatedRepository();
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($instance);
 
         $this->assertDatabaseHas('cases_started', [
@@ -211,8 +207,7 @@ class CaseParticipatedTest extends TestCase
             'process_id' => $process->id,
         ]);
 
-        $repoParticipant = new CaseParticipatedRepository();
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($instance);
 
         $this->assertDatabaseCount('cases_started', 1);
@@ -290,8 +285,7 @@ class CaseParticipatedTest extends TestCase
             'process_id' => $process->id,
         ]);
 
-        $repoParticipant = new CaseParticipatedRepository();
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($instance);
 
         $this->assertDatabaseCount('cases_started', 1);

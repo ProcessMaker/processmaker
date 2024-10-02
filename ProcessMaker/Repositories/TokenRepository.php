@@ -136,6 +136,10 @@ class TokenRepository implements TokenRepositoryInterface
                     $evaluatedUsers = is_array($evaluatedUsers) ? $evaluatedUsers : [$evaluatedUsers];
                     $evaluatedGroups = is_array($evaluatedGroups) ? $evaluatedGroups : [$evaluatedGroups];
 
+                    // convert to array of strings
+                    $evaluatedUsers = array_map('strval', $evaluatedUsers);
+                    $evaluatedGroups = array_map('strval', $evaluatedGroups);
+
                     $token->self_service_groups = ['users' => $evaluatedUsers, 'groups' => $evaluatedGroups];
                     break;
                 case 'rule_expression':

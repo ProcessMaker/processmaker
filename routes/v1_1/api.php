@@ -17,7 +17,7 @@ Route::prefix('api/1.1')
             // Route to show a task
             Route::get('/{task}', [TaskController::class, 'show'])
                 ->name('show')
-                ->middleware(['bindings','can:view,task']);
+                ->middleware(['bindings', 'can:view,task']);
 
             // Route to show the screen of a task
             Route::get('/{taskId}/screen', [TaskController::class, 'showScreen'])
@@ -38,8 +38,12 @@ Route::prefix('api/1.1')
             Route::get('get_in_progress', [CaseController::class, 'getInProgress'])
                 ->name('in_progress');
 
-                // Route to list all completed cases
+            // Route to list all completed cases
             Route::get('get_completed', [CaseController::class, 'getCompleted'])
                 ->name('completed');
+
+            // Route to get my cases counters
+            Route::get('get_my_cases_counters', [CaseController::class, 'getMyCasesCounters'])
+                ->name('my_cases_counters');
         });
     });

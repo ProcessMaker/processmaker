@@ -3,6 +3,7 @@
 namespace ProcessMaker\Repositories;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Contracts\CaseRepositoryInterface;
 use ProcessMaker\Models\CaseStarted;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
@@ -13,15 +14,22 @@ class CaseRepository implements CaseRepositoryInterface
     const CASE_STATUS_ACTIVE = 'ACTIVE';
 
     /**
+     * @var CaseParticipatedRepository
+     */
+    protected CaseParticipatedRepository $caseParticipatedRepository;
+
+    /**
      * This property is used to store an instance of `CaseStarted`
      * when a case started is updated.
      * @var CaseStarted|null
      */
     protected ?CaseStarted $case;
 
-    public function __construct(protected CaseParticipatedRepository $caseParticipatedRepository)
+    public function __construct()
     {
+        $this->caseParticipatedRepository = new CaseParticipatedRepository();
     }
+
     /**
      * Store a new case started.
      *
@@ -31,7 +39,7 @@ class CaseRepository implements CaseRepositoryInterface
     public function create(ExecutionInstanceInterface $instance): void
     {
         if (is_null($instance->case_number)) {
-            \Log::error('Case number is required. instance: ' . $instance->getKey());
+            Log::error('case number is required, method=create, instance=' . $instance->getKey());
 
             return;
         }
@@ -58,8 +66,8 @@ class CaseRepository implements CaseRepositoryInterface
                 'completed_at' => null,
             ]);
         } catch (\Exception $e) {
-            \Log::error($e->getMessage());
-            \Log::error($e->getTraceAsString());
+            Log::error('CaseException: ' . $e->getMessage());
+            Log::error('CaseException: ' . $e->getTraceAsString());
         }
     }
 
@@ -72,19 +80,13 @@ class CaseRepository implements CaseRepositoryInterface
      */
     public function update(ExecutionInstanceInterface $instance, TokenInterface $token): void
     {
-        if (is_null($instance->case_number)) {
-            \Log::error('Case number is required. instance: ' . $instance->getKey());
+        if (!$this->checkIfCaseStartedExist($instance->case_number)) {
+            Log::error('case started not found, method=update, instance=' . $instance->getKey());
 
             return;
         }
 
         try {
-            if (!$this->checkIfCaseStartedExist($instance->case_number)) {
-                \Log::error('Case number not found. instance: ' . $instance->id);
-
-                return;
-            }
-
             $this->case->case_title = $instance->case_title;
             $this->case->case_status = $instance->status === self::CASE_STATUS_ACTIVE ? 'IN_PROGRESS' : $instance->status;
             $this->case->request_tokens = CaseUtils::storeRequestTokens($token->getKey(), $this->case->request_tokens);
@@ -94,7 +96,8 @@ class CaseRepository implements CaseRepositoryInterface
 
             $this->case->saveOrFail();
         } catch (\Exception $e) {
-            \Log::error($e->getMessage());
+            Log::error('CaseException: ' . $e->getMessage());
+            Log::error('CaseException: ' . $e->getTraceAsString());
         }
     }
 
@@ -124,7 +127,8 @@ class CaseRepository implements CaseRepositoryInterface
             CaseStarted::where('case_number', $instance->case_number)->update($data);
             $this->caseParticipatedRepository->updateStatus($instance->case_number, $data);
         } catch (\Exception $e) {
-            \Log::error($e->getMessage());
+            Log::error('CaseException: ' . $e->getMessage());
+            Log::error('CaseException: ' . $e->getTraceAsString());
         }
     }
 
@@ -163,11 +167,15 @@ class CaseRepository implements CaseRepositoryInterface
     /**
      * Check if the case started exist.
      *
-     * @param int $caseNumber
+     * @param int|null $caseNumber
      * @return bool
      */
-    private function checkIfCaseStartedExist(int $caseNumber): bool
+    private function checkIfCaseStartedExist(int | null $caseNumber): bool
     {
+        if (is_null($caseNumber)) {
+            return false;
+        }
+
         $this->case = CaseStarted::where('case_number', $caseNumber)->first();
 
         return !is_null($this->case);
@@ -191,8 +199,9 @@ class CaseRepository implements CaseRepositoryInterface
             $this->case->requests = CaseUtils::storeRequests($instance, $this->case->requests);
 
             $this->case->saveOrFail();
-        } catch (\Exception $th) {
-            \Log::error($th->getMessage());
+        } catch (\Exception $e) {
+            Log::error('CaseException: ' . $e->getMessage());
+            Log::error('CaseException: ' . $e->getTraceAsString());
         }
     }
 }

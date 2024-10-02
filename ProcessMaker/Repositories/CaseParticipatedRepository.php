@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Repositories;
 
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\CaseParticipated;
 use ProcessMaker\Models\CaseStarted;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
@@ -44,7 +45,8 @@ class CaseParticipatedRepository
                 'completed_at' => null,
             ]);
         } catch (\Exception $e) {
-            \Log::error($e->getMessage());
+            Log::error('CaseException: ' . $e->getMessage());
+            Log::error('CaseException: ' . $e->getTraceAsString());
         }
     }
 
@@ -73,7 +75,8 @@ class CaseParticipatedRepository
                 'participants' => $case->participants,
             ]);
         } catch (\Exception $e) {
-            \Log::error($e->getMessage());
+            Log::error('CaseException: ' . $e->getMessage());
+            Log::error('CaseException: ' . $e->getTraceAsString());
         }
     }
 
@@ -90,7 +93,8 @@ class CaseParticipatedRepository
             CaseParticipated::where('case_number', $caseNumber)
                 ->update($statusData);
         } catch (\Exception $e) {
-            \Log::error($e->getMessage());
+            Log::error('CaseException: ' . $e->getMessage());
+            Log::error('CaseException: ' . $e->getTraceAsString());
         }
     }
 

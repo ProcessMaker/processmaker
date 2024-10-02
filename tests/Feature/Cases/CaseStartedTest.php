@@ -3,14 +3,13 @@
 namespace Tests\Feature\Cases;
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Tests\TestCase;
 use Mockery;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
-use ProcessMaker\Repositories\CaseParticipatedRepository;
 use ProcessMaker\Repositories\CaseRepository;
+use Tests\TestCase;
 
 class CaseStartedTest extends TestCase
 {
@@ -19,12 +18,11 @@ class CaseStartedTest extends TestCase
     public function test_create_case()
     {
         $user = User::factory()->create();
-        $repoParticipant = Mockery::mock(CaseParticipatedRepository::class);
         $instance = ProcessRequest::factory()->create([
             'user_id' => $user->id,
         ]);
 
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($instance);
 
         $this->assertDatabaseCount('cases_started', 1);
@@ -39,7 +37,6 @@ class CaseStartedTest extends TestCase
     public function test_create_multiple_cases()
     {
         $user = User::factory()->create();
-        $repoParticipant = Mockery::mock(CaseParticipatedRepository::class);
         $instance1 = ProcessRequest::factory()->create([
             'user_id' => $user->id,
         ]);
@@ -47,7 +44,7 @@ class CaseStartedTest extends TestCase
             'user_id' => $user->id,
         ]);
 
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($instance1);
         $repo->create($instance2);
 
@@ -71,14 +68,13 @@ class CaseStartedTest extends TestCase
         $process = Process::factory()->create();
 
         $user = User::factory()->create();
-        $repoParticipant = Mockery::mock(CaseParticipatedRepository::class);
 
         $instance = ProcessRequest::factory()->create([
             'user_id' => $user->id,
             'process_id' => $process->id,
         ]);
 
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($instance);
 
         $this->assertDatabaseCount('cases_started', 1);
@@ -97,14 +93,13 @@ class CaseStartedTest extends TestCase
         $process = Process::factory()->create();
 
         $user = User::factory()->create();
-        $repoParticipant = Mockery::mock(CaseParticipatedRepository::class);
 
         $instance = ProcessRequest::factory()->create([
             'user_id' => $user->id,
             'process_id' => $process->id,
         ]);
 
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($instance);
 
         $this->assertDatabaseCount('cases_started', 1);
@@ -130,9 +125,7 @@ class CaseStartedTest extends TestCase
             'process_id' => $process->id,
         ]);
 
-        $repoParticipant = new CaseParticipatedRepository();
-
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($instance);
 
         $this->assertDatabaseCount('cases_started', 1);
@@ -170,9 +163,7 @@ class CaseStartedTest extends TestCase
             'process_id' => $process->id,
         ]);
 
-        $repoParticipant = new CaseParticipatedRepository();
-
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($instance);
 
         $this->assertDatabaseCount('cases_started', 1);
@@ -232,9 +223,7 @@ class CaseStartedTest extends TestCase
             'process_id' => $process->id,
         ]);
 
-        $repoParticipant = new CaseParticipatedRepository();
-
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($instance);
 
         $this->assertDatabaseCount('cases_started', 1);
@@ -293,9 +282,7 @@ class CaseStartedTest extends TestCase
             'process_id' => $process->id,
         ]);
 
-        $repoParticipant = new CaseParticipatedRepository();
-
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($instance);
 
         $this->assertDatabaseCount('cases_started', 1);
@@ -352,9 +339,7 @@ class CaseStartedTest extends TestCase
             'process_id' => $process->id,
         ]);
 
-        $repoParticipant = new CaseParticipatedRepository();
-
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($instance);
 
         $this->assertDatabaseCount('cases_started', 1);
@@ -399,12 +384,11 @@ class CaseStartedTest extends TestCase
     public function test_try_update_if_case_has_not_been_created()
     {
         $user = User::factory()->create();
-        $repoParticipant = Mockery::mock(CaseParticipatedRepository::class);
         $instance = ProcessRequest::factory()->create([
             'user_id' => null,
         ]);
 
-        $repo = new CaseRepository($repoParticipant);
+        $repo = new CaseRepository();
         $repo->create($instance);
 
         $this->assertDatabaseCount('cases_started', 0);

@@ -2,9 +2,12 @@
 
 namespace Tests\Feature\Api\V1_1;
 
+use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\CaseParticipated;
 use ProcessMaker\Models\CaseStarted;
+use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
@@ -257,5 +260,53 @@ class CaseControllerTest extends TestCase
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['filterBy' => [$invalidField => 'value']]));
         $response->assertStatus(422);
         $response->assertJsonPath('message', 'The Filter by field must be a valid JSON string.');
+    }
+
+    public function test_get_my_cases_counters_ok(): void
+    {
+        /**
+         * Creating missing permissions, probably this part should be removed when
+         * the permissions were added in another ticket
+         */
+        Permission::create([
+            'name' => 'view-all_cases',
+            'title' => 'View All Cases',
+        ]);
+        Permission::create([
+            'name' => 'view-my_requests',
+            'title' => 'View My Requests',
+        ]);
+
+        $userA = $this->createUser('user_a');
+        $userB = $this->createUser('user_b');
+
+        $userA->giveDirectPermission('view-all_cases');
+        $userA->giveDirectPermission('view-my_requests');
+        $userB->giveDirectPermission('view-all_cases');
+        $userB->giveDirectPermission('view-my_requests');
+
+        $casesA = $this->createCasesStartedForUser($userA->id, 5, ['case_status' => 'COMPLETED']);
+        $casesB = $this->createCasesStartedForUser($userA->id, 5, ['case_status' => 'IN_PROGRESS']);
+        $casesC = $this->createCasesParticipatedForUser($userA->id, 5, ['case_status' => 'COMPLETED']);
+        $casesD = $this->createCasesParticipatedForUser($userA->id, 5, ['case_status' => 'IN_PROGRESS']);
+
+        $casesE = $this->createCasesStartedForUser($userB->id, 5, ['case_status' => 'COMPLETED']);
+        $casesF = $this->createCasesStartedForUser($userB->id, 5, ['case_status' => 'IN_PROGRESS']);
+        $casesG = $this->createCasesParticipatedForUser($userB->id, 5, ['case_status' => 'COMPLETED']);
+        $casesH = $this->createCasesParticipatedForUser($userB->id, 5, ['case_status' => 'IN_PROGRESS']);
+
+        $in_progress = ProcessRequest::factory(5)->create([
+            'status' => 'ACTIVE',
+            'user_id' => $userA->id,
+        ]);
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.my_cases_counters'), ['userId' => $userA->id]);
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment(['totalAllCases' => 20]);
+        $response->assertJsonFragment(['totalMyCases' => 10]);
+        $response->assertJsonFragment(['totalInProgress' => 5]);
+        $response->assertJsonFragment(['totalCompleted' => 5]);
+        $response->assertJsonFragment(['totalMyRequest' => 5]);
     }
 }
