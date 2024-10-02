@@ -202,23 +202,13 @@ class CaseControllerTest extends TestCase
         $response->assertJsonFragment(['message' => "Sort by field $invalidField is not allowed."]);
     }
 
-    public function test_get_all_cases_filter_by(): void
+    public function test_filter_by_case_number(): void
     {
         $userA = $this->createUser('user_a');
-        $casesA = $this->createCasesStartedForUser($userA->id, 5);
         $caseNumber = 123456;
-        $casesB = $this->createCasesStartedForUser($userA->id, 1, [
-            'case_number' => $caseNumber,
-            'case_status' => 'IN_PROGRESS',
-        ]);
-        $initiatedAt = $casesA->first()->initiated_at->format('Y-m-d');
+        $this->createCasesStartedForUser($userA->id, 5);
+        $this->createCasesStartedForUser($userA->id, 1, ['case_number' => $caseNumber]);
 
-        // Test: Get all cases
-        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases'));
-        $response->assertStatus(200);
-        $response->assertJsonCount(6, 'data');
-
-        // Test: Filter by case number
         $filterBy = [
             'filterBy' => json_encode([
                 [
@@ -228,12 +218,23 @@ class CaseControllerTest extends TestCase
                 ],
             ]),
         ];
+
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', $filterBy));
         $response->assertStatus(200);
         $response->assertJsonCount(1, 'data');
         $response->assertJsonFragment(['case_number' => $caseNumber]);
+    }
 
-        // Test: Filter by case status
+    public function test_filter_by_case_status(): void
+    {
+        $userA = $this->createUser('user_a');
+        $casesA = $this->createCasesStartedForUser($userA->id, 5);
+        $caseNumber = 123456;
+        $casesB = $this->createCasesStartedForUser($userA->id, 1, [
+            'case_number' => $caseNumber,
+            'case_status' => 'IN_PROGRESS',
+        ]);
+
         $filterBy = [
             'filterBy' => json_encode([
                 [
@@ -243,17 +244,27 @@ class CaseControllerTest extends TestCase
                 ],
             ]),
         ];
+
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', $filterBy));
         $response->assertStatus(200);
 
         $total = $casesA->where('case_status', 'IN_PROGRESS')->count() +
-                 $casesB->where('case_status', 'IN_PROGRESS')->count();
-
+            $casesB->where('case_status', 'IN_PROGRESS')->count();
         $response->assertJsonCount($total, 'data');
         $response->assertJsonFragment(['case_status' => 'IN_PROGRESS']);
         $response->assertJsonMissing(['case_status' => 'COMPLETED']);
+    }
 
-        // Test: Filter by user ID and case status
+    public function test_filter_by_user_and_case_status(): void
+    {
+        $userA = $this->createUser('user_a');
+        $casesA = $this->createCasesStartedForUser($userA->id, 5);
+        $caseNumber = 123456;
+        $casesB = $this->createCasesStartedForUser($userA->id, 1, [
+            'case_number' => $caseNumber,
+            'case_status' => 'IN_PROGRESS',
+        ]);
+
         $filterBy = [
             'filterBy' => json_encode([
                 [
@@ -268,19 +279,29 @@ class CaseControllerTest extends TestCase
                 ],
             ]),
         ];
+
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', $filterBy));
         $response->assertStatus(200);
 
         $total = $casesA->where('user_id', $userA->id)
-                       ->where('case_status', 'IN_PROGRESS')->count() +
-                 $casesB->where('user_id', $userA->id)
-                       ->where('case_status', 'IN_PROGRESS')->count();
-
+            ->where('case_status', 'IN_PROGRESS')->count() +
+            $casesB->where('user_id', $userA->id)
+            ->where('case_status', 'IN_PROGRESS')->count();
         $response->assertJsonCount($total, 'data');
         $response->assertJsonFragment(['case_status' => 'IN_PROGRESS']);
         $response->assertJsonFragment(['user_id' => $userA->id]);
+    }
 
-        // Test: Filter by user ID, case status, and created_at
+    public function test_filter_by_user_case_status_and_created_at(): void
+    {
+        $userA = $this->createUser('user_a');
+        $casesA = $this->createCasesStartedForUser($userA->id, 5);
+        $caseNumber = 123456;
+        $casesB = $this->createCasesStartedForUser($userA->id, 1, [
+            'case_number' => $caseNumber,
+            'case_status' => 'IN_PROGRESS',
+        ]);
+
         $filterBy = [
             'filterBy' => json_encode([
                 [
@@ -300,21 +321,31 @@ class CaseControllerTest extends TestCase
                 ],
             ]),
         ];
+
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', $filterBy));
         $response->assertStatus(200);
 
         $total = $casesA->where('user_id', $userA->id)
-                       ->where('case_status', 'IN_PROGRESS')
-                       ->where('created_at', '>', '2023-02-10')->count() +
-                 $casesB->where('user_id', $userA->id)
-                       ->where('case_status', 'IN_PROGRESS')
-                       ->where('created_at', '>', '2023-02-10')->count();
-
+            ->where('case_status', 'IN_PROGRESS')
+            ->where('created_at', '>', '2023-02-10')->count() +
+            $casesB->where('user_id', $userA->id)
+            ->where('case_status', 'IN_PROGRESS')
+            ->where('created_at', '>', '2023-02-10')->count();
         $response->assertJsonCount($total, 'data');
         $response->assertJsonFragment(['case_status' => 'IN_PROGRESS']);
         $response->assertJsonFragment(['user_id' => $userA->id]);
+    }
 
-        // Test: Filter by user ID, case status, created_at, and completed_at
+    public function test_filter_by_user_case_status_created_at_and_completed_at(): void
+    {
+        $userA = $this->createUser('user_a');
+        $casesA = $this->createCasesStartedForUser($userA->id, 5);
+        $caseNumber = 123456;
+        $casesB = $this->createCasesStartedForUser($userA->id, 1, [
+            'case_number' => $caseNumber,
+            'case_status' => 'IN_PROGRESS',
+        ]);
+
         $filterBy = [
             'filterBy' => json_encode([
                 [
@@ -339,31 +370,29 @@ class CaseControllerTest extends TestCase
                 ],
             ]),
         ];
+
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', $filterBy));
+        $response->assertStatus(200);
 
         $total = $casesA->where('user_id', $userA->id)
-                       ->where('case_status', 'IN_PROGRESS')
-                       ->where('created_at', '>', '2023-02-10')
-                       ->where('completed_at', '>', '2023-04-01')->count() +
-                 $casesB->where('user_id', $userA->id)
-                       ->where('case_status', 'IN_PROGRESS')
-                       ->where('created_at', '>', '2023-02-10')
-                       ->where('completed_at', '>', '2023-04-01')->count();
+            ->where('case_status', 'IN_PROGRESS')
+            ->where('created_at', '>', '2023-02-10')
+            ->where('completed_at', '>', '2023-04-01')->count() +
+            $casesB->where('user_id', $userA->id)
+            ->where('case_status', 'IN_PROGRESS')
+            ->where('created_at', '>', '2023-02-10')
+            ->where('completed_at', '>', '2023-04-01')->count();
 
+        $response->assertJsonCount($total, 'data');
         $json = $response->json();
         $metaTotal = $json['meta']['total'];
         $this->assertEquals($total, $metaTotal, 'The total count of cases does not match the expected value. ' . json_encode($json));
-
-        $response->assertStatus(200);
-
-        print_r($total);
-        $response->assertJsonCount($total, 'data');
     }
 
     public function test_get_all_cases_filter_by_invalid_field(): void
     {
         $invalidField = 'invalid_field';
-        $filterBy = ['filterBy' =>'[invalid_json'];
+        $filterBy = ['filterBy' => '[invalid_json'];
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', $filterBy));
         $response->assertStatus(422);
         $response->assertJsonPath('message', 'The Filter by field must be a valid JSON string.');
