@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Cases;
 
-use Exception;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -125,9 +124,9 @@ class CaseExceptionTest extends TestCase
 
     public function test_artisan_sync_command_success(): void
     {
-        $this->artisan('cases:sync --request_ids=1,2')
-            ->expectsOutput('Case started synced 1')
-            ->expectsOutput('Case started synced 2')
+        $this->artisan('cases:sync --request_ids=' . $this->instance->id . ',' . $this->instance2->id)
+            ->expectsOutput('Case started synced ' . $this->instance->case_number)
+            ->expectsOutput('Case started synced ' . $this->instance2->case_number)
             ->assertExitCode(0);
 
         $this->assertDatabaseCount('cases_started', 2);
