@@ -3,7 +3,10 @@
 namespace ProcessMaker\Repositories;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use ProcessMaker\Contracts\CaseApiRepositoryInterface;
 use ProcessMaker\Exception\CaseValidationException;
 use ProcessMaker\Models\CaseParticipated;
@@ -208,5 +211,38 @@ class CaseApiRepository implements CaseApiRepositoryInterface
                 $query->orderBy($field, $order);
             }
         }
+    }
+
+    /**
+     * Get users by participant IDs.
+     *
+     * @param Collection $data
+     * @return Collection The users collection grouped by user ID.
+     */
+    public function getUsers($data): Collection
+    {
+        try {
+            $participantIds = $data->pluck('participants')
+                ->collapse()
+                ->unique()
+                ->values();
+
+            return DB::table('users')
+                ->select([
+                    'id',
+                    DB::raw('TRIM(CONCAT(firstname, " ", lastname)) as name'),
+                    'title',
+                    'avatar',
+                ])
+                ->whereIn('id', $participantIds)
+                ->get()
+                ->keyBy('id');
+        } catch (QueryException $e) {
+            \Log::error($e->getMessage());
+        } catch (\Exception $e) {
+            \Log::error($e->getMessage());
+        }
+
+        return collect();
     }
 }

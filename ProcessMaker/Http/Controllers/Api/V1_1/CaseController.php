@@ -163,7 +163,11 @@ class CaseController extends Controller
     private function paginateResponse(Builder $query): JsonResponse
     {
         $pageSize = $this->request->get('pageSize', self::DEFAULT_PAGE_SIZE);
-        $pagination = CaseResource::collection($query->paginate($pageSize));
+        $data = $query->paginate($pageSize);
+        // Get all the participants ids from the data
+        $users = $this->caseRepository->getUsers($data);
+
+        $pagination = CaseResource::customCollection($data, $users);
 
         return response()->json([
             'data' => $pagination->items(),
