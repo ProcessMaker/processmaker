@@ -3,7 +3,9 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\User;
 
 class PermissionSeeder extends Seeder
 {
@@ -83,8 +85,10 @@ class PermissionSeeder extends Seeder
         'Username and Password' => [
             'edit-user-and-password',
         ],
-        'Requests' => [
+        'Cases and Requests' => [
+            'view-all_cases',
             'view-all_requests',
+            'view-my_requests',
             'edit-request_data',
             'edit-task_data',
         ],
@@ -114,16 +118,24 @@ class PermissionSeeder extends Seeder
         ],
     ];
 
+    private $defaultPermissions = [
+        'view-my_requests',
+    ];
+
     public function run($seedUser = null)
     {
         foreach ($this->permissionGroups as $groupName => $permissions) {
             foreach ($permissions as $permissionString) {
-                Permission::updateOrCreate([
+                $permission = Permission::updateOrCreate([
                     'name' => $permissionString,
                 ], [
                     'title' => ucwords(preg_replace('/(\-|_)/', ' ', $permissionString)),
                     'group' => $groupName,
                 ]);
+
+                if (in_array($permissionString, $this->defaultPermissions)) {
+                    $this->assignDefaultPermission($permission);
+                }
             }
         }
 
@@ -133,5 +145,27 @@ class PermissionSeeder extends Seeder
             $seedUser->permissions()->attach($permissions);
             $seedUser->save();
         }
+    }
+
+    /**
+     * Assign default permission to users and groups.
+     */
+    private function assignDefaultPermission(Permission $permission): void
+    {
+        $userIds = User::nonSystem()->pluck('id');
+        $groupIds = Group::pluck('id');
+    
+        // Define the chunk size for the permission assignment
+        $chunkSize = 500;
+    
+        // Attach user IDs in chunks
+        $userIds->chunk($chunkSize)->each(function ($chunk) use ($permission) {
+            $permission->users()->attach($chunk);
+        });
+    
+        // Attach group IDs in chunks
+        $groupIds->chunk($chunkSize)->each(function ($chunk) use ($permission) {
+            $permission->groups()->attach($chunk);
+        });
     }
 }

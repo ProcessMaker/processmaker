@@ -121,7 +121,8 @@ mix
   .js("resources/js/requests/mobile.js", "public/js/requests/mobile.js")
   .js("resources/js/requests/show.js", "public/js/requests")
   .js("resources/js/requests/preview.js", "public/js/requests")
-
+  .js("resources/jscomposition/cases/casesMain/main.js", "public/js/composition/cases/casesMain/main.js")
+  .js("resources/jscomposition/cases/casesDetail/edit.js", "public/js/composition/cases/casesDetail/edit.js")
   .js("resources/js/processes/translations/import.js", "public/js/processes/translations")
 
   .js("resources/js/processes-catalogue/index.js", "public/js/processes-catalogue/index.js")
@@ -169,6 +170,9 @@ mix
   .sass("resources/sass/sidebar/sidebar.scss", "public/css")
   .sass("resources/sass/app.scss", "public/css")
   .sass("resources/sass/admin/queues.scss", "public/css/admin")
+  .postCss("resources/sass/tailwind.css", "public/css", [
+    require("tailwindcss"),
+  ])
   .version();
 
 mix.vue({ version: 2 });

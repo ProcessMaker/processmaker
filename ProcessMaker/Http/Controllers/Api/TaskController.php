@@ -54,6 +54,15 @@ class TaskController extends Controller
         'Completed' => 'CLOSED',
     ];
 
+    protected $defaultCase = [
+        'id', // Task #
+        'element_name', // Task Name
+        'user_id', // Participant
+        'process_id', // Process
+        'due_at', // Due At
+        'process_request_id', // Request Id #
+    ];
+
     /**
      * Display a listing of the resource.
      *
@@ -146,6 +155,55 @@ class TaskController extends Controller
             ->where('due_at', '<', Carbon::now());
 
         $response->inOverdue = $inOverdueQuery->count();
+
+        return new TaskCollection($response);
+    }
+
+    /**
+     * Get the task list related to the case
+     * @param Request $request
+     * @param User $user used by Saved Search package to return accurate counts
+     * @return array
+     */
+    public function indexCase(Request $request, User $user = null)
+    {
+        if (!$user) {
+            $user = Auth::user();
+        }
+
+        // Validate the inputs, including optional ones
+        $request->validate([
+            'case_number' => 'required|integer',
+            'status' => 'nullable|string|in:ACTIVE,CLOSED',
+            'order_by' => 'nullable|string|in:id,element_name,due_at,user.lastname,process.name',
+            'order_direction' => 'nullable|string|in:asc,desc',
+            'page' => 'nullable|integer|min:1',
+            'per_page' => 'nullable|integer',
+        ]);
+
+        // Get only the columns defined
+        $query = ProcessRequestToken::select($this->defaultCase);
+        // Filter by case_number
+        $query->filterByCaseNumber($request);
+        // Filter by status
+        $query->filterByStatus($request);
+        // Return the process information
+        $query->getProcess();
+        // Return the user information
+        $query->getUser();
+        // Filter only the task related to the user
+        $this->applyForCurrentUser($query, $user);
+        // Exclude non visible task
+        $this->excludeNonVisibleTasks($query, $request);
+        // Apply ordering only if a valid order_by field is provided
+        $query->applyOrdering($request);
+
+        try {
+            $response = $query->applyPagination($request);
+            $response->inOverdue = 0;
+        } catch (QueryException $e) {
+            return $this->handleQueryException($e);
+        }
 
         return new TaskCollection($response);
     }
