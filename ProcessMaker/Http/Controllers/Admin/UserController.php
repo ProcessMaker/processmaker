@@ -9,7 +9,6 @@ use ProcessMaker\Models\Group;
 use ProcessMaker\Models\JsonData;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\User;
-use ProcessMaker\Package\Auth\Models\SsoUser;
 use ProcessMaker\Traits\HasControllerAddons;
 
 class UserController extends Controller
@@ -77,10 +76,6 @@ class UserController extends Controller
                 return $result;
             }
         );
-        $ssoUser = false;
-        if (class_exists(SsoUser::class)) {
-            $ssoUser = SsoUser::where('user_id', $user->id)->exists();
-        }
 
         // Get global and valid 2FA preferences for the user
         $enabled2FA = config('password-policies.2fa_enabled', false);
@@ -108,7 +103,6 @@ class UserController extends Controller
             'is2FAEnabledForGroup',
             'addons',
             'addonsSettings',
-            'ssoUser',
         ));
     }
 

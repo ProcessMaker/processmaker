@@ -44,8 +44,7 @@
             {!! Form::email('email', null, ['id' => 'email', 'rows' => 4, 'class'=>
             'form-control', 'v-model'
             => 'formData.email', 'v-bind:class' => '{\'form-control\':true,
-            \'is-invalid\':errors.email}', 'required', 'aria-required' => 'true',
-            '@input' => 'checkEmailChange']) !!}
+            \'is-invalid\':errors.email}', 'required', 'aria-required' => 'true']) !!}
             <div class="invalid-feedback" role="alert" v-if="errors.email">@{{errors.email[0]}}
             </div>
         </div>

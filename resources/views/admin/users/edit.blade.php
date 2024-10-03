@@ -257,7 +257,6 @@
             image: '',
             status: @json($status),
             global2FAEnabled: @json($global2FAEnabled),
-            ssoUser:@json($ssoUser),
             errors: {
               username: null,
               firstname: null,
@@ -283,8 +282,6 @@
             groups: [],
             userGroupsFilter: '',
             focusErrors: 'errors',
-            originalEmail: '',
-            emailHasChanged: false,
           }
         },
         created() {
@@ -480,12 +477,28 @@
             return true
           },
           profileUpdate($event) {
-            if(this.emailHasChanged && !this.ssoUser) {
-              $('#validateModal').modal('show');
-            } else {
-              this.saveProfileChanges();
+            this.resetErrors();
+            if (@json($enabled2FA) &&  this.global2FAEnabled.length === 0) {
+              // User has not enabled two-factor authentication correctly
+              ProcessMaker.alert(
+                this.$t('The Two Step Authentication Method has not been set. Please contact your administrator.'),
+                'warning'
+              );
+              return false;
             }
-
+            if (!this.validatePassword()) return false;
+            if (@json($enabled2FA) && typeof this.formData.preferences_2fa != "undefined" &&
+              this.formData.preferences_2fa != null && this.formData.preferences_2fa.length < 1) return false;
+            ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
+              .then(response => {
+                ProcessMaker.alert(this.$t('User Updated Successfully '), 'success');
+                if (this.formData.id == window.ProcessMaker.user.id) {
+                  window.ProcessMaker.events.$emit('update-profile-avatar');
+                }
+              })
+              .catch(error => {
+                this.errors = error.response.data.errors;
+              });
           },
           permissionUpdate() {
             ProcessMaker.apiClient.put("/permissions", {
@@ -661,4 +674,3 @@
         }
     </style>
 @endsection
-
