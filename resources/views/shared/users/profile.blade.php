@@ -173,8 +173,11 @@
       <div class="modal-body">
             <div class="form-group col">
                 {!! Form::label('valpassword', __('Password')) !!}
-                {!! Form::password('valpassword', ['id' => 'valpassword', 'rows' => 4, 'class'=> 'form-control', 'v-model'
-                        => 'formData.valpassword']) !!}
+                <div style="position: relative;">
+                    {!! Form::password('valpassword', ['id' => 'valpassword', 'rows' => 4, 'class'=> 'form-control', 'v-model'
+                            => 'formData.valpassword']) !!}
+                    <i class="fa fa-eye" id="togglePassword" style="position: absolute; top: 32%; right: 4%; cursor: pointer; color: #51585E;"></i>
+                </div>
             </div>
       </div>
       <div class="modal-footer">

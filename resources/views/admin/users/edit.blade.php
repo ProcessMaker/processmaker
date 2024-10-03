@@ -346,6 +346,14 @@
             ProcessMaker.alert(this.$t('The user was successfully created'), 'success');
           }
           this.originalEmail = this.formData.email;
+          const togglePassword = document.querySelector('#togglePassword');
+          const password = document.querySelector('#valpassword');
+
+          togglePassword.addEventListener('click', function (e) {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            this.classList.toggle('fa-eye-slash');
+          });
         },
         watch: {
           selectedPermissions: function () {
@@ -575,9 +583,10 @@
             ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
               .then(response => {
                 ProcessMaker.alert(this.$t('User Updated Successfully '), 'success');
+                this.originalEmail = this.formData.email;
+                this.emailHasChanged = false;
                 if (this.formData.id == window.ProcessMaker.user.id) {
                   window.ProcessMaker.events.$emit('update-profile-avatar');
-                  this.originalEmail = this.formData.email;
                   this.formData.valpassword = "";
                 }
               })

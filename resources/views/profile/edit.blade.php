@@ -174,6 +174,14 @@
             },
             mounted() {
               this.originalEmail = this.formData.email;
+              const togglePassword = document.querySelector('#togglePassword');
+              const password = document.querySelector('#valpassword');
+
+              togglePassword.addEventListener('click', function (e) {
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                this.classList.toggle('fa-eye-slash');
+              });
             },
             methods: {
                 openAvatarModal() {
@@ -257,6 +265,7 @@
                             ProcessMaker.alert(this.$t('Your profile was saved.'), 'success')
                             window.ProcessMaker.events.$emit('update-profile-avatar');
                             this.originalEmail = this.formData.email;
+                            this.emailHasChanged = false;
                             this.formData.valpassword = "";
                         })
                         .catch(error => {
