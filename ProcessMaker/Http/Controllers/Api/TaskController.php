@@ -164,7 +164,7 @@ class TaskController extends Controller
      * @param User $user used by Saved Search package to return accurate counts
      * @return array
      */
-    public function indexCase(Request $request, User $user = null)
+    public function getTasksByCase(Request $request, User $user = null)
     {
         if (!$user) {
             $user = Auth::user();
@@ -202,11 +202,11 @@ class TaskController extends Controller
 
         try {
             $response = $query->applyPagination($request);
-            $response->inOverdue = 0;
 
             if ($includeScreen) {
                 $response = $this->processScreenData($response);
             }
+            $response->inOverdue = 0;
         } catch (QueryException $e) {
             return $this->handleQueryException($e);
         }

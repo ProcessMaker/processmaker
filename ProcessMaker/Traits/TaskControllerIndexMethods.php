@@ -126,22 +126,12 @@ trait TaskControllerIndexMethods
 
     private function processScreenData($response)
     {
-        $collection = $response->getCollection()->transform(function ($token) {
-            $definition = $token->getDefinition();
+        $dataManager = new DataManager();
+        $response->getCollection()->transform(function ($row) use ($dataManager) {
+            $row->taskData = $dataManager->getData($row);
 
-            $token->screenData = null;
-            if (array_key_exists('screenRef', $definition)) {
-                $screen = $token->getScreenVersion();
-                if ($screen) {
-                    $dataManager = new DataManager();
-                    $token->screenData = $dataManager->getData($token, true);
-                }
-            }
-
-            return $token;
-        })->values();
-
-        $response->setCollection($collection);
+            return $row;
+        });
 
         return $response;
     }

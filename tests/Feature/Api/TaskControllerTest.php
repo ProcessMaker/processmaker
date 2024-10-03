@@ -135,7 +135,7 @@ class TaskControllerTest extends TestCase
         $response->assertStatus(200);
         $this->assertCount(1, $response->json('data'));
         $response->assertJsonStructure([
-            'data' => ['*' => self::TASK_BY_CASE_STRUCTURE],
+            'data' => ['*' => array_merge(self::TASK_BY_CASE_STRUCTURE, ['taskData'])],
             'meta',
         ]);
     }
