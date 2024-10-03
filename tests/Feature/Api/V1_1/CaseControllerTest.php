@@ -158,6 +158,7 @@ class CaseControllerTest extends TestCase
     {
         $userA = $this->createUser('user_a');
         $cases = $this->createCasesStartedForUser($userA->id, 10);
+
         $casesSorted = $cases->sortBy('case_number');
 
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['sortBy' => 'case_number:asc']));
@@ -201,46 +202,208 @@ class CaseControllerTest extends TestCase
         $response->assertJsonFragment(['message' => "Sort by field $invalidField is not allowed."]);
     }
 
-    public function test_get_all_cases_filter_by(): void
+    public function test_filter_by_case_number(): void
+    {
+        $userA = $this->createUser('user_a');
+        $caseNumber = 123456;
+        $this->createCasesStartedForUser($userA->id, 5);
+        $this->createCasesStartedForUser($userA->id, 1, ['case_number' => $caseNumber]);
+
+        $filterBy = [
+            'filterBy' => json_encode([
+                [
+                    'subject' => ['type' => 'Field', 'value' => 'case_number'],
+                    'operator' => '=',
+                    'value' => $caseNumber,
+                ],
+            ]),
+        ];
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', $filterBy));
+        $response->assertStatus(200);
+        $response->assertJsonCount(1, 'data');
+        $response->assertJsonFragment(['case_number' => $caseNumber]);
+    }
+
+    public function test_filter_by_case_status(): void
     {
         $userA = $this->createUser('user_a');
         $casesA = $this->createCasesStartedForUser($userA->id, 5);
         $caseNumber = 123456;
-        $casesB = $this->createCasesStartedForUser($userA->id, 1, ['case_number' => $caseNumber, 'case_status' => 'IN_PROGRESS']);
+        $casesB = $this->createCasesStartedForUser($userA->id, 1, [
+            'case_number' => $caseNumber,
+            'case_status' => 'IN_PROGRESS',
+        ]);
 
-        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases'));
-        $response->assertStatus(200);
-        $response->assertJsonCount(6, 'data');
+        $filterBy = [
+            'filterBy' => json_encode([
+                [
+                    'subject' => ['type' => 'Field', 'value' => 'case_status'],
+                    'operator' => '=',
+                    'value' => 'IN_PROGRESS',
+                ],
+            ]),
+        ];
 
-        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['filterBy' => ['case_number' => $caseNumber]]));
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', $filterBy));
         $response->assertStatus(200);
-        $response->assertJsonCount(1, 'data');
-        $response->assertJsonFragment(['case_number' => $caseNumber]);
 
-        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['filterBy' => ['case_status' => 'IN_PROGRESS']]));
-        $response->assertStatus(200);
-        $total = $casesA->where('case_status', 'IN_PROGRESS')->count() + $casesB->where('case_status', 'IN_PROGRESS')->count();
+        $total = $casesA->where('case_status', 'IN_PROGRESS')->count() +
+            $casesB->where('case_status', 'IN_PROGRESS')->count();
         $response->assertJsonCount($total, 'data');
         $response->assertJsonFragment(['case_status' => 'IN_PROGRESS']);
         $response->assertJsonMissing(['case_status' => 'COMPLETED']);
     }
 
+    public function test_filter_by_user_and_case_status(): void
+    {
+        $userA = $this->createUser('user_a');
+        $casesA = $this->createCasesStartedForUser($userA->id, 5);
+        $caseNumber = 123456;
+        $casesB = $this->createCasesStartedForUser($userA->id, 1, [
+            'case_number' => $caseNumber,
+            'case_status' => 'IN_PROGRESS',
+        ]);
+
+        $filterBy = [
+            'filterBy' => json_encode([
+                [
+                    'subject' => ['type' => 'Field', 'value' => 'user_id'],
+                    'operator' => '=',
+                    'value' => $userA->id,
+                ],
+                [
+                    'subject' => ['type' => 'Field', 'value' => 'case_status'],
+                    'operator' => '=',
+                    'value' => 'IN_PROGRESS',
+                ],
+            ]),
+        ];
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', $filterBy));
+        $response->assertStatus(200);
+
+        $total = $casesA->where('user_id', $userA->id)
+            ->where('case_status', 'IN_PROGRESS')->count() +
+            $casesB->where('user_id', $userA->id)
+            ->where('case_status', 'IN_PROGRESS')->count();
+        $response->assertJsonCount($total, 'data');
+        $response->assertJsonFragment(['case_status' => 'IN_PROGRESS']);
+        $response->assertJsonFragment(['user_id' => $userA->id]);
+    }
+
+    public function test_filter_by_user_case_status_and_created_at(): void
+    {
+        $userA = $this->createUser('user_a');
+        $casesA = $this->createCasesStartedForUser($userA->id, 5);
+        $caseNumber = 123456;
+        $casesB = $this->createCasesStartedForUser($userA->id, 1, [
+            'case_number' => $caseNumber,
+            'case_status' => 'IN_PROGRESS',
+        ]);
+
+        $filterBy = [
+            'filterBy' => json_encode([
+                [
+                    'subject' => ['type' => 'Field', 'value' => 'user_id'],
+                    'operator' => '=',
+                    'value' => $userA->id,
+                ],
+                [
+                    'subject' => ['type' => 'Field', 'value' => 'case_status'],
+                    'operator' => '=',
+                    'value' => 'IN_PROGRESS',
+                ],
+                [
+                    'subject' => ['type' => 'Field', 'value' => 'created_at'],
+                    'operator' => '>',
+                    'value' => '2023-02-10',
+                ],
+            ]),
+        ];
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', $filterBy));
+        $response->assertStatus(200);
+
+        $total = $casesA->where('user_id', $userA->id)
+            ->where('case_status', 'IN_PROGRESS')
+            ->where('created_at', '>', '2023-02-10')->count() +
+            $casesB->where('user_id', $userA->id)
+            ->where('case_status', 'IN_PROGRESS')
+            ->where('created_at', '>', '2023-02-10')->count();
+        $response->assertJsonCount($total, 'data');
+        $response->assertJsonFragment(['case_status' => 'IN_PROGRESS']);
+        $response->assertJsonFragment(['user_id' => $userA->id]);
+    }
+
+    public function test_filter_by_user_case_status_created_at_and_completed_at(): void
+    {
+        $userA = $this->createUser('user_a');
+        $casesA = $this->createCasesStartedForUser($userA->id, 5);
+        $caseNumber = 123456;
+        $casesB = $this->createCasesStartedForUser($userA->id, 1, [
+            'case_number' => $caseNumber,
+            'case_status' => 'IN_PROGRESS',
+        ]);
+
+        $filterBy = [
+            'filterBy' => json_encode([
+                [
+                    'subject' => ['type' => 'Field', 'value' => 'user_id'],
+                    'operator' => '=',
+                    'value' => $userA->id,
+                ],
+                [
+                    'subject' => ['type' => 'Field', 'value' => 'case_status'],
+                    'operator' => '=',
+                    'value' => 'IN_PROGRESS',
+                ],
+                [
+                    'subject' => ['type' => 'Field', 'value' => 'created_at'],
+                    'operator' => '>',
+                    'value' => '2023-02-10',
+                ],
+                [
+                    'subject' => ['type' => 'Field', 'value' => 'completed_at'],
+                    'operator' => '>',
+                    'value' => '2023-04-01',
+                ],
+            ]),
+        ];
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', $filterBy));
+        $response->assertStatus(200);
+
+        $total = $casesA->where('user_id', $userA->id)
+            ->where('case_status', 'IN_PROGRESS')
+            ->where('created_at', '>', '2023-02-10')
+            ->where('completed_at', '>', '2023-04-01')->count() +
+            $casesB->where('user_id', $userA->id)
+            ->where('case_status', 'IN_PROGRESS')
+            ->where('created_at', '>', '2023-02-10')
+            ->where('completed_at', '>', '2023-04-01')->count();
+
+        $response->assertJsonCount($total, 'data');
+        $json = $response->json();
+        $metaTotal = $json['meta']['total'];
+        $this->assertEquals($total, $metaTotal, 'The total count of cases does not match the expected value. ' . json_encode($json));
+    }
+
     public function test_get_all_cases_filter_by_invalid_field(): void
     {
         $invalidField = 'invalid_field';
-
-        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['filterBy' => '']));
+        $filterBy = ['filterBy' => '[invalid_json'];
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', $filterBy));
         $response->assertStatus(422);
-        $response->assertJsonPath('message', 'The Filter by field must be an array.');
-
+        $response->assertJsonPath('message', 'The Filter by field must be a valid JSON string.');
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['filterBy' => [$invalidField => 'value']]));
         $response->assertStatus(422);
-        $response->assertJsonPath('message', "Filter by field $invalidField is not allowed.");
+        $response->assertJsonPath('message', 'The Filter by field must be a valid JSON string.');
     }
 
     public function test_get_my_cases_counters_ok(): void
     {
-        /** 
+        /**
          * Creating missing permissions, probably this part should be removed when
          * the permissions were added in another ticket
          */
@@ -267,7 +430,7 @@ class CaseControllerTest extends TestCase
         $casesD = $this->createCasesParticipatedForUser($userA->id, 5, ['case_status' => 'IN_PROGRESS']);
 
         $casesE = $this->createCasesStartedForUser($userB->id, 5, ['case_status' => 'COMPLETED']);
-        $casesF = $this->createCasesStartedForUser($userB->id, 5, ['case_status' => 'IN_PROGRESS']);        
+        $casesF = $this->createCasesStartedForUser($userB->id, 5, ['case_status' => 'IN_PROGRESS']);
         $casesG = $this->createCasesParticipatedForUser($userB->id, 5, ['case_status' => 'COMPLETED']);
         $casesH = $this->createCasesParticipatedForUser($userB->id, 5, ['case_status' => 'IN_PROGRESS']);
 

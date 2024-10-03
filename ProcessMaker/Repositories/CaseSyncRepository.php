@@ -138,8 +138,7 @@ class CaseSyncRepository
      */
     private static function processChildRequests(
         $instance, &$cpData, &$csProcesses, &$csRequests, &$participants, &$csRequestTokens, &$csTasks
-    )
-    {
+    ) {
         foreach ($instance->childRequests as $subProcess) {
             $cpData['processes'] = CaseUtils::storeProcesses($subProcess, collect());
             $cpData['requests'] = CaseUtils::storeRequests($subProcess, collect());

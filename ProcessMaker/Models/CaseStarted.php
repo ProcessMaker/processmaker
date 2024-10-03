@@ -3,14 +3,16 @@
 namespace ProcessMaker\Models;
 
 use Database\Factories\CaseStartedFactory;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Models\ProcessMakerModel;
+use ProcessMaker\Traits\HandlesValueAliasStatus;
 
 class CaseStarted extends ProcessMakerModel
 {
     use HasFactory;
+    use HandlesValueAliasStatus;
 
     protected $table = 'cases_started';
 

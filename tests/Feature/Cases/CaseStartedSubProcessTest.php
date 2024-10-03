@@ -3,13 +3,13 @@
 namespace Tests\Feature\Cases;
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Tests\TestCase;
 use Mockery;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\Repositories\CaseRepository;
+use Tests\TestCase;
 
 class CaseStartedSubProcessTest extends TestCase
 {

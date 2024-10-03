@@ -17,6 +17,7 @@ class CaseRepository implements CaseRepositoryInterface
      * @var CaseParticipatedRepository
      */
     protected CaseParticipatedRepository $caseParticipatedRepository;
+
     /**
      * This property is used to store an instance of `CaseStarted`
      * when a case started is updated.
@@ -28,6 +29,7 @@ class CaseRepository implements CaseRepositoryInterface
     {
         $this->caseParticipatedRepository = new CaseParticipatedRepository();
     }
+
     /**
      * Store a new case started.
      *
@@ -38,6 +40,7 @@ class CaseRepository implements CaseRepositoryInterface
     {
         if (is_null($instance->case_number)) {
             Log::error('case number is required, method=create, instance=' . $instance->getKey());
+
             return;
         }
 
@@ -79,6 +82,7 @@ class CaseRepository implements CaseRepositoryInterface
     {
         if (!$this->checkIfCaseStartedExist($instance->case_number)) {
             Log::error('case started not found, method=update, instance=' . $instance->getKey());
+
             return;
         }
 

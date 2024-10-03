@@ -3,13 +3,13 @@
 namespace Tests\Feature\Cases;
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Tests\TestCase;
 use Mockery;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\Repositories\CaseRepository;
+use Tests\TestCase;
 
 class CaseStartedTest extends TestCase
 {
@@ -125,7 +125,6 @@ class CaseStartedTest extends TestCase
             'process_id' => $process->id,
         ]);
 
-
         $repo = new CaseRepository();
         $repo->create($instance);
 
@@ -163,7 +162,6 @@ class CaseStartedTest extends TestCase
             'user_id' => $user->id,
             'process_id' => $process->id,
         ]);
-
 
         $repo = new CaseRepository();
         $repo->create($instance);
@@ -225,7 +223,6 @@ class CaseStartedTest extends TestCase
             'process_id' => $process->id,
         ]);
 
-
         $repo = new CaseRepository();
         $repo->create($instance);
 
@@ -285,7 +282,6 @@ class CaseStartedTest extends TestCase
             'process_id' => $process->id,
         ]);
 
-
         $repo = new CaseRepository();
         $repo->create($instance);
 
@@ -342,7 +338,6 @@ class CaseStartedTest extends TestCase
             'user_id' => $user->id,
             'process_id' => $process->id,
         ]);
-
 
         $repo = new CaseRepository();
         $repo->create($instance);
