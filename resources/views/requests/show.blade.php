@@ -488,8 +488,6 @@
     window.PM4ConfigOverrides = {
       requestFiles: @json($request->requestFiles())
     };
-
-    const requestJonas =  @json($request->getRequestAsArray())
   </script>
 
   <script src="{{ mix('js/requests/show.js') }}"></script>
