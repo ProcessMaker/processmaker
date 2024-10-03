@@ -377,12 +377,8 @@ class UsersTest extends TestCase
         // Load the starting user data
         $verify = $this->apiCall('GET', $url);
 
-        // Send the same email to avoid the email validation
-        $updateData = $this->getUpdatedData();
-        $updateData['email'] = $verify['email'];
-
         // Post saved success
-        $response = $this->apiCall('PUT', $url, $updateData);
+        $response = $this->apiCall('PUT', $url, $this->getUpdatedData());
 
         // Validate the header status code
         $response->assertStatus(204);
@@ -401,14 +397,12 @@ class UsersTest extends TestCase
     {
         $faker = Faker::create();
 
-        $user = User::factory()->create();
-
-        $url = self::API_TEST_URL . '/' . $user->id;
+        $url = self::API_TEST_URL . '/' . User::factory()->create()->id;
 
         // Post saved success
         $response = $this->apiCall('PUT', $url, [
             'username' => 'updatemytestusername',
-            'email' => $user->email,
+            'email' => $faker->email(),
             'firstname' => $faker->firstName(),
             'lastname' => $faker->lastName(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
@@ -729,11 +723,8 @@ class UsersTest extends TestCase
         // Load the starting user data
         $verify = $this->apiCall('GET', $url);
 
-        $updateData = $this->getUpdatedData();
-        $updateData['email'] = $verify['email'];
-
         // Post saved success
-        $response = $this->apiCall('PUT', $url, $updateData);
+        $response = $this->apiCall('PUT', $url, $this->getUpdatedData());
 
         // Validate the header status code
         $response->assertStatus(204);
@@ -763,10 +754,7 @@ class UsersTest extends TestCase
         // Load the starting user data
         $verify = $this->apiCall('GET', $url);
 
-        $updateData = $this->getUpdatedData();
-        $updateData['email'] = $verify['email'];
-
-        $response = $this->apiCall('PUT', $url, $updateData);
+        $response = $this->apiCall('PUT', $url, $this->getUpdatedData());
 
         // Validate the header status code
         $response->assertStatus(403);
@@ -777,11 +765,8 @@ class UsersTest extends TestCase
         $this->user->refresh();
         $this->flushSession();
 
-        $updateData = $this->getUpdatedData();
-        $updateData['email'] = $verify['email'];
-
         // Post saved success
-        $response = $this->apiCall('PUT', $url, $updateData);
+        $response = $this->apiCall('PUT', $url, $this->getUpdatedData());
 
         // Validate the header status code
         $response->assertStatus(204);
@@ -802,12 +787,8 @@ class UsersTest extends TestCase
         $this->assertEquals(1, RecommendationUser::where('user_id', $this->user->id)->count());
 
         $url = self::API_TEST_URL . '/' . $this->user->id;
-
-        $updateData = $this->getUpdatedData();
-        $updateData['email'] = $this->user->email;
-
         $data = [
-            ...$updateData,
+            ...$this->getUpdatedData(),
             'meta' => [
                 'disableRecommendations' => true,
             ],
