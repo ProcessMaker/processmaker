@@ -329,27 +329,6 @@ class UserController extends Controller
                 return $response;
             }
         }
-        if ($fields['email'] !== $original['email']) {
-            if (!isset($fields['valpassword'])) {
-                return response([
-                    'message' => __(
-                        'A valid authentication is required for for update the email.'
-                    ),
-                    'errors' => [
-                        'email' => [
-                            __(
-                                'The password is required.'
-                            ),
-                        ],
-                    ],
-                ], 422);
-            } else {
-                $response = $this->validateBeforeChange($user, $fields['valpassword']);
-                if ($response) {
-                    return $response;
-                }
-            }
-        }
         if (Auth::user()->is_administrator && $request->has('is_administrator')) {
             // user must be an admin to make another user an admin
             $user->is_administrator = $request->get('is_administrator');
@@ -393,32 +372,6 @@ class UserController extends Controller
                     'cell' => [
                         __(
                             'A valid Cell phone number is required for SMS two-factor authentication.'
-                        ),
-                    ],
-                ],
-            ], 422);
-        }
-
-        return false;
-    }
-
-    /**
-     * Validate the phone number for SMS two-factor authentication.
-     *
-     * @param User $user User to validate
-     * @param mixed $password String to validate
-     */
-    private function validateBeforeChange(User $user, $password)
-    {
-        if (!Hash::check($password, $user->password)) {
-            return response([
-                'message' => __(
-                    'A valid authentication is required for for update the email.'
-                ),
-                'errors' => [
-                    'email' => [
-                        __(
-                            'The authentication is incorrect.'
                         ),
                     ],
                 ],
