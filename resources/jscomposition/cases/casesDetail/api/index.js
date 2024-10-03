@@ -55,4 +55,4 @@ const getScreenData = (id) => {
   return response;
 };
 
-export { getData, getDataTask, getScreenData };
+export { getData, getScreenData };
