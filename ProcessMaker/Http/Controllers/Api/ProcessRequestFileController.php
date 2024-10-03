@@ -431,7 +431,7 @@ class ProcessRequestFileController extends Controller
     {
         $text = $file->get();
 
-        $jsKeywords = ['/JavaScript', '/JS', '<< /S /JavaScript'];
+        $jsKeywords = ['/JavaScript', '<< /S /JavaScript'];
 
         foreach ($jsKeywords as $keyword) {
             if (strpos($text, $keyword) !== false) {
