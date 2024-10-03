@@ -31,6 +31,10 @@ export const statuses = {
     color: "green",
     label: "In progress",
   },
+  ACTIVE: {
+    color: "green",
+    label: "In progress",
+  },
 };
 
 export default defineComponent({

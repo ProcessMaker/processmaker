@@ -1,25 +1,42 @@
 import { api } from "../variables";
 
-export const getData = async () => {
+const getData = async () => {
   const objectsList = [];
 
   for (let i = 0; i <= 31; i += 1) {
     const obj = {
       id: `${i}`,
       case_number: 100,
-      case_title: `Case Title ${i}`,
-      process_name: `Process ${i}`,
-      assigned: `Avatar ${i}`,
+      element_name: `Case Title ${i}`,
+      process: {
+        name: `Process ${i}`,
+      },
+      user: {
+        fullname: `Avatar ${i}`,
+      },
       current_task: `Task ${i}`,
-      status: `badge ${i}`,
+      status: "IN_PROGRESS",
       started: `21/21/${i}`,
-      due_date: `21/21/${i}`,
+      due_at: `21/21/${i}`,
+      completed_date: `21/21/${i}`,
+      screen_id: 4,
     };
 
     objectsList.push(obj);
   }
 
   return objectsList;
+};
+
+export const getDataRequests = async ({ params, pagination }) => {
+  const response = await api.get("requests-by-case", {
+    params: {
+      ...params,
+      ...pagination,
+    },
+  });
+
+  return response.data.data;
 };
 
 export const getDataTask = async ({ params, pagination }) => {
@@ -32,3 +49,10 @@ export const getDataTask = async ({ params, pagination }) => {
 
   return response.data.data;
 };
+const getScreenData = (id) => {
+  const response = ProcessMaker.apiClient.get(`screens/${id}`);
+
+  return response;
+};
+
+export { getData, getScreenData };

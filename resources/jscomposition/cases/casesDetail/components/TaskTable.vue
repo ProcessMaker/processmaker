@@ -5,14 +5,16 @@
       :columns="columnsConfig"
       :data="data"
       class="tw-grow tw-overflow-y-scroll tw-overflow-hidden"
-      @changeFilter="onChangeFilter" />
+      @changeFilter="onChangeFilter"
+    />
 
     <Pagination
       :total="dataPagination.total"
       :page="dataPagination.page"
       :pages="dataPagination.pages"
       @perPage="onPerPage"
-      @go="onGo" />
+      @go="onGo"
+    />
   </div>
 </template>
 
@@ -27,7 +29,7 @@ const data = ref(null);
 const columnsConfig = ref(null);
 const dataPagination = ref({
   total: 153,
-  page: 1,
+  page: 0,
   pages: 10,
   perPage: 15,
 });

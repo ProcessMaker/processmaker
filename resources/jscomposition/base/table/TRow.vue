@@ -1,15 +1,25 @@
 <template>
-  <tr class="tw-border-b">
-    <slot></slot>
+  <tr
+    class="tw-border-b tw-relative"
+    @mouseover="menu = true"
+    @mouseleave="menu = false"
+  >
+    <slot :name="`cell`" />
+    <template v-if="menu">
+      <slot :name="`menu`" />
+    </template>
   </tr>
 </template>
 
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 
 export default defineComponent({
   setup() {
-    return {};
+    const menu = ref(false);
+    return {
+      menu,
+    };
   },
 });
 </script>

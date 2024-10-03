@@ -48,7 +48,7 @@ export default defineComponent({
 
     const dataPagination = ref({
       total: 153,
-      page: 1,
+      page: 0,
       pages: 10,
       perPage: 15,
     });
