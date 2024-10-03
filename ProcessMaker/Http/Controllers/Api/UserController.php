@@ -432,7 +432,6 @@ class UserController extends Controller
                     ],
                 ], 422);
             } else {
-                //dd(Auth::user());
                 $response = $this->validateBeforeChange(Auth::user(), $fields['valpassword']);
                 if ($response) {
                     return $response;
@@ -482,6 +481,32 @@ class UserController extends Controller
                     'cell' => [
                         __(
                             'A valid Cell phone number is required for SMS two-factor authentication.'
+                        ),
+                    ],
+                ],
+            ], 422);
+        }
+
+        return false;
+    }
+
+    /**
+     * Validate the phone number for SMS two-factor authentication.
+     *
+     * @param User $user User to validate
+     * @param mixed $password String to validate
+     */
+    private function validateBeforeChange(User $user, $password)
+    {
+        if (!Hash::check($password, $user->password)) {
+            return response([
+                'message' => __(
+                    'A valid authentication is required for for update the email.'
+                ),
+                'errors' => [
+                    'email' => [
+                        __(
+                            'The authentication is incorrect.'
                         ),
                     ],
                 ],

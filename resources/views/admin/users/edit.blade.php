@@ -256,6 +256,7 @@
             image: '',
             status: @json($status),
             global2FAEnabled: @json($global2FAEnabled),
+            ssoUser:@json($ssoUser),
             errors: {
               username: null,
               firstname: null,
@@ -281,6 +282,8 @@
             groups: [],
             userGroupsFilter: '',
             focusErrors: 'errors',
+            originalEmail: '',
+            emailHasChanged: false,
           }
         },
         created() {
@@ -338,6 +341,15 @@
           if (created) {
             ProcessMaker.alert(this.$t('The user was successfully created'), 'success');
           }
+          this.originalEmail = this.formData.email;
+          const togglePassword = document.querySelector('#togglePassword');
+          const password = document.querySelector('#valpassword');
+
+          togglePassword.addEventListener('click', function (e) {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            this.classList.toggle('fa-eye-slash');
+          });
         },
         watch: {
           selectedPermissions: function () {
@@ -464,28 +476,12 @@
             return true
           },
           profileUpdate($event) {
-            this.resetErrors();
-            if (@json($enabled2FA) &&  this.global2FAEnabled.length === 0) {
-              // User has not enabled two-factor authentication correctly
-              ProcessMaker.alert(
-                this.$t('The Two Step Authentication Method has not been set. Please contact your administrator.'),
-                'warning'
-              );
-              return false;
+            if(this.emailHasChanged && !this.ssoUser) {
+              $('#validateModal').modal('show');
+            } else {
+              this.saveProfileChanges();
             }
-            if (!this.validatePassword()) return false;
-            if (@json($enabled2FA) && typeof this.formData.preferences_2fa != "undefined" &&
-              this.formData.preferences_2fa != null && this.formData.preferences_2fa.length < 1) return false;
-            ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
-              .then(response => {
-                ProcessMaker.alert(this.$t('User Updated Successfully '), 'success');
-                if (this.formData.id == window.ProcessMaker.user.id) {
-                  window.ProcessMaker.events.$emit('update-profile-avatar');
-                }
-              })
-              .catch(error => {
-                this.errors = error.response.data.errors;
-              });
+
           },
           permissionUpdate() {
             ProcessMaker.apiClient.put("/permissions", {
@@ -560,7 +556,45 @@
               .then(response => {
                 this.groups = response.data.data
               });
-          }
+          },
+          showModal() {
+            $('#validateModal').modal('show');
+          },
+          closeModal() {
+            $('#validateModal').modal('hide');
+          },
+          saveProfileChanges() {
+            this.resetErrors();
+            if (@json($enabled2FA) &&  this.global2FAEnabled.length === 0) {
+              // User has not enabled two-factor authentication correctly
+              ProcessMaker.alert(
+                this.$t('The Two Step Authentication Method has not been set. Please contact your administrator.'),
+                'warning'
+              );
+              return false;
+            }
+            if (!this.validatePassword()) return false;
+            if (@json($enabled2FA) && typeof this.formData.preferences_2fa != "undefined" &&
+              this.formData.preferences_2fa != null && this.formData.preferences_2fa.length < 1) return false;
+            ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
+              .then(response => {
+                ProcessMaker.alert(this.$t('User Updated Successfully '), 'success');
+                this.originalEmail = this.formData.email;
+                this.emailHasChanged = false;
+                if (this.formData.id == window.ProcessMaker.user.id) {
+                  window.ProcessMaker.events.$emit('update-profile-avatar');
+                  this.formData.valpassword = "";
+                }
+              })
+              .catch(error => {
+                this.errors = error.response.data.errors;
+              });
+
+            this.closeModal();
+          },
+          checkEmailChange() {
+            this.emailHasChanged = this.formData.email !== this.originalEmail;
+          },
         }
       });
     </script>
@@ -623,3 +657,4 @@
         }
     </style>
 @endsection
+

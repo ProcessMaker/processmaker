@@ -135,6 +135,7 @@
                 states: @json($states),
                 status: @json($status),
                 global2FAEnabled: @json($global2FAEnabled),
+                ssoUser:@json($ssoUser),
                 errors: {
                     username: null,
                     firstname: null,
@@ -145,6 +146,8 @@
                 },
 				        confPassword: '',
                 image: '',
+                originalEmail: '',
+                emailHasChanged: false,
                 options: [
                     {
                         src: @json($currentUser['avatar']),
@@ -168,37 +171,27 @@
                 });
               }
             },
+            mounted() {
+              this.originalEmail = this.formData.email;
+              const togglePassword = document.querySelector('#togglePassword');
+              const password = document.querySelector('#valpassword');
+
+              togglePassword.addEventListener('click', function (e) {
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                this.classList.toggle('fa-eye-slash');
+              });
+            },
             methods: {
                 openAvatarModal() {
                   modalVueInstance.$refs.updateAvatarModal.show();
                 },
                 profileUpdate() {
-                    this.resetErrors();
-                    if (@json($enabled2FA) &&  this.global2FAEnabled.length === 0) {
-                      let message = 'The Two Step Authentication Method has not been set. ' +
-                      'Please contact your administrator.';
-                      // User has not enabled two-factor authentication correctly
-                      ProcessMaker.alert(this.$t($message), 'warning');
-                      return false;
-                    }
-                    if (!this.validatePassword()) return false;
-                    if (@json($enabled2FA) && typeof this.formData.preferences_2fa != "undefined" &&
-                        this.formData.preferences_2fa != null && this.formData.preferences_2fa.length < 1)
-                          return false;
-                    if (this.image) {
-                        this.formData.avatar = this.image;
-                    }
-                    if (this.image === false) {
-                        this.formData.avatar = false;
-                    }
-                    ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
-                        .then((response) => {
-                            ProcessMaker.alert(this.$t('Your profile was saved.'), 'success')
-                            window.ProcessMaker.events.$emit('update-profile-avatar');
-                        })
-                        .catch(error => {
-                            this.errors = error.response.data.errors;
-                        });
+                  if(this.emailHasChanged && !this.ssoUser) {
+                    $('#validateModal').modal('show');
+                  } else {
+                    this.saveProfileChanges();
+                  }
                 },
                 deleteAvatar() {
                     let optionValues = formVueInstance.$data.options[0];
@@ -240,6 +233,48 @@
                 },
                 onClose() {
                   window.location.href = '/admin/users';
+                },
+                showModal() {
+                  $('#validateModal').modal('show');
+                },
+                closeModal() {
+                  $('#validateModal').modal('hide');
+                },
+                saveProfileChanges() {
+                  this.resetErrors();
+                    if (@json($enabled2FA) &&  this.global2FAEnabled.length === 0) {
+                      let message = 'The Two Step Authentication Method has not been set. ' +
+                      'Please contact your administrator.';
+                      // User has not enabled two-factor authentication correctly
+                      ProcessMaker.alert(this.$t($message), 'warning');
+                      return false;
+                    }
+                    if (!this.validatePassword()) return false;
+                    if (@json($enabled2FA) && typeof this.formData.preferences_2fa != "undefined" &&
+                        this.formData.preferences_2fa != null && this.formData.preferences_2fa.length < 1)
+                          return false;
+                    if (this.image) {
+                        this.formData.avatar = this.image;
+                    }
+                    if (this.image === false) {
+                        this.formData.avatar = false;
+                    }
+                    ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
+                        .then((response) => {
+                            ProcessMaker.alert(this.$t('Your profile was saved.'), 'success')
+                            window.ProcessMaker.events.$emit('update-profile-avatar');
+                            this.originalEmail = this.formData.email;
+                            this.emailHasChanged = false;
+                            this.formData.valpassword = "";
+                        })
+                        .catch(error => {
+                            this.errors = error.response.data.errors;
+                        });
+
+                  this.closeModal();
+                },
+                checkEmailChange() {
+                  this.emailHasChanged = this.formData.email !== this.originalEmail;
                 },
             },
             computed: {
@@ -378,7 +413,7 @@
 
             //TODO: HANDLE CONNECTION UPDATE
             this.onCloseModal;
-          }
+          },
         }
       });
     </script>
