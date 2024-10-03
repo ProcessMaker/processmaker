@@ -417,6 +417,28 @@ class UserController extends Controller
                 return $response;
             }
         }
+        if ($fields['email'] !== $original['email']) {
+            if (!isset($fields['valpassword'])) {
+                return response([
+                    'message' => __(
+                        'A valid authentication is required for for update the email.'
+                    ),
+                    'errors' => [
+                        'email' => [
+                            __(
+                                'The password is required.'
+                            ),
+                        ],
+                    ],
+                ], 422);
+            } else {
+                //dd(Auth::user());
+                $response = $this->validateBeforeChange(Auth::user(), $fields['valpassword']);
+                if ($response) {
+                    return $response;
+                }
+            }
+        }
         if (Auth::user()->is_administrator && $request->has('is_administrator')) {
             // user must be an admin to make another user an admin
             $user->is_administrator = $request->get('is_administrator');
