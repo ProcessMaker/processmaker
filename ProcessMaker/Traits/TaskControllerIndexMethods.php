@@ -129,14 +129,12 @@ trait TaskControllerIndexMethods
         $collection = $response->getCollection()->transform(function ($token) {
             $definition = $token->getDefinition();
 
+            $token->screenData = null;
             if (array_key_exists('screenRef', $definition)) {
                 $screen = $token->getScreenVersion();
                 if ($screen) {
                     $dataManager = new DataManager();
-                    $screen->data = $dataManager->getData($token, true);
-                    $screen->screen_id = $screen->id;
-
-                    return $screen;
+                    $token->screenData = $dataManager->getData($token, true);
                 }
             }
 

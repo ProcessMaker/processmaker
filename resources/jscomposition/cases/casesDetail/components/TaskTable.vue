@@ -29,7 +29,7 @@ const data = ref(null);
 const columnsConfig = ref(null);
 const dataPagination = ref({
   total: 153,
-  page: 0,
+  page: 1,
   pages: 10,
   perPage: 15,
 });
