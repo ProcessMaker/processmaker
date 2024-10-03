@@ -62,6 +62,10 @@ class CaseController extends Controller
      */
     public function getInProgress(CaseListRequest $request): JSonResponse
     {
+        // The status parameter should never be considered as a filter for this list.
+        $request->merge(['status' => null]);
+
+        // Get query
         $query = $this->caseRepository->getInProgressCases($request);
         return $this->paginateResponse($query);
     }
@@ -82,6 +86,10 @@ class CaseController extends Controller
      */
     public function getCompleted(CaseListRequest $request): JSonResponse
     {
+        // The status parameter should never be considered as a filter for this list.
+        $request->merge(['status' => null]);
+
+        // Get query
         $query = $this->caseRepository->getCompletedCases($request);
         return $this->paginateResponse($query);
     }
