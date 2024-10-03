@@ -344,7 +344,8 @@ class UserController extends Controller
                     ],
                 ], 422);
             } else {
-                $response = $this->validateBeforeChange($user, $fields['valpassword']);
+                //dd(Auth::user());
+                $response = $this->validateBeforeChange(Auth::user(), $fields['valpassword']);
                 if ($response) {
                     return $response;
                 }
