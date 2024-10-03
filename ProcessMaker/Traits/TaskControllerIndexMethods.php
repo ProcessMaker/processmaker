@@ -124,7 +124,7 @@ trait TaskControllerIndexMethods
         $query->where(is_string($key) ? $key : $column, $operator, $fieldFilter);
     }
 
-    private function processScreenData($response)
+    private function addTaskData($response)
     {
         $dataManager = new DataManager();
         $response->getCollection()->transform(function ($row) use ($dataManager) {

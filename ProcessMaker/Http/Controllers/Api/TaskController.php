@@ -204,7 +204,7 @@ class TaskController extends Controller
             $response = $query->applyPagination($request);
 
             if ($includeScreen) {
-                $response = $this->processScreenData($response);
+                $response = $this->addTaskData($response);
             }
             $response->inOverdue = 0;
         } catch (QueryException $e) {
