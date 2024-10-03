@@ -165,8 +165,12 @@ class TaskController extends Controller
 
     public function quickFillEdit(ProcessRequestToken $task)
     {
+        $screenVersion = $task->getScreenVersion();
+        $screenFields = $screenVersion ? $screenVersion->screenFilteredFields() : [];
+
         return view('tasks.editQuickFill', [
             'task' => $task,
+            'screenFields' => $screenFields,
         ]);
     }
 }
