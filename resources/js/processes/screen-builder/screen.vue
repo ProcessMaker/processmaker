@@ -10,6 +10,7 @@
         ref="menuScreen"
         :options="optionsMenu"
         :environment="self"
+        :toolbar-disabled="$refs.builder?.isCurrentPageClipboard"
       />
 
       <!-- Card Body -->
