@@ -10,7 +10,6 @@
         ref="menuScreen"
         :options="optionsMenu"
         :environment="self"
-        @translate="translateScreen"
       />
 
       <!-- Card Body -->
@@ -716,6 +715,9 @@ export default {
     this.setEllipsisMenu();
     ProcessMaker.EventBus.$on("show-create-template-modal", () => {
       this.$refs["create-template-modal"].show();
+    });
+    ProcessMaker.EventBus.$on("translate-screen-builder", (language) => {
+      this.translateScreen(language.code);
     });
   },
   methods: {
