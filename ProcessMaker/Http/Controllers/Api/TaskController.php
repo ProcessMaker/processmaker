@@ -164,7 +164,7 @@ class TaskController extends Controller
      * @param User $user used by Saved Search package to return accurate counts
      * @return array
      */
-    public function indexCase(Request $request, User $user = null)
+    public function getTasksByCase(Request $request, User $user = null)
     {
         if (!$user) {
             $user = Auth::user();
@@ -178,7 +178,10 @@ class TaskController extends Controller
             'order_direction' => 'nullable|string|in:asc,desc',
             'page' => 'nullable|integer|min:1',
             'per_page' => 'nullable|integer',
+            'includeScreen' => 'sometimes|boolean',
         ]);
+
+        $includeScreen = $request->input('includeScreen', false);
 
         // Get only the columns defined
         $query = ProcessRequestToken::select($this->defaultCase);
@@ -199,6 +202,10 @@ class TaskController extends Controller
 
         try {
             $response = $query->applyPagination($request);
+
+            if ($includeScreen) {
+                $response = $this->addTaskData($response);
+            }
             $response->inOverdue = 0;
         } catch (QueryException $e) {
             return $this->handleQueryException($e);
