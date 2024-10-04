@@ -721,7 +721,11 @@ export default {
   methods: {
     ...mapMutations("globalErrorsModule", { setStoreMode: "setMode" }),
     translateScreen(language) {
-      ProcessMaker.apiClient.get(`screens/${this.screen.id}/translate/${language}`)
+      const postData = {
+        inputData: this.previewData,
+        screenConfig: this.screen.config,
+      };
+      ProcessMaker.apiClient.post(`screens/${this.screen.id}/translate/${language}`, postData)
         .then((response) => {
           this.preview.config = response.data;
         });
