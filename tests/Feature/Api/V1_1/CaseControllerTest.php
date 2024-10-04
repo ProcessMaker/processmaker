@@ -55,6 +55,10 @@ class CaseControllerTest extends TestCase
         $response->assertJsonCount($cases->count(), 'data');
         $response->assertJsonFragment(['case_status' => 'IN_PROGRESS']);
         $response->assertJsonMissing(['case_status' => 'COMPLETED']);
+
+        // The status parameter should be ignored
+        $response = $this->apiCall('GET', route('api.1.1.cases.in_progress'), ['status' => 'COMPLETED']);
+        $response->assertJsonCount($cases->count(), 'data');
     }
 
     public function test_get_completed(): void
@@ -67,6 +71,10 @@ class CaseControllerTest extends TestCase
         $response->assertJsonCount($cases->count(), 'data');
         $response->assertJsonFragment(['case_status' => 'COMPLETED']);
         $response->assertJsonMissing(['case_status' => 'IN_PROGRESS']);
+
+        // The status parameter should be ignored
+        $response = $this->apiCall('GET', route('api.1.1.cases.completed'), ['status' => 'IN_PROGRESS']);
+        $response->assertJsonCount($cases->count(), 'data');
     }
 
     public function test_get_all_cases_by_users(): void
