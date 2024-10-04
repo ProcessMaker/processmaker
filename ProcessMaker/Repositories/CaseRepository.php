@@ -146,17 +146,10 @@ class CaseRepository implements CaseRepositoryInterface
             return;
         }
 
-        $participantExists = $this->case->participants->contains(function ($participant) use ($user) {
-            return $participant['id'] === $user->id;
-        });
+        $participantExists = $this->case->participants->contains($user->id);
 
         if (!$participantExists) {
-            $this->case->participants->push([
-                'id' => $user->id,
-                'name' => $user->getFullName(),
-                'title' => $user->title,
-                'avatar' => $user->avatar,
-            ]);
+            $this->case->participants->push($user->id);
 
             $this->caseParticipatedRepository->create($this->case, $token);
         }

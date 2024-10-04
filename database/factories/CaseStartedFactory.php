@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use ProcessMaker\Models\CaseStarted;
+use ProcessMaker\Models\User;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\ProcessMaker\Models\CaseStarted>
@@ -19,9 +20,11 @@ class CaseStartedFactory extends Factory
      */
     public function definition(): array
     {
+        $users = User::get();
+
         return [
             'case_number' => fake()->unique()->randomNumber(),
-            'user_id' => fake()->randomElement([1, 3]),
+            'user_id' => $users->random()->id,
             'case_title' => fake()->words(3, true),
             'case_title_formatted' => fake()->words(3, true),
             'case_status' => fake()->randomElement(['IN_PROGRESS', 'COMPLETED']),
@@ -43,7 +46,11 @@ class CaseStartedFactory extends Factory
                     'parent_request' => fake()->randomNumber(),
                 ],
             ],
-            'request_tokens' => fake()->randomElement([fake()->randomNumber(), fake()->randomNumber(), fake()->randomNumber()]),
+            'request_tokens' => array_map(fn() => fake()->randomElement([
+                fake()->randomNumber(),
+                fake()->randomNumber(),
+                fake()->randomNumber(),
+            ]), range(1, 3)),
             'tasks' => [
                 [
                     'id' => fake()->numerify('node_####'),
@@ -58,20 +65,7 @@ class CaseStartedFactory extends Factory
                     'name' => fake()->words(2, true),
                 ],
             ],
-            'participants' => [
-                [
-                    'id' => fake()->randomNumber(),
-                    'name' => fake()->name(),
-                ],
-                [
-                    'id' => fake()->randomNumber(),
-                    'name' => fake()->name(),
-                ],
-                [
-                    'id' => fake()->randomNumber(),
-                    'name' => fake()->name(),
-                ],
-            ],
+            'participants' => array_map(fn() => fake()->randomElement($users->pluck('id')->toArray()), range(1, 3)),
             'initiated_at' => fake()->dateTime(),
             'completed_at' => fake()->dateTime(),
             'keywords' => '',

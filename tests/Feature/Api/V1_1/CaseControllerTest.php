@@ -448,4 +448,67 @@ class CaseControllerTest extends TestCase
         $response->assertJsonFragment(['totalCompleted' => 5]);
         $response->assertJsonFragment(['totalMyRequest' => 5]);
     }
+
+    public function test_get_all_cases_participants(): void
+    {
+        $userA = $this->createUser('user_a');
+        $userB = $this->createUser('user_b');
+
+        $casesA = $this->createCasesStartedForUser($userA->id, 1, ['case_status' => 'IN_PROGRESS', 'participants' => [$userA->id, $userB->id]]);
+        $casesB = $this->createCasesStartedForUser($userB->id, 1, ['case_status' => 'COMPLETED', 'participants' => [$userA->id]]);
+        $casesC = $this->createCasesStartedForUser($userA->id, 1, ['case_status' => 'IN_PROGRESS', 'participants' => [$userB->id]]);
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases'));
+
+        $total = $casesA->count() + $casesB->count() + $casesC->count();
+        $response->assertStatus(200);
+        $response->assertJsonCount($total, 'data');
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    'participants' => [
+                        '*' => [
+                            'id',
+                            'name',
+                            'title',
+                            'avatar',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        $response->assertJsonFragment(['participants' => [
+            [
+                'id' => $userA->id,
+                'name' => $userA->fullname,
+                'title' => $userA->title,
+                'avatar' => $userA->avatar,
+            ],
+            [
+                'id' => $userB->id,
+                'name' => $userB->fullname,
+                'title' => $userB->title,
+                'avatar' => $userB->avatar,
+            ],
+        ]]);
+
+        $response->assertJsonPath('data.1.participants', [
+            [
+                'id' => $userA->id,
+                'name' => $userA->fullname,
+                'title' => $userA->title,
+                'avatar' => $userA->avatar,
+            ],
+        ]);
+
+        $response->assertJsonPath('data.2.participants', [
+            [
+                'id' => $userB->id,
+                'name' => $userB->fullname,
+                'title' => $userB->title,
+                'avatar' => $userB->avatar,
+            ],
+        ]);
+    }
 }
