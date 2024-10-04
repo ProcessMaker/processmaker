@@ -5,14 +5,36 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\DevLink;
+use ProcessMaker\Models\Setting;
 
 class DevLinkController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return DevLink::all();
+        $query = DevLink::query();
+        $filter = $request->input('filter', '');
+        if (!empty($filter)) {
+            $filter = '%' . $filter . '%';
+            $query->where(function ($query) use ($filter) {
+                $query->where('id', 'like', $filter)
+                    ->orWhere('name', 'like', $filter)
+                    ->orWhere('url', 'like', $filter);
+            });
+        }
+        $order_by = 'id';
+        $order_direction = 'ASC';
+
+        $response =
+            $query->orderBy(
+                $request->input('order_by', $order_by),
+                $request->input('order_direction', $order_direction)
+            )
+            ->paginate($request->input('per_page', 15));
+
+        return new ApiCollection($response);
     }
 
     public function show(DevLink $devLink)
@@ -63,11 +85,32 @@ class DevLinkController extends Controller
 
     public function localBundles(Request $request)
     {
+        $bundlesQuery = Bundle::with('devLink');
+
         if ($request->has('published')) {
-            return Bundle::published()->get();
+            $bundlesQuery->published();
         }
 
-        return Bundle::get();
+        $filter = $request->input('filter', '');
+        if (!empty($filter)) {
+            $filter = '%' . $filter . '%';
+            $bundlesQuery->where(function ($bundlesQuery) use ($filter) {
+                $bundlesQuery->where('id', 'like', $filter)
+                    ->orWhere('name', 'like', $filter)
+                    ->orWhere('version', 'like', $filter);
+            });
+        }
+        $order_by = 'id';
+        $order_direction = 'ASC';
+
+        $response =
+            $bundlesQuery->orderBy(
+                $request->input('order_by', $order_by),
+                $request->input('order_direction', $order_direction)
+            )
+            ->paginate($request->input('per_page', 15));
+
+        return new ApiCollection($response);
     }
 
     public function showBundle(Bundle $bundle)
@@ -75,9 +118,9 @@ class DevLinkController extends Controller
         return $bundle->load('assets');
     }
 
-    public function remoteBundles(DevLink $devLink)
+    public function remoteBundles(Request $request, DevLink $devLink)
     {
-        return $devLink->remoteBundles();
+        return $devLink->remoteBundles($request);
     }
 
     public function createBundle(Request $request)
@@ -142,6 +185,44 @@ class DevLinkController extends Controller
 
         $asset = $request->input('type')::findOrFail($request->input('id'));
         $bundle->addAsset($asset);
+    }
+
+    public function sharedAssets(Request $request)
+    {
+        return Setting::Where('group', 'Devlink')->get();
+    }
+
+    public function remoteAssets(Request $request, DevLink $devLink)
+    {
+        return $devLink->remoteAssets($request);
+    }
+
+    public function remoteAssetsListing(Request $request, DevLink $devLink)
+    {
+        return $devLink->remoteAssetsListing($request);
+    }
+
+    public function addSharedAsset(Request $request)
+    {
+        $sharedAsset = new Setting();
+        $sharedAsset->key = $request->input('key');
+        $sharedAsset->config = $request->input('config');
+        $sharedAsset->name = $request->input('name');
+        $sharedAsset->hidden = 0;
+        $sharedAsset->group = 'Devlink';
+        $sharedAsset->format = 'text';
+        $sharedAsset->saveOrFail();
+    }
+
+    public function removeSharedAsset($id)
+    {
+        $deleted = Setting::destroy($id);
+
+        if ($deleted) {
+            return response()->json(['message' => 'Asset deleted.'], 200);
+        } else {
+            return response()->json(['message' => 'Asset not found.'], 404);
+        }
     }
 
     public function installRemoteAsset(Request $request, DevLink $devLink)

@@ -60,10 +60,31 @@ class DevLink extends ProcessMakerModel
         return $uuid;
     }
 
-    public function remoteBundles()
+    public function remoteBundles($request)
     {
         return $this->client()->get(
-            route('api.devlink.local-bundles', ['published' => true], false)
+            route('api.devlink.local-bundles',
+                ['published' => true,
+                    'filter' => $request->input('filter')],
+                false)
+        );
+    }
+
+    public function remoteAssets($request)
+    {
+        return $this->client()->get(
+            route('api.devlink.shared-assets',
+                [],
+                false)
+        );
+    }
+
+    public function remoteAssetsListing($request)
+    {
+        return $this->client()->get(
+            route($request->input('url'),
+                ['filter' => $request->input('filter')],
+                false)
         );
     }
 

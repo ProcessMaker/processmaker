@@ -1,5 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import debounce from 'lodash/debounce';
+import Origin from './Origin.vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 
 const router = useRouter();
@@ -7,6 +9,7 @@ const route = useRoute();
 const bundles = ref([]);
 const editModal = ref(null);
 const confirmDeleteModal = ref(null);
+const filter = ref("");
 
 onMounted(() => {
   load();
@@ -14,9 +17,9 @@ onMounted(() => {
 
 const load = () => {
   ProcessMaker.apiClient
-    .get(`/devlink/local-bundles`)
+    .get(`/devlink/local-bundles?filter=${filter.value}`)
     .then((result) => {
-      bundles.value = result.data;
+      bundles.value = result.data.data;
     });
 }
 
@@ -24,6 +27,10 @@ const fields = [
   {
     key: 'name',
     label: 'Name'
+  },
+  {
+    key: 'origin',
+    label: 'Origin'
   },
   {
     key: 'published',
@@ -104,13 +111,29 @@ const executeDelete = () => {
       confirmDeleteModal.value.hide();
       load();
     });
-}
+};
+
+// Debounced function
+const debouncedLoad = debounce(load, 300);
+
+// Function called on change
+const handleFilterChange = () => {
+  debouncedLoad();
+};
 </script>
 
 <template>
   <div>
-    <b-button variant="primary" @click="createNewBundle">Create New Bundle</b-button>
-
+    <div class="top-options">
+      <input v-model="filter" class="form-control col-10 search-input" @input="handleFilterChange">
+      <b-button
+        variant="primary"
+        @click="createNewBundle"
+        class="new-button"
+      >
+      <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>Create Bundle
+      </b-button>
+    </div>
     <b-modal ref="confirmDeleteModal" title="Delete Bundle" @ok="executeDelete">
       <p>Are you sure you want to delete {{ selected?.name }}?</p>
     </b-modal>
@@ -126,24 +149,101 @@ const executeDelete = () => {
         <b-form-checkbox v-model="selected.locked"></b-form-checkbox>
       </b-form-group>
     </b-modal>
-
-    <b-table
-      :items="bundles"
-      :fields="fields"
-    >
-      <template #cell(name)="data">
-        {{ data.item.name }}
-        <i v-if="data.item.locked" class="ml-2 fa fa-lock"></i>
-      </template>
-      <template #cell(published)="data">
-        <b-form-checkbox v-model="data.item.published" switch @change="updatePublished(data.item)">
-        </b-form-checkbox>
-      </template>
-      <template #cell(menu)="data">
-        <a href="#" @click.prevent="edit(data.item)">Edit</a>
-        |
-        <a href="#" @click.prevent="deleteBundle(data.item)">Delete</a>
-      </template>
-    </b-table>
+    <div class="card local-bundles-card">
+      <b-table
+        :items="bundles"
+        :fields="fields"
+      >
+        <template #cell(name)="data">
+          {{ data.item.name }}
+          <i v-if="data.item.locked" class="ml-2 fa fa-lock"></i>
+        </template>
+        <template #cell(published)="data">
+          <b-form-checkbox v-model="data.item.published" switch @change="updatePublished(data.item)">
+          </b-form-checkbox>
+        </template>
+        <template #cell(origin)="data">
+          <Origin :dev-link="data.item.dev_link"></Origin>
+        </template>
+        <template #cell(menu)="data">
+          <div class="btn-menu-container">
+            <div class="btn-group" role="group" aria-label="Basic example">
+              <button
+                type="button"
+                class="btn btn-menu"
+                @click.prevent="edit(data.item)"
+              >
+                <img src="/img/pencil-fill.svg">
+              </button>
+              <button
+                type="button"
+                class="btn btn-menu"
+                @click.prevent="deleteBundle(data.item)"
+              >
+                <img src="/img/trash-fill.svg">
+              </button>
+            </div>
+          </div>
+        </template>
+      </b-table>
+    </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+tr:hover {
+  cursor: pointer;
+}
+.top-options {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 16px;
+}
+.search-input {
+  padding-left: 30px;
+  background: url(/img/search-icon.svg) no-repeat left;
+  background-position: 7px 8px;
+  background-size: 15px;
+  border-radius: 8px;
+}
+::v-deep .table {
+  border-bottom: 1px solid #e9edf1;
+}
+::v-deep .table > thead > tr > th {
+  border-top: none;
+  background-color: #FBFBFC;
+  border-right: 1px solid rgba(0, 0, 0, 0.125);
+  color: #4E5663;
+  font-weight: 600;
+  font-size: 14px;
+}
+::v-deep .table > tbody > tr > td {
+  color: #4E5663;
+  font-size: 14px;
+  font-weight: 400;
+}
+::v-deep .table > thead > tr > th:last-child {
+  border-right: none !important;
+  border-top-right-radius: 8px;
+}
+::v-deep .table > thead > tr > th:first-child {
+  border-top-left-radius: 8px;
+}
+.local-bundles-card {
+  border-radius: 8px;
+  min-height: calc(-355px + 100vh);
+}
+.btn-menu {
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  background-color: transparent;
+}
+.new-button {
+  text-transform: none;
+  font-weight: 500;
+  font-size: 14px;
+}
+.btn-menu-container {
+  display: flex;
+  justify-content: flex-end;
+}
+</style>
