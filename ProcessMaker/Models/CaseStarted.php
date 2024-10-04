@@ -45,10 +45,6 @@ class CaseStarted extends ProcessMakerModel
         'completed_at',
     ];
 
-    protected $attributes = [
-        'keywords' => '',
-    ];
-
     protected static function newFactory(): Factory
     {
         return CaseStartedFactory::new();

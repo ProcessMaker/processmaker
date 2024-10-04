@@ -64,6 +64,7 @@ class CaseRepository implements CaseRepositoryInterface
                 'participants' => [],
                 'initiated_at' => $instance->initiated_at,
                 'completed_at' => null,
+                'keywords' => $instance->case_title,
             ]);
         } catch (\Exception $e) {
             Log::error('CaseException: ' . $e->getMessage());
@@ -91,6 +92,7 @@ class CaseRepository implements CaseRepositoryInterface
             $this->case->case_status = $instance->status === self::CASE_STATUS_ACTIVE ? 'IN_PROGRESS' : $instance->status;
             $this->case->request_tokens = CaseUtils::storeRequestTokens($token->getKey(), $this->case->request_tokens);
             $this->case->tasks = CaseUtils::storeTasks($token, $this->case->tasks);
+            $this->case->keywords = $instance->case_title;
 
             $this->updateParticipants($token);
 

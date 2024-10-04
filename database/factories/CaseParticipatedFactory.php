@@ -5,6 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use ProcessMaker\Models\CaseParticipated;
 use ProcessMaker\Models\User;
+use ProcessMaker\Repositories\CaseUtils;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\ProcessMaker\Models\CaseParticipated>
@@ -22,10 +23,13 @@ class CaseParticipatedFactory extends Factory
     {
         $users = User::get();
 
+        $caseTitle = fake()->words(4, true);
+        $caseNumber = fake()->unique()->randomNumber();
+
         return [
             'user_id' => $users->random()->id,
-            'case_number' => fake()->unique()->randomNumber(),
-            'case_title' => fake()->words(3, true),
+            'case_number' => $caseNumber,
+            'case_title' => $caseTitle,
             'case_title_formatted' => fake()->words(3, true),
             'case_status' => fake()->randomElement(['IN_PROGRESS', 'COMPLETED']),
             'processes' => array_map(function() {
@@ -68,7 +72,7 @@ class CaseParticipatedFactory extends Factory
             'participants' => array_map(fn() => fake()->randomElement($users->pluck('id')->toArray()), range(1, 3)),
             'initiated_at' => fake()->dateTime(),
             'completed_at' => fake()->dateTime(),
-            'keywords' => '',
+            'keywords' => CaseUtils::getCaseNumberByKeywords($caseNumber) . ' ' . $caseTitle,
         ];
     }
 }

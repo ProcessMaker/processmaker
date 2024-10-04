@@ -59,6 +59,7 @@ class CaseSyncRepository
                         'participants' => $participants,
                         'initiated_at' => $instance->initiated_at,
                         'completed_at' => $instance->completed_at,
+                        'keywords' => CaseUtils::getCaseNumberByKeywords($instance->case_number) . ' ' . $instance->case_title,
                     ],
                 );
 
@@ -95,6 +96,7 @@ class CaseSyncRepository
             'participants' => $participants,
             'initiated_at' => $instance->initiated_at,
             'completed_at' => $instance->completed_at,
+            'keywords' => CaseUtils::getCaseNumberByKeywords($instance->case_number) . ' ' . $instance->case_title,
         ];
     }
 

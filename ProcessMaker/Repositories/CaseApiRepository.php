@@ -40,8 +40,7 @@ class CaseApiRepository implements CaseApiRepositoryInterface
     ];
 
     protected $searchableFields = [
-        'case_number',
-        'case_title',
+        'keywords',
     ];
 
     protected $filterableFields = [
@@ -149,15 +148,17 @@ class CaseApiRepository implements CaseApiRepositoryInterface
         if ($request->filled('search')) {
             $search = $request->get('search');
 
-            $query->where(function ($q) use ($search) {
-                foreach ($this->searchableFields as $field) {
-                    if ($field === 'case_title') {
-                        $q->orWhereFullText($field, $search . '*', ['mode' => 'boolean']);
-                    } else {
-                        $q->where($field, $search);
-                    }
-                }
-            });
+            if (is_numeric($search)) {
+                $search = CaseUtils::CASE_NUMBER_PREFIX . $search;
+            } else {
+                // Remove special characters except another languages
+                $search = preg_replace(['/[^a-zA-Z0-9\s]/', '/\s{2,}/'], [' ', ' '], $search);
+            }
+
+            // Add a plus (+) to the beginning and an asterisk (*) to the end of each word
+            $search = preg_replace('/\b(\w+)\b/', '+$1*', $search);
+
+            $query->whereFullText($this->searchableFields, $search, ['mode' => 'boolean']);
         }
     }
 
