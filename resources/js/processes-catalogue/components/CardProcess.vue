@@ -122,12 +122,6 @@ export default {
       await this.$nextTick();
       this.loadCard();
     },
-    processSelected(newValue) {
-      this.$emit('processSelectedChanged', newValue);
-    },
-    templateSelected(newValue) {
-      this.$emit('templateSelectedChanged', newValue);
-    },
   },
   mounted() {
     this.loadCard(()=>{
