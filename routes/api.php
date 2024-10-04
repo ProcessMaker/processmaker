@@ -100,7 +100,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::delete('screens/{screen}', [ScreenController::class, 'destroy'])->name('screens.destroy')->middleware('can:delete-screens,screen');
     Route::post('screens/{screen}/export', [ScreenController::class, 'export'])->name('screens.export')->middleware('can:export-screens,screen');
     Route::post('screens/import', [ScreenController::class, 'import'])->name('screens.import')->middleware('can:import-screens');
-    Route::get('screens/{screen}/translate/{language}', [ScreenController::class, 'translate'])->name('screen.translate')->middleware('can:edit-screens,screen');
+    Route::post('screens/{screen}/translate/{language}', [ScreenController::class, 'translate'])->name('screen.translate')->middleware('can:edit-screens,screen');
 
     // Screen Categories
     Route::get('screen_categories', [ScreenCategoryController::class, 'index'])->name('screen_categories.index')->middleware('can:view-screen-categories');

@@ -672,11 +672,15 @@ class ScreenController extends Controller
      *     ),
      * )
      */
-    public function translate(Screen $screen, $language)
+    public function translate(Request $request, Screen $screen, $language)
     {
         $draft = $screen->versions()->draft()->first();
         $processTranslation = new ProcessTranslation(null);
-        $transConfig = $processTranslation->translateScreen($draft, $language);
+        $transConfig = $processTranslation->translateScreen(
+            $draft,
+            $request->input('screenConfig'),
+            $request->input('inputData'),
+            $language);
         return $transConfig;
     }
 

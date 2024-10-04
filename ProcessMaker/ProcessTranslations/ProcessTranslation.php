@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Assets\ScreensInProcess;
 use ProcessMaker\Assets\ScreensInScreen;
 use ProcessMaker\ImportExport\Utils;
+use ProcessMaker\Models\MustacheExpressionEvaluator;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTranslationToken;
 use ProcessMaker\Models\Screen;
@@ -269,13 +270,16 @@ class ProcessTranslation
         return $config;
     }
 
-    public function translateScreen($screen, $language)
+    public function translateScreen($screen, $screenConfig, $data, $language)
     {
         if (!$screen) {
             return;
         }
 
-        $config = $screen['config'];
+        $mustacheEngine = new MustacheExpressionEvaluator();
+        $configEvaluated = $mustacheEngine->render(json_encode($screenConfig), $data);
+
+        $config = json_decode($configEvaluated, true);
         $translations = $screen['translations'];
         $targetLanguage = $language;
 
