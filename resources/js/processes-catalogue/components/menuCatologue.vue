@@ -167,6 +167,14 @@ export default {
     if (!this.selectedProcessItem && !this.selectedTemplateItem) {
       this.selectDefault();
     }
+
+    if (this.selectedProcessItem && !this.selectedTemplateItem) {
+      window.ProcessMaker.EventBus.$emit("process-item-selected");
+    }
+
+    if (this.selectedTemplateItem && !this.selectedProcessItem) {
+      window.ProcessMaker.EventBus.$emit("template-item-selected");
+    }
   },
   watch: {
     $route(r) {
