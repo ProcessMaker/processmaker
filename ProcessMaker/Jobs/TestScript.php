@@ -62,7 +62,7 @@ class TestScript implements ShouldQueue
             $this->script->code = $this->code;
             $this->script->nonce = $this->nonce;
             $response = $this->script->runScript($this->data, $this->configuration);
-            $this->sendResponse(200, $response);
+            //$this->sendResponse(200, $response);
         } catch (Throwable $exception) {
             $this->sendResponse(500, [
                 'exception' => get_class($exception),
