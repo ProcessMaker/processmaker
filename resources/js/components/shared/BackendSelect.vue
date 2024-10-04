@@ -31,7 +31,7 @@ watch(value, () => {
 
 onMounted(() => {
   window.ProcessMaker.apiClient.get(props.url).then((response) => {
-    options.value = response.data;
+    options.value = response.data.data;
   });
 })
 </script>
