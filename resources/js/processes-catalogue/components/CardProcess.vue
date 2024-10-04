@@ -3,6 +3,8 @@
     <SearchCards
       v-if="processList.length > 0 || showEmpty"
       :filter-pmql="onFilter"
+      :process-selected="processSelected"
+      :template-selected="templateSelected"
     />
     <div
       id="infinite-list-card"
@@ -95,6 +97,8 @@ export default {
       sumHeight: 0,
       isCardProcess: true,
       sizeChange: false,
+      processSelected: false,
+      templateSelected: false,
     };
   },
   computed: {
@@ -118,6 +122,12 @@ export default {
       await this.$nextTick();
       this.loadCard();
     },
+    processSelected(newValue) {
+      this.$emit('processSelectedChanged', newValue);
+    },
+    templateSelected(newValue) {
+      this.$emit('templateSelectedChanged', newValue);
+    },
   },
   mounted() {
     this.loadCard(()=>{
@@ -128,6 +138,16 @@ export default {
     }, null);
     this.$root.$on("sizeChanged", (val) => {
       this.handleSizeChange(val);
+    });
+
+    ProcessMaker.EventBus.$on("process-item-selected", () => {
+      this.processSelected = true;
+      this.templateSelected = false;
+    });
+
+    ProcessMaker.EventBus.$on("template-item-selected", () => {
+      this.templateSelected = true;
+      this.processSelected = false;
     });
   },
   beforeDestroy() {

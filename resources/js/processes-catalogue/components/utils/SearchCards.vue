@@ -16,7 +16,7 @@
       <b-form-input
         class="search-box"
         v-model="filter"
-        :placeholder="$t('Search Templates')"
+        :placeholder="placeholder"
         @keyup.enter="fetch()"
       />
 
@@ -52,7 +52,7 @@
 
 <script>
 export default {
-  props: ["filterPmql"],
+  props: ["filterPmql", "processSelected", "templateSelected"],
   data() {
     return {
       filter: "",
@@ -65,6 +65,13 @@ export default {
         'search-wide': true,
       };
       return classes;
+    },
+    placeholder() {
+      if (this.templateSelected) {
+        return this.$t("Search Templates");
+      }
+
+      return this.$t("Search Categories and Processes");
     },
   },
   mounted() {
