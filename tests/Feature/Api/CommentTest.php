@@ -21,6 +21,8 @@ class CommentTest extends TestCase
 
     const API_TEST_URL = '/comments';
 
+    const API_COMMENT_BY_CASE = '/comments-by-case';
+
     const STRUCTURE = [
         'id',
         'user_id',
@@ -219,5 +221,79 @@ class CommentTest extends TestCase
 
         //Validate the header status code
         $response->assertStatus(405);
+    }
+
+    /**
+     * Test indexCase without case_number.
+     *
+     * @return void
+     */
+    public function test_index_case_requires_case_number()
+    {
+        // Call the endpoint without the 'case_number' parameter
+        $response = $this->apiCall('GET', self::API_COMMENT_BY_CASE);
+
+        // Check if the response returns a 400 error due to missing 'case_number'
+        $response->assertStatus(422)
+                 ->assertJson(['message' => 'The Case number field is required.']);
+    }
+
+    /**
+     * Test comments by case
+     */
+    public function testGetCommentByTypeByCase()
+    {
+        $this->user = User::factory()->create([
+            'password' => Hash::make('password'),
+            'is_administrator' => false,
+        ]);
+        // Create a request1 then a task related to the request
+        $request1 = ProcessRequest::factory()->create();
+        $task1 = ProcessRequestToken::factory()->create([
+            'user_id' => $this->user->getKey(),
+            'process_request_id' => $request1->getKey(),
+        ]);
+        Comment::factory()->count(2)->create([
+            'commentable_id' => $request1->getKey(),
+            'commentable_type' => get_class($request1),
+            'case_number' => $request1->case_number,
+            'type' => 'LOG',
+            'hidden' => false,
+        ]);
+        Comment::factory()->count(2)->create([
+            'commentable_id' => $task1->getKey(),
+            'commentable_type' => get_class($task1),
+            'case_number' => $request1->case_number,
+            'type' => 'LOG',
+            'hidden' => false,
+        ]);
+        // Create a request2 with the same case_number then a task related to the request
+        $request2 = ProcessRequest::factory()->create([
+            'parent_request_id' => $request1->getKey(),
+        ]);
+        $task2 = ProcessRequestToken::factory()->create([
+            'user_id' => $this->user->getKey(),
+            'process_request_id' => $request2->getKey(),
+        ]);
+        Comment::factory()->count(2)->create([
+            'commentable_id' => $request2->getKey(),
+            'commentable_type' => get_class($request2),
+            'case_number' => $request1->case_number,
+            'type' => 'LOG',
+            'hidden' => false,
+        ]);
+        Comment::factory()->count(2)->create([
+            'commentable_id' => $task2->getKey(),
+            'commentable_type' => get_class($task2),
+            'case_number' => $request1->case_number,
+            'type' => 'LOG',
+            'hidden' => false,
+        ]);
+        // Load api
+        $filter = "?case_number=$request1->case_number";
+        $response = $this->apiCall('GET', self::API_COMMENT_BY_CASE . $filter);
+        // Check if the response is successful and contains the expected tasks
+        $response->assertStatus(200);
+        $this->assertCount(8, $response->json('data'));
     }
 }

@@ -263,6 +263,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     // Comments
     Route::get('comments', [CommentController::class, 'index'])->name('comments.index');
+    Route::get('comments-by-case', [CommentController::class, 'getCommentsByCase'])->name('comments.index.case');
     Route::get('comments/{comment}', [CommentController::class, 'show'])->name('comments.show');
     Route::post('comments', [CommentController::class, 'store'])->name('comments.store');
     Route::put('comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
