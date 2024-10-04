@@ -12,6 +12,22 @@ class CaseUtils
 
     const ALLOWED_REQUEST_TOKENS = ['task', 'scriptTask', 'callActivity'];
 
+    const CASE_NUMBER_PREFIX = 'cn_';
+
+    /**
+     * Get the case number split into keywords.
+     */
+    public static function getCaseNumberByKeywords(int $caseNumber)
+    {
+        $caseNumber = (string) $caseNumber;
+        $keywords = array_map(
+            fn($i) => self::CASE_NUMBER_PREFIX . substr($caseNumber, 0, $i),
+            range(1, strlen($caseNumber))
+        );
+
+        return implode(' ', $keywords);
+    }
+
     /**
      * Store processes.
      *

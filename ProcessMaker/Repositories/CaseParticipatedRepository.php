@@ -43,6 +43,7 @@ class CaseParticipatedRepository
                 'participants' => $case->participants,
                 'initiated_at' => $case->initiated_at,
                 'completed_at' => null,
+                'keywords' => $case->keywords,
             ]);
         } catch (\Exception $e) {
             Log::error('CaseException: ' . $e->getMessage());
@@ -73,6 +74,7 @@ class CaseParticipatedRepository
                 'request_tokens' => CaseUtils::storeRequestTokens($token->getKey(), $this->caseParticipated->request_tokens),
                 'tasks' => CaseUtils::storeTasks($token, $this->caseParticipated->tasks),
                 'participants' => $case->participants,
+                'keywords' => $case->keywords,
             ]);
         } catch (\Exception $e) {
             Log::error('CaseException: ' . $e->getMessage());
