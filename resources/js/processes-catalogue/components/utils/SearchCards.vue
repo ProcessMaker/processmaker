@@ -16,7 +16,7 @@
       <b-form-input
         class="search-box"
         v-model="filter"
-        :placeholder="$t('Search categories and processes')"
+        :placeholder="$t('Search Templates')"
         @keyup.enter="fetch()"
       />
 
