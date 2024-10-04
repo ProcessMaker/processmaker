@@ -21,14 +21,6 @@
               <i :class="button.icon" />
               {{ button.name }}
             </b-button>
-            <select v-if="index === 1" v-model="selectedLanguage">
-              <option value="es">Spanish</option>
-              <option value="fr">French</option>
-              <option value="de">German</option>
-            </select>
-            <b-button v-if="index === 1" @click="translateScreen">
-              Translate
-            </b-button>
           </b-button-group>
 
           <b-button
@@ -53,6 +45,14 @@
         </template>
       </b-col>
 
+      <div v-if="!sectionRight"
+        class="text-right">
+          <language-selector-button
+            class="ml-2"
+            :type="'screen-builder'"
+            :show-language-code="false">
+          </language-selector-button>
+      </div>
       <b-col
         v-if="sectionRight"
         class="text-right"
@@ -170,9 +170,6 @@ export default {
     },
   },
   methods: {
-    translateScreen() {
-      this.$emit("translate", this.selectedLanguage);
-    },
     handleNavigate(action) {
       switch (action?.value) {
         case "discard-draft":
