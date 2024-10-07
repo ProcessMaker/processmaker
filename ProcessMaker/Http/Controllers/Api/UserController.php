@@ -130,7 +130,7 @@ class UserController extends Controller
         if ($request->has('order_direction')) {
             $order_direction = $request->input('order_direction');
         }
-        
+
         $response =
             $query->orderBy(
                 $request->input('order_by', $order_by),
