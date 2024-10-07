@@ -55,7 +55,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('users/{user}/update_pinned_controls', [UserController::class, 'updatePinnedControls'])->name('users.updatePinnnedControls'); // Permissions handled in the controller
     Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy')->middleware('can:delete-users');
     Route::put('password/change', [ChangePasswordController::class, 'update'])->name('password.update');
-    Route::get('users_task_count', [UserController::class, 'getUsersTaskCount'])->name('users.users_task_count'); // Permissions handled in the controller
+    Route::get('users_task_count', [UserController::class, 'getUsersTaskCount'])->name('users.users_task_count')
+        ->middleware('can:view-users|create-processes|edit-processes|create-projects|view-projects');
     // User Groups
     Route::put('users/{user}/groups', [UserController::class, 'updateGroups'])->name('users.groups.update')->middleware('can:edit-users');
     // User personal access tokens

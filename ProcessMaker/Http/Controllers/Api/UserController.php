@@ -178,13 +178,6 @@ class UserController extends Controller
      */
     public function getUsersTaskCount(Request $request)
     {
-        if (!(Auth::user()->can('view-users') ||
-            Auth::user()->can('create-processes') ||
-            Auth::user()->can('edit-processes') ||
-            Auth::user()->can('create-projects') ||
-            Auth::user()->can('view-projects'))) {
-            throw new AuthorizationException(__('Not authorized to view users.'));
-        }
         $query = User::nonSystem();
 
         $filter = $request->input('filter', '');
