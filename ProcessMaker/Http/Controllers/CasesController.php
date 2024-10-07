@@ -36,10 +36,11 @@ class CasesController extends Controller
      *
      * @return \Illuminate\View\View|\Illuminate\Contracts\View
      */
-    public function index($type = null)
+    public function index(ProcessRequest $request)
     {
+        $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
        // This is a temporary API the engine team will provide the new
-        return view('cases.casesMain');
+        return view('cases.casesMain', compact('currentUser'));
     }
     /**
      * Cases Detail

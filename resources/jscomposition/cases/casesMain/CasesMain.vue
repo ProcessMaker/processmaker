@@ -5,11 +5,13 @@
     <div
       class="tw-mx-4 tw-p-4 tw-bg-white tw-rounded-2xl
       tw-border-gray-200 tw-border tw-space-y-4 tw-flex
-      tw-flex-col tw-overflow-hidden tw-grow tw-shadow-md">
+      tw-flex-col tw-overflow-hidden tw-grow tw-shadow-md"
+    >
       <AppCounters
         v-model="countersData"
         class="tw-w-full"
-        @change="onChangeCounter" />
+        @change="onChangeCounter"
+      />
       <RouterView :key="route.fullPath" />
     </div>
   </div>
@@ -22,6 +24,7 @@ import { formatCounters } from "./utils/counters";
 import { getCounters } from "./api";
 import { Breadcrums } from "../../system";
 import { configHomeBreadcrum } from "../../config/index";
+import { user } from "./variables";
 
 export default defineComponent({
   components: {
@@ -47,7 +50,11 @@ export default defineComponent({
 
     const initCounters = async () => {
       let currentCounter = [];
-      const resCounters = await getCounters();
+      const resCounters = await getCounters({
+        params: {
+          userId: user.id,
+        },
+      });
 
       countersData.value = formatCounters(resCounters);
       currentCounter = countersData.value.find((counter) => counter.url === route.path) ?? countersData.value[0];
