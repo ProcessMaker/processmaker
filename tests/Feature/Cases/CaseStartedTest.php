@@ -3,13 +3,13 @@
 namespace Tests\Feature\Cases;
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Tests\TestCase;
 use Mockery;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\Repositories\CaseRepository;
+use Tests\TestCase;
 
 class CaseStartedTest extends TestCase
 {
@@ -125,7 +125,6 @@ class CaseStartedTest extends TestCase
             'process_id' => $process->id,
         ]);
 
-
         $repo = new CaseRepository();
         $repo->create($instance);
 
@@ -163,7 +162,6 @@ class CaseStartedTest extends TestCase
             'user_id' => $user->id,
             'process_id' => $process->id,
         ]);
-
 
         $repo = new CaseRepository();
         $repo->create($instance);
@@ -225,7 +223,6 @@ class CaseStartedTest extends TestCase
             'process_id' => $process->id,
         ]);
 
-
         $repo = new CaseRepository();
         $repo->create($instance);
 
@@ -285,7 +282,6 @@ class CaseStartedTest extends TestCase
             'process_id' => $process->id,
         ]);
 
-
         $repo = new CaseRepository();
         $repo->create($instance);
 
@@ -308,10 +304,7 @@ class CaseStartedTest extends TestCase
             'user_id' => $user->id,
             'case_title' => 'Case #' . $instance->case_number,
             'case_status' => 'IN_PROGRESS',
-            'participants->[0]->id' => $user->id,
-            'participants->[0]->name' => $user->fullName,
-            'participants->[0]->title' => $user->title,
-            'participants->[0]->avatar' => $user->avatar,
+            'participants->[0]' => $user->id,
         ]);
 
         $user2 = User::factory()->create();
@@ -326,10 +319,7 @@ class CaseStartedTest extends TestCase
             'user_id' => $user->id,
             'case_title' => 'Case #' . $instance->case_number,
             'case_status' => 'IN_PROGRESS',
-            'participants->[1]->id' => $user2->id,
-            'participants->[1]->name' => $user2->fullName,
-            'participants->[1]->title' => $user2->title,
-            'participants->[1]->avatar' => $user2->avatar,
+            'participants->[1]' => $user2->id,
         ]);
     }
 
@@ -342,7 +332,6 @@ class CaseStartedTest extends TestCase
             'user_id' => $user->id,
             'process_id' => $process->id,
         ]);
-
 
         $repo = new CaseRepository();
         $repo->create($instance);

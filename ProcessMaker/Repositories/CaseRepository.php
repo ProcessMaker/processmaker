@@ -17,6 +17,7 @@ class CaseRepository implements CaseRepositoryInterface
      * @var CaseParticipatedRepository
      */
     protected CaseParticipatedRepository $caseParticipatedRepository;
+
     /**
      * This property is used to store an instance of `CaseStarted`
      * when a case started is updated.
@@ -28,6 +29,7 @@ class CaseRepository implements CaseRepositoryInterface
     {
         $this->caseParticipatedRepository = new CaseParticipatedRepository();
     }
+
     /**
      * Store a new case started.
      *
@@ -38,6 +40,7 @@ class CaseRepository implements CaseRepositoryInterface
     {
         if (is_null($instance->case_number)) {
             Log::error('case number is required, method=create, instance=' . $instance->getKey());
+
             return;
         }
 
@@ -61,6 +64,7 @@ class CaseRepository implements CaseRepositoryInterface
                 'participants' => [],
                 'initiated_at' => $instance->initiated_at,
                 'completed_at' => null,
+                'keywords' => $instance->case_title,
             ]);
         } catch (\Exception $e) {
             Log::error('CaseException: ' . $e->getMessage());
@@ -79,6 +83,7 @@ class CaseRepository implements CaseRepositoryInterface
     {
         if (!$this->checkIfCaseStartedExist($instance->case_number)) {
             Log::error('case started not found, method=update, instance=' . $instance->getKey());
+
             return;
         }
 
@@ -87,6 +92,7 @@ class CaseRepository implements CaseRepositoryInterface
             $this->case->case_status = $instance->status === self::CASE_STATUS_ACTIVE ? 'IN_PROGRESS' : $instance->status;
             $this->case->request_tokens = CaseUtils::storeRequestTokens($token->getKey(), $this->case->request_tokens);
             $this->case->tasks = CaseUtils::storeTasks($token, $this->case->tasks);
+            $this->case->keywords = $instance->case_title;
 
             $this->updateParticipants($token);
 
@@ -142,17 +148,10 @@ class CaseRepository implements CaseRepositoryInterface
             return;
         }
 
-        $participantExists = $this->case->participants->contains(function ($participant) use ($user) {
-            return $participant['id'] === $user->id;
-        });
+        $participantExists = $this->case->participants->contains($user->id);
 
         if (!$participantExists) {
-            $this->case->participants->push([
-                'id' => $user->id,
-                'name' => $user->getFullName(),
-                'title' => $user->title,
-                'avatar' => $user->avatar,
-            ]);
+            $this->case->participants->push($user->id);
 
             $this->caseParticipatedRepository->create($this->case, $token);
         }

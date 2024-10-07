@@ -19,7 +19,8 @@ class CaseController extends Controller
 
     const DEFAULT_PAGE_SIZE = 15;
 
-    public function __construct(private Request $request, CaseApiRepository $caseRepository) {
+    public function __construct(private Request $request, CaseApiRepository $caseRepository)
+    {
         $this->caseRepository = $caseRepository;
     }
 
@@ -40,9 +41,10 @@ class CaseController extends Controller
      *
      * @return array
      */
-    public function getAllCases(CaseListRequest $request): JSonResponse
+    public function getAllCases(CaseListRequest $request): JsonResponse
     {
         $query = $this->caseRepository->getAllCases($request);
+
         return $this->paginateResponse($query);
     }
 
@@ -60,9 +62,14 @@ class CaseController extends Controller
      *
      * @return array
      */
-    public function getInProgress(CaseListRequest $request): JSonResponse
+    public function getInProgress(CaseListRequest $request): JsonResponse
     {
+        // The status parameter should never be considered as a filter for this list.
+        $request->merge(['status' => null]);
+
+        // Get query
         $query = $this->caseRepository->getInProgressCases($request);
+
         return $this->paginateResponse($query);
     }
 
@@ -80,9 +87,14 @@ class CaseController extends Controller
      *
      * @return array
      */
-    public function getCompleted(CaseListRequest $request): JSonResponse
+    public function getCompleted(CaseListRequest $request): JsonResponse
     {
+        // The status parameter should never be considered as a filter for this list.
+        $request->merge(['status' => null]);
+
+        // Get query
         $query = $this->caseRepository->getCompletedCases($request);
+
         return $this->paginateResponse($query);
     }
 
@@ -163,7 +175,11 @@ class CaseController extends Controller
     private function paginateResponse(Builder $query): JsonResponse
     {
         $pageSize = $this->request->get('pageSize', self::DEFAULT_PAGE_SIZE);
-        $pagination = CaseResource::collection($query->paginate($pageSize));
+        $data = $query->paginate($pageSize);
+        // Get all the participants ids from the data
+        $users = $this->caseRepository->getUsers($data);
+
+        $pagination = CaseResource::customCollection($data, $users);
 
         return response()->json([
             'data' => $pagination->items(),

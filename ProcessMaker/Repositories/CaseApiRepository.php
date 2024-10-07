@@ -3,9 +3,13 @@
 namespace ProcessMaker\Repositories;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use ProcessMaker\Contracts\CaseApiRepositoryInterface;
 use ProcessMaker\Exception\CaseValidationException;
+use ProcessMaker\Filters\CasesFilter;
 use ProcessMaker\Models\CaseParticipated;
 use ProcessMaker\Models\CaseStarted;
 
@@ -31,13 +35,14 @@ class CaseApiRepository implements CaseApiRepositoryInterface
 
     protected $sortableFields = [
         'case_number',
+        'case_title',
+        'status',
         'initiated_at',
         'completed_at',
     ];
 
     protected $searchableFields = [
-        'case_number',
-        'case_title',
+        'keywords',
     ];
 
     protected $filterableFields = [
@@ -73,6 +78,7 @@ class CaseApiRepository implements CaseApiRepositoryInterface
     {
         $query = CaseStarted::select($this->defaultFields);
         $this->applyFilters($request, $query);
+
         return $query;
     }
 
@@ -88,6 +94,7 @@ class CaseApiRepository implements CaseApiRepositoryInterface
         $query = CaseParticipated::select($this->defaultFields)
             ->where('case_status', 'IN_PROGRESS');
         $this->applyFilters($request, $query);
+
         return $query;
     }
 
@@ -103,6 +110,7 @@ class CaseApiRepository implements CaseApiRepositoryInterface
         $query = CaseParticipated::select($this->defaultFields)
             ->where('case_status', 'COMPLETED');
         $this->applyFilters($request, $query);
+
         return $query;
     }
 
@@ -142,15 +150,17 @@ class CaseApiRepository implements CaseApiRepositoryInterface
         if ($request->filled('search')) {
             $search = $request->get('search');
 
-            $query->where(function ($q) use ($search) {
-                foreach ($this->searchableFields as $field) {
-                    if ($field === 'case_title') {
-                        $q->orWhereFullText($field, $search . '*', ['mode' => 'boolean']);
-                    } else {
-                        $q->where($field, $search);
-                    }
-                }
-            });
+            if (is_numeric($search)) {
+                $search = CaseUtils::CASE_NUMBER_PREFIX . $search;
+            } else {
+                // Remove special characters except another languages
+                $search = preg_replace(['/[^a-zA-Z0-9\s]/', '/\s{2,}/'], [' ', ' '], $search);
+            }
+
+            // Add a plus (+) to the beginning and an asterisk (*) to the end of each word
+            $search = preg_replace('/\b(\w+)\b/', '+$1*', $search);
+
+            $query->whereFullText($this->searchableFields, $search, ['mode' => 'boolean']);
         }
     }
 
@@ -165,22 +175,31 @@ class CaseApiRepository implements CaseApiRepositoryInterface
      */
     public function filterBy(Request $request, Builder $query): void
     {
-        if ($request->filled('filterBy')) {
-            $filterByValue = $request->get('filterBy');
-
-            foreach ($filterByValue as $key => $value) {
-                if (!in_array($key, $this->filterableFields)) {
-                    throw new CaseValidationException("Filter by field $key is not allowed.");
-                }
-
-                if (in_array($key, $this->dateFields)) {
-                    $query->whereDate($key, $value);
-                    continue;
-                }
-
-                $query->where($key, $value);
-            }
+        // Check if filterBy exists in the request
+        if (!$request->has('filterBy')) {
+            return;
         }
+
+        // Get the filter input and apply the filter only if it's not empty
+        $filters = $request->input('filterBy', '');
+        if (empty($filters)) {
+            return;
+        }
+
+        // Apply the filters to the query
+        $this->executeFilters($query, $filters);
+    }
+
+    /**
+     * Execute advanced filters to the query.
+     *
+     * @param Builder $query
+     * @param array|string $filters
+     * @return void
+     */
+    protected function executeFilters(Builder $query, $filters): void
+    {
+        CasesFilter::filter($query, $filters);
     }
 
     /**
@@ -208,5 +227,38 @@ class CaseApiRepository implements CaseApiRepositoryInterface
                 $query->orderBy($field, $order);
             }
         }
+    }
+
+    /**
+     * Get users by participant IDs.
+     *
+     * @param Collection $data
+     * @return Collection The users collection grouped by user ID.
+     */
+    public function getUsers($data): Collection
+    {
+        try {
+            $participantIds = $data->pluck('participants')
+                ->collapse()
+                ->unique()
+                ->values();
+
+            return DB::table('users')
+                ->select([
+                    'id',
+                    DB::raw('TRIM(CONCAT(firstname, " ", lastname)) as name'),
+                    'title',
+                    'avatar',
+                ])
+                ->whereIn('id', $participantIds)
+                ->get()
+                ->keyBy('id');
+        } catch (QueryException $e) {
+            \Log::error($e->getMessage());
+        } catch (\Exception $e) {
+            \Log::error($e->getMessage());
+        }
+
+        return collect();
     }
 }

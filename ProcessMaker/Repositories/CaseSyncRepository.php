@@ -59,6 +59,7 @@ class CaseSyncRepository
                         'participants' => $participants,
                         'initiated_at' => $instance->initiated_at,
                         'completed_at' => $instance->completed_at,
+                        'keywords' => CaseUtils::getCaseNumberByKeywords($instance->case_number) . ' ' . $instance->case_title,
                     ],
                 );
 
@@ -95,6 +96,7 @@ class CaseSyncRepository
             'participants' => $participants,
             'initiated_at' => $instance->initiated_at,
             'completed_at' => $instance->completed_at,
+            'keywords' => CaseUtils::getCaseNumberByKeywords($instance->case_number) . ' ' . $instance->case_title,
         ];
     }
 
@@ -138,8 +140,7 @@ class CaseSyncRepository
      */
     private static function processChildRequests(
         $instance, &$cpData, &$csProcesses, &$csRequests, &$participants, &$csRequestTokens, &$csTasks
-    )
-    {
+    ) {
         foreach ($instance->childRequests as $subProcess) {
             $cpData['processes'] = CaseUtils::storeProcesses($subProcess, collect());
             $cpData['requests'] = CaseUtils::storeRequests($subProcess, collect());
