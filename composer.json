@@ -210,30 +210,6 @@
         {
             "type": "vcs",
             "url": "https://github.com/ProcessMaker/SocialiteProviders"
-        },
-        {
-            "type": "path",
-            "url": "/Users/jonathan.quispe/projects/pmdev/scripts/package-slideshow"
-        },
-        {
-            "type": "path",
-            "url": "/Users/jonathan.quispe/projects/pmdev/scripts/package-testing"
-        },
-        {
-            "type": "path",
-            "url": "/Users/jonathan.quispe/projects/pmdev/scripts/package-ab-testing"
-        },
-        {
-            "type": "path",
-            "url": "/Users/jonathan.quispe/projects/pmdev/scripts/connector-send-email"
-        },
-        {
-            "type": "path",
-            "url": "/Users/jonathan.quispe/projects/pmdev/scripts/package-comments"
-        },
-        {
-            "type": "path",
-            "url": "/Users/jonathan.quispe/projects/pmdev/scripts/package-files"
         }
     ],
     "config": {
