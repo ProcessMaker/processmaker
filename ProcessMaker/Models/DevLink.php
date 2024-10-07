@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use ProcessMaker\ImportExport\Importer;
+use ProcessMaker\ImportExport\Logger;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\ProcessMakerModel;
 use Ramsey\Uuid\Type\Integer;
@@ -121,8 +122,14 @@ class DevLink extends ProcessMakerModel
 
     private function import(array $payload)
     {
-        $importer = new Importer($payload, new Options([]));
+        if (!$this->logger) {
+            $this->logger = new Logger();
+        }
+
+        $importer = new Importer($payload, new Options([]), $this->logger);
         $manifest = $importer->doImport();
+
+        dd($importer->logger);
 
         return $manifest[$payload['root']]->model;
     }

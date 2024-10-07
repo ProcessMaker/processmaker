@@ -53,7 +53,8 @@ const install = (asset) => {
       };
       ProcessMaker.apiClient
         .post(`/devlink/${route.params.id}/install-remote-asset`, params)
-        .then(() => {
+        .then((response) => {
+          console.log(response);
           window.ProcessMaker.alert('Asset successfully installed', "success");
         });
     }

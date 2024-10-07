@@ -14,6 +14,8 @@ class Logger
 
     public $userId = null;
 
+    private $warnings = [];
+
     public function __construct($userId = null)
     {
         $this->pid = getmypid();
@@ -60,8 +62,20 @@ class Logger
             return;
         }
 
+        $this->addWarning(substr($message, 0, 1000));
+
         ImportLog::dispatch($this->userId, $type, substr($message, 0, 1000), $additionalParams);
         $this->logToFile($type, $message, $additionalParams);
+    }
+
+    public function addWarning($message)
+    {
+        $this->warnings[] = $message;
+    }
+
+    public function getWarnings()
+    {
+        return $this->warnings;
     }
 
     private function logToFile($type, $message, $additionalParams = [])
