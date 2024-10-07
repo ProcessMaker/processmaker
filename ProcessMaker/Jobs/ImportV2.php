@@ -56,7 +56,8 @@ class ImportV2 implements ShouldQueue
 
         if ($lock->get()) {
             $logger->clear();
-            $this->runImport($logger);
+            $newId = $this->runImport($logger);
+            \Log::debug("++++++++++++++++ return new id", ['id' => $newId]);
             $lock->release();
         } else {
             // Don't throw exception because that will unlock the running job
@@ -68,7 +69,10 @@ class ImportV2 implements ShouldQueue
     {
         $this->checkHash();
 
+        \Log::debug("++++++++++++++ RUNNING IMPORT IMPORTV2");
+
         $payload = json_decode(Storage::get(self::FILE_PATH), true);
+
 
         $options = [];
         if (!$this->isPreview) {
@@ -77,6 +81,7 @@ class ImportV2 implements ShouldQueue
 
         try {
             $payload = Importer::handlePasswordDecrypt($payload, $this->password);
+            \Log::debug("++++++++++++++ RUNNING IMPORT IMPORTV2");
         } catch (ImportPasswordException $e) {
             $logger->exception($e);
 
@@ -94,7 +99,8 @@ class ImportV2 implements ShouldQueue
                 'processVersion' => 2,
             ], 200);
         } else {
-            $importer->doImport();
+            $manifest = $importer->doImport();
+            return $manifest[$payload['root']]->log['newId'];
         }
 
         $logger->log('Done');

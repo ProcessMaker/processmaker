@@ -229,6 +229,7 @@ class ProcessController extends Controller
             return redirect()->route('processes.import');
         }
         $importIsRunning = ImportV2::isRunning();
+        \Log::debug("======== PROCESS CONTROLLER IMPORT IS RUNNING =================================");
 
         return view('processes.import', compact('importIsRunning'));
     }
