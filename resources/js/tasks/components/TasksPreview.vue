@@ -270,6 +270,7 @@ export default {
   props: ["tooltipButton", "propPreview"],
   data(){
     return {
+      selectedUser: null,
       users: []
     };
   },
@@ -331,7 +332,7 @@ export default {
   },
   computed: {
     disabled() {
-      return this.selectedUser ? this.selectedUser.length === 0 : true;
+      return this.selectedUser ? false : true;
     },
     isAllowReassignment() {
       if (this.taskDefinition.definition) {
@@ -419,17 +420,17 @@ export default {
       if (this.selectedUser) {
         ProcessMaker.apiClient
           .put("tasks/" + this.task.id, {
-            user_id: this.selectedUser.id
+            user_id: this.selectedUser
           })
           .then(response => {
             this.showReassignment = false;
-            this.selectedUser = [];
+            this.selectedUser = null;
           });
       }
     },
     cancelReassign() {
       this.showReassignment = false;
-      this.selectedUser = [];
+      this.selectedUser = null;
     },
     openReassignment() {
       this.showReassignment = !this.showReassignment;
@@ -467,8 +468,7 @@ export default {
     onInput(filter) {
       this.getUsers(filter);
     },
-    onSelectedOption(a) {
-      console.log("onSelectedOption",a);
+    onSelectedOption(item) {
     }
   }
 };

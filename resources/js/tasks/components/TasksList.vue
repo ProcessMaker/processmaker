@@ -943,6 +943,13 @@ export default {
         let index = this.arrayOfCheckedRows.indexOf(row.id);
         this.arrayOfCheckedRows.splice(index, 1);
       }
+      this.$emit('add-checked-item', this.arrayOfCheckedRows);
+    },
+    getArrayOfCheckedRows() {
+      return this.arrayOfCheckedRows;
+    },
+    clearArrayOfCheckedRows() {
+      this.arrayOfCheckedRows = [];
     },
     changeHeadCheckbox(event) {
       this.data.data.forEach(row => {
@@ -952,14 +959,18 @@ export default {
     changeCheckbox(event, row) {
       this.addCheckedItem(event, row);
       this.$nextTick(() => {
-        let sw = this.$refs.checkboxRegister.every(item => item.checked === true);
-        this.headCheckbox = sw;
+        if (this.$refs.checkboxRegister) {
+          let sw = this.$refs.checkboxRegister.every(item => item.checked === true);
+          this.headCheckbox = sw;
+        }
       });
     },
     checkHeadCheckboxAfterChangeData() {
       this.$nextTick(() => {
-        let sw = this.$refs.checkboxRegister.every(item => item.checked === true);
-        this.headCheckbox = sw;
+        if (this.$refs.checkboxRegister) {
+          let sw = this.$refs.checkboxRegister.every(item => item.checked === true);
+          this.headCheckbox = sw;
+        }
       });
     },
   },

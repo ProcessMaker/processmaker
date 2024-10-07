@@ -197,6 +197,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('tasks/{task}/rollback', [TaskController::class, 'rollbackTask'])->name('tasks.rollback_task')->middleware('can:rollback,task');
     Route::post('tasks/{task}/setViewed', [TaskController::class, 'setViewed'])->name('tasks.set_viewed')->middleware('can:viewScreen,task,screen');
     Route::put('tasks/{task}/setPriority', [TaskController::class, 'setPriority'])->name('tasks.priority');
+    Route::put('tasks/updateReassign', [TaskController::class, 'updateReassign'])->name('tasks.updateReassign');
 
     // TaskDrafts
     Route::put('drafts/{task}', [TaskDraftController::class, 'update'])->name('taskdraft.update');

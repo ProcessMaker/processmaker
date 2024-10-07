@@ -234,6 +234,7 @@ class TaskController extends Controller
      */
     public function update(Request $request, ProcessRequestToken $task)
     {
+        file_put_contents("/Users/user/srv/http/processmaker4/.work/error.json", $request->input('user_id')."\n", FILE_APPEND);
         $this->authorize('update', $task);
         if ($request->input('status') === 'COMPLETED') {
             if ($task->status === 'CLOSED') {
@@ -257,6 +258,17 @@ class TaskController extends Controller
             return new Resource($task->refresh());
         } else {
             return abort(422);
+        }
+    }
+    
+    public function updateReassign(Request $request)
+    {
+        $userToAssign = $request->input('user_id');
+        if (is_array($request->process_request_token)) {
+            foreach ($request->process_request_token as $value) {
+                $processRequestToken = ProcessRequestToken::find($value);
+                $processRequestToken->reassign($userToAssign, $request->user());
+            }
         }
     }
 

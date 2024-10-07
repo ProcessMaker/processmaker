@@ -332,21 +332,6 @@
                       <template slot="noOptions">
                         {{ __('No Data Available') }}
                       </template>
-                      <template slot="tag" slot-scope="props">
-                        <span class="multiselect__tag  d-flex align-items-center" style="width:max-content;">
-                          <span class="option__desc mr-1">
-                            <span class="option__title">@{{ props.option.fullname }}</span>
-                          </span>
-                          <i aria-hidden="true" tabindex="1"
-                            @click="props.remove(props.option)"
-                            class="multiselect__tag-icon"></i>
-                        </span>
-                      </template>
-                      <template slot="option" slot-scope="props">
-                        <div class="option__desc d-flex align-items-center">
-                          <span class="option__title mr-1">@{{ props.option.fullname }}</span>
-                        </div>
-                      </template>
                     </select-from-api>
                   </div>
                   <div slot="modal-footer">

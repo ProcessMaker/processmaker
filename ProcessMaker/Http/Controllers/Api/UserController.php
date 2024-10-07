@@ -165,7 +165,7 @@ class UserController extends Controller
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
-     *                 ref="#/components/schemas/users",
+     *                 @OA\Items(ref="#/components/schemas/users"),
      *             ),
      *             @OA\Property(
      *                 property="meta",
