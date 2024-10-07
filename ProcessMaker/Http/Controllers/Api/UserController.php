@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Events\UserCreated;
 use ProcessMaker\Events\UserDeleted;
@@ -189,11 +190,10 @@ class UserController extends Controller
                     ->orWhere('lastname', 'like', $filter);
             });
         }
-        
+
         $query->where('status', 'ACTIVE');
 
-        $subQueryString = "SELECT COUNT(id) FROM process_request_tokens WHERE user_id=users.id AND status='ACTIVE' AND element_type='task'";
-        $query->selectRaw("*, ({$subQueryString}) AS count");
+        $query->select('*', DB::Raw("(SELECT COUNT(id) FROM process_request_tokens WHERE user_id=users.id AND status='ACTIVE' AND element_type='task') AS count"));
         $query->groupBy('users.id');
 
         $response = $query->orderBy(
