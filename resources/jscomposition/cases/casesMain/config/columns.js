@@ -101,7 +101,9 @@ export const processColumn = () => ({
     component: TruncatedOptionsCell,
     params: {
       click: (option, row, column, columns) => {
+        window.document.location = `/tasks/${option.id}/edit`;
       },
+      formatterOptions: (option, row, column, columns) => option.name,
     },
   }),
   filter: {
@@ -121,6 +123,7 @@ export const taskColumn = () => ({
       click: (option, row, column, columns) => {
         window.document.location = `/tasks/${option.id}/edit`;
       },
+      formatterOptions: (option, row, column, columns) => option.name,
     },
   }),
   filter: {

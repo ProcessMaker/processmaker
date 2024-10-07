@@ -1,21 +1,24 @@
 <template>
   <div
-    class="tw-w-full tw-space-y-3 tw-flex tw-flex-col tw-overflow-hidden">
-    <CaseFilter />
+    class="tw-w-full tw-space-y-3 tw-flex tw-flex-col tw-overflow-hidden"
+  >
+    <CaseFilter @enter="onChangeSearch" />
 
     <BadgesSection v-model="badgesData" />
 
     <FilterableTable
       :columns="columnsConfig"
       :data="data"
-      class="tw-grow tw-overflow-y-scroll" />
+      class="tw-grow tw-overflow-y-scroll"
+    />
 
     <Pagination
       :total="dataPagination.total"
       :page="dataPagination.page"
       :pages="dataPagination.pages"
       @perPage="onPerPage"
-      @go="onGo" />
+      @go="onGo"
+    />
   </div>
 </template>
 <script>
@@ -26,7 +29,8 @@ import { Pagination } from "../../base";
 import { getColumns } from "./config/columns";
 import { FilterableTable } from "../../system";
 import { badges } from "./config/badges";
-import { getAllData } from "./api";
+import * as api from "./api";
+import { user } from "./variables";
 
 export default defineComponent({
   components: {
@@ -45,34 +49,58 @@ export default defineComponent({
     const badgesData = ref(badges);
     const columnsConfig = ref();
     const data = ref();
+    const search = ref();
 
     const dataPagination = ref({
       total: 153,
-      page: 0,
+      page: 1,
       pages: 10,
       perPage: 15,
     });
 
-    const getData = () => getAllData({
-      type: props.listId,
-      page: dataPagination.value.page,
-      perPage: dataPagination.value.perPage,
-    });
+    const setMetaPagination = (meta) => {
+      dataPagination.value = {
+        total: meta.total,
+        page: meta.currentPage,
+        pages: meta.lastPage,
+        perPage: meta.perPage,
+      };
+    };
+
+    const getData = async () => {
+      const response = await api.getCaseData(props.listId, {
+        params: {
+          pageSize: dataPagination.value.perPage,
+          page: dataPagination.value.page,
+          userId: user.id,
+          search: search.value || null,
+        },
+      });
+
+      data.value = response.data;
+      setMetaPagination(response.meta);
+    };
 
     const onGo = async (page) => {
       dataPagination.value.page = page;
 
-      data.value = await getData();
+      await getData();
     };
 
     const onPerPage = async (perPage) => {
       dataPagination.value.perPage = perPage;
 
-      data.value = await getData();
+      await getData();
+    };
+
+    const onChangeSearch = async (val) => {
+      search.value = val;
+
+      await getData();
     };
 
     onMounted(async () => {
-      data.value = await getData();
+      await getData();
 
       columnsConfig.value = getColumns(props.listId);
     });
@@ -84,6 +112,7 @@ export default defineComponent({
       badgesData,
       onGo,
       onPerPage,
+      onChangeSearch,
     };
   },
 });
