@@ -64,7 +64,7 @@ class ScriptMicroserviceRunner
         }
 
         $payload = [
-            'version' => 'v4.11.2', //$this->getProcessMakerVersion(),
+            'version' => config('script-runner-microservice.version') ?? $this->getProcessMakerVersion(),
             'language' => $scriptRunner['language'],
             'metadata'=> [
                 'nonce' => $this->script->nonce,

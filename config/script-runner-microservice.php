@@ -3,6 +3,7 @@
 return [
     'base_url' => env('SCRIPT_MICROSERVICE_BASE_URL'),
     'callback' => env('SCRIPT_MICROSERVICE_CALLBACK'),
+    'version'  => env('SCRIPT_MICROSERVICE_VERSION'),
     'keycloak' => [
         'client_id' => env('KEYCLOAK_CLIENT_ID'),
         'client_secret' => env('KEYCLOAK_CLIENT_SECRET'),
