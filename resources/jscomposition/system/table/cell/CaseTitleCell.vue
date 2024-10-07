@@ -1,9 +1,9 @@
 <template>
   <div
     class="tw-text-nowrap tw-whitespace-nowrap tw-p-3">
-    <a
+    <span
       href="#"
-      class="hover:tw-text-blue-500"
+      class="hover:tw-text-blue-400 tw-text-gray-500 hover:tw-cursor-pointer"
       @click.prevent="onClick">
       <div
         v-if="row.case_title_formatted"
@@ -12,7 +12,7 @@
       <span
         v-else
         class="tw-overflow-hidden tw-text-ellipsis">{{ getValue() }}</span>
-    </a>
+    </span>
   </div>
 </template>
 <script>

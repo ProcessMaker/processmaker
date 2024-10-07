@@ -1,15 +1,10 @@
 <template>
   <div class="tw-flex tw-relative tw-text-nowrap tw-whitespace-nowrap tw-p-3">
     <div class="tw-overflow-hidden tw-text-ellipsis ">
-      <a
-        v-if="optionsModel.length <= 1"
-        class="hover:tw-text-blue-500"
+      <span
+        class="hover:tw-text-blue-400 tw-text-gray-500 hover:tw-cursor-pointer"
         href="#"
         @click.prevent.stop="onClickOption(row[column.field][0], 0)">
-        {{ getValue() }}
-
-      </a>
-      <span v-else>
         {{ getValue() }}
       </span>
     </div>
@@ -30,15 +25,17 @@
         <ul
           class="tw-bg-white tw-list-none tw-text-gray-600
             tw-overflow-hidden tw-rounded-lg tw-w-50 tw-text-sm tw-border tw-border-gray-300">
-          <li
-            v-for="(option, index) in optionsModel"
-            :key="index"
-            class="hover:tw-bg-gray-100"
-            @click.prevent.stop="onClickOption(option, index)">
-            <span class="tw-flex tw-py-2 tw-px-4 transition duration-300 hover:tw-bg-gray-200 hover:tw-cursor-pointer">
-              {{ getValueOption(option, index) }}
-            </span>
-          </li>
+          <template v-for="(option, index) in optionsModel">
+            <li
+              v-if="index > 0"
+              :key="index"
+              class="hover:tw-bg-gray-100"
+              @click.prevent.stop="onClickOption(option, index)">
+              <span class="tw-flex tw-py-2 tw-px-4 transition duration-300 hover:tw-bg-gray-200 hover:tw-cursor-pointer">
+                {{ getValueOption(option, index) }}
+              </span>
+            </li>
+          </template>
         </ul>
       </template>
     </AppPopover>

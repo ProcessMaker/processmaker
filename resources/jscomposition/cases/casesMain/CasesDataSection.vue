@@ -73,7 +73,7 @@ export default defineComponent({
           pageSize: dataPagination.value.perPage,
           page: dataPagination.value.page,
           userId: user.id,
-          search: search.value,
+          search: search.value || null,
         },
       });
 
