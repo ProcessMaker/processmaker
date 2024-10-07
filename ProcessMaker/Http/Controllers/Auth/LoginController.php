@@ -242,6 +242,10 @@ class LoginController extends Controller
     public function beforeLogout(Request $request)
     {
         if (Auth::check()) {
+            // Remove the Laravel cookie
+            $request->session()->invalidate();
+            Cookie::queue(Cookie::forget(Passport::cookie()));
+
             //Clear the user permissions
             $request->session()->forget('permissions');
 
@@ -259,10 +263,6 @@ class LoginController extends Controller
             session()->remove(TwoFactorAuthController::TFA_VALIDATED);
             session()->remove(TwoFactorAuthController::TFA_MESSAGE);
             session()->remove(TwoFactorAuthController::TFA_ERROR);
-
-            // Remove the Laravel cookie
-            $request->session()->invalidate();
-            Cookie::queue(Cookie::forget(Passport::cookie()));
         }
 
         return $this->logout($request);
