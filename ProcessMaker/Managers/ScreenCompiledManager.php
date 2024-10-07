@@ -78,7 +78,7 @@ class ScreenCompiledManager
         $files = Storage::disk($this->storageDisk)->files($this->storagePath);
 
         foreach ($files as $file) {
-            if (strpos($file, "pid_{$processId}_") === 0) {
+            if (strpos($file, "pid_{$processId}_") !== false) {
                 Storage::disk($this->storageDisk)->delete($file);
             }
         }
