@@ -189,7 +189,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     // Tasks
     Route::get('tasks', [TaskController::class, 'index'])->name('tasks.index'); // Already filtered in controller
-    Route::get('tasks-by-case', [TaskController::class, 'indexCase'])->name('tasks.indexCase');
+    Route::get('tasks-by-case', [TaskController::class, 'getTasksByCase'])->name('tasks.index.case');
     Route::get('tasks/{task}', [TaskController::class, 'show'])->name('tasks.show')->middleware('can:view,task');
     Route::get('tasks/{task}/screen_fields', [TaskController::class, 'getScreenFields'])->name('getScreenFields.show')->middleware('can:view,task');
     Route::get('tasks/{task}/screens/{screen}', [TaskController::class, 'getScreen'])->name('tasks.get_screen')->middleware('can:viewScreen,task,screen');
@@ -263,6 +263,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     // Comments
     Route::get('comments', [CommentController::class, 'index'])->name('comments.index');
+    Route::get('comments-by-case', [CommentController::class, 'getCommentsByCase'])->name('comments.index.case');
     Route::get('comments/{comment}', [CommentController::class, 'show'])->name('comments.show');
     Route::post('comments', [CommentController::class, 'store'])->name('comments.store');
     Route::put('comments/{comment}', [CommentController::class, 'update'])->name('comments.update');

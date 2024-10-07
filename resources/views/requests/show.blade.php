@@ -345,6 +345,13 @@
                             </button>
                           </li>
                         @endif
+                        <li class="list-group-item">
+                            <button type="button" class="btn btn-outline-custom btn-block" @click="onReturnCase"
+                              aria-haspopup="dialog">
+                              <i class="fa fa-arrow-up"></i>
+                              {{ __('Go to Case') }}
+                            </button>
+                          </li>
                         <div :class="classStatusCard">
                           <span style="margin:0; padding:0; line-height:1">@{{ __(statusLabel) }}</span>
                         </div>
@@ -486,6 +493,7 @@
     window.PM4ConfigOverrides = {
       requestFiles: @json($request->requestFiles())
     };
+    const request = @json($request);
   </script>
 
   <script src="{{ mix('js/requests/show.js') }}"></script>
@@ -784,6 +792,9 @@
               this.okCancel();
             },
           );
+        },
+        onReturnCase() {
+          window.open(`../cases/${request.case_number}`);
         },
         completeRequest() {
           ProcessMaker.confirmModal(
