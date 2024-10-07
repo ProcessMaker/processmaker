@@ -65,7 +65,7 @@ export default {
   components: {
     MenuCatologue, CatalogueEmpty, Breadcrumbs,
   },
-  props: ["currentUserId", "process", "currentUser"],
+  props: ["currentUserId", "process", "currentUser", "userConfig"],
   data() {
     return {
       showMenu: false,
@@ -103,7 +103,9 @@ export default {
       categoryCount: 0,
       hideLaunchpad: true,
       currentWidth: 0,
-      mobileApp: window.ProcessMaker.mobileApp
+      mobileApp: window.ProcessMaker.mobileApp,
+      userConfiguration: this.userConfig,
+      urlConfiguration: "users/configuration",
     };
   },
   mounted() {
@@ -118,6 +120,7 @@ export default {
     this.$root.$on('filter-categories', (filter) => {
       this.filterCategories(filter);
     });
+    this.defineUserConfiguration();
   },
   watch: {
     category: {
@@ -136,9 +139,26 @@ export default {
     }
   },
   methods: {
+    defineUserConfiguration() {
+      this.showMenu = this.userConfiguration.launchpad.isMenuCollapse;
+    },
     hideMenu() {
       this.showMenu = !this.showMenu;
       this.$root.$emit("sizeChanged", !this.showMenu);
+      this.updateUserConfiguration();
+    },
+    updateUserConfiguration() {
+      this.userConfiguration.launchpad.isMenuCollapse = this.showMenu;
+      ProcessMaker.apiClient
+        .put(
+          this.urlConfiguration,
+          {
+            ui_configuration: this.userConfiguration,
+          },
+        )
+        .catch((error) => {
+          console.error("Error", error);
+        });
     },
     /**
      * Add new page of categories

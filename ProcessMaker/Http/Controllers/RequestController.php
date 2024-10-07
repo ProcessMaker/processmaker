@@ -12,6 +12,7 @@ use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Filters\SaveSession;
 use ProcessMaker\Helpers\DefaultColumns;
 use ProcessMaker\Helpers\MobileHelper;
+use ProcessMaker\Http\Controllers\Api\UserConfigurationController;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
@@ -193,6 +194,7 @@ class RequestController extends Controller
         }
 
         UserResourceView::setViewed(Auth::user(), $request);
+        $userConfiguration = (new UserConfigurationController())->index();
 
         return view('requests.show', compact(
             'request',
@@ -208,6 +210,7 @@ class RequestController extends Controller
             'isProcessManager',
             'eligibleRollbackTask',
             'errorTask',
+            'userConfiguration',
         ));
     }
 

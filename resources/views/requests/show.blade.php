@@ -520,6 +520,8 @@
           showTree: false,
           showInfo: true,
           showMenu: true,
+          userConfiguration: @json($userConfiguration),
+          urlConfiguration:'users/configuration',
         };
       },
       computed: {
@@ -649,9 +651,27 @@
         },
       },
       methods: {
+        defineUserConfiguration() {
+          this.userConfiguration = JSON.parse(this.userConfiguration.ui_configuration);
+          this.showMenu = this.userConfiguration.requests.isMenuCollapse;
+        },
         hideMenu() {
           this.showMenu = !this.showMenu;
           this.$root.$emit("sizeChanged", !this.showMenu);
+          this.updateUserConfiguration();
+        },
+        updateUserConfiguration() {
+          this.userConfiguration.requests.isMenuCollapse = this.showMenu;
+          ProcessMaker.apiClient
+            .put(
+              this.urlConfiguration, 
+              {
+                ui_configuration: this.userConfiguration,
+              }
+            )
+            .catch((error) => {
+              console.error("Error", error);
+            });
         },
         switchTab(tab) {
           this.activeTab = tab;
@@ -850,6 +870,7 @@
         this.listenRequestUpdates();
         this.cleanScreenButtons();
         this.editJsonData();
+        this.defineUserConfiguration();
       },
     });
   </script>
