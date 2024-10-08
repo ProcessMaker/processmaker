@@ -20,10 +20,10 @@ class UserFactory extends Factory
         }
 
         return [
-            'username' => $this->faker->unique()->userName().'.'.$this->faker->word(),
+            'username' => $this->faker->unique()->userName() . '.' . $this->faker->word(),
             'email' => $this->faker->unique()->email(),
             'password' => $GLOBALS['testPassword'],
-            'status' => $this->faker->randomElement(['ACTIVE', 'INACTIVE']),
+            'status' => 'ACTIVE',
             'firstname' => $this->faker->firstName(),
             'lastname' => $this->faker->lastName(),
             'address' => $this->faker->streetAddress(),

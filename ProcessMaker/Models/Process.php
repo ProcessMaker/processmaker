@@ -254,6 +254,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         static::updating(function ($model) {
             $user = Auth::user();
             $model->updated_by = $user?->id;
+            self::clearAndRebuildUserProjectAssetsCache();
         });
     }
 
@@ -1076,7 +1077,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             ->where('groups.status', 'ACTIVE')
             ->chunk(1000, function ($members) use (&$users) {
                 $groupIds = $members->pluck('member_id')->toArray();
-                $users = $this->addActiveAssignedGroupMembers($groupIds, $users);
+                $users = $this->getConsolidatedUsers($groupIds, $users);
             });
 
         return $users;

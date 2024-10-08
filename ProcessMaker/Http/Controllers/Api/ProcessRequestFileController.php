@@ -290,6 +290,12 @@ class ProcessRequestFileController extends Controller
      */
     private function saveUploadedFile(UploadedFile $file, ProcessRequest $processRequest, Request $laravelRequest)
     {
+        $errors = [];
+        $this->validateFile($file, $errors);
+        if (count($errors) > 0) {
+            return abort(response($errors , 422));
+        }
+
         $parentId = $processRequest->parent_request_id;
         $parentRequest = $processRequest;
 
@@ -410,5 +416,30 @@ class ProcessRequestFileController extends Controller
         FilesDeleted::dispatch($fileId, $file->file_name);
 
         return response([], 204);
+    }
+
+    private function validateFile(UploadedFile $file, &$errors)
+    {
+        if (strtolower($file->getClientOriginalExtension() === 'pdf')) {
+             $this->validatePDFFile($file, $errors);
+        }
+
+        return $errors;
+    }
+
+    private function validatePDFFile(UploadedFile $file, &$errors)
+    {
+        $text = $file->get();
+
+        $jsKeywords = ['/JavaScript', '<< /S /JavaScript'];
+
+        foreach ($jsKeywords as $keyword) {
+            if (strpos($text, $keyword) !== false) {
+                $errors[] = __('Dangerous PDF file content');
+                break;
+            }
+        }
+
+        return $errors;
     }
 }

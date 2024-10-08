@@ -115,6 +115,13 @@ class ScriptExecutor extends ProcessMakerModel
         return $dockerfile;
     }
 
+    public static function finalInstructions($language)
+    {
+        $finalInstruction = self::config($language)['final_instructions'] ?? '';
+
+        return is_array($finalInstruction) ? implode("\n", $finalInstruction) : $finalInstruction;
+    }
+
     public static function packagePath($language)
     {
         return self::config($language)['package_path'];
