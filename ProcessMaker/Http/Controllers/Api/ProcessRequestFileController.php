@@ -95,10 +95,12 @@ class ProcessRequestFileController extends Controller
 
         // Register the Event
         if (!empty($filter)) {
-            FilesAccessed::dispatch($filter, $request);
+            foreach ($media as $singleMedia) {
+                FilesAccessed::dispatch($filter, $request, $singleMedia);
+            }
         }
 
-        if ($id && $media instanceof \ProcessMaker\Models\Media) {
+        if ($id && $media instanceof Media) {
             // We retrieved a single item by ID, so no need to filter.
             // Just return a collection with one item.
             $media = [$media];
