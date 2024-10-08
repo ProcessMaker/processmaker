@@ -28,6 +28,33 @@ class ScreenTemplateHelper
     }
 
     /**
+     * Filters and retrieves screen components from the provided configuration.
+     *
+     * This method processes the given screen configuration, iterating through each page
+     * to filter its items based on the specified components. It can optionally remove
+     * components from the configuration or keep only the specified components.
+     * @param array $config The full screen configuration
+     * @param array $components An array of component names that will be used to filter
+     *                          the items in the configuration.
+     * @param bool $removeComponents (optional) Determines the filtering behavior:
+     *        - If 'true', the components in the `$components` array will be removed from the configuration
+     *        - If 'false', only the components in the `$components` array will be retained
+     *        Defaults to `true`.
+     *
+     * @return array The updated configuration after filtering the components.
+     */
+    public static function getScreenComponents($config, $components, $removeComponents = true)
+    {
+        foreach ($config as $page) {
+            $filteredPageItems = self::filterPageItems($page['items'] ?? [], $components, $removeComponents);
+            $page['items'] = $filteredPageItems;
+            $updatedConfig[] = $page;
+        }
+
+        return $updatedConfig;
+    }
+
+    /**
      * Filter items of a page based on the provided components.
      *
      * This method iterates over each item in the page and filters it based on the provided components.
@@ -36,14 +63,15 @@ class ScreenTemplateHelper
      *
      * @param array $items The items of a page to filter.
      * @param array $components The components to filter the items against.
+     * @param bool $removeComponents Whether to remove.
      * @return array The filtered items of the page.
      */
-    private static function filterPageItems($items, $components)
+    private static function filterPageItems($items, $components, $removeComponents = true)
     {
         $filteredItems = [];
 
         foreach ($items as $item) {
-            $filteredItem = self::filterItemByComponent($item, $components);
+            $filteredItem = self::filterItemByComponent($item, $components, $removeComponents);
             if ($filteredItem !== null) {
                 if (is_array($filteredItem) && !isset($filteredItem['component'])) {
                     $filteredItems = array_merge($filteredItems, self::flattenNestedItems($filteredItem));
@@ -67,15 +95,16 @@ class ScreenTemplateHelper
      *
      * @param array $item The item to filter.
      * @param array $components The components to filter against.
+     * @param bool $removeComponents Whether to remove.
      * @return array|null The filtered item or null if it should be removed.
      */
-    private static function filterItemByComponent($item, $components)
+    private static function filterItemByComponent($item, $components, $removeComponents = true)
     {
         if ($item['component'] === 'FormMultiColumn') {
-            return self::filterFormMultiColumn($item, $components);
+            return self::filterFormMultiColumn($item, $components, $removeComponents);
         }
 
-        return !self::removeNestedComponents($item, $components) ? $item : null;
+        return !self::removeNestedComponents($item, $components, $removeComponents) ? $item : null;
     }
 
     /**
@@ -88,15 +117,16 @@ class ScreenTemplateHelper
      *
      * @param array $item The 'FormMultiColumn' item to filter.
      * @param array $components The components to filter against.
+     * @param bool $removeComponents Whether to remove.
      * @return array The filtered 'FormMultiColumn' item.
      */
-    private static function filterFormMultiColumn($item, $components)
+    private static function filterFormMultiColumn($item, $components, $removeComponents = true)
     {
-        $removeMultiColumn = self::removeNestedComponents($item, $components);
+        $removeMultiColumn = self::removeNestedComponents($item, $components, $removeComponents);
         $filteredMultiColumnItems = $removeMultiColumn ? [] : $item;
 
         foreach ($item['items'] as $index => $column) {
-            $filteredColumnItems = self::filterColumnItems($column, $components, $removeMultiColumn);
+            $filteredColumnItems = self::filterColumnItems($column, $components, $removeMultiColumn, $removeComponents);
 
             if (isset($filteredMultiColumnItems['items'])) {
                 $filteredMultiColumnItems['items'][$index] = $filteredColumnItems;
@@ -117,9 +147,10 @@ class ScreenTemplateHelper
      *
      * @param array $item The item to check for removal.
      * @param array $components The screen components to filter against.
+     * @param bool $removeComponents Whether to remove.
      * @return bool Whether the item should be removed.
      */
-    private static function removeNestedComponents($item, $components)
+    private static function removeNestedComponents($item, $components, $removeComponents = true)
     {
         $componentList = ['BFormComponent', 'BWrapperComponent'];
         if (in_array($item['component'], $componentList)) {
@@ -128,7 +159,8 @@ class ScreenTemplateHelper
                 return in_array($bootstrapComponent, $components[$item['component']]['bootstrapComponent']);
             }
         } else {
-            return in_array($item['component'], $components);
+            return in_array($item['component'], $components) && $removeComponents ||
+                !$removeComponents && !in_array($item['component'], $components);
         }
 
         return false;
@@ -145,10 +177,11 @@ class ScreenTemplateHelper
      *
      * @param array $column The column items to filter.
      * @param array $components The components to filter against.
+     * @param bool $removeComponents Whether to remove.
      * @param bool $removeMultiColumn Whether the entire 'FormMultiColumn' should be removed.
      * @return array The filtered column items.
      */
-    private static function filterColumnItems($column, $components, $removeMultiColumn)
+    private static function filterColumnItems($column, $components, $removeMultiColumn, $removeComponents = true)
     {
         $filteredColumnItems = [];
 
@@ -156,7 +189,7 @@ class ScreenTemplateHelper
             if (isset($colItem['component']) && $colItem['component'] === 'FormMultiColumn') {
                 self::filterNestedMultiColumns($colItem, $components, $removeMultiColumn);
                 $filteredColumnItems[] = $colItem;
-            } elseif (!self::removeNestedComponents($colItem, $components)) {
+            } elseif (!self::removeNestedComponents($colItem, $components, $removeComponents)) {
                 $filteredColumnItems[] = $colItem;
             }
         }
@@ -249,5 +282,72 @@ class ScreenTemplateHelper
         }
 
         return $flattenedItems;
+    }
+
+    // Parse the CSS string into an associative array
+    public static function parseCss($cssString)
+    {
+        $rules = [];
+        // Regex to match complex CSS selectors, allowing for any selector pattern
+        preg_match_all('/(?:\/\*.*?\*\*\/|([^{}]+))\s*\{(?:\/\*.*?\*\*\/|([^}]*))\}/', $cssString, $matches, PREG_SET_ORDER);
+
+        foreach ($matches as $match) {
+            $fullSelector = trim($match[1]); // Full CSS selector
+            $propertiesString = trim($match[2]); // Properties between the brackets
+
+            // Split properties into key-value pairs
+            $propertiesArray = explode(';', $propertiesString);
+            $properties = [];
+
+            foreach ($propertiesArray as $property) {
+                $propertyParts = explode(':', $property);
+                if (count($propertyParts) == 2) {
+                    $key = trim($propertyParts[0]);
+                    $value = trim($propertyParts[1]);
+                    if (!empty($key) && !empty($value)) {
+                        $properties[$key] = $value;
+                    }
+                }
+            }
+
+            // Add rule for the selector
+            $rules[$fullSelector] = $properties;
+        }
+
+        return $rules;
+    }
+
+    // Merge the two CSS arrays
+    public static function mergeCss($currentCss, $templateCss)
+    {
+        foreach ($templateCss as $selector => $properties) {
+            if (isset($currentCss[$selector])) {
+                // Merge properties from Template CSS into the Current Screen CSS for the same selector
+                $currentCss[$selector] = array_merge($currentCss[$selector], $properties);
+            } else {
+                // Add new selector and properties from Template CSS
+                $currentCss[$selector] = $properties;
+            }
+        }
+
+        return $currentCss;
+    }
+
+    public static function generateCss($cssArray)
+    {
+        // Convert the CSS array back into a string and output the final CSS
+        $cssString = '';
+
+        foreach ($cssArray as $selector => $properties) {
+            $cssString .= "$selector {\n";
+
+            foreach ($properties as $key => $value) {
+                $cssString .= " $key: $value;\n";
+            }
+
+            $cssString .= "}\n\n";
+        }
+
+        return $cssString;
     }
 }
