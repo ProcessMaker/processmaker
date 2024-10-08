@@ -6,6 +6,8 @@ use Carbon\Carbon;
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\Screen;
@@ -123,5 +125,73 @@ class ProcessRequestTokenPolicyTest extends TestCase
         $response = $this->apiCall('GET', $url);
         $response->assertStatus(200);
         $this->assertEquals('Screen Interstitial', $response->json()['config'][0]['name']);
+    }
+
+    public function createTaskHelper($allowReassignment, $assignedTo)
+    {
+        ProcessCategory::factory()->create(['is_system' => true]);
+        $this->seed(\ProcessMaker\Package\AdvancedUserManager\Database\Seeds\AssignmentProcessSeeder::class);
+
+        $bpmn = file_get_contents(base_path('tests/Feature/Api/bpmnPatterns/SimpleTaskProcess.bpmn'));
+        $value = $allowReassignment ? 'true' : 'false';
+        $bpmn = str_replace('pm:allowReassignment="false"', 'pm:allowReassignment="' . $value . '"', $bpmn);
+        $process = Process::factory()->create(['bpmn' => $bpmn]);
+
+        $url = route('api.process_events.trigger', [$process->id, 'event' => 'node_1']);
+        $this->apiCall('POST', $url);
+
+        $task = ProcessRequestToken::where('status', 'ACTIVE')->first();
+        $task->user_id = $assignedTo->id;
+        $task->save();
+
+        return $task;
+    }
+
+    public function testReassignTask()
+    {
+        $assignedUser = User::factory()->create();
+        $reassignToUser = User::factory()->create();
+        $task = $this->createTaskHelper(true, $assignedUser);
+
+        $this->user = $assignedUser;
+        $response = $this->apiCall('PUT', route('api.tasks.update', $task), [
+            'user_id' => $reassignToUser->id,
+        ]);
+        $response->assertStatus(200);
+
+        $this->assertEquals($reassignToUser->id, $task->refresh()->user_id);
+    }
+
+    public function testReassignWithoutTaskSetting()
+    {
+        $assignedUser = User::factory()->create();
+        $reassignToUser = User::factory()->create();
+        $task = $this->createTaskHelper(false, $assignedUser);
+
+        $this->user = $assignedUser;
+        $response = $this->apiCall('PUT', route('api.tasks.update', $task), [
+            'user_id' => $reassignToUser->id,
+        ]);
+        $response->assertStatus(403);
+
+        $this->assertEquals('Not authorized to reassign this task', $response->json()['message']);
+    }
+
+    public function testAdminReassignWithoutTaskSetting()
+    {
+        $assignedUser = User::factory()->create();
+        $reassignToUser = User::factory()->create();
+        $adminUser = User::factory()->create([
+            'is_administrator' => true,
+        ]);
+        $task = $this->createTaskHelper(false, $assignedUser);
+
+        $this->user = $adminUser;
+        $response = $this->apiCall('PUT', route('api.tasks.update', $task), [
+            'user_id' => $reassignToUser->id,
+        ]);
+        $response->assertStatus(200);
+
+        $this->assertEquals($reassignToUser->id, $task->refresh()->user_id);
     }
 }

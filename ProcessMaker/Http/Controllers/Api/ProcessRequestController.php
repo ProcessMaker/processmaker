@@ -216,8 +216,8 @@ class ProcessRequestController extends Controller
                     'label' => __('Default chart'),
                     'data' => [$countCompleted, $countInProgress],
                     'backgroundColor' => [
-                        'CLOSED' => '#62B2FD', // Color for 'Completed'
-                        'ACTIVE' => '#9BDFC4', // Color for 'In Progress'
+                        'CLOSED' => '#F9A8D4', // Color for 'Completed'
+                        'ACTIVE' => '#4F46E5', // Color for 'In Progress'
                     ],
                 ],
             ],
@@ -817,5 +817,26 @@ class ProcessRequestController extends Controller
                           ->update(['is_actionbyemail' => true]);
 
         return $affectedRows > 0;
+    }
+
+    /**
+     * This endpoint returns the destination of the last end event of a process request
+     *
+     * @param ProcessRequest $request
+     */
+    public function endEventDestination(ProcessRequest $request)
+    {
+        $lastEndEvent = $request->tokens()
+            ->where('element_type', 'end_event')
+            ->orderBy('id', 'desc')
+            ->first();
+        if (!$lastEndEvent) {
+            return response()->json(['message' => __('No end event found'), 'data' => null]);
+        }
+        $data = [
+            'endEventDestination' => $lastEndEvent->element_destination,
+        ];
+
+        return response()->json(['message' => __('End event found'), 'data' => $data]);
     }
 }
