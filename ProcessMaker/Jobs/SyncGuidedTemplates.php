@@ -15,12 +15,9 @@ use Log;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Media;
-use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\User;
 use ProcessMaker\Models\WizardTemplate;
-use Storage;
+use Spatie\MediaLibrary\MediaCollections\Filesystem;
 
 class SyncGuidedTemplates implements ShouldQueue
 {
@@ -318,10 +315,24 @@ class SyncGuidedTemplates implements ShouldQueue
     {
         // Import a media asset and associate it with the media collection
         if (!is_null($assetUrl)) {
-            $guidedTemplate
+            // load Media file
+            $urlParts = explode('/', $assetUrl);
+            $fileName = end($urlParts);
+            $media = Media::where('file_name', $fileName)
+            ->where('collection_name', $mediaCollectionName)->first();
+
+            if ($media) {
+                // remove files of media and add new file
+                app(Filesystem::class)->removeAllFiles($media);
+                // update file in Meda
+                app(Filesystem::class)->add($assetUrl, $media);
+            } else {
+                // create new media
+                $guidedTemplate
                 ->addMediaFromUrl($assetUrl)
                 ->withCustomProperties(['media_type' => $customProperty])
                 ->toMediaCollection($mediaCollectionName);
+            }
         }
     }
 
