@@ -2,6 +2,9 @@
 
 namespace Tests\Feature\Api\V1_1;
 
+use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Facades\ScreenCompiledManager;
+use ProcessMaker\Http\Resources\V1_1\TaskScreen;
 use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
@@ -44,6 +47,75 @@ class TaskControllerTest extends TestCase
         $this->assertIsArray($response->json());
         $this->assertNotNull($response->headers->get('Cache-Control'));
         $this->assertNotNull($response->headers->get('Expires'));
+    }
+
+    public function testShowScreenCache()
+    {
+        $content = file_get_contents(
+            __DIR__ . '/Fixtures/nested_screen_process.json'
+        );
+        ImportProcess::dispatchSync($content);
+        $request = ProcessRequest::factory()->create([
+            'process_id' => Process::where('name', 'nested screen test')->first()->id,
+        ]);
+        $process = Process::where('name', 'nested screen test')->first();
+        $processVersion = $process->getPublishedVersion([]);
+        $task = ProcessRequestToken::factory()->create([
+            'element_type' => 'task',
+            'element_name' => 'Task 1',
+            'element_id' => 'node_2',
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+        ]);
+        $screenVersion = $task->getScreenVersion();
+
+        // Prepare the key for the screen cache
+        Auth::setUser($this->user);
+        $processId = $process->id;
+        $processVersionId = $processVersion->id;
+        $language = $this->user->language;
+        $screenId = $screenVersion->screen_id;
+        $screenVersionId = $screenVersion->id;
+
+        // Get the screen cache key
+        $screenKey = ScreenCompiledManager::createKey(
+            $processId,
+            $processVersionId,
+            $language,
+            $screenId,
+            $screenVersionId
+        );
+
+        // Prepare the screen content with nested to be stored in the cache
+        $response = new TaskScreen($task);
+        $request = new \Illuminate\Http\Request();
+        $request->setUserResolver(function () {
+            return $this->user;
+        });
+        // add query param include=screen,nested
+        $request->query->add(['include' => 'screen,nested']);
+        $content = $response->toArray($request)['screen'];
+
+        // Mock the ScreenCompiledManager
+        ScreenCompiledManager::shouldReceive('createKey')
+            ->once()
+            ->withAnyArgs()
+            ->andReturn($screenKey);
+        ScreenCompiledManager::shouldReceive('getCompiledContent')
+            ->once()
+            ->with($screenKey)
+            ->andReturn(null);
+        ScreenCompiledManager::shouldReceive('storeCompiledContent')
+            ->once()
+            ->withAnyArgs($screenKey, $content)
+            ->andReturn(null);
+
+        // Assert the expected screen content is returned
+        $response = $this->apiCall('GET', route('api.1.1.tasks.show.screen', $task->id) . '?include=screen,nested');
+        $this->assertNotNull($response->json());
+        $this->assertIsArray($response->json());
+        $response->assertStatus(200);
+        $response->assertJson($content);
     }
 
     public function testIncludeSubprocessTasks()
