@@ -3,6 +3,7 @@
 namespace ProcessMaker;
 
 use Illuminate\Support\Facades\Validator;
+use ProcessMaker\Facades\ScreenCompiledManager;
 use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Models\Screen;
 
@@ -107,26 +108,36 @@ class SanitizeHelper
         if ($task) {
             // Get current and nested screens IDs ..
             $currentScreenExceptions = [];
-            $currentScreenAndNestedIds = $task->getScreenAndNestedIds();
-            foreach ($currentScreenAndNestedIds as $id) {
-                // Find the screen version ..
-                $screen = Screen::findOrFail($id);
-                $screen = $screen->versionFor($task->processRequest)->toArray();
-                // Get exceptions ..
-                $exceptions = self::getExceptions((object) $screen);
-                if (count($exceptions)) {
-                    $currentScreenExceptions = array_unique(array_merge($exceptions, $currentScreenExceptions));
+            $lastVersionId = ScreenCompiledManager::getLastScreenVersionId();
+            $screenVersionId = $task->getScreenVersion()->id;
+            // Get exceptions for the current screen and nested screens from screen cache if exists ..
+            $key = 'sid_' . $screenVersionId . '_last_' . $lastVersionId;
+            $exceptTask = ScreenCompiledManager::getCompiledContent($key);
+            if (!isset($exceptTask)) {
+                $currentScreenAndNestedIds = $task->getScreenAndNestedIds();
+                foreach ($currentScreenAndNestedIds as $id) {
+                    // Find the screen version ..
+                    $screen = Screen::findOrFail($id);
+                    $screen = $screen->versionFor($task->processRequest)->toArray();
+                    // Get exceptions ..
+                    $exceptions = self::getExceptions((object) $screen);
+                    if (count($exceptions)) {
+                        $currentScreenExceptions = array_unique(array_merge($exceptions, $currentScreenExceptions));
+                    }
                 }
+
+                // Get process request exceptions stored in do_not_sanitize column ..
+                $processRequestExceptions = $task->processRequest->do_not_sanitize;
+                if (!$processRequestExceptions) {
+                    $processRequestExceptions = [];
+                }
+
+                // Merge (nestedSreensExceptions and currentScreenExceptions) with processRequestExceptions ..
+                $exceptTask = array_unique(array_merge($processRequestExceptions, $currentScreenExceptions));
+
+                ScreenCompiledManager::storeCompiledContent($key, $exceptTask);
             }
 
-            // Get process request exceptions stored in do_not_sanitize column ..
-            $processRequestExceptions = $task->processRequest->do_not_sanitize;
-            if (!$processRequestExceptions) {
-                $processRequestExceptions = [];
-            }
-
-            // Merge (nestedSreensExceptions and currentScreenExceptions) with processRequestExceptions ..
-            $exceptTask = array_unique(array_merge($processRequestExceptions, $currentScreenExceptions));
             $except = array_unique(array_merge($except, $exceptTask));
         }
 
