@@ -234,7 +234,6 @@ class TaskController extends Controller
      */
     public function update(Request $request, ProcessRequestToken $task)
     {
-        file_put_contents("/Users/user/srv/http/processmaker4/.work/error.json", $request->input('user_id')."\n", FILE_APPEND);
         $this->authorize('update', $task);
         if ($request->input('status') === 'COMPLETED') {
             if ($task->status === 'CLOSED') {
