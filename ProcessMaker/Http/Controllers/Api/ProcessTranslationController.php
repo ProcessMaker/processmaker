@@ -4,6 +4,8 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
+use ProcessMaker\Facades\ScreenCompiledManager;
+
 use function PHPUnit\Framework\isEmpty;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
@@ -184,6 +186,9 @@ class ProcessTranslationController extends Controller
         $processVersion = Process::find($processId)->getDraftOrPublishedLatestVersion();
         $processTranslation = new ProcessTranslation($processVersion);
         $processTranslation->updateTranslations($screensTranslations, $language);
+
+        // Clear the screens cache for the process
+        ScreenCompiledManager::clearProcessScreensCache($processId);
     }
 
     public function export(Request $request, $processId, $languageCode)
