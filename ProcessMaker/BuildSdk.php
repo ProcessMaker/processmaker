@@ -58,7 +58,7 @@ class BuildSdk
     public function setUserId($userId)
     {
         if (!is_numeric($userId)) {
-            throw new \Exception('User id must be a number');
+            throw new Exception('User id must be a number');
         }
         $this->userId = $userId;
     }
@@ -235,6 +235,22 @@ class BuildSdk
                 "find {$folder} -name '*.py' -exec " .
                 "sed -i -E 's/ProcessMaker\\\Models\\\/ProcessMaker\\\\\\\Models\\\\\\\/g' {} \;"
             );
+        }
+
+        if ($this->lang === 'php') {
+            $content = file_get_contents("{$folder}/lib/ObjectSerializer.php");
+            $line = 'if (in_array($class, [\'DateTime';
+            $insertAbove = '
+                if ($class === "mixed") {
+                    $jsonObj = json_decode($data, true);
+                    if ($jsonObj === null && json_last_error() !== JSON_ERROR_NONE) {
+                        return $data;
+                    }
+                    return $jsonObj;
+                }
+            ';
+            $content = str_replace($line, $insertAbove . "\n\n" . $line, $content);
+            file_put_contents("{$folder}/lib/ObjectSerializer.php", $content);
         }
     }
 
