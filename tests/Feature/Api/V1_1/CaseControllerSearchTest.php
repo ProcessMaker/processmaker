@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\V1_1;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use ProcessMaker\Repositories\CaseUtils;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
@@ -9,6 +10,7 @@ use Tests\TestCase;
 class CaseControllerSearchTest extends TestCase
 {
     use RequestHelper;
+    use RefreshDatabase;
 
     public function test_search_all_cases_by_case_number(): void
     {
@@ -180,7 +182,7 @@ class CaseControllerSearchTest extends TestCase
         $response->assertJsonCount(5, 'data');
     }
 
-    public function test_search_special_all_cases_by_case_number(): void
+    public function test_search_all_cases_special_by_dni(): void
     {
         $caseTitle1 = 'this is a ci 123456LP';
 
@@ -194,6 +196,73 @@ class CaseControllerSearchTest extends TestCase
         $response->assertJsonCount(15, 'data');
 
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => '123456LP']));
+        $response->assertStatus(200);
+        $response->assertJsonCount(5, 'data');
+
+    }
+
+    public function test_search_all_cases_special_by_japanese_characters(): void
+    {
+        $caseTitle1 = '信用評価プロセス';
+
+        $user = CaseControllerTest::createUser('user_h');
+        CaseControllerTest::createCasesStartedForUser($user->id, 5, ['case_title' => $caseTitle1, 'keywords' => $caseTitle1]);
+
+        $this->assertDatabaseCount('cases_started', 31);
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases'));
+        $response->assertStatus(200);
+        $response->assertJsonCount(15, 'data');
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => $caseTitle1]));
+        $response->assertStatus(200);
+        $response->assertJsonCount(5, 'data');
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => '信用']));
+        $response->assertStatus(200);
+        $response->assertJsonCount(5, 'data');
+    }
+
+    public function test_search_all_cases_special_by_thai_characters(): void
+    {
+        $caseTitle1 = 'กระบวนการประเมินเครดิต';
+
+        $user = CaseControllerTest::createUser('user_i');
+        CaseControllerTest::createCasesStartedForUser($user->id, 5, ['case_title' => $caseTitle1, 'keywords' => $caseTitle1]);
+
+        $this->assertDatabaseCount('cases_started', 36);
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases'));
+        $response->assertStatus(200);
+        $response->assertJsonCount(15, 'data');
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => 'กระบวนการ']));
+        $response->assertStatus(200);
+        $response->assertJsonCount(5, 'data');
+    }
+
+    public function test_search_all_cases_special_by_french_characters(): void
+    {
+        $caseTitle1 = "Processus du crédit";
+
+        $user = CaseControllerTest::createUser('user_j');
+        CaseControllerTest::createCasesStartedForUser($user->id, 5, ['case_title' => $caseTitle1, 'keywords' => $caseTitle1]);
+
+        $this->assertDatabaseCount('cases_started', 41);
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases'));
+        $response->assertStatus(200);
+        $response->assertJsonCount(15, 'data');
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => 'Processus']));
+        $response->assertStatus(200);
+        $response->assertJsonCount(5, 'data');
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => 'crédit']));
+        $response->assertStatus(200);
+        $response->assertJsonCount(10, 'data');
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => "Processus crédit"]));
         $response->assertStatus(200);
         $response->assertJsonCount(5, 'data');
     }
