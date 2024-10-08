@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static void clearCompiledAssets()
  * @method static string createKey(string $processId, string $processVersionId, string $language, string $screenId, string $screenVersionId)
  * @method static int getLastScreenVersionId()
+ * @method static void clearProcessScreensCache(string $processId)
  *
  * @see \ProcessMaker\Managers\ScreenCompiledManager
  */
