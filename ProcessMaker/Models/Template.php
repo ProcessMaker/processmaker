@@ -101,6 +101,11 @@ class Template extends ProcessMakerModel
         return (new $this->types[$type][1])->deleteMediaImages($request);
     }
 
+    public function applyTemplate(string $type, Request $request)
+    {
+        return (new $this->types[$type][1])->applyTemplate($request);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

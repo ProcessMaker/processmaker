@@ -62,7 +62,7 @@ export default {
           value: "add-to-project",
           content: "Add to Project",
           icon: "fas fa-folder-plus",
-          permission: "create-projects",
+          permission: "edit-processes",
         },
         {
           value: "add-to-bundle",
@@ -85,7 +85,7 @@ export default {
           content: "View Documentation",
           link: true,
           href: ProcessMaker.packages.includes('package-ai') ? "/modeler/{{id}}/documentation" : "/modeler/{{id}}/print",
-          permission: ["view-processes", "view-additional-asset-actions"],
+          permission: ["view-documentation", "edit-documentation", "view-additional-asset-actions"],
           icon: "fas fa-sign",
           conditional: "isDocumenterInstalled",
         },
