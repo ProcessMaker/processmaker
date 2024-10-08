@@ -1,17 +1,27 @@
 <template>
   <div>
-    <div
-      class="btn text-black text-capitalize cursor-default"
-    >
+    <div class="btn text-black text-capitalize cursor-default">
       <div class="toolbar-item d-flex align-items-center">
-        <span>
+        <div class="save-date">
+          <span
+            v-if="size === 0"
+            class="autosave-draft-date"
+          >
+            {{ date }}
+          </span>
           <FontAwesomeIcon
             v-if="task.draft"
             :class="{ 'text-success': !error, 'text-secondary': error }"
             :icon="icon"
             :spin="isLoading"
           />
-        </span>
+          <span
+            v-if="size === 0"
+            class="autosave-draft-date"
+          >
+            {{ $t("Saved") }}
+          </span>
+        </div>
         <span
           id="saved-status"
           class="element-name truncate-text"
@@ -19,8 +29,7 @@
             maxWidth: `${size}px`
           }"
           v-html="sanitizeHtml(task.element_name)"
-        >
-        </span>
+        />
       </div>
     </div>
     <b-tooltip
@@ -32,11 +41,22 @@
         {{ task.process_request.case_title }}
       </div>
       <div class="tooltip-draft-date">
-        <FontAwesomeIcon v-if="!error" class="text-success" :icon="savedIcon" />
-        {{ $t('Last Autosave: ')+date }}
+        <FontAwesomeIcon
+          v-if="!error"
+          class="text-success"
+          :icon="savedIcon"
+        />
+        {{ $t('Last Autosave: ') + date }}
       </div>
-      <div v-if="error" class="tooltip-draft-error">
-        <FontAwesomeIcon v-if="error" class="text-secondary" :icon="errorIcon " />
+      <div
+        v-if="error"
+        class="tooltip-draft-error"
+      >
+        <FontAwesomeIcon
+          v-if="error"
+          class="text-secondary"
+          :icon="errorIcon "
+        />
         <span>{{ $t('Unable to save. Verify your internet connection.') }}
         </span>
       </div>
@@ -124,14 +144,14 @@ export default {
       return this.removeScriptsHtml(html);
     },
     removeScriptsHtml(input) {
-      const doc = new DOMParser().parseFromString(input, 'text/html');
+      const doc = new DOMParser().parseFromString(input, "text/html");
 
-      const scripts = doc.querySelectorAll('script');
+      const scripts = doc.querySelectorAll("script");
       scripts.forEach((script) => {
         script.remove();
       });
 
-      const styles = doc.querySelectorAll('style');
+      const styles = doc.querySelectorAll("style");
       styles.forEach((style) => {
         style.remove();
       });
@@ -193,5 +213,10 @@ export default {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+.save-date {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
 }
 </style>
