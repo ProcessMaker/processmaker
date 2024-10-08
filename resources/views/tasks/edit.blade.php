@@ -80,10 +80,111 @@
                                             :timeline="false"
                                             />
                             </div>
-                          </div>
-                          @can('editData', $task->processRequest)
-                              <div v-if="task.process_request.status === 'ACTIVE'" id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="card card-body border-top-0 tab-pane p-3">
-                                  @include('tasks.editdata')
+                        @endcan
+                    </div>
+                </div>
+            </div>
+            @if (shouldShow('taskStatusContainer'))
+              <div>
+                <button
+                  role="button"
+                  class="btn d-block mr-0 ml-auto button-collapse"
+                  data-toggle="collapse"
+                  data-target="#collapse-info"
+                  @click="showTabs = !showTabs"
+                >
+                  <template v-if="showTabs">
+                    <i class="fas fa-angle-right"></i>
+                  </template>
+                  <template v-else>
+                    <i class="fas fa-angle-left"></i>
+                  </template>
+                </button>
+                <ul v-if="showTabs" class="nav nav-tabs nav-collapse" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button
+                      id="details-tab"
+                      :class="{'nav-link': true, active: showInfo }"
+                      data-bs-toggle="tab"
+                      data-bs-target="#details"
+                      type="button"
+                      role="tab"
+                      aria-controls="details"
+                      aria-selected="true"
+                      @click="switchTabInfo('details')"
+                    >
+                      @{{ __('Details') }}
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button
+                      id="comments-tab"
+                      :class="{'nav-link': true, active: !showInfo }"
+                      data-bs-toggle="tab"
+                      data-bs-target="#comments"
+                      type="button"
+                      role="tab"
+                      aria-controls="comments"
+                      aria-selected="false"
+                      @click="switchTabInfo('comments')"
+                    >
+                      @{{ __('Comments') }}
+                    </button>
+                  </li>
+                </ul>
+                <div class="tab-content">
+                  <div id="collapse-info" class="collapse show width">
+                  <div
+                    v-if="showInfo"
+                    id="details"
+                    v-bind:class="{ 'tab-pane':true, fade: true, show: showInfo, active: showInfo }"
+                    role="tabpanel"
+                    aria-labelledby="details-tab"
+                  >
+                      <div class="ml-md-3 mt-3 mt-md-0">
+                        <div class="card collapse-content">
+                          <ul class="list-group list-group-flush w-100">
+                            <li class="list-group-item">
+                            <div
+                              v-if="taskDraftsEnabled"
+                              class="row justify-content-start pb-1"
+                            >
+                              <task-save-notification
+                                :options="options"
+                                :task="task"
+                                :date="lastAutosaveNav"
+                                :error="errorAutosave"
+                                :form-data="formData"
+                              />
+                            </div>
+                              <div class="row button-group">
+                                <div class="col-6">
+                                  <button
+                                    type="button"
+                                    class="btn btn-block button-actions"
+                                    @click="createRule"
+                                  >
+                                  <i class="fas fa-plus"></i> {{ __('Create Rule') }}
+                                  </button>
+                                </div>
+                                <div class="col-6">
+                                  <button
+                                    type="button"
+                                    class="btn btn-block button-actions"
+                                    :class="{ 'button-priority': isPriority }"
+                                    @click="addPriority"
+                                  >
+                                  <img
+                                    :src="
+                                      isPriority
+                                        ? '/img/priority.svg'
+                                        : '/img/priority-header.svg'
+                                    "
+                                    :alt="$t('No Image')"
+                                  >
+                                    {{ __('Priority') }}
+                                  </button>
+                                </div>
                               </div>
                           @endcan
                       </div>
@@ -141,7 +242,18 @@
                           <div class="card collapse-content">
                             <ul class="list-group list-group-flush w-100">
                               <li class="list-group-item">
-                                <!-- ADD THE OTHER BUTTONS -->
+                                <div
+                                  v-if="taskDraftsEnabled"
+                                  class="row justify-content-start pb-1"
+                                >
+                                <task-save-notification
+                                  :options="options"
+                                  :task="task"
+                                  :date="lastAutosaveNav"
+                                  :error="errorAutosave"
+                                  :form-data="formData"
+                                />
+                                </div>
                                 <div class="row button-group">
                                   <div class="col-6">
                                     <button
@@ -382,6 +494,7 @@
     );
 
     const task = @json($task);
+    let draftTask = task.draft;
     const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
     const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
@@ -415,6 +528,7 @@
           filter: "",
           showReassignment: false,
           task,
+          draftTask,
           userHasAccessToTask,
           selectedUser: [],
           hasErrors: false,
@@ -430,6 +544,7 @@
             is_loading: false,
           },
           lastAutosave: "-",
+          lastAutosaveNav: "-",
           errorAutosave: false,
           formDataWatcherActive: true,
           showInfo: true,
@@ -449,9 +564,11 @@
                 history.replaceState(null, null, `/tasks/${task.id}/edit`);
               }
               if (task.draft) {
-                this.lastAutosave = moment(task.draft.updated_at).format("DD MMMM YYYY | HH:mm");
+                this.lastAutosave = moment(this.draftTask.updated_at).format("DD MMMM YYYY | HH:mm");
+                this.lastAutosaveNav = moment(this.draftTask.updated_at).format("MMM DD, YYYY / HH:mm");
               } else {
                 this.lastAutosave = "-";
+                this.lastAutosaveNav = "-"
               }
             }
           },
@@ -723,12 +840,12 @@
               return ProcessMaker.apiClient
               .put("drafts/" + this.task.id, draftData)
               .then((response) => {
-                ProcessMaker.alert(this.$t('Saved'), 'success')
                 this.task.draft = _.merge(
                   {},
                   this.task.draft,
                   response.data
                 );
+                this.draftTask = structuredClone(response.data);
               })
               .catch(() => {
                 this.errorAutosave = true;
