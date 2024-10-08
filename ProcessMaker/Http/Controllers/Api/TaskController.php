@@ -247,7 +247,6 @@ class TaskController extends Controller
             $instance = $task->processRequest;
             TaskDraft::moveDraftFiles($task);
             WorkflowManager::completeTask($process, $instance, $task, $data);
-            HandleRedirectListener::sendRedirectToEvent();
 
             return new Resource($task->refresh());
         } elseif (!empty($request->input('user_id'))) {

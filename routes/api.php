@@ -228,6 +228,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('requests/{request}/tokens', [ProcessRequestController::class, 'getRequestToken'])->name('requests.getRequestToken')->middleware('can:view,request');
     Route::post('requests/{request}/events/{event}', [ProcessRequestController::class, 'activateIntermediateEvent'])->name('requests.update,request');
     Route::get('requests/{request}/details-screen-request', [ProcessRequestController::class, 'screenRequested'])->name('requests.detail.screen')->middleware('can:view,request');
+    Route::get('requests/{request}/end-event-destination', [ProcessRequestController::class, 'endEventDestination'])->name('requests.end_event_destination')->middleware('can:view,request');
 
     // Request Files
     Route::get('requests/{request}/files', [ProcessRequestFileController::class, 'index'])->name('requests.files.index')->middleware('can:view,request');
@@ -332,6 +333,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('modeler/templates/{type}/{id}', [TemplateController::class, 'show'])->name('modeler.template.show')->middleware('template-authorization');
     Route::post('templates/{type}/import/validation', [TemplateController::class, 'preImportValidation'])->name('template.preImportValidation')->middleware('template-authorization');
     Route::post('template/{type}/{id}/publish', [TemplateController::class, 'publishTemplate'])->name('template.publishTemplate')->middleware('can:publish-screen-templates');
+    Route::post('template/{type}/{id}/apply', [TemplateController::class, 'applyTemplate'])->name('template.applyTemplate')->middleware('template-authorization');
     Route::get('screen-builder/{type}/{id}', [TemplateController::class, 'show'])->name('screenBuilder.template.show')->middleware('template-authorization');
 
     // Wizard Templates

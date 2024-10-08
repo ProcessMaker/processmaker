@@ -138,10 +138,14 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
     {
         $today = $this->today();
         try {
-            if (!Schema::hasTable('scheduled_tasks')) {
-                return;
-            }
-
+            /**
+             * This validation is removed; the database schema should exist before 
+             * any initiation of 'jobs' and 'schedule'.
+             * 
+             * if (!Schema::hasTable('scheduled_tasks')) {
+             *     return;
+             * }
+             */
             $this->removeExpiredLocks();
 
             $tasks = ScheduledTask::cursor();
@@ -202,7 +206,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                 }
             }
         } catch (PDOException $e) {
-            Log::error('The connection to the database had problems');
+            Log::error('The connection to the database had problems (scheduleTasks): ' .  $e->getMessage());
         }
     }
 

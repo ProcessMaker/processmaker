@@ -74,8 +74,8 @@ export default {
       return filter.value;
     },
     isDatetime(value) {
-      let date = new Date(value);
-      return date instanceof Date && !isNaN(date);
+      let date = moment(value, "YYYY-MM-DDTHH:mm:ss.SSS[Z]", true);
+      return date.isValid();
     },
     formatDatetime(value) {
       return moment(value)
