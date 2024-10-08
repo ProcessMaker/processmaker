@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->uuid('uuid')->unique()->nullable();
             $table->string('field_name');
-            $table->unsignedInteger('request_id');
             $table->string('iv');
             $table->text('data');
             $table->timestamps();
@@ -23,8 +22,6 @@ return new class extends Migration
             // Indexes
             $table->index('uuid');
             $table->index('field_name');
-            $table->index('request_id');
-            $table->unique(['field_name', 'request_id']);
         });
     }
 

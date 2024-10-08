@@ -35,7 +35,6 @@ class EncryptedData extends ProcessMakerModel
      */
     protected $fillable = [
         'field_name',
-        'request_id',
         'iv',
         'data',
     ];

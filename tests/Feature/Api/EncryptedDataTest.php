@@ -5,7 +5,6 @@ namespace Tests\Feature\Api;
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
@@ -28,12 +27,10 @@ class EncryptedDataTest extends TestCase
 
         // Create required dummy objects
         $screen = Screen::factory()->create(['config' => $config]);
-        $request = ProcessRequest::factory()->create();
         
         // Build data to send
         $data = [
             'field_name' => 'form_input_1',
-            'request_id' => $request->id,
             'plain_text' => $faker->sentence(),
             'screen_id' => $screen->id,
         ];
@@ -53,12 +50,10 @@ class EncryptedDataTest extends TestCase
 
         // Create required dummy objects
         $screen = Screen::factory()->create();
-        $request = ProcessRequest::factory()->create();
         
         // Build data to send
         $data = [
             'field_name' => '', // Empty
-            'request_id' => $request->id,
             'plain_text' => $faker->sentence(),
             'screen_id' => $screen->id,
         ];
@@ -74,33 +69,6 @@ class EncryptedDataTest extends TestCase
         $this->assertIsArray($responseData['errors']);
     }
 
-    public function test_encrypt_text_request_id_not_found()
-    {
-        // Initialize Faker
-        $faker = Faker::create();
-
-        // Create required dummy objects
-        $screen = Screen::factory()->create();
-        
-        // Build data to send
-        $data = [
-            'field_name' => $faker->word(),
-            'request_id' => 9999999,
-            'plain_text' => $faker->sentence(),
-            'screen_id' => $screen->id,
-        ];
-
-        // Call endpoint
-        $response = $this->apiCall('POST', route('api.encrypted_data.encrypt_text'), $data);
-
-        // Asserts
-        $response->assertStatus(422);
-        $responseData = $response->json();
-        $this->assertIsArray($responseData);
-        $this->assertEquals($responseData['message'], 'The selected Request id is invalid.');
-        $this->assertIsArray($responseData['errors']);
-    }
-
     public function test_encrypt_text_text_plain_empty()
     {
         // Initialize Faker
@@ -108,12 +76,10 @@ class EncryptedDataTest extends TestCase
 
         // Create required dummy objects
         $screen = Screen::factory()->create();
-        $request = ProcessRequest::factory()->create();
         
         // Build data to send
         $data = [
             'field_name' => $faker->word(),
-            'request_id' => $request->id,
             'plain_text' => '', // Empty
             'screen_id' => $screen->id,
         ];
@@ -133,14 +99,10 @@ class EncryptedDataTest extends TestCase
     {
         // Initialize Faker
         $faker = Faker::create();
-
-        // Create required dummy objects
-        $request = ProcessRequest::factory()->create();
         
         // Build data to send
         $data = [
             'field_name' => $faker->word(),
-            'request_id' => $request->id,
             'plain_text' => $faker->sentence(),
             'screen_id' => 9999999,
         ];
