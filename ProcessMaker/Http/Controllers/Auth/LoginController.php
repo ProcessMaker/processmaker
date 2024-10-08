@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Laravel\Passport\HasApiTokens;
 use Laravel\Passport\Passport;
@@ -253,8 +254,12 @@ class LoginController extends Controller
             // Clear the user session
             $this->forgetUserSession();
 
-            event(new Logout(Auth::user()));
-
+            try {
+                $eventResult = event(new Logout(Auth::user()));
+            } catch (\Throwable $e) {
+                Log::error('Error when in logout event: ' . $e->getMessage());
+                report($e);
+            }
             // Always destroy 2fa flag
             session()->remove(TwoFactorAuthController::TFA_VALIDATED);
             session()->remove(TwoFactorAuthController::TFA_MESSAGE);
