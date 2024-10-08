@@ -283,9 +283,9 @@ class TemplateController extends Controller
                 continue;
             }
 
-            if ($payload['root'] === $asset['attributes']['uuid']
+            if (!$asset['model']::where('uuid', $key)->exists()
+                || $payload['root'] === $asset['attributes']['uuid']
                 || Str::contains($asset['type'], 'Category')
-                || !$asset['model']::where('uuid', $key)->exists()
             ) {
                 continue;
             }

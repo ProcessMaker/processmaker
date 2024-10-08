@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\ImportExport\Exporters;
 
-use Facades\ProcessMaker\Helpers\CachedSchema;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
@@ -70,7 +69,7 @@ abstract class ExporterBase implements ExporterInterface
         $baseQuery = $class::query();
 
         // If table does not exists for model, continue.
-        if (!CachedSchema::hasTable($baseQuery->getModel()->getTable())) {
+        if (!Schema::hasTable($baseQuery->getModel()->getTable())) {
             return [null, null];
         }
 
@@ -289,15 +288,14 @@ abstract class ExporterBase implements ExporterInterface
 
     public function toArray()
     {
-        $lastModifiedBy = $this->getLastModifiedBy();
         $attributes = [
             'exporter' => get_class($this),
             'type' => $this->getClassName(),
             'type_human' => Str::singular($this->getTypeHuman($this->getClassName())),
             'type_plural' => Str::plural($this->getClassName()),
             'type_human_plural' => Str::plural($this->getTypeHuman($this->getClassName())),
-            'last_modified_by' => $lastModifiedBy['lastModifiedByName'],
-            'last_modified_by_id' => $lastModifiedBy['lastModifiedById'],
+            'last_modified_by' => $this->getLastModifiedBy()['lastModifiedByName'],
+            'last_modified_by_id' => $this->getLastModifiedBy()['lastModifiedById'],
             'model' => get_class($this->model),
             'force_password_protect' => $this->forcePasswordProtect,
             'hidden' => $this->hidden,
@@ -344,7 +342,7 @@ abstract class ExporterBase implements ExporterInterface
 
     public function getDescription()
     {
-        if (!CachedSchema::hasColumn($this->model->getTable(), 'description')) {
+        if (!Schema::hasColumn($this->model->getTable(), 'description')) {
             return null;
         }
 
@@ -520,7 +518,17 @@ abstract class ExporterBase implements ExporterInterface
         foreach ($this->getDependents(DependentType::CATEGORIES) as $dependent) {
             $categories->push($categoryClass::findOrFail($dependent->model->id));
         }
-        $isTemplate = $this->options->get('isTemplate', $this->model->uuid);
+        // Get the options from the object, filter them for the `isTemplate` flag and get the first value.
+        $manifest = $this->manifest->toArray(true);
+        $options = (array) $this->options;
+        $isTemplate = collect($options['options'])
+            ->filter(function ($optionValue, $optionKey) use ($manifest) {
+                return Arr::has($manifest, $optionKey);
+            })
+            ->map(function ($optionValue, $optionKey) {
+                return Arr::get($optionValue, 'isTemplate');
+            })
+            ->first();
 
         // If the process has a set category, we need to verify the "Uncategorized"
         // category exists for this model and if it doesn't, recreate it

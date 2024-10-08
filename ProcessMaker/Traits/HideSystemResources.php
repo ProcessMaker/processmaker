@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Traits;
 
-use Facades\ProcessMaker\Helpers\CachedSchema;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use ProcessMaker\Models\Process;
@@ -64,7 +63,7 @@ trait HideSystemResources
         } elseif (static::class === Process::class) {
             return $query
                 ->where('is_template', false)
-                ->when(CachedSchema::hasColumn('processes', 'asset_type'), function ($query) {
+                ->when(Schema::hasColumn('processes', 'asset_type'), function ($query) {
                     return $query->whereNull('asset_type');
                 })
                 ->whereDoesntHave('categories', function ($query) {
@@ -73,7 +72,7 @@ trait HideSystemResources
         } elseif (static::class === Screen::class) {
             return $query
                 ->where('is_template', false)
-                ->when(CachedSchema::hasColumn('screens', 'asset_type'), function ($query) {
+                ->when(Schema::hasColumn('screens', 'asset_type'), function ($query) {
                     return $query->whereNull('asset_type');
                 })
                 ->whereDoesntHave('categories', function ($query) {
@@ -82,7 +81,7 @@ trait HideSystemResources
         } elseif (static::class === Script::class) {
             return $query
                 ->where('is_template', false)
-                ->when(CachedSchema::hasColumn('scripts', 'asset_type'), function ($query) {
+                ->when(Schema::hasColumn('scripts', 'asset_type'), function ($query) {
                     return $query->whereNull('asset_type');
                 })
                 ->whereDoesntHave('categories', function ($query) {
@@ -91,7 +90,7 @@ trait HideSystemResources
         } elseif (static::class === DataSource::class) {
             return $query
                 ->where('is_template', false)
-                ->when(CachedSchema::hasColumn('data_sources', 'asset_type'), function ($query) {
+                ->when(Schema::hasColumn('data_sources', 'asset_type'), function ($query) {
                     return $query->whereNull('asset_type');
                 })
                 ->whereDoesntHave('categories', function ($query) {
@@ -110,7 +109,7 @@ trait HideSystemResources
             });
         } elseif (static::class === ProcessTemplates::class) {
             return $query->where('process_templates.is_system', false)
-                ->when(CachedSchema::hasColumn('process_templates', 'asset_type'), function ($query) {
+                ->when(Schema::hasColumn('process_templates', 'asset_type'), function ($query) {
                     return $query->whereNull('asset_type');
                 });
         } elseif (static::class === ScriptExecutor::class) {
@@ -119,7 +118,7 @@ trait HideSystemResources
             return $query->whereNull('collections.asset_type');
         } elseif (static::class === ScreenTemplates::class) {
             return $query->where('screen_templates.is_system', false)
-                ->when(CachedSchema::hasColumn('screen_templates', 'asset_type'), function ($query) {
+                ->when(Schema::hasColumn('screen_templates', 'asset_type'), function ($query) {
                     return $query->whereNull('asset_type');
                 });
         } else {

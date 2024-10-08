@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Traits;
 
-use Facades\ProcessMaker\Helpers\CachedSchema;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
@@ -34,7 +33,7 @@ trait HasVersioning
     {
         $query->whereHas('versions', function ($query) {
             // Avoid migration errors when 'draft' column does not exist.
-            $hasDraftColumn = CachedSchema::hasColumn($query->getModel()->getTable(), 'draft');
+            $hasDraftColumn = Schema::hasColumn($query->getModel()->getTable(), 'draft');
             $query->when($hasDraftColumn, function ($query) {
                 $query->where('draft', false);
             });
