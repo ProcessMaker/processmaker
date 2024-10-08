@@ -315,30 +315,23 @@
                 >
                   <div class="form-group">
                     {!!Form::label('user', __('User'))!!}
-                    <select-from-api
-                      id='user'
-                      v-model="selectedUser"
-                      placeholder="{{__('Select the user to reassign to the task')}}"
-                      api="users?status=ACTIVE"
-                      :multiple="false"
-                      :show-labels="false"
-                      :searchable="true"
-                      :store-id="false"
-                      label="fullname"
-                    >
-                      <template slot="noResult">
-                        {{ __('No elements found. Consider changing the search query.') }}
+                    <p-m-dropdown-suggest v-model="selectedUser"
+                                          :options="users"
+                                          @pmds-input="onInput"
+                                          :placeholder="$t('Type here to search')">
+                      <template v-slot:pre-text="{ option }">
+                        <b-badge variant="secondary" 
+                                 class="mr-2 custom-badges pl-2 pr-2 rounded-lg">
+                          @{{ option.count }}
+                        </b-badge>
                       </template>
-                      <template slot="noOptions">
-                        {{ __('No Data Available') }}
-                      </template>
-                    </select-from-api>
+                    </p-m-dropdown-suggest>
                   </div>
                   <div slot="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" @click="cancelReassign">
                       {{__('Cancel')}}
                     </button>
-                    <button type="button" class="btn btn-secondary ml-2" @click="reassignUser" :disabled="disabled">
+                    <button type="button" class="btn btn-secondary" @click="reassignUser" :disabled="disabled">
                       {{__('Reassign')}}
                     </button>
                   </div>
@@ -406,7 +399,7 @@
           showReassignment: false,
           task,
           userHasAccessToTask,
-          selectedUser: [],
+          selectedUser: null,
           hasErrors: false,
           redirectInProcess: false,
           formData: {},
@@ -427,6 +420,7 @@
           isPriority: false,
           userHasInteracted: false,
           caseTitle: "",
+          users: []
         },
         watch: {
           task: {
@@ -493,7 +487,7 @@
             return this.task.status !== "CLOSED";
           },
           disabled () {
-            return this.selectedUser ? this.selectedUser.length === 0 : true;
+            return this.selectedUser ? false : true;
           },
           styleDataMonaco () {
             let height = window.innerHeight * 0.55;
@@ -581,24 +575,26 @@
           },
           // Reassign methods
           show () {
+            this.selectedUser = null;
             this.showReassignment = true;
+            this.getUsers("");
           },
           showQuickFill () {
             this.redirect(`/tasks/${this.task.id}/edit/quickfill`);
           },
           cancelReassign () {
+            this.selectedUser = null;
             this.showReassignment = false;
-            this.selectedUser = [];
           },
           reassignUser () {
             if (this.selectedUser) {
               ProcessMaker.apiClient
                 .put("tasks/" + this.task.id, {
-                  user_id: this.selectedUser.id
+                  user_id: this.selectedUser
                 })
                 .then(response => {
                   this.showReassignment = false;
-                  this.selectedUser = [];
+                  this.selectedUser = null;
                   this.redirect('/tasks');
                 });
             }
@@ -749,6 +745,25 @@
           },
           caseTitleField(task) {
             this.caseTitle = task.process_request.case_title;
+          },
+          getUsers(filter) {
+            ProcessMaker.apiClient.get(this.getUrlUsersTaskCount(filter)).then(response => {
+              this.users = [];
+              for (let i in response.data.data) {
+                this.users.push({
+                  text: response.data.data[i].fullname,
+                  value: response.data.data[i].id,
+                  count: response.data.data[i].count
+                });
+              }
+            });
+          },
+          getUrlUsersTaskCount(filter) {
+            let url = "users_task_count?filter=" + filter;
+            return url;
+          },
+          onInput(filter) {
+            this.getUsers(filter);
           }
         },
         mounted() {
@@ -764,6 +779,7 @@
           interactionListener.addEventListener('keydown', (event) => {
             this.sendUserHasInteracted();
           });
+          this.getUsers("");
         }
       });
       window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name);
