@@ -4,7 +4,7 @@
       <div
         v-if="tablePagination"
         class="pagination"
-      >{{tablePagination.from + 1}} - {{tablePagination.to}} {{$t('of')}} {{tablePagination.total}} {{title}}</div>
+      >{{tablePagination.from + 1}} - {{tablePagination.to}} {{$t('of')}} {{tablePagination.count}} {{title}}</div>
       <div
         class="pagination"
         v-if="tablePagination && tablePagination.last_page < 1"
