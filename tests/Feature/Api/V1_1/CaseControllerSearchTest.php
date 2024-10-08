@@ -192,19 +192,24 @@ class CaseControllerSearchTest extends TestCase
     public function test_search_all_cases_special_by_dni(): void
     {
         $caseTitle1 = 'this is a ci 123456LP';
+        $caseTitle2 = "John's Vacation";
 
         CaseControllerTest::createCasesStartedForUser($this->user->id, 5, ['case_title' => $caseTitle1, 'keywords' => $caseTitle1]);
+        CaseControllerTest::createCasesStartedForUser($this->user->id, 5, ['case_title' => $caseTitle2, 'keywords' => $caseTitle2]);
 
-        $this->assertDatabaseCount('cases_started', 5);
+        $this->assertDatabaseCount('cases_started', 10);
 
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases'));
         $response->assertStatus(200);
-        $response->assertJsonCount(5, 'data');
+        $response->assertJsonCount(10, 'data');
 
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => '123456LP']));
         $response->assertStatus(200);
         $response->assertJsonCount(5, 'data');
 
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => "John's"]));
+        $response->assertStatus(200);
+        $response->assertJsonCount(5, 'data');
     }
 
     public function test_search_all_cases_special_by_japanese_characters(): void
