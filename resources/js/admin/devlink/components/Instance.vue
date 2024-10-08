@@ -10,6 +10,7 @@ const route = useRoute();
 
 const bundles = ref([]);
 const filter = ref("");
+const warnings = ref([]);
 const fields = [
   {
     key: 'name',
@@ -37,6 +38,14 @@ onMounted(() => {
   load();
 });
 
+const showModal = () => {
+  $("#warningsModal").modal("show");
+};
+
+const closeModal = () => {
+  $("#warningsModal").modal("hide");
+};
+
 const load = () => {
   ProcessMaker.apiClient
     .get(`/devlink/${route.params.id}/remote-bundles?filter=${filter.value}`)
@@ -58,7 +67,11 @@ const install = (bundle) => {
     if (confirm) {
       ProcessMaker.apiClient
         .post(`/devlink/${route.params.id}/remote-bundles/${bundle.id}/install`)
-        .then(() => {
+        .then((response) => {
+          warnings.value = response.data.warnings_devlink;
+          if (warnings.value.length > 0) {
+            showModal();
+          }
           window.ProcessMaker.alert('Bundle successfully installed', "success");
         });
     }
@@ -90,6 +103,26 @@ const install = (bundle) => {
           </div>
         </template>
       </b-table>
+    </div>
+    <div class="modal fade" id="warningsModal" tabindex="-1" role="dialog" aria-labelledby="warningsModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <h5>Warnings</h5>
+            <ul>
+              <li
+                v-for="(warning, index) in warnings"
+                :key="index"
+              >
+                {{ warning }}
+              </li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" @click="closeModal()" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 

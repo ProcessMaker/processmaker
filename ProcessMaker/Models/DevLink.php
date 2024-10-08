@@ -118,6 +118,10 @@ class DevLink extends ProcessMakerModel
         }
 
         $bundle->syncAssets($assets);
+
+        return [
+            'warnings_devlink' => $this->logger->getWarnings(),
+        ];
     }
 
     private function import(array $payload)
@@ -129,7 +133,7 @@ class DevLink extends ProcessMakerModel
         $importer = new Importer($payload, new Options([]), $this->logger);
         $manifest = $importer->doImport();
 
-        dd($importer->logger);
+        $manifest[$payload['root']]->model['warnings_devlink'] = $importer->logger->getWarnings();
 
         return $manifest[$payload['root']]->model;
     }

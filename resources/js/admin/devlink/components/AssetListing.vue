@@ -14,6 +14,7 @@ const typeConfig = types.find((type) => type.type === route.params.type);
 
 const items = ref([]);
 const filter = ref("");
+const warnings = ref([]);
 
 const dateFormatter = (value) => {
   return moment(value).format(ProcessMaker.user.datetime_format);
@@ -41,8 +42,16 @@ const fields = [
   {
     key: 'menu',
     label: ''
-  }
+  },
 ];
+
+const showModal = () => {
+  $("#warningsModal").modal("show");
+};
+
+const closeModal = () => {
+  $("#warningsModal").modal("hide");
+};
 
 const install = (asset) => {
   vue.$bvModal.msgBoxConfirm('Are you sure you want to install this asset onto this instance?').then((confirm) => {
@@ -54,8 +63,11 @@ const install = (asset) => {
       ProcessMaker.apiClient
         .post(`/devlink/${route.params.id}/install-remote-asset`, params)
         .then((response) => {
-          console.log(response);
           window.ProcessMaker.alert('Asset successfully installed', "success");
+          warnings.value = response.data.warnings_devlink;
+          if (warnings.value.length > 0) {
+            showModal();
+          }
         });
     }
   });
@@ -88,32 +100,54 @@ const handleFilterChange = () => {
 
 <template>
   <div>
-    <instance-tabs />
-    <h3>{{ typeConfig.name }}</h3>
-    <div class="top-options">
-      <input v-model="filter" class="form-control col-10 search-input" @input="handleFilterChange">
-    </div>
-    <div class="card asset-listing-card">
-      <div v-if="!typeConfig">
-        Invalid asset type
+    <div>
+      <instance-tabs />
+      <h3>{{ typeConfig.name }}</h3>
+      <div class="top-options">
+        <input v-model="filter" class="form-control col-10 search-input" @input="handleFilterChange">
       </div>
-      <b-table
-        v-else
-        :items="items"
-        :fields="fields"
-        class="asset-listing-table"
-      >
-        <template #cell(menu)="data">
-          <div class="btn-menu-container">
-            <button
-              class="btn install-asset-btn"
-              @click.prevent="install(data.item)"
-            >
-              <i class="fp-cloud-download-outline"></i>
-            </button>
+      <div class="card asset-listing-card">
+        <div v-if="!typeConfig">
+          Invalid asset type
+        </div>
+        <b-table
+          v-else
+          :items="items"
+          :fields="fields"
+          class="asset-listing-table"
+        >
+          <template #cell(menu)="data">
+            <div class="btn-menu-container">
+              <button
+                class="btn install-asset-btn"
+                @click.prevent="install(data.item)"
+              >
+                <i class="fp-cloud-download-outline"></i>
+              </button>
+            </div>
+          </template>
+        </b-table>
+      </div>
+    </div>
+    <div class="modal fade" id="warningsModal" tabindex="-1" role="dialog" aria-labelledby="warningsModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <h5>Warnings</h5>
+            <ul>
+              <li
+                v-for="(warning, index) in warnings"
+                :key="index"
+              >
+                {{ warning }}
+              </li>
+            </ul>
           </div>
-        </template>
-      </b-table>
+          <div class="modal-footer">
+            <button type="button" @click="closeModal()" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>

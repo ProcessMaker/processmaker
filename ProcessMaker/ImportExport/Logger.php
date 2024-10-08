@@ -62,8 +62,6 @@ class Logger
             return;
         }
 
-        $this->addWarning(substr($message, 0, 1000));
-
         ImportLog::dispatch($this->userId, $type, substr($message, 0, 1000), $additionalParams);
         $this->logToFile($type, $message, $additionalParams);
     }
