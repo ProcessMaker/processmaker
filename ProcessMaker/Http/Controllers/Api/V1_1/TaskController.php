@@ -14,6 +14,7 @@ use ProcessMaker\Http\Resources\V1_1\TaskResource;
 use ProcessMaker\Http\Resources\V1_1\TaskScreen;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\ProcessTranslations\ProcessTranslation;
 
 class TaskController extends Controller
 {
@@ -111,8 +112,7 @@ class TaskController extends Controller
         // Prepare the key for the screen cache
         $processId = $task->process_id;
         $processVersionId = $task->processRequest->process_version_id;
-        $user = Auth::user();
-        $language = $user?->language ?: 'en';
+        $language = ProcessTranslation::getCurrentUserLanguage();
         $screenVersion = $task->getScreenVersion();
         $key = ScreenCompiledManager::createKey($processId, $processVersionId, $language, $screenVersion->screen_id, $screenVersion->id);
 
