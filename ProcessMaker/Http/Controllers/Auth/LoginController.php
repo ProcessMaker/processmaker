@@ -6,8 +6,11 @@ use App;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Validation\ValidationException;
+use Laravel\Passport\HasApiTokens;
+use Laravel\Passport\Passport;
 use ProcessMaker\Events\Logout;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\LoginManager;
@@ -18,6 +21,7 @@ use ProcessMaker\Traits\HasControllerAddons;
 
 class LoginController extends Controller
 {
+    use HasApiTokens;
     use HasControllerAddons;
     /*
     |--------------------------------------------------------------------------
@@ -238,8 +242,17 @@ class LoginController extends Controller
     public function beforeLogout(Request $request)
     {
         if (Auth::check()) {
+            // Remove the Laravel cookie
+            $request->session()->invalidate();
+            Cookie::queue(Cookie::forget(Passport::cookie()));
+
             //Clear the user permissions
             $request->session()->forget('permissions');
+
+            //Clear the user permissions
+            $userId = Auth::user()->id;
+            Cache::forget("user_{$userId}_permissions");
+            Cache::forget("user_{$userId}_project_assets");
 
             // Clear the user session
             $this->forgetUserSession();
@@ -325,6 +338,10 @@ class LoginController extends Controller
 
                 return redirect()->route('password.change');
             }
+            // Cache user permissions for a day to improve performance
+            Cache::remember("user_{$user->id}_permissions", 86400, function () use ($user) {
+                return $user->permissions()->pluck('name')->toArray();
+            });
 
             return $this->sendLoginResponse($request);
         }

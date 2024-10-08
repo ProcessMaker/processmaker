@@ -55,6 +55,7 @@
                               v-model="formData"
                               :initial-task-id="{{ $task->id }}"
                               :initial-request-id="{{ $task->process_request_id }}"
+                              :screen-version="{{ $task->screen['id'] ?? null }}"
                               :user-id="{{ Auth::user()->id }}"
                               csrf-token="{{ csrf_token() }}"
                               initial-loop-context="{{ $task->getLoopContext() }}"
@@ -195,7 +196,7 @@
                                 <div class="col-6">
                                   <template v-if="isAllowReassignment || userIsAdmin || userIsProcessManager">
                                     <button
-                                      v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
+                                      v-if="!isSelfService && (task.advanceStatus === 'open' || task.advanceStatus === 'overdue')"
                                       type="button"
                                       class="btn btn-block button-actions"
                                       @click="show"
