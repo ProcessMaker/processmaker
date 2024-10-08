@@ -257,7 +257,7 @@ class LoginController extends Controller
             try {
                 $eventResult = event(new Logout(Auth::user()));
             } catch (\Throwable $e) {
-                Log::error('Error when in logout event: ' . $e->getMessage());
+                Log::error('Error in logout event: ' . $e->getMessage());
                 report($e);
             }
             // Always destroy 2fa flag
