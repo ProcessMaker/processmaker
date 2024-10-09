@@ -198,6 +198,13 @@ class GenerateMenus
                     'id' => 'signal',
                 ])->data('order', 5);
             }
+            if ($this->userHasPermission('view-collections')) {
+                $submenu->add(__('Collections'), [
+                    'route' => 'plugin-collections-index',
+                    'customicon' => 'nav-icon fas fa-database',
+                    'id' => 'collection',
+                ])->data('order', 6);
+            }
         });
 
         Menu::make('sidebar_designer', function ($menu) {
