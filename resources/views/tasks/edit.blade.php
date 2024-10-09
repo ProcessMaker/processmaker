@@ -443,7 +443,7 @@
                       <button type="button" class="btn btn-outline-secondary" @click="cancelReassign">
                         {{__('Cancel')}}
                       </button>
-                      <button type="button" class="btn btn-secondary ml-2" @click="reassignUser" :disabled="disabled">
+                      <button type="button" class="btn btn-secondary" @click="reassignUser" :disabled="disabled">
                         {{__('Reassign')}}
                       </button>
                     </div>
