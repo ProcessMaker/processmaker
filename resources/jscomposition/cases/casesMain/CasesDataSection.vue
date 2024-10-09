@@ -49,7 +49,7 @@ const table = ref();
 
 const dataPagination = ref({
   total: 0,
-  page: 0,
+  page: 1,
   pages: 0,
   perPage: 15,
 });
