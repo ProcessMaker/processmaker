@@ -192,7 +192,8 @@ export default {
   props: ["filter", "id", "status", "permission", "isDocumenterInstalled", "pmql", "processName", "currentUserId"],
   data() {
     return {
-      orderBy: "name",
+      orderBy: "updated_at",
+      orderDirection: "desc",
       processId: null,
       processTemplateName: "",
       pmBlockName: "",
@@ -202,9 +203,9 @@ export default {
       previousPmql: "",
       sortOrder: [
         {
-          field: "name",
-          sortField: "name",
-          direction: "asc",
+          field: "updated_at",
+          sortField: "updated_at",
+          direction: "desc",
         },
       ],
 
@@ -239,7 +240,7 @@ export default {
           format: "datetime",
           width: 160,
           sortable: true,
-          direction: "none",
+          direction: "desc",
         },
         {
           label: this.$t("Created"),

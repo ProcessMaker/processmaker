@@ -35,6 +35,7 @@ use ProcessMaker\Http\Controllers\Api\TaskAssignmentController;
 use ProcessMaker\Http\Controllers\Api\TaskController;
 use ProcessMaker\Http\Controllers\Api\TaskDraftController;
 use ProcessMaker\Http\Controllers\Api\TemplateController;
+use ProcessMaker\Http\Controllers\Api\UserConfigurationController;
 use ProcessMaker\Http\Controllers\Api\UserController;
 use ProcessMaker\Http\Controllers\Api\UserTokenController;
 use ProcessMaker\Http\Controllers\Api\WizardTemplateController;
@@ -64,6 +65,9 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('users/{user}/tokens/{tokenId}', [UserTokenController::class, 'show'])->name('users.tokens.show'); // Permissions handled in the controller
     Route::post('users/{user}/tokens', [UserTokenController::class, 'store'])->name('users.tokens.store'); // Permissions handled in the controller
     Route::delete('users/{user}/tokens/{tokenId}', [UserTokenController::class, 'destroy'])->name('users.tokens.destroy'); // Permissions handled in the controller
+    // User Configuration
+    Route::get('users/configuration', [UserConfigurationController::class, 'index'])->name('users.configuration.index');
+    Route::put('users/configuration', [UserConfigurationController::class, 'store'])->name('users.configuration.store');
 
     // Groups//Permissions policy
     Route::get('groups', [GroupController::class, 'index'])->name('groups.index'); // Permissions handled in the controller
