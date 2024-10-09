@@ -52,12 +52,24 @@ class PopulateCaseStarted extends Upgrade
         echo '    Populating case_started from process_requests';
 
         try {
+            DB::enableQueryLog(); // Habilitar el log
             $this->getNonSystemRequests()
                 ->orderBy('process_requests.id')
                 ->chunk($chunkSize, function ($requests) use (&$caseNumber, $startTime, $count) {
                     $this->insertCasesStarted($requests);
                     $this->displayRate($caseNumber, $startTime, $count, false);
                 });
+            echo PHP_EOL;
+            // Obtener y mostrar los queries ejecutados
+            $queryLog = DB::getQueryLog();
+            foreach ($queryLog as $log) {
+                $query = $log['query'];
+                foreach ($log['bindings'] as $binding) {
+                    $query = preg_replace('/\?/', "'$binding'", $query, 1);
+                }
+                echo $query . "\n"; // Imprimir el query final
+                echo PHP_EOL;
+            }
             echo 'Cases started have been populated successfully.';
         } catch (Exception $e) {
             echo 'Failed to populate cases_started: ' . $e->getMessage();
@@ -109,9 +121,9 @@ class PopulateCaseStarted extends Upgrade
     private function getNonSystemRequests()
     {
         return DB::table('process_requests')
-            ->whereNull('parent_request_id')
             ->join('processes', 'process_requests.process_id', '=', 'processes.id')
             ->join('process_categories', 'processes.process_category_id', '=', 'process_categories.id')
+            ->whereNull('parent_request_id')
             ->where('process_categories.is_system', false)
             ->select(
                 'process_requests.id',
