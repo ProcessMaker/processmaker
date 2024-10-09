@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->unsignedInteger('case_number')->nullable();
 
             $table->index('type');
+            $table->index('case_number');
         });
     }
 
@@ -26,6 +27,7 @@ return new class extends Migration {
             $table->dropColumn('case_number');
 
             $table->dropIndex(['type']);
+            $table->dropIndex(['case_number']);
         });
     }
 };
