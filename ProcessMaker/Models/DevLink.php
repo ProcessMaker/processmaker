@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use ProcessMaker\ImportExport\Importer;
+use ProcessMaker\ImportExport\Logger;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\ProcessMakerModel;
 use Ramsey\Uuid\Type\Integer;
@@ -117,12 +118,22 @@ class DevLink extends ProcessMakerModel
         }
 
         $bundle->syncAssets($assets);
+
+        return [
+            'warnings_devlink' => $this->logger->getWarnings(),
+        ];
     }
 
     private function import(array $payload)
     {
-        $importer = new Importer($payload, new Options([]));
+        if (!$this->logger) {
+            $this->logger = new Logger();
+        }
+
+        $importer = new Importer($payload, new Options([]), $this->logger);
         $manifest = $importer->doImport();
+
+        $manifest[$payload['root']]->model['warnings_devlink'] = $importer->logger->getWarnings();
 
         return $manifest[$payload['root']]->model;
     }
