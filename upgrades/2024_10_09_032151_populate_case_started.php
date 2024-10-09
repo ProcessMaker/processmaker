@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Repositories\CaseUtils;
 use ProcessMaker\Upgrades\UpgradeMigration as Upgrade;
 
 class PopulateCaseStarted extends Upgrade
@@ -11,8 +12,6 @@ class PopulateCaseStarted extends Upgrade
     const REFRESH_TIME = 1;
 
     private $lastPrint = 0;
-
-    const ALLOWED_REQUEST_TOKENS = ['task', 'scriptTask', 'callActivity'];
 
     /**
      * Run any validations/pre-run checks to ensure the environment, settings,
@@ -233,13 +232,13 @@ class PopulateCaseStarted extends Upgrade
     {
         return $matchingRequestTokens->isNotEmpty()
             ? $matchingRequestTokens->filter(function ($token) {
-                return in_array($token->element_type, self::ALLOWED_REQUEST_TOKENS);
+                return in_array($token->element_type, CaseUtils::ALLOWED_REQUEST_TOKENS);
             })->pluck('id')->toArray()
             : [];
     }
 
     /**
-     * Get participant data as JSON formatted array from matching tokens, ensuring user_id is not null.
+     * Get unique user IDs as JSON formatted array from matching request tokens, filtering out null user IDs.
      *
      * @param Illuminate\Support\Collection $matchingRequestTokens
      * @return array
@@ -249,7 +248,7 @@ class PopulateCaseStarted extends Upgrade
         return $matchingRequestTokens->isNotEmpty()
             ? $matchingRequestTokens->filter(function ($token) {
                 return !is_null($token->user_id); // Filter out null user_ids
-            })->pluck('user_id')->toArray()
+            })->pluck('user_id')->unique()->values()->toArray() // Get unique user IDs
             : [];
     }
 
