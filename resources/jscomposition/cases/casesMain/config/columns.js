@@ -7,32 +7,7 @@ import {
   StatusCell,
   LinkCell,
 } from "../../../system/index";
-
-const formatDate = (value, format) => {
-  let config = "DD/MM/YYYY hh:mm";
-  if (
-    typeof ProcessMaker !== "undefined"
-    && ProcessMaker.user
-    && ProcessMaker.user.datetime_format
-  ) {
-    if (format === "datetime") {
-      config = ProcessMaker.user.datetime_format;
-    }
-    if (format === "date") {
-      config = ProcessMaker.user.datetime_format.replace(
-        /[\sHh:msaAzZ]/g,
-        "",
-      );
-    }
-  }
-  if (value) {
-    if (moment(value).isValid()) {
-      return moment(value).format(config);
-    }
-    return value;
-  }
-  return "n/a";
-};
+import { formatDate } from "../utils";
 
 export default {};
 /**
@@ -106,10 +81,6 @@ export const processColumn = () => ({
       formatterOptions: (option, row, column, columns) => option.name,
     },
   }),
-  filter: {
-    dataType: "string",
-    operators: ["="],
-  },
 });
 
 export const taskColumn = () => ({
@@ -126,10 +97,6 @@ export const taskColumn = () => ({
       formatterOptions: (option, row, column, columns) => option.name,
     },
   }),
-  filter: {
-    dataType: "string",
-    operators: ["="],
-  },
 });
 
 export const participantsColumn = () => ({
@@ -145,10 +112,6 @@ export const participantsColumn = () => ({
       },
     },
   }),
-  filter: {
-    dataType: "string",
-    operators: ["="],
-  },
 });
 
 export const statusColumn = () => ({
