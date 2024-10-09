@@ -14,18 +14,19 @@ class EncryptedDataController extends Controller
     {
         // Validate request inputs
         $request->validate([
+            'uuid' => 'nullable|uuid',
             'field_name' => 'required',
-            'request_id' => 'required|exists:process_requests,id',
             'plain_text' => 'required',
             'screen_id' => 'required|exists:screens,id',
         ]);
 
         // Set variables
+        $uuid = $request->input('uuid');
         $fieldName = $request->input('field_name');
-        $requestId = $request->input('request_id');
         $plainText = $request->input('plain_text');
         $screenId = $request->input('screen_id');
 
+        // Get current user
         $user = Auth::user();
         $userId = $user->id;
 
@@ -40,10 +41,11 @@ class EncryptedDataController extends Controller
 
         // Store encrypted data
         $encryptedData = EncryptedData::firstOrNew([
-            'field_name' => $fieldName,
-            'request_id' => $requestId,
+            'uuid' => $uuid,
         ]);
 
+        $encryptedData->uuid = $uuid;
+        $encryptedData->field_name = $fieldName;
         $encryptedData->iv = base64_encode(EncryptedDataManager::driver($driver)->getIv());
         $encryptedData->data = $cipherText;
         $encryptedData->save();
@@ -55,16 +57,17 @@ class EncryptedDataController extends Controller
     {
         // Validate request inputs
         $request->validate([
+            'uuid' => 'required|uuid',
             'field_name' => 'required',
-            'request_id' => 'required|exists:process_requests,id',
             'screen_id' => 'required|exists:screens,id',
         ]);
 
-        // Initialize variables
+        // Set variables
+        $uuid = $request->input('uuid');
         $fieldName = $request->input('field_name');
-        $requestId = $request->input('request_id');
         $screenId = $request->input('screen_id');
 
+        // Get current user
         $user = Auth::user();
         $userId = $user->id;
 
@@ -72,10 +75,7 @@ class EncryptedDataController extends Controller
         EncryptedData::checkUserPermission($userId, $screenId, $fieldName);
 
         // Get encrypted data
-        $encryptedData = EncryptedData::where([
-            'field_name' => $fieldName,
-            'request_id' => $requestId,
-        ])->firstOrFail();
+        $encryptedData = EncryptedData::where('uuid', $uuid)->firstOrFail();
 
         $cipherText = $encryptedData->data;
         $iv = base64_decode($encryptedData->iv);
