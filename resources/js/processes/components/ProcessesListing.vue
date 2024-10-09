@@ -159,6 +159,7 @@
         @vuetable-pagination:change-page="onPageChange"
       />
     </div>
+    <add-to-bundle asset-type="ProcessMaker\Models\Process" />
   </div>
 </template>
 
@@ -175,6 +176,7 @@ import AddToProjectModal from "../../components/shared/AddToProjectModal.vue";
 import processNavigationMixin from "../../components/shared/processNavigation";
 import paginationTable from "../../components/shared/PaginationTable.vue";
 import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
+import AddToBundle from "../../components/shared/AddToBundle.vue";
 import ProcessMixin from "./ProcessMixin";
 
 const uniqIdsMixin = createUniqIdsMixin();
@@ -187,6 +189,7 @@ export default {
     CreatePmBlockModal,
     AddToProjectModal,
     paginationTable,
+    AddToBundle,
   },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ellipsisMenuMixin, processNavigationMixin, FilterTableBodyMixin, ProcessMixin],
   props: ["filter", "id", "status", "permission", "isDocumenterInstalled", "pmql", "processName", "currentUserId"],

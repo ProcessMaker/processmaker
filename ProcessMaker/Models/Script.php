@@ -6,6 +6,7 @@ use Illuminate\Validation\Rule;
 use ProcessMaker\Contracts\ScriptInterface;
 use ProcessMaker\Exception\ConfigurationException;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
+use ProcessMaker\ImportExport\Exporters\ScriptExporter;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
 use ProcessMaker\ScriptRunners\ScriptRunner;

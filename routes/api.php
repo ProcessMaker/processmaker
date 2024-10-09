@@ -6,6 +6,7 @@ use ProcessMaker\Http\Controllers\Api\ChangePasswordController;
 use ProcessMaker\Http\Controllers\Api\CommentController;
 use ProcessMaker\Http\Controllers\Api\CssOverrideController;
 use ProcessMaker\Http\Controllers\Api\DebugController;
+use ProcessMaker\Http\Controllers\Api\DevLinkController;
 use ProcessMaker\Http\Controllers\Api\EnvironmentVariablesController;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\Http\Controllers\Api\FileController;
@@ -374,4 +375,36 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // Recommendations
     Route::get('recommendations', [RecommendationsController::class, 'index'])->name('recommendations.index');
     Route::put('recommendations/{recommendationUser}', [RecommendationsController::class, 'update'])->name('recommendations.update');
+
+    // DevLink
+    Route::middleware('admin')->group(function () {
+        Route::get('devlink', [DevLinkController::class, 'index'])->name('devlink.index');
+        Route::post('devlink', [DevLinkController::class, 'store'])->name('devlink.store');
+        Route::put('devlink/{devLink}', [DevLinkController::class, 'update'])->name('devlink.update');
+        Route::delete('devlink/{devLink}', [DevLinkController::class, 'destroy'])->name('devlink.destroy');
+        Route::get('devlink/{devLink}/ping', [DevLinkController::class, 'ping'])->name('devlink.ping');
+        Route::get('devlink/pong', [DevLinkController::class, 'pong'])->name('devlink.pong');
+        Route::get('devlink/{devLink}/remote-bundles', [DevLinkController::class, 'remoteBundles'])->name('devlink.remote-bundles');
+
+        Route::get('devlink/shared-assets', [DevLinkController::class, 'sharedAssets'])->name('devlink.shared-assets');
+        Route::get('devlink/{devLink}/remote-assets', [DevLinkController::class, 'remoteAssets'])->name('devlink.remote-assets');
+        Route::get('devlink/{devLink}/remote-assets-listing', [DevLinkController::class, 'remoteAssetsListing'])->name('devlink.remote-assets-listing');
+        Route::post('devlink/add-shared-asset', [DevLinkController::class, 'addSharedAsset'])->name('devlink.add-shared-assets');
+        Route::delete('devlink/remove-shared-asset/{setting}', [DevLinkController::class, 'removeSharedAsset'])->name('devlink.remove-shared-assets');
+
+        Route::get('devlink/local-bundles', [DevLinkController::class, 'localBundles'])->name('devlink.local-bundles');
+        Route::get('devlink/local-bundles/{bundle}', [DevLinkController::class, 'showBundle'])->name('devlink.local-bundle');
+        Route::post('devlink/local-bundles', [DevLinkController::class, 'createBundle'])->name('devlink.create-bundle');
+        Route::put('devlink/local-bundles/{bundle}', [DevLinkController::class, 'updateBundle'])->name('devlink.update-bundle');
+        Route::post('devlink/local-bundles/{bundle}/add-assets', [DevLinkController::class, 'addAsset'])->name('devlink.add-asset');
+        Route::delete('devlink/local-bundles/{bundle}', [DevLinkController::class, 'deleteBundle'])->name('devlink.delete-bundle');
+        Route::get('devlink/export-local-bundle/{bundle}', [DevLinkController::class, 'exportLocalBundle'])->name('devlink.export-local-bundle');
+        Route::get('devlink/export-local-asset', [DevLinkController::class, 'exportLocalAsset'])->name('devlink.export-local-asset');
+
+        Route::post('devlink/{devLink}/remote-bundles/{removeBundleId}/install', [DevLinkController::class, 'installRemoteBundle'])->name('devlink.install-remote-bundle');
+        Route::post('devlink/{devLink}/install-remote-asset', [DevLinkController::class, 'installRemoteAsset'])->name('devlink.install-remote-asset');
+
+        // Put these last to avoid conflicts with the other devlink routes
+        Route::get('devlink/{devLink}', [DevLinkController::class, 'show'])->name('devlink.show');
+    });
 });
