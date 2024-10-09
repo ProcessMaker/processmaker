@@ -38,6 +38,7 @@ class UpdateCommentsCaseNumber extends Command
             ->leftJoin('process_request_tokens', 'comments.commentable_id', '=', 'process_request_tokens.id')
             ->leftJoin('process_requests', 'process_request_tokens.process_request_id', '=', 'process_requests.id')
             ->where('comments.commentable_type', 'ProcessMaker\\Models\\ProcessRequestToken')
+            ->whereNull('comments.case_number')
             ->select('comments.id', 'process_requests.case_number')
             ->chunkById($chunkSize, function ($comments) {
                 foreach ($comments as $comment) {
@@ -51,6 +52,7 @@ class UpdateCommentsCaseNumber extends Command
         DB::table('comments')
             ->leftJoin('process_requests', 'comments.commentable_id', '=', 'process_requests.id')
             ->where('comments.commentable_type', 'ProcessMaker\\Models\\ProcessRequest')
+            ->whereNull('comments.case_number')
             ->select('comments.id', 'process_requests.case_number')
             ->chunkById($chunkSize, function ($comments) {
                 foreach ($comments as $comment) {
