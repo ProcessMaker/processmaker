@@ -37,6 +37,9 @@ class FilesDeleted implements SecurityLogEventInterface
         return [
             'file_name' => $this->fileName,
             'deleted_at' => Carbon::now(),
+            'name' => [
+                'id' => $this->fileId,
+            ],
         ];
     }
 

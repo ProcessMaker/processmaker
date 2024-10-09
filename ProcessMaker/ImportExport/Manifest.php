@@ -120,6 +120,7 @@ class Manifest
         foreach ([$modelClass, $exporterClass] as $class) {
             if (!class_exists($class)) {
                 self::$logger?->warn("Class {$class} does not exist.");
+                self::$logger?->addWarning("Class {$class} does not exist.");
 
                 return false;
             }
@@ -218,6 +219,7 @@ class Manifest
             if (!in_array($key, $columns)) {
                 unset($attrs[$key]);
                 self::$logger?->warn("Attribute '$key' does not exist in the table '$table'");
+                self::$logger?->addWarning("Attribute '$key' does not exist in the table '$table'");
             }
         }
 

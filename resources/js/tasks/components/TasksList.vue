@@ -327,6 +327,10 @@ export default {
       type: String,
       default: "tasks",
     },
+    verifyUrlToFalse: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -846,7 +850,10 @@ export default {
     },
     verifyURL(string) {
       const currentUrl = window.location.href;
-      const isInUrl = currentUrl.includes(string);
+      let isInUrl = currentUrl.includes(string);
+      if (this.verifyUrlToFalse) {
+        isInUrl = false;
+      }
       return isInUrl;
     },
     /**

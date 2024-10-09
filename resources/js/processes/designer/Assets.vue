@@ -141,9 +141,18 @@ export default {
           urlPath: "/designer/flow-genies",
           urlAsset: "/designer/flow-genies?create=true",
         },
+        {
+          color: "#5E4FE2",
+          icon: "fas fa-database",
+          asset_name: "Collections",
+          asset_name_all: "View All Collections",
+          asset_name_new: "New Collection",
+          urlPath: "/collections",
+          urlAsset: "/collections?create=true",
+        },
       ],
       showButtonsCore: new Array(3).fill(false),
-      showButtonsPackage: new Array(3).fill(false),
+      showButtonsPackage: new Array(4).fill(false),
     };
   },
   methods: {
