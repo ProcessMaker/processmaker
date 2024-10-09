@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use ProcessMaker\Http\Controllers\AboutController;
 use ProcessMaker\Http\Controllers\Admin\AuthClientController;
 use ProcessMaker\Http\Controllers\Admin\CssOverrideController;
+use ProcessMaker\Http\Controllers\Admin\DevLinkController;
 use ProcessMaker\Http\Controllers\Admin\GroupController;
 use ProcessMaker\Http\Controllers\Admin\LdapLogsController;
 use ProcessMaker\Http\Controllers\Admin\QueuesController;
@@ -60,6 +61,12 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
         Route::get('customize-ui/{tab?}', [CssOverrideController::class, 'edit'])->name('customize-ui.edit');
 
         Route::get('script-executors', [ScriptExecutorController::class, 'index'])->name('script-executors.index');
+
+        // DevLink
+        Route::middleware('admin')->group(function () {
+            Route::get('devlink/oauth-client', [DevLinkController::class, 'getOauthClient'])->name('devlink.oauth-client');
+            Route::get('devlink/{router?}', [DevLinkController::class, 'index'])->where(['router' => '.*'])->name('devlink.index');
+        });
 
         // temporary, should be removed
         Route::get('security-logs/download/all', [ProcessMaker\Http\Controllers\Api\SecurityLogController::class, 'downloadForAllUsers'])->middleware('can:view-security-logs');

@@ -21,7 +21,7 @@ const operatorType = [
     component: () => InOperator,
   },
   {
-    operator: ["<", "<=", ">", ">="],
+    operator: [">", ">=", "<", "<="],
     type: ["datetime"],
     component: () => DateOperator,
   },
