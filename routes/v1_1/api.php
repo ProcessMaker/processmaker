@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use ProcessMaker\Http\Controllers\Api\V1_1\CaseController;
 use ProcessMaker\Http\Controllers\Api\V1_1\ClipboardController;
 use ProcessMaker\Http\Controllers\Api\V1_1\TaskController;
 
@@ -27,6 +28,26 @@ Route::prefix('api/1.1')
             Route::get('/{taskId}/interstitial', [TaskController::class, 'showInterstitial'])
                 ->name('show.interstitial');
         });
+
+        // Cases Endpoints
+        Route::name('cases.')->prefix('cases')->group(function () {
+            // Route to list all cases
+            Route::get('get_all_cases', [CaseController::class, 'getAllCases'])
+                ->name('all_cases');
+
+            // Route to list all in-progress cases
+            Route::get('get_in_progress', [CaseController::class, 'getInProgress'])
+                ->name('in_progress');
+
+            // Route to list all completed cases
+            Route::get('get_completed', [CaseController::class, 'getCompleted'])
+                ->name('completed');
+
+            // Route to get my cases counters
+            Route::get('get_my_cases_counters', [CaseController::class, 'getMyCasesCounters'])
+                ->name('my_cases_counters');
+        });
+
         // Clipboard Endpoints
         Route::name('clipboard.')->prefix('clipboard')->group(function () {
             // Get clipboard by user

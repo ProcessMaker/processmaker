@@ -290,6 +290,70 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     }
 
     /**
+     * Scope to filter by case_number through the processRequest relationship
+     */
+    public function scopeFilterByCaseNumber($query, $request)
+    {
+        $caseNumber = $request->input('case_number');
+
+        return $query->whereHas('processRequest', function ($query) use ($caseNumber) {
+            $query->where('case_number', $caseNumber);
+        });
+    }
+
+    /**
+     * Scope to filter by status
+     */
+    public function scopeFilterByStatus($query, $request)
+    {
+        $status = $request->input('status', 'ACTIVE');
+
+        return $query->where('status', $status);
+    }
+
+    /**
+     * Scope get process information
+     */
+    public function scopeGetProcess($query)
+    {
+        return $query->with(['process' => function ($query) {
+            $query->select('id', 'name');
+        }]);
+    }
+
+    /**
+     * Scope get user information
+     */
+    public function scopeGetUser($query)
+    {
+        return $query->with(['user' => function ($query) {
+            $query->select('id', 'firstname', 'lastname', 'username', 'avatar');
+        }]);
+    }
+
+    /**
+     * Scope apply order
+     */
+    public function scopeApplyOrdering($query, $request)
+    {
+        $orderBy = $request->input('order_by', 'due_at');
+        $orderDirection = $request->input('order_direction', 'asc');
+
+        return $query->orderBy($orderBy, $orderDirection);
+    }
+
+    /**
+     * Scope apply pagination
+     */
+    public function scopeApplyPagination($query, $request)
+    {
+        $page = $request->input('page', 1);
+        $perPage = $request->input('per_page', 10);
+
+        return $query->paginate($perPage);
+    }
+
+    /**
      * Returns either the owner element or its properties
      *
      * @param asObject Boolean flag that determines whether the function should return the element directly or its
