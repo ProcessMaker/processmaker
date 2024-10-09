@@ -1,5 +1,5 @@
 <template>
-  <div class="tw-flex tw-space-x-2">
+  <div class="tw-flex tw-flex-col tw-space-y-2">
     <input
       v-for="(element, index) in inputs"
       :key="index"
@@ -12,37 +12,34 @@
       @change="onChange()">
   </div>
 </template>
-<script>
-import { defineComponent, ref } from "vue";
+<script setup>
+import { ref } from "vue";
 
-export default defineComponent({
-  props: {
-    placeholder: {
-      type: String,
-      default: () => ("value"),
-    },
+const props = defineProps({
+  placeholder: {
+    type: String,
+    default: () => ("value"),
   },
-  emits: ["change"],
-  setup(props, { emit }) {
-    const inputs = ref([
-      {
-        id: "from",
-        value: null,
-      },
-      {
-        id: "to",
-        value: null,
-      },
-    ]);
-
-    const onChange = () => {
-      emit("change", inputs.value);
-    };
-
-    return {
-      inputs,
-      onChange,
-    };
+  value: {
+    type: Array,
+    default: () => null,
   },
 });
+
+const emit = defineEmits(["change"]);
+
+const inputs = ref(props.value || [
+  {
+    id: "from",
+    value: null,
+  },
+  {
+    id: "to",
+    value: null,
+  },
+]);
+
+const onChange = () => {
+  emit("change", inputs.value);
+};
 </script>

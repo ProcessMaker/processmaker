@@ -6,7 +6,7 @@
       position="bottom">
       <i
         class="hover:tw-cursor-pointer tw-px-1 fas fa-ellipsis-v"
-        @click.prevent.stop="onClick" />
+        @click.prevent="onClick" />
 
       <template #content>
         <div
@@ -18,68 +18,100 @@
 
           <div class="tw-grow tw-overflow-auto tw-space-y-4">
             <FilterOperator
+              :key="key"
               ref="filterOperatorsRef"
+              :value="filterOperator"
               :operators="filter.operators"
               :type="filter.dataType"
               @change="(e) => onChangeFilterOperator(e)" />
           </div>
 
-          <FooterButtons />
+          <FooterButtons
+            @cancel="onCancel"
+            @clear="onClear"
+            @apply="onApply" />
         </div>
       </template>
     </AppPopover>
   </div>
 </template>
-<script>
-import { defineComponent, ref } from "vue";
+<script setup>
+import { ref } from "vue";
 import { AppPopover } from "../../../../base/index";
 import SortingButtons from "./SortingButtons.vue";
 import FilterOperator from "./operator/FilterOperator.vue";
 import FooterButtons from "./FooterButtons.vue";
 
-export default defineComponent({
-  components: {
-    AppPopover,
-    SortingButtons,
-    FilterOperator,
-    FooterButtons,
-  },
-  props: {
-    // FilterInterface {
-    //   operators = []  Array
-    //   dataType = null String
-    // }
-    filter: Object,
-  },
-  setup() {
-    const show = ref(false);
+const emit = defineEmits(["change"]);
 
-    // Model that saves the values
-    const filterOperator = ref({
-      id: new Date().getTime(),
-      value: null,
-    });
-
-    const onClick = () => {
-      show.value = !show.value;
-    };
-
-    const onAsc = () => {};
-
-    const onDesc = () => {};
-
-    const onChangeFilterOperator = (element) => {
-      filterOperator.value.value = element;
-    };
-
-    return {
-      show,
-      filterOperator,
-      onClick,
-      onAsc,
-      onDesc,
-      onChangeFilterOperator,
-    };
-  },
+const props = defineProps({
+  // FilterInterface {
+  //   operators = []  Array
+  //   dataType = null String
+  // }
+  filter: Object,
+  value: Object,
 });
+
+const show = ref(false);
+
+const key = ref(1);
+
+// Model that saves the values
+const filterOperator = ref(props.value);
+
+const onClick = () => {
+  show.value = !show.value;
+};
+
+const onAsc = () => {
+  emit("change", {
+    ...filterOperator.value,
+    sortable: "asc",
+  });
+
+  show.value = false;
+};
+
+const onDesc = () => {
+  emit("change", {
+    ...filterOperator.value,
+    sortable: "desc",
+  });
+
+  show.value = false;
+};
+
+const onCancel = () => {
+  show.value = false;
+};
+
+const onClear = () => {
+  const filter = filterOperator.value;
+
+  filterOperator.value = null;
+  key.value += 1;
+
+  emit("clear", {
+    ...filter,
+    sortable: null,
+  });
+
+  show.value = false;
+};
+
+const onChangeFilterOperator = (element) => {
+  filterOperator.value = element;
+};
+
+const onApply = () => {
+  const filter = filterOperator.value;
+
+  emit("change", {
+    ...filter,
+    sortable: null,
+  });
+
+  show.value = false;
+};
 </script>

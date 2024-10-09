@@ -33,40 +33,38 @@
     </div>
   </div>
 </template>
-<script>
+<script setup>
+import { ref } from "vue";
 
-import { defineComponent, ref } from "vue";
+const emit = defineEmits(["change"]);
 
-export default defineComponent({
-  setup(props, { emit }) {
-    const inputs = ref([
-      {
-        id: new Date().getTime(),
-        value: null,
-      },
-    ]);
-
-    const addInput = () => {
-      inputs.value.push({
-        id: new Date().getTime(),
-        value: null,
-      });
-    };
-
-    const removeInput = (index) => {
-      inputs.value.splice(index, 1);
-    };
-
-    const onChange = () => {
-      emit("change", inputs.value);
-    };
-
-    return {
-      inputs,
-      addInput,
-      removeInput,
-      onChange,
-    };
+const props = defineProps({
+  value: {
+    type: Array,
+    default: () => null,
   },
 });
+
+const inputs = ref(props.value || [
+  {
+    id: new Date().getTime(),
+    value: null,
+  },
+]);
+
+const addInput = () => {
+  inputs.value.push({
+    id: new Date().getTime(),
+    value: null,
+  });
+};
+
+const removeInput = (index) => {
+  inputs.value.splice(index, 1);
+};
+
+const onChange = () => {
+  emit("change", inputs.value);
+};
+
 </script>
