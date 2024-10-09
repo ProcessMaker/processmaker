@@ -81,7 +81,7 @@ class CaseStartedSubProcessTest extends TestCase
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $this->parentRequest->case_number,
             'user_id' => $this->user->id,
-            'case_title' => 'Case #' . $this->parentRequest->case_number,
+            'case_title' => $this->parentRequest->case_title,
             'case_status' => 'IN_PROGRESS',
         ]);
     }
@@ -98,7 +98,7 @@ class CaseStartedSubProcessTest extends TestCase
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $this->parentRequest->case_number,
             'user_id' => $this->user->id,
-            'case_title' => 'Case #' . $this->parentRequest->case_number,
+            'case_title' => $this->parentRequest->case_title,
             'case_status' => 'IN_PROGRESS',
             'processes->[0]->id' => $this->process->id,
             'processes->[0]->name' => $this->process->name,
@@ -119,7 +119,7 @@ class CaseStartedSubProcessTest extends TestCase
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $this->parentRequest->case_number,
             'user_id' => $this->user->id,
-            'case_title' => 'Case #' . $this->parentRequest->case_number,
+            'case_title' => $this->parentRequest->case_title,
             'case_status' => 'IN_PROGRESS',
             'requests->[0]->id' => $this->parentRequest->id,
             'requests->[0]->name' => $this->parentRequest->name,
@@ -144,7 +144,7 @@ class CaseStartedSubProcessTest extends TestCase
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $this->parentRequest->case_number,
             'user_id' => $this->user->id,
-            'case_title' => 'Case #' . $this->parentRequest->case_number,
+            'case_title' => $this->parentRequest->case_title,
             'case_status' => 'IN_PROGRESS',
             'request_tokens->[0]' => $this->parentToken->id,
             'request_tokens->[1]' => $this->childToken->id,
@@ -165,7 +165,7 @@ class CaseStartedSubProcessTest extends TestCase
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $this->parentRequest->case_number,
             'user_id' => $this->user->id,
-            'case_title' => 'Case #' . $this->parentRequest->case_number,
+            'case_title' => $this->parentRequest->case_title,
             'case_status' => 'IN_PROGRESS',
             'tasks->[0]->id' => $this->parentToken->id,
             'tasks->[0]->element_id' => $this->parentToken->element_id,
@@ -194,7 +194,7 @@ class CaseStartedSubProcessTest extends TestCase
         $this->assertDatabaseHas('cases_participated', [
             'case_number' => $this->parentRequest->case_number,
             'user_id' => $this->user->id,
-            'case_title' => 'Case #' . $this->parentRequest->case_number,
+            'case_title' => $this->parentRequest->case_title,
             'case_status' => 'IN_PROGRESS',
             'processes->[0]->id' => $this->process->id,
             'processes->[0]->name' => $this->process->name,
@@ -204,7 +204,7 @@ class CaseStartedSubProcessTest extends TestCase
         $this->assertDatabaseHas('cases_participated', [
             'case_number' => $this->parentRequest->case_number,
             'user_id' => $this->user2->id,
-            'case_title' => 'Case #' . $this->parentRequest->case_number,
+            'case_title' => $this->parentRequest->case_title,
             'case_status' => 'IN_PROGRESS',
             'processes->[0]->id' => $this->subProcess->id,
             'processes->[0]->name' => $this->subProcess->name,
@@ -227,7 +227,7 @@ class CaseStartedSubProcessTest extends TestCase
         $this->assertDatabaseHas('cases_participated', [
             'case_number' => $this->parentRequest->case_number,
             'user_id' => $this->user->id,
-            'case_title' => 'Case #' . $this->parentRequest->case_number,
+            'case_title' => $this->parentRequest->case_title,
             'case_status' => 'IN_PROGRESS',
             'requests->[0]->id' => $this->parentRequest->id,
             'requests->[0]->name' => $this->parentRequest->name,
@@ -239,7 +239,7 @@ class CaseStartedSubProcessTest extends TestCase
         $this->assertDatabaseHas('cases_participated', [
             'case_number' => $this->parentRequest->case_number,
             'user_id' => $this->user2->id,
-            'case_title' => 'Case #' . $this->parentRequest->case_number,
+            'case_title' => $this->parentRequest->case_title,
             'case_status' => 'IN_PROGRESS',
             'requests->[0]->id' => $this->childRequest->id,
             'requests->[0]->name' => $this->childRequest->name,
@@ -263,7 +263,7 @@ class CaseStartedSubProcessTest extends TestCase
         $this->assertDatabaseHas('cases_participated', [
             'case_number' => $this->parentRequest->case_number,
             'user_id' => $this->user->id,
-            'case_title' => 'Case #' . $this->parentRequest->case_number,
+            'case_title' => $this->parentRequest->case_title,
             'case_status' => 'IN_PROGRESS',
             'request_tokens->[0]' => $this->parentToken->id,
             'request_tokens->[1]' => $this->childToken->id,
@@ -271,7 +271,7 @@ class CaseStartedSubProcessTest extends TestCase
         $this->assertDatabaseHas('cases_participated', [
             'case_number' => $this->parentRequest->case_number,
             'user_id' => $this->user2->id,
-            'case_title' => 'Case #' . $this->parentRequest->case_number,
+            'case_title' => $this->parentRequest->case_title,
             'case_status' => 'IN_PROGRESS',
             'request_tokens->[0]' => $this->childToken2->id,
         ]);
@@ -293,7 +293,7 @@ class CaseStartedSubProcessTest extends TestCase
         $this->assertDatabaseHas('cases_participated', [
             'case_number' => $this->parentRequest->case_number,
             'user_id' => $this->user->id,
-            'case_title' => 'Case #' . $this->parentRequest->case_number,
+            'case_title' => $this->parentRequest->case_title,
             'case_status' => 'IN_PROGRESS',
             'tasks->[0]->id' => $this->parentToken->id,
             'tasks->[0]->element_id' => $this->parentToken->element_id,
@@ -307,7 +307,7 @@ class CaseStartedSubProcessTest extends TestCase
         $this->assertDatabaseHas('cases_participated', [
             'case_number' => $this->parentRequest->case_number,
             'user_id' => $this->user2->id,
-            'case_title' => 'Case #' . $this->parentRequest->case_number,
+            'case_title' => $this->parentRequest->case_title,
             'case_status' => 'IN_PROGRESS',
             'tasks->[0]->id' => $this->childToken2->id,
             'tasks->[0]->element_id' => $this->childToken2->element_id,
