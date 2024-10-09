@@ -3,7 +3,6 @@
 namespace Tests\Feature\Cases;
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Mockery;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
