@@ -46,11 +46,9 @@ class PopulateCaseStarted extends Upgrade
         $count = $this->getNonSystemRequests()->count();
         echo ' ', $count, PHP_EOL;
 
-        // Truncate the table case_numbers
+        // Truncate the table cases_started
         DB::table('cases_started')->truncate();
         echo PHP_EOL;
-
-        // process_requests
         echo '    Populating case_started from process_requests';
 
         try {
@@ -60,29 +58,46 @@ class PopulateCaseStarted extends Upgrade
                     $this->insertCasesStarted($requests);
                     $this->displayRate($caseNumber, $startTime, $count, false);
                 });
-
-            Log::info('Cases started have been populated successfully.');
+            echo 'Cases started have been populated successfully.';
         } catch (Exception $e) {
-            Log::error('Failed to populate cases_started: ' . $e->getMessage());
+            echo 'Failed to populate cases_started: ' . $e->getMessage();
         }
 
         echo PHP_EOL;
     }
 
-    protected function displayRate($processed, $startTime, $count, $forceShow)
+    /**
+     * Display the processing rate of requests based on the time elapsed.
+     *
+     * @param int     $processed The number of requests that have been processed so far.
+     * @param float   $startTime The time when the processing started (in microseconds).
+     * @param int     $count     The total number of requests to be processed.
+     * @param bool    $forceShow Whether to force showing the rate, regardless of the refresh interval.
+     * @return void
+     */
+    protected function displayRate(int $processed, float $startTime, int $count, bool $forceShow): void
     {
+        // Get the current time in microseconds
         $currentTime = microtime(true);
+
+        // Only update the display if the forceShow flag is set or enough time has passed since the last display
         if (!$forceShow && ($this->lastPrint + self::REFRESH_TIME > $currentTime)) {
-            return;
+            return; // Skip if refresh time hasn't elapsed
         }
+
+        // Update the last print time
         $this->lastPrint = $currentTime;
+
+        // Calculate the time elapsed since the start of processing
         $timeElapsed = $currentTime - $startTime;
+
+        // Calculate the processing rate (requests per second), handle divide by zero case
         $rate = $timeElapsed > 0 ? $processed / $timeElapsed : 0;
 
-        // Clear current line
+        // Clear the current line in the console
         echo "\r";
 
-        // Write new rate
+        // Display the current processing progress and rate, formatted to 2 decimal places
         echo "    #{$processed}/{$count} Processing rate: " . number_format($rate, 2) . ' requests/second';
     }
 
@@ -123,11 +138,18 @@ class PopulateCaseStarted extends Upgrade
             ->get();
     }
 
+    /**
+     * Retrieve tokens associated with a specific case number.
+     *
+     * @param string $caseNumber The case number used to filter process requests.
+     * @return Illuminate\Support\Collection A collection of matching token records.
+     */
     private function getTokensByCaseNumber(string $caseNumber)
     {
         return DB::table('process_request_tokens')
             ->select('id', 'element_id', 'element_name', 'user_id', 'process_id')
             ->whereIn('process_request_id', function ($query) use ($caseNumber) {
+                // Subquery to select process_request IDs related to the given case number
                 $query->select('id')
                     ->from('process_requests')
                     ->where('case_number', $caseNumber);
@@ -152,85 +174,83 @@ class PopulateCaseStarted extends Upgrade
                     ->where('process_requests.id', $detail->id)
                     ->select('processes.id as process_id', 'processes.name as process_name')
                     ->get();
-                // if ($matchingRequestToken->isNotEmpty()) {
                 foreach ($requests as $request) {
                     $jsonData[] = [
                         'id' => $request->process_id,
                         'name' => $request->process_name,
                     ];
                 }
-
-                // if ($instance) {
-                //     $jsonData[] = [
-                //         'id' => $instance->process_id,
-                //         'name' => $instance->process_name,
-                //     ];
-                // }
             }
         }
 
         return $jsonData;
     }
 
+    /**
+     * Get request data as JSON formatted array from matching request IDs.
+     *
+     * @param Illuminate\Support\Collection $matchingRequestIds
+     * @return array
+     */
     private function getRequestJsonData($matchingRequestIds)
     {
-        $jsonData = [];
-
-        if ($matchingRequestIds->isNotEmpty()) {
-            foreach ($matchingRequestIds as $request) {
-                $jsonData[] = [
+        return $matchingRequestIds->isNotEmpty()
+            ? $matchingRequestIds->map(function ($request) {
+                return [
                     'id' => $request->id,
                     'name' => $request->name,
-                    'parent_request_id'  => $request->parent_request_id,
+                    'parent_request_id' => $request->parent_request_id,
                 ];
-            }
-        }
-
-        return $jsonData;
+            })->toArray()
+            : [];
     }
 
-    private function getTokenJsonData($matchingRequestToken)
+    /**
+     * Get token data as JSON formatted array from matching tokens.
+     *
+     * @param Illuminate\Support\Collection $matchingRequestTokens
+     * @return array
+     */
+    private function getTokenJsonData($matchingRequestTokens)
     {
-        $jsonData = [];
-
-        if ($matchingRequestToken->isNotEmpty()) {
-            foreach ($matchingRequestToken as $token) {
-                $jsonData[] = $token->id;
-            }
-        }
-
-        return $jsonData;
+        return $matchingRequestTokens->isNotEmpty()
+            ? $matchingRequestTokens->pluck('id')->toArray()
+            : [];
     }
 
-    private function getParticipantJsonData($matchingRequestToken)
+    /**
+     * Get participant data as JSON formatted array from matching tokens, ensuring user_id is not null.
+     *
+     * @param Illuminate\Support\Collection $matchingRequestTokens
+     * @return array
+     */
+    private function getParticipantJsonData($matchingRequestTokens)
     {
-        $jsonData = [];
-
-        if ($matchingRequestToken->isNotEmpty()) {
-            foreach ($matchingRequestToken as $token) {
-                $jsonData[] = $token->user_id;
-            }
-        }
-
-        return $jsonData;
+        return $matchingRequestTokens->isNotEmpty()
+            ? $matchingRequestTokens->filter(function ($token) {
+                return !is_null($token->user_id); // Filter out null user_ids
+            })->pluck('user_id')->toArray()
+            : [];
     }
 
-    private function getTaskJsonData($matchingRequestToken)
+    /**
+     * Get task data as JSON formatted array from matching tokens.
+     *
+     * @param Illuminate\Support\Collection $matchingRequestTokens
+     * @return array
+     */
+    private function getTaskJsonData($matchingRequestTokens)
     {
-        $jsonData = [];
-
-        if ($matchingRequestToken->isNotEmpty()) {
-            foreach ($matchingRequestToken as $token) {
-                $jsonData[] = [
+        return $matchingRequestTokens->isNotEmpty()
+            ? $matchingRequestTokens->map(function ($token) {
+                return [
                     'id' => $token->id,
                     'element_id' => $token->element_id,
                     'name' => $token->element_name,
-                    'process_id'  => $token->process_id,
+                    'process_id' => $token->process_id,
                 ];
-            }
-        }
-
-        return $jsonData;
+            })->toArray()
+            : [];
     }
 
     /**
@@ -262,7 +282,7 @@ class PopulateCaseStarted extends Upgrade
     }
 
     /**
-     * Insert data in chunks.
+     * Insert data into the cases_started table in chunks.
      *
      * @param Illuminate\Support\Collection $requests
      * @return void
@@ -272,14 +292,18 @@ class PopulateCaseStarted extends Upgrade
         $inserts = [];
 
         foreach ($requests as $request) {
+            // Fetch all related data
             $matchingRequestIds = $this->getMatchingRequestDetails($request->case_number);
+            $matchingRequestTokens = $this->getTokensByCaseNumber($request->case_number);
+
+            // Prepare JSON data
             $processJsonData = $this->getProcessJsonData($matchingRequestIds);
             $requestJsonData = $this->getRequestJsonData($matchingRequestIds);
-            $matchingRequestTokens = $this->getTokensByCaseNumber($request->case_number);
             $tokenJsonData = $this->getTokenJsonData($matchingRequestTokens);
             $taskJsonData = $this->getTaskJsonData($matchingRequestTokens);
             $participantJsonData = $this->getParticipantJsonData($matchingRequestTokens);
 
+            // Create the insert array
             $inserts[] = $this->createInsertData($request, [
                 'processes' => $processJsonData,
                 'requests' => $requestJsonData,
@@ -289,6 +313,7 @@ class PopulateCaseStarted extends Upgrade
             ]);
         }
 
+        // Insert data into the database in bulk
         if (!empty($inserts)) {
             DB::table('cases_started')->insert($inserts);
         }
