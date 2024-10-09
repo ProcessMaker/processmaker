@@ -2358,5 +2358,14 @@
   "Start": "Start",
   "Copy link": "Copy link",
   "This actions is taking longer than expected. We will continue updating your tasks in the background.": "This actions is taking longer than expected. We will continue updating your tasks in the background.",
-  "No user selected": "No user selected"
+  "No user selected": "No user selected",
+  "Encrypted": "Encrypted",
+  "Users/Groups to View": "Users/Groups to View",
+  "Conceal": "Conceal",
+  "Reveal": "Reveal",
+  "There is no field with the name ':fieldName'.": "There is no field with the name ':fieldName'.",
+  "Configuration related to encryption is not found for this field.": "Configuration related to encryption is not found for this field.",
+  "Encryption is not enabled for this field.": "Encryption is not enabled for this field.",
+  "Configuration related to assignments is missing for this field.": "Configuration related to assignments is missing for this field.",
+  "You are not assigned to this encrypted field.": "You are not assigned to this encrypted field."
 }
