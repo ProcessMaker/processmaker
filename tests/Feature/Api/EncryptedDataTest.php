@@ -43,6 +43,68 @@ class EncryptedDataTest extends TestCase
         $this->assertTrue(Str::isUuid($response->content()));
     }
 
+    public function test_encrypt_text_uuid()
+    {
+        // Initialize Faker
+        $faker = Faker::create();
+
+        // Prepare screen config
+        $content = file_get_contents(__DIR__ . '/screens/test encrypted field.json');
+        $content = str_replace('"9999999999"', $this->user->id, $content);
+        $content = str_replace('"8888888888"', '', $content);
+        $config = json_decode($content, true);
+
+        // Create required dummy objects
+        $screen = Screen::factory()->create(['config' => $config]);
+
+        // Build data to send
+        $data = [
+            'field_name' => 'form_input_1',
+            'plain_text' => $faker->sentence(),
+            'screen_id' => $screen->id,
+        ];
+
+        // Call endpoint
+        $response = $this->apiCall('POST', route('api.encrypted_data.encrypt_text'), $data);
+
+        // Asserts
+        $response->assertStatus(200);
+        $uuid1 = $response->content();
+
+        // The first time the record should be created
+        $this->assertTrue(Str::isUuid($uuid1));
+
+        // Build data to send
+        $data = [
+            'uuid' => $uuid1,
+            'field_name' => 'form_input_1',
+            'plain_text' => $faker->sentence(),
+            'screen_id' => $screen->id,
+        ];
+
+        // Call endpoint
+        $response = $this->apiCall('POST', route('api.encrypted_data.encrypt_text'), $data);
+
+        // Asserts, the returned uuid should be the same that the previous beacuse only the data is updated
+        $response->assertStatus(200);
+        $uuid2 = $response->content();
+        $this->assertEquals($uuid1, $uuid2);
+
+        // Build data to send
+        $data = [
+            'uuid' => 'invalid_uuid',
+            'field_name' => 'form_input_1',
+            'plain_text' => $faker->sentence(),
+            'screen_id' => $screen->id,
+        ];
+
+        // Call endpoint
+        $response = $this->apiCall('POST', route('api.encrypted_data.encrypt_text'), $data);
+
+        // Asserts, the returned status code should be 422 because is an invalid uuid
+        $response->assertStatus(422);
+    }
+
     public function test_encrypt_text_field_name_empty()
     {
         // Initialize Faker
