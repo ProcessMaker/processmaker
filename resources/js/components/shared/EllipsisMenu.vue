@@ -167,6 +167,10 @@ export default {
   },
   methods: {
     onClick(action, data) {
+      if (action.emit_on_root) {
+        this.$root.$emit(action.emit_on_root, data);
+        return;
+      }
       this.$emit("navigate", action, data);
     },
     itemLink(action, data) {

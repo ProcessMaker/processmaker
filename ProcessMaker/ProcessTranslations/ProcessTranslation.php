@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Assets\ScreensInProcess;
 use ProcessMaker\Assets\ScreensInScreen;
 use ProcessMaker\ImportExport\Utils;
+use ProcessMaker\Models\MustacheExpressionEvaluator;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTranslationToken;
 use ProcessMaker\Models\Screen;
@@ -255,6 +256,32 @@ class ProcessTranslation
         if (Auth::user() && Auth::user()->username !== '_pm4_anon_user') {
             $targetLanguage = Auth::user()->language;
         }
+
+        if (!$translations) {
+            return $config;
+        }
+
+        if (array_key_exists($targetLanguage, $translations)) {
+            foreach ($translations[$targetLanguage]['strings'] as $translation) {
+                $this->applyTranslationsToScreen($translation['key'], $translation['string'], $config);
+            }
+        }
+
+        return $config;
+    }
+
+    public function translateScreen($screen, $screenConfig, $data, $language)
+    {
+        if (!$screen) {
+            return;
+        }
+
+        $mustacheEngine = new MustacheExpressionEvaluator();
+        $configEvaluated = $mustacheEngine->render(json_encode($screenConfig), $data);
+
+        $config = json_decode($configEvaluated, true);
+        $translations = $screen['translations'];
+        $targetLanguage = $language;
 
         if (!$translations) {
             return $config;

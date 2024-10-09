@@ -171,7 +171,7 @@ class User extends Authenticatable implements HasMedia
     /**
      * Validation rules
      *
-     * @param  \ProcessMaker\Models\User|null  $existing
+     * @param  User|null  $existing
      *
      * @return array
      */
@@ -197,7 +197,7 @@ class User extends Authenticatable implements HasMedia
     /**
      * Validation rules specifically for the password
      *
-     * @param  \ProcessMaker\Models\User|null  $existing
+     * @param  User|null  $existing
      *
      * @return array
      */
@@ -278,6 +278,10 @@ class User extends Authenticatable implements HasMedia
                 }
             }
         });
+
+        if ($this->is_administrator) {
+            $filtered->push('admin');
+        }
 
         return $filtered->values();
     }
