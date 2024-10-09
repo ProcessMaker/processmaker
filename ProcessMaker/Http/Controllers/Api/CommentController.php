@@ -29,7 +29,7 @@ class CommentController extends Controller
      *
      * @param Request $request
      *
-     * @return \ProcessMaker\Http\Resources\ApiCollection
+     * @return ApiCollection
      *
      * @return \Illuminate\Http\Response
      */
@@ -76,6 +76,48 @@ class CommentController extends Controller
             if ($commentable_id) {
                 $query->where('commentable_id', $commentable_id);
             }
+        }
+
+        $response =
+            $query->orderBy(
+                $request->input('order_by', 'created_at'),
+                $request->input('order_direction', 'ASC')
+            )->paginate($request->input('per_page', 100));
+
+        return new ApiCollection($response);
+    }
+
+    /**
+     * Display comments related to the case
+     *
+     * @param Request $request
+     *
+     * @return ApiCollection
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getCommentsByCase(Request $request)
+    {
+        $request->validate([
+            'case_number' => 'required|integer',
+        ]);
+
+        $query = Comment::query()
+            ->with('user')
+            ->with('repliedMessage');
+
+        $flag = 'visible';
+        if (\Auth::user()->is_administrator) {
+            $flag = 'all';
+        }
+        $query->hidden($flag);
+        $caseNumber = $request->input('case_number', null);
+
+        $query->where('case_number', $caseNumber);
+
+        if ($request->has('type')) {
+            $types = explode(',', $request->input('type'));
+            $query->whereIn('type', $types);
         }
 
         $response =
