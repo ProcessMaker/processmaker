@@ -45,6 +45,6 @@ const onClose = (item, index) => {
 
 .badge-enter, .badge-leave-to /* .badge-leave-active in <=2.1.8 */ {
   opacity: 0;
-  transform: translateY(-10px); /* Mueve el badge hacia arriba al entrar o salir */
+  transform: translateY(-10px);
 }
 </style>

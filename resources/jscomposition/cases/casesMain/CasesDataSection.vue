@@ -48,9 +48,9 @@ const filters = ref([]);
 const table = ref();
 
 const dataPagination = ref({
-  total: 153,
-  page: 1,
-  pages: 10,
+  total: 0,
+  page: 0,
+  pages: 0,
   perPage: 15,
 });
 
