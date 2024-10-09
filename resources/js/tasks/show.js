@@ -13,6 +13,7 @@ import TasksList from "./components/TasksList.vue";
 import TaskSavePanel from "./components/TaskSavePanel.vue";
 import autosaveMixins from "../modules/autosave/autosaveMixin";
 import draftFileUploadMixin from "../modules/autosave/draftFileUploadMixin";
+import TaskSaveNotification from "./components/TaskSaveNotification.vue";
 
 Vue.use(Vuex);
 Vue.use("task", Task);
@@ -25,6 +26,7 @@ Vue.component("TimelineItem", TimelineItem);
 Vue.component("QuickFillPreview", QuickFillPreview);
 Vue.component("TasksList", TasksList);
 Vue.component("TaskSavePanel", TaskSavePanel);
+Vue.component("TaskSaveNotification", TaskSaveNotification);
 
 Vue.mixin(autosaveMixins);
 Vue.mixin(draftFileUploadMixin);

@@ -99,10 +99,20 @@ export default {
         responsive: false,
         legend: {
           position: "bottom",
+          labels: {
+            // This more specific font property overrides the global property
+            fontSize: 12,
+            fontStyle: "normal",
+            fontFamily: "'Open Sans', sans-serif",
+            usePointStyle: true,
+            padding: 30,
+          },
         },
         title: {
           display: true,
-          text: this.$t("Case by Status"),
+          fontSize: 16,
+          fontFamily: "'Open Sans', sans-serif",
+          text: this.$t("Active vs Closed Cases"),
         },
       },
     };
@@ -269,15 +279,16 @@ export default {
 </script>
 <style scoped>
 .default-chart {
-  width: 294px;
-  margin-top: 16px;
-  padding: 16px 0;
+  width: 325px;
+  margin-top: 24px;
+  padding: 20px 0;
   border-radius: 16px;
-  border: 0.883px solid rgba(205, 221, 238, 0.50);
-  background: linear-gradient(0deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.92) 100%), #57D490;
+  border: 0.88px solid #CDDDEE;
+  background: white;
   display: flex;
   justify-content: center;
   align-items: center;
+  box-shadow: 0.88px 0.88px 7.06px 1.77px #4A6F9D1A;
 }
 .custom-settings {
   margin-top: 32px;
@@ -285,7 +296,6 @@ export default {
 }
 @media (width < 1360px) and (width > 768px) {
   .default-chart {
-    margin-top: 0;
     margin-left: 32px;
   }
 }
@@ -294,7 +304,6 @@ export default {
     width: 100%;
     max-width: 100%;
     margin-right: 32px;
-    margin-top: 24px;
   }
 }
 </style>

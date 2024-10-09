@@ -216,8 +216,8 @@ class ProcessRequestController extends Controller
                     'label' => __('Default chart'),
                     'data' => [$countCompleted, $countInProgress],
                     'backgroundColor' => [
-                        'CLOSED' => '#62B2FD', // Color for 'Completed'
-                        'ACTIVE' => '#9BDFC4', // Color for 'In Progress'
+                        'CLOSED' => '#F9A8D4', // Color for 'Completed'
+                        'ACTIVE' => '#4F46E5', // Color for 'In Progress'
                     ],
                 ],
             ],
