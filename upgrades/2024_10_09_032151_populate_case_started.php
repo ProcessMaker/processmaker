@@ -12,6 +12,8 @@ class PopulateCaseStarted extends Upgrade
 
     private $lastPrint = 0;
 
+    const ALLOWED_REQUEST_TOKENS = ['task', 'scriptTask', 'callActivity'];
+
     /**
      * Run any validations/pre-run checks to ensure the environment, settings,
      * packages installed, etc. are right correct to run this upgrade.
@@ -60,7 +62,8 @@ class PopulateCaseStarted extends Upgrade
                     $this->displayRate($caseNumber, $startTime, $count, false);
                 });
             echo PHP_EOL;
-            // Obtener y mostrar los queries ejecutados
+            // Get Queryes
+
             $queryLog = DB::getQueryLog();
             foreach ($queryLog as $log) {
                 $query = $log['query'];
@@ -132,7 +135,10 @@ class PopulateCaseStarted extends Upgrade
                 'process_requests.case_title',
                 'process_requests.case_title_formatted',
                 'process_requests.status',
-                'process_requests.initiated_at'
+                'process_requests.initiated_at',
+                'process_requests.created_at',
+                'process_requests.completed_at',
+                'process_requests.updated_at',
             );
     }
 
@@ -159,7 +165,7 @@ class PopulateCaseStarted extends Upgrade
     private function getTokensByCaseNumber(string $caseNumber)
     {
         return DB::table('process_request_tokens')
-            ->select('id', 'element_id', 'element_name', 'user_id', 'process_id')
+            ->select('id', 'element_id', 'element_name', 'user_id', 'process_id', 'element_type')
             ->whereIn('process_request_id', function ($query) use ($caseNumber) {
                 // Subquery to select process_request IDs related to the given case number
                 $query->select('id')
@@ -218,7 +224,7 @@ class PopulateCaseStarted extends Upgrade
     }
 
     /**
-     * Get token data as JSON formatted array from matching tokens.
+     * Get token IDs as JSON formatted array from matching tokens, filtering by allowed element types.
      *
      * @param Illuminate\Support\Collection $matchingRequestTokens
      * @return array
@@ -226,7 +232,9 @@ class PopulateCaseStarted extends Upgrade
     private function getTokenJsonData($matchingRequestTokens)
     {
         return $matchingRequestTokens->isNotEmpty()
-            ? $matchingRequestTokens->pluck('id')->toArray()
+            ? $matchingRequestTokens->filter(function ($token) {
+                return in_array($token->element_type, self::ALLOWED_REQUEST_TOKENS);
+            })->pluck('id')->toArray()
             : [];
     }
 
@@ -286,10 +294,10 @@ class PopulateCaseStarted extends Upgrade
             'tasks' => json_encode($data['tasks']),
             'participants' => json_encode($data['participants']),
             'initiated_at' => $request->initiated_at,
-            'completed_at' => null,
+            'completed_at' => $request->completed_at,
             'keywords' => $request->case_title,
-            'created_at' => now(),
-            'updated_at' => now(),
+            'created_at' => $request->created_at,
+            'updated_at' => $request->updated_at,
         ];
     }
 
