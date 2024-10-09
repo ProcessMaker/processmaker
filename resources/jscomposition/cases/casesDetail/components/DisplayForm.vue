@@ -1,19 +1,20 @@
 <template>
   <div class="tw-py-10 tw-px-32 tw-max-h-[450px] tw-overflow-auto">
-    <vue-form-renderer
-      v-if="screen !== null"
-      v-model="previewData"
-      :config="screen.config"
-      :computed="screen.computed"
-      :custom-css="screen.custom_css"
-      :watchers="screen.watchers"
-      :show-errors="true"
-    />
+    <div class="tw-pointer-events-none">
+      <vue-form-renderer
+        v-if="screen !== null"
+        v-model="previewData"
+        :data="previewData"
+        :config="screen.config"
+        :custom-css="screen.custom_css"
+        :show-errors="true"
+      />
+    </div>
   </div>
 </template>
 
 <script>
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref, computed } from "vue";
 import { getScreenData } from "../api/index";
 
 export default defineComponent({
@@ -24,7 +25,7 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const previewData = ref({});
+    const previewData = computed(() => props.data.taskData);
     const screen = ref(null);
 
     const getScreen = (screenId) => {

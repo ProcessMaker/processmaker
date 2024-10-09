@@ -31,7 +31,11 @@ export default defineComponent({
   setup(props) {
     const onPrint = () => {
       const { data } = props;
-      window.open(`/requests/${data.case_number}/task/${data.id}/screen/${data.screen_id}`);
+      if (data.screen_version) {
+        window.open(`/requests/${data.process_request_id}/task/${data.id}/screen/${data.screen_version}`);
+      }
+      const msg = "There is not screen";
+      ProcessMaker.alert(msg, "danger");
     };
 
     const menuOptions = [
