@@ -5,13 +5,11 @@
     <div
       class="tw-mx-4 tw-p-4 tw-bg-white tw-rounded-2xl
       tw-border-gray-200 tw-border tw-space-y-4 tw-flex
-      tw-flex-col tw-overflow-hidden tw-grow tw-shadow-md"
-    >
+      tw-flex-col tw-overflow-hidden tw-grow tw-shadow-md">
       <AppCounters
         v-model="countersData"
         class="tw-w-full"
-        @change="onChangeCounter"
-      />
+        @change="onChangeCounter" />
       <RouterView :key="route.fullPath" />
     </div>
   </div>
