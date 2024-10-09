@@ -38,6 +38,7 @@ class FilesCreated implements SecurityLogEventInterface
             $this->name = [
                 'label' => $this->media['name'],
                 'link' => route('file-manager.index', ['public/' . $this->media['file_name']]),
+                'id' => $fileId,
             ];
         } else {
             $this->processName = $data->getAttribute('name');
@@ -45,6 +46,7 @@ class FilesCreated implements SecurityLogEventInterface
             $this->name = [
                 'label' => $data->getAttribute('id'),
                 'link' => route('requests.show', $data),
+                'id' => $fileId,
             ];
         }
     }

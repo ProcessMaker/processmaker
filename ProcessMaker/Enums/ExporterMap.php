@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Enums;
 
+use ProcessMaker\Models\ProcessMakerModel;
+
 enum ExporterMap
 {
     const TYPES = [
@@ -29,5 +31,14 @@ enum ExporterMap
     public static function getExporterClass(string $type): ?string
     {
         return self::TYPES[$type][1] ?? null;
+    }
+
+    public static function getExporterClassForModel(ProcessMakerModel $model): string | null
+    {
+        $class = get_class($model);
+
+        return collect(self::TYPES)->first(function ($type) use ($class) {
+            return $type[0] == $class;
+        })[1] ?? null;
     }
 }

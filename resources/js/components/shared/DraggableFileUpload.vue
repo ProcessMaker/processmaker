@@ -15,7 +15,7 @@
           - {{ $t('or') }} -
         </div>
         <uploader-btn id="submitFile" class="text-primary">{{ $t('Select file from computer') }}</uploader-btn>
-        <div v-if="$refs.uploader && inProgress">
+        <div v-if="$refs.uploader && inProgress || loadingFile">
           <i class="fas fa-spinner fa-spin p-0" />
         </div>
       </uploader-drop>
@@ -51,10 +51,12 @@ export default {
   },
   data() {
     return {
+      loadingFile: false
     };
   },
   methods: {
     addFile(file) {
+      this.loadingFile = false;
       if (this.accept) {
         file.ignored = true;
         if (this.accept.indexOf(file.fileType) !== -1) {
@@ -64,13 +66,15 @@ export default {
           ProcessMaker.alert(this.$t("The selected file is invalid or not supported. Please verify that this file is in JSON format."), "danger");
           return false
         }
+        this.loadingFile = true;
       }
       file.ignored = false;
     
       return true;
     },
     fileUploaded(rootFile, file, message) {
-        this.$emit('input', file.file);
+      this.loadingFile = false;
+      this.$emit('input', file.file);
     },
   }
 };
