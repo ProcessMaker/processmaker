@@ -830,4 +830,20 @@ class UserController extends Controller
 
         return response(['data' => $filter], 200);
     }
+
+    public function updateLanguage(Request $request)
+    {
+        $user = Auth::user();
+        $original = $user->getOriginal();
+        $user->language = $request->input('language')['code'];
+        $user->saveOrFail();
+        $changes = $user->getChanges();
+
+        //Call new Event to store User Changes into LOG
+        UserUpdated::dispatch($user, $changes, $original);
+
+        RecommendationEngine::handleUserSettingChanges($user, $original);
+
+        return response([], 204);
+    }
 }
