@@ -261,7 +261,10 @@ class PopulateCaseStarted extends Upgrade
     private function getTaskJsonData($matchingRequestTokens)
     {
         return $matchingRequestTokens->isNotEmpty()
-            ? $matchingRequestTokens->map(function ($token) {
+            ? $matchingRequestTokens->filter(function ($token) {
+                return in_array($token->element_type, CaseUtils::ALLOWED_REQUEST_TOKENS);
+            })
+            ->map(function ($token) {
                 return [
                     'id' => $token->id,
                     'element_id' => $token->element_id,
