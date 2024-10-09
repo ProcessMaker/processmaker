@@ -199,11 +199,11 @@ jobs:
           docker compose run phpunit
           CONTAINER_ID=$(docker ps -a --filter ancestor=pm4-eks-phpunit:latest --format "{{.ID}}" | head -n 1)
           docker cp $CONTAINER_ID:/opt/processmaker/coverage.xml coverage.xml
-      - name: Archive code coverage
-        uses: actions/upload-artifact@v4
-        with:
-          name: code-coverage
-          path: ./pm4-k8s-distribution/images/pm4-tools/coverage.xml
+      # - name: Archive code coverage
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: code-coverage
+      #     path: ./pm4-k8s-distribution/images/pm4-tools/coverage.xml
       - name: SonarQube Coverage Report
         uses: sonarsource/sonarqube-scan-action@master
         env:
