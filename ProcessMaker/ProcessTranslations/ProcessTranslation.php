@@ -239,8 +239,6 @@ class ProcessTranslation
             return;
         }
         $config = $screen['config'];
-        $translations = $screen['translations'];
-        $targetLanguage = '';
 
         if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
             $targetLanguage = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
@@ -252,17 +250,7 @@ class ProcessTranslation
             $targetLanguage = Auth::user()->language;
         }
 
-        if (!$translations) {
-            return $config;
-        }
-
-        if (array_key_exists($targetLanguage, $translations)) {
-            foreach ($translations[$targetLanguage]['strings'] as $translation) {
-                $this->applyTranslationsToScreen($translation['key'], $translation['string'], $config);
-            }
-        }
-
-        return $config;
+        return $this->searchTranslations($screen['screen_id'], $config, $targetLanguage);
     }
 
     public function translateScreen($screen, $screenConfig, $data, $language)
