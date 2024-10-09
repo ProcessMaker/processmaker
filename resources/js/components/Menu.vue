@@ -45,6 +45,14 @@
         </template>
       </b-col>
 
+      <div v-if="!sectionRight"
+        class="text-right">
+          <language-selector-button
+            class="ml-2"
+            :type="'screen-builder'"
+            :show-language-code="false">
+          </language-selector-button>
+      </div>
       <b-col
         v-if="sectionRight"
         class="text-right"
@@ -125,6 +133,7 @@ export default {
       newItems: this.initialNewItems,
       sectionRight: true,
       items: [],
+      selectedLanguage: "es",
     };
   },
   computed: {

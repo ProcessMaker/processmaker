@@ -476,6 +476,16 @@ export default {
             action: "redoAction()",
           },
           {
+            id: "button_templates",
+            type: "button",
+            title: this.$t("Screen Templates"),
+            name: this.$t("Templates"),
+            variant: "link",
+            icon: "fas fa-palette",
+            action: "openTemplatesPanel()",
+            dataCy: "button-templates",
+          },
+          {
             id: "button_calcs",
             type: "button",
             title: this.$t("Calculated Properties"),
@@ -594,6 +604,8 @@ export default {
         ],
       },
       iframeHeight: "600px",
+      myTemplatesData: null,
+      sharedTemplatesData: null,
     };
   },
   computed: {
@@ -716,9 +728,22 @@ export default {
     ProcessMaker.EventBus.$on("show-create-template-modal", () => {
       this.$refs["create-template-modal"].show();
     });
+    ProcessMaker.EventBus.$on("translate-screen-builder", (language) => {
+      this.translateScreen(language.code);
+    });
   },
   methods: {
     ...mapMutations("globalErrorsModule", { setStoreMode: "setMode" }),
+    translateScreen(language) {
+      const postData = {
+        inputData: this.previewData,
+        screenConfig: this.screen.config,
+      };
+      ProcessMaker.apiClient.post(`screens/${this.screen.id}/translate/${language}`, postData)
+        .then((response) => {
+          this.preview.config = response.data;
+        });
+    },
     // eslint-disable-next-line func-names
     updateDataInput: debounce(function () {
       if (this.previewInputValid) {
@@ -1016,6 +1041,9 @@ export default {
     },
     redoAction() {
       this.$refs.builder.redo();
+    },
+    openTemplatesPanel() {
+      this.$refs.builder.openTemplatesPanel();
     },
     openComputedProperties() {
       this.$refs.computedProperties.show();

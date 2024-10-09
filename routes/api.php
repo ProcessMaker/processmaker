@@ -55,6 +55,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('users/{user}/update_pinned_controls', [UserController::class, 'updatePinnedControls'])->name('users.updatePinnnedControls'); // Permissions handled in the controller
     Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy')->middleware('can:delete-users');
     Route::put('password/change', [ChangePasswordController::class, 'update'])->name('password.update');
+    Route::put('users/update_language', [UserController::class, 'updateLanguage'])->name('users.updateLanguage');
+
     // User Groups
     Route::put('users/{user}/groups', [UserController::class, 'updateGroups'])->name('users.groups.update')->middleware('can:edit-users');
     // User personal access tokens
@@ -98,6 +100,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::delete('screens/{screen}', [ScreenController::class, 'destroy'])->name('screens.destroy')->middleware('can:delete-screens,screen');
     Route::post('screens/{screen}/export', [ScreenController::class, 'export'])->name('screens.export')->middleware('can:export-screens,screen');
     Route::post('screens/import', [ScreenController::class, 'import'])->name('screens.import')->middleware('can:import-screens');
+    Route::post('screens/{screen}/translate/{language}', [ScreenController::class, 'translate'])->name('screen.translate')->middleware('can:edit-screens,screen');
 
     // Screen Categories
     Route::get('screen_categories', [ScreenCategoryController::class, 'index'])->name('screen_categories.index')->middleware('can:view-screen-categories');
@@ -236,6 +239,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // Files
     Route::get('files', [FileController::class, 'index'])->name('files.index')->middleware('can:view-files');
     Route::get('files/{file}', [FileController::class, 'show'])->name('files.show')->middleware('can:view,file');
+    Route::get('files/{file}/logs', [FileController::class, 'showLogs'])->name('file_logs.show')->middleware('can:view,file');
     Route::get('files/{file}/contents', [FileController::class, 'download'])->name('files.download')->middleware('can:view,file');
     Route::post('files', [FileController::class, 'store'])->name('files.store')->middleware('can:create,ProcessMaker\Models\Media');
     Route::put('files/{file}', [FileController::class, 'update'])->name('files.update')->middleware('can:update,file');
@@ -330,7 +334,9 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('modeler/templates/{type}/{id}', [TemplateController::class, 'show'])->name('modeler.template.show')->middleware('template-authorization');
     Route::post('templates/{type}/import/validation', [TemplateController::class, 'preImportValidation'])->name('template.preImportValidation')->middleware('template-authorization');
     Route::post('template/{type}/{id}/publish', [TemplateController::class, 'publishTemplate'])->name('template.publishTemplate')->middleware('can:publish-screen-templates');
+    Route::post('template/{type}/{id}/apply', [TemplateController::class, 'applyTemplate'])->name('template.applyTemplate')->middleware('template-authorization');
     Route::get('screen-builder/{type}/{id}', [TemplateController::class, 'show'])->name('screenBuilder.template.show')->middleware('template-authorization');
+
 
     // Wizard Templates
     Route::get('wizard-templates', [WizardTemplateController::class, 'index'])->name('wizard-templates.index');
