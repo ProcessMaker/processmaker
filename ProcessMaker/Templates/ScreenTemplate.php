@@ -703,7 +703,7 @@ class ScreenTemplate implements TemplateInterface
             // Get the current screen to apply the template
             $screenId = $request->get('screenId');
             $screen = Screen::where('id', $screenId)->firstOrFail();
-            $currentScreenPage = $request->get('currentScreenPage');
+            $currentScreenPage = $request->get('currentScreenPage', 1);
             // Get the selected template options
             $templateOptions = $request->get('templateOptions', []);
             $supportedOptionComponents = ScreenComponents::getComponents();
@@ -713,6 +713,7 @@ class ScreenTemplate implements TemplateInterface
                     $this->applyTemplateOption($option, $supportedOptionComponents, $template,
                         $newTemplateScreen, $screen, $templateOptions, $currentScreenPage);
                 }
+
                 $screen->save(); // Save the updated screen
             }
             Screen::where('id', $newScreenId)->delete(); // Clean up the temporary imported template screen
@@ -800,6 +801,11 @@ class ScreenTemplate implements TemplateInterface
 
         $screenConfig = $screen->config;
 
+        // Ensure the index exists
+        if (!isset($screenConfig[$currentScreenPage])) {
+            $screenConfig[$currentScreenPage] = ['items' => []];
+        }
+
         $screenConfig[$currentScreenPage]['items'] =
             array_merge($screenConfig[$currentScreenPage]['items'], $templateComponents);
         $screen->config = $screenConfig;
@@ -817,6 +823,11 @@ class ScreenTemplate implements TemplateInterface
             }
 
             $screenConfig = $screen->config;
+
+            // Ensure the index exists
+            if (!isset($screenConfig[$currentScreenPage])) {
+                $screenConfig[$currentScreenPage] = ['items' => []];
+            }
 
             $screenConfig[$currentScreenPage]['items'] =
                 array_merge($screenConfig[$currentScreenPage]['items'], $templateComponents);
