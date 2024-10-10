@@ -878,4 +878,26 @@ class ProcessRequestController extends Controller
 
         return new ApiCollection($response);
     }
+
+    /**
+     * This endpoint returns the parent request by case number
+     *  
+     * @param Request $request
+     *
+     * @return ApiCollection
+     */
+
+     public function getParentRequestByCase (Request $request)
+     {
+         // Validate the inputs, including optional ones
+         $request->validate([
+             'case_number' => 'required|integer',
+         ]);
+ 
+         $response = ProcessRequest::where('case_number', $request->input('case_number'))
+                 ->whereNull('parent_request_id')
+                 ->first();
+ 
+         return new ApiResource($response);
+     }
 }
