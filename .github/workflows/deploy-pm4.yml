@@ -43,7 +43,7 @@ jobs:
       - name: Common 
         uses: ./.github/actions/common
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GIT_TOKEN }}
 
       - name: Set image name
         run: |
