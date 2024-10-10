@@ -236,13 +236,13 @@
                   </ul>
                   <div class="menu-tab-content">
                     <div id="collapse-info" class="collapse show width">
-                    <div
-                      v-if="showInfo"
-                      id="details"
-                      v-bind:class="{ 'tab-pane':true, fade: true, show: showInfo, active: showInfo }"
-                      role="tabpanel"
-                      aria-labelledby="details-tab"
-                    >
+                      <div
+                        v-if="showInfo"
+                        id="details"
+                        v-bind:class="{ 'tab-pane':true, fade: true, show: showInfo, active: showInfo }"
+                        role="tabpanel"
+                        aria-labelledby="details-tab"
+                      >
                         <div class="ml-md-3 mt-3 mt-md-0">
                           <div class="card collapse-content">
                             <ul class="list-group list-group-flush w-100">
@@ -261,35 +261,6 @@
                                 </div>
                                 <div class="row button-group">
                                   <div class="col-6">
-                                    <button
-                                      type="button"
-                                      class="btn btn-block button-actions"
-                                      @click="createRule"
-                                    >
-                                    <i class="fas fa-plus"></i> {{ __('Create Rule') }}
-                                    </button>
-                                  </div>
-                                  <div class="col-6">
-                                    <button
-                                      type="button"
-                                      class="btn btn-block button-actions"
-                                      :class="{ 'button-priority': isPriority }"
-                                      @click="addPriority"
-                                    >
-                                    <img
-                                      :src="
-                                        isPriority
-                                          ? '/img/priority.svg'
-                                          : '/img/priority-header.svg'
-                                      "
-                                      :alt="$t('No Image')"
-                                    >
-                                      {{ __('Priority') }}
-                                    </button>
-                                  </div>
-                                </div>
-                                <div class="row button-group">
-                                  <div class="col-6">
                                     <template>
                                       <button
                                         type="button"
@@ -298,9 +269,10 @@
                                         @click="showQuickFill"
                                       >
                                       <img
-                                      src="../../img/smartinbox-images/fill.svg"
-                                      :alt="$t('No Image')"
-                                    /> {{__('Quick Fill')}}
+                                        src="../../img/smartinbox-images/fill.svg"
+                                        :alt="$t('No Image')"
+                                      />
+                                        {{__('Quick Fill')}}
                                       </button>
                                     </template>
                                   </div>
@@ -383,12 +355,12 @@
                                 </a>
                               </li>
                               <li class="list-group-item">
-                              <p class="section-title">{{__('Requested By')}}:</p>
-                                <avatar-image
-                                  v-if="task.requestor"
-                                  size="32"
-                                  class="d-inline-flex pull-left align-items-center"
-                                  :input-data="task.requestor"
+                                <p class="section-title">{{__('Requested By')}}:</p>
+                                  <avatar-image
+                                    v-if="task.requestor"
+                                    size="32"
+                                    class="d-inline-flex pull-left align-items-center"
+                                    :input-data="task.requestor"
                                   ></avatar-image>
                                 <p v-if="!task.requestor">{{__('Web Entry')}}</p>
                               </li>
@@ -473,6 +445,8 @@
                 </div>
               @endif
           </div>
+      </div>
+    </div>
   </div>
 @endsection
 
