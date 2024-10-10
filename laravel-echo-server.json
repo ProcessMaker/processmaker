@@ -1,4 +1,5 @@
 {
+	"authHost": "http://localhost",
 	"authEndpoint": "/broadcasting/auth",
 	"clients": [
 		{
@@ -16,7 +17,7 @@
 	"protocol": "https",
 	"socketio": {},
 	"sslCertPath": "/etc/nginx/ssl/processmaker.local.processmaker.com.crt",
-	"sslKeyPath": "/etc/nginx/ssl/processmaker.local.processmaker.com.key",
+ 	"sslKeyPath": "/etc/nginx/ssl/processmaker.local.processmaker.com.key",
 	"sslCertChainPath": "",
 	"sslPassphrase": "",
 	"subscribers": {

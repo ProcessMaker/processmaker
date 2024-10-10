@@ -53,7 +53,6 @@ class PopulateCaseStarted extends Upgrade
         echo '    Populating case_started from process_requests';
 
         try {
-            DB::enableQueryLog(); // Habilitar el log
             $this->getNonSystemRequests()
                 ->orderBy('process_requests.id')
                 ->chunk($chunkSize, function ($requests) use (&$caseNumber, $startTime, $count) {
@@ -61,17 +60,6 @@ class PopulateCaseStarted extends Upgrade
                     $this->displayRate($caseNumber, $startTime, $count, false);
                 });
             echo PHP_EOL;
-            // Get Queryes
-
-            $queryLog = DB::getQueryLog();
-            foreach ($queryLog as $log) {
-                $query = $log['query'];
-                foreach ($log['bindings'] as $binding) {
-                    $query = preg_replace('/\?/', "'$binding'", $query, 1);
-                }
-                echo $query . "\n"; // Imprimir el query final
-                echo PHP_EOL;
-            }
             echo 'Cases started have been populated successfully.';
         } catch (Exception $e) {
             echo 'Failed to populate cases_started: ' . $e->getMessage();
@@ -138,88 +126,72 @@ class PopulateCaseStarted extends Upgrade
                 'process_requests.created_at',
                 'process_requests.completed_at',
                 'process_requests.updated_at',
+                'process_requests.name',
+                'process_requests.parent_request_id',
+                'processes.id as process_id',
+                'processes.name as process_name',
             );
     }
 
     /**
-     * Get matching requests data for a given case number.
+     * Retrieve tokens associated with multiple case numbers in batch.
      *
-     * @param string $caseNumber
-     * @return Illuminate\Support\Collection
-     */
-    private function getMatchingRequestDetails(string $caseNumber)
-    {
-        return DB::table('process_requests')
-            ->where('case_number', $caseNumber)
-            ->select('id', 'name', 'parent_request_id')  // Select specific fields
-            ->get();
-    }
-
-    /**
-     * Retrieve tokens associated with a specific case number.
-     *
-     * @param string $caseNumber The case number used to filter process requests.
+     * @param array $caseNumbers The case numbers used to filter process requests.
      * @return Illuminate\Support\Collection A collection of matching token records.
      */
-    private function getTokensByCaseNumber(string $caseNumber)
+    private function getTokensByCaseNumbers(array $caseNumbers)
     {
         return DB::table('process_request_tokens')
             ->select('id', 'element_id', 'element_name', 'user_id', 'process_id', 'element_type')
-            ->whereIn('process_request_id', function ($query) use ($caseNumber) {
-                // Subquery to select process_request IDs related to the given case number
+            ->whereIn('process_request_id', function ($query) use ($caseNumbers) {
+                // Subquery to select process_request IDs related to the given case numbers
                 $query->select('id')
                     ->from('process_requests')
-                    ->where('case_number', $caseNumber);
+                    ->whereIn('case_number', $caseNumbers);
             })
             ->get();
     }
 
     /**
-     * Get process JSON data for matching request IDs.
-     *
-     * @param Illuminate\Support\Collection $matchingRequestIds
+     * Get JSON data for a process request.
+     * @param object $request
      * @return array
      */
-    private function getProcessJsonData($matchingRequestIds)
+    private function getProcessJsonData($request)
     {
-        $jsonData = [];
-
-        if ($matchingRequestIds->isNotEmpty()) {
-            foreach ($matchingRequestIds as $detail) {
-                $requests = DB::table('process_requests')
-                    ->join('processes', 'process_requests.process_id', '=', 'processes.id')
-                    ->where('process_requests.id', $detail->id)
-                    ->select('processes.id as process_id', 'processes.name as process_name')
-                    ->get();
-                foreach ($requests as $request) {
-                    $jsonData[] = [
-                        'id' => $request->process_id,
-                        'name' => $request->process_name,
-                    ];
-                }
-            }
-        }
-
-        return $jsonData;
+        return $this->getJsonData($request, ['process_id' => 'id', 'process_name' => 'name']);
     }
 
     /**
-     * Get request data as JSON formatted array from matching request IDs.
-     *
-     * @param Illuminate\Support\Collection $matchingRequestIds
+     * Get JSON data for a process request.
+     * @param object $request
      * @return array
      */
-    private function getRequestJsonData($matchingRequestIds)
+    private function getRequestJsonData($request)
     {
-        return $matchingRequestIds->isNotEmpty()
-            ? $matchingRequestIds->map(function ($request) {
-                return [
-                    'id' => $request->id,
-                    'name' => $request->name,
-                    'parent_request_id' => $request->parent_request_id,
-                ];
-            })->toArray()
-            : [];
+        return $this->getJsonData($request, [
+            'id' => 'id',
+            'name' => 'name',
+            'parent_request_id' => 'parent_request_id',
+        ]);
+    }
+
+    /**
+     * Get JSON data for a given request based on specified keys.
+     *
+     * @param object $request
+     * @param array $keys
+     * @return array
+     */
+    private function getJsonData($request, array $keys)
+    {
+        $jsonData = [];
+
+        if (!empty((array) $request)) {
+            $jsonData[] = array_intersect_key((array) $request, array_flip($keys));
+        }
+
+        return $jsonData;
     }
 
     /**
@@ -289,7 +261,7 @@ class PopulateCaseStarted extends Upgrade
             'user_id' => $request->user_id,
             'case_title' => $request->case_title,
             'case_title_formatted' => $request->case_title_formatted,
-            'case_status' => $request->status,
+            'case_status' => $request->status === 'ACTIVE' ? 'IN_PROGRESS' : $request->status,
             'processes' => json_encode($data['processes']),
             'requests' => json_encode($data['requests']),
             'request_tokens' => json_encode($data['tokens']),
@@ -313,14 +285,13 @@ class PopulateCaseStarted extends Upgrade
     {
         $inserts = [];
 
-        foreach ($requests as $request) {
-            // Fetch all related data
-            $matchingRequestIds = $this->getMatchingRequestDetails($request->case_number);
-            $matchingRequestTokens = $this->getTokensByCaseNumber($request->case_number);
+        $caseNumbers = $requests->pluck('case_number')->toArray(); // Collect case numbers for batch processing
+        $matchingRequestTokens = $this->getTokensByCaseNumbers($caseNumbers); // Retrieve tokens in batch
 
+        foreach ($requests as $request) {
             // Prepare JSON data
-            $processJsonData = $this->getProcessJsonData($matchingRequestIds);
-            $requestJsonData = $this->getRequestJsonData($matchingRequestIds);
+            $processJsonData = $this->getProcessJsonData($request);
+            $requestJsonData = $this->getRequestJsonData($request);
             $tokenJsonData = $this->getTokenJsonData($matchingRequestTokens);
             $taskJsonData = $this->getTaskJsonData($matchingRequestTokens);
             $participantJsonData = $this->getParticipantJsonData($matchingRequestTokens);
@@ -335,10 +306,12 @@ class PopulateCaseStarted extends Upgrade
             ]);
         }
 
-        // Insert data into the database in bulk
-        if (!empty($inserts)) {
-            DB::table('cases_started')->insert($inserts);
-        }
+        // Insert data into the database in chunks
+        DB::transaction(function () use ($inserts) {
+            foreach (array_chunk($inserts, self::CHUNK_SIZE) as $insertChunk) {
+                DB::table('cases_started')->insert($insertChunk);
+            }
+        });
     }
 
     /**
