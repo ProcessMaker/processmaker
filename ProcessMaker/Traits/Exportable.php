@@ -2,6 +2,10 @@
 
 namespace ProcessMaker\Traits;
 
+use ProcessMaker\Enums\ExporterMap;
+use ProcessMaker\Exception\ExporterNotSupported;
+use ProcessMaker\ImportExport\Exporter;
+
 trait Exportable
 {
     use HasUuids;
@@ -20,5 +24,18 @@ trait Exportable
     public function preventSavingDiscardedModel()
     {
         $this->_preventSavingDiscardedModel = true;
+    }
+
+    public function export()
+    {
+        $exporterClass = ExporterMap::getExporterClassForModel($this);
+        if (!$exporterClass) {
+            throw new ExporterNotSupported();
+        }
+
+        $exporter = new Exporter();
+        $exporter->export($this, $exporterClass);
+
+        return $exporter->payload();
     }
 }

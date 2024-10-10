@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Enums;
 
+use ProcessMaker\Models\ProcessMakerModel;
+
 enum ExporterMap
 {
     const TYPES = [
@@ -19,6 +21,7 @@ enum ExporterMap
             \ProcessMaker\Models\ScreenTemplates::class,
             \ProcessMaker\ImportExport\Exporters\ScreenTemplatesExporter::class,
         ],
+        'screen_translation' => [\ProcessMaker\Package\Translations\Models\Translatable::class, \ProcessMaker\Package\Translations\ImportExport\TranslatableExporter::class],
     ];
 
     public static function getModelClass(string $type): ?string
@@ -29,5 +32,14 @@ enum ExporterMap
     public static function getExporterClass(string $type): ?string
     {
         return self::TYPES[$type][1] ?? null;
+    }
+
+    public static function getExporterClassForModel(ProcessMakerModel $model): string | null
+    {
+        $class = get_class($model);
+
+        return collect(self::TYPES)->first(function ($type) use ($class) {
+            return $type[0] == $class;
+        })[1] ?? null;
     }
 }

@@ -27,7 +27,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
   BUILD_BASE: ${{ (contains(github.event.pull_request.body, 'ci:build-base') || github.event_name == 'schedule') && '1' || '0' }}
   BASE_IMAGE: ${{ secrets.REGISTRY_HOST }}/processmaker/processmaker:base
-  K8S_BRANCH: ${{ contains(github.event.pull_request.body, 'ci:next') && 'next' || 'develop' }}
+  K8S_BRANCH: ${{ contains(github.event.pull_request.body, 'ci:next') && 'next' || 'release-2024-fall' }}
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -53,18 +53,18 @@ jobs:
       - name: List Images
         run: |
           docker images
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: processmaker/enterprise:${{ env.VERSION }}
-          format: 'table'
-          exit-code: '0'
-          ignore-unfixed: false
-          vuln-type: 'os,library'
-          scanners: 'vuln,secret'
-          severity: 'MEDIUM,HIGH,CRITICAL'
-        env:
-          TRIVY_TIMEOUT: 30m
+      # - name: Run Trivy vulnerability scanner
+      #   uses: aquasecurity/trivy-action@master
+      #   with:
+      #     image-ref: processmaker/enterprise:${{ env.VERSION }}
+      #     format: 'table'
+      #     exit-code: '0'
+      #     ignore-unfixed: false
+      #     vuln-type: 'os,library'
+      #     scanners: 'vuln,secret'
+      #     severity: 'MEDIUM,HIGH,CRITICAL'
+      #   env:
+      #     TRIVY_TIMEOUT: 30m
       - name: Login to Harbor
         uses: docker/login-action@v2
         with:

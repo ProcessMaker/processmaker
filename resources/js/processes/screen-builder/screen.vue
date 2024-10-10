@@ -10,6 +10,7 @@
         ref="menuScreen"
         :options="optionsMenu"
         :environment="self"
+        :toolbar-disabled="$refs.builder?.isCurrentPageClipboard"
       />
 
       <!-- Card Body -->
@@ -476,6 +477,16 @@ export default {
             action: "redoAction()",
           },
           {
+            id: "button_templates",
+            type: "button",
+            title: this.$t("Screen Templates"),
+            name: this.$t("Templates"),
+            variant: "link",
+            icon: "fas fa-palette",
+            action: "openTemplatesPanel()",
+            dataCy: "button-templates",
+          },
+          {
             id: "button_calcs",
             type: "button",
             title: this.$t("Calculated Properties"),
@@ -594,6 +605,8 @@ export default {
         ],
       },
       iframeHeight: "600px",
+      myTemplatesData: null,
+      sharedTemplatesData: null,
     };
   },
   computed: {
@@ -1029,6 +1042,9 @@ export default {
     },
     redoAction() {
       this.$refs.builder.redo();
+    },
+    openTemplatesPanel() {
+      this.$refs.builder.openTemplatesPanel();
     },
     openComputedProperties() {
       this.$refs.computedProperties.show();
