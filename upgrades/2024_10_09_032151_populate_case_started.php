@@ -341,7 +341,7 @@ class PopulateCaseStarted extends Upgrade
      */
     public function down()
     {
-        // Truncate the table case_numbers
+        // Truncate the table cases_started
         DB::table('cases_started')->truncate();
     }
 }
