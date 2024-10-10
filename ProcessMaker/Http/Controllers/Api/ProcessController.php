@@ -457,6 +457,9 @@ class ProcessController extends Controller
         if (!$request->has('name')) {
             unset($rules['name']);
         }
+        if ($request->has('default_for_anon_webentry')) {
+            $rules = ['language_code' => 'required_if:default_for_anon_webentry,true'];
+        }
         $request->validate($rules);
         $original = $process->getOriginal();
 
@@ -503,6 +506,13 @@ class ProcessController extends Controller
         // Save any task notification settings...
         if ($request->has('task_notifications')) {
             $this->saveTaskNotifications($process, $request);
+        }
+
+        // Save default language for anon web entry...
+        if ($request->has(['default_for_anon_webentry', 'language_code'])) {
+            $process->default_anon_web_language = $request->input('default_for_anon_webentry') 
+                ? $request->input('language_code') 
+                : null;
         }
 
         $isTemplate = Process::select('is_template')->where('id', $process->id)->value('is_template');
@@ -1683,7 +1693,7 @@ class ProcessController extends Controller
      */
     protected function getRequestFields(Request $request)
     {
-        $fields = $request->input('fields', 'id,name,description');
+        $fields = $request->input('fields', 'id,name,description,default_anon_web_language');
 
         return $fields ? explode(',', $fields) : [];
     }
