@@ -43,7 +43,7 @@ class PopulateCommentsCaseNumber extends Upgrade
             ->select('comments.id', 'process_requests.case_number')
             ->chunkById($chunkSize, function ($comments) {
                 foreach ($comments as $comment) {
-                    // Actualizar cada comentario con el case_number
+                    // Update the comments.case_number with ptrocess_requests.case_number
                     DB::table('comments')
                         ->where('id', $comment->id)
                         ->update(['case_number' => $comment->case_number]);
@@ -57,7 +57,7 @@ class PopulateCommentsCaseNumber extends Upgrade
             ->select('comments.id', 'process_requests.case_number')
             ->chunkById($chunkSize, function ($comments) {
                 foreach ($comments as $comment) {
-                    // Actualizar cada comentario con el case_number
+                    // Update the comments.case_number with ptrocess_requests.case_number
                     DB::table('comments')
                         ->where('id', $comment->id)
                         ->update(['case_number' => $comment->case_number]);
