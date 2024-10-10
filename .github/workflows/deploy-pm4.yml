@@ -37,8 +37,7 @@ jobs:
     if: github.event.action != 'closed'
     runs-on: ${{ vars.RUNNER }}
     steps:
-      - &checkout
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           repository: processmaker/processmaker
@@ -47,8 +46,7 @@ jobs:
             .github
           sparse-checkout-clone-mode: false
 
-      - &common
-        name: Common 
+      - name: Common 
         uses: ./.github/actions/common
         with:
           token: ${{ secrets.GIT_TOKEN }}
@@ -94,8 +92,19 @@ jobs:
     needs: imageEKS
     runs-on: ${{ vars.RUNNER }}
     steps:
-      - *checkout
-      - *common
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: processmaker/processmaker
+          ref: test-cicd-phpunit
+          spark-checkout: |
+            .github
+          sparse-checkout-clone-mode: false
+
+      - name: Common 
+        uses: ./.github/actions/common
+        with:
+          token: ${{ secrets.GIT_TOKEN }}
 
       - name: Clone private repository
         run: |
@@ -169,9 +178,19 @@ jobs:
     if: contains(github.event.pull_request.body, 'ci:api-test')
     runs-on: self-hosted
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: processmaker/processmaker
+          ref: test-cicd-phpunit
+          spark-checkout: |
+            .github
+          sparse-checkout-clone-mode: false
 
-      - *checkout 
-      - *common
+      - name: Common 
+        uses: ./.github/actions/common
+        with:
+          token: ${{ secrets.GIT_TOKEN }}
 
       - name: Clone private repository
         run: |
@@ -266,8 +285,19 @@ jobs:
     needs: imageEKS
     runs-on: ${{ vars.RUNNER }}
     steps:
-      - *checkout
-      - *common 
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: processmaker/processmaker
+          ref: test-cicd-phpunit
+          spark-checkout: |
+            .github
+          sparse-checkout-clone-mode: false
+
+      - name: Common 
+        uses: ./.github/actions/common
+        with:
+          token: ${{ secrets.GIT_TOKEN }}
 
       - name: Export Params
         run: |
