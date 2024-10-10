@@ -92,7 +92,7 @@ jobs:
       - name: Common 
         uses: ./.github/actions/common
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GIT_TOKEN }}
 
       - name: Clone private repository
         run: |
@@ -173,7 +173,7 @@ jobs:
       - name: Common 
         uses: ./.github/actions/common
         with: 
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GIT_TOKEN }}
 
       - name: Clone private repository
         run: |
@@ -273,6 +273,8 @@ jobs:
 
       - name: Common 
         uses: ./.github/actions/common
+        with:
+          token: ${{ secrets.GIT_TOKEN }}
 
       - name: Export Params
         run: |
