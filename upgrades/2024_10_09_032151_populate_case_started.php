@@ -262,7 +262,7 @@ class PopulateCaseStarted extends Upgrade
     {
         return $matchingRequestTokens->isNotEmpty()
             ? $matchingRequestTokens->filter(function ($token) {
-                return in_array($token->element_type, CaseUtils::ALLOWED_REQUEST_TOKENS);
+                return in_array($token->element_type, CaseUtils::ALLOWED_ELEMENT_TYPES);
             })
             ->map(function ($token) {
                 return [
