@@ -4,6 +4,9 @@ namespace ProcessMaker\ProcessTranslations;
 
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Package\Translations\Models\Translatable;
 
 class ScreenTranslation
 {
@@ -110,7 +113,6 @@ class ScreenTranslation
     public function applyTranslations($screen)
     {
         $config = $screen['config'];
-        $translations = $screen['translations'];
         $targetLanguage = '';
 
         if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
@@ -121,16 +123,28 @@ class ScreenTranslation
 
         if (!Auth::user()->isAnonymous) {
             $targetLanguage = Auth::user()->language;
+        } elseif (Cache::has('LANGUAGE_ANON_WEBENTRY')) {
+            $targetLanguage = Cache::get('LANGUAGE_ANON_WEBENTRY');
+        }
+
+        return $this->searchTranslations($screen['screen_id'], $config, $targetLanguage);
+    }
+
+    public function searchTranslations($screenId, $config, $language)
+    {
+        $translations = null;
+        if (class_exists(Translatable::class)) {
+            $translations = Translatable::where('translatable_id', $screenId)
+                ->where('translatable_type', Screen::class)
+                ->where('language_code', $language)->first();
         }
 
         if (!$translations) {
             return $config;
         }
 
-        if (array_key_exists($targetLanguage, $translations)) {
-            foreach ($translations[$targetLanguage]['strings'] as $translation) {
-                $this->applyTranslationsToScreen($translation['key'], $translation['string'], $config);
-            }
+        foreach ($translations->translations as $key => $translation) {
+            $this->applyTranslationsToScreen($key, $translation, $config);
         }
 
         return $config;
