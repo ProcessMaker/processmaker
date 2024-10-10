@@ -11,9 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('comments', function (Blueprint $table) {
-            $table->unsignedInteger('case_number')->nullable();
-
-            $table->index('type');
+            $table->index('case_number');
         });
     }
 
@@ -23,9 +21,7 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('comments', function (Blueprint $table) {
-            $table->dropColumn('case_number');
-
-            $table->dropIndex(['type']);
+            $table->dropIndex(['case_number']);
         });
     }
 };
