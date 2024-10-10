@@ -480,6 +480,10 @@ class ProcessController extends Controller
         if ($request->has('manager_id')) {
             $process->manager_id = $request->input('manager_id', null);
         }
+        
+        if($request->has('reassignment_users')) {
+            $process->setProperty('reassignment_users', $request->get('reassignment_users'));
+        }
 
         // If we are specifying cancel assignments...
         if ($request->has('cancel_request')) {

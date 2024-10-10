@@ -28,11 +28,19 @@
           @card-button-clicked="$emit('blank-process-button-clicked')"
         />
 
-        <div v-if="packageAi" class="col-8 p-0">
+        <div v-if="packageAi" class="col-4 p-0">
           <button-card
             :button="aiProcessButton"
             @show-details="showDetails($event)"
             @card-button-clicked="$emit('ai-process-button-clicked')"
+          />
+        </div>
+
+        <div v-if="packageAi" class="col-4 p-0">
+          <button-card
+            :button="processIntelligenceButton"
+            @show-details="showDetails($event)"
+            @card-button-clicked="$emit('process-intelligence-clicked')"
           />
         </div>
         <div class="d-flex w-100 align-items-center my-3 card-separator">
@@ -140,12 +148,15 @@ export default {
       },
       aiProcessButton: {
         title: this.$t("Generate from AI"),
-        helperEnabled: true,
-        helperTitle: this.$t("Try our new Generative AI"),
-        helperDescription: this.$t("Describe your process. Our AI will build the model for you. Use it immediately or tweak it as needed."),
         svgIcon: "../../../img/nl-to-process.svg",
         svgIconStyle: "height: 2em;",
         showAiSlogan: true,
+      },
+      processIntelligenceButton: {
+        title: this.$t("Import a PI Process"),
+        description: '',
+        svgIcon: "../../../img/process-intelligence-logo-black.png",
+        svgIconStyle: "margin-left: auto; width: 60%; margin-right: auto;",
       },
       showWizardTemplateDetails: false,
     };
