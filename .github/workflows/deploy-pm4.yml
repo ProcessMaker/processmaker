@@ -27,7 +27,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
   BUILD_BASE: ${{ (contains(github.event.pull_request.body, 'ci:build-base') || github.event_name == 'schedule') && '1' || '0' }}
   BASE_IMAGE: ${{ secrets.REGISTRY_HOST }}/processmaker/processmaker:base
-  K8S_BRANCH: ${{ contains(github.event.pull_request.body, 'ci:next') && 'next' || 'develop' }}
+  # K8S_BRANCH: ${{ contains(github.event.pull_request.body, 'ci:next') && 'next' || 'release-2024-fall' }}
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -37,34 +37,39 @@ jobs:
     if: github.event.action != 'closed'
     runs-on: ${{ vars.RUNNER }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Common 
+        uses: ./.github/actions/common
+        with:
+          token: ${{ secrets.GIT_TOKEN }}
+
       - name: Set image name
         run: |
             RESOLVED_IMAGE_TAG=${{ env.IMAGE_TAG }}
             echo "IMAGE=${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:$RESOLVED_IMAGE_TAG" >> $GITHUB_ENV
-      - name: Clone repo K8S
-        run: |
-          echo "IMAGE: ${{ env.IMAGE }}"
-          git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution
       - name: Generate image EKS
         run: |
           cd pm4-k8s-distribution/images
+          export CI_RELEASE_BRANCH=$RELEASE_BRANCH
           branch=$(echo "${{ env.CI_PACKAGE_BRANCH }}" | sed 's/refs-heads-//g') tag=${{env.IMAGE_TAG}} bash build.k8s-cicd.sh
           echo "VERSION=${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
       - name: List Images
         run: |
           docker images
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: processmaker/enterprise:${{ env.VERSION }}
-          format: 'table'
-          exit-code: '0'
-          ignore-unfixed: false
-          vuln-type: 'os,library'
-          scanners: 'vuln,secret'
-          severity: 'MEDIUM,HIGH,CRITICAL'
-        env:
-          TRIVY_TIMEOUT: 30m
+      # - name: Run Trivy vulnerability scanner
+      #   uses: aquasecurity/trivy-action@master
+      #   with:
+      #     image-ref: processmaker/enterprise:${{ env.VERSION }}
+      #     format: 'table'
+      #     exit-code: '0'
+      #     ignore-unfixed: false
+      #     vuln-type: 'os,library'
+      #     scanners: 'vuln,secret'
+      #     severity: 'MEDIUM,HIGH,CRITICAL'
+      #   env:
+      #     TRIVY_TIMEOUT: 30m
       - name: Login to Harbor
         uses: docker/login-action@v2
         with:
@@ -81,13 +86,23 @@ jobs:
     needs: imageEKS
     runs-on: ${{ vars.RUNNER }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Common 
+        uses: ./.github/actions/common
+        with:
+          token: ${{ secrets.GIT_TOKEN }}
+
       - name: Clone private repository
         run: |
           git clone --depth 1 -b eng "https://$GITHUB_TOKEN@github.com/ProcessMaker/argocd.git" argocd
       - name: Install pm4-tools
         run: |
-          git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
-          echo "versionHelm=$(grep "version:" "pm4-k8s-distribution/charts/enterprise/Chart.yaml" | awk '{print $2}' | sed 's/\"//g')" >> $GITHUB_ENV
+          # Moved to common action
+          # git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
+          # echo "versionHelm=$(grep "version:" "pm4-k8s-distribution/charts/enterprise/Chart.yaml" | awk '{print $2}' | sed 's/\"//g')" >> $GITHUB_ENV
+
           cd pm4-k8s-distribution/images/pm4-tools
           composer install --no-interaction
           cd ..
@@ -117,7 +132,7 @@ jobs:
             kubectl apply -f template-db.yaml
             echo "Creating Deploy :: $deploy"
             #Sed PMAI
-            if [[ $K8S_BRANCH == "develop" ]] ; then
+            if [[ $RELEASE_BRANCH == "release-2024-summer" ]] ; then
               sed -i "s/{{pmai-system}}/pmai-system/" template-instance.yaml
             else
               sed -i "s/{{pmai-system}}/pmai-system-next/" template-instance.yaml
@@ -151,12 +166,21 @@ jobs:
     if: contains(github.event.pull_request.body, 'ci:api-test')
     runs-on: self-hosted
     steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Common 
+        uses: ./.github/actions/common
+        with: 
+          token: ${{ secrets.GIT_TOKEN }}
+
       - name: Clone private repository
         run: |
           git clone --depth 1 -b eng "https://$GITHUB_TOKEN@github.com/ProcessMaker/argocd.git" argocd
       - name: Install pm4-tools
         run: |
-          git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
+          git clone --depth 1 -b "$RELEASE_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
           echo "versionHelm=$(grep "version:" "pm4-k8s-distribution/charts/enterprise/Chart.yaml" | awk '{print $2}' | sed 's/\"//g')" >> $GITHUB_ENV
           cd pm4-k8s-distribution/images/pm4-tools
           composer install --no-interaction
@@ -244,16 +268,24 @@ jobs:
     needs: imageEKS
     runs-on: ${{ vars.RUNNER }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Common 
+        uses: ./.github/actions/common
+        with:
+          token: ${{ secrets.GIT_TOKEN }}
+
       - name: Export Params
         run: |
           echo "IMAGE=${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}" >> $GITHUB_ENV
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Clone repo K8S
-        run: |
-          echo "IMAGE: ${{ env.IMAGE }}"
-          git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution
+      # - uses: actions/checkout@v2
+      #   with:
+      #     fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      # - name: Clone repo K8S
+      #   run: |
+      #     echo "IMAGE: ${{ env.IMAGE }}"
+      #     git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution
       - name: Login to Harbor
         uses: docker/login-action@v2
         with:

@@ -1,0 +1,47 @@
+name: 'Common'
+description: 'Here to dry up the workflow'
+
+inputs:
+  token:
+    description: 'GitHub token'
+    required: true
+
+
+runs:
+  using: "composite"
+  steps:
+    - name: Determine the base branch
+      run: |
+          default_branch=${{ github.event.repository.default_branch }}
+          base_branch=${{ github.event.pull_request.base.ref }}
+          release_branch=$default_branch
+
+          match_pattern=release-202[0-9]-[^[:space:]]+
+          if [[ $base_branch =~ $match_pattern ]]; then
+            release_branch=$base_branch
+          fi
+
+          # if the github body contains ci:release-branch: then use that
+          match_pattern='ci:release-branch:([^[:space:]]+)'
+          if [[ $CI_PR_BODY =~ $match_pattern ]]; then
+            release_branch=${BASH_REMATCH[1]}
+          fi
+
+          echo "*** Release Branch: $release_branch ***"
+          echo "RELEASE_BRANCH=${release_branch}" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Clone K8S
+      run: |
+        k8s_branch=$RELEASE_BRANCH
+
+        match_pattern='ci:k8s-branch:([^[:space:]]+)'
+        echo "Checking for $match_pattern in $CI_PR_BODY"
+        if [[ $CI_PR_BODY =~ $match_pattern ]]; then
+          k8s_branch=${BASH_REMATCH[1]}
+        fi
+
+        echo "*** k8s Branch: $k8s_branch ***"
+        git clone --depth 1 -b "$k8s_branch" "https://${{ inputs.token }}@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution
+        echo "versionHelm=$(grep "version:" "pm4-k8s-distribution/charts/enterprise/Chart.yaml" | awk '{print $2}' | sed 's/\"//g')" >> $GITHUB_ENV
+      shell: bash
