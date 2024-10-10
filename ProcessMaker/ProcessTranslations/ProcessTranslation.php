@@ -239,6 +239,7 @@ class ProcessTranslation
             return;
         }
         $config = $screen['config'];
+        $targetLanguage = '';
 
         if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
             $targetLanguage = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
