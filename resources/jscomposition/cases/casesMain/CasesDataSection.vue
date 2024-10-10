@@ -38,11 +38,10 @@ import CaseFilter from "./components/CaseFilter.vue";
 import BadgesSection from "./components/BadgesSection.vue";
 import { Pagination } from "../../base";
 import { getColumns } from "./config/columns";
-import { FilterableTable } from "../../system";
+import { FilterableTable, TablePlaceholder } from "../../system";
 import * as api from "./api";
 import { user } from "./variables";
 import { formatFilters, formatFilterBadges } from "./utils";
-import TablePlaceholder from "./components/TablePlaceholder.vue";
 
 const props = defineProps({
   listId: {

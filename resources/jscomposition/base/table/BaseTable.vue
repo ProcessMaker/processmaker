@@ -2,7 +2,11 @@
   <div
     class="tw-w-full tw-relative tw-text-gray-600 tw-text-sm
       tw-border tw-rounded-xl tw-border-gray-300 tw-overflow-hidden tw-overflow-x-auto">
-    <table class="tw-w-full tw-border-collapse tw-table-fixed">
+    <table
+      class="tw-w-full tw-border-collapse"
+      :class="{
+        'tw-table-fixed':getDefaultConfig(config).tableFixed
+      }">
       <thead class="tw-border-b tw-sticky tw-top-0 tw-z-10 tw-bg-gray-100">
         <tr>
           <THeader
@@ -35,18 +39,24 @@
                   <slot :name="`tcell-${indexRow}-${column.field}`" />
                 </TCell>
               </template>
+
               <template
-                v-if="`checkEllpisisMenu(${indexRow})`"
+                v-if="`checkEllipsisMenu(${indexRow})`"
                 #[`menu`]>
-                <slot :name="`ellipsis-menu-${indexRow}`" />
+                <slot
+                  :name="`ellipsis-menu-${indexRow}`"
+                  :row="row"
+                  :columns="columns" />
               </template>
             </TRow>
+
             <ContainerRow
               v-if="`checkContainerRow(${indexRow})`"
               :key="`container-${indexRow}`"
-              :show-row="getShowContainer(indexRow)"
-              :columns="columns">
-              <slot :name="`container-row-${indexRow}`" />
+              :columns="columns"
+              :show-row="getShowContainer(indexRow)">
+              <slot
+                :name="`container-row-${indexRow}`" />
             </ContainerRow>
           </template>
         </tbody>
@@ -73,6 +83,10 @@ import THeader from "./THeader.vue";
 import TRow from "./TRow.vue";
 import TCell from "./TCell.vue";
 import ContainerRow from "./ContainerRow.vue";
+
+const defaultConfig = () => ({
+  tableFixed: true,
+});
 
 export default defineComponent({
   components: {
@@ -109,7 +123,9 @@ export default defineComponent({
     };
 
     const checkContainerRow = computed((index) => Object.hasOwn(slots, `container-row-${index}`));
-    const checkEllpisisMenu = computed((index) => Object.hasOwn(slots, `ellipsis-menu-${index}`));
+    const checkEllipsisMenu = computed((index) => Object.hasOwn(slots, `ellipsis-menu-${index}`));
+
+    const getDefaultConfig = (configInput) => Object.assign(defaultConfig(), configInput);
 
     onUpdated(async () => {
       if (configRow.value.length === 0) {
@@ -124,9 +140,10 @@ export default defineComponent({
       showContainer,
       toogleContainer,
       getShowContainer,
+      getDefaultConfig,
       slots,
       checkContainerRow,
-      checkEllpisisMenu,
+      checkEllipsisMenu,
     };
   },
 });

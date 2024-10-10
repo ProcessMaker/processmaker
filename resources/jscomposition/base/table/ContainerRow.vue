@@ -1,23 +1,22 @@
 <template>
   <tr
     v-if="showRow"
-    class="tw-border-b"
-  >
+    class="tw-border-b">
     <td :colspan="columns.length">
       <slot />
     </td>
   </tr>
 </template>
 
-<script>
-import { defineComponent } from "vue";
-
-export default defineComponent({
-  props: ["showRow", "columns"],
-  setup(props) {
-    return {
-      view: props.showRow,
-    };
+<script setup>
+const props = defineProps({
+  showRow: {
+    type: Boolean,
+    default: () => false,
+  },
+  columns: {
+    type: Array,
+    default: () => [],
   },
 });
 </script>

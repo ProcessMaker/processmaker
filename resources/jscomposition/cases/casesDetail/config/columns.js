@@ -3,20 +3,20 @@ import {
   StatusCell,
   TruncatedOptionsCell,
   CollapseFormCell,
+  ParticipantCell,
 } from "../../../system/index";
+import { formatDate } from "../../../utils";
 
 export default {};
 
 // Column for Task
 const taskNumberColumn = () => ({
-  field: "case_number",
+  field: "id",
   header: "Tasks #",
   resizable: true,
-  width: 200,
+  width: 100,
   filter: true,
-  formatter:(row, column, columns)=>{
-    return row.element_name;
-  },
+  formatter: (row, column, columns) => `#${row.id}`,
   cellRenderer: () => ({
     component: LinkCell,
     params: {
@@ -50,12 +50,29 @@ const processNameColumn = () => ({
   width: 200,
 });
 
-const assignedColumn = () => ({
-  field: "user.fullname",
+// const assignedColumn = () => ({
+//   field: "user.fullname",
+//   header: "Assigned",
+//   resizable: true,
+//   width: 200,
+//   filter: true,
+// });
+
+export const assignedColumn = () => ({
+  field: "user",
   header: "Assigned",
   resizable: true,
   width: 200,
-  filter: true,
+  cellRenderer: () => ({
+    component: ParticipantCell,
+    params: {
+      click: (row, column, columns) => {
+        window.document.location = `/profile/${row.user.id}`;
+      },
+      formatter: (row, column, columns) => row.user.fullname,
+      initials: (row, column, columns) => row.user.fullname[0],
+    },
+  }),
 });
 
 const dueDateColumn = () => ({
@@ -64,6 +81,7 @@ const dueDateColumn = () => ({
   resizable: true,
   width: 200,
   filter: true,
+  formatter: (row, column, columns) => formatDate(row.due_at),
 });
 
 // Columns for Requests
@@ -72,7 +90,7 @@ const requestIdColumn = () => ({
   header: "Request ID",
   resizable: true,
   filter: { type: "sortable" },
-  width: 80,
+  width: 150,
   cellRenderer: () => ({
     component: LinkCell,
     params: {
@@ -104,18 +122,14 @@ const taskColumn = () => ({
   header: "Task",
   resizable: true,
   width: 140,
-  formatter:(row, column, columns)=>{
-    return row.active_tasks.length? row.active_tasks[0].element_name : "";
-  },
+  formatter: (row, column, columns) => (row.active_tasks.length ? row.active_tasks[0].element_name : ""),
   cellRenderer: () => ({
     component: TruncatedOptionsCell,
     params: {
       click: (option, row, column, columns) => {
         window.document.location = `/tasks/${option.id}/edit`;
       },
-      formatterOptions:(option, row, column, columns)=>{
-        return option.element_name;
-      }
+      formatterOptions: (option, row, column, columns) => option.element_name,
     },
   }),
 });
@@ -137,13 +151,15 @@ const startedColumn = () => ({
   filter: { type: "sortable" },
   resizable: true,
   width: 200,
+  formatter: (row, column, columns) => formatDate(row.initiated_at),
 });
 
 const completedDateColumn = () => ({
-  field: "completed_date",
-  header: "Completed Date",
+  field: "completed_at",
+  header: "Completed",
   resizable: true,
   width: 200,
+  formatter: (row, column, columns) => formatDate(row.initiated_at),
 });
 
 const actionColumn = () => ({
@@ -151,7 +167,12 @@ const actionColumn = () => ({
   header: "",
   resizable: false,
   width: 50,
-  cellRenderer: () => CollapseFormCell,
+  cellRenderer: () => ({
+    component: CollapseFormCell,
+    params: {
+      show: (row, column, columns) => true,
+    },
+  }),
   params: {},
 });
 

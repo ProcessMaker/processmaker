@@ -8,13 +8,13 @@
         position="bottom"
         :hover="true">
         <AppAvatar
-          :class="`${participant.color}`"
-          :initials="participant.name[0]"
+          :class="`tw-bg-gray-500`"
+          :initials="initials(participant, row, column, columns) || ''"
           class="tw-cursor-pointer"
           @click="onClick(participant)" />
         <template #content>
           <div class="tw-p-2 tw-rounded-lg tw-border tw-border-gray-300 tw-bg-white">
-            {{ participant.name }}
+            {{ formatter(participant, row, column, columns) || "" }}
           </div>
         </template>
       </AppPopover>
@@ -23,23 +23,22 @@
     <span
       v-if="participants.length == 1"
       class="tw-px-2">
-      {{ participants[0].name }}
+      {{ formatter(participants[0], row, column, columns) }}
     </span>
   </div>
 </template>
 <script>
-import { defineComponent, computed, ref } from "vue";
+import { defineComponent, computed } from "vue";
 import { AppAvatar, AppPopover } from "../../../base";
 
 const colors = [
-  "tw-bg-green-500",
-  "tw-bg-gray-400",
-  "tw-bg-yellow-500",
-  "tw-bg-emerald-500",
-  "tw-bg-red-500",
-  "tw-bg-blue-500",
-  "tw-bg-gray-500",
-  "tw-bg-purple-500",
+  "tw-bg-green-300",
+  "tw-bg-gray-300",
+  "tw-bg-yellow-300",
+  "tw-bg-emerald-300",
+  "tw-bg-red-300",
+  "tw-bg-blue-300",
+  "tw-bg-purple-300",
 ];
 
 const getRandomInt = (max) => Math.floor(Math.random() * max);
@@ -63,6 +62,14 @@ export default defineComponent({
       default: () => ({}),
     },
     click: {
+      type: Function,
+      default: new Function(),
+    },
+    formatter: {
+      type: Function,
+      default: new Function(),
+    },
+    initials: {
       type: Function,
       default: new Function(),
     },

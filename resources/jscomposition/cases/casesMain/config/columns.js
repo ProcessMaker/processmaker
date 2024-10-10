@@ -1,5 +1,3 @@
-import moment from "moment";
-
 import {
   CaseTitleCell,
   TruncatedOptionsCell,
@@ -7,7 +5,7 @@ import {
   StatusCell,
   LinkCell,
 } from "../../../system/index";
-import { formatDate } from "../utils";
+import { formatDate } from "../../../utils";
 
 export default {};
 /**
@@ -110,6 +108,8 @@ export const participantsColumn = () => ({
       click: (option, row, column, columns) => {
         window.document.location = `/profile/${option.id}`;
       },
+      formatter: (option, row, column, columns) => option.name,
+      initials: (option, row, column, columns) => option.name[0],
     },
   }),
 });

@@ -3,7 +3,7 @@ import { api } from "../variables";
 const getData = async () => {
   const objectsList = [];
 
-  for (let i = 0; i <= 31; i += 1) {
+  for (let i = 0; i <= 1; i += 1) {
     const obj = {
       id: `${i}`,
       case_number: 100,
@@ -28,27 +28,17 @@ const getData = async () => {
   return objectsList;
 };
 
-export const getDataRequests = async ({ params, pagination }) => {
-  const response = await api.get("requests-by-case", {
-    params: {
-      ...params,
-      ...pagination,
-    },
-  });
+export const getDataRequests = async (params) => {
+  const response = await api.get("requests-by-case", params);
 
-  return response.data.data;
+  return response.data;
 };
 
-export const getDataTask = async ({ params, pagination }) => {
-  const response = await api.get("tasks-by-case/", {
-    params: {
-      ...params,
-      ...pagination,
-    },
-  });
-
-  return response.data.data;
+export const getDataTask = async (params) => {
+  const response = await api.get("tasks-by-case/", params);
+  return response.data;
 };
+
 const getScreenData = (id) => {
   const response = ProcessMaker.apiClient.get(`screens/${id}`);
 

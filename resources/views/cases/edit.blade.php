@@ -30,7 +30,7 @@
               :tabs="tabs" >
 
               <template #details>
-                <ul class="tw-w-full tw-space-y-3 tw-py-3 tw-text-gray-500">
+                <ul class="tw-w-full tw-space-y-3 tw-py-3 tw-text-gray-500 tw-overflow-y-scroll">
                   @if ($canCancel == true && $request->status === 'ACTIVE')
                     <li class="tw-flex tw-items-center tw-justify-center">
                       <button type="button" class="tw-w-full tw-border tw-border-gray-300 tw-px-3 tw-py-2
