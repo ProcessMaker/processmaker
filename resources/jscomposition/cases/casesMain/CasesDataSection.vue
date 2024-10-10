@@ -1,6 +1,6 @@
 <template>
   <div
-    class="tw-w-full tw-space-y-3 tw-flex tw-flex-col tw-overflow-hidden">
+    class="tw-w-full tw-space-y-3 tw-flex tw-flex-col tw-overflow-hidden tw-grow">
     <CaseFilter @enter="onChangeSearch" />
 
     <BadgesSection
@@ -11,10 +11,20 @@
       ref="table"
       :columns="columnsConfig"
       :data="data"
-      class="tw-grow tw-overflow-y-scroll"
-      @changeFilter="onChangeFilter" />
+      :placeholder="showPlaceholder"
+      class="tw-flex tw-flex-col tw-grow tw-overflow-y-scroll"
+      @changeFilter="onChangeFilter">
+      <template #placeholder>
+        <TablePlaceholder
+          :placeholder="placeholderType"
+          class="tw-grow" />
+      </template>
+    </FilterableTable>
 
     <Pagination
+      :class="{
+        ' tw-opacity-50':showPlaceholder
+      }"
       :total="dataPagination.total"
       :page="dataPagination.page"
       :pages="dataPagination.pages"
@@ -32,6 +42,7 @@ import { FilterableTable } from "../../system";
 import * as api from "./api";
 import { user } from "./variables";
 import { formatFilters, formatFilterBadges } from "./utils";
+import TablePlaceholder from "./components/TablePlaceholder.vue";
 
 const props = defineProps({
   listId: {
@@ -46,6 +57,8 @@ const data = ref();
 const search = ref();
 const filters = ref([]);
 const table = ref();
+const showPlaceholder = ref(false);
+const placeholderType = ref("loading");
 
 const dataPagination = ref({
   total: 0,
@@ -76,27 +89,43 @@ const getData = async () => {
       sortBy: sortFilter ? `${sortFilter.field}:${sortFilter.sortable}` : null,
     },
   });
+  return response;
+};
 
-  data.value = response.data;
+const hookGetData = async () => {
+  placeholderType.value = "loading";
+  showPlaceholder.value = true;
+
+  const response = await getData();
+
   setMetaPagination(response.meta);
+
+  setTimeout(() => {
+    data.value = response.data;
+    if (response.data && !response.data.length) {
+      placeholderType.value = "empty-cases";
+      return;
+    }
+    showPlaceholder.value = false;
+  }, 300);
 };
 
 const onGo = async (page) => {
   dataPagination.value.page = page;
 
-  await getData();
+  await hookGetData();
 };
 
 const onPerPage = async (perPage) => {
   dataPagination.value.perPage = perPage;
 
-  await getData();
+  await hookGetData();
 };
 
 const onChangeSearch = async (val) => {
   search.value = val;
 
-  await getData();
+  await hookGetData();
 };
 
 const onChangeFilter = async (filtersData) => {
@@ -104,7 +133,7 @@ const onChangeFilter = async (filtersData) => {
 
   badgesData.value = formatFilterBadges(filtersData, columnsConfig.value);
 
-  await getData();
+  await hookGetData();
 };
 
 const onRemoveBadge = async (badge, index) => {
@@ -113,13 +142,20 @@ const onRemoveBadge = async (badge, index) => {
 
   // Remove filter from table
   table.value.removeFilter(index);
-  await getData();
+  await hookGetData();
 };
 
 onMounted(async () => {
-  await getData();
+  await hookGetData();
 
   columnsConfig.value = getColumns(props.listId);
 });
-
 </script>
+<style scoped>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.9s ease;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+</style>
