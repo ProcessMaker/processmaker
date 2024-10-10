@@ -90,112 +90,6 @@
                 </div>
             </div>
             @if (shouldShow('taskStatusContainer'))
-              <div>
-                <button
-                  role="button"
-                  class="btn d-block mr-0 ml-auto button-collapse"
-                  data-toggle="collapse"
-                  data-target="#collapse-info"
-                  @click="showTabs = !showTabs"
-                >
-                  <template v-if="showTabs">
-                    <i class="fas fa-angle-right"></i>
-                  </template>
-                  <template v-else>
-                    <i class="fas fa-angle-left"></i>
-                  </template>
-                </button>
-                <ul v-if="showTabs" class="nav nav-tabs nav-collapse" role="tablist">
-                  <li class="nav-item" role="presentation">
-                    <button
-                      id="details-tab"
-                      :class="{'nav-link': true, active: showInfo }"
-                      data-bs-toggle="tab"
-                      data-bs-target="#details"
-                      type="button"
-                      role="tab"
-                      aria-controls="details"
-                      aria-selected="true"
-                      @click="switchTabInfo('details')"
-                    >
-                      @{{ __('Details') }}
-                    </button>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                    <button
-                      id="comments-tab"
-                      :class="{'nav-link': true, active: !showInfo }"
-                      data-bs-toggle="tab"
-                      data-bs-target="#comments"
-                      type="button"
-                      role="tab"
-                      aria-controls="comments"
-                      aria-selected="false"
-                      @click="switchTabInfo('comments')"
-                    >
-                      @{{ __('Comments') }}
-                    </button>
-                  </li>
-                </ul>
-                <div class="tab-content">
-                  <div id="collapse-info" class="collapse show width">
-                  <div
-                    v-if="showInfo"
-                    id="details"
-                    v-bind:class="{ 'tab-pane':true, fade: true, show: showInfo, active: showInfo }"
-                    role="tabpanel"
-                    aria-labelledby="details-tab"
-                  >
-                      <div class="ml-md-3 mt-3 mt-md-0">
-                        <div class="card collapse-content">
-                          <ul class="list-group list-group-flush w-100">
-                            <li class="list-group-item">
-                            <div
-                              v-if="taskDraftsEnabled"
-                              class="row justify-content-start pb-1"
-                            >
-                              <task-save-notification
-                                :options="options"
-                                :task="task"
-                                :date="lastAutosaveNav"
-                                :error="errorAutosave"
-                                :form-data="formData"
-                              />
-                            </div>
-                              <div class="row button-group">
-                                <div class="col-6">
-                                  <button
-                                    type="button"
-                                    class="btn btn-block button-actions"
-                                    @click="createRule"
-                                  >
-                                  <i class="fas fa-plus"></i> {{ __('Create Rule') }}
-                                  </button>
-                                </div>
-                                <div class="col-6">
-                                  <button
-                                    type="button"
-                                    class="btn btn-block button-actions"
-                                    :class="{ 'button-priority': isPriority }"
-                                    @click="addPriority"
-                                  >
-                                  <img
-                                    :src="
-                                      isPriority
-                                        ? '/img/priority.svg'
-                                        : '/img/priority-header.svg'
-                                    "
-                                    :alt="$t('No Image')"
-                                  >
-                                    {{ __('Priority') }}
-                                  </button>
-                                </div>
-                              </div>
-                          @endcan
-                      </div>
-                  </div>
-              </div>
-              @if (shouldShow('taskStatusContainer'))
                 <div class="slide-control">
                   <a href="#" @click="hideMenu">
                     <i class="fa" :class="{ 'fa-caret-left' : !showMenu, 'fa-caret-right' : showMenu }"></i>
@@ -451,6 +345,8 @@
                 </div>
               @endif
           </div>
+      </div>
+    </div>
   </div>
 @endsection
 
@@ -537,7 +433,8 @@
           showMenu: true,
           userConfiguration: @json($userConfiguration),
           urlConfiguration:'users/configuration',
-          users: []
+          users: [],
+          showTabs: true
         },
         watch: {
           task: {
