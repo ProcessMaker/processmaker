@@ -21,6 +21,7 @@ class TaskControllerTest extends TestCase
         'element_name',
         'user_id',
         'process_id',
+        'completed_at',
         'due_at',
         'process_request_id',
     ];
