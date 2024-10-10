@@ -3,6 +3,8 @@
     :key="indexFilter"
     :columns="columns"
     :data="data"
+    :config="config"
+    :placeholder="placeholder"
     class="tw-grow tw-overflow-y-scroll">
     <template
       v-for="(column, index) in columns"
@@ -12,6 +14,26 @@
         :key="`sortable-${index}`"
         :state="indexFilter == index ? 'asc': ''"
         @change="e=> onChangeFilter(column, e, index)" />
+    </template>
+
+    <template
+      v-for="(item, indexRow) in data"
+      #[`container-row-${indexRow}`]>
+      <slot
+        :name="`container-row-${indexRow}`" />
+    </template>
+
+    <template
+      v-for="(item, index) in data"
+      #[`ellipsis-menu-${index}`]="{row, columns}">
+      <slot
+        :name="`ellipsis-menu-${index}`"
+        :row="row"
+        :columns="columns" />
+    </template>
+
+    <template #placeholder>
+      <slot name="placeholder" />
     </template>
   </BaseTable>
 </template>
@@ -30,6 +52,14 @@ const props = defineProps({
   data: {
     type: Array,
     default: () => [],
+  },
+  placeholder: {
+    type: Boolean,
+    default: () => false,
+  },
+  config: {
+    type: Object,
+    default: () => ({}),
   },
 });
 

@@ -178,7 +178,7 @@ const selectedOption = ref({
 
 const first = () => {
   if (pageModel.value > 1) {
-    pageModel.value = 0;
+    pageModel.value = 1;
     emit("go", 1);
   }
 };
@@ -199,7 +199,7 @@ const next = () => {
 
 const last = () => {
   if (pageModel.value < props.pages) {
-    pageModel.value = props.pages - 1;
+    pageModel.value = props.pages;
     emit("go", pageModel.value);
   }
 };

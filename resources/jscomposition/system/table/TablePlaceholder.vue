@@ -7,7 +7,7 @@
 <script setup>
 import { t } from "i18next";
 import { computed } from "vue";
-import { LoadingPlaceholder, EmptyPlaceholder } from "../../../system";
+import { LoadingPlaceholder, EmptyPlaceholder } from "../placeholders";
 
 const props = defineProps({
   placeholder: {
