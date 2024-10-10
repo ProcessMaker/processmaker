@@ -135,39 +135,3 @@ onMounted(async () => {
   await hookGetData();
 });
 </script>
-
-<!-- <script setup>
-import { ref, onMounted } from "vue";
-import { SortTable, Pagination } from "../../../system";
-import DisplayForm from "./DisplayForm.vue";
-import EllipsisMenu from "./EllipsisMenu.vue";
-import { getData } from "../api/index";
-import { getColumns } from "../config/columns";
-
-const data = ref(null);
-const columnsConfig = ref(null);
-const config = {
-  tableFixed: false,
-};
-
-// Pagination variable
-const dataPagination = ref({
-  total: 0,
-  page: 1,
-  pages: 0,
-  perPage: 15,
-});
-
-const onGo = async (page) => {
-
-};
-
-const onPerPage = async (perPage) => {
-
-};
-
-onMounted(async () => {
-  data.value = await getData();
-  columnsConfig.value = getColumns("completed_forms");
-});
-</script> -->
