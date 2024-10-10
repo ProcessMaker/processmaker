@@ -59,6 +59,7 @@ class TaskController extends Controller
         'element_name', // Task Name
         'user_id', // Participant
         'process_id', // Process
+        'completed_at', // Completed At
         'due_at', // Due At
         'process_request_id', // Request Id #
     ];
