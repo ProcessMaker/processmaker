@@ -79,13 +79,18 @@ class ScriptMicroserviceRunner
             'secrets' => $this->getEnvironmentVariables(),
             'callback' => config('script-runner-microservice.callback'),
             'debug' => true,
+            'timeout' => $timeout,
+            'sync' => 1,
         ];
 
         Log::debug(print_r($payload, true));
 
-        return Http::withToken($this->getAccessToken())
-            ->post(config('script-runner-microservice.base_url') . '/requests/create', $payload)
-            ->json();
+        $response = Http::withToken($this->getAccessToken())
+            ->post(config('script-runner-microservice.base_url') . '/requests/create', $payload);
+
+        $response->throw();
+
+        return $response->json();
     }
 
     private function getEnvironmentVariables()
