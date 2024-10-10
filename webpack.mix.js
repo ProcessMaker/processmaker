@@ -134,6 +134,7 @@ mix
   .js("resources/js/notifications/index.js", "public/js/notifications/index.js")
   .js('resources/js/inbox-rules/index.js', 'public/js/inbox-rules')
   .js('resources/js/inbox-rules/show.js', 'public/js/inbox-rules')
+  .js("resources/js/admin/devlink/index.js", "public/js/admin/devlink")
 
   // Note, that this should go last for the extract to properly put the manifest and vendor in the right location
   // See: https://github.com/JeffreyWay/laravel-mix/issues/1118
@@ -168,6 +169,7 @@ mix.copyDirectory(`${monacoSource}language`, `${monacoDestination}language`);
 
 mix
   .sass("resources/sass/sidebar/sidebar.scss", "public/css")
+  .sass("resources/sass/collapseDetails.scss", "public/css")
   .sass("resources/sass/app.scss", "public/css")
   .sass("resources/sass/admin/queues.scss", "public/css/admin")
   .postCss("resources/sass/tailwind.css", "public/css", [

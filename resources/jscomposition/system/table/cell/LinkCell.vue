@@ -1,12 +1,12 @@
 <template>
   <div
     class="tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis tw-p-3">
-    <a
-      class="hover:tw-text-blue-500"
+    <span
+      class="hover:tw-text-blue-400 tw-text-gray-500 hover:tw-cursor-pointer"
       href="#"
       @click.prevent="onClick">
       {{ getValue() }}
-    </a>
+    </span>
   </div>
 </template>
 <script setup>

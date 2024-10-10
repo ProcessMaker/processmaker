@@ -7,6 +7,7 @@ use DB;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Scout\Searchable;
 use Log;
@@ -558,25 +559,6 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         }
 
         return $result;
-    }
-
-    /**
-     * Check if the user has access to reassign this task
-     *
-     * @param User $user
-     */
-    public function authorizeReassignment(User $user)
-    {
-        if ($user->can('update', $this)) {
-            $definitions = $this->getDefinition();
-            if (empty($definitions['allowReassignment']) || $definitions['allowReassignment'] === 'false') {
-                throw new AuthorizationException('Not authorized to reassign this task');
-            }
-
-            return true;
-        } else {
-            throw new AuthorizationException('Not authorized to view this task');
-        }
     }
 
     /**
@@ -1232,7 +1214,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             $reassingAction = true;
         } else {
             // Validate if user can reassign
-            $this->authorizeReassignment($requestingUser);
+            Gate::forUser($requestingUser)->authorize('reassign', $this);
             // Reassign user
             $this->reassignTo($toUserId);
             $this->persistUserData($toUserId);

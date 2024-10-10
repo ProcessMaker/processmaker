@@ -15,6 +15,7 @@ const FormNestedScreen = FormBuilderControls.find((control) => control.rendererB
 const FileDownloadControl = FormBuilderControls.find((control) => control.builderBinding === "FileDownload");
 const FormListTable = FormBuilderControls.find((control) => control.rendererBinding === "FormListTable");
 const FormAnalyticsChart = FormBuilderControls.find((control) => control.rendererBinding === "FormAnalyticsChart");
+const FormCollectionViewControl = FormBuilderControls.find((control) => control.rendererBinding === "FormCollectionViewControl");
 // Remove editable inspector props
 FormRecordList.control.inspector = FormRecordList.control.inspector.filter((prop) => prop.field !== "editable" && prop.field !== "form");
 
@@ -32,6 +33,7 @@ const controlsDisplay = [
   FileDownloadControl,
   FormListTable,
   FormAnalyticsChart,
+  FormCollectionViewControl
 ];
 
 ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {

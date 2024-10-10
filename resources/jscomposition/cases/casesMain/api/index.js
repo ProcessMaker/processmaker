@@ -1,16 +1,6 @@
-export default {};
+import { api } from "../variables";
 
-// Method to get counters - change with processmaker API
-export const getCounters = async () => {
-  const url = "http://localhost:3000/appcounters";
-  return {
-    myCases: 36,
-    inProgress: 20,
-    completed: 125,
-    allCases: 145,
-    allRequests: 777,
-  };
-};
+export default {};
 
 // Method to get data case list - change with processmaker API
 export const getData = async () => {
@@ -552,4 +542,22 @@ export const getAllData = async ({ type, page, perPage }) => {
   }
 
   return response;
+};
+
+const services = {
+  completed: "get_completed",
+  in_progress: "get_in_progress",
+  all: "get_all_cases",
+};
+
+export const getCaseData = async (service, data) => {
+  const response = await api.get(`/api/1.1/cases/${services[service] || "get_all_cases"}`, data);
+
+  return response.data;
+};
+
+export const getCounters = async (data) => {
+  const response = await api.get("/api/1.1/cases/get_my_cases_counters", data);
+
+  return response.data;
 };

@@ -3,7 +3,7 @@
     class="tw-flex tw-items-center tw-justify-start tw-space-x-2 tw-text-gray-500 tw-text-sm">
     <svg
       :class="{
-        'hover:tw-cursor-pointer hover:tw-bg-gray-100': pageModel > 0
+        'hover:tw-cursor-pointer hover:tw-bg-gray-100': pageModel > 1
       }"
       class=" tw-rounded-md"
       width="20"
@@ -25,7 +25,7 @@
 
     <svg
       :class="{
-        'hover:tw-cursor-pointer hover:tw-bg-gray-100 ': pageModel > 0
+        'hover:tw-cursor-pointer hover:tw-bg-gray-100 ': pageModel > 1
       }"
       class="tw-rounded-md"
       width="20"
@@ -48,9 +48,9 @@
     <div
       class="tw-flex tw-border-1 tw-rounded-md tw-ring-1 tw-ring-inset tw-ring-gray-300">
       <input
+        v-model="pageModel"
         inputmode="numeric"
         pattern="\d*"
-        :value="pageModel"
         class="tw-block tw-w-10 tw-text-center tw-flex-1 tw-border-0 tw-bg-transparent tw-pl-1
           focus-visible:tw-outline-none placeholder:tw-text-gray-400"
         placeholder="1"
@@ -59,7 +59,7 @@
 
     <svg
       :class="{
-        'hover:tw-cursor-pointer hover:tw-bg-gray-100': pageModel < pages - 1
+        'hover:tw-cursor-pointer hover:tw-bg-gray-100': pageModel < pages
       }"
       class="tw-rounded-md"
       width="20"
@@ -81,7 +81,7 @@
 
     <svg
       :class="{
-        'hover:tw-cursor-pointer hover:tw-bg-gray-100': pageModel < pages - 1
+        'hover:tw-cursor-pointer hover:tw-bg-gray-100': pageModel < pages
       }"
       class="tw-rounded-md"
       width="20"
@@ -126,105 +126,89 @@
     </div>
   </div>
 </template>
-<script>
-import { defineComponent, ref, computed } from "vue";
+<script setup>
+import { ref, computed } from "vue";
 import { t } from "i18next";
 import { Dropdown } from "../../base/form";
 
-export default defineComponent({
-  components: {
-    Dropdown,
+const props = defineProps({
+  total: {
+    type: Number,
+    default: () => (0),
   },
-  props: {
-    total: {
-      type: Number,
-      default: () => (0),
-    },
-    page: {
-      type: Number,
-      default: () => (0),
-    },
-    pages: {
-      type: Number,
-      default: () => (0),
-    },
-    options: {
-      type: Array,
-      default: () => [],
-    },
+  page: {
+    type: Number,
+    default: () => (0),
   },
-  emits: ["perPage", "go"],
-  setup(props, { emit }) {
-    const totalModel = computed(() => props.total);
-    const pageModel = ref(props.page);
-    const optionsPerPage = [
-      {
-        value: 15,
-        label: `15 ${t("items")}`,
-      },
-      {
-        value: 30,
-        label: `30 ${t("items")}`,
-      },
-      {
-        value: 50,
-        label: `50 ${t("items")}`,
-      },
-    ];
-
-    const optionsModel = ref(props.options.length ? props.options : optionsPerPage);
-
-    const selectedOption = ref({
-      value: 15,
-      label: "15 items",
-    });
-
-    const first = () => {
-      if (pageModel.value > 0) {
-        pageModel.value = 0;
-        emit("go", 0);
-      }
-    };
-
-    const prev = () => {
-      if (pageModel.value > 0) {
-        pageModel.value -= 1;
-        emit("go", pageModel.value);
-      }
-    };
-
-    const next = () => {
-      if (pageModel.value < props.pages - 1) {
-        pageModel.value += 1;
-        emit("go", pageModel.value);
-      }
-    };
-
-    const last = () => {
-      if (pageModel.value < props.pages - 1) {
-        pageModel.value = props.pages - 1;
-        emit("go", pageModel.value);
-      }
-    };
-
-    const onChangeOption = (e) => {
-      selectedOption.value = e;
-      emit("perPage", e.value);
-    };
-
-    return {
-      optionsModel,
-      selectedOption,
-      totalModel,
-      pageModel,
-      first,
-      last,
-      next,
-      onChangeOption,
-      prev,
-    };
+  pages: {
+    type: Number,
+    default: () => (0),
+  },
+  options: {
+    type: Array,
+    default: () => [],
   },
 });
+
+const emit = defineEmits(["perPage", "go"]);
+
+const totalModel = computed(() => props.total);
+const pageModel = ref(props.page);
+const optionsPerPage = [
+  {
+    value: 15,
+    label: `15 ${t("items")}`,
+  },
+  {
+    value: 30,
+    label: `30 ${t("items")}`,
+  },
+  {
+    value: 50,
+    label: `50 ${t("items")}`,
+  },
+];
+
+const optionsModel = ref(props.options.length ? props.options : optionsPerPage);
+
+const selectedOption = ref({
+  value: 15,
+  label: "15 items",
+});
+
+const first = () => {
+  if (pageModel.value > 1) {
+    pageModel.value = 0;
+    emit("go", 1);
+  }
+};
+
+const prev = () => {
+  if (pageModel.value > 1) {
+    pageModel.value -= 1;
+    emit("go", pageModel.value);
+  }
+};
+
+const next = () => {
+  if (pageModel.value < props.pages) {
+    pageModel.value += 1;
+    emit("go", pageModel.value);
+  }
+};
+
+const last = () => {
+  if (pageModel.value < props.pages) {
+    pageModel.value = props.pages - 1;
+    emit("go", pageModel.value);
+  }
+};
+
+const onChangeOption = (e) => {
+  selectedOption.value = e;
+  emit("perPage", e.value);
+};
+
 </script>
 <style scoped>
 /* Chrome, Safari, Edge, Opera */

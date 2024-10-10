@@ -3,6 +3,7 @@
 namespace ProcessMaker\ImportExport;
 
 use Illuminate\Support\Arr;
+use ProcessMaker\Exception\InvalidImportOption;
 
 class Options
 {
@@ -15,8 +16,20 @@ class Options
             ],
             'default' => 'update',
         ],
-        'isTemplate' => false,
-        'saveAssetsMode' => ['saveModelOnly', 'saveAllAssets'],
+        'isTemplate' => [
+            'enum' => [
+                true => 'Asset is part of a template',
+                false => 'Asset is not part of a template',
+            ],
+            'default' => false,
+        ],
+        'saveAssetsMode' => [
+            'enum' => [
+                'saveModelOnly' => 'Save only the model',
+                'saveAllAssets' => 'Save all assets',
+            ],
+            'default' => 'saveAllAssets',
+        ],
     ];
 
     public $options;
@@ -26,24 +39,31 @@ class Options
         $this->options = $options;
     }
 
-    // Name can only equal "mode" for now
     public function get($name, $uuid)
     {
-        $assetOptions = Arr::get($this->options, $uuid, []);
+        $optionsForUuid = Arr::get($this->options, $uuid, []);
 
-        $option = self::IMPORT_OPTIONS[$name];
-        $importOptions = null;
-
-        if ($name === 'mode') {
-            $importOptions = self::IMPORT_OPTIONS[$name]['default'];
-        } else {
-            if (count($assetOptions) === 0) {
-                $importOptions = self::IMPORT_OPTIONS[$name][1];
-            } else {
-                $importOptions = self::IMPORT_OPTIONS[$name];
-            }
+        $default = Arr::get(self::IMPORT_OPTIONS, $name . '.default', null);
+        if ($default === null) {
+            throw new InvalidImportOption($name);
         }
 
-        return Arr::get($assetOptions, $name, $importOptions);
+        if (Arr::has($optionsForUuid, $name)) {
+            return Arr::get($optionsForUuid, $name, $default);
+        }
+
+        /**
+         * Support for passing in global options like:
+         *
+         * new Options([
+         *     'mode' => 'update',
+         *     'saveAssetsMode' => 'saveModelOnly',
+         *     'isTemplate' => false,
+         * ]);
+         *
+         * Note that this is not the usual uuid => options map
+         */
+
+        return Arr::get($this->options, $name, $default);
     }
 }

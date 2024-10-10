@@ -22,6 +22,7 @@ import { formatCounters } from "./utils/counters";
 import { getCounters } from "./api";
 import { Breadcrums } from "../../system";
 import { configHomeBreadcrum } from "../../config/index";
+import { user } from "./variables";
 
 export default defineComponent({
   components: {
@@ -47,7 +48,11 @@ export default defineComponent({
 
     const initCounters = async () => {
       let currentCounter = [];
-      const resCounters = await getCounters();
+      const resCounters = await getCounters({
+        params: {
+          userId: user.id,
+        },
+      });
 
       countersData.value = formatCounters(resCounters);
       currentCounter = countersData.value.find((counter) => counter.url === route.path) ?? countersData.value[0];
