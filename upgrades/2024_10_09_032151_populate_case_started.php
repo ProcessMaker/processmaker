@@ -154,18 +154,29 @@ class PopulateCaseStarted extends Upgrade
 
     /**
      * Get JSON data for a process request.
-     * @param object $request
-     * @return array
+     *
+     * This method extracts the process ID and name from the given request object
+     * and returns the data in a JSON-friendly format.
+     *
+     * @param object $request The request object containing the process information.
+     * @return array The structured array containing the 'id' and 'name' of the process.
      */
     private function getProcessJsonData($request)
     {
-        return $this->getJsonData($request, ['process_id' => 'id', 'process_name' => 'name']);
+        return $this->getJsonData($request, [
+            'process_id' => 'id',
+            'process_name' => 'name',
+        ]);
     }
 
     /**
-     * Get JSON data for a process request.
-     * @param object $request
-     * @return array
+     * Get JSON data for a request.
+     *
+     * This method extracts the ID, name, and parent request ID from the given request object
+     * and returns the data in a JSON-friendly format.
+     *
+     * @param object $request The request object containing the request information.
+     * @return array The structured array containing the 'id', 'name', and 'parent_request_id' of the request.
      */
     private function getRequestJsonData($request)
     {
@@ -177,18 +188,25 @@ class PopulateCaseStarted extends Upgrade
     }
 
     /**
-     * Get JSON data for a given request based on specified keys.
+     * General method to extract specified attributes from a request and format them into a JSON array.
      *
-     * @param object $request
-     * @param array $keys
-     * @return array
+     * This method is used internally by both getProcessJsonData and getRequestJsonData to avoid redundancy.
+     * It takes a request object and a mapping array that defines the attribute-to-key relationship.
+     *
+     * @param object $request The request object containing data.
+     * @param array $mapping An associative array where keys are object properties and values are the corresponding JSON keys.
+     * @return array The structured JSON array based on the provided mapping.
      */
-    private function getJsonData($request, array $keys)
+    private function getJsonData($request, array $mapping)
     {
         $jsonData = [];
 
         if (!empty((array) $request)) {
-            $jsonData[] = array_intersect_key((array) $request, array_flip($keys));
+            $formattedData = [];
+            foreach ($mapping as $property => $key) {
+                $formattedData[$key] = $request->{$property} ?? null; // Handle undefined properties
+            }
+            $jsonData[] = $formattedData;
         }
 
         return $jsonData;
@@ -225,10 +243,10 @@ class PopulateCaseStarted extends Upgrade
     }
 
     /**
-     * Get task data as JSON formatted array from matching tokens.
+     * Get JSON data for tasks from the provided matching request tokens.
      *
      * @param Illuminate\Support\Collection $matchingRequestTokens
-     * @return array
+     * @return array An array of objects containing 'id', 'element_id', 'name', and 'process_id'.
      */
     private function getTaskJsonData($matchingRequestTokens)
     {
@@ -243,7 +261,9 @@ class PopulateCaseStarted extends Upgrade
                     'name' => $token->element_name,
                     'process_id' => $token->process_id,
                 ];
-            })->toArray()
+            })
+            ->values() // Reset the keys to return an array of objects
+            ->toArray()
             : [];
     }
 
