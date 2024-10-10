@@ -4,6 +4,7 @@ namespace Tests\Feature\Templates\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\File;
 use ProcessMaker\ImportExport\Exporters\ScreenTemplatesExporter;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Screen;
@@ -382,5 +383,143 @@ class ScreenTemplateTest extends TestCase
         // Owner of the template should be able to delete the template.
         $response = $this->actingAs($user, 'api')->call('DELETE', $route);
         $response->assertStatus(200);
+    }
+
+    public function testApplyCssToExistingScreen()
+    {
+        // Create a new screen with no custom_css
+        $screen = Screen::factory()->create();
+        $this->assertNull($screen->custom_css);
+
+        // Create a screen template with custom_css
+        $screenTemplate = ScreenTemplates::factory()->withCustomCss()->create();
+
+        // Apply the screen template to the screen
+        $route = route('api.template.applyTemplate', [
+            'type' => 'screen',
+            'id' => $screenTemplate->id,
+        ]);
+
+        $data = [
+            'screenId' => $screen->id,
+            'templateOptions' => ['CSS'],
+            'currentScreenPage' => 1,
+        ];
+
+        $response = $this->apiCall('POST', $route, $data);
+        $response->assertStatus(200);
+        $screen->refresh();
+
+        // Check that the screen has the custom_css
+        $this->assertNotNull($screen->custom_css);
+    }
+
+    public function testApplyFieldsToExistingScreen()
+    {
+        // Create screen from template-manifest-with-css-fields-layout.json
+        $screenData = File::get(base_path('tests/Feature/Templates/fixtures/template-manifest-with-css-fields-layout.json'));
+
+        $screenTemplate = ScreenTemplates::factory()->create([
+            'manifest' => $screenData,
+        ]);
+
+        $this->assertNotNull($screenTemplate);
+
+        // Create a new screen with no fields
+        $newScreen = Screen::factory()->create();
+        $this->assertEmpty($newScreen->config);
+
+        // Apply the template to the new screen
+        $route = route('api.template.applyTemplate', [
+            'type' => 'screen',
+            'id' => $screenTemplate->id,
+        ]);
+
+        $data = [
+            'screenId' => $newScreen->id,
+            'templateOptions' => ['Fields'],
+            'currentScreenPage' => 1,
+        ];
+
+        $response = $this->apiCall('POST', $route, $data);
+        $response->assertStatus(200);
+        $newScreen->refresh();
+
+        // Check that the screen config is not empty
+        $this->assertNotEmpty($newScreen->config);
+    }
+
+    public function testApplyLayoutToExistingScreen()
+    {
+        // Create screen from template-manifest-with-css-fields-layout.json
+        $screenData = File::get(base_path('tests/Feature/Templates/fixtures/template-manifest-with-css-fields-layout.json'));
+
+        $screenTemplate = ScreenTemplates::factory()->create([
+            'manifest' => $screenData,
+        ]);
+
+        $this->assertNotNull($screenTemplate);
+
+        // Create a new screen with no fields
+        $newScreen = Screen::factory()->create();
+        $this->assertEmpty($newScreen->config);
+
+        // Apply the template to the new screen
+        $route = route('api.template.applyTemplate', [
+            'type' => 'screen',
+            'id' => $screenTemplate->id,
+        ]);
+
+        $data = [
+            'screenId' => $newScreen->id,
+            'templateOptions' => ['Layout'],
+            'currentScreenPage' => 1,
+        ];
+
+        $response = $this->apiCall('POST', $route, $data);
+        $response->assertStatus(200);
+        $newScreen->refresh();
+
+        // Check that the screen config is not empty
+        $this->assertNotEmpty($newScreen->config);
+    }
+
+    public function testApplyFullTemplateToExistingScreen()
+    {
+        // Create screen from template-manifest-with-css-fields-layout.json
+        $screenData = File::get(base_path('tests/Feature/Templates/fixtures/template-manifest-with-css-fields-layout.json'));
+
+        $screenTemplate = ScreenTemplates::factory()->create([
+            'manifest' => $screenData,
+        ]);
+
+        $this->assertNotNull($screenTemplate);
+
+        // Create a new screen with no fields and no custom_css
+        $newScreen = Screen::factory()->create();
+        $this->assertNull($newScreen->custom_css);
+        $this->assertEmpty($newScreen->config);
+
+        // Apply the template to the new screen
+        $route = route('api.template.applyTemplate', [
+            'type' => 'screen',
+            'id' => $screenTemplate->id,
+        ]);
+
+        $data = [
+            'screenId' => $newScreen->id,
+            'templateOptions' => ['CSS', 'Fields', 'Layout'],
+            'currentScreenPage' => 1,
+        ];
+
+        $response = $this->apiCall('POST', $route, $data);
+        $response->assertStatus(200);
+        $newScreen->refresh();
+
+        // Check that the screen config is not empty
+        $this->assertNotEmpty($newScreen->config);
+
+        // Check that the screen has the custom_css
+        $this->assertNotNull($newScreen->custom_css);
     }
 }
