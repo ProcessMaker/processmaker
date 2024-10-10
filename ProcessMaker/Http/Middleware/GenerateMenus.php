@@ -36,10 +36,10 @@ class GenerateMenus
                     ['route' => 'process.browser.index', 'id' => 'process-browser']
                 )->active('process-browser/*');
             });
-            $menu->group(['prefix' => 'requests'], function ($request_items) {
+            $menu->group(['prefix' => 'cases'], function ($request_items) {
                 $request_items->add(
                     __('Cases'),
-                    ['route' => 'cases.index', 'id' => 'requests']
+                    ['route' => 'cases-main.index', 'id' => 'cases']
                 )->active('cases/*');
             });
             //@TODO change the index to the correct blade
@@ -142,23 +142,51 @@ class GenerateMenus
             $submenu = $menu->add(__('Processes'));
         });
         Menu::make('sidebar_request', function ($menu) {
-            $submenu = $menu->add(__('Cases'));
-            $submenu->add(__('My Cases'), [
-                'route' => ['cases_by_type', ''],
+            $submenu = $menu->add(__('Requests'));
+            $submenu->add(__('My Requests'), [
+                'route' => ['requests_by_type', ''],
                 'icon' => 'fa-id-badge',
             ]);
             $submenu->add(__('In Progress'), [
-                'route' => ['cases_by_type', 'in_progress'],
+                'route' => ['requests_by_type', 'in_progress'],
                 'icon' => 'fa-clipboard-list',
             ]);
             $submenu->add(__('Completed'), [
-                'route' => ['cases_by_type', 'completed'],
+                'route' => ['requests_by_type', 'completed'],
                 'icon' => 'fa-clipboard-check',
             ]);
             if (\Auth::check() && \Auth::user()->can('view-all_requests')) {
-                $submenu->add(__('All Cases'), [
-                    'route' => ['cases_by_type', 'all'],
+                $submenu->add(__('All Requests'), [
+                    'route' => ['requests_by_type', 'all'],
                     'icon' => 'fa-clipboard',
+                ]);
+            }
+        });
+
+        Menu::make('sidebar_cases', function ($menu) {
+            $submenu = $menu->add(__('Cases'));
+            $submenu->add(__('My Cases'), [
+                'route' => ['cases-main.index', ''],
+                'icon' => 'fa-user',
+            ]);
+            $submenu->add(__('In Progress'), [
+                'route' => ['cases-main.index', 'in_progress'],
+                'icon' => 'fa-list',
+            ]);
+            $submenu->add(__('Completed'), [
+                'route' => ['cases-main.index', 'completed'],
+                'icon' => 'fa-check-circle',
+            ]);
+            if (\Auth::check() && \Auth::user()->can('view-all_cases')) {
+                $submenu->add(__('All Cases'), [
+                    'route' => ['cases-main.index', 'all'],
+                    'icon' => 'fa-clipboard',
+                ]);
+            }
+            if (\Auth::check() && \Auth::user()->can('view-my_requests')) {
+                $submenu->add(__('My Requests'), [
+                    'route' => ['requests_by_type', ''],
+                    'icon' => 'fa-play',
                 ]);
             }
         });

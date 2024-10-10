@@ -924,7 +924,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .tasks-table-card {
   padding: 0;
 }
@@ -950,10 +950,6 @@ export default {
 .btn-light:hover {
   background-color: #EDF1F6;
   color: #888;
-}
-.pm-table-column-header-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 </style>
 <style lang="scss" scoped>

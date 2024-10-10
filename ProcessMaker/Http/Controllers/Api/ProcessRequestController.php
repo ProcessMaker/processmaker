@@ -839,4 +839,43 @@ class ProcessRequestController extends Controller
 
         return response()->json(['message' => __('End event found'), 'data' => $data]);
     }
+
+    /**
+     * This endpoint returns requests by case number
+     *  
+     * @param Request $request
+     *
+     * @return ApiCollection
+     */
+    public function getRequestsByCase(Request $request, User $user = null)
+    {
+        if (!$user) {
+            $user = Auth::user();
+        }
+
+        // Validate the inputs, including optional ones
+        $request->validate([
+            'case_number' => 'required|integer',
+            'order_by' => 'nullable|string|in:id,name,status,user_id,initiated_at,participants',
+            'order_direction' => 'nullable|string|in:asc,desc',
+            'page' => 'nullable|integer|min:1',
+            'per_page' => 'nullable|integer',
+        ]);
+
+        $query = ProcessRequest::forUser($user);
+        
+        // Filter by case_number
+        $query->filterByCaseNumber($request);
+
+        // Apply ordering only if a valid order_by field is provided
+        $query->applyOrdering($request);
+        $response = $query->applyPagination($request);
+        
+        // Get activeTasks and participants
+        $response = $response->map(function ($processRequest) use ($request) {
+            return new ProcessRequestResource($processRequest);
+        });
+
+        return new ApiCollection($response);
+    }
 }
