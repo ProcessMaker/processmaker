@@ -37,13 +37,18 @@ jobs:
     if: github.event.action != 'closed'
     runs-on: ${{ vars.RUNNER }}
     steps:
-      - name: Checkout
+      - &checkout
+        name: Checkout
         uses: actions/checkout@v4
         with:
           repository: processmaker/processmaker
           ref: test-cicd-phpunit
+          spark-checkout: |
+            .github
+          sparse-checkout-clone-mode: false
 
-      - name: Common 
+      - &common
+        name: Common 
         uses: ./.github/actions/common
         with:
           token: ${{ secrets.GIT_TOKEN }}
@@ -89,16 +94,8 @@ jobs:
     needs: imageEKS
     runs-on: ${{ vars.RUNNER }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          repository: processmaker/processmaker
-          ref: test-cicd-phpunit
-
-      - name: Common 
-        uses: ./.github/actions/common
-        with:
-          token: ${{ secrets.GIT_TOKEN }}
+      - *checkout
+      - *common
 
       - name: Clone private repository
         run: |
@@ -173,16 +170,8 @@ jobs:
     runs-on: self-hosted
     steps:
 
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          repository: processmaker/processmaker
-          ref: test-cicd-phpunit
-
-      - name: Common 
-        uses: ./.github/actions/common
-        with: 
-          token: ${{ secrets.GIT_TOKEN }}
+      - *checkout 
+      - *common
 
       - name: Clone private repository
         run: |
@@ -277,16 +266,8 @@ jobs:
     needs: imageEKS
     runs-on: ${{ vars.RUNNER }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          repository: processmaker/processmaker
-          ref: test-cicd-phpunit
-
-      - name: Common 
-        uses: ./.github/actions/common
-        with:
-          token: ${{ secrets.GIT_TOKEN }}
+      - *checkout
+      - *common 
 
       - name: Export Params
         run: |
