@@ -25,6 +25,17 @@ class DevLink extends ProcessMakerModel
         'state',
     ];
 
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($devLink) {
+            foreach ($devLink->bundles as $bundle) {
+                $bundle->delete();
+            }
+        });
+    }
+
     public function getClientUrl()
     {
         $params = [
@@ -145,5 +156,10 @@ class DevLink extends ProcessMakerModel
         )->json();
 
         return $this->import($payload);
+    }
+
+    public function bundles()
+    {
+        return $this->hasMany(Bundle::class);
     }
 }

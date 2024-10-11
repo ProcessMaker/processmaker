@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 import debounce from 'lodash/debounce';
 import Status from './Status.vue';
@@ -55,7 +55,12 @@ const clear = () => {
   newUrl.value = '';
 }
 
-const create = () => {
+const create = (e) => {
+  if (!urlIsValid.value) {
+    e.preventDefault();
+    return;
+  }
+
   ProcessMaker.apiClient
     .post('/devlink', {
       name: newName.value,
@@ -116,6 +121,11 @@ const debouncedLoad = debounce(load, 300);
 const handleFilterChange = () => {
   debouncedLoad();
 };
+
+const urlIsValid = computed(() => {
+  return /^(https?:\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/.test(newUrl.value);
+});
+
 </script>
 
 <template>
@@ -138,7 +148,11 @@ const handleFilterChange = () => {
       <b-form-group label="Name">
         <b-form-input v-model="newName"></b-form-input>
       </b-form-group>
-      <b-form-group label="Instance URL">
+      <b-form-group
+        label="Instance URL"
+        :invalid-feedback="$t('Invalid URL')"
+        :state="urlIsValid"
+      >
         <b-form-input v-model="newUrl"></b-form-input>
       </b-form-group>
     </b-modal>
