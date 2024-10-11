@@ -159,7 +159,7 @@ const completedDateColumn = () => ({
   header: "Completed",
   resizable: true,
   width: 200,
-  formatter: (row, column, columns) => formatDate(row.initiated_at),
+  formatter: (row, column, columns) => formatDate(row.completed_at),
 });
 
 const actionColumn = () => ({
