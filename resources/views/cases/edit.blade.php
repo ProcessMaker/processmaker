@@ -92,7 +92,7 @@
               <template #comments v-if="panCommentInVueOptionsComponents">
                 <comment-container
                   class="tw-grow tw-overflow-hidden"
-                  :commentable_id="requestId"
+                  :commentable_id="request.id"
                   commentable_type="{{ get_class($request) }}"
                   name="{{ $request->name }}"
                   :readonly="request.status === 'COMPLETED'"
