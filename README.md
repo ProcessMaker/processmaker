@@ -80,6 +80,13 @@ This works in package PRs as well. To specify a branch in core, use:
 
 If no branches are specified in the PR body, the develop branch of each package will be used.
 
+### Release Branches and Packages
+
+If your PR is based on a release branch (for example `release-2024-fall <-- feature/123`), then all packages will be installed using the corresponding base branch (`release-2024-fall`). No need to add additional `ci:` tags.
+
+However, if your PR has an intermediate branch, for example (`epic/abc <-- feature/123`), where `epic/abc` is branched off the `release-2024-fall` branch, you will need to add `ci:release-branch:release-2024-fall` to your PR body so the CI builder knows what branch to use for packages.
+
+
 ### CI Server
 
 A full working instance can be built by adding the tag `ci:deploy` to your PR description. A link will be posted in the PR comments when it's ready. Note that this currently takes 10 to 30 minutes before the instance is ready.
@@ -87,9 +94,6 @@ A full working instance can be built by adding the tag `ci:deploy` to your PR de
 The instance will stay active until the PR is merged.
 
 You can wipe the database on the CI Server by adding the tag `ci:db:clean`. Remember to remove the tag from your PR description or the DB will be wiped clean every time the PR is updated.
-
-### Use `next` branch
-To use the `next` branch instead of `develop` for all packages by default, use `ci:next` in your PR body.
 
 ### Environment Variables
 You can add or overwrite environment variables on the deployed server using this syntax in your PR body
@@ -100,6 +104,13 @@ Or with double quotes if the value has spaces
 ```
 ci:MY_ENVIRONMENT_VARIABLE="custom value"
 ```
+
+### Specify the K8S Distribution Branch
+The CI Builder uses the `pm4-k8s-distribution` repository for building and deploying your PR branch in a CI server.
+
+By default, the branch of `pm4-k8s-distribution` used for the build will be the same as the release branch (see "Release Branches and Packages" above).
+
+If you are testing updates to `pm4-k8s-distribution`, you can specify a branch in your PR body with `ci:k8s-branch:some-other-branch`
 
 ### PHPUnit Tests
 We use PHPUnit for both integration and unit testing. Most of our PHPUnit tests are integration tests that use the framework and database.
