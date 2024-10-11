@@ -3,20 +3,15 @@
 namespace ProcessMaker\ProcessTranslations;
 
 use Carbon\Carbon;
-use DOMXPath;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
-use ProcessMaker\Assets\ScreensInProcess;
-use ProcessMaker\Assets\ScreensInScreen;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Models\MustacheExpressionEvaluator;
-use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTranslationToken;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Package\Translations\Models\Translatable;
 
 class ProcessTranslation
 {
@@ -153,17 +148,17 @@ class ProcessTranslation
 
         $result = [];
         $imgPattern = '/<img[^>]+>/';
-        foreach($strings as $string) {
+        foreach ($strings as $string) {
             if ($this->includeImages && preg_match($imgPattern, $string)) {
                 $result[] = preg_replace_callback($imgPattern,
                     function ($matches) {
                         $hash = sha1($matches[0]);
-                        Cache::put('img.'.$hash, $matches[0], now()->addMinutes(15));
+                        Cache::put('img.' . $hash, $matches[0], now()->addMinutes(15));
+
                         return '<img src="' . $hash . '"/>';
                     },
                     $string);
-            }
-            else {
+            } else {
                 $result[] = $string ?? '';
             }
         }
@@ -244,7 +239,6 @@ class ProcessTranslation
             return;
         }
         $config = $screen['config'];
-        $translations = $screen['translations'];
         $targetLanguage = '';
 
         if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
@@ -257,17 +251,7 @@ class ProcessTranslation
             $targetLanguage = Auth::user()->language;
         }
 
-        if (!$translations) {
-            return $config;
-        }
-
-        if (array_key_exists($targetLanguage, $translations)) {
-            foreach ($translations[$targetLanguage]['strings'] as $translation) {
-                $this->applyTranslationsToScreen($translation['key'], $translation['string'], $config);
-            }
-        }
-
-        return $config;
+        return $this->searchTranslations($screen['screen_id'], $config, $targetLanguage);
     }
 
     public function translateScreen($screen, $screenConfig, $data, $language)
@@ -280,17 +264,25 @@ class ProcessTranslation
         $configEvaluated = $mustacheEngine->render(json_encode($screenConfig), $data);
 
         $config = json_decode($configEvaluated, true);
-        $translations = $screen['translations'];
-        $targetLanguage = $language;
+
+        return $this->searchTranslations($screen['id'], $config, $language);
+    }
+
+    public function searchTranslations($screenId, $config, $language)
+    {
+        $translations = null;
+        if (class_exists(Translatable::class)) {
+            $translations = Translatable::where('translatable_id', $screenId)
+                ->where('translatable_type', Screen::class)
+                ->where('language_code', $language)->first();
+        }
 
         if (!$translations) {
             return $config;
         }
 
-        if (array_key_exists($targetLanguage, $translations)) {
-            foreach ($translations[$targetLanguage]['strings'] as $translation) {
-                $this->applyTranslationsToScreen($translation['key'], $translation['string'], $config);
-            }
+        foreach ($translations->translations as $key => $translation) {
+            $this->applyTranslationsToScreen($key, $translation, $config);
         }
 
         return $config;
