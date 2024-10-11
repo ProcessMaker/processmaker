@@ -37,6 +37,7 @@ class UserObserver
     {
         $perList = [
             'view-process-catalog',
+            'view-my_requests',
         ];
         $permissionIds = Permission::whereIn('name', $perList)->pluck('id')->toArray();
         $user->permissions()->attach($permissionIds);

@@ -18,6 +18,8 @@ class Column
 
     public $isSubmitButton;
 
+    public $encryptedConfig;
+
     /**
      * @OA\Schema(
      *   schema="columns",

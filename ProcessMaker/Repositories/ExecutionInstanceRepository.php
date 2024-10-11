@@ -3,6 +3,8 @@
 namespace ProcessMaker\Repositories;
 
 use Carbon\Carbon;
+use ProcessMaker\Jobs\CaseStore;
+use ProcessMaker\Jobs\CaseUpdateStatus;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Nayra\Contracts\Bpmn\ParticipantInterface;
@@ -184,6 +186,8 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         // Set id
         $instance->setId($instance->getKey());
 
+        CaseStore::dispatch($instance);
+
         // Persists collaboration
         $this->persistCollaboration($instance);
     }
@@ -208,6 +212,8 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->status = 'ERROR';
         $instance->mergeLatestStoredData();
         $instance->saveOrFail();
+
+        CaseUpdateStatus::dispatch($instance);
     }
 
     /**
@@ -255,6 +261,8 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->completed_at = Carbon::now();
         $instance->mergeLatestStoredData();
         $instance->saveOrFail();
+
+        CaseUpdateStatus::dispatch($instance);
     }
 
     /**

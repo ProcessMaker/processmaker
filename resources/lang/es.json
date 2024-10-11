@@ -32,6 +32,7 @@
   "Add Screen": "Agregar pantalla",
   "Add User To Group": "Agregar usuario a grupo",
   "Add Users": "Agregar usuarios",
+  "Add to clipboard": "Agregar al portapapeles",
   "Address": "Dirección",
   "Admin": "Administrador",
   "Advanced Search": "Búsqueda avanzada",
@@ -649,6 +650,7 @@
   "Refresh": "Refrescar",
   "Regenerating CSS Files": "Volviendo a generar archivos CSS",
   "Remember me": "Recordarme",
+  "Remove from clipboard": "Quitar del portapapeles",
   "Remove from Group": "Eliminar de este grupo",
   "Remove the .env file to perform a new installation.": "Elimine el archivo .env existente para realizar una nueva instalación.",
   "Remove": "Eliminar",
@@ -2348,5 +2350,14 @@
   "No items to show": "No hay artículos para mostrar",
   "Copy link": "Copiar enlace",
   "This actions is taking longer than expected. We will continue updating your tasks in the background.": "Esta acción está tomando más tiempo de lo esperado. Continuaremos actualizando tus tareas en segundo plano.",
-  "No user selected": "Ningún usuario seleccionado"
+  "No user selected": "Ningún usuario seleccionado",
+  "Encrypted": "Encriptado",
+  "Users/Groups to View": "Usuarios/Grupos que pueden ver",
+  "Conceal": "Ocultar",
+  "Reveal": "Revelar",
+  "There is no field with the name ':fieldName'.": "No hay un campo con el nombre ':fieldName'.",
+  "Configuration related to encryption is not found for this field.": "El campo no tiene configuración relacionada con encriptación.",
+  "Encryption is not enabled for this field.": "La encriptación no se encuentra habilitada para este campo.",
+  "Configuration related to assignments is missing for this field.": "El campo no tiene configuración relacionada con asignaciones.",
+  "You are not assigned to this encrypted field.": "Tu no estás asignado a este campo encriptado."
 }

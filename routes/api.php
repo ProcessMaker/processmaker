@@ -6,6 +6,7 @@ use ProcessMaker\Http\Controllers\Api\ChangePasswordController;
 use ProcessMaker\Http\Controllers\Api\CommentController;
 use ProcessMaker\Http\Controllers\Api\CssOverrideController;
 use ProcessMaker\Http\Controllers\Api\DebugController;
+use ProcessMaker\Http\Controllers\Api\EncryptedDataController;
 use ProcessMaker\Http\Controllers\Api\DevLinkController;
 use ProcessMaker\Http\Controllers\Api\EnvironmentVariablesController;
 use ProcessMaker\Http\Controllers\Api\ExportController;
@@ -36,6 +37,7 @@ use ProcessMaker\Http\Controllers\Api\TaskAssignmentController;
 use ProcessMaker\Http\Controllers\Api\TaskController;
 use ProcessMaker\Http\Controllers\Api\TaskDraftController;
 use ProcessMaker\Http\Controllers\Api\TemplateController;
+use ProcessMaker\Http\Controllers\Api\UserConfigurationController;
 use ProcessMaker\Http\Controllers\Api\UserController;
 use ProcessMaker\Http\Controllers\Api\UserTokenController;
 use ProcessMaker\Http\Controllers\Api\WizardTemplateController;
@@ -56,6 +58,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('users/{user}/update_pinned_controls', [UserController::class, 'updatePinnedControls'])->name('users.updatePinnnedControls'); // Permissions handled in the controller
     Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy')->middleware('can:delete-users');
     Route::put('password/change', [ChangePasswordController::class, 'update'])->name('password.update');
+    Route::put('users/update_language', [UserController::class, 'updateLanguage'])->name('users.updateLanguage');
+
     // User Groups
     Route::put('users/{user}/groups', [UserController::class, 'updateGroups'])->name('users.groups.update')->middleware('can:edit-users');
     // User personal access tokens
@@ -63,6 +67,9 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('users/{user}/tokens/{tokenId}', [UserTokenController::class, 'show'])->name('users.tokens.show'); // Permissions handled in the controller
     Route::post('users/{user}/tokens', [UserTokenController::class, 'store'])->name('users.tokens.store'); // Permissions handled in the controller
     Route::delete('users/{user}/tokens/{tokenId}', [UserTokenController::class, 'destroy'])->name('users.tokens.destroy'); // Permissions handled in the controller
+    // User Configuration
+    Route::get('users/configuration', [UserConfigurationController::class, 'index'])->name('users.configuration.index');
+    Route::put('users/configuration', [UserConfigurationController::class, 'store'])->name('users.configuration.store');
 
     // Groups//Permissions policy
     Route::get('groups', [GroupController::class, 'index'])->name('groups.index'); // Permissions handled in the controller
@@ -99,6 +106,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::delete('screens/{screen}', [ScreenController::class, 'destroy'])->name('screens.destroy')->middleware('can:delete-screens,screen');
     Route::post('screens/{screen}/export', [ScreenController::class, 'export'])->name('screens.export')->middleware('can:export-screens,screen');
     Route::post('screens/import', [ScreenController::class, 'import'])->name('screens.import')->middleware('can:import-screens');
+    Route::post('screens/{screen}/translate/{language}', [ScreenController::class, 'translate'])->name('screen.translate')->middleware('can:edit-screens,screen');
 
     // Screen Categories
     Route::get('screen_categories', [ScreenCategoryController::class, 'index'])->name('screen_categories.index')->middleware('can:view-screen-categories');
@@ -190,6 +198,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     // Tasks
     Route::get('tasks', [TaskController::class, 'index'])->name('tasks.index'); // Already filtered in controller
+    Route::get('tasks-by-case', [TaskController::class, 'getTasksByCase'])->name('tasks.index.case');
     Route::get('tasks/{task}', [TaskController::class, 'show'])->name('tasks.show')->middleware('can:view,task');
     Route::get('tasks/{task}/screen_fields', [TaskController::class, 'getScreenFields'])->name('getScreenFields.show')->middleware('can:view,task');
     Route::get('tasks/{task}/screens/{screen}', [TaskController::class, 'getScreen'])->name('tasks.get_screen')->middleware('can:viewScreen,task,screen');
@@ -214,7 +223,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('/tasks/rule-execution-log', [InboxRulesController::class, 'executionLog'])->name('inboxrules.execution-log');
 
     // Cases
-    Route::get('cases', [ProcessRequestController::class, 'index'])->name('cases.index');
+    //Route::get('cases', [ProcessRequestController::class, 'index'])->name('cases.index');
+    Route::get('requests-by-case', [ProcessRequestController::class, 'getRequestsByCase'])->name('requests.getRequestsByCase');
     // Requests
     Route::get('requests', [ProcessRequestController::class, 'index'])->name('requests.index'); // Already filtered in controller
     Route::get('requests/{process}/count', [ProcessRequestController::class, 'getCount'])->name('requests.count');
@@ -237,6 +247,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // Files
     Route::get('files', [FileController::class, 'index'])->name('files.index')->middleware('can:view-files');
     Route::get('files/{file}', [FileController::class, 'show'])->name('files.show')->middleware('can:view,file');
+    Route::get('files/{file}/logs', [FileController::class, 'showLogs'])->name('file_logs.show')->middleware('can:view,file');
     Route::get('files/{file}/contents', [FileController::class, 'download'])->name('files.download')->middleware('can:view,file');
     Route::post('files', [FileController::class, 'store'])->name('files.store')->middleware('can:create,ProcessMaker\Models\Media');
     Route::put('files/{file}', [FileController::class, 'update'])->name('files.update')->middleware('can:update,file');
@@ -262,6 +273,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     // Comments
     Route::get('comments', [CommentController::class, 'index'])->name('comments.index');
+    Route::get('comments-by-case', [CommentController::class, 'getCommentsByCase'])->name('comments.index.case');
     Route::get('comments/{comment}', [CommentController::class, 'show'])->name('comments.show');
     Route::post('comments', [CommentController::class, 'store'])->name('comments.store');
     Route::put('comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
@@ -334,6 +346,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('template/{type}/{id}/apply', [TemplateController::class, 'applyTemplate'])->name('template.applyTemplate')->middleware('template-authorization');
     Route::get('screen-builder/{type}/{id}', [TemplateController::class, 'show'])->name('screenBuilder.template.show')->middleware('template-authorization');
 
+
     // Wizard Templates
     Route::get('wizard-templates', [WizardTemplateController::class, 'index'])->name('wizard-templates.index');
     Route::get('wizard-templates/{template_uuid}/get-helper-process', [WizardTemplateController::class, 'getHelperProcess'])->name('wizard-templates.getHelperProcess');
@@ -366,6 +379,10 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // Recommendations
     Route::get('recommendations', [RecommendationsController::class, 'index'])->name('recommendations.index');
     Route::put('recommendations/{recommendationUser}', [RecommendationsController::class, 'update'])->name('recommendations.update');
+
+    // Encrypted data
+    Route::post('encrypted_data/encryptText', [EncryptedDataController::class, 'encryptText'])->name('encrypted_data.encrypt_text');
+    Route::post('encrypted_data/decryptText', [EncryptedDataController::class, 'decryptText'])->name('encrypted_data.decrypt_text');
 
     // DevLink
     Route::middleware('admin')->group(function () {
