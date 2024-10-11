@@ -35,7 +35,7 @@ export const getDataRequests = async (params) => {
 };
 
 export const getDataTask = async (params) => {
-  const response = await api.get("tasks-by-case/", params);
+  const response = await api.get("tasks-by-case", params);
   return response.data;
 };
 
