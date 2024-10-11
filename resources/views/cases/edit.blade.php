@@ -35,7 +35,7 @@
                     <li class="tw-flex tw-items-center tw-justify-center">
                       <button type="button" class="tw-w-full tw-border tw-border-gray-300 tw-px-3 tw-py-2
                         tw-shadow-sm tw-rounded-md" @click="onCancel" aria-haspopup="dialog">
-                        <i class="fas fa-ban"></i>  
+                        <i class="fas fa-ban"></i>
                         <span>{{ __('Cancel Request') }}</span>
                       </button>
                     </li>
@@ -53,7 +53,7 @@
 
                   @if ($request->user_id)
                     <li class="tw-px-4 tw-py-3 tw-border-b tw-border-gray-300">
-                      <p class="section-title">{{ __('Requested By') }}:</p>
+                      <p class="section-title">{{ __('STARTED BY') }}:</p>
                       <avatar-image
                         v-if="userRequested"
                         size="32"
@@ -66,18 +66,17 @@
                   @endif
 
                   <li class="tw-px-4 tw-py-3 tw-border-b tw-border-gray-300">
-                    <p class="section-title">{{ __('Process') }}</p>
-                    {{ $request->name }}
+                    <p class="section-title">{{ __('LAUNCHPAD') }}</p>
                     <p class="launchpad-link">
                       <a href="{{route('process.browser.index', [$request->process_id])}}">
-                        {{ __('Open Process Launchpad') }}
+                        {{ $request->name }}
                       </a>
                     </p>
                   </li>
                   
                   @if ($request->participants->count())
                     <li class="tw-px-4 tw-py-3 tw-border-b tw-border-gray-300">
-                      <p class="section-title">{{ __('Participants') }}:</p>
+                      <p class="section-title">{{ __('PARTICIPANTS') }}:</p>
                       <avatar-image
                         size="32"
                         class="d-inline-flex pull-left align-items-center"

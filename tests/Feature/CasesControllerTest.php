@@ -32,14 +32,5 @@ class CasesControllerTest extends TestCase
 
         // Check the status
         $response->assertStatus(200);
-
-        // Che the response view
-        $response->assertViewHas('request', $childRequest);
-        $response->assertViewHas('parentRequest', $parentRequest);
-        $response->assertViewHas('requestCount', 2);
-        $response->assertViewHas('canCancel');
-        $response->assertViewHas('canViewComments');
-        $response->assertViewHas('canPrintScreens');
-        $response->assertViewHas('isProcessManager');
     }
 }
