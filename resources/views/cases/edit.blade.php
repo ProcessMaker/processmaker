@@ -11,6 +11,7 @@
 @section('breadcrumbs')
   @include('shared.breadcrumbs', ['routes' => [
       __('Cases') => route('cases.index'),
+      $request->case_title . ' #' . $request->case_number => null,
   ]])
 @endsection
 
