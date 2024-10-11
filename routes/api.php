@@ -6,8 +6,8 @@ use ProcessMaker\Http\Controllers\Api\ChangePasswordController;
 use ProcessMaker\Http\Controllers\Api\CommentController;
 use ProcessMaker\Http\Controllers\Api\CssOverrideController;
 use ProcessMaker\Http\Controllers\Api\DebugController;
-use ProcessMaker\Http\Controllers\Api\EncryptedDataController;
 use ProcessMaker\Http\Controllers\Api\DevLinkController;
+use ProcessMaker\Http\Controllers\Api\EncryptedDataController;
 use ProcessMaker\Http\Controllers\Api\EnvironmentVariablesController;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\Http\Controllers\Api\FileController;
@@ -223,8 +223,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('/tasks/rule-execution-log', [InboxRulesController::class, 'executionLog'])->name('inboxrules.execution-log');
 
     // Cases
-    //Route::get('cases', [ProcessRequestController::class, 'index'])->name('cases.index');
-    Route::get('requests-by-case', [ProcessRequestController::class, 'getRequestsByCase'])->name('requests.getRequestsByCase');
+    Route::get('requests-by-case', [ProcessRequestController::class, 'getRequestsByCase'])->name('requests.index.case');
     // Requests
     Route::get('requests', [ProcessRequestController::class, 'index'])->name('requests.index'); // Already filtered in controller
     Route::get('requests/{process}/count', [ProcessRequestController::class, 'getCount'])->name('requests.count');
@@ -345,7 +344,6 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('template/{type}/{id}/publish', [TemplateController::class, 'publishTemplate'])->name('template.publishTemplate')->middleware('can:publish-screen-templates');
     Route::post('template/{type}/{id}/apply', [TemplateController::class, 'applyTemplate'])->name('template.applyTemplate')->middleware('template-authorization');
     Route::get('screen-builder/{type}/{id}', [TemplateController::class, 'show'])->name('screenBuilder.template.show')->middleware('template-authorization');
-
 
     // Wizard Templates
     Route::get('wizard-templates', [WizardTemplateController::class, 'index'])->name('wizard-templates.index');
