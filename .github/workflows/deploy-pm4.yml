@@ -7,5 +7,5 @@ on:
 jobs:
   run:
     name: Run PM4-workflow
-    uses: processmaker/workflows/.github/workflows/deploy-pm4.yml@main
+    uses: processmaker/.github/.github/workflows/deploy-pm4.yml@main
     secrets: inherit
