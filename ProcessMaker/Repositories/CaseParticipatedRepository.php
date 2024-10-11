@@ -30,16 +30,35 @@ class CaseParticipatedRepository
         }
 
         try {
+            $processData = [
+                'id' => $token->processRequest->process->id,
+                'name' => $token->processRequest->process->name,
+            ];
+
+            $requestData = [
+                'id' => $token->processRequest->id,
+                'name' => $token->processRequest->name,
+                'parent_request_id' => $token->processRequest?->parentRequest?->id,
+            ];
+
+            $taskData = [
+                'id' => $token->getKey(),
+                'element_id' => $token->element_id,
+                'name' => $token->element_name,
+                'process_id' => $token->process_id,
+                'element_type' => $token->element_type,
+            ];
+
             CaseParticipated::create([
                 'user_id' => $token->user->id,
                 'case_number' => $case->case_number,
                 'case_title' => $case->case_title,
                 'case_title_formatted' => $case->case_title_formatted,
                 'case_status' => $case->case_status,
-                'processes' => CaseUtils::storeProcesses($token->processRequest, collect()),
-                'requests' => CaseUtils::storeRequests($token->processRequest, collect()),
-                'request_tokens' => CaseUtils::storeRequestTokens($token->getKey(), collect()),
-                'tasks' => CaseUtils::storeTasks($token, collect()),
+                'processes' => CaseUtils::storeProcesses(collect(), $processData),
+                'requests' => CaseUtils::storeRequests(collect(), $requestData),
+                'request_tokens' => CaseUtils::storeRequestTokens(collect(), $token->getKey()),
+                'tasks' => CaseUtils::storeTasks(collect(), $taskData),
                 'participants' => $case->participants,
                 'initiated_at' => $case->initiated_at,
                 'completed_at' => null,
@@ -65,14 +84,33 @@ class CaseParticipatedRepository
                 return;
             }
 
+            $processData = [
+                'id' => $token->processRequest->process->id,
+                'name' => $token->processRequest->process->name,
+            ];
+
+            $requestData = [
+                'id' => $token->processRequest->id,
+                'name' => $token->processRequest->name,
+                'parent_request_id' => $token->processRequest?->parentRequest?->id,
+            ];
+
+            $taskData = [
+                'id' => $token->getKey(),
+                'element_id' => $token->element_id,
+                'name' => $token->element_name,
+                'process_id' => $token->process_id,
+                'element_type' => $token->element_type,
+            ];
+
             $this->caseParticipated->updateOrFail([
                 'case_title' => $case->case_title,
                 'case_title_formatted' => $case->case_title_formatted,
                 'case_status' => $case->case_status,
-                'processes' => CaseUtils::storeProcesses($token->processRequest, $this->caseParticipated->processes),
-                'requests' => CaseUtils::storeRequests($token->processRequest, $this->caseParticipated->requests),
-                'request_tokens' => CaseUtils::storeRequestTokens($token->getKey(), $this->caseParticipated->request_tokens),
-                'tasks' => CaseUtils::storeTasks($token, $this->caseParticipated->tasks),
+                'processes' => CaseUtils::storeProcesses($this->caseParticipated->processes, $processData),
+                'requests' => CaseUtils::storeRequests($this->caseParticipated->requests, $requestData),
+                'request_tokens' => CaseUtils::storeRequestTokens($this->caseParticipated->request_tokens, $token->getKey()),
+                'tasks' => CaseUtils::storeTasks($this->caseParticipated->tasks, $taskData),
                 'participants' => $case->participants,
                 'keywords' => $case->keywords,
             ]);

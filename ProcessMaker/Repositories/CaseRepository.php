@@ -51,14 +51,25 @@ class CaseRepository implements CaseRepositoryInterface
         }
 
         try {
+            $processData = [
+                'id' => $instance->process->id,
+                'name' => $instance->process->name,
+            ];
+
+            $requestData = [
+                'id' => $instance->id,
+                'name' => $instance->name,
+                'parent_request_id' => $instance?->parentRequest?->id,
+            ];
+
             CaseStarted::create([
                 'case_number' => $instance->case_number,
                 'user_id' => $instance->user_id,
                 'case_title' => $instance->case_title,
                 'case_title_formatted' => $instance->case_title_formatted,
                 'case_status' => $instance->status === self::CASE_STATUS_ACTIVE ? 'IN_PROGRESS' : $instance->status,
-                'processes' => CaseUtils::storeProcesses($instance, collect()),
-                'requests' => CaseUtils::storeRequests($instance, collect()),
+                'processes' => CaseUtils::storeProcesses(collect(), $processData),
+                'requests' => CaseUtils::storeRequests(collect(), $requestData),
                 'request_tokens' => [],
                 'tasks' => [],
                 'participants' => [],
@@ -88,10 +99,18 @@ class CaseRepository implements CaseRepositoryInterface
         }
 
         try {
+            $taskData = [
+                'id' => $token->getKey(),
+                'element_id' => $token->element_id,
+                'name' => $token->element_name,
+                'process_id' => $token->process_id,
+                'element_type' => $token->element_type,
+            ];
+
             $this->case->case_title = $instance->case_title;
             $this->case->case_status = $instance->status === self::CASE_STATUS_ACTIVE ? 'IN_PROGRESS' : $instance->status;
-            $this->case->request_tokens = CaseUtils::storeRequestTokens($token->getKey(), $this->case->request_tokens);
-            $this->case->tasks = CaseUtils::storeTasks($token, $this->case->tasks);
+            $this->case->request_tokens = CaseUtils::storeRequestTokens($this->case->request_tokens, $token->getKey());
+            $this->case->tasks = CaseUtils::storeTasks($this->case->tasks, $taskData);
             $this->case->keywords = $instance->case_title;
 
             $this->updateParticipants($token);
@@ -189,9 +208,20 @@ class CaseRepository implements CaseRepositoryInterface
         }
 
         try {
+            $processData = [
+                'id' => $instance->process->id,
+                'name' => $instance->process->name,
+            ];
+
+            $requestData = [
+                'id' => $instance->id,
+                'name' => $instance->name,
+                'parent_request_id' => $instance?->parentRequest?->id,
+            ];
+
             // Store the sub-processes and requests
-            $this->case->processes = CaseUtils::storeProcesses($instance, $this->case->processes);
-            $this->case->requests = CaseUtils::storeRequests($instance, $this->case->requests);
+            $this->case->processes = CaseUtils::storeProcesses($this->case->processes, $processData);
+            $this->case->requests = CaseUtils::storeRequests($this->case->requests, $requestData);
 
             $this->case->saveOrFail();
         } catch (\Exception $e) {
