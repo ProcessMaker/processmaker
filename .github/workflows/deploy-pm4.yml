@@ -2,7 +2,8 @@ name: Build PM4
 on:
   pull_request:
     types: [opened, reopened, synchronize, edited]
-  workflow_dispatch:  
+  workflow_dispatch:
+  workflow_call:
 jobs:
   run:
     name: Run PM4-workflow
