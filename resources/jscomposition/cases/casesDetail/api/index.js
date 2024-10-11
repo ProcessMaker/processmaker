@@ -40,7 +40,7 @@ export const getDataTask = async (params) => {
 };
 
 const getScreenData = (id) => {
-  const response = ProcessMaker.apiClient.get(`screens/${id}`);
+  const response = ProcessMaker.apiClient.get(`/api/1.1/tasks/${id}/screen`);
 
   return response;
 };

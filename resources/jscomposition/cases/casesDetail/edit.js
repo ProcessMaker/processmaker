@@ -23,7 +23,6 @@ new Vue({
       data,
       requestId,
       request,
-      files,
       refreshTasks: 0,
       canCancel,
       canViewPrint,

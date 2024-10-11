@@ -86,68 +86,6 @@
                       ></avatar-image>
                     </li>
                   @endif
-
-                  @if ($canManuallyComplete == true)
-                    <li class="tw-px-4 tw-py-3 tw-border-b tw-border-gray-300">
-                      <p class="section-title">{{ __('Manually Complete Request') }}</p>
-                      <button
-                        type="button"
-                        class="btn btn-outline-success btn-block"
-                        data-toggle="modal"
-                        @click="completeRequest"
-                      >
-                        <i class="fas fa-stop-circle"></i> {{ __('Complete') }}
-                      </button>
-                    </li>
-                  @endif
-                  @if ($canRetry === true)
-                    <li class="tw-px-4 tw-py-3 tw-border-b tw-border-gray-300">
-                      <p class="section-title">{{ __('Retry Request') }}</p>
-                      <button id="retryRequestButton" type="button" class="btn btn-outline-info btn-block"
-                        data-toggle="modal" :disabled="retryDisabled" @click="retryRequest">
-                        <i class="fas fa-sync"></i> {{ __('Retry') }}
-                      </button>
-                    </li>
-                  @endif
-                  @if ($eligibleRollbackTask)
-                    @can('rollback', $errorTask)
-                      <li
-                        v-if="{{ $isProcessManager ? 'true' : 'false' }} ||
-                          {{ Auth::user()->is_administrator ? 'true' : 'false' }}"
-                        class="list-group-item"
-                      >
-                        <p class="section-title">{{ __('Rollback Request') }}</p>
-                          <button
-                            id="retryRequestButton"
-                            type="button"
-                            class="btn btn-outline-info btn-block"
-                            data-toggle="modal"
-                            @click="rollback({{ $errorTask->id }}, '{{ $eligibleRollbackTask->element_name }}')"
-                          >
-                            <i class="fas fa-undo"></i> {{ __('Rollback') }}
-                          </button>
-                          <small>{{ __('Rollback to task') }}: <b>{{ $eligibleRollbackTask->element_name }}</b> ({{ $eligibleRollbackTask->element_id }})</small>
-                        </li>
-                      @endcan
-                    @endif
-                    @if ($request->parentRequest)
-                      <li class="list-group-item">
-                        <p class="section-title">{{ __('Parent Request') }}</p>
-                        <i :class="requestStatusClass('{{ $request->parentRequest->status }}')"></i>
-                        <a href="/requests/{{ $request->parentRequest->getKey() }}">{{ $request->parentRequest->name }}</a>
-                      </li>
-                    @endif
-                    @if (count($request->childRequests))
-                      <li class="list-group-item">
-                        <p class="section-title">{{ __('Child Requests') }}</p>
-                        @foreach ($request->childRequests as $childRequest)
-                          <div>
-                            <i :class="requestStatusClass('{{ $childRequest->status }}')"></i>
-                            <a href="/requests/{{ $childRequest->getKey() }}">{{ $childRequest->name }}</a>
-                          </div>
-                        @endforeach
-                      </li>
-                    @endif
                 </ul>
               </template>
 
@@ -173,7 +111,6 @@
     const data = @json($request->getRequestData());
     const requestId = @json($request->getKey());
     const request = @json($request->getRequestAsArray());
-    const files = @json($files);
     const canCancel = @json($canCancel);
     const canViewPrint = @json($canPrintScreens);
     const errorLogs = @json(['data' => $request->getErrors()]);

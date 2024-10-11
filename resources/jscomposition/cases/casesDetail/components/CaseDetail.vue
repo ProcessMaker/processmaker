@@ -1,8 +1,7 @@
 <template>
   <Tabs
     :tab-default="tabDefault"
-    :tabs="tabs"
-  />
+    :tabs="tabs" />
 </template>
 
 <script>
@@ -12,6 +11,7 @@ import TaskTable from "./TaskTable.vue";
 import RequestTable from "./RequestTable.vue";
 import TabHistory from "./TabHistory.vue";
 import CompletedForms from "./CompletedForms.vue";
+import Overview from "./Overview.vue";
 
 export default defineComponent({
   components: { Tabs },
@@ -25,7 +25,7 @@ export default defineComponent({
         name: translate.t("Tasks"), href: "#tasks", current: "tasks", show: true, content: TaskTable,
       },
       {
-        name: translate.t("Overview"), href: "#overview", current: "overview", show: true, content: "",
+        name: translate.t("Overview"), href: "#overview", current: "overview", show: true, content: Overview,
       },
       {
         name: translate.t("Completed & Form"), href: "#completed_form", current: "completed", show: true, content: CompletedForms,
