@@ -1,7 +1,9 @@
 name: Build PM4
 on:
   pull_request:
-    types: [opened, reopened, synchronize, edited]
+    types: [opened, reopened, synchronize, edited, closed]
+  schedule:
+    - cron: '30 2 * * *'  # run daily
   workflow_dispatch:
   workflow_call:
 jobs:
