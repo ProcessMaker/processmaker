@@ -320,7 +320,7 @@
                       id='user'
                       v-model="selectedUser"
                       placeholder="{{__('Select the user to reassign to the task')}}"
-                      api="users?status=ACTIVE"
+                      :api="reassign()"
                       :multiple="false"
                       :show-labels="false"
                       :searchable="true"
@@ -533,6 +533,16 @@
           },
         },
         methods: {
+          reassign() {
+            // Reassignment should only be available to users in the set pool group of users
+            // In the example above, the user shouldn’t be able to reassign the task since he/she is the only one in the pool of applicable users.
+            // If a group is used, only the users inside the group should be elegible for reassignment. DONE
+            if (this.task.definition.assignedGroups) {
+              return "groups/" + this.task.definition.assignedGroups + "/users?status=ACTIVE";
+            } else {
+              return "users?status=ACTIVE";  
+            }            
+          },
           createRule() {
             window.location.href = '/tasks/rules/new?' +
             `task_id=${this.task.id}&` +
