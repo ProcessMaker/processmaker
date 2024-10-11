@@ -23,5 +23,4 @@
 </template>
 
 <script setup>
-
 </script>

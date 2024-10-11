@@ -18,7 +18,7 @@
         v-show="showPlaceholder"
         class="tw-flex tw-grow tw-w-full tw-h-full tw-pointer-events-none
           tw-absolute tw-left-0 tw-top-0 tw-z-10 tw-justify-center tw-items-center">
-        <LoadingFormPlaceholder />
+        <LoadingPlaceholder />
       </div>
     </transition>
 
@@ -43,7 +43,7 @@
 <script setup>
 import { onMounted, ref, computed } from "vue";
 import { getScreenData } from "../api/index";
-import LoadingFormPlaceholder from "./placeholder/LoadingFormPlaceholder.vue";
+import LoadingPlaceholder from "./placeholder/LoadingPlaceholder.vue";
 
 const props = defineProps({
   data: {
