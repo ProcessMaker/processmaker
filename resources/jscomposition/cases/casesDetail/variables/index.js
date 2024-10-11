@@ -2,6 +2,8 @@ export default {};
 
 export const getRequestId = () => requestId;
 
+export const getRequest = () => request;
+
 export const getRequestStatus = () => request.status;
 
 export const getComentableType = () => comentable_type;

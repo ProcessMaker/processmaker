@@ -36,7 +36,7 @@
                     <li class="tw-flex tw-items-center tw-justify-center">
                       <button type="button" class="tw-w-full tw-border tw-border-gray-300 tw-px-3 tw-py-2
                         tw-shadow-sm tw-rounded-md" @click="onCancel" aria-haspopup="dialog">
-                        <i class="fas fa-ban"></i>  
+                        <i class="fas fa-ban"></i>
                         <span>{{ __('Cancel Request') }}</span>
                       </button>
                     </li>
@@ -54,7 +54,7 @@
 
                   @if ($request->user_id)
                     <li class="tw-px-4 tw-py-3 tw-border-b tw-border-gray-300">
-                      <p class="section-title">{{ __('Requested By') }}:</p>
+                      <p class="section-title">{{ __('STARTED BY') }}:</p>
                       <avatar-image
                         v-if="userRequested"
                         size="32"
@@ -67,18 +67,17 @@
                   @endif
 
                   <li class="tw-px-4 tw-py-3 tw-border-b tw-border-gray-300">
-                    <p class="section-title">{{ __('Process') }}</p>
-                    {{ $request->name }}
+                    <p class="section-title">{{ __('LAUNCHPAD') }}</p>
                     <p class="launchpad-link">
                       <a href="{{route('process.browser.index', [$request->process_id])}}">
-                        {{ __('Open Process Launchpad') }}
+                        {{ $request->name }}
                       </a>
                     </p>
                   </li>
                   
                   @if ($request->participants->count())
                     <li class="tw-px-4 tw-py-3 tw-border-b tw-border-gray-300">
-                      <p class="section-title">{{ __('Participants') }}:</p>
+                      <p class="section-title">{{ __('PARTICIPANTS') }}:</p>
                       <avatar-image
                         size="32"
                         class="d-inline-flex pull-left align-items-center"
@@ -87,75 +86,13 @@
                       ></avatar-image>
                     </li>
                   @endif
-
-                  @if ($canManuallyComplete == true)
-                    <li class="tw-px-4 tw-py-3 tw-border-b tw-border-gray-300">
-                      <p class="section-title">{{ __('Manually Complete Request') }}</p>
-                      <button
-                        type="button"
-                        class="btn btn-outline-success btn-block"
-                        data-toggle="modal"
-                        @click="completeRequest"
-                      >
-                        <i class="fas fa-stop-circle"></i> {{ __('Complete') }}
-                      </button>
-                    </li>
-                  @endif
-                  @if ($canRetry === true)
-                    <li class="tw-px-4 tw-py-3 tw-border-b tw-border-gray-300">
-                      <p class="section-title">{{ __('Retry Request') }}</p>
-                      <button id="retryRequestButton" type="button" class="btn btn-outline-info btn-block"
-                        data-toggle="modal" :disabled="retryDisabled" @click="retryRequest">
-                        <i class="fas fa-sync"></i> {{ __('Retry') }}
-                      </button>
-                    </li>
-                  @endif
-                  @if ($eligibleRollbackTask)
-                    @can('rollback', $errorTask)
-                      <li
-                        v-if="{{ $isProcessManager ? 'true' : 'false' }} ||
-                          {{ Auth::user()->is_administrator ? 'true' : 'false' }}"
-                        class="list-group-item"
-                      >
-                        <p class="section-title">{{ __('Rollback Request') }}</p>
-                          <button
-                            id="retryRequestButton"
-                            type="button"
-                            class="btn btn-outline-info btn-block"
-                            data-toggle="modal"
-                            @click="rollback({{ $errorTask->id }}, '{{ $eligibleRollbackTask->element_name }}')"
-                          >
-                            <i class="fas fa-undo"></i> {{ __('Rollback') }}
-                          </button>
-                          <small>{{ __('Rollback to task') }}: <b>{{ $eligibleRollbackTask->element_name }}</b> ({{ $eligibleRollbackTask->element_id }})</small>
-                        </li>
-                      @endcan
-                    @endif
-                    @if ($request->parentRequest)
-                      <li class="list-group-item">
-                        <p class="section-title">{{ __('Parent Request') }}</p>
-                        <i :class="requestStatusClass('{{ $request->parentRequest->status }}')"></i>
-                        <a href="/requests/{{ $request->parentRequest->getKey() }}">{{ $request->parentRequest->name }}</a>
-                      </li>
-                    @endif
-                    @if (count($request->childRequests))
-                      <li class="list-group-item">
-                        <p class="section-title">{{ __('Child Requests') }}</p>
-                        @foreach ($request->childRequests as $childRequest)
-                          <div>
-                            <i :class="requestStatusClass('{{ $childRequest->status }}')"></i>
-                            <a href="/requests/{{ $childRequest->getKey() }}">{{ $childRequest->name }}</a>
-                          </div>
-                        @endforeach
-                      </li>
-                    @endif
                 </ul>
               </template>
 
               <template #comments v-if="panCommentInVueOptionsComponents">
                 <comment-container
                   class="tw-grow tw-overflow-hidden"
-                  :commentable_id="requestId"
+                  :commentable_id="request.id"
                   commentable_type="{{ get_class($request) }}"
                   name="{{ $request->name }}"
                   :readonly="request.status === 'COMPLETED'"
@@ -174,7 +111,6 @@
     const data = @json($request->getRequestData());
     const requestId = @json($request->getKey());
     const request = @json($request->getRequestAsArray());
-    const files = @json($files);
     const canCancel = @json($canCancel);
     const canViewPrint = @json($canPrintScreens);
     const errorLogs = @json(['data' => $request->getErrors()]);
