@@ -842,7 +842,7 @@ class ProcessRequestController extends Controller
 
     /**
      * This endpoint returns requests by case number
-     *  
+     *
      * @param Request $request
      *
      * @return ApiCollection
@@ -863,14 +863,14 @@ class ProcessRequestController extends Controller
         ]);
 
         $query = ProcessRequest::forUser($user);
-        
+
         // Filter by case_number
         $query->filterByCaseNumber($request);
 
         // Apply ordering only if a valid order_by field is provided
         $query->applyOrdering($request);
         $response = $query->applyPagination($request);
-        
+
         // Get activeTasks and participants
         $response = $response->map(function ($processRequest) use ($request) {
             return new ProcessRequestResource($processRequest);
