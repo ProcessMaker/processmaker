@@ -156,6 +156,7 @@ class CommentController extends Controller
 
         $data['user_id'] = Auth::user()->id;
         // Get the case_number if was not send
+        $caseNumber = null;
         if (!$request->has('case_number')) {
             $caseNumber = $this->getCaseNumber($request);
         }
@@ -200,6 +201,7 @@ class CommentController extends Controller
         }
         $data['user_id'] = Auth::user()->id;
         // Get the case_number if was not send
+        $caseNumber = null;
         if (!$request->has('case_number')) {
             $caseNumber = $this->getCaseNumber($request);
         }
