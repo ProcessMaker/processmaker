@@ -54,7 +54,7 @@ const getData = async () => {
       orderBy: filter.value?.field,
       order_direction: filter.value?.value,
       page: dataPagination.value.page,
-      perPage: dataPagination.value.perPage,
+      per_page: dataPagination.value.perPage,
     },
   });
 
@@ -112,57 +112,3 @@ onMounted(async () => {
   await hookGetData();
 });
 </script>
-
-<!-- <script>
-import { defineComponent, ref, onMounted } from "vue";
-import { SortTable, Pagination } from "../../../system";
-import { getDataRequests } from "../api/index";
-import { getColumns } from "../config/columns";
-import { getRequestId } from "../variables";
-
-export default defineComponent({
-  components: { SortTable, Pagination },
-  setup() {
-    const data = ref(null);
-    const columnsConfig = ref(null);
-    const dataPagination = ref({
-      total: 15,
-      page: 1,
-      pages: 1,
-      perPage: 15,
-    });
-
-    const formatData = (filter) => ({
-      params: {
-        case_number: getRequestId(),
-        include: "participants,activeTasks",
-        ...filter,
-      },
-      pagination: {
-        page: dataPagination.value.page,
-        perPage: dataPagination.value.perPage,
-      },
-    });
-
-    const onChangeFilter = async (dataFilter) => {
-      data.value = await getDataRequests(formatData({
-        order_by: dataFilter.field,
-        order_direction: dataFilter.filter,
-      }));
-    };
-
-    onMounted(async () => {
-      data.value = await getDataRequests(formatData({}));
-      columnsConfig.value = getColumns("requests");
-    });
-
-    return {
-      data,
-      dataPagination,
-      columnsConfig,
-      formatData,
-      onChangeFilter,
-    };
-  },
-});
-</script> -->

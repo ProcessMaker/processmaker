@@ -50,14 +50,6 @@ const processNameColumn = () => ({
   width: 200,
 });
 
-// const assignedColumn = () => ({
-//   field: "user.fullname",
-//   header: "Assigned",
-//   resizable: true,
-//   width: 200,
-//   filter: true,
-// });
-
 export const assignedColumn = () => ({
   field: "user",
   header: "Assigned",
@@ -109,11 +101,7 @@ const processRequestColumn = () => ({
   filter: { type: "sortable" },
   cellRenderer: () => ({
     component: LinkCell,
-    params: {
-      click: (row, column, columns) => {
-        window.document.location = `/requests/${row.id}`;
-      },
-    },
+    params: {},
   }),
 });
 
