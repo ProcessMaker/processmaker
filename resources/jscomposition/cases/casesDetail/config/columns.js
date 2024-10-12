@@ -101,11 +101,7 @@ const processRequestColumn = () => ({
   filter: { type: "sortable" },
   cellRenderer: () => ({
     component: LinkCell,
-    params: {
-      click: (row, column, columns) => {
-        window.document.location = `/requests/${row.id}`;
-      },
-    },
+    params: {},
   }),
 });
 

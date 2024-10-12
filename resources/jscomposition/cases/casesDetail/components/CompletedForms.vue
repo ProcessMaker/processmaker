@@ -77,7 +77,7 @@ const getData = async () => {
       orderBy: filter.value?.field,
       order_direction: filter.value?.value,
       page: dataPagination.value.page,
-      perPage: dataPagination.value.perPage,
+      per_page: dataPagination.value.perPage,
     },
   });
 
