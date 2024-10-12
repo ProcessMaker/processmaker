@@ -195,7 +195,7 @@ class BpmnSubscriber
         try {
             WorkflowManager::runScripTask($scriptTask, $token);
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::Error('Unhandled error when running a script task:' . $e->getMessage());
+            Log::Error('Unhandled error when running a script task:' . $e->getMessage());
         }
     }
 
@@ -211,7 +211,7 @@ class BpmnSubscriber
         try {
             WorkflowManager::runServiceTask($serviceTask, $token);
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::Error('Unhandled error when running a service task:' . $e->getMessage());
+            Log::Error('Unhandled error when running a service task:' . $e->getMessage());
         }
     }
 
@@ -222,6 +222,9 @@ class BpmnSubscriber
             TimerEventDefinitionInterface::class => 'System is waiting for the scheduled timer: ":event"',
             ConditionalEventDefinitionInterface::class => 'System is waiting for the conditional event: ":event"',
         ];
+        // Get the case_number
+        $caseNumber = ProcessRequest::where('id', $token->getInstance()->id)->value('case_number');
+
         foreach ($event->getEventDefinitions() as $eventDefinition) {
             foreach ($messages as $interface => $message) {
                 if (is_subclass_of($eventDefinition, $interface)) {
@@ -232,6 +235,7 @@ class BpmnSubscriber
                         'subject' => __($message, ['event' => $event->getName()]),
                         'body' => __($message, ['event' => $event->getName()]),
                         'type' => 'LOG',
+                        'case_number' => $caseNumber,
                     ]);
                     $comment->save();
                     break;
@@ -279,7 +283,7 @@ class BpmnSubscriber
                 $instance->data = $data;
                 $instance->saveOrFail();
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('The expression used in the flow generated and error: ', [$e->getMessage()]);
             $instance->logError($e, $transition->getOwner());
         }
