@@ -99,10 +99,6 @@ const processRequestColumn = () => ({
   resizable: true,
   width: 200,
   filter: { type: "sortable" },
-  cellRenderer: () => ({
-    component: LinkCell,
-    params: {},
-  }),
 });
 
 const taskColumn = () => ({
