@@ -2,13 +2,14 @@
 
 namespace Tests\Feature\Api\V1_1;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use ProcessMaker\Repositories\CaseUtils;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
 class CaseControllerSearchTest extends TestCase
 {
-    use RequestHelper;
+    use RequestHelper, RefreshDatabase;
 
     public function test_search_all_cases_by_case_number(): void
     {
