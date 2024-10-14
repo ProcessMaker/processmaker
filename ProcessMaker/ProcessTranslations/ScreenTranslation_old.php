@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Package\Translations\Models\Translatable;
 
-class ScreenTranslation extends Translate
+class ScreenTranslation
 {
     protected $screen;
 
@@ -114,8 +114,25 @@ class ScreenTranslation extends Translate
     public function applyTranslations($screen)
     {
         $config = $screen['config'];
-        $language = $this->getTargetLanguage();
-        return $this->searchTranslations($screen['screen_id'], $config, $language);
+        $targetLanguage = '';
+
+        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            $targetLanguage = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+        }
+
+        $availableLanguages = Language::where('installed', 1)->pluck('code')->toArray();
+        $targetLanguage = array_key_exists($targetLanguage, $availableLanguages) ? $targetLanguage : 'en';
+
+        if (!Auth::user()->isAnonymous) {
+            $targetLanguage = Auth::user()->language;
+        } elseif (Cache::has('LANGUAGE_ANON_WEBENTRY')) {
+            $targetLanguage = Cache::get('LANGUAGE_ANON_WEBENTRY');
+        }
+        if (Cookie::has('language')) {
+            $targetLanguage = json_decode(Cookie::get('language'), true)['code'];
+        }
+
+        return $this->searchTranslations($screen['screen_id'], $config, $targetLanguage);
     }
 
     public function searchTranslations($screenId, $config, $language)
