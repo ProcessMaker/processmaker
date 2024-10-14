@@ -156,8 +156,8 @@ class CommentController extends Controller
 
         $data['user_id'] = Auth::user()->id;
         // Get the case_number if was not send
-        $caseNumber = null;
-        if (!$request->has('case_number')) {
+        $caseNumber = $request->input('case_number', null);
+        if (is_null($caseNumber)) {
             $caseNumber = $this->getCaseNumber($request);
         }
         $data['case_number'] = $caseNumber;
@@ -201,8 +201,8 @@ class CommentController extends Controller
         }
         $data['user_id'] = Auth::user()->id;
         // Get the case_number if was not send
-        $caseNumber = null;
-        if (!$request->has('case_number')) {
+        $caseNumber = $request->input('case_number', null);
+        if (is_null($caseNumber)) {
             $caseNumber = $this->getCaseNumber($request);
         }
         $data['case_number'] = $caseNumber;
@@ -244,9 +244,9 @@ class CommentController extends Controller
     {
         $requestId = null;
         $commentableType = $request->input('commentable_type');
-        if ($commentableType === 'ProcessMaker\\Models\\ProcessRequestToken') {
-            $requestId = ProcessRequestToken::select('process_request_id')->find($request->input('commentable_id'));
-        } elseif ($commentableType === 'ProcessMaker\\Models\\ProcessRequest') {
+        if ($commentableType === 'ProcessMaker\Models\ProcessRequestToken') {
+            $requestId = ProcessRequestToken::where('id', $request->input('commentable_id'))->value('process_request_id');
+        } elseif ($commentableType === 'ProcessMaker\Models\ProcessRequest') {
             $requestId = $request->input('commentable_id');
         }
         if ($requestId) {
