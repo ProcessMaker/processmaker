@@ -154,9 +154,9 @@ export default {
       },
       processIntelligenceButton: {
         title: this.$t("Import a PI Process"),
-        description: this.$t("Process Intelligence"),
-        svgIcon: "../../../img/wf-to-pm.svg",
-        svgIconStyle: "height: 2em;",
+        description: '',
+        svgIcon: "../../../img/process-intelligence-logo-black.png",
+        svgIconStyle: "margin-left: auto; width: 60%; margin-right: auto;",
       },
       showWizardTemplateDetails: false,
     };
