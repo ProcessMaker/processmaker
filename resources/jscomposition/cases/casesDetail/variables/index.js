@@ -4,7 +4,6 @@ export const getRequestId = () => requestId;
 
 export const getCaseNumber = () => request.case_number;
 
-
 export const getRequest = () => request;
 
 export const getRequestStatus = () => request.status;
