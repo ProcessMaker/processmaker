@@ -46,7 +46,7 @@ import { ref, onMounted } from "vue";
 import { SortTable, Pagination, TablePlaceholder } from "../../../system";
 import { getDataTask } from "../api/index";
 import { getColumns } from "../config/columns";
-import { getRequestId } from "../variables";
+import { getCaseNumber } from "../variables";
 import DisplayForm from "./DisplayForm.vue";
 import EllipsisMenu from "./EllipsisMenu.vue";
 
@@ -71,7 +71,7 @@ const dataPagination = ref({
 const getData = async () => {
   const response = await getDataTask({
     params: {
-      case_number: getRequestId(),
+      case_number: getCaseNumber(),
       status: "CLOSED",
       includeScreen: 1,
       orderBy: filter.value?.field,

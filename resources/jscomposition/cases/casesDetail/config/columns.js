@@ -50,15 +50,7 @@ const processNameColumn = () => ({
   width: 200,
 });
 
-// const assignedColumn = () => ({
-//   field: "user.fullname",
-//   header: "Assigned",
-//   resizable: true,
-//   width: 200,
-//   filter: true,
-// });
-
-export const assignedColumn = () => ({
+const assignedColumn = () => ({
   field: "user",
   header: "Assigned",
   resizable: true,

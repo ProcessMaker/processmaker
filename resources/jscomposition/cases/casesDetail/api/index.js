@@ -45,4 +45,16 @@ const getScreenData = (id) => {
   return response;
 };
 
+export const getUserConfiguration = async () => {
+  const response = await api.get("users/configuration");
+
+  return response.data;
+};
+
+export const updateUserConfiguration = async (data) => {
+  const response = await api.put("users/configuration", data);
+
+  return response.data;
+};
+
 export { getData, getScreenData };

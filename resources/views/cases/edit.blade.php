@@ -21,7 +21,9 @@
       tw-flex-1 tw-bg-white tw-rounded-2xl">
     </case-detail>
 
-    <collapsable-container class="tw-w-80">
+    <collapsable-container class="tw-w-80"
+      v-model="collapseContainer"
+      @change="onToogleContainer">
       <template>
         <div class="tw-w-full tw-flex tw-border tw-border-gray-200 tw-shadow-md tw-px-3
           tw-bg-white tw-rounded-2xl">
