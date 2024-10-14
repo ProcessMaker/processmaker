@@ -1,7 +1,7 @@
 <template>
   <div
     ref="tooltipWrapper"
-    class="tw-relative"
+    class=""
     @mouseenter="($event) => hover && showTooltip($event)"
     @mouseleave="($event) => hover && hideTooltip($event)">
     <slot name="default" />
@@ -110,8 +110,7 @@ export default {
           const leftaux = wrapperRect.left - tooltipRect.width - 10;
           // Verify space left
           if (leftaux < 0) {
-            calculatedPosition.value = "right-bottom";
-            left = wrapperRect.right + 100;
+            left = 10;
           }
       }
 
@@ -181,26 +180,5 @@ export default {
 .tooltip-content {
   position: fixed;
   z-index: 1000;
-}
-
-.tooltip-content.top {
-  transform: translateX(-50%);
-}
-
-.tooltip-content.bottom {
-  transform: translateX(-50%);
-}
-
-.tooltip-content.left {
-  transform: translateY(-50%);
-}
-
-.tooltip-content.right {
-  transform: translateY(-50%);
-}
-
-.tooltip-content.right-bottom {
-  transform: translateY(-50%);
-  transform: translateX(-50%);
 }
 </style>

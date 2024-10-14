@@ -3,6 +3,11 @@ import CaseDetail from "./components/CaseDetail.vue";
 import Tabs from "./components/Tabs.vue";
 import Timeline from "../../../js/components/Timeline.vue";
 import { CollapsableContainer } from "../../base";
+import { cases } from "./store";
+import { updateUserConfiguration, getUserConfiguration } from "./api";
+import { useStore } from "./variables";
+
+Vue.globalStore.registerModule("core:cases", cases);
 
 const caseDetail = new Vue({
   el: "#case-detail",
@@ -22,6 +27,7 @@ const caseDetail = new Vue({
       processId,
       canViewComments,
       tabDefault: "details",
+      collapseContainer: true,
       tabs: [
         {
           name: "Details",
@@ -93,9 +99,16 @@ const caseDetail = new Vue({
     panCommentInVueOptionsComponents() {
       return "pan-comment" in Vue.options.components;
     },
+
   },
-  mounted() {
+  async mounted() {
+    const store = useStore();
     this.packages = window.ProcessMaker.requestShowPackages;
+
+    const response = await this.getUserConf();
+
+    store.commit("core:cases/updateUserConfiguration", response);
+    this.collapseContainer = store.getters["core:cases/getCollapseContainer"];
   },
   methods: {
     onCancel() {
@@ -107,6 +120,26 @@ const caseDetail = new Vue({
           this.okCancel();
         },
       );
+    },
+    async onToogleContainer(value) {
+      const store = useStore();
+      store.commit("core:cases/updateCollapseContainer", value);
+
+      const userConf = store.getters["core:cases/getUserConfiguration"];
+
+      const response = await updateUserConfiguration({
+        user_id: userConf.user_id,
+        ui_configuration: userConf.ui_configuration,
+      });
+    },
+
+    getUserConf: async () => {
+      const response = await getUserConfiguration();
+
+      return {
+        user_id: response.user_id,
+        ui_configuration: JSON.parse(response.ui_configuration),
+      };
     },
   },
 });
