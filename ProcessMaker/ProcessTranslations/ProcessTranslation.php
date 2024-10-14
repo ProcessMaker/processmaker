@@ -282,7 +282,9 @@ class ProcessTranslation
         }
 
         foreach ($translations->translations as $key => $translation) {
-            $this->applyTranslationsToScreen($key, $translation, $config);
+            if ($translation) {
+                $this->applyTranslationsToScreen($key, $translation, $config);
+            }
         }
 
         return $config;
