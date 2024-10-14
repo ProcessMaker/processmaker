@@ -56,7 +56,7 @@ const caseDetail = new Vue({
         CANCELED: "canceled-style ",
         ERROR: "canceled-style",
       };
-      return `card-header text-status ${header[this.request.status.toUpperCase()]}`;
+      return `tw-rounded-md text-status ${header[this.request.status.toUpperCase()]}`;
     },
     labelDate() {
       const label = {
