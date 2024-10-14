@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\ProcessTranslations;
 
-use Cookie;
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -125,10 +124,8 @@ class ScreenTranslation
         if (!Auth::user()->isAnonymous) {
             $targetLanguage = Auth::user()->language;
         } elseif (Cache::has('LANGUAGE_ANON_WEBENTRY')) {
-            $targetLanguage = Cache::get('LANGUAGE_ANON_WEBENTRY');
-        }
-        if (Cookie::has('language')) {
-            $targetLanguage = json_decode(Cookie::get('language'), true)['code'];
+            $language = Cache::get('LANGUAGE_ANON_WEBENTRY');
+            $targetLanguage = $language['code'];
         }
 
         return $this->searchTranslations($screen['screen_id'], $config, $targetLanguage);
