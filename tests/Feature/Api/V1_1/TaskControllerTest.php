@@ -75,4 +75,28 @@ class TaskControllerTest extends TestCase
         $this->assertEquals($subTask1->id, $tasks[1]['id']);
         $this->assertEquals($subTask2->id, $tasks[2]['id']);
     }
+
+    public function testResponseTaskWithTokenProperties()
+    {
+        $content = file_get_contents(
+            __DIR__ . '/Fixtures/nested_screen_process.json'
+        );
+        ImportProcess::dispatchSync($content);
+        $request = ProcessRequest::factory()->create([
+            'process_id' => Process::where('name', 'nested screen test')->first()->id,
+        ]);
+        $task = ProcessRequestToken::factory()->create([
+            'element_type' => 'task',
+            'element_name' => 'Task 1',
+            'element_id' => 'node_2',
+            'process_id' => Process::where('name', 'nested screen test')->first()->id,
+            'process_request_id' => $request->id,
+        ]);
+        $response = $this->apiCall('GET', route('api.1.1.tasks.show', $task->id) . '?include=data');
+        $this->assertNotNull($response->json());
+        $this->assertIsArray($response->json());
+
+        //Validate that field token_properties is sent with the response.
+        $this->assertArrayHasKey('token_properties', $response->json());
+    }
 }

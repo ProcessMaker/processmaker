@@ -327,6 +327,10 @@ export default {
       type: String,
       default: "tasks",
     },
+    verifyUrlToFalse: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -846,7 +850,10 @@ export default {
     },
     verifyURL(string) {
       const currentUrl = window.location.href;
-      const isInUrl = currentUrl.includes(string);
+      let isInUrl = currentUrl.includes(string);
+      if (this.verifyUrlToFalse) {
+        isInUrl = false;
+      }
       return isInUrl;
     },
     /**
@@ -917,7 +924,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .tasks-table-card {
   padding: 0;
 }
@@ -943,10 +950,6 @@ export default {
 .btn-light:hover {
   background-color: #EDF1F6;
   color: #888;
-}
-.pm-table-column-header-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 </style>
 <style lang="scss" scoped>

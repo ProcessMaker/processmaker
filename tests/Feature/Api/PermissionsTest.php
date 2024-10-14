@@ -211,4 +211,55 @@ class PermissionsTest extends TestCase
         $context('script', ScriptCategory::class);
         $context('screen', ScreenCategory::class);
     }
+
+    /**
+     * Test if the created event in UserObserver assigns the correct permissions.
+     */
+    public function testSetPermissionsViewMyRequestForUser()
+    {
+        $permissionName = 'view-my_requests';
+        $permissionTitle = 'View My Requests';
+        // Ensure permission is created without duplicates
+        Permission::firstOrCreate(['name' => $permissionName, 'title' => $permissionTitle]);
+
+        // Create a user (this should trigger the observer)
+        $user = User::factory()->create();
+
+        // Assert the user has been assigned the correct permissions
+        $this->assertTrue($user->permissions()->where('name', $permissionName)->exists());
+    }
+
+    /**
+     * Test that the permissions are seeded and assigned to users and groups.
+     */
+    public function testSetPermissionsViewMyRequestForUsersAndGroupCreated()
+    {
+        //Set up the users and groups
+        $users = User::factory()->count(5)->create();
+        $groups = Group::factory()->count(3)->create();
+
+        //Run the seeder
+        $this->seed(PermissionSeeder::class);
+        $permissionName = 'view-my_requests';
+        $permissionTitle = 'View My Requests';
+
+        //Verify that the permission exists
+        $this->assertDatabaseHas('permissions', [
+            'name' => $permissionName,
+            'group' => 'Cases and Requests',
+            'title' => $permissionTitle,
+        ]);
+
+        //Verify that the permission is assigned to users
+        $permission = Permission::where('name', $permissionName)->first();
+        $this->assertNotNull($permission);
+        foreach ($users as $user) {
+            $this->assertTrue($user->hasPermission($permissionName));
+        }
+
+        //Verify that the permission is assigned to groups
+        foreach ($groups as $group) {
+            $this->assertTrue($permission->groups->contains($group));
+        }
+    }
 }
