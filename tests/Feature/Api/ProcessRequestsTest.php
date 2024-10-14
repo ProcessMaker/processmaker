@@ -1029,4 +1029,39 @@ class ProcessRequestsTest extends TestCase
         $response->assertStatus(422);
         $this->assertEquals('The Case number field is required.', $response->json()['message']);
     }
+
+    /**
+     * Get a list of Requests by Cases pagination
+     */
+    public function testRequestByCasePagination()
+    {
+        ProcessRequest::query()->delete();
+        $request = ProcessRequest::factory()->create();
+        ProcessRequest::factory()->count(11)->create([
+            'parent_request_id' => $request->id,
+        ]);
+        // Call the endpoint with the 'case_number' parameter page 1
+        $filter = "?case_number=$request->case_number&include=activeTasks&page=1&per_page=5";
+        $url = self::API_REQUESTS_BY_CASE . $filter;
+
+        // Check if the response is successful and contains the expected tasks
+        $response = $this->apiCall('GET', $url);
+        $this->assertCount(5, $response->json('data'));
+
+        // Call the endpoint with the 'case_number' parameter page 2
+        $filter = "?case_number=$request->case_number&include=activeTasks&page=2&per_page=5";
+        $url = self::API_REQUESTS_BY_CASE . $filter;
+
+        // Check if the response is successful and contains the expected tasks
+        $response = $this->apiCall('GET', $url);
+        $this->assertCount(5, $response->json('data'));
+
+        // Call the endpoint with the 'case_number' parameter page 3
+        $filter = "?case_number=$request->case_number&include=activeTasks&page=3&per_page=5";
+        $url = self::API_REQUESTS_BY_CASE . $filter;
+
+        // Check if the response is successful and contains the expected tasks
+        $response = $this->apiCall('GET', $url);
+        $this->assertCount(3, $response->json('data'));
+    }
 }
