@@ -29,7 +29,7 @@ import { ref, onMounted } from "vue";
 import { SortTable, Pagination, TablePlaceholder } from "../../../system";
 import { getDataTask } from "../api/index";
 import { getColumns } from "../config/columns";
-import { getRequestId } from "../variables";
+import { getCaseNumber } from "../variables";
 
 const data = ref(null);
 const columnsConfig = ref(null);
@@ -49,7 +49,7 @@ const dataPagination = ref({
 const getData = async () => {
   const response = await getDataTask({
     params: {
-      case_number: getRequestId(),
+      case_number: getCaseNumber(),
       status: "ACTIVE",
       orderBy: filter.value?.field,
       order_direction: filter.value?.value,

@@ -14,14 +14,14 @@
 import { defineComponent, ref } from "vue";
 import TimeLine from "../../../../js/components/Timeline.vue";
 import {
-  getRequestId, getRequestStatus, getComentableType, getProcessName,
+  getRequestStatus, getComentableType, getProcessName, getCaseNumber,
 } from "../variables";
 
 export default defineComponent({
   components: { TimeLine },
   setup() {
     const status = ref(getRequestStatus());
-    const commentableId = ref(getRequestId());
+    const commentableId = ref(getCaseNumber());
     const comentableType = ref(getComentableType());
     const processName = ref(getProcessName());
     return {
