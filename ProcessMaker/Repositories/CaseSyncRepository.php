@@ -32,29 +32,34 @@ class CaseSyncRepository
                     continue;
                 }
 
-                $processData = [
-                    'id' => $instance->process->id,
-                    'name' => $instance->process->name,
-                ];
+                $processData = CaseUtils::extractData($instance->process, [
+                    'id' => 'id',
+                    'name' => 'name',
+                ]);
 
-                $requestData = [
-                    'id' => $instance->id,
-                    'name' => $instance->name,
-                    'parent_request_id' => $instance?->parentRequest?->id,
-                ];
+                $requestData = CaseUtils::extractData($instance, [
+                    'id' => 'id',
+                    'name' => 'name',
+                    'parent_request_id' => 'parentRequest.id',
+                ]);
 
-                $csProcesses = CaseUtils::storeProcesses(collect(), $processData);
-                $csRequests = CaseUtils::storeRequests(collect(), $requestData);
-                $csRequestTokens = collect();
-                $csTasks = collect();
+                $caseStartedProcesses = CaseUtils::storeProcesses(collect(), $processData);
+                $caseStartedRequests = CaseUtils::storeRequests(collect(), $requestData);
+                $caseStartedRequestTokens = collect();
+                $caseStartedTasks = collect();
                 $participants = $instance->participants->map->only('id', 'fullName', 'title', 'avatar');
                 $status = $instance->status === CaseRepository::CASE_STATUS_ACTIVE ? 'IN_PROGRESS' : $instance->status;
 
-                $cpData = self::prepareCaseStartedData($instance, $status, $participants);
+                $caseParticipatedData = self::prepareCaseStartedData($instance, $status, $participants);
 
-                self::processTokens($instance, $cpData, $csRequestTokens, $csTasks);
+                self::processTokens($instance, $caseParticipatedData, $caseStartedRequestTokens, $caseStartedTasks);
 
-                self::processChildRequests($instance, $cpData, $csProcesses, $csRequests, $participants, $csRequestTokens, $csTasks);
+                self::processChildRequests($instance, $caseParticipatedData, $caseStartedProcesses, $caseStartedRequests, $participants, $caseStartedRequestTokens, $caseStartedTasks);
+
+                $dataKeywords = CaseUtils::extractData($instance, [
+                    'case_number' => 'case_number',
+                    'case_title' => 'case_title',
+                ]);
 
                 $caseStarted = CaseStarted::updateOrCreate(
                     ['case_number' => $instance->case_number],
@@ -63,14 +68,14 @@ class CaseSyncRepository
                         'case_title' => $instance->case_title,
                         'case_title_formatted' => $instance->case_title_formatted,
                         'case_status' => $status,
-                        'processes' => $csProcesses,
-                        'requests' => $csRequests,
-                        'request_tokens' => $csRequestTokens,
-                        'tasks' => $csTasks,
+                        'processes' => $caseStartedProcesses,
+                        'requests' => $caseStartedRequests,
+                        'request_tokens' => $caseStartedRequestTokens,
+                        'tasks' => $caseStartedTasks,
                         'participants' => $participants,
                         'initiated_at' => $instance->initiated_at,
                         'completed_at' => $instance->completed_at,
-                        'keywords' => CaseUtils::getCaseNumberByKeywords($instance->case_number) . ' ' . $instance->case_title,
+                        'keywords' => CaseUtils::getKeywords($dataKeywords),
                     ],
                 );
 
@@ -96,16 +101,21 @@ class CaseSyncRepository
      */
     private static function prepareCaseStartedData($instance, $status, $participants)
     {
-        $processData = [
-            'id' => $instance->process->id,
-            'name' => $instance->process->name,
-        ];
+        $processData = CaseUtils::extractData($instance->process, [
+            'id' => 'id',
+            'name' => 'name',
+        ]);
 
-        $requestData = [
-            'id' => $instance->id,
-            'name' => $instance->name,
-            'parent_request_id' => $instance?->parentRequest?->id,
-        ];
+        $requestData = CaseUtils::extractData($instance, [
+            'id' => 'id',
+            'name' => 'name',
+            'parent_request_id' => 'parentRequest.id',
+        ]);
+
+        $dataKeywords = CaseUtils::extractData($instance, [
+            'case_number' => 'case_number',
+            'case_title' => 'case_title',
+        ]);
 
         return [
             'case_title' => $instance->case_title,
@@ -118,7 +128,7 @@ class CaseSyncRepository
             'participants' => $participants,
             'initiated_at' => $instance->initiated_at,
             'completed_at' => $instance->completed_at,
-            'keywords' => CaseUtils::getCaseNumberByKeywords($instance->case_number) . ' ' . $instance->case_title,
+            'keywords' => CaseUtils::getKeywords($dataKeywords),
         ];
     }
 
@@ -126,12 +136,12 @@ class CaseSyncRepository
      * Process the tokens.
      *
      * @param ProcessRequest $instance
-     * @param array $cpData
-     * @param Collection $csRequestTokens
-     * @param Collection $csTasks
+     * @param array $caseParticipatedData
+     * @param Collection $caseStartedRequestTokens
+     * @param Collection $caseStartedTasks
      * @return void
      */
-    private static function processTokens($instance, &$cpData, &$csRequestTokens, &$csTasks)
+    private static function processTokens($instance, &$caseParticipatedData, &$caseStartedRequestTokens, &$caseStartedTasks)
     {
         foreach ($instance->tokens as $token) {
             if (in_array($token->element_type, CaseUtils::ALLOWED_REQUEST_TOKENS)) {
@@ -154,15 +164,15 @@ class CaseSyncRepository
                     'element_type' => $token->element_type,
                 ];
 
-                $cpData['processes'] = CaseUtils::storeProcesses($cpData['processes'], $processData);
-                $cpData['requests'] = CaseUtils::storeRequests($cpData['requests'], $requestData);
-                $cpData['request_tokens'] = CaseUtils::storeRequestTokens($cpData['request_tokens'], $token->getKey());
-                $cpData['tasks'] = CaseUtils::storeTasks($cpData['tasks'], $taskData);
+                $caseParticipatedData['processes'] = CaseUtils::storeProcesses($caseParticipatedData['processes'], $processData);
+                $caseParticipatedData['requests'] = CaseUtils::storeRequests($caseParticipatedData['requests'], $requestData);
+                $caseParticipatedData['request_tokens'] = CaseUtils::storeRequestTokens($caseParticipatedData['request_tokens'], $token->getKey());
+                $caseParticipatedData['tasks'] = CaseUtils::storeTasks($caseParticipatedData['tasks'], $taskData);
 
-                $csRequestTokens = CaseUtils::storeRequestTokens($csRequestTokens, $token->getKey());
-                $csTasks = CaseUtils::storeTasks($csTasks, $taskData);
+                $caseStartedRequestTokens = CaseUtils::storeRequestTokens($caseStartedRequestTokens, $token->getKey());
+                $caseStartedTasks = CaseUtils::storeTasks($caseStartedTasks, $taskData);
 
-                self::syncCasesParticipated($instance->case_number, $token->user_id, $cpData);
+                self::syncCasesParticipated($instance->case_number, $token->user_id, $caseParticipatedData);
             }
         }
     }
@@ -171,36 +181,36 @@ class CaseSyncRepository
      * Process the child requests.
      *
      * @param ProcessRequest $instance
-     * @param array $cpData
-     * @param Collection $csProcesses
-     * @param Collection $csRequests
+     * @param array $caseParticipatedData
+     * @param Collection $caseStartedProcesses
+     * @param Collection $caseStartedRequests
      * @param Collection $participants
-     * @param Collection $csRequestTokens
-     * @param Collection $csTasks
+     * @param Collection $caseStartedRequestTokens
+     * @param Collection $caseStartedTasks
      * @return void
      */
     private static function processChildRequests(
-        $instance, &$cpData, &$csProcesses, &$csRequests, &$participants, &$csRequestTokens, &$csTasks
+        $instance, &$caseParticipatedData, &$caseStartedProcesses, &$caseStartedRequests, &$participants, &$caseStartedRequestTokens, &$caseStartedTasks
     ) {
         foreach ($instance->childRequests as $subProcess) {
-            $processData = [
-                'id' => $subProcess->process->id,
-                'name' => $subProcess->process->name,
-            ];
+            $processData = CaseUtils::extractData($subProcess->process, [
+                'id' => 'id',
+                'name' => 'name',
+            ]);
 
-            $requestData = [
-                'id' => $subProcess->id,
-                'name' => $subProcess->name,
-                'parent_request_id' => $subProcess?->parentRequest?->id,
-            ];
+            $requestData = CaseUtils::extractData($subProcess, [
+                'id' => 'id',
+                'name' => 'name',
+                'parent_request_id' => 'parentRequest.id',
+            ]);
 
-            $cpData['processes'] = CaseUtils::storeProcesses(collect(), $processData);
-            $cpData['requests'] = CaseUtils::storeRequests(collect(), $requestData);
-            $cpData['request_tokens'] = collect();
-            $cpData['tasks'] = collect();
+            $caseParticipatedData['processes'] = CaseUtils::storeProcesses(collect(), $processData);
+            $caseParticipatedData['requests'] = CaseUtils::storeRequests(collect(), $requestData);
+            $caseParticipatedData['request_tokens'] = collect();
+            $caseParticipatedData['tasks'] = collect();
 
-            $csProcesses = CaseUtils::storeProcesses($csProcesses, $processData);
-            $csRequests = CaseUtils::storeRequests($csRequests, $requestData);
+            $caseStartedProcesses = CaseUtils::storeProcesses($caseStartedProcesses, $processData);
+            $caseStartedRequests = CaseUtils::storeRequests($caseStartedRequests, $requestData);
 
             $participants = $participants
                 ->merge($subProcess->participants->map->only('id', 'fullName', 'title', 'avatar'))
@@ -217,15 +227,15 @@ class CaseSyncRepository
                 ];
 
                 if (in_array($spToken->element_type, CaseUtils::ALLOWED_REQUEST_TOKENS)) {
-                    $cpData['processes'] = CaseUtils::storeProcesses($cpData['processes'], $processData);
-                    $cpData['requests'] = CaseUtils::storeRequests($cpData['requests'], $requestData);
-                    $cpData['request_tokens'] = CaseUtils::storeRequestTokens($cpData['request_tokens'], $spToken->getKey());
-                    $cpData['tasks'] = CaseUtils::storeTasks($cpData['tasks'], $taskData);
+                    $caseParticipatedData['processes'] = CaseUtils::storeProcesses($caseParticipatedData['processes'], $processData);
+                    $caseParticipatedData['requests'] = CaseUtils::storeRequests($caseParticipatedData['requests'], $requestData);
+                    $caseParticipatedData['request_tokens'] = CaseUtils::storeRequestTokens($caseParticipatedData['request_tokens'], $spToken->getKey());
+                    $caseParticipatedData['tasks'] = CaseUtils::storeTasks($caseParticipatedData['tasks'], $taskData);
 
-                    $csRequestTokens = CaseUtils::storeRequestTokens($csRequestTokens, $spToken->getKey());
-                    $csTasks = CaseUtils::storeTasks($csTasks, $taskData);
+                    $caseStartedRequestTokens = CaseUtils::storeRequestTokens($caseStartedRequestTokens, $spToken->getKey());
+                    $caseStartedTasks = CaseUtils::storeTasks($caseStartedTasks, $taskData);
 
-                    self::syncCasesParticipated($instance->case_number, $spToken->user_id, $cpData);
+                    self::syncCasesParticipated($instance->case_number, $spToken->user_id, $caseParticipatedData);
                 }
             }
         }

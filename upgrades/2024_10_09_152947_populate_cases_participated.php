@@ -49,6 +49,11 @@ class PopulateCasesParticipated extends Upgrade
                         $tasks = CaseUtils::storeTasks(collect(json_decode($row->tasks)));
                         $participants = CaseUtils::storeParticipants(collect(json_decode($row->participants)));
 
+                        $dataKeywords = [
+                            'case_number' => $row->case_number,
+                            'case_title' => $row->case_title,
+                        ];
+
                         array_push($casesParticipated, [
                             'user_id' => $row->user_id,
                             'case_number' => $row->case_number,
@@ -64,7 +69,7 @@ class PopulateCasesParticipated extends Upgrade
                             'completed_at' => $row->completed_at,
                             'created_at' => $row->created_at,
                             'updated_at' => $row->updated_at,
-                            'keywords' => CaseUtils::getCaseNumberByKeywords($row->case_number) . ' ' . $row->case_title,
+                            'keywords' => CaseUtils::getKeywords($dataKeywords),
                         ]);
                     }
 

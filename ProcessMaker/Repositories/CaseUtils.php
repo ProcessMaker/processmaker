@@ -16,14 +16,30 @@ class CaseUtils
 
     /**
      * Get the case number split into keywords.
+     * @param int $caseNumber
+     * @return string
      */
-    public static function getCaseNumberByKeywords(int $caseNumber)
+    public static function getCaseNumberByKeywords(int $caseNumber): string
     {
         $caseNumber = (string) $caseNumber;
         $keywords = array_map(
             fn($i) => self::CASE_NUMBER_PREFIX . substr($caseNumber, 0, $i),
             range(1, strlen($caseNumber))
         );
+
+        return implode(' ', $keywords);
+    }
+
+    /**
+     * Get the keywords for a case number and additional data.
+     * @param array $data
+     * @return string
+     */
+    public static function getKeywords(array $dataKeywords): string
+    {
+        $keywords = array_map(function ($key, $keyword) {
+            return $key === 'case_number' ? self::getCaseNumberByKeywords($keyword) : $keyword;
+        }, array_keys($dataKeywords), $dataKeywords);
 
         return implode(' ', $keywords);
     }
@@ -107,11 +123,9 @@ class CaseUtils
      */
     public static function storeTasks(Collection $tasks, ?array $taskData = []): Collection
     {
-        if (!empty($taskData) && array_key_exists('id', $taskData) && array_key_exists('element_id', $taskData) && array_key_exists('name', $taskData) && array_key_exists('process_id', $taskData)) {
-            if (in_array($taskData['element_type'], self::ALLOWED_ELEMENT_TYPES)) {
-                unset($taskData['element_type']);
-                $tasks->push($taskData);
-            }
+        if (in_array($taskData['element_type'], self::ALLOWED_ELEMENT_TYPES) && !empty($taskData) && array_key_exists('id', $taskData) && array_key_exists('element_id', $taskData) && array_key_exists('name', $taskData) && array_key_exists('process_id', $taskData)) {
+            unset($taskData['element_type']);
+            $tasks->push($taskData);
         }
 
         return $tasks->unique('id')->values();
@@ -131,5 +145,21 @@ class CaseUtils
         }
 
         return $participants->unique()->values();
+    }
+
+    /**
+     * Extract data from an object based on a mapping array.
+     *
+     * @param object $object The object to extract data from.
+     * @param array $mapping An associative array where keys are the desired keys in the output array and values are the corresponding properties in the object.
+     * @return array The extracted data as an associative array.
+     */
+    public static function extractData(object $object, array $mapping): array
+    {
+        $data = [];
+        foreach ($mapping as $key => $property) {
+            $data[$key] = data_get($object, $property);
+        }
+        return $data;
     }
 }
