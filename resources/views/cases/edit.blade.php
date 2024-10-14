@@ -122,7 +122,7 @@
 @endsection
 
 @section('css')
-<style>
+<style scoped>
   .active-style {
     background-color: #4ea075;
   }
