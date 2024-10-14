@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4f79cf91f29956a636f1b26557cc3cf5",
+    "content-hash": "a83194e99000b7d446b2cd8e860a02ea",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -3485,6 +3485,84 @@
             "time": "2023-11-23T15:47:58+00:00"
         },
         {
+            "name": "laravel/pail",
+            "version": "v1.1.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/pail.git",
+                "reference": "c22fe771277971eb9cd224955996bcf39c1a710d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/pail/zipball/c22fe771277971eb9cd224955996bcf39c1a710d",
+                "reference": "c22fe771277971eb9cd224955996bcf39c1a710d",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "ext-pcntl": "*",
+                "illuminate/console": "^10.24|^11.0",
+                "illuminate/contracts": "^10.24|^11.0",
+                "illuminate/log": "^10.24|^11.0",
+                "illuminate/process": "^10.24|^11.0",
+                "illuminate/support": "^10.24|^11.0",
+                "nunomaduro/termwind": "^1.15|^2.0",
+                "php": "^8.2",
+                "symfony/console": "^6.0|^7.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.13",
+                "orchestra/testbench": "^8.12|^9.0",
+                "pestphp/pest": "^2.20",
+                "pestphp/pest-plugin-type-coverage": "^2.3",
+                "phpstan/phpstan": "^1.10",
+                "symfony/var-dumper": "^6.3|^7.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.x-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "Laravel\\Pail\\PailServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Pail\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                },
+                {
+                    "name": "Nuno Maduro",
+                    "email": "enunomaduro@gmail.com"
+                }
+            ],
+            "description": "Easily delve into your Laravel application's log files directly from the command line.",
+            "homepage": "https://github.com/laravel/pail",
+            "keywords": [
+                "laravel",
+                "logs",
+                "php",
+                "tail"
+            ],
+            "support": {
+                "issues": "https://github.com/laravel/pail/issues",
+                "source": "https://github.com/laravel/pail"
+            },
+            "time": "2024-05-08T18:19:39+00:00"
+        },
+        {
             "name": "laravel/passport",
             "version": "v11.10.0",
             "source": {
@@ -5402,6 +5480,58 @@
                 "source": "https://github.com/microsoftgraph/msgraph-sdk-php/tree/1.109.2"
             },
             "time": "2023-12-01T09:41:49+00:00"
+        },
+        {
+            "name": "mittwald/vault-php",
+            "version": "2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mittwald/vaultPHP.git",
+                "reference": "e3a1f8b6d5247db39172daa3fa777b407a884ff9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mittwald/vaultPHP/zipball/e3a1f8b6d5247db39172daa3fa777b407a884ff9",
+                "reference": "e3a1f8b6d5247db39172daa3fa777b407a884ff9",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "guzzlehttp/psr7": "^2.6",
+                "php": "^7.2.5 || ^8.0",
+                "psr/http-client": "^1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "9.6.19",
+                "vimeo/psalm": "5.23.1"
+            },
+            "suggest": {
+                "php-http/curl-client": "CURL Client Adapter",
+                "tuupola/http-factory": "HTTP Factory"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "VaultPHP\\": "src\\VaultPHP\\"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marco Rieger",
+                    "email": "m.rieger@mittwald.de"
+                }
+            ],
+            "description": "A PHP client library for 'Vault by HashiCorp'",
+            "homepage": "https://www.mittwald.de/",
+            "support": {
+                "issues": "https://github.com/mittwald/vaultPHP/issues",
+                "source": "https://github.com/mittwald/vaultPHP/tree/2.1.0"
+            },
+            "time": "2024-08-26T11:39:31+00:00"
         },
         {
             "name": "mobiledetect/mobiledetectlib",

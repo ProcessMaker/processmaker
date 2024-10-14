@@ -5,21 +5,14 @@
         <i v-if="button.icon" class="icon mb-2 text-primary" :class="button.icon" :style="button.iconStyle"></i>
         <img v-if="button.svgIcon" :src="button.svgIcon" class="mb-2" :style="button.svgIconStyle" :alt="button.title">
         <h5 class="m-0">{{ button.title }}</h5>
+        <div v-if="button.description" class="mb-2">
+          <div class="mt-1 description text-secondary">{{ button.description }}</div>
+        </div>
       </div>
       <div v-if="button.showAiSlogan" class="ai-slogan-container mb-2">
         <div class="ai-slogan"><img src="/img/favicon.svg" :alt="$t('ProcessMaker')"> {{ $t("Powered by ProcessMaker AI") }}</div>
       </div>
     </b-card>
-
-    <div v-if="button.helperEnabled" class="helper-container col-6 p-0">
-      <div class="arrow-left"></div>
-      <b-card no-body class="button-card card-helper p-4">
-        <div class="card-body card-helper text-center d-flex justify-content-center flex-column">
-          <h4 class="m-0 text-left card-title">{{ button.helperTitle }}</h4>
-          <p class="m-0 text-left card-text">{{ button.helperDescription }}</p>
-        </div>
-      </b-card>
-    </div>
   </div>
 </template>
 
@@ -93,26 +86,11 @@ export default {
   font-size: 1.5rem;
 }
 
-.helper-container {
-  position: relative;
+.description {
+  font-weight: 200;
+  font-size: 14px;
 }
-.arrow-left {
-  width: 0;
-  height: 0;
-  border-top: 16px solid transparent;
-  border-bottom: 16px solid transparent;
-  border-right: 13px solid #BCDCF8;
-  position: absolute;
-  top: calc(50% - 16px);
-  left: 0px;
-}
-.button-card.card-helper {
-    border: 0;
-    background: #BCDCF8;
-}
-.button-card.card-helper .card-text {
-  color:#363A3E;
-}
+
 .ai-slogan-container {
   position: absolute;
   bottom: 0;

@@ -155,7 +155,7 @@ The import() methods is where you link assets to their dependencies. Because IDs
       - name: The name given when exporting
     - Returns: The data variable exported
 
-Note: You will `$this->model->save()` some places in the code. This is from a previous version and is not necessary any more. These will be cleaned up later. The model is automatically saved before getting to he `import()` method.
+Note: You will see `$this->model->save()` some places in the code. This is from a previous version and is not necessary any more. These will be cleaned up later. The model is automatically saved before getting to the `import()` method.
 
 You only need to save the model again if you made changes to it.
 

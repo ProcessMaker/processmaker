@@ -242,6 +242,11 @@ class TemplateController extends Controller
         return $this->template->deleteMediaImages($type, $request);
     }
 
+    public function applyTemplate(string $type, Request $request)
+    {
+        return $this->template->applyTemplate($type, $request);
+    }
+
     private function validateImportedFile($content, $request, $type)
     {
         $decoded = null;
@@ -283,9 +288,9 @@ class TemplateController extends Controller
                 continue;
             }
 
-            if (!$asset['model']::where('uuid', $key)->exists()
-                || $payload['root'] === $asset['attributes']['uuid']
+            if ($payload['root'] === $asset['attributes']['uuid']
                 || Str::contains($asset['type'], 'Category')
+                || !$asset['model']::where('uuid', $key)->exists()
             ) {
                 continue;
             }
