@@ -11,12 +11,25 @@ class CaseControllerSearchTest extends TestCase
 {
     use RequestHelper, RefreshDatabase;
 
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->user = CaseControllerTest::createUser('user_a');
+    }
+
+    public function tearDown(): void
+    {
+        User::where('id', $this->user->id)->forceDelete();
+
+        parent::tearDown();
+    }
+
     public function test_search_all_cases_by_case_number(): void
     {
-        $user = CaseControllerTest::createUser('user_a');
-        CaseControllerTest::createCasesStartedForUser($user->id, 5);
+        CaseControllerTest::createCasesStartedForUser($this->user->id, 5);
         $caseNumber = 123456;
-        CaseControllerTest::createCasesStartedForUser($user->id, 1, ['case_number' => $caseNumber, 'keywords' => CaseUtils::getCaseNumberByKeywords($caseNumber)]);
+        CaseControllerTest::createCasesStartedForUser($this->user->id, 1, ['case_number' => $caseNumber, 'keywords' => CaseUtils::getCaseNumberByKeywords($caseNumber)]);
 
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases'));
         $response->assertStatus(200);
@@ -29,10 +42,9 @@ class CaseControllerSearchTest extends TestCase
 
     public function test_search_in_progress_cases_by_case_number(): void
     {
-        $user = CaseControllerTest::createUser('user_b');
-        CaseControllerTest::createCasesParticipatedForUser($user->id, 5, ['case_status' => 'IN_PROGRESS']);
+        CaseControllerTest::createCasesParticipatedForUser($this->user->id, 5, ['case_status' => 'IN_PROGRESS']);
         $caseNumber = 123456;
-        CaseControllerTest::createCasesParticipatedForUser($user->id, 1, [
+        CaseControllerTest::createCasesParticipatedForUser($this->user->id, 1, [
             'case_number' => $caseNumber, 'case_status' => 'IN_PROGRESS', 'keywords' => CaseUtils::getCaseNumberByKeywords($caseNumber),
         ]);
 
@@ -47,10 +59,9 @@ class CaseControllerSearchTest extends TestCase
 
     public function test_search_completed_cases_by_case_number(): void
     {
-        $user = CaseControllerTest::createUser('user_c');
-        CaseControllerTest::createCasesParticipatedForUser($user->id, 5, ['case_status' => 'COMPLETED']);
+        CaseControllerTest::createCasesParticipatedForUser($this->user->id, 5, ['case_status' => 'COMPLETED']);
         $caseNumber = 987654;
-        CaseControllerTest::createCasesParticipatedForUser($user->id, 1, [
+        CaseControllerTest::createCasesParticipatedForUser($this->user->id, 1, [
             'case_number' => $caseNumber, 'case_status' => 'COMPLETED', 'keywords' => CaseUtils::getCaseNumberByKeywords($caseNumber),
         ]);
 
@@ -69,12 +80,11 @@ class CaseControllerSearchTest extends TestCase
         $caseTitle2 = 'ABE Spring';
         $caseTitle3 = 'Credit Evaluation Process';
 
-        $user = CaseControllerTest::createUser('user_d');
-        CaseControllerTest::createCasesStartedForUser($user->id, 5, ['case_title' => $caseTitle1, 'keywords' => $caseTitle1]);
-        CaseControllerTest::createCasesStartedForUser($user->id, 5, ['case_title' => $caseTitle2, 'keywords' => $caseTitle2]);
-        CaseControllerTest::createCasesStartedForUser($user->id, 5, ['case_title' => $caseTitle3, 'keywords' => $caseTitle3]);
+        CaseControllerTest::createCasesStartedForUser($this->user->id, 5, ['case_title' => $caseTitle1, 'keywords' => $caseTitle1]);
+        CaseControllerTest::createCasesStartedForUser($this->user->id, 5, ['case_title' => $caseTitle2, 'keywords' => $caseTitle2]);
+        CaseControllerTest::createCasesStartedForUser($this->user->id, 5, ['case_title' => $caseTitle3, 'keywords' => $caseTitle3]);
 
-        $this->assertDatabaseCount('cases_started', 21);
+        $this->assertDatabaseCount('cases_started', 15);
 
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases'));
         $response->assertStatus(200);
@@ -107,16 +117,15 @@ class CaseControllerSearchTest extends TestCase
         $caseTitle2 = 'ABE Spring';
         $caseTitle3 = 'Credit Evaluation Process';
 
-        $user = CaseControllerTest::createUser('user_e');
-        CaseControllerTest::createCasesParticipatedForUser($user->id, 10, ['case_title' => $caseTitle1, 'case_status' => 'IN_PROGRESS', 'keywords' => $caseTitle1]);
-        CaseControllerTest::createCasesParticipatedForUser($user->id, 5, ['case_title' => $caseTitle2, 'case_status' => 'IN_PROGRESS', 'keywords' => $caseTitle2]);
-        CaseControllerTest::createCasesParticipatedForUser($user->id, 5, ['case_title' => $caseTitle3, 'case_status' => 'IN_PROGRESS', 'keywords' => $caseTitle3]);
+        CaseControllerTest::createCasesParticipatedForUser($this->user->id, 10, ['case_title' => $caseTitle1, 'case_status' => 'IN_PROGRESS', 'keywords' => $caseTitle1]);
+        CaseControllerTest::createCasesParticipatedForUser($this->user->id, 5, ['case_title' => $caseTitle2, 'case_status' => 'IN_PROGRESS', 'keywords' => $caseTitle2]);
+        CaseControllerTest::createCasesParticipatedForUser($this->user->id, 5, ['case_title' => $caseTitle3, 'case_status' => 'IN_PROGRESS', 'keywords' => $caseTitle3]);
 
-        $this->assertDatabaseCount('cases_participated', 32);
+        $this->assertDatabaseCount('cases_participated', 20);
 
         $response = $this->apiCall('GET', route('api.1.1.cases.in_progress', ['pageSize' => 50]));
         $response->assertStatus(200);
-        $response->assertJsonCount(26, 'data');
+        $response->assertJsonCount(20, 'data');
 
         $response = $this->apiCall('GET', route('api.1.1.cases.in_progress', ['search' => 'accident']));
         $response->assertStatus(200);
@@ -145,16 +154,15 @@ class CaseControllerSearchTest extends TestCase
         $caseTitle2 = 'ABE Spring';
         $caseTitle3 = 'Credit Evaluation Process 123-abc';
 
-        $user = CaseControllerTest::createUser('user_f');
-        CaseControllerTest::createCasesParticipatedForUser($user->id, 5, ['case_title' => $caseTitle1, 'case_status' => 'COMPLETED', 'keywords' => $caseTitle1]);
-        CaseControllerTest::createCasesParticipatedForUser($user->id, 10, ['case_title' => $caseTitle2, 'case_status' => 'COMPLETED', 'keywords' => $caseTitle2]);
-        CaseControllerTest::createCasesParticipatedForUser($user->id, 5, ['case_title' => $caseTitle3, 'case_status' => 'COMPLETED', 'keywords' => $caseTitle3]);
+        CaseControllerTest::createCasesParticipatedForUser($this->user->id, 5, ['case_title' => $caseTitle1, 'case_status' => 'COMPLETED', 'keywords' => $caseTitle1]);
+        CaseControllerTest::createCasesParticipatedForUser($this->user->id, 10, ['case_title' => $caseTitle2, 'case_status' => 'COMPLETED', 'keywords' => $caseTitle2]);
+        CaseControllerTest::createCasesParticipatedForUser($this->user->id, 5, ['case_title' => $caseTitle3, 'case_status' => 'COMPLETED', 'keywords' => $caseTitle3]);
 
-        $this->assertDatabaseCount('cases_participated', 52);
+        $this->assertDatabaseCount('cases_participated', 20);
 
         $response = $this->apiCall('GET', route('api.1.1.cases.completed', ['pageSize' => 30]));
         $response->assertStatus(200);
-        $response->assertJsonCount(26, 'data');
+        $response->assertJsonCount(20, 'data');
 
         $response = $this->apiCall('GET', route('api.1.1.cases.completed', ['search' => 'accident']));
         $response->assertStatus(200);
@@ -181,20 +189,88 @@ class CaseControllerSearchTest extends TestCase
         $response->assertJsonCount(5, 'data');
     }
 
-    public function test_search_special_all_cases_by_case_number(): void
+    public function test_search_all_cases_special_by_dni(): void
     {
         $caseTitle1 = 'this is a ci 123456LP';
+        $caseTitle2 = "John's Vacation";
 
-        $user = CaseControllerTest::createUser('user_g');
-        CaseControllerTest::createCasesStartedForUser($user->id, 5, ['case_title' => $caseTitle1, 'keywords' => $caseTitle1]);
+        CaseControllerTest::createCasesStartedForUser($this->user->id, 5, ['case_title' => $caseTitle1, 'keywords' => $caseTitle1]);
+        CaseControllerTest::createCasesStartedForUser($this->user->id, 5, ['case_title' => $caseTitle2, 'keywords' => $caseTitle2]);
 
-        $this->assertDatabaseCount('cases_started', 26);
+        $this->assertDatabaseCount('cases_started', 10);
 
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases'));
         $response->assertStatus(200);
-        $response->assertJsonCount(15, 'data');
+        $response->assertJsonCount(10, 'data');
 
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => '123456LP']));
+        $response->assertStatus(200);
+        $response->assertJsonCount(5, 'data');
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => "John's"]));
+        $response->assertStatus(200);
+        $response->assertJsonCount(5, 'data');
+    }
+
+    public function test_search_all_cases_special_by_japanese_characters(): void
+    {
+        $caseTitle1 = '信用評価プロセス';
+
+        CaseControllerTest::createCasesStartedForUser($this->user->id, 5, ['case_title' => $caseTitle1, 'keywords' => $caseTitle1]);
+
+        $this->assertDatabaseCount('cases_started', 5);
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases'));
+        $response->assertStatus(200);
+        $response->assertJsonCount(5, 'data');
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => $caseTitle1]));
+        $response->assertStatus(200);
+        $response->assertJsonCount(5, 'data');
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => '信用']));
+        $response->assertStatus(200);
+        $response->assertJsonCount(5, 'data');
+    }
+
+    public function test_search_all_cases_special_by_thai_characters(): void
+    {
+        $caseTitle1 = 'กระบวนการประเมินเครดิต';
+
+        CaseControllerTest::createCasesStartedForUser($this->user->id, 5, ['case_title' => $caseTitle1, 'keywords' => $caseTitle1]);
+
+        $this->assertDatabaseCount('cases_started', 5);
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases'));
+        $response->assertStatus(200);
+        $response->assertJsonCount(5, 'data');
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => 'กระบวนการ']));
+        $response->assertStatus(200);
+        $response->assertJsonCount(5, 'data');
+    }
+
+    public function test_search_all_cases_special_by_french_characters(): void
+    {
+        $caseTitle1 = "Processus du crédit";
+
+        CaseControllerTest::createCasesStartedForUser($this->user->id, 5, ['case_title' => $caseTitle1, 'keywords' => $caseTitle1]);
+
+        $this->assertDatabaseCount('cases_started', 5);
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases'));
+        $response->assertStatus(200);
+        $response->assertJsonCount(5, 'data');
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => 'Processus']));
+        $response->assertStatus(200);
+        $response->assertJsonCount(5, 'data');
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => 'crédit']));
+        $response->assertStatus(200);
+        $response->assertJsonCount(5, 'data');
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => "Processus crédit"]));
         $response->assertStatus(200);
         $response->assertJsonCount(5, 'data');
     }

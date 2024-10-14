@@ -30,6 +30,7 @@ class ProcessRequestsTest extends TestCase
     public $withPermissions = true;
 
     const API_TEST_URL = '/requests';
+    const API_REQUESTS_BY_CASE = '/requests-by-case';
 
     const STRUCTURE = [
         'id',
@@ -985,5 +986,45 @@ class ProcessRequestsTest extends TestCase
         // Assert empty because tokens does not have screens.
         $data = $response->json()['data'];
         $this->assertEmpty($data);
+    }
+    
+    /**
+     * Get a list of Requests by Cases.
+     */
+    public function testRequestByCase()
+    {
+        ProcessRequest::query()->delete();
+        $request = ProcessRequest::factory()->create();
+        ProcessRequest::factory()->count(9)->create([
+            'parent_request_id' => $request->id,
+        ]);
+
+        $url = self::API_REQUESTS_BY_CASE . '?case_number=' . $request->case_number;
+        
+        $response = $this->apiCall('GET', $url);
+
+        //Validate the header status code
+        $response->assertStatus(200);
+
+        // Verify structure
+        $response->assertJsonStructure([
+            'data' => ['*' => self::STRUCTURE],
+            'meta',
+        ]);
+
+        // Verify count
+        $this->assertEquals(10, $response->json()['meta']['total']);
+    }
+
+    /**
+     * Get a list of Requests by Cases.
+     */
+    public function testRequestByCaseWithoutCaseNumber()
+    {        
+        $response = $this->apiCall('GET', self::API_REQUESTS_BY_CASE);
+
+        //Validate the header status code
+        $response->assertStatus(422);
+        $this->assertEquals('The Case number field is required.', $response->json()['message']);
     }
 }

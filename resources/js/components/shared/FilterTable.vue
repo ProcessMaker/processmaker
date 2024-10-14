@@ -382,6 +382,13 @@ export default {
   right: 7px;
   background-color: #F2F8FE
 }
+.pm-table-ellipsis-column{
+  text-transform: capitalize;
+}
+.pm-table-column-header-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .pm-table-ellipsis-column .pm-table-filter-button {
   opacity: 0;
   visibility: hidden;

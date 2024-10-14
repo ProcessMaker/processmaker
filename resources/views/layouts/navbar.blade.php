@@ -147,6 +147,11 @@
                     <navbar-profile :info="{{$user}}" :permissions="{{$permissions}}"></navbar-profile>
                 </li>
             </ol>
+            <language-selector-button
+                class="ml-2"
+                :type="'navbar'"
+                :show-language-code="false">
+            </language-selector-button>
         </b-navbar-nav>
     </b-collapse>
 </b-navbar>

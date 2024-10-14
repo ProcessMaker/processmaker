@@ -155,11 +155,13 @@ class CaseApiRepository implements CaseApiRepositoryInterface
                 $search = CaseUtils::CASE_NUMBER_PREFIX . $search;
             } else {
                 // Remove special characters except another languages
-                $search = preg_replace(['/[^a-zA-Z0-9\s]/', '/\s{2,}/'], [' ', ' '], $search);
+                $search = preg_replace(['/[^\p{L}\p{N}\s\']/u', '/\s{2,}/'], [' ', ' '], $search);
             }
 
             // Add a plus (+) to the beginning and an asterisk (*) to the end of each word
-            $search = preg_replace('/\b(\w+)\b/', '+$1*', $search);
+            $search = preg_replace_callback("/\b[\w']+\b/u", function($matches) {
+                return '+' . $matches[0] . '*';
+            }, $search);
 
             $query->whereFullText($this->searchableFields, $search, ['mode' => 'boolean']);
         }
