@@ -703,7 +703,7 @@ class ScreenTemplate implements TemplateInterface
             // Get the current screen to apply the template
             $screenId = $request->get('screenId');
             $screen = Screen::where('id', $screenId)->firstOrFail();
-            $currentScreenPage = $request->get('currentScreenPage', 1);
+            $currentScreenPage = $request->get('currentScreenPage', 0);
             // Get the selected template options
             $templateOptions = $request->get('templateOptions', []);
             $supportedOptionComponents = ScreenComponents::getComponents();
