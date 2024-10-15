@@ -19,7 +19,6 @@ class BundleFactory extends Factory
         return [
             'name' => $this->faker->name(),
             'published' => true,
-            'locked' => false,
             'version' => 0,
         ];
     }

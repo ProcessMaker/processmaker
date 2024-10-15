@@ -40,7 +40,7 @@ class DevLinkTest extends TestCase
 
         // assert an error is returned about screen2 already being in the bundle
         $response->assertStatus(422);
-        $this->assertEquals('Asset already exists in bundle', $response->json()['message']);
+        $this->assertEquals('Asset already exists in bundle', $response->json()['error']['message']);
     }
 
     public function testInstallRemoteAsset()
