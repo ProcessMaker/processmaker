@@ -284,6 +284,12 @@ class ScreenTemplateHelper
         return $flattenedItems;
     }
 
+    /**
+     * Parses a CSS string into an associative array of selectors and their properties.
+     *
+     * @param string $cssString The CSS string to parse.
+     * @return array An associative array where keys are CSS selectors and values are arrays of properties.
+     */
     public static function parseCss($cssString)
     {
         $rules = [];
@@ -295,72 +301,73 @@ class ScreenTemplateHelper
             $fullSelector = trim($match[1]); // Full CSS selector
             $propertiesString = trim($match[2]); // Properties between the brackets
 
-            // Initialize properties array
-            $properties = [];
+            $properties = self::parseProperties($propertiesString);
 
-            // Split properties into individual declarations
-            // The regex captures properties and their inline comments correctly
-            preg_match_all('/([^;]+;)(?:\s*\/\*.*?\*\/)?/s', $propertiesString, $propertyMatches);
-
-            foreach ($propertyMatches[0] as $property) {
-                $property = trim($property);
-
-                // If there is an inline comment, include it in the value
-                if (preg_match('/(.*?)(\/\*.*?\*\/)?$/s', $property, $parts)) {
-                    $keyValue = explode(':', $parts[1], 2);
-                    if (count($keyValue) == 2) {
-                        $key = trim($keyValue[0]);
-                        $value = trim(rtrim($keyValue[1], ';')); // Trim the trailing semicolon
-                        // Combine value with inline comment if present
-                        if (!empty($parts[2])) {
-                            $value .= ' ' . trim($parts[2]);
-                        }
-                        if (!empty($key) && !empty($value)) {
-                            $properties[$key] = $value; // Add key-value pair
-                        }
-                    }
-                }
+            // Only add to rules if selector and properties are non-empty
+            if (!empty($fullSelector) && !empty($properties)) {
+                $rules[$fullSelector] = $properties;
             }
-
-            // Add rule for the selector
-            $rules[$fullSelector] = $properties;
         }
 
         return $rules;
     }
 
-    // Parse the CSS string into an associative array
-    // public static function parseCss($cssString)
-    // {
-    //     $rules = [];
-    //     // Regex to match complex CSS selectors, allowing for any selector pattern
-    //     preg_match_all('/(?:\/\*.*?\*\*\/|([^{}]+))\s*\{(?:\/\*.*?\*\*\/|([^}]*))\}/', $cssString, $matches, PREG_SET_ORDER);
+    /**
+     * Parses a string of CSS properties and returns an associative array of property-value pairs.
+     *
+     * @param string $propertiesString The string of CSS properties to parse.
+     * @return array An associative array of properties.
+     */
+    private static function parseProperties($propertiesString)
+    {
+        $properties = [];
 
-    //     foreach ($matches as $match) {
-    //         $fullSelector = trim($match[1]); // Full CSS selector
-    //         $propertiesString = trim($match[2]); // Properties between the brackets
+        // Split properties into individual declarations, capturing inline comments
+        preg_match_all('/([^;]+;)(?:\s*\/\*.*?\*\/)?/s', $propertiesString, $propertyMatches);
 
-    //         // Split properties into key-value pairs
-    //         $propertiesArray = explode(';', $propertiesString);
-    //         $properties = [];
+        foreach ($propertyMatches[0] as $property) {
+            $property = trim($property);
+            $keyValue = self::extractKeyValue($property);
 
-    //         foreach ($propertiesArray as $property) {
-    //             $propertyParts = explode(':', $property);
-    //             if (count($propertyParts) == 2) {
-    //                 $key = trim($propertyParts[0]);
-    //                 $value = trim($propertyParts[1]);
-    //                 if (!empty($key) && !empty($value)) {
-    //                     $properties[$key] = $value;
-    //                 }
-    //             }
-    //         }
+            if ($keyValue) {
+                list($key, $value) = $keyValue;
 
-    //         // Add rule for the selector
-    //         $rules[$fullSelector] = $properties;
-    //     }
+                // Only add to properties if both key and value are non-empty
+                if (!empty($key) && !empty($value)) {
+                    $properties[$key] = $value; // Add key-value pair
+                }
+            }
+        }
 
-    //     return $rules;
-    // }
+        return $properties;
+    }
+
+    /**
+     * Extracts the key and value from a CSS property string.
+     *
+     * @param string $property The CSS property string to extract key-value from.
+     * @return array|null An array containing the key and value, or null if not valid.
+     */
+    private static function extractKeyValue($property)
+    {
+        if (preg_match('/(.*?)(\/\*.*?\*\/)?$/s', $property, $parts)) {
+            $keyValue = explode(':', $parts[1], 2);
+
+            if (count($keyValue) == 2) {
+                $key = trim($keyValue[0]);
+                $value = trim(rtrim($keyValue[1], ';')); // Trim the trailing semicolon
+
+                // Combine value with inline comment if present
+                if (!empty($parts[2])) {
+                    $value .= ' ' . trim($parts[2]);
+                }
+
+                return [$key, $value]; // Return key and value as an array
+            }
+        }
+
+        return null; // Return null if the property is not valid
+    }
 
     // Merge the two CSS arrays
     public static function mergeCss($currentCss, $templateCss)
