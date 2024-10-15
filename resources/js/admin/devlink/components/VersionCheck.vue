@@ -14,7 +14,7 @@ const remote = () => {
   ProcessMaker.apiClient
     .get(`/devlink/${props.devLink.dev_link_id}/remote-version/${props.devLink.remote_id}`)
     .then((response) => {
-      if (response.data.version > props.devLink.version) {
+      if (Number(response.data.version) > Number(props.devLink.version)) {
         checkNewVersion.value = true;
       }
     });
@@ -44,6 +44,6 @@ onMounted(() => {
     font-size: 14px;
     font-weight: 500;
     border-radius: 6px;
-    padding: 2px 6px;
+    height: 24px;
 }
 </style>
