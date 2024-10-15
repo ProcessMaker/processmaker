@@ -12,6 +12,7 @@ use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ProcessExporter;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
+use ProcessMaker\Jobs\ImportV2;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
@@ -212,6 +213,12 @@ class ProcessTemplate implements TemplateInterface
         $payload = json_decode($template->manifest, true);
         // Check for existing assets
         $existingAssets = $request->existingAssets;
+        $existingAssetModes = array_reduce($existingAssets, function ($carry, $item) {
+            $carry[$item['uuid']] = $item['mode'];
+
+            return $carry;
+        }, []);
+
         $requestData = $existingAssets ? $request->toArray()['request'] : $request;
 
         $payload['name'] = $requestData['name'];
@@ -236,19 +243,10 @@ class ProcessTemplate implements TemplateInterface
             }
 
             $postOptions[$key] = [
-                'mode' => 'copy',
+                'mode' => isset($existingAssetModes[$key]) ? $existingAssetModes[$key] : 'copy',
                 'isTemplate' => false,
                 'saveAssetsMode' => 'saveAllAssets',
             ];
-
-            if ($existingAssets) {
-                foreach ($existingAssets as $item) {
-                    $uuid = $item['uuid'];
-                    if (isset($postOptions[$uuid])) {
-                        $postOptions[$uuid]['mode'] = $item['mode'];
-                    }
-                }
-            }
 
             if ($payload['root'] === $key) {
                 // Set name and description for the new process
@@ -282,15 +280,18 @@ class ProcessTemplate implements TemplateInterface
             }
         }
         $options = new Options($postOptions);
+        if ($request->queue) {
+            dd('run on qeue');
+        } else {
+            $importer = new Importer($payload, $options);
+            $existingAssetsInDatabase = null;
+            $importingFromTemplate = true;
+            $manifest = $importer->doImport($existingAssetsInDatabase, $importingFromTemplate);
+            $rootLog = $manifest[$payload['root']]->log;
+            $processId = $rootLog['newId'];
 
-        $importer = new Importer($payload, $options);
-        $existingAssetsInDatabase = null;
-        $importingFromTemplate = true;
-        $manifest = $importer->doImport($existingAssetsInDatabase, $importingFromTemplate);
-        $rootLog = $manifest[$payload['root']]->log;
-        $processId = $rootLog['newId'];
-
-        $process = Process::findOrFail($processId);
+            $process = Process::findOrFail($processId);
+        }
 
         $this->syncLaunchpadAssets($request, $process);
 

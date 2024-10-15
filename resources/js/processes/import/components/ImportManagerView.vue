@@ -412,6 +412,7 @@ export default {
 
         },
         handleProcessImport() {
+            console.log("HANDLE PROCESS IMPORT", this.$root.queue);
             let request;
             if (this.$root.queue) {
                 request = DataProvider.doImportQueued(this.$root.exportOptions(), this.password, this.$root.hash);
@@ -427,6 +428,7 @@ export default {
                     // the request was successful but did not return expected data
                     throw new Error(this.$t('Unknown error while importing the Process.'));
                 }
+                console.log("IMPORT RESPONSE", response);
             })
             .catch((error) => {
                 this.handleError(error); // a shared method that displays the error message and resets loading/submitted
