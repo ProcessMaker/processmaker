@@ -1,19 +1,10 @@
 <?php
 
-use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use ProcessMaker\Repositories\CaseUtils;
 use ProcessMaker\Upgrades\UpgradeMigration as Upgrade;
 
 class PopulateCaseStarted extends Upgrade
 {
-    const CHUNK_SIZE = 5000;
-
-    const REFRESH_TIME = 1;
-
-    private $lastPrint = 0;
-
     /**
      * Run any validations/pre-run checks to ensure the environment, settings,
      * packages installed, etc. are correct to run this upgrade.
