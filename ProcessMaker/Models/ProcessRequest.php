@@ -165,8 +165,6 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         'participants',
     ];
 
-    const DEFAULT_CASE_TITLE = 'Case #{{_request.case_number}}';
-
     /**
      * Determine whether the item should be indexed.
      *
@@ -1002,7 +1000,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             $caseTitle = $this->process()->select('case_title')->first()->case_title;
         }
 
-        return $caseTitle ?: self::DEFAULT_CASE_TITLE;
+        return $caseTitle ?: $this->name;
     }
 
     /**
@@ -1090,5 +1088,37 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         }
 
         return $endEvents->first()->elementDestination;
+    }
+
+    /**
+     * Scope apply order
+     */
+    public function scopeApplyOrdering($query, $request)
+    {
+        $orderBy = $request->input('order_by', 'name');
+        $orderDirection = $request->input('order_direction', 'asc');
+
+        return $query->orderBy($orderBy, $orderDirection);
+    }
+
+    /**
+     * Scope apply pagination
+     */
+    public function scopeApplyPagination($query, $request)
+    {
+        $page = $request->input('page', 1);
+        $perPage = $request->input('per_page', 10);
+
+        return $query->paginate($perPage);
+    }
+
+    /**
+     * Scope to filter by case_number
+     */
+    public function scopeFilterByCaseNumber($query, $request)
+    {
+        $caseNumber = $request->input('case_number');
+
+        return $query->where('case_number', $caseNumber);
     }
 }

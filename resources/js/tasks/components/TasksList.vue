@@ -37,9 +37,14 @@
               width="20"
               height="20"
             />
+            <b-form-checkbox v-else-if="column.field === 'check_control'"
+                             v-model="headCheckbox"
+                             @change="changeHeadCheckbox">
+            </b-form-checkbox>
             <span v-else>{{ $t(column.label) }}</span>
           </div>
           <b-tooltip
+            v-if="column.field !== 'check_control'"
             :key="index"
             :target="`tasks-table-column-${column.field}`"
             custom-class="pm-table-tooltip-header"
@@ -146,6 +151,12 @@
                     {{ formatRemainingTime(row.due_at) }}
                   </span>
                   <span>{{ getNestedPropertyValue(row, header) }}</span>
+                </template>
+                <template v-else-if="header.field === 'check_control'">
+                  <b-form-checkbox :checked="arrayOfCheckedRows.includes(row.id)"
+                                   ref="checkboxRegister"
+                                   @change="changeCheckbox($event, row)">
+                  </b-form-checkbox>
                 </template>
                 <template v-else-if="header.field === 'is_priority'">
                   <span>
@@ -398,6 +409,8 @@ export default {
       hideTimer: null,
       ellipsisShow: false,
       columnMouseover: null,
+      headCheckbox: false,
+      arrayOfCheckedRows: []
     };
   },
   computed: {
@@ -450,6 +463,7 @@ export default {
       }
       this.$emit('count', newData.meta?.total);
       this.$emit("tab-count", newData.meta?.total);
+      this.checkHeadCheckboxAfterChangeData();
     },
     shouldShowLoader(value) {
       if (this.apiNoResults) {
@@ -920,11 +934,50 @@ export default {
     handleColumnMouseleave() {
       this.columnMouseover = null;
     },
+    addCheckedItem(value, row) {
+      if (value === true) {
+        if (!this.arrayOfCheckedRows.includes(row.id)) {
+          this.arrayOfCheckedRows.push(row.id);
+        }
+      } else {
+        let index = this.arrayOfCheckedRows.indexOf(row.id);
+        this.arrayOfCheckedRows.splice(index, 1);
+      }
+      this.$emit('add-checked-item', this.arrayOfCheckedRows);
+    },
+    getArrayOfCheckedRows() {
+      return this.arrayOfCheckedRows;
+    },
+    clearArrayOfCheckedRows() {
+      this.arrayOfCheckedRows = [];
+    },
+    changeHeadCheckbox(event) {
+      this.data.data.forEach(row => {
+        this.addCheckedItem(event, row);
+      });
+    },
+    changeCheckbox(event, row) {
+      this.addCheckedItem(event, row);
+      this.$nextTick(() => {
+        if (this.$refs.checkboxRegister) {
+          let sw = this.$refs.checkboxRegister.every(item => item.checked === true);
+          this.headCheckbox = sw;
+        }
+      });
+    },
+    checkHeadCheckboxAfterChangeData() {
+      this.$nextTick(() => {
+        if (this.$refs.checkboxRegister) {
+          let sw = this.$refs.checkboxRegister.every(item => item.checked === true);
+          this.headCheckbox = sw;
+        }
+      });
+    },
   },
 };
 </script>
 
-<style>
+<style scoped>
 .tasks-table-card {
   padding: 0;
 }
@@ -950,10 +1003,6 @@ export default {
 .btn-light:hover {
   background-color: #EDF1F6;
   color: #888;
-}
-.pm-table-column-header-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 </style>
 <style lang="scss" scoped>

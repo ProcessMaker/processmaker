@@ -295,7 +295,7 @@ class ProcessRequestFileController extends Controller
         $errors = [];
         $this->validateFile($file, $errors);
         if (count($errors) > 0) {
-            return abort(response($errors , 422));
+            return abort(response($errors, 422));
         }
 
         $parentId = $processRequest->parent_request_id;
@@ -423,7 +423,7 @@ class ProcessRequestFileController extends Controller
     private function validateFile(UploadedFile $file, &$errors)
     {
         if (strtolower($file->getClientOriginalExtension() === 'pdf')) {
-             $this->validatePDFFile($file, $errors);
+            $this->validatePDFFile($file, $errors);
         }
 
         return $errors;

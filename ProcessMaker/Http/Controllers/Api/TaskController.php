@@ -19,6 +19,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\Task as Resource;
 use ProcessMaker\Http\Resources\TaskCollection;
+use ProcessMaker\Jobs\CaseUpdate;
 use ProcessMaker\Listeners\HandleRedirectListener;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
@@ -51,6 +52,15 @@ class TaskController extends Controller
     private $statusMap = [
         'In Progress' => 'ACTIVE',
         'Completed' => 'CLOSED',
+    ];
+
+    protected $defaultCase = [
+        'id', // Task #
+        'element_name', // Task Name
+        'user_id', // Participant
+        'process_id', // Process
+        'due_at', // Due At
+        'process_request_id', // Request Id #
     ];
 
     /**
@@ -145,6 +155,62 @@ class TaskController extends Controller
             ->where('due_at', '<', Carbon::now());
 
         $response->inOverdue = $inOverdueQuery->count();
+
+        return new TaskCollection($response);
+    }
+
+    /**
+     * Get the task list related to the case
+     * @param Request $request
+     * @param User $user used by Saved Search package to return accurate counts
+     * @return array
+     */
+    public function getTasksByCase(Request $request, User $user = null)
+    {
+        if (!$user) {
+            $user = Auth::user();
+        }
+
+        // Validate the inputs, including optional ones
+        $request->validate([
+            'case_number' => 'required|integer',
+            'status' => 'nullable|string|in:ACTIVE,CLOSED',
+            'order_by' => 'nullable|string|in:id,element_name,due_at,user.lastname,process.name',
+            'order_direction' => 'nullable|string|in:asc,desc',
+            'page' => 'nullable|integer|min:1',
+            'per_page' => 'nullable|integer',
+            'includeScreen' => 'sometimes|boolean',
+        ]);
+
+        $includeScreen = $request->input('includeScreen', false);
+
+        // Get only the columns defined
+        $query = ProcessRequestToken::select($this->defaultCase);
+        // Filter by case_number
+        $query->filterByCaseNumber($request);
+        // Filter by status
+        $query->filterByStatus($request);
+        // Return the process information
+        $query->getProcess();
+        // Return the user information
+        $query->getUser();
+        // Filter only the task related to the user
+        $this->applyForCurrentUser($query, $user);
+        // Exclude non visible task
+        $this->excludeNonVisibleTasks($query, $request);
+        // Apply ordering only if a valid order_by field is provided
+        $query->applyOrdering($request);
+
+        try {
+            $response = $query->applyPagination($request);
+
+            if ($includeScreen) {
+                $response = $this->addTaskData($response);
+            }
+            $response->inOverdue = 0;
+        } catch (QueryException $e) {
+            return $this->handleQueryException($e);
+        }
 
         return new TaskCollection($response);
     }
@@ -253,9 +319,30 @@ class TaskController extends Controller
             $userToAssign = $request->input('user_id');
             $task->reassign($userToAssign, $request->user());
 
-            return new Resource($task->refresh());
+            $taskRefreshed = $task->refresh();
+
+            CaseUpdate::dispatch($task->processRequest, $taskRefreshed);
+
+            return new Resource($taskRefreshed);
         } else {
             return abort(422);
+        }
+    }
+    
+    public function updateReassign(Request $request)
+    {
+        $userToAssign = $request->input('user_id');
+        if (is_array($request->process_request_token)) {
+            foreach ($request->process_request_token as $value) {
+                $processRequestToken = ProcessRequestToken::find($value);
+                //Claim the task for the current user.
+                $processRequestToken->reassign($request->user()->id, $request->user());
+
+                //Reassign to the user.
+                $processRequestToken->reassign($userToAssign, $request->user());
+                $taskRefreshed = $processRequestToken->refresh();
+                CaseUpdate::dispatch($processRequestToken->processRequest, $taskRefreshed);
+            }
         }
     }
 

@@ -7,6 +7,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ProcessMaker\Filters\Filter;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
@@ -16,19 +17,28 @@ trait TaskControllerIndexMethods
 {
     private function indexBaseQuery($request)
     {
+        // Parse the includes parameter
+        $includes = $request->has('include') ? explode(',', $request->input('include')) : [];
+        // Determine if the data should be included
+        $includeData = in_array('data', $includes);
+
         $query = ProcessRequestToken::exclude(['data'])->with([
-            'processRequest' => fn($q) => $q->exclude(['data']),
+            'processRequest' => function($q) use ($includeData) {
+                if (!$includeData) {
+                    return $q->exclude(['data']);
+                }
+            },
             // review if bpmn is reuiqred here process
-            'process' => fn($q) => $q->exclude(['svg', 'warnings']),
+            'process' => fn ($q) => $q->exclude(['svg', 'warnings']),
             // review if bpmn is reuiqred here processRequest.process
-            'processRequest.process' => fn($q) => $q->exclude(['svg', 'warnings']),
+            'processRequest.process' => fn ($q) => $q->exclude(['svg', 'warnings']),
             // The following lines use to much memory but reduce the number of queries
             // bpmn is required here in processRequest.processVersion
             // 'processRequest.processVersion' => fn($q) => $q->exclude(['svg', 'warnings']),
             // review if bpmn is reuiqred here processRequest.processVersion.process
             // 'processRequest.processVersion.process' => fn($q) => $q->exclude(['svg', 'warnings']),
             'user',
-            'draft'
+            'draft',
         ]);
 
         $include = $request->input('include') ? explode(',', $request->input('include')) : [];
@@ -121,6 +131,18 @@ trait TaskControllerIndexMethods
         $key = array_search($column, $filterByFields);
         $operator = is_numeric($fieldFilter) ? '=' : 'like';
         $query->where(is_string($key) ? $key : $column, $operator, $fieldFilter);
+    }
+
+    private function addTaskData($response)
+    {
+        $dataManager = new DataManager();
+        $response->getCollection()->transform(function ($row) use ($dataManager) {
+            $row->taskData = $dataManager->getData($row);
+
+            return $row;
+        });
+
+        return $response;
     }
 
     private function excludeNonVisibleTasks($query, $request)
