@@ -137,11 +137,23 @@ const canEdit = (bundle) => {
       <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>Create Bundle
       </b-button>
     </div>
-    <b-modal ref="confirmDeleteModal" title="Delete Bundle" @ok="executeDelete">
+    <b-modal
+      ref="confirmDeleteModal"
+      centered
+      content-class="modal-style"
+      title="Delete Bundle"
+      @ok="executeDelete"
+    >
       <p>Are you sure you want to delete {{ selected?.name }}?</p>
     </b-modal>
 
-    <b-modal ref="editModal" :title="selected.id ? 'Edit Bundle' : 'Create New Bundle'" @ok="update">
+    <b-modal
+      ref="editModal"
+      centered
+      content-class="modal-style"
+      :title="selected.id ? 'Edit Bundle' : 'Create New Bundle'"
+      @ok="update"
+    >
       <b-form-group label="Name">
         <b-form-input v-model="selected.name"></b-form-input>
       </b-form-group>
@@ -168,6 +180,22 @@ const canEdit = (bundle) => {
         <template #cell(menu)="data">
           <div class="btn-menu-container">
             <div class="btn-group" role="group" aria-label="Basic example">
+              <button
+                v-if="canEdit(data.item)"
+                type="button"
+                class="btn btn-menu"
+                @click.prevent="deleteBundle(data.item)"
+              >
+                <i class="fas fa-cloud-upload-alt" />
+              </button>
+              <button
+                v-if="!canEdit(data.item)"
+                type="button"
+                class="btn btn-menu"
+                @click.prevent="edit(data.item)"
+              >
+                <i class="fas fa-cloud-download-alt" />
+              </button>
               <button
                 v-if="canEdit(data.item)"
                 type="button"
@@ -207,6 +235,25 @@ tr:hover {
   background-size: 15px;
   border-radius: 8px;
 }
+::v-deep .modal-style {
+  border-radius: 8px;
+}
+::v-deep .modal-header {
+  border-bottom: none;
+}
+::v-deep .modal-footer {
+  border-top: none;
+}
+::v-deep .modal-title {
+  font-size: 24px;
+  font-weight: 500;
+  color: #20242A;
+}
+::v-deep .modal-body {
+  font-size: 14px;
+  font-weight: 400;
+  color: #20242A;
+}
 ::v-deep .table {
   border-bottom: 1px solid #e9edf1;
 }
@@ -237,6 +284,7 @@ tr:hover {
 .btn-menu {
   border: 1px solid rgba(0, 0, 0, 0.125);
   background-color: transparent;
+  color: #6A7888;
 }
 .new-button {
   text-transform: none;
