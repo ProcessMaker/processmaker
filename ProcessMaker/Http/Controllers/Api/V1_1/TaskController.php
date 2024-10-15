@@ -14,6 +14,7 @@ use ProcessMaker\Http\Resources\V1_1\TaskResource;
 use ProcessMaker\Http\Resources\V1_1\TaskScreen;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\ProcessTranslations\TranslationManager;
 
 class TaskController extends Controller
 {
@@ -111,8 +112,7 @@ class TaskController extends Controller
         // Prepare the key for the screen cache
         $processId = $task->process_id;
         $processVersionId = $task->processRequest->process_version_id;
-        $user = Auth::user();
-        $language = $user?->language ?: 'en';
+        $language = TranslationManager::getTargetLanguage();
         $screenVersion = $task->getScreenVersion();
         $key = ScreenCompiledManager::createKey($processId, $processVersionId, $language, $screenVersion->screen_id, $screenVersion->id);
 
@@ -125,11 +125,6 @@ class TaskController extends Controller
         }
 
         $response = response($translatedScreen, 200);
-        $now = time();
-        // screen cache time
-        $cacheTime = config('screen_task_cache_time', 86400);
-        $response->headers->set('Cache-Control', 'max-age=' . $cacheTime . ', must-revalidate, public');
-        $response->headers->set('Expires', gmdate('D, d M Y H:i:s', $now + $cacheTime) . ' GMT');
 
         return $response;
     }
@@ -141,11 +136,6 @@ class TaskController extends Controller
         )->findOrFail($taskId);
         $response = new TaskInterstitialResource($task);
         $response = response($response->toArray(request())['screen'], 200);
-        $now = time();
-        // screen cache time
-        $cacheTime = config('screen_task_cache_time', 86400);
-        $response->headers->set('Cache-Control', 'max-age=' . $cacheTime . ', must-revalidate, public');
-        $response->headers->set('Expires', gmdate('D, d M Y H:i:s', $now + $cacheTime) . ' GMT');
 
         return $response;
     }
