@@ -3,6 +3,7 @@
 namespace ProcessMaker\Repositories;
 
 use Illuminate\Support\Collection;
+use ProcessMaker\Constants\CaseStatusConstants;
 use ProcessMaker\Models\CaseParticipated;
 use ProcessMaker\Models\CaseStarted;
 use ProcessMaker\Models\ProcessRequest;
@@ -37,7 +38,7 @@ class CaseSyncRepository
                 $csRequestTokens = collect();
                 $csTasks = collect();
                 $participants = $instance->participants->map->only('id', 'fullName', 'title', 'avatar');
-                $status = $instance->status === CaseRepository::CASE_STATUS_ACTIVE ? 'IN_PROGRESS' : $instance->status;
+                $status = $instance->status === CaseStatusConstants::ACTIVE ? CaseStatusConstants::IN_PROGRESS : $instance->status;
 
                 $cpData = self::prepareCaseStartedData($instance, $status, $participants);
 

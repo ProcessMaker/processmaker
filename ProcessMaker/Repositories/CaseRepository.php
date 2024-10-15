@@ -4,6 +4,7 @@ namespace ProcessMaker\Repositories;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Constants\CaseStatusConstants;
 use ProcessMaker\Contracts\CaseRepositoryInterface;
 use ProcessMaker\Models\CaseStarted;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
@@ -11,8 +12,6 @@ use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 
 class CaseRepository implements CaseRepositoryInterface
 {
-    const CASE_STATUS_ACTIVE = 'ACTIVE';
-
     /**
      * @var CaseParticipatedRepository
      */
@@ -56,7 +55,7 @@ class CaseRepository implements CaseRepositoryInterface
                 'user_id' => $instance->user_id,
                 'case_title' => $instance->case_title,
                 'case_title_formatted' => $instance->case_title_formatted,
-                'case_status' => $instance->status === self::CASE_STATUS_ACTIVE ? 'IN_PROGRESS' : $instance->status,
+                'case_status' => $instance->status === CaseStatusConstants::ACTIVE ? CaseStatusConstants::IN_PROGRESS : $instance->status,
                 'processes' => CaseUtils::storeProcesses($instance, collect()),
                 'requests' => CaseUtils::storeRequests($instance, collect()),
                 'request_tokens' => [],
@@ -89,7 +88,7 @@ class CaseRepository implements CaseRepositoryInterface
 
         try {
             $this->case->case_title = $instance->case_title;
-            $this->case->case_status = $instance->status === self::CASE_STATUS_ACTIVE ? 'IN_PROGRESS' : $instance->status;
+            $this->case->case_status = $instance->status === CaseStatusConstants::ACTIVE ? CaseStatusConstants::IN_PROGRESS : $instance->status;
             $this->case->request_tokens = CaseUtils::storeRequestTokens($token->getKey(), $this->case->request_tokens);
             $this->case->tasks = CaseUtils::storeTasks($token, $this->case->tasks);
             $this->case->keywords = $instance->case_title;
@@ -121,7 +120,7 @@ class CaseRepository implements CaseRepositoryInterface
                 'case_status' => $instance->status,
             ];
 
-            if ($instance->status === 'COMPLETED') {
+            if ($instance->status === CaseStatusConstants::COMPLETED) {
                 $data['completed_at'] = Carbon::now();
             }
 
