@@ -401,6 +401,7 @@ class ProcessRequestController extends Controller
                 'commentable_id' => $request->id,
                 'subject' => 'Data edited',
                 'body' => $user_name . ' ' . $text,
+                'case_number' => isset($request->case_number) ? $request->case_number : null,
             ]);
         } else {
             $httpRequest->validate(ProcessRequest::rules($request));
@@ -629,6 +630,7 @@ class ProcessRequestController extends Controller
             'commentable_id' => $request->id,
             'subject' => __('Process Manually Completed'),
             'body' => $user->fullname . ' ' . __('manually completed the request from an error state'),
+            'case_number' => isset($request->case_number) ? $request->case_number : null,
         ]);
     }
 

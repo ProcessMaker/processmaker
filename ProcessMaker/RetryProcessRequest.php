@@ -111,7 +111,7 @@ class RetryProcessRequest
     /**
      * Clear previous ProcessRequestToken errors off of its parent ProcessRequest(s)
      *
-     * @param  \ProcessMaker\Models\ProcessRequestToken  $token
+     * @param  ProcessRequestToken  $token
      *
      * @return void
      */
@@ -153,6 +153,7 @@ class RetryProcessRequest
             'commentable_type' => ProcessRequest::class,
             'commentable_id' => $this->processRequest->id,
             'subject' => __('Request Retried'),
+            'case_number' => isset($this->processRequest->case_number) ? $this->processRequest->case_number : null,
         ]);
 
         if ($user = $this->initializingUser()) {
