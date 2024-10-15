@@ -542,7 +542,7 @@
             if (this.task.definition.assignedUsers) {
               let currentAssignedUsers = this.task.definition.assignedUsers.split(',');
               let assignedUsers = currentAssignedUsers.filter(user => user !== window.ProcessMaker.user.id);
-              return 'tasks/' + this.task.id + '/getAssignedUsers?users=' + assignedUsers;
+              return 'users?include_ids=' + assignedUsers;
             } else {
               return "users?status=ACTIVE";  
             }     
