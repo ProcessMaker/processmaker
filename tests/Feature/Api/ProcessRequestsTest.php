@@ -8,6 +8,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
@@ -1028,5 +1029,36 @@ class ProcessRequestsTest extends TestCase
         //Validate the header status code
         $response->assertStatus(422);
         $this->assertEquals('The Case number field is required.', $response->json()['message']);
+    }
+
+    /**
+     * Get task list with data
+     */
+    public function testGetTaskListWithData()
+    {
+        // Create a request with a token
+        $request = ProcessRequest::factory()->create([
+            'data' => ['foo' => 'bar'],
+        ]);
+        ProcessRequestToken::factory()->create([
+            'process_request_id' => $request->id,
+        ]);
+
+        $route = route('api.tasks.index', ['order_direction'=>'asc', 'include' => 'data']);
+        $response = $this->apiCall('GET', $route);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    // has id, data
+                    'data',
+                ],
+            ],
+            'meta',
+        ]);
+
+        // has foo => bar
+        $this->assertEquals('bar', $response->json()['data'][0]['data']['foo']);
     }
 }

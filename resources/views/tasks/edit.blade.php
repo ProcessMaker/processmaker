@@ -90,112 +90,6 @@
                 </div>
             </div>
             @if (shouldShow('taskStatusContainer'))
-              <div>
-                <button
-                  role="button"
-                  class="btn d-block mr-0 ml-auto button-collapse"
-                  data-toggle="collapse"
-                  data-target="#collapse-info"
-                  @click="showTabs = !showTabs"
-                >
-                  <template v-if="showTabs">
-                    <i class="fas fa-angle-right"></i>
-                  </template>
-                  <template v-else>
-                    <i class="fas fa-angle-left"></i>
-                  </template>
-                </button>
-                <ul v-if="showTabs" class="nav nav-tabs nav-collapse" role="tablist">
-                  <li class="nav-item" role="presentation">
-                    <button
-                      id="details-tab"
-                      :class="{'nav-link': true, active: showInfo }"
-                      data-bs-toggle="tab"
-                      data-bs-target="#details"
-                      type="button"
-                      role="tab"
-                      aria-controls="details"
-                      aria-selected="true"
-                      @click="switchTabInfo('details')"
-                    >
-                      @{{ __('Details') }}
-                    </button>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                    <button
-                      id="comments-tab"
-                      :class="{'nav-link': true, active: !showInfo }"
-                      data-bs-toggle="tab"
-                      data-bs-target="#comments"
-                      type="button"
-                      role="tab"
-                      aria-controls="comments"
-                      aria-selected="false"
-                      @click="switchTabInfo('comments')"
-                    >
-                      @{{ __('Comments') }}
-                    </button>
-                  </li>
-                </ul>
-                <div class="tab-content">
-                  <div id="collapse-info" class="collapse show width">
-                  <div
-                    v-if="showInfo"
-                    id="details"
-                    v-bind:class="{ 'tab-pane':true, fade: true, show: showInfo, active: showInfo }"
-                    role="tabpanel"
-                    aria-labelledby="details-tab"
-                  >
-                      <div class="ml-md-3 mt-3 mt-md-0">
-                        <div class="card collapse-content">
-                          <ul class="list-group list-group-flush w-100">
-                            <li class="list-group-item">
-                            <div
-                              v-if="taskDraftsEnabled"
-                              class="row justify-content-start pb-1"
-                            >
-                              <task-save-notification
-                                :options="options"
-                                :task="task"
-                                :date="lastAutosaveNav"
-                                :error="errorAutosave"
-                                :form-data="formData"
-                              />
-                            </div>
-                              <div class="row button-group">
-                                <div class="col-6">
-                                  <button
-                                    type="button"
-                                    class="btn btn-block button-actions"
-                                    @click="createRule"
-                                  >
-                                  <i class="fas fa-plus"></i> {{ __('Create Rule') }}
-                                  </button>
-                                </div>
-                                <div class="col-6">
-                                  <button
-                                    type="button"
-                                    class="btn btn-block button-actions"
-                                    :class="{ 'button-priority': isPriority }"
-                                    @click="addPriority"
-                                  >
-                                  <img
-                                    :src="
-                                      isPriority
-                                        ? '/img/priority.svg'
-                                        : '/img/priority-header.svg'
-                                    "
-                                    :alt="$t('No Image')"
-                                  >
-                                    {{ __('Priority') }}
-                                  </button>
-                                </div>
-                              </div>
-                          @endcan
-                      </div>
-                  </div>
-              </div>
-              @if (shouldShow('taskStatusContainer'))
                 <div class="slide-control">
                   <a href="#" @click="hideMenu">
                     <i class="fa" :class="{ 'fa-caret-left' : !showMenu, 'fa-caret-right' : showMenu }"></i>
@@ -411,6 +305,7 @@
                             :readonly="task.status === 'CLOSED'"
                             :name="task.element_name"
                             :header="false"
+                            :case_number="task.process_request.case_number"
                           />
                         </template>
                       </div>
@@ -427,45 +322,23 @@
                   >
                     <div class="form-group">
                       {!!Form::label('user', __('User'))!!}
-                      <select-from-api
-                        id='user'
-                        v-model="selectedUser"
-                        placeholder="{{__('Select the user to reassign to the task')}}"
-                        api="users?status=ACTIVE"
-                        :multiple="false"
-                        :show-labels="false"
-                        :searchable="true"
-                        :store-id="false"
-                        label="fullname"
-                      >
-                        <template slot="noResult">
-                          {{ __('No elements found. Consider changing the search query.') }}
-                        </template>
-                        <template slot="noOptions">
-                          {{ __('No Data Available') }}
-                        </template>
-                        <template slot="tag" slot-scope="props">
-                          <span class="multiselect__tag  d-flex align-items-center" style="width:max-content;">
-                            <span class="option__desc mr-1">
-                              <span class="option__title">@{{ props.option.fullname }}</span>
-                            </span>
-                            <i aria-hidden="true" tabindex="1"
-                              @click="props.remove(props.option)"
-                              class="multiselect__tag-icon"></i>
-                          </span>
-                        </template>
-                        <template slot="option" slot-scope="props">
-                          <div class="option__desc d-flex align-items-center">
-                            <span class="option__title mr-1">@{{ props.option.fullname }}</span>
-                          </div>
-                        </template>
-                      </select-from-api>
+                    <p-m-dropdown-suggest v-model="selectedUser"
+                                          :options="users"
+                                          @pmds-input="onInput"
+                                          :placeholder="$t('Type here to search')">
+                      <template v-slot:pre-text="{ option }">
+                        <b-badge variant="secondary" 
+                                 class="mr-2 custom-badges pl-2 pr-2 rounded-lg">
+                          @{{ option.count }}
+                        </b-badge>
+                      </template>
+                    </p-m-dropdown-suggest>
                     </div>
                     <div slot="modal-footer">
                       <button type="button" class="btn btn-outline-secondary" @click="cancelReassign">
                         {{__('Cancel')}}
                       </button>
-                      <button type="button" class="btn btn-secondary ml-2" @click="reassignUser" :disabled="disabled">
+                      <button type="button" class="btn btn-secondary" @click="reassignUser" :disabled="disabled">
                         {{__('Reassign')}}
                       </button>
                     </div>
@@ -473,6 +346,8 @@
                 </div>
               @endif
           </div>
+      </div>
+    </div>
   </div>
 @endsection
 
@@ -535,7 +410,7 @@
           task,
           draftTask,
           userHasAccessToTask,
-          selectedUser: [],
+          selectedUser: null,
           hasErrors: false,
           redirectInProcess: false,
           formData: {},
@@ -559,6 +434,8 @@
           showMenu: true,
           userConfiguration: @json($userConfiguration),
           urlConfiguration:'users/configuration',
+          users: [],
+          showTabs: true
         },
         watch: {
           task: {
@@ -627,7 +504,7 @@
             return this.task.status !== "CLOSED";
           },
           disabled () {
-            return this.selectedUser ? this.selectedUser.length === 0 : true;
+            return this.selectedUser ? false : true;
           },
           styleDataMonaco () {
             let height = window.innerHeight * 0.55;
@@ -737,24 +614,26 @@
           },
           // Reassign methods
           show () {
+            this.selectedUser = null;
             this.showReassignment = true;
+            this.getUsers("");
           },
           showQuickFill () {
             this.redirect(`/tasks/${this.task.id}/edit/quickfill`);
           },
           cancelReassign () {
+            this.selectedUser = null;
             this.showReassignment = false;
-            this.selectedUser = [];
           },
           reassignUser () {
             if (this.selectedUser) {
               ProcessMaker.apiClient
                 .put("tasks/" + this.task.id, {
-                  user_id: this.selectedUser.id
+                  user_id: this.selectedUser
                 })
                 .then(response => {
                   this.showReassignment = false;
-                  this.selectedUser = [];
+                  this.selectedUser = null;
                   this.redirect('/tasks');
                 });
             }
@@ -970,6 +849,25 @@
           },
           caseTitleField(task) {
             this.caseTitle = task.process_request.case_title;
+          },
+          getUsers(filter) {
+            ProcessMaker.apiClient.get(this.getUrlUsersTaskCount(filter)).then(response => {
+              this.users = [];
+              for (let i in response.data.data) {
+                this.users.push({
+                  text: response.data.data[i].fullname,
+                  value: response.data.data[i].id,
+                  count: response.data.data[i].count
+                });
+              }
+            });
+          },
+          getUrlUsersTaskCount(filter) {
+            let url = "users_task_count?filter=" + filter;
+            return url;
+          },
+          onInput(filter) {
+            this.getUsers(filter);
           }
         },
         mounted() {
@@ -986,6 +884,7 @@
             this.sendUserHasInteracted();
           });
           this.defineUserConfiguration();
+          this.getUsers("");
         }
       });
       window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name);
