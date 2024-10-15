@@ -101,6 +101,7 @@
                   commentable_type="{{ get_class($request) }}"
                   name="{{ $request->name }}"
                   :readonly="request.status === 'COMPLETED'"
+                  :get-data="getCommentsData"
                 />
               </template>
             </Tabs>

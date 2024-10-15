@@ -4,8 +4,8 @@ import Tabs from "./components/Tabs.vue";
 import Timeline from "../../../js/components/Timeline.vue";
 import { CollapsableContainer } from "../../base";
 import { cases } from "./store";
-import { updateUserConfiguration, getUserConfiguration } from "./api";
-import { useStore } from "./variables";
+import { updateUserConfiguration, getUserConfiguration, getCommentsData } from "./api";
+import { useStore, getRequest, getComentableType } from "./variables";
 
 Vue.globalStore.registerModule("core:cases", cases);
 
@@ -132,7 +132,6 @@ const caseDetail = new Vue({
         ui_configuration: userConf.ui_configuration,
       });
     },
-
     getUserConf: async () => {
       const response = await getUserConfiguration();
 
@@ -140,6 +139,18 @@ const caseDetail = new Vue({
         user_id: response.user_id,
         ui_configuration: JSON.parse(response.ui_configuration),
       };
+    },
+    getCommentsData: async () => {
+      const request = getRequest();
+
+      const response = await getCommentsData({
+        params: {
+          type: "COMMENT,REPLY",
+          case_number: request.case_number,
+        },
+      });
+
+      return response;
     },
   },
 });
