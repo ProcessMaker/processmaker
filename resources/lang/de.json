@@ -32,6 +32,7 @@
   "Add Screen": "Ansicht hinzufügen",
   "Add User To Group": "Benutzer zu Gruppe hinzufügen",
   "Add Users": "Benutzer hinzufügen",
+  "Add to clipboard": "Zur Zwischenablage hinzufügen",
   "Address": "Adresse",
   "Admin": "Administrator",
   "Advanced Search": "Erweiterte Suche",
@@ -644,6 +645,7 @@
   "Refresh": "Aktualisieren",
   "Regenerating CSS Files": "CSS-Dateien werden neu generiert",
   "Remember me": "Meine Daten speichern",
+  "Remove from clipboard": "Aus Zwischenablage entfernen",
   "Remove from Group": "Aus Gruppe entfernen",
   "Remove the .env file to perform a new installation.": "Entfernen Sie die .env-Datei, damit Sie eine neue Installation durchführen können.",
   "Remove": "Entfernen",
@@ -2351,5 +2353,14 @@
   "No items to show": "Keine Artikel zu zeigen",
   "Copy link": "Kopieren Link",
   "This actions is taking longer than expected. We will continue updating your tasks in the background.": "Diese Aktion dauert länger als erwartet. Wir werden Ihre Aufgaben weiterhin im Hintergrund aktualisieren.",
-  "No user selected": "Kein Benutzer ausgewählt"
+  "No user selected": "Kein Benutzer ausgewählt",
+  "Encrypted": "Verschlüsselt",
+  "Users/Groups to View": "Benutzer/Gruppen zum Anzeigen",
+  "Conceal": "Verbergen",
+  "Reveal": "Offenbaren",
+  "There is no field with the name ':fieldName'.": "Es gibt kein Feld mit dem Namen ':fieldName'.",
+  "Configuration related to encryption is not found for this field.": "Die Konfiguration in Bezug auf die Verschlüsselung wurde für dieses Feld nicht gefunden.",
+  "Encryption is not enabled for this field.": "Die Verschlüsselung ist für dieses Feld nicht aktiviert.",
+  "Configuration related to assignments is missing for this field.": "Die Konfiguration im Zusammenhang mit Zuordnungen fehlt für dieses Feld.",
+  "You are not assigned to this encrypted field.": "Sie sind diesem verschlüsselten Feld nicht zugeordnet."
 }

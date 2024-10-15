@@ -10,7 +10,7 @@
 
 @section('breadcrumbs')
 @include('shared.breadcrumbs', ['routes' => [
-    __('Cases') => route('requests.index'),
+    __('Requests') => route('requests.index'),
     function() use ($title) { return [__($title), null]; }
 ]])
 @endsection
@@ -22,21 +22,21 @@
                 <counter-card
                     color="info"
                     icon="id-badge"
-                    link="{{ route('cases_by_type', ['type' => '']) }}"
+                    link="{{ route('requests_by_type', ['type' => '']) }}"
                     url='requests?total=true&pmql=(status = "In Progress") AND (requester = "{{ Auth::user()->username }}")'
-                    :title="__('My Cases')"
+                    :title="__('My Requests')"
                 ></counter-card>
                 <counter-card
                     color="success"
                     icon="clipboard-list"
-                    link="{{ route('cases_by_type', ['type' => 'in_progress']) }}"
+                    link="{{ route('requests_by_type', ['type' => 'in_progress']) }}"
                     url='requests?total=true&pmql=(status = "In Progress")'
                     :title="__('In Progress')"
                 ></counter-card>
                 <counter-card
                     color="primary"
                     icon="clipboard-check"
-                    link="{{ route('cases_by_type', ['type' => 'completed']) }}"
+                    link="{{ route('requests_by_type', ['type' => 'completed']) }}"
                     url='requests?total=true&pmql=(status = "Completed")'
                     :title="__('Completed')"
                 ></counter-card>
@@ -44,9 +44,9 @@
                     <counter-card
                         color="secondary"
                         icon="clipboard"
-                        link="{{ route('cases_by_type', ['type' => 'all']) }}"
+                        link="{{ route('requests_by_type', ['type' => 'all']) }}"
                         url='requests?total=true'
-                        :title="__('All Cases')"
+                        :title="__('All Requests')"
                     ></counter-card>
                 @endcan
             </counter-card-group>

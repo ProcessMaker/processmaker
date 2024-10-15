@@ -45,6 +45,14 @@
         </template>
       </b-col>
 
+      <div v-if="!sectionRight"
+        class="text-right">
+          <language-selector-button
+            class="ml-2"
+            :type="'screen-builder'"
+            :show-language-code="false">
+          </language-selector-button>
+      </div>
       <b-col
         v-if="sectionRight"
         class="text-right"
@@ -62,6 +70,7 @@
               class="text-capitalize screen-toolbar-button"
               :title="button.title"
               :data-cy="`toolbar-${button.id}`"
+              :disabled="toolbarDisabled"
               @click="executeFunction(button.action)"
             >
               <i :class="button.icon" />
@@ -118,6 +127,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    toolbarDisabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -125,6 +138,7 @@ export default {
       newItems: this.initialNewItems,
       sectionRight: true,
       items: [],
+      selectedLanguage: "es",
     };
   },
   computed: {

@@ -67,12 +67,14 @@ class LoginController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function showLoginForm()
+    public function showLoginForm(Request $request)
     {
         $manager = App::make(LoginManager::class);
         $addons = $manager->list();
+        // Cheche if the user can by pass
+        $showForceLogin = $request->has('showLogin') && $request->get('showLogin') === 'true';
         // Review if we need to redirect the default SSO
-        if (config('app.enable_default_sso')) {
+        if (config('app.enable_default_sso') && !$showForceLogin) {
             $arrayAddons = $addons->toArray();
             $driver = $this->getDefaultSSO($arrayAddons);
             // If a default SSO was defined we will to redirect
@@ -336,6 +338,8 @@ class LoginController extends Controller
                 return $user->permissions()->pluck('name')->toArray();
             });
 
+            $this->setupLanguage($request, $user);
+            
             return $this->sendLoginResponse($request);
         }
 
@@ -362,5 +366,13 @@ class LoginController extends Controller
     public function showLoginFailed(Request $request)
     {
         return view('errors.login-failed');
+    }
+
+    private function setupLanguage(Request $request, User $user) {
+        $language = $request->cookies->get('language');
+        if ($language) {
+            $user->language = json_decode($language)->code;
+            $user->save();
+        }
     }
 }

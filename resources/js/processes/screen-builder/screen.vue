@@ -10,6 +10,7 @@
         ref="menuScreen"
         :options="optionsMenu"
         :environment="self"
+        :toolbar-disabled="$refs.builder?.isCurrentPageClipboard"
       />
 
       <!-- Card Body -->
@@ -728,9 +729,22 @@ export default {
     ProcessMaker.EventBus.$on("show-create-template-modal", () => {
       this.$refs["create-template-modal"].show();
     });
+    ProcessMaker.EventBus.$on("translate-screen-builder", (language) => {
+      this.translateScreen(language.code);
+    });
   },
   methods: {
     ...mapMutations("globalErrorsModule", { setStoreMode: "setMode" }),
+    translateScreen(language) {
+      const postData = {
+        inputData: this.previewData,
+        screenConfig: this.screen.config,
+      };
+      ProcessMaker.apiClient.post(`screens/${this.screen.id}/translate/${language}`, postData)
+        .then((response) => {
+          this.preview.config = response.data;
+        });
+    },
     // eslint-disable-next-line func-names
     updateDataInput: debounce(function () {
       if (this.previewInputValid) {
