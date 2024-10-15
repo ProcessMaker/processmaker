@@ -10,6 +10,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Events\TemplateCreated;
+use ProcessMaker\Exception\MissingScreenPageException;
 use ProcessMaker\Helpers\ScreenTemplateHelper;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
@@ -700,10 +701,20 @@ class ScreenTemplate implements TemplateInterface
             // Import the template to get the screen config
             $newScreenId = $this->handleTemplateImport($template);
             $newTemplateScreen = Screen::select('config')->where('id', $newScreenId)->firstOrFail();
-            // Get the current screen to apply the template
+
+            // Get the current screen and screen page
             $screenId = $request->get('screenId');
             $screen = Screen::where('id', $screenId)->firstOrFail();
             $currentScreenPage = $request->get('currentScreenPage', 0);
+
+            if (hasPackage('package-versions')) {
+                // Fetch the latest screen version
+                $screen = \ProcessMaker\Models\ScreenVersion::where('screen_id', $screenId)->latest()->firstOrFail();
+            } else {
+                // Fallback: Use the screen model instead
+                $screen = Screen::where('id', $screenId)->firstOrFail();
+            }
+
             // Get the selected template options
             $templateOptions = $request->get('templateOptions', []);
             $supportedOptionComponents = ScreenComponents::getComponents();
@@ -719,10 +730,16 @@ class ScreenTemplate implements TemplateInterface
             Screen::where('id', $newScreenId)->delete(); // Clean up the temporary imported template screen
         } catch (ModelNotFoundException $e) {
             Log::error('Template or screen not found: ' . $e->getMessage());
-            throw new ModelNotFoundException('Template or screen not found.');
+
+            return response()->json(['error' => 'Template or screen not found.'], 400);
+        } catch (MissingScreenPageException $e) {
+            Log::error('Error applying template to specific screen page: ' . $e->getMessage());
+
+            return response()->json(['error' => $e->getMessage()], 400);
         } catch (Exception $e) {
             Log::error('Error applying template: ' . $e->getMessage());
-            throw new Exception('Failed to apply template.');
+
+            return response()->json(['error' => 'Failed to apply template.'], 400);
         }
     }
 
@@ -800,6 +817,10 @@ class ScreenTemplate implements TemplateInterface
         }
 
         $screenConfig = $screen->config;
+        // Check if the currentScreenPage exists in the screenConfig array
+        if (!isset($screenConfig[$currentScreenPage])) {
+            throw new MissingScreenPageException();
+        }
 
         // Ensure the index exists
         if (!isset($screenConfig[$currentScreenPage])) {
@@ -823,6 +844,10 @@ class ScreenTemplate implements TemplateInterface
             }
 
             $screenConfig = $screen->config;
+            // Check if the currentScreenPage exists in the screenConfig array
+            if (!isset($screenConfig[$currentScreenPage])) {
+                throw new MissingScreenPageException();
+            }
 
             // Ensure the index exists
             if (!isset($screenConfig[$currentScreenPage])) {
