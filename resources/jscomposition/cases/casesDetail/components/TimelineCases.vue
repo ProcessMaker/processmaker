@@ -83,7 +83,6 @@ export default {
       return this.form.subject.trim() === "" || this.form.body.trim() === "";
     },
   },
-  watch: {},
   mounted() {
     this.load();
   },
@@ -119,42 +118,27 @@ export default {
           this.comments = response.data.data;
         });
     },
-    save() {
-      const that = this;
-      that.form.commentable_id = that.commentable_id;
-      that.form.commentable_type = that.commentable_type;
-      that.form.type = that.type ? that.type : "MESSAGE";
-      that.form.hidden = that.hidden ? that.hidden : false;
-      ProcessMaker.apiClient.post("comments", that.form).then((response) => {
-        that.load();
-        that.emptyForm();
-      });
-    },
   },
 };
 </script>
 
-<style>
+<style scoped>
 #systemAvatar {
   max-height: 24px;
   max-width: 24px;
   border-radius: 50%;
   margin-left: 3px;
 }
-
 .row .col-auto {
   height: 3em;
 }
-
 .date {
   color: #848484;
   font-size: 0.8em;
 }
-
 .comment-body {
   line-height: 1.2em;
 }
-
 .timeline {
   background: linear-gradient(
     to right,
@@ -166,7 +150,6 @@ export default {
     transparent 100%
   );
 }
-
 .timeline-badge {
   width: 28px;
   height: 24px;
