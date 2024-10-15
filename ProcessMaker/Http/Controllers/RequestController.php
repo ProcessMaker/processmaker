@@ -25,7 +25,7 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Package\PackageComments\PackageServiceProvider;
-use ProcessMaker\ProcessTranslations\ProcessTranslation;
+use ProcessMaker\ProcessTranslations\ScreenTranslation;
 use ProcessMaker\RetryProcessRequest;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
@@ -281,8 +281,8 @@ class RequestController extends Controller
     public function summaryScreenTranslation(ProcessRequest $request): void
     {
         if ($request->summary_screen) {
-            $processTranslation = new ProcessTranslation($request->process);
-            $translatedConf = $processTranslation->applyTranslations($request->summary_screen);
+            $screenTranslation = new ScreenTranslation();
+            $translatedConf = $screenTranslation->applyTranslations($request->summary_screen->toArray());
             $request->summary_screen['config'] = $translatedConf;
         }
     }

@@ -4,7 +4,7 @@ namespace ProcessMaker\Http\Resources\V1_1;
 
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\ScreenVersion as ScreenVersionResource;
-use ProcessMaker\ProcessTranslations\ProcessTranslation;
+use ProcessMaker\ProcessTranslations\ScreenTranslation;
 use ProcessMaker\Traits\TaskScreenResourceTrait;
 
 class TaskScreen extends ApiResource
@@ -41,14 +41,14 @@ class TaskScreen extends ApiResource
 
         if ($array['screen']) {
             // Apply translations to screen
-            $processTranslation = new ProcessTranslation($this->process);
-            $array['screen']['config'] = $processTranslation->applyTranslations($array['screen']);
+            $screenTranslation = new ScreenTranslation();
+            $array['screen']['config'] = $screenTranslation->applyTranslations($array['screen']);
             $array['screen']['config'] = $this->removeInspectorMetadata($array['screen']['config']);
 
             // Apply translations to nested screens
             if (array_key_exists('nested', $array['screen'])) {
                 foreach ($array['screen']['nested'] as &$nestedScreen) {
-                    $nestedScreen['config'] = $processTranslation->applyTranslations($nestedScreen);
+                    $nestedScreen['config'] = $screenTranslation->applyTranslations($nestedScreen);
                     $nestedScreen['config'] = $this->removeInspectorMetadata($nestedScreen['config']);
                 }
             }
