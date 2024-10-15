@@ -423,8 +423,10 @@ export default {
             user_id: this.selectedUser
           })
           .then(response => {
+            this.$emit("on-reassign-user", this.selectedUser);
             this.showReassignment = false;
             this.selectedUser = null;
+            this.getUsers("");
           });
       }
     },

@@ -1101,6 +1101,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
             return $this;
         }
+        //This depends on the `package-advanced-user-manager` package.
         $assignmentProcess = Process::where('name', Process::ASSIGNMENT_PROCESS)->first();
         if ($assignmentProcess) {
             $res = (new WorkflowManagerDefault)->runProcess($assignmentProcess, 'assign', [
@@ -1216,6 +1217,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             // Validate if user can reassign
             Gate::forUser($requestingUser)->authorize('reassign', $this);
             // Reassign user
+            $this->is_self_service = 0; //When reassigning the user, it is not necessary to claim the task. 
             $this->reassignTo($toUserId);
             $this->persistUserData($toUserId);
             $reassingAction = true;

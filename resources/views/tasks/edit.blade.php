@@ -373,6 +373,8 @@
     );
 
     const task = @json($task);
+    task.aa = 1;
+    console.log("ini",task)
     let draftTask = task.draft;
     const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
@@ -488,6 +490,7 @@
             return dueLabels[this.task.advanceStatus] || '';
           },
           isSelfService() {
+            console.log("is:",this.task);
             return this.task.process_request.status === 'ACTIVE' && this.task.is_self_service;
           },
           dateDueAt () {
@@ -764,6 +767,7 @@
 
           },
           taskUpdated(task) {
+            console.log("taskUpdated:",task);
             this.task = task;
           },
           updateScreenFields(taskId) {

@@ -232,6 +232,7 @@
       :tooltip-button="tooltipFromButton"
       @onSetViewed="setViewed"
       @onWatchShowPreview="onWatchShowPreview"
+      @on-reassign-user="onReassignUser"
     >
       <template v-slot:header="{ close, screenFilteredTaskData, taskReady }">
         <slot name="preview-header" v-bind:close="close" v-bind:screenFilteredTaskData="screenFilteredTaskData" v-bind:taskReady="taskReady"></slot>
@@ -973,6 +974,9 @@ export default {
         }
       });
     },
+    onReassignUser(idUser) {
+      this.fetch();
+    }
   },
 };
 </script>
