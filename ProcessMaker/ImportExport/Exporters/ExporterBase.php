@@ -15,6 +15,7 @@ use ProcessMaker\ImportExport\Logger;
 use ProcessMaker\ImportExport\Manifest;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\ImportExport\Psudomodels\Psudomodel;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\ProcessTranslations\Languages;
 use ProcessMaker\Traits\HasVersioning;
 
@@ -354,10 +355,17 @@ abstract class ExporterBase implements ExporterInterface
     public function getExtraAttributes($model): array
     {
         $translatedLanguages = [];
-        if ($model->translations) {
-            foreach ($model->translations as $key => $value) {
-                $translatedLanguages[$key] = Languages::ALL[$key];
+
+        if ($model::class === Screen::class) {
+            // Get the translations for the screen
+            foreach ($this->getDependents('screen-translations') as $dependent) {
+                if ($dependent->type === 'screen-translations') {
+                    $translatedLanguages[$dependent->meta['language_code']] = Languages::ALL[$dependent->meta['language_code']];
+                }
             }
+        } elseif ($model->translations && $model->language_code) {
+            // Get the translations for the model translatable
+            $translatedLanguages[$model->language_code] = Languages::ALL[$model->language_code];
         }
 
         return [
