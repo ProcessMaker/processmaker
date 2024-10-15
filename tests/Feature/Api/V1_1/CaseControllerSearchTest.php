@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\V1_1;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use ProcessMaker\Models\User;
 use ProcessMaker\Repositories\CaseUtils;
 use Tests\Feature\Shared\RequestHelper;
@@ -9,7 +10,7 @@ use Tests\TestCase;
 
 class CaseControllerSearchTest extends TestCase
 {
-    use RequestHelper;
+    use RequestHelper, RefreshDatabase;
 
     public function setUp(): void
     {
@@ -252,7 +253,7 @@ class CaseControllerSearchTest extends TestCase
 
     public function test_search_all_cases_special_by_french_characters(): void
     {
-        $caseTitle1 = "Processus du crédit";
+        $caseTitle1 = 'Processus du crédit';
 
         CaseControllerTest::createCasesStartedForUser($this->user->id, 5, ['case_title' => $caseTitle1, 'keywords' => $caseTitle1]);
 
@@ -270,7 +271,7 @@ class CaseControllerSearchTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonCount(5, 'data');
 
-        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => "Processus crédit"]));
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => 'Processus crédit']));
         $response->assertStatus(200);
         $response->assertJsonCount(5, 'data');
     }
