@@ -104,10 +104,37 @@ class PopulateCaseStarted extends Upgrade
                 'process_requests.parent_request_id',
                 'processes.id as process_id',
                 'processes.name as process_name',
-                DB::raw("IF(process_requests.status = 'ACTIVE', 'IN_PROGRESS', process_requests.status) as status"),
-                DB::raw("JSON_OBJECT('id', process_requests.id , 'name', process_requests.name) as processes"),
-                DB::raw("JSON_OBJECT('name', process_requests.name , 'parent_request_id', process_requests.parent_request_id) as requests")
-            );
+                DB::raw('
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                            "id", processes.id,
+                            "name", processes.name
+                        )
+                    ) as processes
+                '), // Collect processes in an array of objects
+                DB::raw('
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                            "id", process_requests.id,
+                            "name", process_requests.name,
+                            "parent_request_id", process_requests.parent_request_id
+                        )
+                    ) as requests
+                '), // Collect requests in an array of objects
+                DB::raw("IF(process_requests.status = 'ACTIVE', 'IN_PROGRESS', process_requests.status) as status")
+            )
+            ->groupBy(
+                'process_requests.id',
+                'process_requests.case_number',
+                'process_requests.user_id',
+                'process_requests.case_title',
+                'process_requests.case_title_formatted',
+                'process_requests.initiated_at',
+                'process_requests.created_at',
+                'process_requests.completed_at',
+                'process_requests.updated_at',
+                DB::raw("IF(process_requests.status = 'ACTIVE', 'IN_PROGRESS', process_requests.status)")
+            ); // Group by all selected fields that are not aggregated
 
         DB::statement('CREATE TEMPORARY TABLE process_requests_temp AS ' . $query->toSql(), $query->getBindings());
     }
@@ -116,7 +143,7 @@ class PopulateCaseStarted extends Upgrade
     {
         // Step 1: Create unique participants using Laravel's query builder
         $uniqueParticipantsQuery = DB::table('process_request_tokens as pr')
-            ->select('pr.user_id', 'temp.case_number')
+            ->select('pr.user_id', 'pr.element_id', 'pr.process_id', 'temp.case_number')
             ->join('process_requests_temp as temp', 'pr.process_request_id', '=', 'temp.id')
             ->where('pr.element_type', 'task')
             ->distinct(); // Use distinct to avoid duplicates
@@ -140,7 +167,8 @@ class PopulateCaseStarted extends Upgrade
                 DB::raw('JSON_ARRAYAGG(JSON_OBJECT(
                     "id", pr.id,
                     "name", pr.element_name,
-                    "parent_request_id", temp.parent_request_id
+                    "element_id", pr.element_id,
+                    "process_id", pr.process_id
                 )) as tasks')
             )
             ->whereIn('pr.element_type', ['task'])
