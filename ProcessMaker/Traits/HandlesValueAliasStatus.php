@@ -2,15 +2,17 @@
 
 namespace ProcessMaker\Traits;
 
+use ProcessMaker\Constants\CaseStatusConstants;
+
 trait HandlesValueAliasStatus
 {
     public function valueAliasStatus($value, $expression)
     {
         $statusMap = [
-            'in progress' => 'IN_PROGRESS',
-            'completed' => 'COMPLETED',
-            'error' => 'ERROR',
-            'canceled' => 'CANCELED',
+            'in progress' => CaseStatusConstants::IN_PROGRESS,
+            'completed' => CaseStatusConstants::COMPLETED,
+            'error' => CaseStatusConstants::ERROR,
+            'canceled' => CaseStatusConstants::CANCELED,
         ];
 
         $value = mb_strtolower($value);
