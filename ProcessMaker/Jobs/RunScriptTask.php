@@ -102,7 +102,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
                     'token_id' => $this->tokenId,
                 ],
             ];
-            $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling->timeout(), false, $metadata);
+            $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling->timeout(), 0, $metadata);
 
             // Todo compare if executor is custom $executor->type = 'custom'
             if (!config('script-runner-microservice.base_url')) {

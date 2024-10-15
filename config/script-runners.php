@@ -27,17 +27,4 @@ return [
         'package_version' => '1.0.0',
         'sdk' => '',
     ],
-    'php-script-microservice' => [
-        'name' => 'PHP (µService)',
-        'runner' => 'ScriptMicroserviceRunner',
-        'mime_type' => 'application/x-php',
-        'options' => ['invokerPackage' => 'ProcessMaker\\Client'],
-        'init_dockerfile' => [
-            'WORKDIR /opt/executor/src',
-        ],
-        'final_instructions' => [
-            'WORKDIR /app',
-        ],
-        'sdk' => '',
-    ],
 ];
