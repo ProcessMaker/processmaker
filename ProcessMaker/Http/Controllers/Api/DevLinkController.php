@@ -141,6 +141,8 @@ class DevLinkController extends Controller
 
     public function updateBundle(Request $request, Bundle $bundle)
     {
+        $bundle->validateEditable();
+
         $bundle->name = $request->input('name');
         $bundle->published = (bool) $request->input('published', false);
         $bundle->version = $bundle->version + 1;
