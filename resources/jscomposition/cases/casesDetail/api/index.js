@@ -1,6 +1,6 @@
 import { api } from "../variables";
 
-const getData = async () => {
+export const getData = async () => {
   const objectsList = [];
 
   for (let i = 0; i <= 1; i += 1) {
@@ -39,7 +39,7 @@ export const getDataTask = async (params) => {
   return response.data;
 };
 
-const getScreenData = (id) => {
+export const getScreenData = (id) => {
   const response = ProcessMaker.apiClient.get(`/api/1.1/tasks/${id}/screen`);
 
   return response;
@@ -57,4 +57,8 @@ export const updateUserConfiguration = async (data) => {
   return response.data;
 };
 
-export { getData, getScreenData };
+export const getCommentsData = (params) => {
+  const response = ProcessMaker.apiClient.get("comments-by-case", params);
+
+  return response;
+};
