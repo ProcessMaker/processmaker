@@ -538,18 +538,20 @@
             if (window.ProcessMaker.user.id == this.task.definition.assignedUsers) {
               this.task.definition.allowReassignment = false;
             }
+
+            // If a group is used, only the users inside the group should be eligible for reassignment.
+            if (this.task.definition.assignedGroups) {
+              return "groups/" + this.task.definition.assignedGroups + "/users?status=ACTIVE";
+            }  
+
             // Reassignment should only be available to users in the set pool group of users
             if (this.task.definition.assignedUsers) {
               let currentAssignedUsers = this.task.definition.assignedUsers.split(',');
               let assignedUsers = currentAssignedUsers.filter(user => user !== window.ProcessMaker.user.id);
-              return 'users?include_ids=' + assignedUsers;
+              return 'users?include_ids=' + assignedUsers + '&status=ACTIVE';
             } else {
               return "users?status=ACTIVE";  
-            }     
-            // If a group is used, only the users inside the group should be eligible for reassignment. DONE
-            if (this.task.definition.assignedGroups) {
-              return "groups/" + this.task.definition.assignedGroups + "/users?status=ACTIVE";
-            }        
+            }           
           },
           createRule() {
             window.location.href = '/tasks/rules/new?' +
