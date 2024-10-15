@@ -248,7 +248,6 @@
           return {
             meta: @json(config('users.properties')),
             formData: @json($user),
-            langsValues: @json($availableLangs, true),
             timezonesValues: @json($timezones, true),
             datetimeFormatsValues: @json($datetimeFormats, true),
             countriesValues: @json($countries, true),
@@ -301,9 +300,6 @@
         computed: {
           isCurrentUser() {
             return this.currentUserId == this.formData.id
-          },
-          langs() {
-            return this.formatDataSelect(this.langsValues);
           },
           timezones() {
             return this.formatDataSelect(this.timezonesValues);

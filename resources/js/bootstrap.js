@@ -32,6 +32,7 @@ import DataTreeToggle from "./components/common/data-tree-toggle.vue";
 import TreeView from "./components/TreeView.vue";
 import FilterTable from "./components/shared/FilterTable.vue";
 import PaginationTable from "./components/shared/PaginationTable.vue";
+import PMDropdownSuggest from './components/PMDropdownSuggest';
 import "@processmaker/screen-builder/dist/vue-form-builder.css";
 
 window.__ = translator;
@@ -51,6 +52,8 @@ window.SharedComponents = require("./components/shared");
 window.ProcessesComponents = require("./processes/components");
 window.ScreensComponents = require("./processes/screens/components");
 window.ScriptsComponents = require("./processes/scripts/components");
+
+window.PMDropdownSuggest = PMDropdownSuggest;
 
 /**
  * Exporting Modeler inspector components

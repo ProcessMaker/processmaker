@@ -22,7 +22,9 @@
     </template>
     <b-dropdown-item v-for="option in options"
                      :key="option.value"
-                     @click="onSelect(option)">
+                     @click="onSelect(option)"
+                     class="pm-dds-item">
+      <slot name="pre-text" :option="option"></slot>
       {{ option.text }}
     </b-dropdown-item>
   </b-dropdown>
@@ -83,11 +85,14 @@
         this.selected = option;
         this.text = this.selected.text;
         this.$emit('input', option.value);
-        this.$emit("onSelectedOption", option);
+        this.$emit("onSelectedOption", option);//deprecated, avoid using it.
+        this.$emit("pmds-selected-option", option);
         this.showMenu(false);
       },
       onInput(value) {
-        this.$emit('onInput', value);
+        this.$emit('input', null);
+        this.$emit('onInput', value);//deprecated, avoid using it.
+        this.$emit('pmds-input', value);
         this.showMenu(true);
       },
       showMenu(sw) {
@@ -117,12 +122,19 @@
   .pm-dds-border button:first-child:hover {
     background-color: transparent;
   }
+  .pm-dds-border > .dropdown-menu {
+    width: 100%;
+  }
   .pm-dds-show {
     display: block;
     position: absolute;
     transform: translate3d(-1px, 30px, 0px);
     top: 0px;
     left: 0px;
+  }
+  .pm-dds-item > .dropdown-item {
+    display: flex;
+    align-items: center;
   }
 </style>
 <style scoped>

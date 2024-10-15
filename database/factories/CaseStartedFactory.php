@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use ProcessMaker\Constants\CaseStatusConstants;
 use ProcessMaker\Models\CaseStarted;
 use ProcessMaker\Models\User;
 use ProcessMaker\Repositories\CaseUtils;
@@ -23,16 +24,21 @@ class CaseStartedFactory extends Factory
     {
         $users = User::get();
 
-        $caseTitle = fake()->words(4, true);
         $caseNumber = fake()->unique()->randomNumber();
+        $caseTitle = fake()->words(4, true);
+
+        $dataKeywords = [
+            'case_number' => $caseNumber,
+            'case_title' => $caseTitle,
+        ];
 
         return [
             'case_number' => $caseNumber,
             'user_id' => $users->random()->id,
             'case_title' => $caseTitle,
             'case_title_formatted' => $caseTitle,
-            'case_status' => fake()->randomElement(['IN_PROGRESS', 'COMPLETED']),
-            'processes' => array_map(function() {
+            'case_status' => fake()->randomElement([CaseStatusConstants::IN_PROGRESS, CaseStatusConstants::COMPLETED]),
+            'processes' => array_map(function () {
                 return [
                     'id' => fake()->randomNumber(),
                     'name' => fake()->words(2, true),
@@ -50,7 +56,7 @@ class CaseStartedFactory extends Factory
                     'parent_request' => fake()->randomNumber(),
                 ],
             ],
-            'request_tokens' => array_map(fn() => fake()->randomElement([
+            'request_tokens' => array_map(fn () => fake()->randomElement([
                 fake()->randomNumber(),
                 fake()->randomNumber(),
                 fake()->randomNumber(),
@@ -69,10 +75,10 @@ class CaseStartedFactory extends Factory
                     'name' => fake()->words(2, true),
                 ],
             ],
-            'participants' => array_map(fn() => fake()->randomElement($users->pluck('id')->toArray()), range(1, 3)),
+            'participants' => array_map(fn () => fake()->randomElement($users->pluck('id')->toArray()), range(1, 3)),
             'initiated_at' => fake()->dateTime(),
             'completed_at' => fake()->dateTime(),
-            'keywords' => CaseUtils::getCaseNumberByKeywords($caseNumber) . ' ' . $caseTitle,
+            'keywords' => CaseUtils::getKeywords($dataKeywords),
         ];
     }
 }
