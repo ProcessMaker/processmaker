@@ -21,6 +21,7 @@ ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
       && config.control.component !== "FormAnalyticsChart"
       && config.control.component !== "FormAvatar"
       && config.control.component !== "LinkButton"
+      && config.control.component !== "FormCollectionViewControl"
     ) {
       manager.addControl(
         config.control,

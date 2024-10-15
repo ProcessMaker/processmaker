@@ -28,6 +28,7 @@ Vue.component("QuickFillPreview", QuickFillPreview);
 Vue.component("TasksList", TasksList);
 Vue.component("TaskSavePanel", TaskSavePanel);
 Vue.component("TaskSaveNotification", TaskSaveNotification);
+Vue.component("PMDropdownSuggest", PMDropdownSuggest);
 
 Vue.mixin(autosaveMixins);
 Vue.mixin(draftFileUploadMixin);

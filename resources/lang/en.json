@@ -74,6 +74,7 @@
   "Add URL Restriction": "Add URL Restriction",
   "Add User To Group": "Add User To Group",
   "Add Users": "Add Users",
+  "Add to clipboard": "Add to clipboard",
   "add": "add",
   "Add": "Add",
   "Additional Details (optional)": "Additional Details (optional)",
@@ -1357,6 +1358,7 @@
   "Regex": "Regex",
   "Regular Button": "Regular Button",
   "Remember me": "Remember me",
+  "Remove from clipboard": "Remove from clipboard",
   "Remove from Group": "Remove from Group",
   "Remove from My Bookmarks": "Remove from My Bookmarks",
   "Remove the .env file to perform a new installation.": "Remove the .env file to perform a new installation.",
@@ -2356,5 +2358,14 @@
   "Start": "Start",
   "Copy link": "Copy link",
   "This actions is taking longer than expected. We will continue updating your tasks in the background.": "This actions is taking longer than expected. We will continue updating your tasks in the background.",
-  "No user selected": "No user selected"
+  "No user selected": "No user selected",
+  "Encrypted": "Encrypted",
+  "Users/Groups to View": "Users/Groups to View",
+  "Conceal": "Conceal",
+  "Reveal": "Reveal",
+  "There is no field with the name ':fieldName'.": "There is no field with the name ':fieldName'.",
+  "Configuration related to encryption is not found for this field.": "Configuration related to encryption is not found for this field.",
+  "Encryption is not enabled for this field.": "Encryption is not enabled for this field.",
+  "Configuration related to assignments is missing for this field.": "Configuration related to assignments is missing for this field.",
+  "You are not assigned to this encrypted field.": "You are not assigned to this encrypted field."
 }

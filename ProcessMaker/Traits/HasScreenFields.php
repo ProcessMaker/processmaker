@@ -79,6 +79,7 @@ trait HasScreenFields
                 'format' => $this->parseItemFormat($item),
                 'mask' => $this->parseItemMask($item),
                 'isSubmitButton' => $this->parseIsSubmitButton($item),
+                'encryptedConfig' => $this->parseEncryptedConfig($item),
                 'sortable' => true,
                 'default' => false,
             ]));
@@ -144,6 +145,11 @@ trait HasScreenFields
     public function parseIsSubmitButton($item)
     {
         return Arr::get($item, 'config.event') === 'submit';
+    }
+
+    public function parseEncryptedConfig($item)
+    {
+        return $item['config']['encryptedConfig'] ?? null;
     }
 
     /**
