@@ -367,19 +367,5 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 });
 
 Route::prefix('api')->name('api.')->group(function () {
-    //Route::get('scripts/execution/{key}', [ScriptController::class, 'execution'])->name('scripts.execution');
-    Route::post('/scripts/microservice/execution', function (Illuminate\Http\Request $request) {
-        $response = $request->all();
-        $status = $response['status'] === 'success' ? 200 : 500;
-        $output = $response['status'] === 'success'
-            ? json_decode($response['script_output'], true)
-            : $response['message'];
-
-        event(new ProcessMaker\Events\ScriptResponseEvent(
-            ProcessMaker\Models\User::find($response['metadata']['user_id']),
-            $status,
-            $output,
-            null,
-            $response['metadata']['nonce']));
-    });
+    Route::post('/scripts/microservice/execution', [ScriptController::class, 'microserviceExecution']);
 });

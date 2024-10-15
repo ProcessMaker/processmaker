@@ -32,9 +32,9 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param \ProcessMaker\Models\Process $definitions
-     * @param \ProcessMaker\Models\ProcessRequest $instance
-     * @param \ProcessMaker\Models\ProcessRequestToken $token
+     * @param Definitions $definitions
+     * @param ProcessRequest $instance
+     * @param ProcessRequestToken $token
      * @param array $data
      */
     public function __construct(Definitions $definitions, ProcessRequest $instance, ProcessRequestToken $token, array $data, $attemptNum = 1)
@@ -95,9 +95,19 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             $this->unlock();
             $dataManager = new DataManager();
             $data = $dataManager->getData($token);
-            $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling->timeout());
+            $metadata = [
+                'script_task' => [
+                    'definition_id' => $this->definitionsId,
+                    'instance_id' => $this->instanceId,
+                    'token_id' => $this->tokenId,
+                ],
+            ];
+            $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling->timeout(), false, $metadata);
 
-            $this->updateData($response);
+            // Todo compare if executor is custom $executor->type = 'custom'
+            if (!config('script-runner-microservice.base_url')) {
+                $this->updateData($response);
+            }
         } catch (ConfigurationException $exception) {
             $this->unlock();
             $this->updateData(['output' => $exception->getMessageForData($token)]);

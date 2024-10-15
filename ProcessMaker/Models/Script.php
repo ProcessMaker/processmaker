@@ -6,8 +6,6 @@ use Illuminate\Validation\Rule;
 use ProcessMaker\Contracts\ScriptInterface;
 use ProcessMaker\Exception\ConfigurationException;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
-use ProcessMaker\Models\ScriptCategory;
-use ProcessMaker\Models\User;
 use ProcessMaker\ScriptRunners\ScriptRunner;
 use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\ExtendedPMQL;
@@ -147,7 +145,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
      * @param array $data
      * @param array $config
      */
-    public function runScript(array $data, array $config, $tokenId = '', $timeout = null)
+    public function runScript(array $data, array $config, $tokenId = '', $timeout = null, $sync = true, $metadata = [])
     {
         if (!$timeout) {
             $timeout = $this->timeout;
@@ -163,7 +161,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
             throw new ConfigurationException('A user is required to run scripts');
         }
 
-        return $runner->run($this->code, $data, $config, $timeout, $user);
+        return $runner->run($this->code, $data, $config, $timeout, $user, $sync, $metadata);
     }
 
     /**

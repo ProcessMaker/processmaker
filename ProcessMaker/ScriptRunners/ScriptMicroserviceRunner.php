@@ -53,26 +53,23 @@ class ScriptMicroserviceRunner
         })->first();
     }
 
-    public function run($code, array $data, array $config, $timeout, $user)
+    public function run($code, array $data, array $config, $timeout, $user, $sync, $metadata)
     {
         Log::debug('Language: ' . $this->script->language);
+        Log::debug('Sync: ' . $sync);
+        Log::debug('Metadata: ' . print_r($metadata, true));
 
         $scriptRunner = $this->getScriptRunner();
 
         if (!$scriptRunner) {
             throw new ConfigurationException('No script executor exists for this language: ' . $this->script->language);
         }
+        $metadata = array_merge($this->getMetadata($user), $metadata);
 
         $payload = [
             'version' => config('script-runner-microservice.version') ?? $this->getProcessMakerVersion(),
             'language' => $scriptRunner['language'],
-            'metadata'=> [
-                'nonce' => $this->script->nonce,
-                'script_id' => $this->script->id,
-                'instance' => config('app.url'),
-                'user_id' => $user->id,
-                'user_email' => $user->email,
-            ],
+            'metadata'=> $metadata,
             'data' => !empty($data) ? $data : new stdClass(),
             'config' => !empty($config) ? $config : new stdClass(),
             'script' => base64_encode(str_replace("'", '&#39;', $code)),
@@ -80,7 +77,7 @@ class ScriptMicroserviceRunner
             'callback' => config('script-runner-microservice.callback'),
             'debug' => true,
             'timeout' => $timeout,
-            'sync' => 1,
+            'sync' => $sync,
         ];
 
         Log::debug(print_r($payload, true));
@@ -121,5 +118,16 @@ class ScriptMicroserviceRunner
 
             return $composer_json_path->version;
         });
+    }
+
+    public function getMetadata($user)
+    {
+        return [
+            'nonce' => $this->script->nonce,
+            'script_id' => $this->script->id,
+            'instance' => config('app.url'),
+            'user_id' => $user->id,
+            'user_email' => $user->email,
+        ];
     }
 }
