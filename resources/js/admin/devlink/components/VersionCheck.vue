@@ -12,7 +12,7 @@ const props = defineProps({
 
 const remote = () => {
   ProcessMaker.apiClient
-    .get(`/devlink/${props.devLink.dev_link_id}/remote-version/${props.devLink.id}`)
+    .get(`/devlink/${props.devLink.dev_link_id}/remote-version/${props.devLink.remote_id}`)
     .then((response) => {
       if (response.data.version > props.devLink.version) {
         checkNewVersion.value = true;
