@@ -16,6 +16,7 @@ use ProcessMaker\Events\ActivityReassignment;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Filters\Filter;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\Task as Resource;
 use ProcessMaker\Http\Resources\TaskCollection;
@@ -329,5 +330,21 @@ class TaskController extends Controller
         } else {
             return response()->json(['error' => 'Screen not found'], 404);
         }
+    }
+
+    /**
+     * Returns a list of users given an array of ids.
+     * Used to populate the assigned users list in the task edit page.
+     *
+     * @param ProcessRequestToken $task
+     * @param Request $request
+     * @return \ProcessMaker\Http\Resources\ApiCollection
+     */
+    public function getAssignedUsers(ProcessRequestToken $task, Request $request)
+    {
+        $userIds = explode(',', $request->input('users'));
+        $response = User::whereIn('id', $userIds)->where('STATUS', 'ACTIVE')->get();
+
+        return new ApiCollection($response);
     }
 }

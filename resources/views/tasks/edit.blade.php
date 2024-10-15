@@ -534,14 +534,22 @@
         },
         methods: {
           reassign() {
+            // The user shouldn’t be able to reassign the task since he/she is the only one in the pool of applicable users.
+            if (window.ProcessMaker.user.id == this.task.definition.assignedUsers) {
+              this.task.definition.allowReassignment = false;
+            }
             // Reassignment should only be available to users in the set pool group of users
-            // In the example above, the user shouldn’t be able to reassign the task since he/she is the only one in the pool of applicable users.
-            // If a group is used, only the users inside the group should be elegible for reassignment. DONE
-            if (this.task.definition.assignedGroups) {
-              return "groups/" + this.task.definition.assignedGroups + "/users?status=ACTIVE";
+            if (this.task.definition.assignedUsers) {
+              let currentAssignedUsers = this.task.definition.assignedUsers.split(',');
+              let assignedUsers = currentAssignedUsers.filter(user => user !== window.ProcessMaker.user.id);
+              return 'tasks/' + this.task.id + '/getAssignedUsers?users=' + assignedUsers;
             } else {
               return "users?status=ACTIVE";  
-            }            
+            }     
+            // If a group is used, only the users inside the group should be eligible for reassignment. DONE
+            if (this.task.definition.assignedGroups) {
+              return "groups/" + this.task.definition.assignedGroups + "/users?status=ACTIVE";
+            }        
           },
           createRule() {
             window.location.href = '/tasks/rules/new?' +
