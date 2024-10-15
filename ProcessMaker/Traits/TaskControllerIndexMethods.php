@@ -16,8 +16,17 @@ trait TaskControllerIndexMethods
 {
     private function indexBaseQuery($request)
     {
+        // Parse the includes parameter
+        $includes = $request->has('include') ? explode(',', $request->input('include')) : [];
+        // Determine if the data should be included
+        $includeData = in_array('data', $includes);
+
         $query = ProcessRequestToken::exclude(['data'])->with([
-            'processRequest' => fn($q) => $q->exclude(['data']),
+            'processRequest' => function($q) use ($includeData) {
+                if (!$includeData) {
+                    return $q->exclude(['data']);
+                }
+            },
             // review if bpmn is reuiqred here process
             'process' => fn($q) => $q->exclude(['svg', 'warnings']),
             // review if bpmn is reuiqred here processRequest.process
