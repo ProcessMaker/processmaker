@@ -461,6 +461,7 @@
                           name="{{ $request->name }}"
                           :readonly="request.status === 'COMPLETED'"
                           :header="false"
+                          :case_number="{{ $request->case_number }}"
                         />
                       </template>
                     </div>

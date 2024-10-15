@@ -411,6 +411,7 @@
                             :readonly="task.status === 'CLOSED'"
                             :name="task.element_name"
                             :header="false"
+                            :case_number="task.process_request.case_number"
                           />
                         </template>
                       </div>
