@@ -24,8 +24,13 @@ class CaseParticipatedFactory extends Factory
     {
         $users = User::get();
 
-        $caseTitle = fake()->words(4, true);
         $caseNumber = fake()->unique()->randomNumber();
+        $caseTitle = fake()->words(4, true);
+
+        $dataKeywords = [
+            'case_number' => $caseNumber,
+            'case_title' => $caseTitle,
+        ];
 
         return [
             'user_id' => $users->random()->id,
@@ -73,7 +78,7 @@ class CaseParticipatedFactory extends Factory
             'participants' => array_map(fn () => fake()->randomElement($users->pluck('id')->toArray()), range(1, 3)),
             'initiated_at' => fake()->dateTime(),
             'completed_at' => fake()->dateTime(),
-            'keywords' => CaseUtils::getCaseNumberByKeywords($caseNumber) . ' ' . $caseTitle,
+            'keywords' => CaseUtils::getKeywords($dataKeywords),
         ];
     }
 }

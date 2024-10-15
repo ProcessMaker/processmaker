@@ -50,20 +50,36 @@ class CaseRepository implements CaseRepositoryInterface
         }
 
         try {
+            $processData = CaseUtils::extractData($instance->process, [
+                'id' => 'id',
+                'name' => 'name',
+            ]);
+
+            $requestData = CaseUtils::extractData($instance, [
+                'id' => 'id',
+                'name' => 'name',
+                'parent_request_id' => 'parentRequest.id',
+            ]);
+
+            $dataKeywords = CaseUtils::extractData($instance, [
+                'case_number' => 'case_number',
+                'case_title' => 'case_title',
+            ]);
+
             CaseStarted::create([
                 'case_number' => $instance->case_number,
                 'user_id' => $instance->user_id,
                 'case_title' => $instance->case_title,
                 'case_title_formatted' => $instance->case_title_formatted,
                 'case_status' => $instance->status === CaseStatusConstants::ACTIVE ? CaseStatusConstants::IN_PROGRESS : $instance->status,
-                'processes' => CaseUtils::storeProcesses($instance, collect()),
-                'requests' => CaseUtils::storeRequests($instance, collect()),
+                'processes' => CaseUtils::storeProcesses(collect(), $processData),
+                'requests' => CaseUtils::storeRequests(collect(), $requestData),
                 'request_tokens' => [],
                 'tasks' => [],
                 'participants' => [],
                 'initiated_at' => $instance->initiated_at,
                 'completed_at' => null,
-                'keywords' => $instance->case_title,
+                'keywords' => CaseUtils::getKeywords($dataKeywords),
             ]);
         } catch (\Exception $e) {
             Log::error('CaseException: ' . $e->getMessage());
@@ -87,11 +103,24 @@ class CaseRepository implements CaseRepositoryInterface
         }
 
         try {
+            $taskData = CaseUtils::extractData($token, [
+                'id' => 'id',
+                'element_id' => 'element_id',
+                'name' => 'element_name',
+                'process_id' => 'process_id',
+                'element_type' => 'element_type',
+            ]);
+
+            $dataKeywords = CaseUtils::extractData($instance, [
+                'case_number' => 'case_number',
+                'case_title' => 'case_title',
+            ]);
+
             $this->case->case_title = $instance->case_title;
             $this->case->case_status = $instance->status === CaseStatusConstants::ACTIVE ? CaseStatusConstants::IN_PROGRESS : $instance->status;
-            $this->case->request_tokens = CaseUtils::storeRequestTokens($token->getKey(), $this->case->request_tokens);
-            $this->case->tasks = CaseUtils::storeTasks($token, $this->case->tasks);
-            $this->case->keywords = $instance->case_title;
+            $this->case->request_tokens = CaseUtils::storeRequestTokens($this->case->request_tokens, $token->getKey());
+            $this->case->tasks = CaseUtils::storeTasks($this->case->tasks, $taskData);
+            $this->case->keywords = CaseUtils::getKeywords($dataKeywords);
 
             $this->updateParticipants($token);
 
@@ -188,9 +217,20 @@ class CaseRepository implements CaseRepositoryInterface
         }
 
         try {
+            $processData = CaseUtils::extractData($instance->process, [
+                'id' => 'id',
+                'name' => 'name',
+            ]);
+
+            $requestData = CaseUtils::extractData($instance, [
+                'id' => 'id',
+                'name' => 'name',
+                'parent_request_id' => 'parentRequest.id',
+            ]);
+
             // Store the sub-processes and requests
-            $this->case->processes = CaseUtils::storeProcesses($instance, $this->case->processes);
-            $this->case->requests = CaseUtils::storeRequests($instance, $this->case->requests);
+            $this->case->processes = CaseUtils::storeProcesses($this->case->processes, $processData);
+            $this->case->requests = CaseUtils::storeRequests($this->case->requests, $requestData);
 
             $this->case->saveOrFail();
         } catch (\Exception $e) {
