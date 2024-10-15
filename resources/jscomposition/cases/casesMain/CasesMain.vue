@@ -50,7 +50,7 @@ export default defineComponent({
       let currentCounter = [];
       const resCounters = await getCounters({
         params: {
-          userId: user.id,
+          userId: route.params?.id == "all" ? null : user.id,
         },
       });
 
