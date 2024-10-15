@@ -25,6 +25,7 @@
         @show-details="updateModal($event)" 
         @blank-process-button-clicked="createBlankProcess()"
         @ai-process-button-clicked="createAiProcess()"
+        @process-intelligence-clicked="importPI()"
         :showTemplateOptionsActionBar="true"
         :package-ai="packageAi" />
     </modal>
@@ -38,6 +39,11 @@
       @resetModal="resetModal()"
       :projectId="projectId"
       />
+    <ImportPIModal
+      ref="import-pi-modal"
+      :userHasEditPermissions="true"
+      @onClose="onClosePIModal()"
+    />
   </div>
 </template>
 
@@ -45,9 +51,10 @@
   import Modal from "../shared/Modal.vue";
   import TemplateSearch from "./TemplateSearch.vue";
   import CreateProcessModal from "../../processes/components/CreateProcessModal.vue";
+  import ImportPIModal from "../../processes/import/components/ImportPIModal.vue";
 
   export default {
-    components: { Modal, TemplateSearch, CreateProcessModal },
+    components: { Modal, TemplateSearch, CreateProcessModal, ImportPIModal },
     props: ['type', 'countCategories', 'packageAi', 'isProjectsInstalled', 'hideAddBtn', 'projectId', 'isAbTestingInstalled'],
     data: function() {
       return {
@@ -106,6 +113,14 @@
         } else {
           window.location.href = "/package-ai/processes/create";
         }
+      },
+      onClosePIModal() {
+        this.$refs["import-pi-modal"].hide();
+        this.$bvModal.show('selectTemplate');
+      },
+      importPI() {
+        this.$bvModal.hide("selectTemplate");
+        this.$refs["import-pi-modal"].show();
       },
       useSelectedTemplate() {
         this.selectedTemplate = true;

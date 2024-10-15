@@ -84,6 +84,12 @@ class ProcessController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
      *     @OA\Parameter(ref="#/components/parameters/status"),
      *     @OA\Parameter(ref="#/components/parameters/include"),
+     *     @OA\Parameter(
+     *         name="simplified_data_for_selector",
+     *         in="query",
+     *         description="Comma separated list of fields to include in the response",
+     *         @OA\Schema(type="string", default=""),
+     *     ),
      *
      *     @OA\Response(
      *         response=200,
@@ -123,6 +129,11 @@ class ProcessController extends Controller
             $processes = Process::active()->with($include);
         }
 
+        $filter = $request->input('filter', '');
+        if (!empty($filter)) {
+            $processes->filter($filter);
+        }
+
         // The simplified parameter indicates to return just the main information of processes
         if ($request->input('simplified_data', false)) {
             $processes = Process::where('status', 'ACTIVE')->select('id', 'start_events')->get();
@@ -135,10 +146,12 @@ class ProcessController extends Controller
             return new ApiCollection($modifiedCollection);
         }
 
-        $filter = $request->input('filter', '');
-        if (!empty($filter)) {
-            $processes->filter($filter);
+        if ($request->input('simplified_data_for_selector', false)) {
+            $fields = $this->getRequestFields($request);
+            $processes = $processes->select($fields);
+            return new ApiCollection($processes->get());
         }
+
         // Filter by category
         $category = $request->input('category', null);
         if (!empty($category)) {
@@ -444,6 +457,9 @@ class ProcessController extends Controller
         if (!$request->has('name')) {
             unset($rules['name']);
         }
+        if ($request->has('default_for_anon_webentry')) {
+            $rules = ['language_code' => 'required_if:default_for_anon_webentry,true'];
+        }
         $request->validate($rules);
         $original = $process->getOriginal();
 
@@ -467,6 +483,10 @@ class ProcessController extends Controller
         if ($request->has('manager_id')) {
             $process->manager_id = $request->input('manager_id', null);
         }
+        
+        if($request->has('reassignment_users')) {
+            $process->setProperty('reassignment_users', $request->get('reassignment_users'));
+        }
 
         // If we are specifying cancel assignments...
         if ($request->has('cancel_request')) {
@@ -486,6 +506,13 @@ class ProcessController extends Controller
         // Save any task notification settings...
         if ($request->has('task_notifications')) {
             $this->saveTaskNotifications($process, $request);
+        }
+
+        // Save default language for anon web entry...
+        if ($request->has(['default_for_anon_webentry', 'language_code'])) {
+            $process->default_anon_web_language = $request->input('default_for_anon_webentry') 
+                ? $request->input('language_code') 
+                : null;
         }
 
         $isTemplate = Process::select('is_template')->where('id', $process->id)->value('is_template');
@@ -1658,6 +1685,20 @@ class ProcessController extends Controller
     }
 
     /**
+     * Get select fields for simplified_data_for_selector.
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    protected function getRequestFields(Request $request)
+    {
+        $fields = $request->input('fields', 'id,name,description,default_anon_web_language');
+
+        return $fields ? explode(',', $fields) : [];
+    }
+
+    /**
      * Get the size of the page.
      * per_page=# (integer, the page requested) (Default: 10).
      *
@@ -1666,6 +1707,13 @@ class ProcessController extends Controller
      */
     protected function getPerPage(Request $request)
     {
+        if ($request->input('simplified_data_for_selector')) {
+            $per_page = $request->input('per_page', null);
+            if (!$per_page) {
+                $request->merge(['per_page' => PHP_INT_MAX]);
+            }
+        }
+
         return $request->input('per_page', 10);
     }
 

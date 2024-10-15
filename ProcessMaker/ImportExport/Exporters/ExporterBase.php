@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\ImportExport\Exporters;
 
+use Facades\ProcessMaker\Helpers\CachedSchema;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
@@ -14,6 +15,7 @@ use ProcessMaker\ImportExport\Logger;
 use ProcessMaker\ImportExport\Manifest;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\ImportExport\Psudomodels\Psudomodel;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\ProcessTranslations\Languages;
 use ProcessMaker\Traits\HasVersioning;
 
@@ -69,7 +71,7 @@ abstract class ExporterBase implements ExporterInterface
         $baseQuery = $class::query();
 
         // If table does not exists for model, continue.
-        if (!Schema::hasTable($baseQuery->getModel()->getTable())) {
+        if (!CachedSchema::hasTable($baseQuery->getModel()->getTable())) {
             return [null, null];
         }
 
@@ -288,14 +290,15 @@ abstract class ExporterBase implements ExporterInterface
 
     public function toArray()
     {
+        $lastModifiedBy = $this->getLastModifiedBy();
         $attributes = [
             'exporter' => get_class($this),
             'type' => $this->getClassName(),
             'type_human' => Str::singular($this->getTypeHuman($this->getClassName())),
             'type_plural' => Str::plural($this->getClassName()),
             'type_human_plural' => Str::plural($this->getTypeHuman($this->getClassName())),
-            'last_modified_by' => $this->getLastModifiedBy()['lastModifiedByName'],
-            'last_modified_by_id' => $this->getLastModifiedBy()['lastModifiedById'],
+            'last_modified_by' => $lastModifiedBy['lastModifiedByName'],
+            'last_modified_by_id' => $lastModifiedBy['lastModifiedById'],
             'model' => get_class($this->model),
             'force_password_protect' => $this->forcePasswordProtect,
             'hidden' => $this->hidden,
@@ -342,7 +345,7 @@ abstract class ExporterBase implements ExporterInterface
 
     public function getDescription()
     {
-        if (!Schema::hasColumn($this->model->getTable(), 'description')) {
+        if (!CachedSchema::hasColumn($this->model->getTable(), 'description')) {
             return null;
         }
 
@@ -352,10 +355,17 @@ abstract class ExporterBase implements ExporterInterface
     public function getExtraAttributes($model): array
     {
         $translatedLanguages = [];
-        if ($model->translations) {
-            foreach ($model->translations as $key => $value) {
-                $translatedLanguages[$key] = Languages::ALL[$key];
+
+        if ($model::class === Screen::class) {
+            // Get the translations for the screen
+            foreach ($this->getDependents('screen-translations') as $dependent) {
+                if ($dependent->type === 'screen-translations') {
+                    $translatedLanguages[$dependent->meta['language_code']] = Languages::ALL[$dependent->meta['language_code']];
+                }
             }
+        } elseif ($model->translations && $model->language_code) {
+            // Get the translations for the model translatable
+            $translatedLanguages[$model->language_code] = Languages::ALL[$model->language_code];
         }
 
         return [
@@ -518,17 +528,7 @@ abstract class ExporterBase implements ExporterInterface
         foreach ($this->getDependents(DependentType::CATEGORIES) as $dependent) {
             $categories->push($categoryClass::findOrFail($dependent->model->id));
         }
-        // Get the options from the object, filter them for the `isTemplate` flag and get the first value.
-        $manifest = $this->manifest->toArray(true);
-        $options = (array) $this->options;
-        $isTemplate = collect($options['options'])
-            ->filter(function ($optionValue, $optionKey) use ($manifest) {
-                return Arr::has($manifest, $optionKey);
-            })
-            ->map(function ($optionValue, $optionKey) {
-                return Arr::get($optionValue, 'isTemplate');
-            })
-            ->first();
+        $isTemplate = $this->options->get('isTemplate', $this->model->uuid);
 
         // If the process has a set category, we need to verify the "Uncategorized"
         // category exists for this model and if it doesn't, recreate it

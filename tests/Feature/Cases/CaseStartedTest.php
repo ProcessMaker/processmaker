@@ -2,8 +2,6 @@
 
 namespace Tests\Feature\Cases;
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Mockery;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -13,7 +11,6 @@ use Tests\TestCase;
 
 class CaseStartedTest extends TestCase
 {
-    use DatabaseTransactions;
 
     public function test_create_case()
     {
@@ -29,7 +26,7 @@ class CaseStartedTest extends TestCase
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $instance->case_number,
             'user_id' => $user->id,
-            'case_title' => 'Case #' . $instance->case_number,
+            'case_title' => $instance->case_title,
             'case_status' => 'IN_PROGRESS',
         ]);
     }
@@ -52,13 +49,13 @@ class CaseStartedTest extends TestCase
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $instance1->case_number,
             'user_id' => $user->id,
-            'case_title' => 'Case #' . $instance1->case_number,
+            'case_title' => $instance1->case_title,
             'case_status' => 'IN_PROGRESS',
         ]);
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $instance2->case_number,
             'user_id' => $user->id,
-            'case_title' => 'Case #' . $instance2->case_number,
+            'case_title' => $instance2->case_title,
             'case_status' => 'IN_PROGRESS',
         ]);
     }
@@ -81,7 +78,7 @@ class CaseStartedTest extends TestCase
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $instance->case_number,
             'user_id' => $user->id,
-            'case_title' => 'Case #' . $instance->case_number,
+            'case_title' => $instance->case_title,
             'case_status' => 'IN_PROGRESS',
             'processes->[0]->id' => $process->id,
             'processes->[0]->name' => $process->name,
@@ -106,7 +103,7 @@ class CaseStartedTest extends TestCase
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $instance->case_number,
             'user_id' => $user->id,
-            'case_title' => 'Case #' . $instance->case_number,
+            'case_title' => $instance->case_title,
             'case_status' => 'IN_PROGRESS',
             'requests->[0]->id' => $instance->id,
             'requests->[0]->name' => $instance->name,
@@ -132,7 +129,7 @@ class CaseStartedTest extends TestCase
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $instance->case_number,
             'user_id' => $user->id,
-            'case_title' => 'Case #' . $instance->case_number,
+            'case_title' => $instance->case_title,
             'case_status' => 'IN_PROGRESS',
         ]);
 
@@ -146,7 +143,7 @@ class CaseStartedTest extends TestCase
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $instance->case_number,
             'user_id' => $user->id,
-            'case_title' => 'Case #' . $instance->case_number,
+            'case_title' => $instance->case_title,
             'case_status' => 'IN_PROGRESS',
             'request_tokens->[0]' => $token->id,
         ]);
@@ -170,7 +167,7 @@ class CaseStartedTest extends TestCase
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $instance->case_number,
             'user_id' => $user->id,
-            'case_title' => 'Case #' . $instance->case_number,
+            'case_title' => $instance->case_title,
             'case_status' => 'IN_PROGRESS',
         ]);
 
@@ -184,7 +181,7 @@ class CaseStartedTest extends TestCase
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $instance->case_number,
             'user_id' => $user->id,
-            'case_title' => 'Case #' . $instance->case_number,
+            'case_title' => $instance->case_title,
             'case_status' => 'IN_PROGRESS',
             'tasks->[0]->id' => $token->id,
             'tasks->[0]->element_id' => $token->element_id,
@@ -203,7 +200,7 @@ class CaseStartedTest extends TestCase
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $instance->case_number,
             'user_id' => $user->id,
-            'case_title' => 'Case #' . $instance->case_number,
+            'case_title' => $instance->case_title,
             'case_status' => 'IN_PROGRESS',
             'tasks->[1]->id' => $token2->id,
             'tasks->[1]->element_id' => $token2->element_id,
@@ -230,7 +227,7 @@ class CaseStartedTest extends TestCase
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $instance->case_number,
             'user_id' => $user->id,
-            'case_title' => 'Case #' . $instance->case_number,
+            'case_title' => $instance->case_title,
             'case_status' => 'IN_PROGRESS',
         ]);
 
@@ -244,7 +241,7 @@ class CaseStartedTest extends TestCase
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $instance->case_number,
             'user_id' => $user->id,
-            'case_title' => 'Case #' . $instance->case_number,
+            'case_title' => $instance->case_title,
             'case_status' => 'IN_PROGRESS',
             'tasks->[0]->id' => $token->id,
             'tasks->[0]->element_id' => $token->element_id,
@@ -262,7 +259,7 @@ class CaseStartedTest extends TestCase
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $instance->case_number,
             'user_id' => $user->id,
-            'case_title' => 'Case #' . $instance->case_number,
+            'case_title' => $instance->case_title,
             'case_status' => 'IN_PROGRESS',
             'tasks->[1]->id' => null,
             'tasks->[1]->element_id' => null,
@@ -289,7 +286,7 @@ class CaseStartedTest extends TestCase
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $instance->case_number,
             'user_id' => $user->id,
-            'case_title' => 'Case #' . $instance->case_number,
+            'case_title' => $instance->case_title,
             'case_status' => 'IN_PROGRESS',
         ]);
 
@@ -302,7 +299,7 @@ class CaseStartedTest extends TestCase
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $instance->case_number,
             'user_id' => $user->id,
-            'case_title' => 'Case #' . $instance->case_number,
+            'case_title' => $instance->case_title,
             'case_status' => 'IN_PROGRESS',
             'participants->[0]' => $user->id,
         ]);
@@ -317,7 +314,7 @@ class CaseStartedTest extends TestCase
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $instance->case_number,
             'user_id' => $user->id,
-            'case_title' => 'Case #' . $instance->case_number,
+            'case_title' => $instance->case_title,
             'case_status' => 'IN_PROGRESS',
             'participants->[1]' => $user2->id,
         ]);
@@ -340,7 +337,7 @@ class CaseStartedTest extends TestCase
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $instance->case_number,
             'user_id' => $user->id,
-            'case_title' => 'Case #' . $instance->case_number,
+            'case_title' => $instance->case_title,
             'case_status' => 'IN_PROGRESS',
         ]);
 
@@ -354,7 +351,7 @@ class CaseStartedTest extends TestCase
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $instance->case_number,
             'user_id' => $user->id,
-            'case_title' => 'Case #' . $instance->case_number,
+            'case_title' => $instance->case_title,
             'case_status' => 'IN_PROGRESS',
             'completed_at' => null,
             'request_tokens->[0]' => $token->id,
@@ -365,7 +362,7 @@ class CaseStartedTest extends TestCase
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $instance->case_number,
             'user_id' => $user->id,
-            'case_title' => 'Case #' . $instance->case_number,
+            'case_title' => $instance->case_title,
             'case_status' => 'COMPLETED',
             'completed_at' => now(),
             'tasks->[0]->id' => $token->id,
