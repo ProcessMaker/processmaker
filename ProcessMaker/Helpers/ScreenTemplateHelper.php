@@ -284,28 +284,40 @@ class ScreenTemplateHelper
         return $flattenedItems;
     }
 
-    // Parse the CSS string into an associative array
     public static function parseCss($cssString)
     {
         $rules = [];
-        // Regex to match complex CSS selectors, allowing for any selector pattern
-        preg_match_all('/(?:\/\*.*?\*\*\/|([^{}]+))\s*\{(?:\/\*.*?\*\*\/|([^}]*))\}/', $cssString, $matches, PREG_SET_ORDER);
+
+        // Regex to match CSS rules, allowing for comments
+        preg_match_all('/([^{]+)\s*\{([^}]*)\}/s', $cssString, $matches, PREG_SET_ORDER);
 
         foreach ($matches as $match) {
             $fullSelector = trim($match[1]); // Full CSS selector
             $propertiesString = trim($match[2]); // Properties between the brackets
 
-            // Split properties into key-value pairs
-            $propertiesArray = explode(';', $propertiesString);
+            // Initialize properties array
             $properties = [];
 
-            foreach ($propertiesArray as $property) {
-                $propertyParts = explode(':', $property);
-                if (count($propertyParts) == 2) {
-                    $key = trim($propertyParts[0]);
-                    $value = trim($propertyParts[1]);
-                    if (!empty($key) && !empty($value)) {
-                        $properties[$key] = $value;
+            // Split properties into individual declarations
+            // The regex captures properties and their inline comments correctly
+            preg_match_all('/([^;]+;)(?:\s*\/\*.*?\*\/)?/s', $propertiesString, $propertyMatches);
+
+            foreach ($propertyMatches[0] as $property) {
+                $property = trim($property);
+
+                // If there is an inline comment, include it in the value
+                if (preg_match('/(.*?)(\/\*.*?\*\/)?$/s', $property, $parts)) {
+                    $keyValue = explode(':', $parts[1], 2);
+                    if (count($keyValue) == 2) {
+                        $key = trim($keyValue[0]);
+                        $value = trim(rtrim($keyValue[1], ';')); // Trim the trailing semicolon
+                        // Combine value with inline comment if present
+                        if (!empty($parts[2])) {
+                            $value .= ' ' . trim($parts[2]);
+                        }
+                        if (!empty($key) && !empty($value)) {
+                            $properties[$key] = $value; // Add key-value pair
+                        }
                     }
                 }
             }
@@ -316,6 +328,39 @@ class ScreenTemplateHelper
 
         return $rules;
     }
+
+    // Parse the CSS string into an associative array
+    // public static function parseCss($cssString)
+    // {
+    //     $rules = [];
+    //     // Regex to match complex CSS selectors, allowing for any selector pattern
+    //     preg_match_all('/(?:\/\*.*?\*\*\/|([^{}]+))\s*\{(?:\/\*.*?\*\*\/|([^}]*))\}/', $cssString, $matches, PREG_SET_ORDER);
+
+    //     foreach ($matches as $match) {
+    //         $fullSelector = trim($match[1]); // Full CSS selector
+    //         $propertiesString = trim($match[2]); // Properties between the brackets
+
+    //         // Split properties into key-value pairs
+    //         $propertiesArray = explode(';', $propertiesString);
+    //         $properties = [];
+
+    //         foreach ($propertiesArray as $property) {
+    //             $propertyParts = explode(':', $property);
+    //             if (count($propertyParts) == 2) {
+    //                 $key = trim($propertyParts[0]);
+    //                 $value = trim($propertyParts[1]);
+    //                 if (!empty($key) && !empty($value)) {
+    //                     $properties[$key] = $value;
+    //                 }
+    //             }
+    //         }
+
+    //         // Add rule for the selector
+    //         $rules[$fullSelector] = $properties;
+    //     }
+
+    //     return $rules;
+    // }
 
     // Merge the two CSS arrays
     public static function mergeCss($currentCss, $templateCss)
