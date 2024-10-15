@@ -123,6 +123,10 @@ const handleFilterChange = () => {
 const canEdit = (bundle) => {
   return bundle.dev_link === null;
 }
+
+const goToBundleAssets = (bundle) => {
+  router.push({ name: 'bundle-assets', params: { id: bundle.id } });
+}
 </script>
 
 <template>
@@ -151,6 +155,8 @@ const canEdit = (bundle) => {
     </b-modal>
     <div class="card local-bundles-card">
       <b-table
+        hover
+        @row-clicked="goToBundleAssets"
         :items="bundles"
         :fields="fields"
       >
@@ -192,9 +198,6 @@ const canEdit = (bundle) => {
 </template>
 
 <style lang="scss" scoped>
-tr:hover {
-  cursor: pointer;
-}
 .top-options {
   display: flex;
   justify-content: space-between;
@@ -222,6 +225,9 @@ tr:hover {
   color: #4E5663;
   font-size: 14px;
   font-weight: 400;
+}
+::v-deep .table > tbody > tr {
+  cursor: pointer;
 }
 ::v-deep .table > thead > tr > th:last-child {
   border-right: none !important;

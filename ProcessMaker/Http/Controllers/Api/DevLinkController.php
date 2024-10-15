@@ -7,6 +7,7 @@ use Illuminate\Validation\Rule;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Models\Bundle;
+use ProcessMaker\Models\BundleAsset;
 use ProcessMaker\Models\DevLink;
 use ProcessMaker\Models\Setting;
 
@@ -220,5 +221,12 @@ class DevLinkController extends Controller
             $request->input('class'),
             $request->input('id')
         );
+    }
+
+    public function deleteBundleAsset(BundleAsset $bundleAsset)
+    {
+        $bundleAsset->delete();
+
+        return response()->json(['message' => 'Bundle asset association deleted.'], 200);
     }
 }

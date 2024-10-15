@@ -6,6 +6,7 @@ import LocalBundles from "./components/LocalBundles";
 import Assets from "./components/Assets";
 import AssetListing from "./components/AssetListing";
 import SharedAssets from "./components/SharedAssets";
+import BundleAssets from "./components/BundleAssets";
 
 Vue.use(VueRouter);
 const router = new VueRouter({
@@ -27,6 +28,11 @@ const router = new VueRouter({
       name: "local-bundles",
       path: "/local-bundles",
       component: LocalBundles,
+    },
+    {
+      name: "bundle-assets",
+      path: "/local-bundles/:id",
+      component: BundleAssets,
     },
     {
       name: 'assets',

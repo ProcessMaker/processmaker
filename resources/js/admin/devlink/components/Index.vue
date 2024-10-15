@@ -166,11 +166,13 @@ const urlIsValid = computed(() => {
     </b-modal>
     <div class="card linked-instances-card">
       <b-table
+        hover
+        @row-clicked="select"
         :items="devlinks"
         :fields="fields"
       >
         <template #cell(name)="data">
-          <a href="#" @click.prevent="select(data.item)">{{ data.item.name }}</a>
+          {{ data.item.name }}
         </template>
         <template #cell(status)="data">
           <Status :id="data.item.id" />
@@ -218,6 +220,9 @@ tr:hover {
 }
 ::v-deep .table {
   border-bottom: 1px solid #e9edf1;
+}
+::v-deep .table tr {
+  cursor: pointer;
 }
 ::v-deep .table > thead > tr > th {
   border-top: none;

@@ -6,8 +6,8 @@ use ProcessMaker\Http\Controllers\Api\ChangePasswordController;
 use ProcessMaker\Http\Controllers\Api\CommentController;
 use ProcessMaker\Http\Controllers\Api\CssOverrideController;
 use ProcessMaker\Http\Controllers\Api\DebugController;
-use ProcessMaker\Http\Controllers\Api\EncryptedDataController;
 use ProcessMaker\Http\Controllers\Api\DevLinkController;
+use ProcessMaker\Http\Controllers\Api\EncryptedDataController;
 use ProcessMaker\Http\Controllers\Api\EnvironmentVariablesController;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\Http\Controllers\Api\FileController;
@@ -346,7 +346,6 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('template/{type}/{id}/apply', [TemplateController::class, 'applyTemplate'])->name('template.applyTemplate')->middleware('template-authorization');
     Route::get('screen-builder/{type}/{id}', [TemplateController::class, 'show'])->name('screenBuilder.template.show')->middleware('template-authorization');
 
-
     // Wizard Templates
     Route::get('wizard-templates', [WizardTemplateController::class, 'index'])->name('wizard-templates.index');
     Route::get('wizard-templates/{template_uuid}/get-helper-process', [WizardTemplateController::class, 'getHelperProcess'])->name('wizard-templates.getHelperProcess');
@@ -406,6 +405,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         Route::put('devlink/local-bundles/{bundle}', [DevLinkController::class, 'updateBundle'])->name('devlink.update-bundle');
         Route::post('devlink/local-bundles/{bundle}/add-assets', [DevLinkController::class, 'addAsset'])->name('devlink.add-asset');
         Route::delete('devlink/local-bundles/{bundle}', [DevLinkController::class, 'deleteBundle'])->name('devlink.delete-bundle');
+        Route::delete('devlink/local-bundles/assets/{bundle_asset}', [DevLinkController::class, 'deleteBundleAsset'])->name('devlink.delete-bundle-asset');
         Route::get('devlink/export-local-bundle/{bundle}', [DevLinkController::class, 'exportLocalBundle'])->name('devlink.export-local-bundle');
         Route::get('devlink/export-local-asset', [DevLinkController::class, 'exportLocalAsset'])->name('devlink.export-local-asset');
 
