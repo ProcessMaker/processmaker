@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import debounce from 'lodash/debounce';
 import Origin from './Origin.vue';
+import VersionCheck from './VersionCheck.vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 
 const router = useRouter();
@@ -176,6 +177,9 @@ const canEdit = (bundle) => {
         </template>
         <template #cell(origin)="data">
           <Origin :dev-link="data.item.dev_link"></Origin>
+        </template>
+        <template #cell(version)="data">
+          {{ data.item.version }} <VersionCheck :dev-link="data.item"></VersionCheck>
         </template>
         <template #cell(menu)="data">
           <div class="btn-menu-container">

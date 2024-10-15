@@ -91,6 +91,13 @@ class DevLink extends ProcessMakerModel
         );
     }
 
+    public function remoteBundle($bundleId)
+    {
+        return $this->client()->get(
+            route('api.devlink.local-bundle', ['bundle' => $bundleId], false)
+        );
+    }
+
     public function remoteAssetsListing($request)
     {
         return $this->client()->get(
@@ -102,9 +109,7 @@ class DevLink extends ProcessMakerModel
 
     public function installRemoteBundle($bundleId)
     {
-        $bundleInfo = $this->client()->get(
-            route('api.devlink.local-bundle', ['bundle' => $bundleId], false)
-        )->json();
+        $bundleInfo = $this->remoteBundle($bundleId)->json();
 
         $bundleExport = $this->client()->get(
             route('api.devlink.export-local-bundle', ['bundle' => $bundleId], false)

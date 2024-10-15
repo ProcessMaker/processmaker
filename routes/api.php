@@ -6,8 +6,8 @@ use ProcessMaker\Http\Controllers\Api\ChangePasswordController;
 use ProcessMaker\Http\Controllers\Api\CommentController;
 use ProcessMaker\Http\Controllers\Api\CssOverrideController;
 use ProcessMaker\Http\Controllers\Api\DebugController;
-use ProcessMaker\Http\Controllers\Api\EncryptedDataController;
 use ProcessMaker\Http\Controllers\Api\DevLinkController;
+use ProcessMaker\Http\Controllers\Api\EncryptedDataController;
 use ProcessMaker\Http\Controllers\Api\EnvironmentVariablesController;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\Http\Controllers\Api\FileController;
@@ -346,7 +346,6 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('template/{type}/{id}/apply', [TemplateController::class, 'applyTemplate'])->name('template.applyTemplate')->middleware('template-authorization');
     Route::get('screen-builder/{type}/{id}', [TemplateController::class, 'show'])->name('screenBuilder.template.show')->middleware('template-authorization');
 
-
     // Wizard Templates
     Route::get('wizard-templates', [WizardTemplateController::class, 'index'])->name('wizard-templates.index');
     Route::get('wizard-templates/{template_uuid}/get-helper-process', [WizardTemplateController::class, 'getHelperProcess'])->name('wizard-templates.getHelperProcess');
@@ -397,6 +396,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         Route::get('devlink/shared-assets', [DevLinkController::class, 'sharedAssets'])->name('devlink.shared-assets');
         Route::get('devlink/{devLink}/remote-assets', [DevLinkController::class, 'remoteAssets'])->name('devlink.remote-assets');
         Route::get('devlink/{devLink}/remote-assets-listing', [DevLinkController::class, 'remoteAssetsListing'])->name('devlink.remote-assets-listing');
+        Route::get('devlink/{devLink}/remote-version/{bundle}', [DevLinkController::class, 'remoteBundleVersion'])->name('devlink.remote-version');
         Route::post('devlink/add-shared-asset', [DevLinkController::class, 'addSharedAsset'])->name('devlink.add-shared-assets');
         Route::delete('devlink/remove-shared-asset/{setting}', [DevLinkController::class, 'removeSharedAsset'])->name('devlink.remove-shared-assets');
 

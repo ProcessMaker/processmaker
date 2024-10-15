@@ -221,4 +221,9 @@ class DevLinkController extends Controller
             $request->input('id')
         );
     }
+
+    public function remoteBundleVersion(DevLink $devLink, $remoteBundleId)
+    {
+        return $devLink->remoteBundle($remoteBundleId);
+    }
 }
