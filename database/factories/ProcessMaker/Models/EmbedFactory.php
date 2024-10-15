@@ -11,20 +11,20 @@ use ProcessMaker\Models\Process;
  */
 class EmbedFactory extends Factory
 {
+    protected $model = Embed::class;
+
     /**
      * Define the model's default state.
-     *
-     * @return array
      */
-    public function definition()
+    public function definition(): array
     {
+        $process = Process::factory()->create();
+
         return [
-            'model_id' => function () {
-                return Process::factory()->create()->getKey();
-            },
-            'model_type' => $this->faker->randomElement(['ProcessMaker\Models\Process']),
+            'model_id' => $process->id,
+            'model_type' => Process::class,
             'mime_type' => $this->faker->randomElement(['text/url']),
-            'custom_properties' => [],
+            'custom_properties' => json_encode([]),
             'order_column' => 1,
         ];
     }

@@ -495,6 +495,7 @@ class ProcessExporter extends ExporterBase
     {
         foreach ($this->getDependents(DependentType::EMBED) as $embed) {
             $embed->model->setAttribute('model_id', $this->model->id);
+            $embed->model->saveOrFail();
         }
     }
 
