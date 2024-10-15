@@ -5,7 +5,7 @@ namespace ProcessMaker\ProcessTranslations;
 use ProcessMaker\Package\PackageDynamicUI\Models\Menu;
 use ProcessMaker\Package\Translations\Models\Translatable;
 
-class MenuTranslation extends Translate
+class MenuTranslation extends TranslationManager
 {
     protected $menu;
 
