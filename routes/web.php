@@ -142,13 +142,18 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('/redirect-to-intended', [HomeController::class, 'redirectToIntended'])->name('redirect_to_intended');
 
     Route::post('/keep-alive', [LoginController::class, 'keepAlive'])->name('keep-alive');
-    // Cases
-    Route::get('cases', [CasesController::class, 'index'])->name('cases.index')->middleware('no-cache');
-    Route::get('cases/{case_number}', [CasesController::class, 'edit'])->name('cases.edit');
+    
     // This is a temporary API the engine team will create the API
-    Route::get('cases/{type?}', [CasesController::class, 'index'])->name('cases-main.index')
-    ->where('type', 'in_progress|completed|all')
+    Route::get('cases/{type?}', [CasesController::class, 'index'])
+    ->where('type', 'all|in_progress|completed')
+    ->name('cases-main.index')
     ->middleware('no-cache');
+    // Cases
+    Route::get('cases/{case_number}', [CasesController::class, 'edit'])
+    ->where('case_number', '[0-9]+')
+    ->name('cases.edit')
+    ->middleware('no-cache');
+
     // Requests
     Route::get('requests', [RequestController::class, 'index'])
         ->name('requests.index')
