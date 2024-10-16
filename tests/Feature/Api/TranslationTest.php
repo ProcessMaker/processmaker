@@ -8,10 +8,11 @@ use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Jobs\ImportV2;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
+use ProcessMaker\Package\Translations\Models\Translatable;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
-
 
 class TranslationTest extends TestCase
 {
@@ -49,6 +50,46 @@ class TranslationTest extends TestCase
         $response = $this->apiCall('GET', "$url?include=screen");
         $response->assertStatus(200);
 
+        // Add a translation for the screen en
+        $screen = $response->json()['screen'];
+
+        $translatable = new Translatable();
+        $translatable->translatable_id = $screen['screen_id'];
+        $translatable->translatable_type = Screen::class;
+        $translatable->language_code = 'en';
+        $translatable->translations = [
+            'First Name' => 'First Name',
+            'Last Name' => 'Last Name',
+            'Age' => 'Age',
+        ];
+        $translatable->save();
+
+        // Add a translation for the screen pt
+        $screen = $response->json()['screen'];
+
+        $translatable = new Translatable();
+        $translatable->translatable_id = $screen['screen_id'];
+        $translatable->translatable_type = Screen::class;
+        $translatable->language_code = 'pt';
+        $translatable->translations = [
+            'First Name' => 'First Name',
+            'Last Name' => 'Last Name',
+            'Age' => 'Age',
+        ];
+        $translatable->save();
+
+        // Add a translation for the screen es
+        $translatable = new Translatable();
+        $translatable->translatable_id = $screen['screen_id'];
+        $translatable->translatable_type = Screen::class;
+        $translatable->language_code = 'es';
+        $translatable->translations = [
+            'First Name' => 'Nombre',
+            'Last Name' => 'Apellido',
+            'Age' => 'Edad',
+        ];
+        $translatable->save();
+
         $responseData = $response->json();
         $items = collect($responseData['screen']['config'][0]['items']);
         $firstNameItem = $items->firstWhere('config.name', 'first_name');
@@ -58,7 +99,6 @@ class TranslationTest extends TestCase
         $this->assertEquals('First Name', $firstNameItem['config']['label']);
         $this->assertEquals('Last Name', $lastNameItem['config']['label']);
         $this->assertEquals('Age', $ageItem['config']['label']);
-
 
         // As portuguese is not translated, english must be used
         $this->user = $portugueseUser;
@@ -73,7 +113,6 @@ class TranslationTest extends TestCase
         $this->assertEquals('Last Name', $lastNameItem['config']['label']);
         $this->assertEquals('Age', $ageItem['config']['label']);
 
-
         // Spanish has translation, so it should be used for the screen:
         $this->user = $spanishUser;
         $response = $this->apiCall('GET', "$url?include=screen");
@@ -87,7 +126,6 @@ class TranslationTest extends TestCase
         $this->assertEquals('Apellido', $lastNameItem['config']['label']);
         $this->assertEquals('Edad', $ageItem['config']['label']);
     }
-
 
     public function testTranslationWithLanguageThatDoesNotHaveTranslation()
     {
@@ -118,6 +156,20 @@ class TranslationTest extends TestCase
         $response = $this->apiCall('GET', "$url?include=screen");
         $response->assertStatus(200);
 
+        // Add a translation for the screen en
+        $screen = $response->json()['screen'];
+
+        $translatable = new Translatable();
+        $translatable->translatable_id = $screen['screen_id'];
+        $translatable->translatable_type = Screen::class;
+        $translatable->language_code = 'en';
+        $translatable->translations = [
+            'First Name' => 'First Name',
+            'Last Name' => 'Last Name',
+            'Age' => 'Age',
+        ];
+        $translatable->save();
+
         // As portuguese is not translated, english must be used
         $response = $this->apiCall('GET', "$url?include=screen");
         $responseData = $response->json();
@@ -133,9 +185,8 @@ class TranslationTest extends TestCase
 
     public function testTranslationWithLanguageThatHasTranslation()
     {
-
         $spanishUser = User::factory()->create(['is_administrator' => true, 'language' => 'es']);
-        $this->user = User::factory()->create(['is_administrator' => true]);
+        $this->user = User::factory()->create(['is_administrator' => true, 'language' => 'es']);
 
         $fileName = __DIR__ . '/../../Fixtures/translation_test.json';
         $file = new UploadedFile($fileName, 'translation_test.json', null, null, true);
@@ -156,11 +207,26 @@ class TranslationTest extends TestCase
         $url = route('api.tasks.show', [$newTask->id]);
         $response = $this->apiCall('GET', "$url?include=screen");
 
+        $screen = $response->json()['screen'];
+
+        $translatable = new Translatable();
+        $translatable->translatable_id = $screen['screen_id'];
+        $translatable->translatable_type = Screen::class;
+        $translatable->language_code = 'es';
+        $translatable->translations = [
+            'First Name' => 'Nombre',
+            'Last Name' => 'Apellido',
+            'Age' => 'Edad',
+        ];
+        $translatable->save();
+
         // Spanish has translation, so it should be used for the screen:
         $this->user = $spanishUser;
+
         $response = $this->apiCall('GET', "$url?include=screen");
         $responseData = $response->json();
         $items = collect($responseData['screen']['config'][0]['items']);
+
         $firstNameItem = $items->firstWhere('config.name', 'first_name');
         $lastNameItem = $items->firstWhere('config.name', 'last_name');
         $ageItem = $items->firstWhere('config.name', 'age');
