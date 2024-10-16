@@ -2391,5 +2391,8 @@
   "Edit Bundle": "Edit Bundle",
   "Create New Bundle": "Create New Bundle",
   "Decision Tables": "Decision Tables",
-  "FlowGenies": "FlowGenies"
+  "FlowGenies": "FlowGenies",
+  "Invalid URL": "Invalid URL",
+  "Create new DevLink": "Create new DevLink",
+  "Edit DevLink": "Edit DevLink"
 }
