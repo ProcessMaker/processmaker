@@ -53,7 +53,6 @@ class CasesController extends Controller
      */
     public function edit($case_number)
     {
-
         // Load event ScreenBuilderStarting
         $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, 'FORM'));
