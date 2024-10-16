@@ -160,11 +160,22 @@ const urlIsValid = computed(() => {
         <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>Add Instance
       </b-button>
     </div>
-    <b-modal ref="confirmDeleteModal" title="Delete DevLink" @ok="executeDelete">
+    <b-modal
+      ref="confirmDeleteModal"
+      centered
+      title="Delete DevLink"
+      @ok="executeDelete"
+    >
       <p>Are you sure you want to delete {{ selected?.name }}?</p>
     </b-modal>
 
-    <b-modal id="create" title="Create new devlink" @hidden="clear" @ok="create">
+    <b-modal
+      id="create"
+      centered
+      title="Create new devlink"
+      @hidden="clear"
+      @ok="create"
+    >
       <b-form-group label="Name">
         <b-form-input v-model="newName"></b-form-input>
       </b-form-group>
@@ -177,7 +188,12 @@ const urlIsValid = computed(() => {
       </b-form-group>
     </b-modal>
 
-    <b-modal ref="editModal" title="Edit DevLink" @ok="updateDevLink">
+    <b-modal
+      ref="editModal"
+      centered
+      title="Edit DevLink"
+      @ok="updateDevLink"
+    >
       <template v-if="selected">
         <b-form-group label="Name">
           <b-form-input v-model="selected.name"></b-form-input>
@@ -228,6 +244,25 @@ tr:hover {
 .ellipsis-devlink {
   border-radius: 10px;
   border: 1px solid #D7DDE5;
+}
+::v-deep .modal-style {
+  border-radius: 8px;
+}
+::v-deep .modal-header {
+  border-bottom: none;
+}
+::v-deep .modal-footer {
+  border-top: none;
+}
+::v-deep .modal-title {
+  font-size: 24px;
+  font-weight: 500;
+  color: #20242A;
+}
+::v-deep .modal-body {
+  font-size: 14px;
+  font-weight: 400;
+  color: #20242A;
 }
 ::v-deep .ellipsis-devlink .btn {
   border-radius: 10px;
