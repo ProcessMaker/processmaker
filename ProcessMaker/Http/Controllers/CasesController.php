@@ -2,32 +2,11 @@
 
 namespace ProcessMaker\Http\Controllers;
 
-use Facades\ProcessMaker\RollbackProcessRequest;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
-use ProcessMaker\Cache\CacheRemember;
-use ProcessMaker\Events\FilesDownloaded;
-use ProcessMaker\Events\ScreenBuilderStarting;
-use ProcessMaker\Filters\SaveSession;
-use ProcessMaker\Helpers\DefaultColumns;
-use ProcessMaker\Helpers\MobileHelper;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Managers\DataManager;
-use ProcessMaker\Managers\ScreenBuilderManager;
-use ProcessMaker\Models\Comment;
-use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\ScreenVersion;
-use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Package\PackageComments\PackageServiceProvider;
 use ProcessMaker\ProcessTranslations\ProcessTranslation;
-use ProcessMaker\RetryProcessRequest;
-use ProcessMaker\Traits\HasControllerAddons;
-use ProcessMaker\Traits\SearchAutocompleteTrait;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class CasesController extends Controller
 {
@@ -54,11 +33,11 @@ class CasesController extends Controller
     public function edit($case_number)
     {
         // Get all the request related to this case number
-        $requests = ProcessRequest::where('case_number', $case_number)->get();
+        $allRequests = ProcessRequest::where('case_number', $case_number)->get();
         $parentRequest = null;
-        $requestCount = $requests->count();
-        // Search the parent request  parent_request_id
-        foreach ($requests as $request) {
+        $requestCount = $allRequests->count();
+        // Search the parent request parent_request_id and load $request
+        foreach ($allRequests as $request) {
             if (is_null($request->parent_request_id)) {
                 $parentRequest = $request;
                 break;
@@ -74,7 +53,7 @@ class CasesController extends Controller
         // The user is Manager from the main request
         $isProcessManager = $request->process?->manager_id === Auth::user()->id;
         // Check if the user has permission print for request
-        $canPrintScreens = $canOpenCase = $this->canUserCanOpenCase($request);
+        $canPrintScreens = $canOpenCase = $this->canUserCanOpenCase($allRequests);
         if (!$canOpenCase && !$isProcessManager) {
             $this->authorize('view', $request);
         }
@@ -97,24 +76,27 @@ class CasesController extends Controller
     /**
      * The user can open the case
      *
-     * @param ProcessRequest $request
+     * @param \Illuminate\Database\Eloquent\Collection $allRequests
      * @return bool
      */
-    private function canUserCanOpenCase(ProcessRequest $request)
+    private function canUserCanOpenCase($allRequests)
     {
         // Validate user is administrator
         if (Auth::user()->is_administrator) {
             return true;
         }
 
-        // Validate user is participant or requester
-        if (in_array(Auth::user()->id, $request->participants()->get()->pluck('id')->toArray())) {
-            return true;
-        }
-
         // Any user with permissions Edit Request Data, Edit Task Data and view All Requests
         if (Auth::user()->can('view-all_requests') && Auth::user()->can('edit-request_data') && Auth::user()->can('edit-task_data')) {
             return true;
+        }
+
+        // Validate user is participant or requester in the request related to the case
+        foreach ($allRequests as $request) {
+            $participantIds = $request->participants->pluck('id')->toArray();
+            if (in_array(Auth::user()->id, $participantIds)) {
+                return true;
+            }
         }
 
         return false;
