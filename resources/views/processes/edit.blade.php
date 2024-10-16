@@ -25,14 +25,6 @@
                         <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-config"
                            role="tab"
                            aria-controls="nav-config" aria-selected="true" @click="activateTab">{{__('Configuration')}}</a>
-                        @if (config('app.open_ai_process_translations'))
-                            @can('view-process-translations')
-                                <a class="nav-item nav-link" id="nav-groups-tab" data-toggle="tab" href="#nav-translations"
-                                    role="tab"
-                                    data-test="translation-tab"
-                                    aria-controls="nav-translations" aria-selected="true" @click="activateTab">{{__('Translations')}}</a>
-                            @endcan
-                        @endif
                         <a class="nav-item nav-link" id="nav-groups-tab" data-toggle="tab" href="#nav-notifications"
                            role="tab"
                            aria-controls="nav-notifications" aria-selected="true" @click="activateTab">{{__('Notifications')}}</a>
@@ -117,21 +109,6 @@
                                                     :errors="errors.category"
                                                 >
                                                 </category-select>
-                                                <div class="form-group">
-                                                    <label class="typo__label">{{__('Process Manager')}}</label>
-                                                    <select-user
-                                                        v-model="manager"
-                                                        :multiple="false"
-                                                        :class="{'is-invalid': errors.manager_id}"
-                                                    />
-                                                    <div
-                                                        v-if="errors.manager_id"
-                                                        class="invalid-feedback"
-                                                        role="alert"
-                                                    >
-                                                        @{{errors.manager_id[0]}}
-                                                    </div>
-                                                </div>
                                             </b-col>
                                             <b-col>
                                                 <div class="form-group">
@@ -169,6 +146,67 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="card card-custom-info">
+                              <div class="card-header"
+                                   id="headingProcessPermissions">
+                                <button
+                                  class="btn btn-custom-info"
+                                  type="button"
+                                  data-toggle="collapse"
+                                  data-target="#collapseProcessPermissions"
+                                  aria-expanded="true"
+                                  aria-controls="collapseProcessPermissions"
+                                  >
+                                  <span>
+                                    {{__('Process Permissions')}}
+                                  </span>
+                                </button>
+                              </div>
+                              <div id="collapseProcessPermissions"
+                                   class="collapse show"
+                                   aria-labelledby="headingProcessPermissions">
+                                <div class="card-body">
+                                  <b-row>
+                                    <b-col>
+                                      <div class="form-group">
+                                        <label class="typo__label">{{__('Process Manager')}}</label>
+                                        <select-user
+                                          v-model="manager"
+                                          :multiple="false"
+                                          :class="{'is-invalid': errors.manager_id}"
+                                          />
+                                        <div
+                                          v-if="errors.manager_id"
+                                          class="invalid-feedback"
+                                          role="alert"
+                                          >
+                                          @{{errors.manager_id[0]}}
+                                        </div>
+                                      </div>
+                                    </b-col>
+                                    <b-col>
+                                      <div class="form-group">
+                                        <div class="d-flex justify-content-between">
+                                          <label class="typo__label">{{__('Reassignment')}}</label>
+                                          <b-button size="sm"
+                                                    variant="outline-light"
+                                                    class="p-0"
+                                                    @click="reassignmentClicked"
+                                                    pill>
+                                            <img src="/img/button-small-plus-blue.svg" :alt="$t('Clear unsaved filters')"/>
+                                          </b-button>
+                                        </div>
+                                        <processes-permissions ref="listReassignment"
+                                                               :reassignments="reassignmentUsers">
+                                        </processes-permissions>
+                                      </div>
+                                    </b-col>
+                                  </b-row>
+                                </div>
+                              </div>
+                            </div>
+                          
                             <div class="card card-custom-info">
                                 <div
                                     class="card-header"
@@ -350,83 +388,6 @@
                                 !!}
                             </div>
                         </div>
-
-                        {{-- Translations --}}
-                        @if (config('app.open_ai_process_translations'))
-                            @can('view-process-translations')
-                                <div class="tab-pane fade show" :class="{'active': activeTab === 'nav-translations'}" id="nav-translations" ref="nav-translations" role="tabpanel"
-                                    aria-labelledby="nav-translations-tab">
-
-                                    <div class="page-content mb-0" id="processTranslationIndex">
-                                        <div id="search-bar" class="search mb-3" vcloak>
-                                            <div class="d-flex flex-column flex-md-row">
-                                                <div class="flex-grow-1">
-                                                    <div id="search" class="mb-3 mb-md-0">
-                                                        <div class="input-group w-100">
-                                                            <input id="search-box" v-model="filterTranslations" class="form-control" placeholder="{{__('Search')}}"  aria-label="{{__('Search')}}">
-                                                            <div class="input-group-append">
-                                                                <button type="button" class="btn btn-primary" aria-label="{{__('Search')}}">
-                                                                    <i class="fas fa-search"></i>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                @canany(['import-process-translations', 'create-process-translations'])
-                                                    <div class="d-flex ml-md-0 flex-column flex-md-row">
-                                                        @can('import-process-translations')
-                                                            <div class="mb-3 mb-md-0 ml-md-2">
-                                                                <a href="#" aria-label="{{ __('Import Translation') }}" id="import_translation" class="btn btn-outline-secondary w-100" @click="importTranslation" data-test="translation-import">
-                                                                    <i class="fas fa-file-import"></i> {{__('Import')}}
-                                                                </a>
-                                                            </div>
-                                                        @endcan
-                                                        @can('create-process-translations')
-                                                            <div class="mb-3 mb-md-0 ml-md-2">
-                                                                <a href="#"
-                                                                    aria-label="{{ __('New Translation') }}"
-                                                                    id="new_translation"
-                                                                    class="btn btn-primary w-100"
-                                                                    @click="newTranslation"
-                                                                    data-test="translation-create-button">
-                                                                    {{__('+ Translation')}}
-                                                                </a>
-                                                            </div>
-                                                        @endcan
-                                                    </div>
-                                                @endcan
-                                            </div>
-                                        </div>
-
-                                        <div class="container-fluid">
-                                            <process-translation-listing
-                                                ref="translationsListing"
-                                                :filter="filterTranslations"
-                                                :permission="{{ \Auth::user()->hasPermissionsFor('process-translations') }}"
-                                                @translated-languages-changed="onTranslatedLanguagesChanged"
-                                                @edit-translation="onEditTranslation"
-                                                :process-id="{{ $process->id }}"
-                                            ></process-translation-listing>
-                                        </div>
-                                    </div>
-
-                                    <div class="d-flex justify-content-end mt-2">
-                                        {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                                        {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
-                                    </div>
-
-                                    <create-process-translation-modal
-                                        ref="createProcessTranslationModal"
-                                        :process-id="{{ $process->id }}"
-                                        :permission="{{ \Auth::user()->hasPermissionsFor('process-translations') }}"
-                                        process-name="{{ $process->name }}"
-                                        :edit-translation="editTranslation"
-                                        @create-process-translation-closed="onCreateProcessTranslationClosed"
-                                        @translating-language="onTranslatingLanguage"
-                                        @language-saved="onLanguageSaved"/>
-                                </div>
-                            @endcan
-                        @endif
 
                         {{-- Notifications --}}
                         <div class="tab-pane fade show p-3" id="nav-notifications" role="tabpanel"
@@ -622,7 +583,6 @@
                     screen: null
                     },
                     screens: [],
-                    filterTranslations: "",
                     canCancel: @json($canCancel),
                     canEditData: @json($canEditData),
                     screenRequestDetail: @json($screenRequestDetail),
@@ -630,16 +590,19 @@
                     activeUsersAndGroups: @json($list),
                     pause_timer_start_events: false,
                     manager: @json($process->manager),
-                    translatedLanguages: [],
-                    editTranslation: null,
                     activeTab: "",
                     noElementsFoundMsg: 'Oops! No elements found. Consider changing the search query.',
+                    reassignmentUsers: []
                 }
                 },
                 mounted() {
                     this.activeTab = "";
                     if (_.get(this.formData, 'properties.manager_can_cancel_request')) {
                         this.canCancel.push(this.processManagerOption());
+                    }
+                    
+                    if (_.get(this.formData, 'properties.reassignment_users')) {
+                        this.reassignmentUsers = _.get(this.formData, 'properties.reassignment_users');
                     }
 
                     this.selectedProjects = this.assignedProjects.length > 0 ? this.assignedProjects.map(project => project.id) : null;
@@ -690,25 +653,6 @@
                 onClose() {
                     window.location.href = '/processes';
                 },
-                onTranslatedLanguagesChanged(translatedLanguages) {
-                    this.translatedLanguages = translatedLanguages;
-                    this.$refs.createProcessTranslationModal.getAvailableLanguages();
-                },
-                onEditTranslation(editTranslation) {
-                    this.editTranslation = editTranslation;
-                    this.$bvModal.show("createProcessTranslation");
-                },
-                onCreateProcessTranslationClosed() {
-                    this.editTranslation = null;
-                },
-                onTranslatingLanguage() {
-                    this.$refs.translationsListing.fetch();
-                    this.$refs.translationsListing.fetchPending();
-                },
-                onLanguageSaved() {
-                    this.$refs.translationsListing.fetch();
-                    this.$refs.translationsListing.fetchPending();
-                },
                 formatAssigneePermissions(data) {
                     let response = {};
 
@@ -757,6 +701,8 @@
                     this.formData.cancel_screen_id = this.formatValueScreen(this.screenCancel);
                     this.formData.request_detail_screen_id = this.formatValueScreen(this.screenRequestDetail);
                     this.formData.manager_id = this.formatValueScreen(this.manager);
+                    this.formData.reassignment_users = this.$refs["listReassignment"].getItems();
+                    
                     ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
                     .then(response => {
                         ProcessMaker.alert(this.$t('The process was saved.'), 'success', 5, true);
@@ -783,6 +729,9 @@
                 importTranslation() {
                     window.location = `/processes/${this.formData.id}/import/translation`
                 },
+                reassignmentClicked() {
+                    this.$refs["listReassignment"].add();
+                }
                 },
             });
         });

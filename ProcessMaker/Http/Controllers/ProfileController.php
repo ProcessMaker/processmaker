@@ -27,13 +27,6 @@ class ProfileController extends Controller
             ['value' => 'INACTIVE', 'text' => __('Inactive')],
         ];
 
-        $langs = ['en'];
-        if (app()->getProvider(\ProcessMaker\Package\Translations\PackageServiceProvider::class)) {
-            $langs = i18nHelper::availableLangs();
-        }
-        // Our form controls need attribute:value pairs sot we convert the langs array to and associative one
-        $availableLangs = array_combine($langs, $langs);
-
         $timezones = array_reduce(JsonData::timezones(),
             function ($result, $item) {
                 $result[$item] = $item;
@@ -59,7 +52,7 @@ class ProfileController extends Controller
         $addons = $this->getPluginAddons('edit', []);
 
         return view('profile.edit',
-            compact('currentUser', 'states', 'timezones', 'countries', 'datetimeFormats', 'availableLangs',
+            compact('currentUser', 'states', 'timezones', 'countries', 'datetimeFormats',
                 'status', 'enabled2FA', 'global2FAEnabled', 'is2FAEnabledForGroup', 'addons'));
     }
 

@@ -13,6 +13,7 @@ use ProcessMaker\Filters\SaveSession;
 use ProcessMaker\Helpers\DefaultColumns;
 use ProcessMaker\Helpers\MobileHelper;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
+use ProcessMaker\Http\Controllers\Api\UserConfigurationController;
 use ProcessMaker\Jobs\MarkNotificationAsRead;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
@@ -92,7 +93,7 @@ class TaskController extends Controller
         $task->allow_interstitial = $interstitial['allow_interstitial'];
         $task->definition = $task->getDefinition();
         $task->requestor = $task->processRequest->user;
-        $task->draft = $task->draft();
+        $task->draft = $task->draft;
         $element = $task->getDefinition(true);
         $screenFields = $screenVersion ? $screenVersion->screenFilteredFields() : [];
         $taskDraftsEnabled = TaskDraft::draftsEnabled();
@@ -140,6 +141,7 @@ class TaskController extends Controller
                 'timezone',
                 'datetime_format',
             ]);
+            $userConfiguration = (new UserConfigurationController())->index();
 
             return view('tasks.edit', [
                 'task' => $task,
@@ -153,6 +155,7 @@ class TaskController extends Controller
                 'currentUser' => $currentUser,
                 'screenFields' => $screenFields,
                 'taskDraftsEnabled' => $taskDraftsEnabled,
+                'userConfiguration' => $userConfiguration,
             ]);
         }
     }

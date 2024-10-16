@@ -51,7 +51,7 @@
     <splitpane-container v-if="showPreview" :size="splitpaneSize">
       <div
         ref="tasks-preview"
-        class="tasks-preview h-100 p-3"
+        class="tasks-preview h-100 p-3 position-relative"
       >
           <div class="d-flex w-100 mb-3">
             <slot name="header" v-bind:close="onClose" v-bind:screenFilteredTaskData="formData" v-bind:taskReady="taskReady">
@@ -98,7 +98,8 @@
                     class="icon-button"
                     :aria-label="$t('Clear Draft')"
                     variant="light"
-                    v-b-tooltip.hover title="Clear Draft"
+                    v-b-tooltip.hover 
+                    :title="$t('Clear Draft')"
                     @click="eraseDraft()"
                     v-if="taskDraftsEnabled"
                   >
@@ -108,6 +109,8 @@
                     v-if="showQuickFillPreview === false"
                     class="icon-button"
                     :aria-label="$t('Quick fill')"
+                    v-b-tooltip.hover 
+                    :title="$t('Quick fill')"
                     variant="light"
                     @click="showQuickFillPreview = true"
                   >
@@ -125,6 +128,8 @@
                     class="icon-button"
                     variant="light"
                     :aria-label="$t('Priority')"
+                    v-b-tooltip.hover 
+                    :title="$t('Priority')"
                     :class="{ 'button-priority': isPriority }"
                     @click="addPriority()"
                   >
@@ -142,6 +147,8 @@
                     class="btn text-secondary icon-button"
                     variant="light"
                     :aria-label="$t('Reassign')"
+                    v-b-tooltip.hover 
+                    :title="$t('Reassign')"
                     @click="openReassignment()"
                   >
                     <i class="fas fa-user-friends" />
@@ -150,6 +157,8 @@
                     class="btn text-secondary icon-button"
                     variant="light"
                     :aria-label="$t('Open Task')"
+                    v-b-tooltip.hover 
+                    :title="$t('Open Task')"
                     @click="openTask()"
                   >
                     <i class="fas fa-external-link-alt" />
@@ -159,6 +168,8 @@
                 <b-button
                   class="btn-light text-secondary"
                   :aria-label="$t('Close')"
+                    v-b-tooltip.hover 
+                    :title="$t('Close')"
                   @click="onClose();showReassignment=false;"
                 >
                   <i class="fas fa-times" />
@@ -168,51 +179,27 @@
           </div>
           <div
             id="reassign-container"
-            class="d-flex mb-3"
+            class="d-flex align-items-center overlay-div position-absolute top-0 start-0 w-100 bg-white shadow-lg p-2 pr-4"
             v-if="showReassignment"
           >
             <div class="mr-3">
               <label for="user">Assign to:</label>
             </div>
             <div class="flex-grow-1">
-              <select-from-api
-                id='user'
-                v-model="selectedUser"
-                :placeholder="$t('Type here to search')"
-                api="users"
-                :multiple="false"
-                :show-labels="false"
-                :searchable="true"
-                :store-id="false"
-                label="fullname"
-              >
-                <template slot="noResult">
-                  {{ $t('No elements found. Consider changing the search query.') }}
+              <PMDropdownSuggest v-model="selectedUser"
+                                 :options="users"
+                                 @onInput="onInput"
+                                 @onSelectedOption="onSelectedOption"
+                                 :placeholder="$t('Type here to search')">
+                <template v-slot:pre-text="{ option }">
+                  <b-badge variant="secondary" class="mr-2 custom-badges pl-2 pr-2 rounded-lg">{{ option.count }}</b-badge>
                 </template>
-                <template slot="noOptions">
-                  {{ $t('No Data Available') }}
-                </template>
-                <template slot="tag" slot-scope="props">
-                  <span class="multiselect__tag  d-flex align-items-center" style="width:max-content;">
-                    <span class="option__desc mr-1">
-                      <span class="option__title">{{ props.option.fullname }}</span>
-                    </span>
-                    <i aria-hidden="true" tabindex="1"
-                      @click="props.remove(props.option)"
-                      class="multiselect__tag-icon"></i>
-                  </span>
-                </template>
-                <template slot="option" slot-scope="props">
-                  <div class="option__desc d-flex align-items-center">
-                    <span class="option__title mr-1">{{ props.option.fullname }}</span>
-                  </div>
-                </template>
-              </select-from-api>
+              </PMDropdownSuggest>
             </div>
-            <button type="button" class="btn btn-secondary ml-2" @click="reassignUser" :disabled="disabled">
+            <button type="button" class="btn btn-primary btn-sm ml-2" @click="reassignUser" :disabled="disabled">
               {{ $t('Assign') }}
             </button>
-            <button type="button" class="btn btn-outline-secondary ml-2" @click="cancelReassign">
+            <button type="button" class="btn btn-outline-secondary btn-sm ml-2" @click="cancelReassign">
               {{ $t('Cancel') }}
             </button>
           </div>
@@ -221,8 +208,7 @@
             'frame-container-full': tooltipButton === 'fullTask',
             'frame-container-inbox': tooltipButton === 'inboxRules'
           }"
-          class="iframe-container"
-          v-show="!showReassignment">
+          class="iframe-container">
             <iframe
               v-if="showFrame1"
               :title="$t('Preview')"
@@ -276,11 +262,18 @@ import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 import QuickFillPreview from "./QuickFillPreview.vue";
 import PreviewMixin from "./PreviewMixin";
 import autosaveMixins from "../../modules/autosave/autosaveMixin.js"
+import PMDropdownSuggest from "../../components/PMDropdownSuggest.vue";
 
 export default {
-  components: { SplitpaneContainer, TaskLoading, QuickFillPreview, TaskSaveNotification, EllipsisMenu },
+  components: { SplitpaneContainer, TaskLoading, QuickFillPreview, TaskSaveNotification, EllipsisMenu, PMDropdownSuggest },
   mixins: [PreviewMixin, autosaveMixins],
   props: ["tooltipButton", "propPreview"],
+  data(){
+    return {
+      selectedUser: null,
+      users: []
+    };
+  },
   watch: {
     task: {
       deep: true,
@@ -335,10 +328,11 @@ export default {
     this.screenWidthPx = window.innerWidth;
     window.addEventListener('resize', this.updateScreenWidthPx);
     this.getUser();
+    this.getUsers("");
   },
   computed: {
     disabled() {
-      return this.selectedUser ? this.selectedUser.length === 0 : true;
+      return this.selectedUser ? false : true;
     },
     isAllowReassignment() {
       if (this.taskDefinition.definition) {
@@ -426,17 +420,17 @@ export default {
       if (this.selectedUser) {
         ProcessMaker.apiClient
           .put("tasks/" + this.task.id, {
-            user_id: this.selectedUser.id
+            user_id: this.selectedUser
           })
           .then(response => {
             this.showReassignment = false;
-            this.selectedUser = [];
+            this.selectedUser = null;
           });
       }
     },
     cancelReassign() {
       this.showReassignment = false;
-      this.selectedUser = [];
+      this.selectedUser = null;
     },
     openReassignment() {
       this.showReassignment = !this.showReassignment;
@@ -455,7 +449,28 @@ export default {
           this.user = response.data;
         });
     },
-  },
+    getUsers(filter) {
+      ProcessMaker.apiClient.get(this.getUrlUsersTaskCount(filter)).then(response => {
+        this.users = [];
+        for (let i in response.data.data) {
+          this.users.push({
+            text: response.data.data[i].fullname,
+            value: response.data.data[i].id,
+            count: response.data.data[i].count
+          });
+        }
+      });
+    },
+    getUrlUsersTaskCount(filter) {
+      let url = "users_task_count?filter=" + filter;
+      return url;
+    },
+    onInput(filter) {
+      this.getUsers(filter);
+    },
+    onSelectedOption(item) {
+    }
+  }
 };
 </script>
 
@@ -558,6 +573,12 @@ export default {
   flex-grow: 1;
   margin: 0;
   padding: 0;
+}
+
+.custom-badges {
+  background: var(--Color-Grey-200, #E9ECF1);
+  font-weight: normal;
+  color: var(--dark);
 }
 
 </style>

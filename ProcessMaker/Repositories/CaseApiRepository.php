@@ -7,6 +7,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use ProcessMaker\Constants\CaseStatusConstants;
 use ProcessMaker\Contracts\CaseApiRepositoryInterface;
 use ProcessMaker\Exception\CaseValidationException;
 use ProcessMaker\Filters\CasesFilter;
@@ -92,7 +93,7 @@ class CaseApiRepository implements CaseApiRepositoryInterface
     public function getInProgressCases(Request $request): Builder
     {
         $query = CaseParticipated::select($this->defaultFields)
-            ->where('case_status', 'IN_PROGRESS');
+            ->where('case_status', CaseStatusConstants::IN_PROGRESS);
         $this->applyFilters($request, $query);
 
         return $query;
@@ -108,7 +109,7 @@ class CaseApiRepository implements CaseApiRepositoryInterface
     public function getCompletedCases(Request $request): Builder
     {
         $query = CaseParticipated::select($this->defaultFields)
-            ->where('case_status', 'COMPLETED');
+            ->where('case_status', CaseStatusConstants::COMPLETED);
         $this->applyFilters($request, $query);
 
         return $query;
@@ -154,11 +155,13 @@ class CaseApiRepository implements CaseApiRepositoryInterface
                 $search = CaseUtils::CASE_NUMBER_PREFIX . $search;
             } else {
                 // Remove special characters except another languages
-                $search = preg_replace(['/[^a-zA-Z0-9\s]/', '/\s{2,}/'], [' ', ' '], $search);
+                $search = preg_replace(['/[^\p{L}\p{N}\s\']/u', '/\s{2,}/'], [' ', ' '], $search);
             }
 
             // Add a plus (+) to the beginning and an asterisk (*) to the end of each word
-            $search = preg_replace('/\b(\w+)\b/', '+$1*', $search);
+            $search = preg_replace_callback("/\b[\w']+\b/u", function($matches) {
+                return '+' . $matches[0] . '*';
+            }, $search);
 
             $query->whereFullText($this->searchableFields, $search, ['mode' => 'boolean']);
         }

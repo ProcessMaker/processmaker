@@ -12,10 +12,12 @@ use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Filters\SaveSession;
 use ProcessMaker\Helpers\DefaultColumns;
 use ProcessMaker\Helpers\MobileHelper;
+use ProcessMaker\Http\Controllers\Api\UserConfigurationController;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Comment;
+use ProcessMaker\Models\Media as MediaModel;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -45,7 +47,7 @@ class RequestController extends Controller
             $this->authorize('view-all_requests');
         }
 
-        $title = 'My Cases';
+        $title = 'My Request';
 
         $types = ['all'=>'All Requests', 'in_progress'=>'Requests In Progress', 'completed'=>'Completed Requests'];
 
@@ -123,7 +125,7 @@ class RequestController extends Controller
 
         $requestMedia = $request->media()->get()->pluck('id');
 
-        $userHasCommentsForMedia = Comment::where('commentable_type', \ProcessMaker\Models\Media::class)
+        $userHasCommentsForMedia = Comment::where('commentable_type', MediaModel::class)
                 ->whereIn('commentable_id', $requestMedia)
                 ->where('body', 'like', '%{{' . \Auth::user()->id . '}}%')
                 ->count() > 0;
@@ -156,7 +158,7 @@ class RequestController extends Controller
                 !$retry->isChildRequest();
         }
 
-        $files = \ProcessMaker\Models\Media::getFilesRequest($request);
+        $files = MediaModel::getFilesRequest($request);
 
         $canPrintScreens = $this->canUserPrintScreen($request);
 
@@ -193,6 +195,7 @@ class RequestController extends Controller
         }
 
         UserResourceView::setViewed(Auth::user(), $request);
+        $userConfiguration = (new UserConfigurationController())->index();
 
         return view('requests.show', compact(
             'request',
@@ -208,6 +211,7 @@ class RequestController extends Controller
             'isProcessManager',
             'eligibleRollbackTask',
             'errorTask',
+            'userConfiguration',
         ));
     }
 
@@ -256,11 +260,12 @@ class RequestController extends Controller
 
     public function downloadFiles(ProcessRequest $request, $media)
     {
+        $model = MediaModel::find($media);
         $file = $request->downloadFile($media);
 
         if ($file) {
             // Register the Event
-            FilesDownloaded::dispatch(basename($file), $request);
+            FilesDownloaded::dispatch($model, $request);
 
             return response()->download($file);
         }

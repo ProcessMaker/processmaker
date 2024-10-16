@@ -43,7 +43,7 @@ export default {
         // change method sort by user
         this.orderBy = this.orderBy === "user" ? "user.firstname" : this.orderBy;
         // change method sort by slot name
-        this.orderBy = this.orderBy === "__slot:name" ? "name" : this.orderBy;
+        this.orderBy = this.orderBy === "__slot:updated_at" ? "updated_at" : this.orderBy;
 
         const url = this.status === null || this.status === "" || this.status === undefined
           ? "processes?"

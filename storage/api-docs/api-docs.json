@@ -18,6 +18,2920 @@
         }
     ],
     "paths": {
+        "/analytics-reporting": {
+            "get": {
+                "tags": [
+                    "AnalyticsReporting"
+                ],
+                "summary": "Returns all analytics reporting that the user has access to",
+                "description": "Get a list of Analytics Reporting.",
+                "operationId": "getAnalyticsReporting",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of analytics reporting",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/analyticsReporting"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/metadata"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "AnalyticsReporting"
+                ],
+                "summary": "Save a new Analytics Reporting",
+                "description": "Create a new Analytics Reporting.",
+                "operationId": "createAnalyticsReporting",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/analyticsReportingEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/analyticsReporting"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/analytics-reporting/{analytic_reporting_id}": {
+            "get": {
+                "tags": [
+                    "AnalyticsReporting"
+                ],
+                "summary": "Get single analytic reporting by ID",
+                "description": "Get a single Analytic Reporting.",
+                "operationId": "getAnalyticReportingById",
+                "parameters": [
+                    {
+                        "name": "analytic_reporting_id",
+                        "in": "path",
+                        "description": "ID of analytic reporting to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the analytics reporting",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/analyticsReporting"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "AnalyticsReporting"
+                ],
+                "summary": "Update a analytic reporting",
+                "description": "Update a Analytics Reporting.",
+                "operationId": "updateAnalyticReporting",
+                "parameters": [
+                    {
+                        "name": "analytic_reporting_id",
+                        "in": "path",
+                        "description": "ID of analytic reporting to update",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/analyticsReportingEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "AnalyticsReporting"
+                ],
+                "summary": "Delete an analytic reporting",
+                "description": "Delete a Analytics Reporting.",
+                "operationId": "deleteAnalyticReporting",
+                "parameters": [
+                    {
+                        "name": "analytic_reporting_id",
+                        "in": "path",
+                        "description": "ID of analytic reporting to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
+        "/collections": {
+            "get": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Returns all collections that the user has access to",
+                "description": "Get a list of Collections.",
+                "operationId": "getCollections",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of collections",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/collections"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/metadata"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Save a new collections",
+                "description": "Create a new Collection.",
+                "operationId": "createCollection",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/collectionsEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/collections"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/collections/{collection_id}": {
+            "get": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Get single collections by ID",
+                "description": "Get a single Collection.",
+                "operationId": "getCollectionById",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of collection to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the collections",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/collections"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Update a collection",
+                "description": "Update a Collection.",
+                "operationId": "updateCollection",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of collection to update",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/collectionsEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Delete a collection",
+                "description": "Delete a Collection.",
+                "operationId": "deleteCollection",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of collection to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
+        "/collections/{collection_id}/export": {
+            "post": {
+                "tags": [
+                    "Screens"
+                ],
+                "summary": "Trigger export collections job",
+                "description": "Export the specified collection.",
+                "operationId": "exportCollection",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of the collection to export",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
+        "/collections/import": {
+            "post": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Import a new collection",
+                "description": "Import the specified collection.",
+                "operationId": "importCollection",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "file"
+                                ],
+                                "properties": {
+                                    "file": {
+                                        "description": "file to upload",
+                                        "type": "file",
+                                        "format": "file"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/collections"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
+        "/collections/{collection_id}/truncate": {
+            "delete": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Deletes all records in a collection",
+                "description": "Truncate a Collection.",
+                "operationId": "truncateCollection",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of collection to truncate",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
+        "/collections/{collection_id}/records": {
+            "get": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Returns all records",
+                "description": "Get the list of records of a collection.",
+                "operationId": "getRecords",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of collection to get records for",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "pmql",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of records of a collection",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/records"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/metadata"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Save a new record in a collection",
+                "description": "Create a new record in a Collection.",
+                "operationId": "createRecord",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of the collection",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/recordsEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/records"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/collections/{collection_id}/records/{record_id}": {
+            "get": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Get single record of a collection",
+                "description": "Get a single record of a Collection.",
+                "operationId": "getRecordById",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of the collection",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "record_id",
+                        "in": "path",
+                        "description": "ID of the record to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the record",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/records"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Update a record",
+                "description": "Update a record in a Collection.",
+                "operationId": "updateRecord",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of collection",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "record_id",
+                        "in": "path",
+                        "description": "ID of the record ",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/recordsEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Delete a collection record",
+                "description": "Delete a record of a Collection.",
+                "operationId": "deleteRecord",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of collection",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "record_id",
+                        "in": "path",
+                        "description": "ID of record in collection",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Partial update of a record",
+                "description": "Implements a partial update of a record in a Collection.",
+                "operationId": "patchRecord",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of collection ",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "record_id",
+                        "in": "path",
+                        "description": "ID of the record ",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/collectionsEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
+        "/comments/tasks": {
+            "get": {
+                "tags": [
+                    "Comments"
+                ],
+                "summary": "Returns all the tasks that are active.",
+                "description": "Display a listing of the resource.",
+                "operationId": "getCommentTasks",
+                "parameters": [
+                    {
+                        "name": "process_request_id",
+                        "in": "query",
+                        "description": "Process request id",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list all tasks taht are active",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/processRequestToken"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/metadata"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/data_source_categories": {
+            "get": {
+                "tags": [
+                    "DataSourcesCategories"
+                ],
+                "summary": "Returns all Data Connectors categories that the user has access to",
+                "description": "Display a listing of the Data Connector Categories.",
+                "operationId": "getDataSourceCategories",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of Data Connectors categories",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/DataSourceCategory"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "DataSourcesCategories"
+                ],
+                "summary": "Save a new Data Connector Category",
+                "description": "Store a newly created Data Connector Category in storage",
+                "operationId": "createDataSourceCategory",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/dataSourceCategoryEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DataSourceCategory"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/data_source_categories/{data_source_category_id}": {
+            "get": {
+                "tags": [
+                    "DataSourcesCategories"
+                ],
+                "summary": "Get single Data Connector category by ID",
+                "description": "Display the specified data Source category.",
+                "operationId": "getDatasourceCategoryById",
+                "parameters": [
+                    {
+                        "name": "data_source_category_id",
+                        "in": "path",
+                        "description": "ID of Data Connector category to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the Data Connector",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DataSourceCategory"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "DataSourcesCategories"
+                ],
+                "summary": "Update a Data Connector Category",
+                "description": "Updates the current element",
+                "operationId": "updateDatasourceCategory",
+                "parameters": [
+                    {
+                        "name": "data_source_category_id",
+                        "in": "path",
+                        "description": "ID of Data Connector category to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/dataSourceCategoryEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DataSourceCategory"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "DataSourcesCategories"
+                ],
+                "summary": "Delete a Data Connector category",
+                "description": "Remove the specified resource from storage.",
+                "operationId": "deleteDataSourceCategory",
+                "parameters": [
+                    {
+                        "name": "data_source_category_id",
+                        "in": "path",
+                        "description": "ID of Data Connector category to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
+        "/data_sources": {
+            "get": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "Returns all Data Connectors that the user has access to",
+                "description": "Get the list of records of a Data Connector",
+                "operationId": "getDataSources",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of Data Connectors",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/dataSource"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "Save a new Data Connector",
+                "description": "Create a new Data Connector.",
+                "operationId": "createDataSource",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/dataSourceEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/dataSource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/data_sources/{data_source_id}": {
+            "get": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "Get single Data Connector by ID",
+                "description": "Get a single Data Connector.",
+                "operationId": "getDataSourceById",
+                "parameters": [
+                    {
+                        "name": "data_source_id",
+                        "in": "path",
+                        "description": "ID of Data Connector to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the Data Connector",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/dataSource"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "Update a Data Connector",
+                "description": "Update a Data Connector.",
+                "operationId": "updateDataSource",
+                "parameters": [
+                    {
+                        "name": "data_source_id",
+                        "in": "path",
+                        "description": "ID of Data Connector to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/dataSourceEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/dataSource"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "Delete a Data Connector",
+                "description": "Delete a Data Connector.",
+                "operationId": "deleteDataSource",
+                "parameters": [
+                    {
+                        "name": "data_source_id",
+                        "in": "path",
+                        "description": "ID of Data Connector to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/dataSource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/data_sources/{data_source_id}/test": {
+            "post": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "Send a Data Connector request",
+                "description": "Send a Data Connector request.",
+                "operationId": "sendDataSource",
+                "parameters": [
+                    {
+                        "name": "data_source_id",
+                        "in": "path",
+                        "description": "ID of Data Connector to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/dataSourceEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/dataSource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/requests/{request_id}/data_sources/{data_source_id}": {
+            "post": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "execute Data Source",
+                "description": "Execute a data Source endpoint",
+                "operationId": "executeDataSourceForRequest",
+                "parameters": [
+                    {
+                        "name": "request_id",
+                        "in": "path",
+                        "description": "ID of the request in whose context the datasource will be executed",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "data_source_id",
+                        "in": "path",
+                        "description": "ID of DataSource to be run",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "config": {
+                                        "$ref": "#/components/schemas/DataSourceCallParameters"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DataSourceResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/requests/data_sources/{data_source_id}": {
+            "post": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "execute Data Source",
+                "operationId": "executeDataSource",
+                "parameters": [
+                    {
+                        "name": "data_source_id",
+                        "in": "path",
+                        "description": "ID of DataSource to be run",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "config": {
+                                        "$ref": "#/components/schemas/DataSourceCallParameters"
+                                    },
+                                    "data": {
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DataSourceResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/requests/data_sources/{data_source_id}/resources/{endpoint}/data": {
+            "post": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "Get Data from Data Source",
+                "operationId": "getDataFromDataSource",
+                "parameters": [
+                    {
+                        "name": "data_source_id",
+                        "in": "path",
+                        "description": "ID of DataSource to be run",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "endpoint",
+                        "in": "path",
+                        "description": "Endpoint of the data source",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DataSourceResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/decision_table_categories": {
+            "get": {
+                "tags": [
+                    "DecisionTableCategories"
+                ],
+                "summary": "Returns all Decision Tables categories that the user has access to",
+                "description": "Display a listing of the Decision Tables Categories.",
+                "operationId": "getDecisionTableCategories",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of Decision Tables categories",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/DecisionTableCategory"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "DecisionTableCategories"
+                ],
+                "summary": "Save a new Decision Table Category",
+                "description": "Store a newly created Decision Tables  Category in storage",
+                "operationId": "createDecisionTableCategory",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/decisionTableCategoryEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DecisionTableCategory"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/decision_table_categories/{decision_table_categories_id}": {
+            "get": {
+                "tags": [
+                    "DecisionTableCategories"
+                ],
+                "summary": "Get single Decision Table category by ID",
+                "description": "Display the specified decision Tables category.",
+                "operationId": "getDecisionTableCategoryById",
+                "parameters": [
+                    {
+                        "name": "decision_table_categories_id",
+                        "in": "path",
+                        "description": "ID of Decision Table category to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the Decision Table",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DecisionTableCategory"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "DecisionTableCategories"
+                ],
+                "summary": "Update a Decision Table Category",
+                "description": "Updates the current element",
+                "operationId": "updateDecisionTableCategory",
+                "parameters": [
+                    {
+                        "name": "decision_table_categories_id",
+                        "in": "path",
+                        "description": "ID of Decision Table category to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/decisionTableCategoryEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DecisionTableCategory"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "DecisionTableCategories"
+                ],
+                "summary": "Delete a Decision Table category",
+                "description": "Remove the specified resource from storage.",
+                "operationId": "deleteDecisionTableCategory",
+                "parameters": [
+                    {
+                        "name": "decision_table_categories_id",
+                        "in": "path",
+                        "description": "ID of Decision Table category to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
+        "/decision_tables": {
+            "get": {
+                "tags": [
+                    "DecisionTables"
+                ],
+                "summary": "Returns all Decision tables that the user has access to",
+                "description": "Display a listing of the resource.",
+                "operationId": "getDecisionTables",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of Decision Tables",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/decisionTable"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "DecisionTables"
+                ],
+                "summary": "Save a new Decision Table",
+                "description": "Store a newly created resource in storage.",
+                "operationId": "createDecisionTable",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/decisionTableEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/decisionTable"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/decision_tables/{decision_table_id}": {
+            "get": {
+                "tags": [
+                    "DecisionTables"
+                ],
+                "summary": "Get single Decision Table by ID",
+                "description": "Display the specified resource.",
+                "operationId": "getDecisionTableById",
+                "parameters": [
+                    {
+                        "name": "decision_table_id",
+                        "in": "path",
+                        "description": "ID of Decision Table to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the Decision Table",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/decisionTable"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "DecisionTables"
+                ],
+                "summary": "Update a Decision Table",
+                "description": "Update a Decision table",
+                "operationId": "updateDecisionTable",
+                "parameters": [
+                    {
+                        "name": "decision_table_id",
+                        "in": "path",
+                        "description": "ID of Decision Table to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/decisionTableEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/decisionTable"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "DecisionTables"
+                ],
+                "summary": "Delete a Decision Table",
+                "description": "Delete a Decision tables",
+                "operationId": "deleteDecisionTable",
+                "parameters": [
+                    {
+                        "name": "decision_table_id",
+                        "in": "path",
+                        "description": "ID of Decision Table to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/decisionTable"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/decision_tables/{decision_table_id}/duplicate": {
+            "put": {
+                "tags": [
+                    "DecisionTables"
+                ],
+                "summary": "duplicate a Decision Table",
+                "description": "duplicate a Decision table.",
+                "operationId": "duplicateDecisionTable",
+                "parameters": [
+                    {
+                        "name": "decision_table_id",
+                        "in": "path",
+                        "description": "ID of Decision Table to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/decisionTableEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/decisionTable"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/decision_tables/{decision_table_id}/excel-import": {
+            "post": {
+                "tags": [
+                    "DecisionTables"
+                ],
+                "summary": "Import a new decision table",
+                "description": "Import a Decision table from excel",
+                "operationId": "importExcel",
+                "parameters": [
+                    {
+                        "name": "decision_table_id",
+                        "in": "path",
+                        "description": "ID of Decision Table to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "file": {
+                                        "description": "file to import",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/decision_tables/{decision_table_id}/export": {
+            "post": {
+                "tags": [
+                    "DecisionTables"
+                ],
+                "summary": "Export a single Decision Table by ID",
+                "description": "Export the specified screen.",
+                "operationId": "exportDecisionTable",
+                "parameters": [
+                    {
+                        "name": "decision_table_id",
+                        "in": "path",
+                        "description": "ID of Decision Table to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully exported the decision table",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DecisionTableExported"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/decision_tables/import": {
+            "post": {
+                "tags": [
+                    "DecisionTables"
+                ],
+                "summary": "Import a new Decision Table",
+                "description": "Import the specified Decision Table.",
+                "operationId": "importDecisionTable",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "file": {
+                                        "description": "file to import",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/decision_tables/{decision_table_id}/execute": {
+            "post": {
+                "tags": [
+                    "DecisionTables"
+                ],
+                "summary": "Execute a Decision Table definition",
+                "description": "Execute a Decision Table definition",
+                "operationId": "previewDecisionTable",
+                "parameters": [
+                    {
+                        "name": "decision_table_id",
+                        "in": "path",
+                        "description": "Decision Table unique Identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully executed",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/saved-searches/{saved_search_id}/charts": {
+            "get": {
+                "tags": [
+                    "SavedSearchCharts"
+                ],
+                "summary": "Returns all saved search charts that the user has access to",
+                "description": "Get a list of SavedSearchCharts.",
+                "operationId": "getSavedSearchCharts",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Only return saved searches by type",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "request",
+                                "task",
+                                "collection"
+                            ]
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of saved search charts",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/SavedSearchChart"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "SavedSearchCharts"
+                ],
+                "summary": "Update several saved search charts at once",
+                "description": "Batch update several SavedSearchCharts.",
+                "operationId": "batchUpdateSavedSearchCharts",
+                "parameters": [
+                    {
+                        "name": "saved_search_id",
+                        "in": "path",
+                        "description": "ID of saved search to which these charts will be saved",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/SavedSearchChart"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "SavedSearchCharts"
+                ],
+                "summary": "Save a new saved search chart",
+                "description": "Create a new SavedSearchChart.",
+                "operationId": "createSavedSearchChart",
+                "parameters": [
+                    {
+                        "name": "saved_search_id",
+                        "in": "path",
+                        "description": "ID of saved search to which this chart will be saved",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SavedSearchChartEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SavedSearchChart"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/saved-searches/charts/{chart_id}": {
+            "get": {
+                "tags": [
+                    "SavedSearchCharts"
+                ],
+                "summary": "Get single saved search chart by ID",
+                "description": "Get a single SavedSearchChart.",
+                "operationId": "getSavedSearchChartById",
+                "parameters": [
+                    {
+                        "name": "chart_id",
+                        "in": "path",
+                        "description": "ID of chart to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the saved search chart",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SavedSearchChart"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "SavedSearchCharts"
+                ],
+                "summary": "Update a saved search chart",
+                "description": "Update a SavedSearchChart.",
+                "operationId": "updateSavedSearchChart",
+                "parameters": [
+                    {
+                        "name": "chart_id",
+                        "in": "path",
+                        "description": "ID of chart to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SavedSearchChartEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SavedSearchChart"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "SavedSearchCharts"
+                ],
+                "summary": "Delete a saved search chart",
+                "description": "Delete a SavedSearchChart.",
+                "operationId": "deleteSavedSearchChart",
+                "parameters": [
+                    {
+                        "name": "chart_id",
+                        "in": "path",
+                        "description": "ID of chart to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
+        "/saved-searches/charts/{chart_id}/fields": {
+            "get": {
+                "tags": [
+                    "SavedSearchCharts"
+                ],
+                "summary": "Get available chart fields for a Saved Search by ID",
+                "description": "Get available chart fields for a Saved Search.",
+                "operationId": "getSavedSearchFieldsById",
+                "parameters": [
+                    {
+                        "name": "chart_id",
+                        "in": "path",
+                        "description": "ID of Saved Search to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the saved search",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SavedSearch"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/saved-searches/reports": {
+            "post": {
+                "tags": [
+                    "Reports"
+                ],
+                "summary": "Save a new report",
+                "operationId": "createReport",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ReportEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Report"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/saved-searches/reports/{reportId}": {
+            "put": {
+                "tags": [
+                    "SavedSearches"
+                ],
+                "summary": "Update a saved search",
+                "description": "Update a Report",
+                "operationId": "updateReport",
+                "parameters": [
+                    {
+                        "name": "reportId",
+                        "in": "path",
+                        "description": "ID of report",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SavedSearchEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SavedSearch"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/saved-searches": {
+            "get": {
+                "tags": [
+                    "SavedSearches"
+                ],
+                "summary": "Returns all saved searches that the user has access to",
+                "description": "Get a list of SavedSearches.",
+                "operationId": "getSavedSearches",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Only return saved searches by type",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "request",
+                                "task",
+                                "collection"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "subset",
+                        "in": "query",
+                        "description": "Only return saved searches that are yours or those that have been shared with you",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "mine",
+                                "shared"
+                            ]
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of saved searches",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/SavedSearch"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "SavedSearches"
+                ],
+                "summary": "Save a new saved search",
+                "description": "Create a new SavedSearch.",
+                "operationId": "createSavedSearch",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SavedSearchEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SavedSearch"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/saved-searches/{savedSearchId}": {
+            "get": {
+                "tags": [
+                    "SavedSearches"
+                ],
+                "summary": "Get single saved searches by ID",
+                "description": "Get a single SavedSearch.",
+                "operationId": "getSavedSearchById",
+                "parameters": [
+                    {
+                        "name": "savedSearchId",
+                        "in": "path",
+                        "description": "ID of saved search to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the saved search",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SavedSearch"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "SavedSearches"
+                ],
+                "summary": "Update a saved search",
+                "description": "Update a SavedSearch.",
+                "operationId": "updateSavedSearch",
+                "parameters": [
+                    {
+                        "name": "savedSearchId",
+                        "in": "path",
+                        "description": "ID of saved search to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SavedSearchEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SavedSearch"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/saved-searches/{savedSearchId}/columns": {
+            "get": {
+                "tags": [
+                    "SavedSearches"
+                ],
+                "summary": "Returns all columns associated with a Saved Search",
+                "description": "Display a listing of columns.",
+                "operationId": "getSavedSearchColumns",
+                "parameters": [
+                    {
+                        "name": "savedSearchId",
+                        "in": "path",
+                        "description": "ID of saved search to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "include",
+                        "in": "query",
+                        "description": "Include specific categories. Comma separated list.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "current",
+                                    "default",
+                                    "available",
+                                    "data"
+                                ]
+                            },
+                            "uniqueItems": false
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Categorized list of columns",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "current": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/columns"
+                                            }
+                                        },
+                                        "default": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/columns"
+                                            }
+                                        },
+                                        "available": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/columns"
+                                            }
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/columns"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/saved-searches/{savedSearchId}/users": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Returns all users",
+                "description": "Display a listing of the resource.",
+                "operationId": "getSavedSearchUsers",
+                "parameters": [
+                    {
+                        "name": "savedSearchId",
+                        "in": "path",
+                        "description": "ID of saved search to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter",
+                        "in": "query",
+                        "description": "Filter results by string. Searches First Name, Last Name, Email and Username.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of users",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/users"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/metadata"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/saved-searches/{savedSearchId}/groups": {
+            "get": {
+                "tags": [
+                    "Groups"
+                ],
+                "summary": "Returns all groups that the user has access to",
+                "description": "Display a listing of the resource.",
+                "operationId": "getSavedSearchGroups",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of groups",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/groups"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/metadata"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/saved-searches/{saved_search_id}": {
+            "delete": {
+                "tags": [
+                    "SavedSearches"
+                ],
+                "summary": "Delete a saved search",
+                "description": "Delete a SavedSearch.",
+                "operationId": "deleteSavedSearch",
+                "parameters": [
+                    {
+                        "name": "saved_search_id",
+                        "in": "path",
+                        "description": "ID of saved search to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
+        "/saved-searches/icons": {
+            "get": {
+                "tags": [
+                    "SavedSearches"
+                ],
+                "summary": "Returns all icons for saved searches",
+                "description": "Get a list of icons available for SavedSearches.",
+                "operationId": "getSavedSearchesIcons",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of icons for saved searches",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/SavedSearchIcon"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/version_histories": {
+            "get": {
+                "tags": [
+                    "Version History"
+                ],
+                "summary": "Return all version History according to the model",
+                "description": "Get the list of records of Version History",
+                "operationId": "getVersionHistories",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of Version History",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/versionHistory"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Version History"
+                ],
+                "summary": "Save a new Version History",
+                "description": "Create a new Version History.",
+                "operationId": "createVersion",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/versionHistoryEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/versionHistory"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/version_histories/{version_history_id}": {
+            "get": {
+                "tags": [
+                    "Version History"
+                ],
+                "summary": "Get single Version History by ID",
+                "description": "Get a single Version History.",
+                "operationId": "getVersionHistoryById",
+                "parameters": [
+                    {
+                        "name": "version_history_id",
+                        "in": "path",
+                        "description": "ID of Version History to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the Version History",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/versionHistory"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Version History"
+                ],
+                "summary": "Update a Version History",
+                "description": "Update a Version History.",
+                "operationId": "updateVersion",
+                "parameters": [
+                    {
+                        "name": "version_history_id",
+                        "in": "path",
+                        "description": "ID of Version History to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/versionHistoryEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/versionHistory"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Version History"
+                ],
+                "summary": "Delete a Version History",
+                "description": "Delete a Version History.",
+                "operationId": "deleteVersion",
+                "parameters": [
+                    {
+                        "name": "version_history_id",
+                        "in": "path",
+                        "description": "ID of Version History to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/versionHistory"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/version_histories/clone": {
+            "post": {
+                "tags": [
+                    "Version History"
+                ],
+                "summary": "Clone a new Version History",
+                "description": "Clone a new Version History.",
+                "operationId": "cloneVersion",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/versionHistoryEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/versionHistory"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/customize-ui": {
             "post": {
                 "tags": [
@@ -5268,6 +8182,628 @@
                     }
                 },
                 "type": "object"
+            },
+            "analyticsReportingEditable": {
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "link": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "analyticsReporting": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/analyticsReportingEditable"
+                    },
+                    {
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "created_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "created_by_id": {
+                                "type": "string",
+                                "format": "id"
+                            },
+                            "updated_by_id": {
+                                "type": "string",
+                                "format": "id"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "collectionsEditable": {
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "custom_title": {
+                        "type": "string"
+                    },
+                    "create_screen_id": {
+                        "type": "string",
+                        "format": "id"
+                    },
+                    "read_screen_id": {
+                        "type": "string",
+                        "format": "id"
+                    },
+                    "update_screen_id": {
+                        "type": "string",
+                        "format": "id"
+                    },
+                    "signal_create": {
+                        "type": "boolean"
+                    },
+                    "signal_update": {
+                        "type": "boolean"
+                    },
+                    "signal_delete": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "collections": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/collectionsEditable"
+                    },
+                    {
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "created_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "created_by_id": {
+                                "type": "string",
+                                "format": "id"
+                            },
+                            "updated_by_id": {
+                                "type": "string",
+                                "format": "id"
+                            },
+                            "columns": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "recordsEditable": {
+                "properties": {
+                    "data": {
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "records": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/recordsEditable"
+                    },
+                    {
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "collection_id": {
+                                "type": "string",
+                                "format": "id"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "DataSourceCallParameters": {
+                "properties": {
+                    "endpoint": {
+                        "type": "string"
+                    },
+                    "dataMapping": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "key": {
+                                    "type": "string"
+                                },
+                                "value": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "outboundConfig": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "key": {
+                                    "type": "string"
+                                },
+                                "value": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "DataSourceResponse": {
+                "properties": {
+                    "status": {
+                        "type": "integer"
+                    },
+                    "response": {
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "dataSourceEditable": {
+                "properties": {
+                    "id": {
+                        "description": "Class DataSource",
+                        "type": "string",
+                        "format": "id"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "endpoints": {
+                        "type": "string"
+                    },
+                    "mappings": {
+                        "type": "string"
+                    },
+                    "authtype": {
+                        "type": "string"
+                    },
+                    "credentials": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "data_source_category_id": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "dataSource": {
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/dataSourceEditable"
+                    },
+                    {
+                        "properties": {
+                            "created_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "dataSourceCategoryEditable": {
+                "properties": {
+                    "name": {
+                        "description": "Represents a business data Source category definition.",
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "INACTIVE"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "DataSourceCategory": {
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/dataSourceCategoryEditable"
+                    },
+                    {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "format": "id"
+                            },
+                            "created_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "decisionTableEditable": {
+                "properties": {
+                    "id": {
+                        "description": "Class Screen",
+                        "type": "string",
+                        "format": "id"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "definition": {
+                        "type": "string"
+                    },
+                    "decision_table_categories_id": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "decisionTable": {
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/decisionTableEditable"
+                    },
+                    {
+                        "properties": {
+                            "created_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "DecisionTableExported": {
+                "properties": {
+                    "url": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "decisionTableCategoryEditable": {
+                "properties": {
+                    "name": {
+                        "description": "Represents a business decision Table category definition.",
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "INACTIVE"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "DecisionTableCategory": {
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/decisionTableCategoryEditable"
+                    },
+                    {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "format": "id"
+                            },
+                            "created_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "SavedSearchEditable": {
+                "properties": {
+                    "meta": {
+                        "description": "Represents an Eloquent model of a Saved Search.",
+                        "type": "object",
+                        "additionalProperties": "true"
+                    },
+                    "pmql": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "task",
+                            "request"
+                        ]
+                    },
+                    "advanced_filter": {
+                        "type": "object",
+                        "additionalProperties": "true"
+                    }
+                },
+                "type": "object"
+            },
+            "SavedSearch": {
+                "allOf": [
+                    {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "format": "id"
+                            },
+                            "user_id": {
+                                "type": "string",
+                                "format": "id"
+                            },
+                            "created_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    {
+                        "$ref": "#/components/schemas/SavedSearchEditable"
+                    }
+                ]
+            },
+            "SavedSearchIcon": {
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "value": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "SavedSearchChartEditable": {
+                "properties": {
+                    "title": {
+                        "description": "Represents an Eloquent model of a Saved Search Chart.",
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "bar",
+                            "bar-vertical",
+                            "line",
+                            "pie",
+                            "doughnut"
+                        ]
+                    },
+                    "config": {
+                        "type": "object",
+                        "additionalProperties": "true"
+                    },
+                    "sort": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "SavedSearchChart": {
+                "allOf": [
+                    {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "format": "id"
+                            },
+                            "saved_search_id": {
+                                "type": "string",
+                                "format": "id"
+                            },
+                            "user_id": {
+                                "type": "string",
+                                "format": "id"
+                            },
+                            "created_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "deleted_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    {
+                        "$ref": "#/components/schemas/SavedSearchChartEditable"
+                    }
+                ]
+            },
+            "ReportEditable": {
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "adhoc",
+                            "scheduled"
+                        ]
+                    },
+                    "format": {
+                        "type": "string",
+                        "enum": [
+                            "csv",
+                            "xlsx"
+                        ]
+                    },
+                    "saved_search_id": {
+                        "type": "integer"
+                    },
+                    "config": {
+                        "type": "object",
+                        "additionalProperties": "true"
+                    },
+                    "to": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "subject": {
+                        "type": "string"
+                    },
+                    "body": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "Report": {
+                "allOf": [
+                    {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "format": "id"
+                            },
+                            "user_id": {
+                                "type": "string",
+                                "format": "id"
+                            },
+                            "created_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    {
+                        "$ref": "#/components/schemas/SavedSearchEditable"
+                    }
+                ]
+            },
+            "versionHistoryEditable": {
+                "properties": {
+                    "versionable_id": {
+                        "description": "Class VersionHistoryCollection",
+                        "type": "integer"
+                    },
+                    "versionable_type": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "subject": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "INACTIVE"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "versionHistory": {
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/versionHistoryEditable"
+                    },
+                    {
+                        "properties": {
+                            "created_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
             },
             "updateUserGroups": {
                 "properties": {

@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('meta')
-    <meta name="request-id" content="{{ $task->processRequest->id }}">
+  <meta name="request-id" content="{{ $task->processRequest->id }}">
 @endsection
 
 @section('title')
@@ -27,342 +27,327 @@
       ], 'attributes' => 'v-cloak'])
 @endsection
 @section('content')
-    <div v-cloak id="task" class="container-fluid px-3">
-        <div class="d-flex flex-column flex-md-row">
-            <div class="flex-grow-1">
-                <div v-if="isSelfService" class="alert alert-primary" role="alert">
-                    <button type="button" class="btn btn-primary" @click="claimTask">{{__('Claim Task')}}</button>
-                    {{__('This task is unassigned, click Claim Task to assign yourself.')}}
-                </div>
-                <div class="container-fluid h-100 d-flex flex-column" id="interactionListener">
-                    @can('editData', $task->processRequest)
-                        <ul v-if="task.process_request.status === 'ACTIVE'" id="tabHeader" role="tablist" class="nav nav-tabs">
-                            <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab"
-                                                    aria-controls="tab-form" aria-selected="true"
-                                                    class="nav-link active">{{__('Form')}}</a></li>
-                            <li class="nav-item"><a id="summary-tab" data-toggle="tab" href="#tab-data" role="tab"
-                                                    aria-controls="tab-data" aria-selected="false"
-                                                    @click="resizeMonaco"
-                                                    class="nav-link">{{__('Data')}}</a></li>
-                        </ul>
-                    @endcan
-                    <div id="tabContent" class="tab-content flex-grow-1">
-                        <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show h-100">
-                          @can('update', $task)
-                            <task
-                              ref="task"
-                              class="card border-0"
-                              v-model="formData"
-                              :initial-task-id="{{ $task->id }}"
-                              :initial-request-id="{{ $task->process_request_id }}"
-                              :screen-version="{{ $task->screen['id'] ?? null }}"
-                              :user-id="{{ Auth::user()->id }}"
-                              csrf-token="{{ csrf_token() }}"
-                              initial-loop-context="{{ $task->getLoopContext() }}"
-                              :wait-loading-listeners="true"
-                              @task-updated="taskUpdated"
-                              @submit="submit"
-                              @completed="completed"
-                              @@error="error"
-                              @closed="closed"
-                              @redirect="redirectToTask"
-                              @form-data-changed="handleFormDataChange"
-                          ></task>
-                          @endcan
-                          <div v-if="taskHasComments">
-                                <timeline :commentable_id="task.id"
-                                          commentable_type="ProcessMaker\Models\ProcessRequestToken"
-                                          :adding="false"
-                                          :readonly="task.status === 'CLOSED'"
-                                          :timeline="false"
-                                          />
+  <div id="task">
+    <div class="menu-mask" :class="{ 'menu-open': showMenu }"></div>
+    <div class="info-main" :class="{ 'menu-open': showMenu }">
+      <div v-cloak class="container-fluid px-3">
+          <div class="d-flex flex-column flex-md-row">
+              <div class="flex-grow-1">
+                  <div v-if="isSelfService" class="alert alert-primary" role="alert">
+                      <button type="button" class="btn btn-primary" @click="claimTask">{{__('Claim Task')}}</button>
+                      {{__('This task is unassigned, click Claim Task to assign yourself.')}}
+                  </div>
+                  <div class="container-fluid h-100 d-flex flex-column" id="interactionListener">
+                      @can('editData', $task->processRequest)
+                          <ul v-if="task.process_request.status === 'ACTIVE'" id="tabHeader" role="tablist" class="nav nav-tabs">
+                              <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab"
+                                                      aria-controls="tab-form" aria-selected="true"
+                                                      class="nav-link active">{{__('Form')}}</a></li>
+                              <li class="nav-item"><a id="summary-tab" data-toggle="tab" href="#tab-data" role="tab"
+                                                      aria-controls="tab-data" aria-selected="false"
+                                                      @click="resizeMonaco"
+                                                      class="nav-link">{{__('Data')}}</a></li>
+                          </ul>
+                      @endcan
+                      <div id="tabContent" class="tab-content flex-grow-1">
+                          <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show h-100">
+                            @can('update', $task)
+                              <task
+                                ref="task"
+                                class="card border-0"
+                                v-model="formData"
+                                :initial-task-id="{{ $task->id }}"
+                                :initial-request-id="{{ $task->process_request_id }}"
+                                :screen-version="{{ $task->screen['id'] ?? null }}"
+                                :user-id="{{ Auth::user()->id }}"
+                                csrf-token="{{ csrf_token() }}"
+                                initial-loop-context="{{ $task->getLoopContext() }}"
+                                :wait-loading-listeners="true"
+                                @task-updated="taskUpdated"
+                                @submit="submit"
+                                @completed="completed"
+                                @@error="error"
+                                @closed="closed"
+                                @redirect="redirectToTask"
+                                @form-data-changed="handleFormDataChange"
+                              />
+                            @endcan
+                              <div v-if="taskHasComments">
+                                  <timeline :commentable_id="task.id"
+                                    commentable_type="ProcessMaker\Models\ProcessRequestToken"
+                                    :adding="false"
+                                    :readonly="task.status === 'CLOSED'"
+                                    :timeline="false"
+                                  />
+                               </div>
                           </div>
-                        </div>
-                        @can('editData', $task->processRequest)
-                            <div v-if="task.process_request.status === 'ACTIVE'" id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="card card-body border-top-0 tab-pane p-3">
-                                @include('tasks.editdata')
-                            </div>
-                        @endcan
+                          @can('editData', $task->processRequest)
+                              <div v-if="task.process_request.status === 'ACTIVE'" id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="card card-body border-top-0 tab-pane p-3">
+                                  @include('tasks.editdata')
+                              </div>
+                          @endcan
                     </div>
                 </div>
             </div>
             @if (shouldShow('taskStatusContainer'))
-              <div>
-                <button
-                  role="button"
-                  class="btn d-block mr-0 ml-auto button-collapse"
-                  data-toggle="collapse"
-                  data-target="#collapse-info"
-                  @click="showTabs = !showTabs"
-                >
-                  <template v-if="showTabs">
-                    <i class="fas fa-angle-right"></i>
-                  </template>
-                  <template v-else>
-                    <i class="fas fa-angle-left"></i>
-                  </template>
-                </button>
-                <ul v-if="showTabs" class="nav nav-tabs nav-collapse" role="tablist">
-                  <li class="nav-item" role="presentation">
-                    <button
-                      id="details-tab"
-                      :class="{'nav-link': true, active: showInfo }"
-                      data-bs-toggle="tab"
-                      data-bs-target="#details"
-                      type="button"
-                      role="tab"
-                      aria-controls="details"
-                      aria-selected="true"
-                      @click="switchTabInfo('details')"
+                <div class="slide-control">
+                  <a href="#" @click="hideMenu">
+                    <i class="fa" :class="{ 'fa-caret-left' : !showMenu, 'fa-caret-right' : showMenu }"></i>
+                  </a>
+                </div>
+                <div class="menu">
+                  <ul class="nav nav-tabs nav-collapse" role="tablist">
+                    <li class="nav-item" role="presentation">
+                      <button
+                        id="details-tab"
+                        :class="{'nav-link': true, active: showInfo }"
+                        data-bs-toggle="tab"
+                        data-bs-target="#details"
+                        type="button"
+                        role="tab"
+                        aria-controls="details"
+                        aria-selected="true"
+                        @click="switchTabInfo('details')"
+                      >
+                        @{{ __('Details') }}
+                      </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                      <button
+                        id="comments-tab"
+                        :class="{'nav-link': true, active: !showInfo }"
+                        data-bs-toggle="tab"
+                        data-bs-target="#comments"
+                        type="button"
+                        role="tab"
+                        aria-controls="comments"
+                        aria-selected="false"
+                        @click="switchTabInfo('comments')"
+                      >
+                        @{{ __('Comments') }}
+                      </button>
+                    </li>
+                  </ul>
+                  <div class="menu-tab-content">
+                    <div id="collapse-info" class="collapse show width">
+                    <div
+                      v-if="showInfo"
+                      id="details"
+                      v-bind:class="{ 'tab-pane':true, fade: true, show: showInfo, active: showInfo }"
+                      role="tabpanel"
+                      aria-labelledby="details-tab"
                     >
-                      @{{ __('Details') }}
-                    </button>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                    <button
-                      id="comments-tab"
-                      :class="{'nav-link': true, active: !showInfo }"
-                      data-bs-toggle="tab"
-                      data-bs-target="#comments"
-                      type="button"
-                      role="tab"
-                      aria-controls="comments"
-                      aria-selected="false"
-                      @click="switchTabInfo('comments')"
-                    >
-                      @{{ __('Comments') }}
-                    </button>
-                  </li>
-                </ul>
-                <div class="tab-content">
-                  <div id="collapse-info" class="collapse show width">
-                  <div
-                    v-if="showInfo"
-                    id="details"
-                    v-bind:class="{ 'tab-pane':true, fade: true, show: showInfo, active: showInfo }"
-                    role="tabpanel"
-                    aria-labelledby="details-tab"
-                  >
-                      <div class="ml-md-3 mt-3 mt-md-0">
-                        <div class="card collapse-content">
-                          <ul class="list-group list-group-flush w-100">
-                            <li class="list-group-item">
-                              <!-- ADD THE OTHER BUTTONS -->
-                              <div class="row button-group">
-                                <div class="col-6">
-                                  <button
-                                    type="button"
-                                    class="btn btn-block button-actions"
-                                    @click="createRule"
-                                  >
-                                  <i class="fas fa-plus"></i> {{ __('Create Rule') }}
-                                  </button>
+                        <div class="ml-md-3 mt-3 mt-md-0">
+                          <div class="card collapse-content">
+                            <ul class="list-group list-group-flush w-100">
+                              <li class="list-group-item">
+                                <div
+                                  v-if="taskDraftsEnabled"
+                                  class="row justify-content-start pb-1"
+                                >
+                                <task-save-notification
+                                  :options="options"
+                                  :task="task"
+                                  :date="lastAutosaveNav"
+                                  :error="errorAutosave"
+                                  :form-data="formData"
+                                />
                                 </div>
-                                <div class="col-6">
-                                  <button
-                                    type="button"
-                                    class="btn btn-block button-actions"
-                                    :class="{ 'button-priority': isPriority }"
-                                    @click="addPriority"
-                                  >
-                                  <img
-                                    :src="
-                                      isPriority
-                                        ? '/img/priority.svg'
-                                        : '/img/priority-header.svg'
-                                    "
-                                    :alt="$t('No Image')"
-                                  >
-                                    {{ __('Priority') }}
-                                  </button>
-                                </div>
-                              </div>
-                              <div class="row button-group">
-                                <div class="col-6">
-                                  <template>
+                                <div class="row button-group">
+                                  <div class="col-6">
                                     <button
                                       type="button"
-                                      v-b-tooltip.hover title="Use content from previous task to fill this one quickly."
                                       class="btn btn-block button-actions"
-                                      @click="showQuickFill"
+                                      @click="createRule"
+                                    >
+                                    <i class="fas fa-plus"></i> {{ __('Create Rule') }}
+                                    </button>
+                                  </div>
+                                  <div class="col-6">
+                                    <button
+                                      type="button"
+                                      class="btn btn-block button-actions"
+                                      :class="{ 'button-priority': isPriority }"
+                                      @click="addPriority"
                                     >
                                     <img
-                                    src="../../img/smartinbox-images/fill.svg"
-                                    :alt="$t('No Image')"
-                                  /> {{__('Quick Fill')}}
-                                    </button>
-                                  </template>
-                                </div>
-                                <div class="col-6">
-                                  <template v-if="isAllowReassignment || userIsAdmin || userIsProcessManager">
-                                    <button
-                                      v-if="!isSelfService && (task.advanceStatus === 'open' || task.advanceStatus === 'overdue')"
-                                      type="button"
-                                      class="btn btn-block button-actions"
-                                      @click="show"
+                                      :src="
+                                        isPriority
+                                          ? '/img/priority.svg'
+                                          : '/img/priority-header.svg'
+                                      "
+                                      :alt="$t('No Image')"
                                     >
-                                      <i class="fas fa-user-friends"></i> {{__('Reassign')}}
+                                      {{ __('Priority') }}
                                     </button>
-                                  </template>
+                                  </div>
                                 </div>
+                                <div class="row button-group">
+                                  <div class="col-6">
+                                    <template>
+                                      <button
+                                        type="button"
+                                        v-b-tooltip.hover title="Use content from previous task to fill this one quickly."
+                                        class="btn btn-block button-actions"
+                                        @click="showQuickFill"
+                                      >
+                                      <img
+                                      src="../../img/smartinbox-images/fill.svg"
+                                      :alt="$t('No Image')"
+                                    /> {{__('Quick Fill')}}
+                                      </button>
+                                    </template>
+                                  </div>
+                                  <div class="col-6">
+                                    <template v-if="isAllowReassignment || userIsAdmin || userIsProcessManager">
+                                      <button
+                                        v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
+                                        type="button"
+                                        class="btn btn-block button-actions"
+                                        @click="show"
+                                      >
+                                        <i class="fas fa-user-friends"></i> {{__('Reassign')}}
+                                      </button>
+                                    </template>
+                                  </div>
+                                </div>
+                              </li>
+                              <li class="list-group-item">
+                                <!-- Section to Add Now What? -->
+                                <button
+                                  type="button"
+                                  class="btn btn-block button-actions"
+                                  @click="eraseDraft()"
+                                  v-if="taskDraftsEnabled"
+                                >
+                                  <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
+                                  {{ __('Clear Draft') }}
+                                </button>
+                              </li>
+                              <div :class="statusCard">
+                                <span style="margin:0; padding:0; line-height:1">@{{$t(task.advanceStatus)}}</span>
                               </div>
-                            </li>
-                            <li class="list-group-item">
-                              <!-- Section to Add Now What? -->
-                              <button
-                                type="button"
-                                class="btn btn-block button-actions"
-                                @click="eraseDraft()"
-                                v-if="taskDraftsEnabled"
-                              >
-                                <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
-                                {{ __('Clear Draft') }}
-                              </button>
-                            </li>
-                            <div :class="statusCard">
-                              <span style="margin:0; padding:0; line-height:1">@{{$t(task.advanceStatus)}}</span>
-                            </div>
-                            <li v-if="dateDueAt && showDueAtDates" class="list-group-item">
-                              <p class="section-title">@{{$t(dueLabel)}} @{{ moment(dateDueAt).fromNow() }}</p>
-                              @{{ moment(dateDueAt).format() }}
-                            </li>
-                            <li v-if="!showDueAtDates" class="list-group-item">
-                              <p class="section-title">@{{$t(dueLabel)}} @{{ moment().to(moment(completedAt)) }}</p>
-                              @{{ moment(completedAt).format() }}
-                            </li>
-                            <li class="list-group-item" v-if="taskDraftsEnabled">
-                              <task-save-panel
-                                :options="options"
-                                :task="task"
-                                :date="lastAutosave"
-                                :error="errorAutosave"
-                              />
-                            </li>
-                            <li v-if="task.is_self_service === 0" class="list-group-item">
-                              <p class="section-title">{{__('Assigned To')}}:</p>
-                              <avatar-image
-                                v-if="task.user"
-                                size="32"
-                                class="d-inline-flex pull-left align-items-center"
-                                :input-data="task.user"
-                              ></avatar-image>
-                              @isset($assignedToAddons)
-                                @foreach ($assignedToAddons as $addon)
-                                  {!! $addon['content'] ?? '' !!}
-                                @endforeach
-                              @endisset
-                            </li>
-                            <li class="list-group-item">
-                              <p class="section-title"> {{__('Assigned') }} @{{ moment(createdAt).fromNow() }}</p>
-                              @{{ moment(createdAt).format() }}
-                            </li>
-                            <li class="list-group-item">
-                              <p class="section-title">{{__('Case')}}</p>
-                              @{{ caseTitle }}
-                              <p class="launchpad-link">
-                                <a href="{{route('process.browser.index', [$task->process->id])}}">
-                                  {{ __('Open Process Launchpad') }}
-                                </a>
-                              </p>
-                            </li>
-                            <li class="list-group-item">
-                              <p class="section-title">{{__('Request')}}</p>
-                              <a href="{{route('requests.show', [$task->process_request_id, 'skipInterstitial' => '1'])}}">
-                                #{{$task->process_request_id}} {{$task->process->name}}
-                              </a>
-                            </li>
-                            <li class="list-group-item">
-                            <p class="section-title">{{__('Requested By')}}:</p>
-                              <avatar-image
-                                v-if="task.requestor"
-                                size="32"
-                                class="d-inline-flex pull-left align-items-center"
-                                :input-data="task.requestor"
+                              <li v-if="dateDueAt && showDueAtDates" class="list-group-item">
+                                <p class="section-title">@{{$t(dueLabel)}} @{{ moment(dateDueAt).fromNow() }}</p>
+                                @{{ moment(dateDueAt).format() }}
+                              </li>
+                              <li v-if="!showDueAtDates" class="list-group-item">
+                                <p class="section-title">@{{$t(dueLabel)}} @{{ moment().to(moment(completedAt)) }}</p>
+                                @{{ moment(completedAt).format() }}
+                              </li>
+                              <li class="list-group-item" v-if="taskDraftsEnabled">
+                                <task-save-panel
+                                  :options="options"
+                                  :task="task"
+                                  :date="lastAutosave"
+                                  :error="errorAutosave"
+                                />
+                              </li>
+                              <li v-if="task.is_self_service === 0" class="list-group-item">
+                                <p class="section-title">{{__('Assigned To')}}:</p>
+                                <avatar-image
+                                  v-if="task.user"
+                                  size="32"
+                                  class="d-inline-flex pull-left align-items-center"
+                                  :input-data="task.user"
                                 ></avatar-image>
-                              <p v-if="!task.requestor">{{__('Web Entry')}}</p>
-                            </li>
-                          </ul>
+                                @isset($assignedToAddons)
+                                  @foreach ($assignedToAddons as $addon)
+                                    {!! $addon['content'] ?? '' !!}
+                                  @endforeach
+                                @endisset
+                              </li>
+                              <li class="list-group-item">
+                                <p class="section-title"> {{__('Assigned') }} @{{ moment(createdAt).fromNow() }}</p>
+                                @{{ moment(createdAt).format() }}
+                              </li>
+                              <li class="list-group-item">
+                                <p class="section-title">{{__('Case')}}</p>
+                                @{{ caseTitle }}
+                                <p class="launchpad-link">
+                                  <a href="{{route('process.browser.index', [$task->process->id])}}">
+                                    {{ __('Open Process Launchpad') }}
+                                  </a>
+                                </p>
+                              </li>
+                              <li class="list-group-item">
+                                <p class="section-title">{{__('Request')}}</p>
+                                <a href="{{route('requests.show', [$task->process_request_id, 'skipInterstitial' => '1'])}}">
+                                  #{{$task->process_request_id}} {{$task->process->name}}
+                                </a>
+                              </li>
+                              <li class="list-group-item">
+                              <p class="section-title">{{__('Requested By')}}:</p>
+                                <avatar-image
+                                  v-if="task.requestor"
+                                  size="32"
+                                  class="d-inline-flex pull-left align-items-center"
+                                  :input-data="task.requestor"
+                                  ></avatar-image>
+                                <p v-if="!task.requestor">{{__('Web Entry')}}</p>
+                              </li>
+                            </ul>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div
-                    v-if="!showInfo"
-                    id="comments"
-                    v-bind:class="{ 'tab-pane':true, fade: true, show: !showInfo, active: !showInfo }"
-                    role="tabpanel"
-                    aria-labelledby="comments-tab"
-                  >
-                    <div class="ml-md-3 mt-md-0 mt-3 collapse-content">
-                      <template v-if="panCommentInVueOptionsComponents">
-                        <comment-container
-                          commentable_type="ProcessMaker\Models\ProcessRequestToken"
-                          :commentable_id="task.id"
-                          :readonly="task.status === 'CLOSED'"
-                          :name="task.element_name"
-                          :header="false"
-                        />
-                      </template>
-                    </div>
-                  </div>
-                  </div>
-                </div>
-                <b-modal
-                  v-model="showReassignment"
-                  size="md"
-                  centered title="{{__('Reassign to')}}"
-                  header-close-content="&times;"
-                  v-cloak
-                  @hide="cancelReassign"
-                >
-                  <div class="form-group">
-                    {!!Form::label('user', __('User'))!!}
-                    <select-from-api
-                      id='user'
-                      v-model="selectedUser"
-                      placeholder="{{__('Select the user to reassign to the task')}}"
-                      api="users?status=ACTIVE"
-                      :multiple="false"
-                      :show-labels="false"
-                      :searchable="true"
-                      :store-id="false"
-                      label="fullname"
+                      <div
+                      v-if="!showInfo"
+                      id="comments"
+                      v-bind:class="{ 'tab-pane':true, fade: true, show: !showInfo, active: !showInfo }"
+                      role="tabpanel"
+                      aria-labelledby="comments-tab"
                     >
-                      <template slot="noResult">
-                        {{ __('No elements found. Consider changing the search query.') }}
-                      </template>
-                      <template slot="noOptions">
-                        {{ __('No Data Available') }}
-                      </template>
-                      <template slot="tag" slot-scope="props">
-                        <span class="multiselect__tag  d-flex align-items-center" style="width:max-content;">
-                          <span class="option__desc mr-1">
-                            <span class="option__title">@{{ props.option.fullname }}</span>
-                          </span>
-                          <i aria-hidden="true" tabindex="1"
-                            @click="props.remove(props.option)"
-                            class="multiselect__tag-icon"></i>
-                        </span>
-                      </template>
-                      <template slot="option" slot-scope="props">
-                        <div class="option__desc d-flex align-items-center">
-                          <span class="option__title mr-1">@{{ props.option.fullname }}</span>
-                        </div>
-                      </template>
-                    </select-from-api>
+                      <div class="ml-md-3 mt-md-0 mt-3 collapse-content">
+                        <template v-if="panCommentInVueOptionsComponents">
+                          <comment-container
+                            commentable_type="ProcessMaker\Models\ProcessRequestToken"
+                            :commentable_id="task.id"
+                            :readonly="task.status === 'CLOSED'"
+                            :name="task.element_name"
+                            :header="false"
+                          />
+                        </template>
+                      </div>
+                    </div>
+                    </div>
                   </div>
-                  <div slot="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" @click="cancelReassign">
-                      {{__('Cancel')}}
-                    </button>
-                    <button type="button" class="btn btn-secondary ml-2" @click="reassignUser" :disabled="disabled">
-                      {{__('Reassign')}}
-                    </button>
-                  </div>
-                </b-modal>
-              </div>
-            @endif
-        </div>
+                  <b-modal
+                    v-model="showReassignment"
+                    size="md"
+                    centered title="{{__('Reassign to')}}"
+                    header-close-content="&times;"
+                    v-cloak
+                    @hide="cancelReassign"
+                  >
+                    <div class="form-group">
+                      {!!Form::label('user', __('User'))!!}
+                    <p-m-dropdown-suggest v-model="selectedUser"
+                                          :options="users"
+                                          @pmds-input="onInput"
+                                          :placeholder="$t('Type here to search')">
+                      <template v-slot:pre-text="{ option }">
+                        <b-badge variant="secondary" 
+                                 class="mr-2 custom-badges pl-2 pr-2 rounded-lg">
+                          @{{ option.count }}
+                        </b-badge>
+                      </template>
+                    </p-m-dropdown-suggest>
+                    </div>
+                    <div slot="modal-footer">
+                      <button type="button" class="btn btn-outline-secondary" @click="cancelReassign">
+                        {{__('Cancel')}}
+                      </button>
+                      <button type="button" class="btn btn-secondary" @click="reassignUser" :disabled="disabled">
+                        {{__('Reassign')}}
+                      </button>
+                    </div>
+                  </b-modal>
+                </div>
+              @endif
+          </div>
+      </div>
     </div>
+  </div>
 @endsection
 
 @section('js')
@@ -388,6 +373,7 @@
     );
 
     const task = @json($task);
+    let draftTask = task.draft;
     const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
     const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
@@ -421,8 +407,9 @@
           filter: "",
           showReassignment: false,
           task,
+          draftTask,
           userHasAccessToTask,
-          selectedUser: [],
+          selectedUser: null,
           hasErrors: false,
           redirectInProcess: false,
           formData: {},
@@ -436,13 +423,18 @@
             is_loading: false,
           },
           lastAutosave: "-",
+          lastAutosaveNav: "-",
           errorAutosave: false,
           formDataWatcherActive: true,
-          showTabs: true,
           showInfo: true,
           isPriority: false,
           userHasInteracted: false,
           caseTitle: "",
+          showMenu: true,
+          userConfiguration: @json($userConfiguration),
+          urlConfiguration:'users/configuration',
+          users: [],
+          showTabs: true
         },
         watch: {
           task: {
@@ -453,9 +445,11 @@
                 history.replaceState(null, null, `/tasks/${task.id}/edit`);
               }
               if (task.draft) {
-                this.lastAutosave = moment(task.draft.updated_at).format("DD MMMM YYYY | HH:mm");
+                this.lastAutosave = moment(this.draftTask.updated_at).format("DD MMMM YYYY | HH:mm");
+                this.lastAutosaveNav = moment(this.draftTask.updated_at).format("MMM DD, YYYY / HH:mm");
               } else {
                 this.lastAutosave = "-";
+                this.lastAutosaveNav = "-"
               }
             }
           },
@@ -509,7 +503,7 @@
             return this.task.status !== "CLOSED";
           },
           disabled () {
-            return this.selectedUser ? this.selectedUser.length === 0 : true;
+            return this.selectedUser ? false : true;
           },
           styleDataMonaco () {
             let height = window.innerHeight * 0.55;
@@ -533,6 +527,28 @@
           },
         },
         methods: {
+          defineUserConfiguration() {
+            this.userConfiguration = JSON.parse(this.userConfiguration.ui_configuration);
+            this.showMenu = this.userConfiguration.tasks.isMenuCollapse;
+          },
+          hideMenu() {
+            this.showMenu = !this.showMenu;
+            this.$root.$emit("sizeChanged", !this.showMenu);
+            this.updateUserConfiguration();
+          },
+          updateUserConfiguration() {
+            this.userConfiguration.tasks.isMenuCollapse = this.showMenu;
+            ProcessMaker.apiClient
+            .put(
+              this.urlConfiguration, 
+              {
+                ui_configuration: this.userConfiguration,
+              }
+            )
+            .catch((error) => {
+              console.error("Error", error);
+            });
+          },
           createRule() {
             window.location.href = '/tasks/rules/new?' +
             `task_id=${this.task.id}&` +
@@ -597,24 +613,26 @@
           },
           // Reassign methods
           show () {
+            this.selectedUser = null;
             this.showReassignment = true;
+            this.getUsers("");
           },
           showQuickFill () {
             this.redirect(`/tasks/${this.task.id}/edit/quickfill`);
           },
           cancelReassign () {
+            this.selectedUser = null;
             this.showReassignment = false;
-            this.selectedUser = [];
           },
           reassignUser () {
             if (this.selectedUser) {
               ProcessMaker.apiClient
                 .put("tasks/" + this.task.id, {
-                  user_id: this.selectedUser.id
+                  user_id: this.selectedUser
                 })
                 .then(response => {
                   this.showReassignment = false;
-                  this.selectedUser = [];
+                  this.selectedUser = null;
                   this.redirect('/tasks');
                 });
             }
@@ -644,12 +662,77 @@
           updateTask(val) {
             this.$set(this, 'task', val);
           },
+          processCollectionData(task) {
+            const results = [];
+            // Verify if object "screen" exists
+            if (task.screen) {
+                // Verify if "config" array exists and it has at least one element
+                if (Array.isArray(task.screen.config) && task.screen.config.length > 0) {
+                    // Iteration on "config" array
+                    for (let configItem of task.screen.config) {
+                        // Verify if "items" array exists
+                        if (Array.isArray(configItem.items)) {
+                            // Iteration over each "items" element
+                            for (let item of configItem.items) {
+                                // Verify if component "FormCollectionRecordControl" is inside the screen
+                                if (item.component === "FormCollectionRecordControl") {
+                                    // Access to FormCollectionRecordControl "config" object
+                                    const config = item.config;
+
+                                    // Saving values into variables
+                                    const collectionFields = config.collection.data[0];
+                                    const submitCollectionChecked = config.collectionmode.submitCollectionCheck;
+                                    let recordId = "";
+                                    const record = config.record;
+
+                                    if (this.isMustache(record)) {
+                                      recordId = Mustache.render(record, this.formData);
+                                    } else {
+                                      recordId = parseInt(record, 10);
+                                    }
+                                    const collectionId = config.collection.collectionId;
+                                    // Save the values into the results array
+                                    results.push({ submitCollectionChecked, recordId, collectionId, collectionFields });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return results.length > 0 ? results : null;
+          },
+          isMustache(record) {
+            return /\{\{.*\}\}/.test(record);
+          },
           submit(task) {
             if (this.isSelfService) {
               ProcessMaker.alert(this.$t('Claim the Task to continue.'), 'warning');
             } else {
               if (this.submitting) {
                 return;
+              }
+
+              // If screen has CollectionControl components saves collection data (if submit check is true)
+              const resultCollectionComponent = this.processCollectionData(this.task);
+              let messageCollection = this.$t('Collection data was updated');
+
+              if (resultCollectionComponent && resultCollectionComponent.length > 0) {
+                resultCollectionComponent.forEach(result => {
+                  if (result.submitCollectionChecked) {
+                    let collectionKeys = Object.keys(result.collectionFields);
+                    let matchingKeys = _.intersection(Object.keys(this.formData), collectionKeys);
+                    let collectionsData = _.pick(this.formData, matchingKeys);
+                    
+                    ProcessMaker.apiClient
+                      .put("collections/" + result.collectionId + "/records/" + result.recordId, {
+                        data: collectionsData,
+                        uploads: []
+                      })
+                      .then(() => {
+                        window.ProcessMaker.alert(messageCollection, 'success', 5, true);
+                      });
+                  }
+                });
               }
 
               let message = this.$t('Task Completed Successfully');
@@ -705,12 +788,12 @@
               return ProcessMaker.apiClient
               .put("drafts/" + this.task.id, draftData)
               .then((response) => {
-                ProcessMaker.alert(this.$t('Saved'), 'success')
                 this.task.draft = _.merge(
                   {},
                   this.task.draft,
                   response.data
                 );
+                this.draftTask = structuredClone(response.data);
               })
               .catch(() => {
                 this.errorAutosave = true;
@@ -765,6 +848,25 @@
           },
           caseTitleField(task) {
             this.caseTitle = task.process_request.case_title;
+          },
+          getUsers(filter) {
+            ProcessMaker.apiClient.get(this.getUrlUsersTaskCount(filter)).then(response => {
+              this.users = [];
+              for (let i in response.data.data) {
+                this.users.push({
+                  text: response.data.data[i].fullname,
+                  value: response.data.data[i].id,
+                  count: response.data.data[i].count
+                });
+              }
+            });
+          },
+          getUrlUsersTaskCount(filter) {
+            let url = "users_task_count?filter=" + filter;
+            return url;
+          },
+          onInput(filter) {
+            this.getUsers(filter);
           }
         },
         mounted() {
@@ -780,6 +882,8 @@
           interactionListener.addEventListener('keydown', (event) => {
             this.sendUserHasInteracted();
           });
+          this.defineUserConfiguration();
+          this.getUsers("");
         }
       });
       window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name);
@@ -788,7 +892,11 @@
 @endsection
 
 @section('css')
+<link href="{{ mix('css/collapseDetails.css') }}" rel="stylesheet">
 <style>
+  .menu-tab-content {
+    margin-left: -16px;
+  }
   .inline-input {
     margin-right: 6px;
   }
@@ -847,7 +955,6 @@
     text-transform: uppercase;
   }
   .nav-collapse {
-    padding: 0 16px;
     border: none;
   }
   .section-title {
@@ -860,19 +967,11 @@
     text-transform: uppercase;
     margin-bottom: 0.5rem;
   }
-  .button-collapse {
-    height: 32px;
-    padding: 0 8px;
-    border-radius: 4px;
-    border: 1px solid var(--borders, #CDDDEE);
-    background: var(--white-w24, #FFF);
-    color: #6a7888;
-  }
   .collapse-content {
     min-width:0px;
     max-width:400px;
-    width:317px;
-    height:calc(100vh - 215px)
+    width:315px;
+    height: calc(100vh - 200px);
   }
   .open-style {
     background-color: #4ea075;
