@@ -159,7 +159,7 @@ class CaseApiRepository implements CaseApiRepositoryInterface
             }
 
             // Add a plus (+) to the beginning and an asterisk (*) to the end of each word
-            $search = preg_replace_callback("/\b[\w']+\b/u", function($matches) {
+            $search = preg_replace_callback("/\b[\w']+\b/u", function ($matches) {
                 return '+' . $matches[0] . '*';
             }, $search);
 

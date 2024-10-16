@@ -2,15 +2,15 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use ProcessMaker\Managers\ScreenCompiledManager;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Managers\ScreenCompiledManager;
+use Tests\TestCase;
 
 class ScreenCompiledManagerTest extends TestCase
 {
-
     protected $storageDisk = 'local';
+
     protected $storagePath = 'compiled_screens/';
 
     protected function setUp(): void
@@ -131,7 +131,7 @@ class ScreenCompiledManagerTest extends TestCase
         ];
 
         // Files unrelated to the process
-        $otherScreenKey = "pid_999_v1_en_sid_3_v1";
+        $otherScreenKey = 'pid_999_v1_en_sid_3_v1';
 
         foreach ($screenKeys as $screenKey) {
             $filename = 'screen_' . $screenKey . '.bin';
@@ -171,7 +171,7 @@ class ScreenCompiledManagerTest extends TestCase
         $screenId = '456';
         $screenVersionId = '1';
 
-        $expectedKey = "pid_123_1_en_sid_456_1";
+        $expectedKey = 'pid_123_1_en_sid_456_1';
 
         // Create the screen key
         $screenKey = $manager->createKey($processId, $processVersionId, $language, $screenId, $screenVersionId);
@@ -195,7 +195,7 @@ class ScreenCompiledManagerTest extends TestCase
         DB::shouldReceive('select')
             ->once()
             ->with('SELECT id FROM screen_versions ORDER BY id DESC LIMIT 1;')
-            ->andReturn([(object)['id' => $expectedId]]);
+            ->andReturn([(object) ['id' => $expectedId]]);
 
         // Get the last screen version ID
         $lastId = $manager->getLastScreenVersionId();

@@ -144,7 +144,7 @@ class UserController extends Controller
     /**
      * Display a listing of users and their task counts.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @return \Illuminate\Http\Response
      *
      * @OA\Get(
@@ -197,9 +197,9 @@ class UserController extends Controller
         $query->groupBy('users.id');
 
         $response = $query->orderBy(
-                $request->input('order_by', 'username'),
-                $request->input('order_direction', 'ASC')
-            )
+            $request->input('order_by', 'username'),
+            $request->input('order_direction', 'ASC')
+        )
             ->paginate(50);
 
         return new ApiCollection($response);
