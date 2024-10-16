@@ -1,4 +1,4 @@
-import { formatDate } from "./date";
+import { formatDate } from "../../../utils";
 
 export const formatFilters = (filters) => {
   const response = filters.map((e) => {

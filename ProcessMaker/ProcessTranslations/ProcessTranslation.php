@@ -233,6 +233,29 @@ class ProcessTranslation
         return $elements;
     }
 
+
+    /**
+     * Get the current user Auth::user() language
+     *
+     * @return string
+     */
+    public static function getCurrentUserLanguage(): string
+    {
+        $targetLanguage = '';
+
+        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            $targetLanguage = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+        }
+
+        $targetLanguage = array_key_exists($targetLanguage, Languages::ALL) ? $targetLanguage : 'en';
+
+        if (Auth::user() && Auth::user()->username !== '_pm4_anon_user') {
+            $targetLanguage = Auth::user()->language;
+        }
+
+        return $targetLanguage;
+    }
+
     public function applyTranslations($screen)
     {
         if (!$screen) {

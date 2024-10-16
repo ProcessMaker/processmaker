@@ -34,6 +34,8 @@ class CommentsSubscriber
         if ($token->is_actionbyemail) {
             $message = $message . ' via email';
         }
+        // Get the case_number
+        $caseNumber = ProcessRequest::where('id', $token->process_request_id)->value('case_number');
 
         Comment::create([
             'type' => 'LOG',
@@ -42,6 +44,7 @@ class CommentsSubscriber
             'commentable_id' => $token->process_request_id,
             'subject' => 'Task Complete',
             'body' => __($message, ['user' => $user_name, 'task_name' => $token->element_name]),
+            'case_number' => $caseNumber,
         ]);
     }
 
@@ -59,6 +62,8 @@ class CommentsSubscriber
         if (!is_int($token->getInstance()->getId())) {
             return;
         }
+        // Get the case number
+        $caseNumber = ProcessRequest::where('id', $token->getInstance()->getId())->value('case_number');
 
         Comment::create([
             'type' => 'LOG',
@@ -67,6 +72,7 @@ class CommentsSubscriber
             'commentable_id' => $token->getInstance()->getId(),
             'subject' => 'Task Skipped',
             'body' => __('The task :task_name was skipped', ['task_name' => $taskName]),
+            'case_number' => $caseNumber,
         ]);
     }
 
@@ -112,6 +118,8 @@ class CommentsSubscriber
             if (!is_int($token->getInstance()->getId())) {
                 return;
             }
+            // Get the case number
+            $caseNumber = ProcessRequest::where('id', $token->getInstance()->getId())->value('case_number');
 
             Comment::create([
                 'type' => 'LOG',
@@ -120,6 +128,7 @@ class CommentsSubscriber
                 'commentable_id' => $token->getInstance()->getId(),
                 'subject' => 'Gateway',
                 'body' => $sourceLabel . ': ' . $flowLabel,
+                'case_number' => $caseNumber,
             ]);
         }
     }

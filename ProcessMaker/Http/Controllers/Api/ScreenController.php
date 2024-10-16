@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use ProcessMaker\Events\ScreenCreated;
 use ProcessMaker\Events\ScreenDeleted;
 use ProcessMaker\Events\ScreenUpdated;
+use ProcessMaker\Facades\ScreenCompiledManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -300,6 +301,10 @@ class ScreenController extends Controller
         $changes['tmp_screen_category_id'] = $request->input('screen_category_id');
         ScreenUpdated::dispatch($screen, $changes, $original);
         $this->updateScreenTemplate($screen);
+
+        // Clear the screens cache when a screen is updated. All cache is cleared
+        // because we don't know which nested screens affect to other screens
+        ScreenCompiledManager::clearCompiledAssets();
 
         return response([], 204);
     }
