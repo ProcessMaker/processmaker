@@ -10724,8 +10724,8 @@
                 "flows": {
                     "authorizationCode": {
                         "authorizationUrl": "http://processmaker-a.test/oauth/authorize",
-                         "tokenUrl": "http://processmaker-a.test/oauth/token",
-                         "refreshUrl": "http://processmaker-a.test/token/refresh",
+                        "tokenUrl": "http://processmaker-a.test/oauth/token",
+                        "refreshUrl": "http://processmaker-a.test/token/refresh",
                         "scopes": {}
                     }
                 }
