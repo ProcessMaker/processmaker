@@ -12,6 +12,7 @@ use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\User;
 use ProcessMaker\Package\Projects\Models\Project;
+use ProcessMaker\Package\Versions\Models\VersionHistory;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Templates\HelperTrait;
 use Tests\TestCase;
@@ -21,6 +22,10 @@ class ScreenTemplateTest extends TestCase
     use RequestHelper;
     use WithFaker;
     use HelperTrait;
+
+    private const SCREEN_TEMPLATE_PATH = 'tests/Feature/Templates/fixtures/template-manifest-with-css-fields-layout.json';
+
+    private const SCREEN_PATH = 'tests/Feature/Templates/fixtures/screen-config-with-two-pages.json';
 
     public function testCreateScreenTemplate()
     {
@@ -387,8 +392,13 @@ class ScreenTemplateTest extends TestCase
 
     public function testApplyCssToExistingScreen()
     {
-        // Create a new screen with no custom_css
-        $screen = Screen::factory()->create();
+        // Create a new screen with two pages and no custom_css
+        $screenPath = base_path(self::SCREEN_PATH);
+        $screenData = json_decode(File::get($screenPath), true);
+
+        $screen = Screen::factory()->create([
+            'config' => $screenData,
+        ]);
         $this->assertNull($screen->custom_css);
 
         // Create a screen template with custom_css
@@ -408,26 +418,39 @@ class ScreenTemplateTest extends TestCase
 
         $response = $this->apiCall('POST', $route, $data);
         $response->assertStatus(200);
-        $screen->refresh();
+
+        if (class_exists(VersionHistory::class)) {
+            $updatedScreen = \ProcessMaker\Models\ScreenVersion::select('custom_css')->where('screen_id', $screen->id)->latest()->firstOrFail();
+        } else {
+            $updatedScreen = Screen::select('custom_css')->where('id', $screen->id)->firstOrFail();
+        }
 
         // Check that the screen has the custom_css
-        $this->assertNotNull($screen->custom_css);
+        $this->assertNotNull($updatedScreen->custom_css);
     }
 
     public function testApplyFieldsToExistingScreen()
     {
         // Create screen from template-manifest-with-css-fields-layout.json
-        $screenData = File::get(base_path('tests/Feature/Templates/fixtures/template-manifest-with-css-fields-layout.json'));
+        $templatePath = base_path(self::SCREEN_TEMPLATE_PATH);
+        $screenTemplateData = File::get($templatePath);
 
         $screenTemplate = ScreenTemplates::factory()->create([
-            'manifest' => $screenData,
+            'manifest' => $screenTemplateData,
         ]);
 
         $this->assertNotNull($screenTemplate);
 
-        // Create a new screen with no fields
-        $newScreen = Screen::factory()->create();
-        $this->assertEmpty($newScreen->config);
+        // Create a new screen with two pages and no fields
+        $screenPath = base_path(self::SCREEN_PATH);
+        $screenData = json_decode(File::get($screenPath), true);
+
+        $newScreen = Screen::factory()->create([
+            'title' => 'Test Screen',
+            'config' => $screenData,
+        ]);
+
+        $this->assertEmpty($newScreen->config[1]['items']);
 
         // Apply the template to the new screen
         $route = route('api.template.applyTemplate', [
@@ -443,26 +466,38 @@ class ScreenTemplateTest extends TestCase
 
         $response = $this->apiCall('POST', $route, $data);
         $response->assertStatus(200);
-        $newScreen->refresh();
+
+        if (class_exists(VersionHistory::class)) {
+            $updatedScreen = \ProcessMaker\Models\ScreenVersion::select('config')->where('screen_id', $newScreen->id)->latest()->firstOrFail();
+        } else {
+            $updatedScreen = Screen::select('config')->where('id', $newScreen->id)->firstOrFail();
+        }
 
         // Check that the screen config is not empty
-        $this->assertNotEmpty($newScreen->config);
+        $this->assertNotEmpty($updatedScreen->config[1]['items']);
     }
 
     public function testApplyLayoutToExistingScreen()
     {
         // Create screen from template-manifest-with-css-fields-layout.json
-        $screenData = File::get(base_path('tests/Feature/Templates/fixtures/template-manifest-with-css-fields-layout.json'));
+        $templatePath = base_path(self::SCREEN_TEMPLATE_PATH);
+        $screenTemplateData = File::get($templatePath);
 
         $screenTemplate = ScreenTemplates::factory()->create([
-            'manifest' => $screenData,
+            'manifest' => $screenTemplateData,
         ]);
 
         $this->assertNotNull($screenTemplate);
 
-        // Create a new screen with no fields
-        $newScreen = Screen::factory()->create();
-        $this->assertEmpty($newScreen->config);
+        // Create a new screen with two pages and no layout
+        $screenPath = base_path(self::SCREEN_PATH);
+        $screenData = json_decode(File::get($screenPath), true);
+
+        $newScreen = Screen::factory()->create([
+            'config' => $screenData,
+        ]);
+
+        $this->assertEmpty($newScreen->config[1]['items']);
 
         // Apply the template to the new screen
         $route = route('api.template.applyTemplate', [
@@ -478,27 +513,39 @@ class ScreenTemplateTest extends TestCase
 
         $response = $this->apiCall('POST', $route, $data);
         $response->assertStatus(200);
-        $newScreen->refresh();
+
+        if (class_exists(VersionHistory::class)) {
+            $updatedScreen = \ProcessMaker\Models\ScreenVersion::select('config')->where('screen_id', $newScreen->id)->latest()->firstOrFail();
+        } else {
+            $updatedScreen = Screen::select('config')->where('id', $newScreen->id)->firstOrFail();
+        }
 
         // Check that the screen config is not empty
-        $this->assertNotEmpty($newScreen->config);
+        $this->assertNotEmpty($updatedScreen->config[1]['items']);
     }
 
     public function testApplyFullTemplateToExistingScreen()
     {
         // Create screen from template-manifest-with-css-fields-layout.json
-        $screenData = File::get(base_path('tests/Feature/Templates/fixtures/template-manifest-with-css-fields-layout.json'));
+        $templatePath = base_path(self::SCREEN_TEMPLATE_PATH);
+        $screenTemplateData = File::get($templatePath);
 
         $screenTemplate = ScreenTemplates::factory()->create([
-            'manifest' => $screenData,
+            'manifest' => $screenTemplateData,
         ]);
 
         $this->assertNotNull($screenTemplate);
 
-        // Create a new screen with no fields and no custom_css
-        $newScreen = Screen::factory()->create();
+        // Create a new screen with two pages, no fields, and no custom_css
+        $screenPath = base_path(self::SCREEN_PATH);
+        $screenData = json_decode(File::get($screenPath), true);
+
+        $newScreen = Screen::factory()->create([
+            'config' => $screenData,
+        ]);
+
         $this->assertNull($newScreen->custom_css);
-        $this->assertEmpty($newScreen->config);
+        $this->assertEmpty($newScreen->config[1]['items']);
 
         // Apply the template to the new screen
         $route = route('api.template.applyTemplate', [
@@ -514,12 +561,17 @@ class ScreenTemplateTest extends TestCase
 
         $response = $this->apiCall('POST', $route, $data);
         $response->assertStatus(200);
-        $newScreen->refresh();
+
+        if (class_exists(VersionHistory::class)) {
+            $updatedScreen = \ProcessMaker\Models\ScreenVersion::select('config', 'custom_css')->where('screen_id', $newScreen->id)->latest()->firstOrFail();
+        } else {
+            $updatedScreen = Screen::select('config', 'custom_css')->where('id', $newScreen->id)->firstOrFail();
+        }
 
         // Check that the screen config is not empty
-        $this->assertNotEmpty($newScreen->config);
+        $this->assertNotEmpty($updatedScreen->config[1]['items']);
 
         // Check that the screen has the custom_css
-        $this->assertNotNull($newScreen->custom_css);
+        $this->assertNotNull($updatedScreen->custom_css);
     }
 }
