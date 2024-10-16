@@ -102,6 +102,12 @@ class DevLink extends ProcessMakerModel
 
     public function installRemoteBundle($bundleId)
     {
+        if (!$this->logger) {
+            $this->logger = new Logger();
+        }
+
+        $this->logger->status(__('Downloading bundle from remote instance'));
+
         $bundleInfo = $this->client()->get(
             route('api.devlink.local-bundle', ['bundle' => $bundleId], false)
         )->json();
@@ -123,28 +129,26 @@ class DevLink extends ProcessMakerModel
             ]
         );
 
+        $this->logger->status('Installing bundle on the this instance');
+        $this->logger->setSteps($bundleExport['payloads']);
+
         $assets = [];
         foreach ($bundleExport['payloads'] as $payload) {
             $assets[] = $this->import($payload);
         }
 
+        $this->logger->status('Syncing bundle assets');
         $bundle->syncAssets($assets);
 
-        return [
-            'warnings_devlink' => $this->logger->getWarnings(),
-        ];
+        $this->logger->addWarning('Test warning message');
+
+        $this->logger->setStatus('done');
     }
 
     private function import(array $payload)
     {
-        if (!$this->logger) {
-            $this->logger = new Logger();
-        }
-
         $importer = new Importer($payload, new Options([]), $this->logger);
         $manifest = $importer->doImport();
-
-        $manifest[$payload['root']]->model['warnings_devlink'] = $importer->logger->getWarnings();
 
         return $manifest[$payload['root']]->model;
     }
