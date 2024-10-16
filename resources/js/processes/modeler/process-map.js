@@ -6,11 +6,14 @@ window.ProcessMaker.i18nPromise.then(() => {
     render: (h) => h(ProcessMap, {
       props: {
         enableTooltip: (window.document
-                          .getElementById("modeler-app")
-                          .getAttribute("enable-tooltip") ?? "true") === "true",
+          .getElementById("modeler-app")
+          .getAttribute("enable-tooltip") ?? "true") === "true",
         forDocumenting: (window.document
-                          .getElementById("modeler-app")
-                          .getAttribute("for-documenting") ?? "false") === "true",
+          .getElementById("modeler-app")
+          .getAttribute("for-documenting") ?? "false") === "true",
+        forPrinting: (window.document
+          .getElementById("modeler-app")
+          .getAttribute("for-printing") ?? "false") === "true",
       },
     }),
   }).$mount("#modeler-app");

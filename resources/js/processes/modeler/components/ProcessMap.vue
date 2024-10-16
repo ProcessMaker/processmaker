@@ -27,6 +27,7 @@
           :request-idle-nodes="requestIdleNodes"
           :read-only="true"
           :for-documenting="forDocumenting"
+          :for-printing="forPrinting"
           @set-xml-manager="xmlManager = $event"
           @click="handleClick"
         />
@@ -47,6 +48,10 @@ export default {
   },
   props: {
     forDocumenting: {
+      type: Boolean,
+      default: false,
+    },
+    forPrinting: {
       type: Boolean,
       default: false,
     },
