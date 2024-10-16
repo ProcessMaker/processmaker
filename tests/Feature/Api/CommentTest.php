@@ -34,6 +34,7 @@ class CommentTest extends TestCase
         'type',
         'updated_at',
         'created_at',
+        'case_number',
     ];
 
     protected function withUserSetup()
