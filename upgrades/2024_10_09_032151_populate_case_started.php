@@ -187,7 +187,7 @@ class PopulateCaseStarted extends Upgrade
                 'prt1.completed_at',
                 'prt1.created_at',
                 'prt1.initiated_at',
-                DB::raw('case_title as keywords'),
+                DB::raw("CONCAT('cn_', prt1.case_number, ' ', prt1.case_title) as keywords"),
                 'prt2.participants',
                 'prt1.processes',
                 'prt2.request_tokens',
