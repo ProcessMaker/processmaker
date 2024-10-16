@@ -1,4 +1,5 @@
 import ParticipantsCell from "./ParticipantsCell.vue";
+import ParticipantCell from "./ParticipantCell.vue";
 import TruncatedOptionsCell from "./TruncatedOptionsCell.vue";
 import StatusCell from "./StatusCell.vue";
 import CaseTitleCell from "./CaseTitleCell.vue";
@@ -12,4 +13,5 @@ export {
   CaseTitleCell,
   LinkCell,
   CollapseFormCell,
+  ParticipantCell,
 };

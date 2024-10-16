@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use function PHPUnit\Framework\isEmpty;
+use ProcessMaker\Facades\ScreenCompiledManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTranslationToken;
@@ -155,93 +156,5 @@ class ProcessTranslationController extends Controller
         return response()->json([
             'translations' => $screensTranslations,
         ]);
-    }
-
-    public function cancel(Request $request, $processId, $language)
-    {
-        $processVersion = Process::find($processId)->getDraftOrPublishedLatestVersion();
-        $processTranslation = new ProcessTranslation($processVersion);
-        $processTranslation->cancelTranslation($language);
-
-        return response()->json();
-    }
-
-    public function delete(Request $request, $processId, $language)
-    {
-        $processVersion = Process::find($processId)->getDraftOrPublishedLatestVersion();
-        $processTranslation = new ProcessTranslation($processVersion);
-        $processTranslation->deleteTranslations($language);
-
-        return response()->json();
-    }
-
-    public function update(Request $request)
-    {
-        $processId = $request->input('process_id');
-        $screensTranslations = $request->input('screens_translations');
-        $language = $request->input('language');
-
-        $processVersion = Process::find($processId)->getDraftOrPublishedLatestVersion();
-        $processTranslation = new ProcessTranslation($processVersion);
-        $processTranslation->updateTranslations($screensTranslations, $language);
-    }
-
-    public function export(Request $request, $processId, $languageCode)
-    {
-        $processVersion = Process::find($processId)->getDraftOrPublishedLatestVersion();
-        $processTranslation = new ProcessTranslation($processVersion);
-        $exportList = $processTranslation->exportTranslations($languageCode);
-
-        $fileName = trim($processVersion->name);
-
-        $exportInfo = json_encode([
-            'processName' => $processVersion->name,
-            'language' => $languageCode,
-            'humanLanguage' => Languages::ALL[$languageCode],
-        ]);
-
-        return response()->streamDownload(
-            function () use ($exportList) {
-                echo json_encode($exportList);
-            },
-            $fileName . '.json',
-            [
-                'Content-type' => 'application/json',
-                'export-info' => $exportInfo,
-            ]
-        );
-    }
-
-    public function preimportValidation(Request $request, $processId)
-    {
-        $content = $request->file('file')->get();
-        $payload = json_decode($content, true);
-
-        $processVersion = Process::find($processId)->getDraftOrPublishedLatestVersion();
-        $processTranslation = new ProcessTranslation($processVersion);
-        $importData = $processTranslation->getImportData($payload);
-
-        if (!$importData || !count($importData)) {
-            return response(
-                ['message' => __('Please verify that the file contains translations for this process.')],
-                422
-            );
-        }
-
-        return [
-            'importData' => $importData,
-        ];
-    }
-
-    public function import(Request $request, $processId)
-    {
-        $content = $request->file('file')->get();
-        $payload = json_decode($content, true);
-
-        $processVersion = Process::find($processId)->getDraftOrPublishedLatestVersion();
-        $processTranslation = new ProcessTranslation($processVersion);
-        $processTranslation->importTranslations($payload);
-
-        return response()->json(['processId' => $processId], 200);
     }
 }

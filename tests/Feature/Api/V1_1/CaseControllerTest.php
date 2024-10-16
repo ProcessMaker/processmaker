@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api\V1_1;
 
 use Illuminate\Support\Facades\Hash;
+use ProcessMaker\Constants\CaseStatusConstants;
 use ProcessMaker\Models\CaseParticipated;
 use ProcessMaker\Models\CaseStarted;
 use ProcessMaker\Models\Permission;
@@ -47,32 +48,32 @@ class CaseControllerTest extends TestCase
     public function test_get_in_progress(): void
     {
         $userA = self::createUser('user_a');
-        $cases = self::createCasesParticipatedForUser($userA->id, 5, ['case_status' => 'IN_PROGRESS']);
+        $cases = self::createCasesParticipatedForUser($userA->id, 5, ['case_status' => CaseStatusConstants::IN_PROGRESS]);
 
         $response = $this->apiCall('GET', route('api.1.1.cases.in_progress'));
         $response->assertStatus(200);
         $response->assertJsonCount($cases->count(), 'data');
-        $response->assertJsonFragment(['case_status' => 'IN_PROGRESS']);
-        $response->assertJsonMissing(['case_status' => 'COMPLETED']);
+        $response->assertJsonFragment(['case_status' => CaseStatusConstants::IN_PROGRESS]);
+        $response->assertJsonMissing(['case_status' => CaseStatusConstants::COMPLETED]);
 
         // The status parameter should be ignored
-        $response = $this->apiCall('GET', route('api.1.1.cases.in_progress'), ['status' => 'COMPLETED']);
+        $response = $this->apiCall('GET', route('api.1.1.cases.in_progress'), ['status' => CaseStatusConstants::COMPLETED]);
         $response->assertJsonCount($cases->count(), 'data');
     }
 
     public function test_get_completed(): void
     {
         $userA = self::createUser('user_a');
-        $cases = self::createCasesParticipatedForUser($userA->id, 5, ['case_status' => 'COMPLETED']);
+        $cases = self::createCasesParticipatedForUser($userA->id, 5, ['case_status' => CaseStatusConstants::COMPLETED]);
 
         $response = $this->apiCall('GET', route('api.1.1.cases.completed'));
         $response->assertStatus(200);
         $response->assertJsonCount($cases->count(), 'data');
-        $response->assertJsonFragment(['case_status' => 'COMPLETED']);
-        $response->assertJsonMissing(['case_status' => 'IN_PROGRESS']);
+        $response->assertJsonFragment(['case_status' => CaseStatusConstants::COMPLETED]);
+        $response->assertJsonMissing(['case_status' => CaseStatusConstants::IN_PROGRESS]);
 
         // The status parameter should be ignored
-        $response = $this->apiCall('GET', route('api.1.1.cases.completed'), ['status' => 'IN_PROGRESS']);
+        $response = $this->apiCall('GET', route('api.1.1.cases.completed'), ['status' => CaseStatusConstants::IN_PROGRESS]);
         $response->assertJsonCount($cases->count(), 'data');
     }
 
@@ -81,9 +82,9 @@ class CaseControllerTest extends TestCase
         $userA = self::createUser('user_a');
         $userB = self::createUser('user_b');
 
-        $casesA = self::createCasesStartedForUser($userA->id, 5, ['case_status' => 'IN_PROGRESS']);
-        $casesB = self::createCasesStartedForUser($userB->id, 6, ['case_status' => 'COMPLETED']);
-        $casesC = self::createCasesStartedForUser($userA->id, 4, ['case_status' => 'IN_PROGRESS']);
+        $casesA = self::createCasesStartedForUser($userA->id, 5, ['case_status' => CaseStatusConstants::IN_PROGRESS]);
+        $casesB = self::createCasesStartedForUser($userB->id, 6, ['case_status' => CaseStatusConstants::COMPLETED]);
+        $casesC = self::createCasesStartedForUser($userA->id, 4, ['case_status' => CaseStatusConstants::IN_PROGRESS]);
 
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases'));
 
@@ -109,16 +110,16 @@ class CaseControllerTest extends TestCase
         $userA = self::createUser('user_a');
         $userB = self::createUser('user_b');
 
-        $casesA = self::createCasesStartedForUser($userA->id, 5, ['case_status' => 'COMPLETED']);
-        $casesB = self::createCasesStartedForUser($userB->id, 6, ['case_status' => 'IN_PROGRESS']);
-        $casesC = self::createCasesStartedForUser($userA->id, 4, ['case_status' => 'COMPLETED']);
+        $casesA = self::createCasesStartedForUser($userA->id, 5, ['case_status' => CaseStatusConstants::COMPLETED]);
+        $casesB = self::createCasesStartedForUser($userB->id, 6, ['case_status' => CaseStatusConstants::IN_PROGRESS]);
+        $casesC = self::createCasesStartedForUser($userA->id, 4, ['case_status' => CaseStatusConstants::COMPLETED]);
 
-        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['status' => 'IN_PROGRESS']));
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['status' => CaseStatusConstants::IN_PROGRESS]));
         $response->assertStatus(200);
         $response->assertJsonCount($casesB->count(), 'data');
 
         $totalCompleted = $casesA->count() + $casesC->count();
-        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['status' => 'COMPLETED']));
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['status' => CaseStatusConstants::COMPLETED]));
         $response->assertStatus(200);
         $response->assertJsonCount($totalCompleted, 'data');
     }
@@ -128,9 +129,9 @@ class CaseControllerTest extends TestCase
         $userA = self::createUser('user_a');
         $userB = self::createUser('user_b');
         $userC = self::createUser('user_c');
-        $casesA = self::createCasesParticipatedForUser($userA->id, 5, ['case_status' => 'IN_PROGRESS']);
-        $casesB = self::createCasesParticipatedForUser($userB->id, 6, ['case_status' => 'IN_PROGRESS']);
-        $casesC = self::createCasesParticipatedForUser($userC->id, 4, ['case_status' => 'IN_PROGRESS']);
+        $casesA = self::createCasesParticipatedForUser($userA->id, 5, ['case_status' => CaseStatusConstants::IN_PROGRESS]);
+        $casesB = self::createCasesParticipatedForUser($userB->id, 6, ['case_status' => CaseStatusConstants::IN_PROGRESS]);
+        $casesC = self::createCasesParticipatedForUser($userC->id, 4, ['case_status' => CaseStatusConstants::IN_PROGRESS]);
 
         $response = $this->apiCall('GET', route('api.1.1.cases.in_progress', ['userId' => $userA->id]));
         $response->assertStatus(200);
@@ -223,7 +224,7 @@ class CaseControllerTest extends TestCase
         $caseNumber = 123456;
         $casesB = self::createCasesStartedForUser($userA->id, 1, [
             'case_number' => $caseNumber,
-            'case_status' => 'IN_PROGRESS',
+            'case_status' => CaseStatusConstants::IN_PROGRESS,
         ]);
 
         $filterBy = [
@@ -231,7 +232,7 @@ class CaseControllerTest extends TestCase
                 [
                     'subject' => ['type' => 'Field', 'value' => 'case_status'],
                     'operator' => '=',
-                    'value' => 'IN_PROGRESS',
+                    'value' => CaseStatusConstants::IN_PROGRESS,
                 ],
             ]),
         ];
@@ -239,11 +240,11 @@ class CaseControllerTest extends TestCase
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', $filterBy));
         $response->assertStatus(200);
 
-        $total = $casesA->where('case_status', 'IN_PROGRESS')->count() +
-            $casesB->where('case_status', 'IN_PROGRESS')->count();
+        $total = $casesA->where('case_status', CaseStatusConstants::IN_PROGRESS)->count() +
+            $casesB->where('case_status', CaseStatusConstants::IN_PROGRESS)->count();
         $response->assertJsonCount($total, 'data');
-        $response->assertJsonFragment(['case_status' => 'IN_PROGRESS']);
-        $response->assertJsonMissing(['case_status' => 'COMPLETED']);
+        $response->assertJsonFragment(['case_status' => CaseStatusConstants::IN_PROGRESS]);
+        $response->assertJsonMissing(['case_status' => CaseStatusConstants::COMPLETED]);
     }
 
     public function test_filter_by_user_and_case_status(): void
@@ -253,7 +254,7 @@ class CaseControllerTest extends TestCase
         $caseNumber = 123456;
         $casesB = self::createCasesStartedForUser($userA->id, 1, [
             'case_number' => $caseNumber,
-            'case_status' => 'IN_PROGRESS',
+            'case_status' => CaseStatusConstants::IN_PROGRESS,
         ]);
 
         $filterBy = [
@@ -266,7 +267,7 @@ class CaseControllerTest extends TestCase
                 [
                     'subject' => ['type' => 'Field', 'value' => 'case_status'],
                     'operator' => '=',
-                    'value' => 'IN_PROGRESS',
+                    'value' => CaseStatusConstants::IN_PROGRESS,
                 ],
             ]),
         ];
@@ -275,11 +276,11 @@ class CaseControllerTest extends TestCase
         $response->assertStatus(200);
 
         $total = $casesA->where('user_id', $userA->id)
-            ->where('case_status', 'IN_PROGRESS')->count() +
+            ->where('case_status', CaseStatusConstants::IN_PROGRESS)->count() +
             $casesB->where('user_id', $userA->id)
-            ->where('case_status', 'IN_PROGRESS')->count();
+            ->where('case_status', CaseStatusConstants::IN_PROGRESS)->count();
         $response->assertJsonCount($total, 'data');
-        $response->assertJsonFragment(['case_status' => 'IN_PROGRESS']);
+        $response->assertJsonFragment(['case_status' => CaseStatusConstants::IN_PROGRESS]);
         $response->assertJsonFragment(['user_id' => $userA->id]);
     }
 
@@ -290,7 +291,7 @@ class CaseControllerTest extends TestCase
         $caseNumber = 123456;
         $casesB = self::createCasesStartedForUser($userA->id, 1, [
             'case_number' => $caseNumber,
-            'case_status' => 'IN_PROGRESS',
+            'case_status' => CaseStatusConstants::IN_PROGRESS,
         ]);
 
         $filterBy = [
@@ -303,7 +304,7 @@ class CaseControllerTest extends TestCase
                 [
                     'subject' => ['type' => 'Field', 'value' => 'case_status'],
                     'operator' => '=',
-                    'value' => 'IN_PROGRESS',
+                    'value' => CaseStatusConstants::IN_PROGRESS,
                 ],
                 [
                     'subject' => ['type' => 'Field', 'value' => 'created_at'],
@@ -323,7 +324,7 @@ class CaseControllerTest extends TestCase
             ->where('case_status', 'IN_PROGRESS')
             ->where('created_at', '>', '2023-02-10')->count();
         $response->assertJsonCount($total, 'data');
-        $response->assertJsonFragment(['case_status' => 'IN_PROGRESS']);
+        $response->assertJsonFragment(['case_status' => CaseStatusConstants::IN_PROGRESS]);
         $response->assertJsonFragment(['user_id' => $userA->id]);
     }
 
@@ -334,7 +335,7 @@ class CaseControllerTest extends TestCase
         $caseNumber = 123456;
         $casesB = self::createCasesStartedForUser($userA->id, 1, [
             'case_number' => $caseNumber,
-            'case_status' => 'IN_PROGRESS',
+            'case_status' => CaseStatusConstants::IN_PROGRESS,
         ]);
 
         $filterBy = [

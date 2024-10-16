@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Providers;
 
+use Illuminate\Database\Console\Migrations\MigrateCommand;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\PackageManifest;
@@ -14,7 +15,6 @@ use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
 use Lavary\Menu\Menu;
-use Illuminate\Database\Console\Migrations\MigrateCommand;
 use ProcessMaker\Console\Migration\ExtendedMigrateCommand;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ScreenBuilderStarting;
@@ -25,6 +25,7 @@ use ProcessMaker\Jobs\SmartInbox;
 use ProcessMaker\LicensedPackageManifest;
 use ProcessMaker\Managers;
 use ProcessMaker\Managers\MenuManager;
+use ProcessMaker\Managers\ScreenCompiledManager;
 use ProcessMaker\Models;
 use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
@@ -157,6 +158,11 @@ class ProcessMakerServiceProvider extends ServiceProvider
                 app('migrator'),
                 app('events')
             );
+        });
+
+        // Register the compiled screen service
+        $this->app->singleton('compiledscreen', function ($app) {
+            return new ScreenCompiledManager();
         });
     }
 
