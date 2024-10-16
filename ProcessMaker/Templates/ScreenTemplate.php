@@ -705,7 +705,7 @@ class ScreenTemplate implements TemplateInterface
             // Get the current screen and screen page
             $screenId = $request->get('screenId');
             $screen = Screen::where('id', $screenId)->firstOrFail();
-            $currentScreenPage = $request->get('currentScreenPage', 0);
+            $currentScreenPage = $request->get('currentScreenPage');
 
             if (hasPackage('package-versions')) {
                 // Fetch the latest screen version
@@ -822,11 +822,6 @@ class ScreenTemplate implements TemplateInterface
             throw new MissingScreenPageException();
         }
 
-        // Ensure the index exists
-        if (!isset($screenConfig[$currentScreenPage])) {
-            $screenConfig[$currentScreenPage] = ['items' => []];
-        }
-
         $screenConfig[$currentScreenPage]['items'] =
             array_merge($screenConfig[$currentScreenPage]['items'], $templateComponents);
         $screen->config = $screenConfig;
@@ -847,11 +842,6 @@ class ScreenTemplate implements TemplateInterface
             // Check if the currentScreenPage exists in the screenConfig array
             if (!isset($screenConfig[$currentScreenPage])) {
                 throw new MissingScreenPageException();
-            }
-
-            // Ensure the index exists
-            if (!isset($screenConfig[$currentScreenPage])) {
-                $screenConfig[$currentScreenPage] = ['items' => []];
             }
 
             $screenConfig[$currentScreenPage]['items'] =
