@@ -3,26 +3,169 @@
 namespace ProcessMaker\ProcessTranslations;
 
 use Illuminate\Support\Collection as SupportCollection;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use ProcessMaker\ImportExport\Utils;
+use ProcessMaker\Models\MustacheExpressionEvaluator;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Package\Translations\Models\Translatable;
 
-class ScreenTranslation
+class ScreenTranslation extends TranslationManager
 {
-    protected $screen;
+    private $includeImages = false;
 
-    public function __construct(array $screen)
+    /**
+     * Apply translations to a screen.
+     * @param array $screen
+     * @return array
+     */
+    public function applyTranslations($screen)
     {
-        $this->screen = $screen;
+        $config = $screen['config'];
+        $language = $this->getTargetLanguage();
+        return $this->searchTranslations($screen['screen_id'], $config, $language);
     }
 
-    public function getStrings($screen) : SupportCollection
+    /**
+     * Evaluate mustache expressions in a screen config.
+     * @param array $screenConfig
+     * @param array $data
+     * @return array
+     */
+    public function evaluateMustache($screenConfig, $data)
+    {
+        $mustacheEngine = new MustacheExpressionEvaluator();
+        $configEvaluated = $mustacheEngine->render(json_encode($screenConfig), $data);
+        return json_decode($configEvaluated, true);
+    }
+
+    /**
+     * Get the available strings in screens that belongs to a process passed by parameter.
+     * @param Process $process
+     * @param array $withColumns
+     * @return Collection
+     */
+    public function getStringsByProcess($process, $withColumns = [])
+    {
+        $screens = $this->getScreens($withColumns, null, $process);
+        $screensArr = [];
+        foreach ($screens as $screen) {
+            $screensArr[] = $this->getStringsByScreen($screen);
+        }
+        return collect($screensArr)->forget('config');
+    }
+
+    /**
+     * Get the available strings in screens passed by parameter.
+     * @param array $screenIds
+     * @param array $withColumns
+     * @return Collection
+     */
+    public function getStringsByScreenIds(array $screenIds, $withColumns = [])
+    {
+        $screens = $this->getScreens($withColumns, $screenIds, null);
+        $screensArr = [];
+        foreach ($screens as $screen) {
+            $screensArr[] = $this->getStringsByScreen($screen);
+        }
+        return collect($screensArr)->forget('config');
+    }
+
+    /**
+     * Get the available strings for a single screen passed by parameter.
+     * @param array $screen
+     * @return array
+     */
+    public function getStringsByScreen($screen)
     {
         $screen['availableStrings'] = $this->getStringsInScreen($screen);
         unset($screen['config']);
 
-        return collect($screen);
+        return $screen;
+    }
+
+    /**
+     * Set the include images flag.
+     * @param bool $includeImages
+     */
+    public function setIncludeImages($includeImages)
+    {
+        $this->includeImages = $includeImages;
+    }
+
+    private function getScreens($withColumns, $screenIds = null, $process = null) : SupportCollection
+    {
+        if (!$screenIds) {
+            $screensInProcess = collect($this->getScreenIdsInProcess($process))
+                ->unique()
+                ->toArray();
+        } else {
+            $screensInProcess = $screenIds;
+        }
+
+        $nestedScreens = [];
+        foreach ($screensInProcess as $screenId) {
+            $screen = Screen::find($screenId);
+            if ($screen) {
+                $nestedScreens = array_merge($nestedScreens, $screen->nestedScreenIds());
+            }
+        }
+
+        $screensInProcess = collect(array_merge($screensInProcess, $nestedScreens))->unique();
+
+        $fields = array_merge(['id', 'translations', 'config'], $withColumns);
+
+        $screens = Screen::whereIn('id', $screensInProcess)
+            ->get()
+            ->map
+            ->only($fields)
+            ->values();
+
+        return $screens;
+    }
+
+    private function getScreenIdsInProcess($process)
+    {
+        $tags = [
+            'bpmn:task',
+            'bpmn:manualTask',
+            'bpmn:startEvent',
+            'bpmn:endEvent',
+            'bpmn:serviceTask',
+            'bpmn:callActivity',
+        ];
+
+        $screenIds = [];
+
+        foreach (Utils::getElementByMultipleTags($process->getDefinitions(true), $tags) as $element) {
+            $screenId = $element->getAttribute('pm:screenRef');
+            $interstitialScreenId = $element->getAttribute('pm:interstitialScreenRef');
+            $allowInterstitial = $element->getAttribute('pm:allowInterstitial');
+            $pmConfig = $element->getAttribute('pm:config');
+
+            if ($pmConfig) {
+                $pmConfig = json_decode($pmConfig, true);
+            }
+
+            if (is_numeric($screenId)) {
+                $screenIds[] = $screenId;
+            }
+
+            // Let's check if interstitialScreen exist
+            if (is_numeric($interstitialScreenId) && $allowInterstitial === 'true') {
+                $screenIds[] = $interstitialScreenId;
+            }
+
+            if (isset($pmConfig) && $pmConfig !== '' && array_key_exists('screenRef', $pmConfig) && is_numeric($pmConfig['screenRef'])) {
+                $screenIds[] = $pmConfig['screenRef'];
+            }
+
+            if (isset($pmConfig) && $pmConfig !== '' && array_key_exists('web_entry', $pmConfig) && $pmConfig['web_entry']) {
+                $screenIds[] = $pmConfig['web_entry']['screen_id'];
+                $screenIds[] = $pmConfig['web_entry']['completed_screen_id'];
+            }
+        }
+
+        return $screenIds;
     }
 
     private function getStringsInScreen($screen)
@@ -41,6 +184,8 @@ class ScreenTranslation
                 }
             }
         }
+
+        $strings = $this->handleIncludeImages($strings);
 
         return $strings;
     }
@@ -85,7 +230,9 @@ class ScreenTranslation
                 if ($item['component'] === 'FormSelectList') {
                     if (isset($item['config']) && isset($item['config']['options']) && isset($item['config']['options']['optionsList'])) {
                         foreach ($item['config']['options']['optionsList'] as $option) {
-                            $elements[] = $option['content'];
+                            if (array_key_exists('content', $option)) {
+                                $elements[] = $option['content'];
+                            }
                         }
                     }
                 }
@@ -110,28 +257,29 @@ class ScreenTranslation
         return $elements;
     }
 
-    public function applyTranslations($screen)
+    private function handleIncludeImages($strings)
     {
-        $config = $screen['config'];
-        $targetLanguage = '';
+        $result = [];
+        $imgPattern = '/<img[^>]+>/';
+        foreach ($strings as $string) {
+            if ($this->includeImages && preg_match($imgPattern, $string)) {
+                $result[] = preg_replace_callback($imgPattern,
+                    function ($matches) {
+                        $hash = sha1($matches[0]);
+                        Cache::put('img.' . $hash, $matches[0], now()->addMinutes(15));
 
-        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-            $targetLanguage = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+                        return '<img src="' . $hash . '"/>';
+                    },
+                    $string);
+            } else {
+                $result[] = $string ?? '';
+            }
         }
 
-        $targetLanguage = array_key_exists($targetLanguage, Languages::ALL) ? $targetLanguage : 'en';
-
-        if (!Auth::user()->isAnonymous) {
-            $targetLanguage = Auth::user()->language;
-        } elseif (Cache::has('LANGUAGE_ANON_WEBENTRY')) {
-            $language = Cache::get('LANGUAGE_ANON_WEBENTRY');
-            $targetLanguage = $language['code'];
-        }
-
-        return $this->searchTranslations($screen['screen_id'], $config, $targetLanguage);
+        return $result;
     }
 
-    public function searchTranslations($screenId, $config, $language)
+    private function searchTranslations($screenId, $config, $language)
     {
         $translations = null;
         if (class_exists(Translatable::class)) {
@@ -153,7 +301,7 @@ class ScreenTranslation
         return $config;
     }
 
-    public function applyTranslationsToScreen($key, $translatedString, &$config)
+    private function applyTranslationsToScreen($key, $translatedString, &$config)
     {
         if ($config) {
             foreach ($config as &$page) {
