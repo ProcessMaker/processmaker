@@ -39,9 +39,11 @@ class CasesController extends Controller
     public function index()
     {
         $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
-       // This is a temporary API the engine team will provide the new
+
+        // This is a temporary API the engine team will provide the new
         return view('cases.casesMain', compact('currentUser'));
     }
+
     /**
      * Cases Detail
      *
@@ -49,112 +51,42 @@ class CasesController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function edit(ProcessRequest $request)
+    public function edit($case_number)
     {
-        if (!request()->input('skipInterstitial') && $request->status === 'ACTIVE') {
-            $startEvent = $request->tokens()->orderBy('id')->first();
-            if ($startEvent) {
-                $definition = $startEvent->getDefinition();
-                $allowInterstitial = false;
-                if (isset($definition['allowInterstitial'])) {
-                    $allowInterstitial = filter_var(
-                        $definition['allowInterstitial'],
-                        FILTER_VALIDATE_BOOLEAN,
-                        FILTER_NULL_ON_FAILURE
-                    );
-                }
-                if ($allowInterstitial && $request->user_id == Auth::id() && request()->has('fromTriggerStartEvent')) {
-                    $active = $request->tokens()
-                        ->where('user_id', Auth::id())
-                        ->where('element_type', 'task')
-                        ->where('status', 'ACTIVE')
-                        ->orderBy('id')->first();
-
-                    // If the interstitial is enabled on the start event, then use it as the task
-                    if ($active) {
-                        $task = $allowInterstitial ? $startEvent : $active;
-                    } else {
-                        $task = $startEvent;
-                    }
-
-                    return redirect(route('tasks.edit', [
-                        'task' => $task->getKey(),
-                    ]));
-                }
+        // Get all the request related to this case number
+        $requests = ProcessRequest::where('case_number', $case_number)->get();
+        $parentRequest = null;
+        $requestCount = $requests->count();
+        // Search the parent request  parent_request_id
+        foreach ($requests as $request) {
+            if (is_null($request->parent_request_id)) {
+                $parentRequest = $request;
+                break;
             }
         }
-
-        $userHasCommentsForRequest = Comment::where('commentable_type', ProcessRequest::class)
-                ->where('commentable_id', $request->id)
-                ->where('body', 'like', '%{{' . \Auth::user()->id . '}}%')
-                ->count() > 0;
-
-        $requestMedia = $request->media()->get()->pluck('id');
-
-        $userHasCommentsForMedia = Comment::where('commentable_type', \ProcessMaker\Models\Media::class)
-                ->whereIn('commentable_id', $requestMedia)
-                ->where('body', 'like', '%{{' . \Auth::user()->id . '}}%')
-                ->count() > 0;
-
-        if (!$userHasCommentsForMedia && !$userHasCommentsForRequest) {
-            $this->authorize('view', $request);
-        }
-
         $request->participants;
         $request->user;
-        $request->summary = $request->summary();
-
-        if ($request->status === 'CANCELED' && $request->process->cancel_screen_id) {
-            $request->summary_screen = $request->process->cancelScreen;
-        } else {
-            $request->summary_screen = $request->getSummaryScreen();
-        }
-        $request->request_detail_screen = Screen::find($request->process->request_detail_screen_id);
-
-        $canCancel = Auth::user()->can('cancel', $request->processVersion);
+        $request->summary = [];
+        // The user canCancel if has the processPermission and the case has only one request
+        $canCancel = (Auth::user()->can('cancel', $request->processVersion) && $requestCount === 1);
+        // The user can see the comments
         $canViewComments = (Auth::user()->hasPermissionsFor('comments')->count() > 0) || class_exists(PackageServiceProvider::class);
-        $canManuallyComplete = Auth::user()->is_administrator && $request->status === 'ERROR';
-        $canRetry = false;
-
-        if ($canManuallyComplete) {
-            $retry = RetryProcessRequest::for($request);
-
-            $canRetry = $retry->hasRetriableTasks() &&
-                !$retry->hasNonRetriableTasks() &&
-                !$retry->isChildRequest();
-        }
-
-        $files = \ProcessMaker\Models\Media::getFilesRequest($request);
-
+        // Check if the user has permission print for request
         $canPrintScreens = $this->canUserPrintScreen($request);
-
-        $manager = app(ScreenBuilderManager::class);
-        event(new ScreenBuilderStarting($manager, ($request->summary_screen) ? $request->summary_screen->type : 'FORM'));
-
-        $addons = [];
-        $dataActionsAddons = [];
-
+        // The user is Manager
         $isProcessManager = $request->process?->manager_id === Auth::user()->id;
-
-        $eligibleRollbackTask = null;
-        $errorTask = RollbackProcessRequest::getErrorTask($request);
-        if ($errorTask) {
-            $eligibleRollbackTask = RollbackProcessRequest::eligibleRollbackTask($errorTask);
-        }
+        // Get the summary screen tranlations
         $this->summaryScreenTranslation($request);
+
+        // Return the view
         return view('cases.edit', compact(
             'request',
-            'files',
+            'parentRequest',
+            'requestCount',
             'canCancel',
             'canViewComments',
-            'canManuallyComplete',
-            'canRetry',
-            'manager',
             'canPrintScreens',
-            'addons',
             'isProcessManager',
-            'eligibleRollbackTask',
-            'errorTask',
         ));
     }
 
