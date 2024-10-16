@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import debounce from 'lodash/debounce';
 import Origin from './Origin.vue';
 import VersionCheck from './VersionCheck.vue';
+import EllipsisMenu from '../../../components/shared/EllipsisMenu.vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 
 const router = useRouter();
@@ -10,7 +11,18 @@ const route = useRoute();
 const bundles = ref([]);
 const editModal = ref(null);
 const confirmDeleteModal = ref(null);
+const confirmIncreaseVersion = ref(null);
 const filter = ref("");
+const actions = [
+  { value: "increase-item", content: "Increase Version", conditional: "if(not(dev_link_id), true, false)" },
+  { value: "update-item", content: "Update Version", conditional: "if(dev_link_id, true, false)" },
+  { value: "edit-item", content: "Edit", conditional: "if(not(dev_link_id) , true, false)" },
+  { value: "delete-item", content: "Delete" },
+];
+const customButton = {
+  icon: "fas fa-ellipsis-v",
+  content: "",
+};
 
 onMounted(() => {
   load();
@@ -22,7 +34,7 @@ const load = () => {
     .then((result) => {
       bundles.value = result.data.data;
     });
-}
+};
 
 const fields = [
   {
@@ -51,7 +63,6 @@ const fields = [
   },
 ];
 
-
 const bundleAttributes = {
   id: null,
   name: '',
@@ -62,12 +73,29 @@ const selected = ref(bundleAttributes);
 
 const reset = () => {
   selected.value = { ...bundleAttributes };
-}
+};
 
 const createNewBundle = () => {
   reset();
   editModal.value.show();
-}
+};
+
+const onNavigate = (action, data, index) => {
+  switch (action.value) {
+    case "edit-item":
+      edit(data);
+      break;
+    case "increase-item":
+      increaseVersionBundle(data);
+      break;
+    case "update-item":
+      edit(data);
+      break;
+    case "delete-item":
+      deleteBundle(data);
+      break;
+  }
+};
 
 const create = () => {
   ProcessMaker.apiClient
@@ -104,6 +132,20 @@ const deleteBundle = (bundle) => {
   confirmDeleteModal.value.show();
 };
 
+const increaseVersionBundle = (bundle) => {
+  selected.value = bundle;
+  confirmIncreaseVersion.value.show();
+};
+
+const executeIncrease = () => {
+  ProcessMaker.apiClient
+    .post(`devlink/local-bundles/${selected.value.id}/increase-version`)
+    .then((result) => {
+      confirmIncreaseVersion.value.hide();
+      load();
+    });
+};
+
 const executeDelete = () => {
   ProcessMaker.apiClient
     .delete(`/devlink/local-bundles/${selected.value.id}`)
@@ -123,7 +165,7 @@ const handleFilterChange = () => {
 
 const canEdit = (bundle) => {
   return bundle.dev_link === null;
-}
+};
 </script>
 
 <template>
@@ -146,6 +188,16 @@ const canEdit = (bundle) => {
       @ok="executeDelete"
     >
       <p>Are you sure you want to delete {{ selected?.name }}?</p>
+    </b-modal>
+
+    <b-modal
+      ref="confirmIncreaseVersion"
+      centered
+      content-class="modal-style"
+      title="Increase Version"
+      @ok="executeIncrease"
+    >
+      <p>Are you sure you increase the version of {{ selected?.name }}?</p>
     </b-modal>
 
     <b-modal
@@ -182,41 +234,13 @@ const canEdit = (bundle) => {
           {{ data.item.version }} <VersionCheck :dev-link="data.item"></VersionCheck>
         </template>
         <template #cell(menu)="data">
-          <div class="btn-menu-container">
-            <div class="btn-group" role="group" aria-label="Basic example">
-              <button
-                v-if="canEdit(data.item)"
-                type="button"
-                class="btn btn-menu"
-                @click.prevent="deleteBundle(data.item)"
-              >
-                <i class="fas fa-cloud-upload-alt" />
-              </button>
-              <button
-                v-if="!canEdit(data.item)"
-                type="button"
-                class="btn btn-menu"
-                @click.prevent="edit(data.item)"
-              >
-                <i class="fas fa-cloud-download-alt" />
-              </button>
-              <button
-                v-if="canEdit(data.item)"
-                type="button"
-                class="btn btn-menu"
-                @click.prevent="edit(data.item)"
-              >
-                <img src="/img/pencil-fill.svg">
-              </button>
-              <button
-                type="button"
-                class="btn btn-menu"
-                @click.prevent="deleteBundle(data.item)"
-              >
-                <img src="/img/trash-fill.svg">
-              </button>
-            </div>
-          </div>
+          <EllipsisMenu
+            class="ellipsis-devlink"
+            :actions="actions"
+            :data="data.item"
+            :custom-button="customButton"
+            @navigate="onNavigate"
+          />
         </template>
       </b-table>
     </div>
@@ -238,6 +262,13 @@ tr:hover {
   background-position: 7px 8px;
   background-size: 15px;
   border-radius: 8px;
+}
+.ellipsis-devlink {
+  border-radius: 10px;
+  border: 1px solid #D7DDE5;
+}
+::v-deep .ellipsis-devlink .btn {
+  border-radius: 10px;
 }
 ::v-deep .modal-style {
   border-radius: 8px;
@@ -285,18 +316,9 @@ tr:hover {
   border-radius: 8px;
   min-height: calc(-355px + 100vh);
 }
-.btn-menu {
-  border: 1px solid rgba(0, 0, 0, 0.125);
-  background-color: transparent;
-  color: #6A7888;
-}
 .new-button {
   text-transform: none;
   font-weight: 500;
   font-size: 14px;
-}
-.btn-menu-container {
-  display: flex;
-  justify-content: flex-end;
 }
 </style>

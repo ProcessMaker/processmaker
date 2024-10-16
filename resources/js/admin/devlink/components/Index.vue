@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 import debounce from 'lodash/debounce';
 import Status from './Status.vue';
+import EllipsisMenu from '../../../components/shared/EllipsisMenu.vue';
 import { store } from '../common';
 
 const router = useRouter();
@@ -11,6 +12,14 @@ const devlinks = ref([]);
 const confirmDeleteModal = ref(null);
 const editModal = ref(null);
 const filter = ref("");
+const actions = [
+  { value: "edit-item", content: "Edit" },
+  { value: "delete-item", content: "Delete" },
+];
+const customButton = {
+  icon: "fas fa-ellipsis-v",
+  content: "",
+};
 
 const fields = [
   {
@@ -48,6 +57,17 @@ const load = () => {
     .then((result) => {
       devlinks.value = result.data.data;
     });
+};
+
+const onNavigate = (action, data, index) => {
+  switch (action.value) {
+    case "edit-item":
+      editDevLink(data);
+      break;
+    case "delete-item":
+      deleteDevLink(data);
+      break;
+  }
 };
 
 const clear = () => {
@@ -176,24 +196,13 @@ const urlIsValid = computed(() => {
           <Status :id="data.item.id" />
         </template>
         <template #cell(menu)="data">
-          <div class="btn-menu-container">
-            <div class="btn-group" role="group" aria-label="Basic example">
-              <button
-                type="button"
-                class="btn btn-menu"
-                @click.prevent="editDevLink(data.item)"
-              >
-                <img src="/img/pencil-fill.svg">
-              </button>
-              <button
-                type="button"
-                class="btn btn-menu"
-                @click.prevent="deleteDevLink(data.item)"
-              >
-                <img src="/img/trash-fill.svg">
-              </button>
-            </div>
-          </div>
+          <EllipsisMenu
+            class="ellipsis-devlink"
+            :actions="actions"
+            :data="data.item"
+            :custom-button="customButton"
+            @navigate="onNavigate"
+          />
         </template>
       </b-table>
     </div>
@@ -215,6 +224,13 @@ tr:hover {
   background-position: 7px 8px;
   background-size: 15px;
   border-radius: 8px;
+}
+.ellipsis-devlink {
+  border-radius: 10px;
+  border: 1px solid #D7DDE5;
+}
+::v-deep .ellipsis-devlink .btn {
+  border-radius: 10px;
 }
 ::v-deep .table {
   border-bottom: 1px solid #e9edf1;
@@ -243,17 +259,9 @@ tr:hover {
   border-radius: 8px;
   min-height: calc(-355px + 100vh);
 }
-.btn-menu {
-  border: 1px solid rgba(0, 0, 0, 0.125);
-  background-color: transparent;
-}
 .new-button {
   text-transform: none;
   font-weight: 500;
   font-size: 14px;
-}
-.btn-menu-container {
-  display: flex;
-  justify-content: flex-end;
 }
 </style>

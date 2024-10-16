@@ -148,6 +148,14 @@ class DevLinkController extends Controller
         return $bundle;
     }
 
+    public function increaseBundleVersion(Bundle $bundle)
+    {
+        $bundle->version = $bundle->version + 1;
+        $bundle->saveOrFail();
+
+        return $bundle;
+    }
+
     public function deleteBundle(Bundle $bundle)
     {
         $bundle->delete();
