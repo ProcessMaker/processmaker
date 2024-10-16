@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Events\UserCreated;
 use ProcessMaker\Events\UserDeleted;
@@ -136,6 +137,70 @@ class UserController extends Controller
                 $request->input('order_direction', $order_direction)
             )
             ->paginate($request->input('per_page', 10));
+
+        return new ApiCollection($response);
+    }
+
+    /**
+     * Display a listing of users and their task counts.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     *
+     * @OA\Get(
+     *     path="/users_count_tasks",
+     *     summary="Returns all users and their total tasks",
+     *     operationId="getUsersTaskCount",
+     *     tags={"Users"},
+     *     @OA\Parameter(
+     *         name="filter",
+     *         in="query",
+     *         description="Filter results by string. Searches First Name, Last Name, Email, or Username.",
+     *         @OA\Schema(type="string"),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of users with task counts",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/users"),
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 ref="#/components/schemas/metadata",
+     *             ),
+     *         ),
+     *     ),
+     * )
+     */
+    public function getUsersTaskCount(Request $request)
+    {
+        $query = User::nonSystem();
+
+        $filter = $request->input('filter', '');
+        if (!empty($filter)) {
+            $filter = '%' . $filter . '%';
+            $query->where(function ($query) use ($filter) {
+                $query->where('username', 'like', $filter)
+                    ->orWhere('firstname', 'like', $filter)
+                    ->orWhere('lastname', 'like', $filter);
+            });
+        }
+
+        $query->where('status', 'ACTIVE');
+
+        $query->select('*', DB::Raw("(SELECT COUNT(id) FROM process_request_tokens WHERE user_id=users.id AND status='ACTIVE' AND element_type='task') AS count"));
+        $query->groupBy('users.id');
+
+        $response = $query->orderBy(
+                $request->input('order_by', 'username'),
+                $request->input('order_direction', 'ASC')
+            )
+            ->paginate(50);
 
         return new ApiCollection($response);
     }

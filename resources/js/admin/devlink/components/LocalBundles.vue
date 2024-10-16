@@ -55,7 +55,6 @@ const bundleAttributes = {
   id: null,
   name: '',
   published: false,
-  locked: false,
 };
 
 const selected = ref(bundleAttributes);
@@ -120,6 +119,10 @@ const debouncedLoad = debounce(load, 300);
 const handleFilterChange = () => {
   debouncedLoad();
 };
+
+const canEdit = (bundle) => {
+  return bundle.dev_link === null;
+}
 </script>
 
 <template>
@@ -142,11 +145,8 @@ const handleFilterChange = () => {
       <b-form-group label="Name">
         <b-form-input v-model="selected.name"></b-form-input>
       </b-form-group>
-      <b-form-group label="Published">
+      <b-form-group v-if="canEdit(selected)" label="Published">
         <b-form-checkbox v-model="selected.published"></b-form-checkbox>
-      </b-form-group>
-      <b-form-group label="Locked">
-        <b-form-checkbox v-model="selected.locked"></b-form-checkbox>
       </b-form-group>
     </b-modal>
     <div class="card local-bundles-card">
@@ -156,10 +156,10 @@ const handleFilterChange = () => {
       >
         <template #cell(name)="data">
           {{ data.item.name }}
-          <i v-if="data.item.locked" class="ml-2 fa fa-lock"></i>
+          <i v-if="!canEdit(data.item)" class="ml-2 fa fa-lock"></i>
         </template>
         <template #cell(published)="data">
-          <b-form-checkbox v-model="data.item.published" switch @change="updatePublished(data.item)">
+          <b-form-checkbox v-if="canEdit(data.item)" v-model="data.item.published" switch @change="updatePublished(data.item)">
           </b-form-checkbox>
         </template>
         <template #cell(origin)="data">
@@ -169,6 +169,7 @@ const handleFilterChange = () => {
           <div class="btn-menu-container">
             <div class="btn-group" role="group" aria-label="Basic example">
               <button
+                v-if="canEdit(data.item)"
                 type="button"
                 class="btn btn-menu"
                 @click.prevent="edit(data.item)"

@@ -40,16 +40,6 @@ class UserController extends Controller
         $permissionNames = $user->permissions()->pluck('name')->toArray();
         $permissionGroups = $all_permissions->sortBy('title')->groupBy('group')->sortKeys();
 
-        $langs = [];
-        foreach (scandir(app()->langPath()) as $file) {
-            preg_match('/([a-z]{2})\\.json/', $file, $matches);
-            if (!empty($matches)) {
-                $langs[] = $matches[1];
-            }
-        }
-        // Our form controls need attribute:value pairs sot we convert the langs array to and associative one
-        $availableLangs = array_combine($langs, $langs);
-
         $currentUser = $user;
         $states = JsonData::states();
         $countries = JsonData::countries();
@@ -96,7 +86,6 @@ class UserController extends Controller
             'timezones',
             'countries',
             'datetimeFormats',
-            'availableLangs',
             'status',
             'enabled2FA',
             'global2FAEnabled',

@@ -195,19 +195,6 @@ const PMColumnFilterCommonMixin = {
       );
       return formattedFilter.length > 0 ? "&advanced_filter=" + encodeURIComponent(JSON.stringify(formattedFilter)) : "";
     },
-    getUrlUsers(filter) {
-      let page = 1;
-      let perPage = 100;
-      let orderBy = "username";
-      let orderDirection = "asc";
-      let url = "users" +
-              "?page=" + page +
-              "&per_page=" + perPage +
-              "&filter=" + filter +
-              "&order_by=" + orderBy +
-              "&order_direction=" + orderDirection;
-      return url;
-    },
     getFormat(column) {
       let format = "string";
       if (column.format) {
