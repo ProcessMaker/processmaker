@@ -443,6 +443,7 @@
           isPriority: false,
           userHasInteracted: false,
           caseTitle: "",
+          assignedUserIds: null
         },
         watch: {
           task: {
@@ -534,14 +535,15 @@
         },
         methods: {
           reassign() {
-            // The user shouldn’t be able to reassign the task since he/she is the only one in the pool of applicable users.
+            // The user shouldn’t be able to reassign the task since is the only one in the pool of applicable users.
             if (window.ProcessMaker.user.id == this.task.definition.assignedUsers) {
               this.task.definition.allowReassignment = false;
             }
 
-            // If a group is used, only the users inside the group should be eligible for reassignment.
+            // If a group is used, only the users inside the group/groups should be eligible for reassignment.
             if (this.task.definition.assignedGroups) {
-              return "groups/" + this.task.definition.assignedGroups + "/users?status=ACTIVE";
+              this.getUsersInGroups(this.task.definition.assignedGroups);
+              return 'users?include_ids=' + this.assignedUserIds + '&status=ACTIVE';
             }  
 
             // Reassignment should only be available to users in the set pool group of users
@@ -552,6 +554,16 @@
             } else {
               return "users?status=ACTIVE";  
             }           
+          },
+          getUsersInGroups(assignedGroups) {
+            let groups = assignedGroups.split(',');
+            ProcessMaker.apiClient.get("tasks/getAssignedUsersInGroups", {
+              params: {
+                groups: groups
+              }
+            }).then(response => {
+              this.assignedUserIds = response.data;
+            });
           },
           createRule() {
             window.location.href = '/tasks/rules/new?' +
