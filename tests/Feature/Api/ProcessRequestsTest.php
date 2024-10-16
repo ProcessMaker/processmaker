@@ -8,6 +8,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
@@ -30,6 +31,7 @@ class ProcessRequestsTest extends TestCase
     public $withPermissions = true;
 
     const API_TEST_URL = '/requests';
+
     const API_REQUESTS_BY_CASE = '/requests-by-case';
 
     const STRUCTURE = [
@@ -987,7 +989,7 @@ class ProcessRequestsTest extends TestCase
         $data = $response->json()['data'];
         $this->assertEmpty($data);
     }
-    
+
     /**
      * Get a list of Requests by Cases.
      */
@@ -998,9 +1000,9 @@ class ProcessRequestsTest extends TestCase
         ProcessRequest::factory()->count(9)->create([
             'parent_request_id' => $request->id,
         ]);
+        $filter = "?case_number=$request->case_number&include=activeTasks";
+        $url = self::API_REQUESTS_BY_CASE . $filter;
 
-        $url = self::API_REQUESTS_BY_CASE . '?case_number=' . $request->case_number;
-        
         $response = $this->apiCall('GET', $url);
 
         //Validate the header status code
@@ -1009,6 +1011,7 @@ class ProcessRequestsTest extends TestCase
         // Verify structure
         $response->assertJsonStructure([
             'data' => ['*' => self::STRUCTURE],
+            'data' => ['*' => array_merge(self::STRUCTURE, ['active_tasks'])],
             'meta',
         ]);
 
@@ -1020,11 +1023,42 @@ class ProcessRequestsTest extends TestCase
      * Get a list of Requests by Cases.
      */
     public function testRequestByCaseWithoutCaseNumber()
-    {        
+    {
         $response = $this->apiCall('GET', self::API_REQUESTS_BY_CASE);
 
         //Validate the header status code
         $response->assertStatus(422);
         $this->assertEquals('The Case number field is required.', $response->json()['message']);
+    }
+
+    /**
+     * Get task list with data
+     */
+    public function testGetTaskListWithData()
+    {
+        // Create a request with a token
+        $request = ProcessRequest::factory()->create([
+            'data' => ['foo' => 'bar'],
+        ]);
+        ProcessRequestToken::factory()->create([
+            'process_request_id' => $request->id,
+        ]);
+
+        $route = route('api.tasks.index', ['order_direction'=>'asc', 'include' => 'data']);
+        $response = $this->apiCall('GET', $route);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    // has id, data
+                    'data',
+                ],
+            ],
+            'meta',
+        ]);
+
+        // has foo => bar
+        $this->assertEquals('bar', $response->json()['data'][0]['data']['foo']);
     }
 }

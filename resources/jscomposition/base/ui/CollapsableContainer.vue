@@ -39,11 +39,29 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { computed } from "vue";
 
-const collapse = ref(false);
+const emit = defineEmits(["change", "input"]);
+
+const props = defineProps({
+  value: {
+    type: Boolean,
+    default: true,
+  },
+});
+
+const collapse = computed({
+  get() {
+    return props.value;
+  },
+  set(val) {
+    emit("input", val);
+  },
+});
 
 const onClick = () => {
-  collapse.value = !collapse.value;
+  const val = !collapse.value;
+  collapse.value = val;
+  emit("change", val);
 };
 </script>

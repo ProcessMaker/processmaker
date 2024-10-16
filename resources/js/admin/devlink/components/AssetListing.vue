@@ -84,7 +84,6 @@ const load = () => {
   ProcessMaker.apiClient
     .get(`devlink/${route.params.id}/remote-assets-listing?url=${typeConfig.url}&filter=${filter.value}`)
     .then((result) => {
-      console.log("Got", result.data.data);
       items.value = result.data.data;
     });
 };
