@@ -1,10 +1,11 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, getCurrentInstance } from 'vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 import debounce from 'lodash/debounce';
 import Status from './Status.vue';
 import { store } from '../common';
 
+const vue = getCurrentInstance().proxy;
 const router = useRouter();
 const route = useRoute();
 const devlinks = ref([]);
@@ -15,19 +16,19 @@ const filter = ref("");
 const fields = [
   {
     key: 'id',
-    label: 'ID'
+    label: vue.$t('ID'),
   },
   {
     key: 'name',
-    label: 'Name'
+    label: vue.$t('Name')
   },
   {
     key: 'url',
-    label: 'URL'
+    label: vue.$t('URL')
   },
   {
     key: 'status',
-    label: 'Status'
+    label: vue.$t('Status'),
   },
   {
     key: 'menu',
@@ -137,7 +138,7 @@ const urlIsValid = computed(() => {
         v-b-modal.create
         class="new-button"
       >
-        <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>Add Instance
+        <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>{{ $t('Add Instance') }}
       </b-button>
     </div>
     <b-modal ref="confirmDeleteModal" title="Delete DevLink" @ok="executeDelete">

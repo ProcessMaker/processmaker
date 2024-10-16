@@ -35,7 +35,10 @@ onMounted(async () => {
 });
 
 const remove = async (asset) => {
-  const confirm = await vue.$bvModal.msgBoxConfirm('Are you sure you want to remote this asset from the bundle?');
+  const confirm = await vue.$bvModal.msgBoxConfirm(vue.$t('Are you sure you want to remote this asset from the bundle?'), {
+    okTitle: vue.$t('Ok'),
+    cancelTitle: vue.$t('Cancel'),
+  });
   if (!confirm) {
     return;
   }

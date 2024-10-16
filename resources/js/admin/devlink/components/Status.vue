@@ -23,8 +23,8 @@ onMounted(() => {
 <template>
   <div>
     <b-spinner v-if="status === 'loading'"></b-spinner>
-    <template v-if="status === 'ok'"><span class="badge badge-linked">Linked</span></template>
-    <template v-if="status === 'error'"><span class="badge badge-not-available">Not available</span></template>
+    <template v-if="status === 'ok'"><span class="badge badge-linked">{{ $t('Linked') }}</span></template>
+    <template v-if="status === 'error'"><span class="badge badge-not-available">{{ $t('Not available') }}</span></template>
   </div>
 </template>
 

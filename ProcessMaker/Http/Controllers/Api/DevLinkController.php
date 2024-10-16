@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Jobs\DevLinkInstall;
 use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\BundleAsset;
 use ProcessMaker\Models\DevLink;
@@ -156,9 +157,14 @@ class DevLinkController extends Controller
         $bundle->delete();
     }
 
-    public function installRemoteBundle(DevLink $devLink, $remoteBundleId)
+    public function installRemoteBundle(Request $request, DevLink $devLink, $remoteBundleId)
     {
-        return $devLink->installRemoteBundle($remoteBundleId);
+        DevLinkInstall::dispatch(
+            $request->user()->id,
+            $devLink->id,
+            $remoteBundleId,
+            'update'
+        );
     }
 
     public function exportLocalBundle(Bundle $bundle)
