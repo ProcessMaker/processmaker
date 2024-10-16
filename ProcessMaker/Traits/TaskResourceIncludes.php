@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Resources\ScreenVersion as ScreenVersionResource;
 use ProcessMaker\Http\Resources\Users;
 use ProcessMaker\Managers\DataManager;
-use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\User;
 use ProcessMaker\ProcessTranslations\ScreenTranslation;
@@ -16,7 +16,6 @@ use StdClass;
 trait TaskResourceIncludes
 {
     use TaskScreenResourceTrait;
-
 
     private function getData()
     {
@@ -140,15 +139,17 @@ trait TaskResourceIncludes
     {
         $interstitial = $this->getInterstitial();
 
-        // Translate interstitials
-        $screenTranslation = new ScreenTranslation();
-        $translatedConf = $screenTranslation->applyTranslations($interstitial['interstitial_screen']);
-        $interstitial['interstitial_screen']['config'] = $translatedConf;
+        if ($interstitial['interstitial_screen']) {
+            // Translate interstitials
+            $screenTranslation = new ScreenTranslation();
+            $translatedConf = $screenTranslation->applyTranslations($interstitial['interstitial_screen']);
+            $interstitial['interstitial_screen']['config'] = $translatedConf;
 
-        // Remove inspector metadata
-        $interstitial['interstitial_screen']['config'] = $this->removeInspectorMetadata(
-            $interstitial['interstitial_screen']['config'] ?: []
-        );
+            // Remove inspector metadata
+            $interstitial['interstitial_screen']['config'] = $this->removeInspectorMetadata(
+                $interstitial['interstitial_screen']['config'] ?: []
+            );
+        }
 
         return [
             'allow_interstitial' => $interstitial['allow_interstitial'],
