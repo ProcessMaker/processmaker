@@ -35,7 +35,7 @@ onMounted(() => {
 
 <template>
   <div>
-    <instance-tabs />
+    <instance-tabs><template #assets>
     <div class="card-grid">
       <div v-for="(type, index) in filteredTypes" :key="index" class="card">
         <!-- Icon -->
@@ -54,6 +54,7 @@ onMounted(() => {
         </div>
       </div>
     </div>
+    </template></instance-tabs>
   </div>
 </template>
 

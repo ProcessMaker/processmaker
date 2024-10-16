@@ -84,7 +84,7 @@ const install = (bundle) => {
 
 <template>
   <div>
-    <instance-tabs />
+    <instance-tabs ><template #bundles>
     <div class="top-options">
       <input v-model="filter" class="form-control col-10 search-input" @input="handleFilterChange">
     </div>
@@ -129,6 +129,7 @@ const install = (bundle) => {
     <b-modal id="install-progress" size="lg" v-model="showInstallModal" :title="$t('Installation Progress')" hide-footer>
       <install-progress />
     </b-modal>
+    </template></instance-tabs>
   </div>
 </template>
 
