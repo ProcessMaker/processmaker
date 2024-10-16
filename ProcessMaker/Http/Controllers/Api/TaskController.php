@@ -21,6 +21,7 @@ use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\Task as Resource;
 use ProcessMaker\Http\Resources\TaskCollection;
 use ProcessMaker\Listeners\HandleRedirectListener;
+use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -330,5 +331,20 @@ class TaskController extends Controller
         } else {
             return response()->json(['error' => 'Screen not found'], 404);
         }
+    }
+
+    /**
+     * Returns a comma-separated list of user IDs that are members of the groups specified in the "groups" query parameter.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAssignedUsersInGroups(Request $request)
+    {
+        $groups = $request->input('groups');
+        $users = GroupMember::whereIn('group_id', $groups)->pluck('member_id');
+        $uniqueUserIds = array_unique($users->toArray());
+
+        return response()->json(implode(',', $uniqueUserIds));
     }
 }
