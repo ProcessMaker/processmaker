@@ -8,10 +8,10 @@ const bundleId = route.params.id;
 const bundle = ref({});
 const loading = ref(true);
 const fields = [
-  { key: 'name', label: 'Name' },
-  { key: 'type', label: 'Type' },
-  { key: 'updated_at', label: 'Modified' },
-  { key: 'created_at', label: 'Created' },
+  { key: 'name', label: vue.$t('Name') },
+  { key: 'type', label: vue.$t('Type') },
+  { key: 'updated_at', label: vue.$t('Last Modified') },
+  { key: 'created_at', label: vue.$t('Created') },
   { key: 'menu', label: '' },
 ];
 
@@ -49,7 +49,7 @@ const remove = async (asset) => {
 
 <template>
   <div v-if="loading">
-    Loading...
+    {{ $t("Loading...") }}
   </div>
   <div v-else>
     <h1>{{ bundle.name }} {{ $t("Assets") }}</h1>
