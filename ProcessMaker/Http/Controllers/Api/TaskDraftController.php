@@ -8,6 +8,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\SanitizeHelper;
 use ProcessMaker\Models\TaskDraft;
 
 class TaskDraftController extends Controller
@@ -31,7 +32,8 @@ class TaskDraftController extends Controller
         $draft = TaskDraft::firstOrNew($search, ['data' => []]);
         // Do not overwrite __deleted_files
         $deletedFiles = Arr::get($draft->data, '__deleted_files');
-        $data = $request->all();
+        $data = json_decode($request->getContent(), true);
+        $data = SanitizeHelper::sanitizeData( $data, null, $task->processRequest->do_not_sanitize ?? []);
         if ($deletedFiles) {
             $data['__deleted_files'] = $deletedFiles;
         }
