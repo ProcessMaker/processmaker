@@ -16,7 +16,6 @@ use ProcessMaker\Events\ActivityReassignment;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Filters\Filter;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\Task as Resource;
 use ProcessMaker\Http\Resources\TaskCollection;

@@ -535,7 +535,7 @@
         },
         methods: {
           reassign() {
-            // The user shouldn’t be able to reassign the task since is the only one in the pool of applicable users.
+            // The user shouldn’t be able to reassign the the current user is the only one in the pool of applicable users.
             if (window.ProcessMaker.user.id == this.task.definition.assignedUsers) {
               this.task.definition.allowReassignment = false;
             }
@@ -546,12 +546,13 @@
               return 'users?include_ids=' + this.assignedUserIds + '&status=ACTIVE';
             }  
 
-            // Reassignment should only be available to users in the set pool group of users
+            // Reassignment should only be available to users in the set pool of users
             if (this.task.definition.assignedUsers) {
               let currentAssignedUsers = this.task.definition.assignedUsers.split(',');
               let assignedUsers = currentAssignedUsers.filter(user => user !== window.ProcessMaker.user.id);
               return 'users?include_ids=' + assignedUsers + '&status=ACTIVE';
             } else {
+              // If no group or users are used, all users should be eligible for reassignment.
               return "users?status=ACTIVE";  
             }           
           },
