@@ -328,6 +328,23 @@ class TaskController extends Controller
             return abort(422);
         }
     }
+    
+    public function updateReassign(Request $request)
+    {
+        $userToAssign = $request->input('user_id');
+        if (is_array($request->process_request_token)) {
+            foreach ($request->process_request_token as $value) {
+                $processRequestToken = ProcessRequestToken::find($value);
+                //Claim the task for the current user.
+                $processRequestToken->reassign($request->user()->id, $request->user());
+
+                //Reassign to the user.
+                $processRequestToken->reassign($userToAssign, $request->user());
+                $taskRefreshed = $processRequestToken->refresh();
+                CaseUpdate::dispatch($processRequestToken->processRequest, $taskRefreshed);
+            }
+        }
+    }
 
     private function handleQueryException($e)
     {

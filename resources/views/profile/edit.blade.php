@@ -129,7 +129,6 @@
             data: {
                 meta: @json(config('users.properties')),
                 formData: @json($currentUser),
-                langs: @json($availableLangs),
                 timezones: @json($timezones),
                 datetimeFormats: @json($datetimeFormats),
                 countries: @json($countries),

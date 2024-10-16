@@ -637,7 +637,7 @@ class ScreenController extends Controller
      * Translates the controls inside a screen
      *
      * @param Screen $screen, the id of the screen that will be translated
-     * @param String $language, language to translate. If the translation does not exist
+     * @param string $language, language to translate. If the translation does not exist
      * english is applied by default
      *
      * @return ResponseFactory|Response
@@ -675,12 +675,16 @@ class ScreenController extends Controller
     public function translate(Request $request, Screen $screen, $language)
     {
         $draft = $screen->versions()->draft()->first();
+        if (!$draft) {
+            $draft = $screen;
+        }
         $processTranslation = new ProcessTranslation(null);
         $transConfig = $processTranslation->translateScreen(
             $draft,
             $request->input('screenConfig'),
             $request->input('inputData'),
             $language);
+
         return $transConfig;
     }
 
