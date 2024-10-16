@@ -1,15 +1,15 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, getCurrentInstance } from 'vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 import debounce from 'lodash/debounce';
 import Status from './Status.vue';
 import EllipsisMenu from '../../../components/shared/EllipsisMenu.vue';
 import { store } from '../common';
 
+const vue = getCurrentInstance().proxy;
 const router = useRouter();
 const route = useRoute();
 const devlinks = ref([]);
-const confirmDeleteModal = ref(null);
 const editModal = ref(null);
 const filter = ref("");
 const actions = [
@@ -24,19 +24,19 @@ const customButton = {
 const fields = [
   {
     key: 'id',
-    label: 'ID'
+    label: vue.$t('ID'),
   },
   {
     key: 'name',
-    label: 'Name'
+    label: vue.$t('Name')
   },
   {
     key: 'url',
-    label: 'URL'
+    label: vue.$t('URL')
   },
   {
     key: 'status',
-    label: 'Status'
+    label: vue.$t('Status'),
   },
   {
     key: 'menu',
@@ -115,18 +115,22 @@ const updateDevLink = () => {
     });
 };
 
-const deleteDevLink = (devlink) => {
+const deleteDevLink = async (devlink) => {
   selected.value = devlink;
-  confirmDeleteModal.value.show();
-};
+  const confirm = await vue.$bvModal.msgBoxConfirm(
+    vue.$t('Are you sure you want to delete {{name}}?', {
+      name: selected.value.name
+    }), {
+    okTitle: vue.$t('Ok'),
+    cancelTitle: vue.$t('Cancel')
+  });
 
-const executeDelete = () => {
-  ProcessMaker.apiClient
-    .delete(`/devlink/${selected.value.id}`)
-    .then((result) => {
-      confirmDeleteModal.value.hide();
-      load();
-    });
+  if (!confirm) {
+    return;
+  }
+
+  await ProcessMaker.apiClient.delete(`/devlink/${selected.value.id}`);
+  load();
 };
 
 const select = (devlink) => {
@@ -157,7 +161,7 @@ const urlIsValid = computed(() => {
         v-b-modal.create
         class="new-button"
       >
-        <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>Add Instance
+        <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>{{ $t('Add Instance') }}
       </b-button>
     </div>
     <b-modal
@@ -172,15 +176,17 @@ const urlIsValid = computed(() => {
     <b-modal
       id="create"
       centered
-      title="Create new devlink"
+      :title="$t('Create new DevLink')"
       @hidden="clear"
       @ok="create"
+      :ok-title="$t('Create')"
+      :cancel-title="$t('Cancel')"
     >
-      <b-form-group label="Name">
+      <b-form-group :label="$t('Name')">
         <b-form-input v-model="newName"></b-form-input>
       </b-form-group>
       <b-form-group
-        label="Instance URL"
+        :label="$t('Instance URL')"
         :invalid-feedback="$t('Invalid URL')"
         :state="urlIsValid"
       >
@@ -191,22 +197,26 @@ const urlIsValid = computed(() => {
     <b-modal
       ref="editModal"
       centered
-      title="Edit DevLink"
+      :title="$t('Edit DevLink')"
       @ok="updateDevLink"
+      :ok-title="$t('Ok')"
+      :cancel-title="$t('Cancel')"
     >
       <template v-if="selected">
-        <b-form-group label="Name">
+        <b-form-group :label="$t('Name')">
           <b-form-input v-model="selected.name"></b-form-input>
         </b-form-group>
       </template>
     </b-modal>
     <div class="card linked-instances-card">
       <b-table
+        hover
+        @row-clicked="select"
         :items="devlinks"
         :fields="fields"
       >
         <template #cell(name)="data">
-          <a href="#" @click.prevent="select(data.item)">{{ data.item.name }}</a>
+          {{ data.item.name }}
         </template>
         <template #cell(status)="data">
           <Status :id="data.item.id" />
@@ -269,6 +279,9 @@ tr:hover {
 }
 ::v-deep .table {
   border-bottom: 1px solid #e9edf1;
+}
+::v-deep .table tr {
+  cursor: pointer;
 }
 ::v-deep .table > thead > tr > th {
   border-top: none;

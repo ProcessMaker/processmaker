@@ -3,6 +3,7 @@ import { ref, onMounted, getCurrentInstance } from 'vue';
 import debounce from 'lodash/debounce';
 import { useRouter, useRoute } from 'vue-router/composables';
 import InstanceTabs from './InstanceTabs.vue';
+import InstallProgress from './InstallProgress.vue';
 
 const vue = getCurrentInstance().proxy;
 const router = useRouter();
@@ -11,22 +12,23 @@ const route = useRoute();
 const bundles = ref([]);
 const filter = ref("");
 const warnings = ref([]);
+const showInstallModal = ref(false);
 const fields = [
   {
     key: 'name',
-    label: 'Name'
+    label: vue.$t('Name')
   },
   {
     key: 'version',
-    label: 'Version'
+    label: vue.$t('Version')
   },
   {
     key: 'created_at',
-    label: 'Creation Date'
+    label: vue.$t('Creation Date')
   },
   {
     key: 'updated_at',
-    label: 'Last Modification Date'
+    label: vue.$t('Last Modified')
   },
   {
     key: 'menu',
@@ -63,16 +65,16 @@ const handleFilterChange = () => {
 };
 
 const install = (bundle) => {
-  vue.$bvModal.msgBoxConfirm('Are you sure you want to install this bundle?').then((confirm) => {
+  vue.$bvModal.msgBoxConfirm(vue.$t('Are you sure you want to install this bundle?'), {
+    okTitle: vue.$t('Ok'),
+    cancelTitle: vue.$t('Cancel')
+  }).then((confirm) => {
     if (confirm) {
+      showInstallModal.value = true;
       ProcessMaker.apiClient
         .post(`/devlink/${route.params.id}/remote-bundles/${bundle.id}/install`)
         .then((response) => {
-          warnings.value = response.data.warnings_devlink;
-          if (warnings.value.length > 0) {
-            showModal();
-          }
-          window.ProcessMaker.alert('Bundle successfully installed', "success");
+          // Handle the response as needed
         });
     }
   });
@@ -124,8 +126,10 @@ const install = (bundle) => {
         </div>
       </div>
     </div>
+    <b-modal id="install-progress" size="lg" v-model="showInstallModal" :title="$t('Installation Progress')" hide-footer>
+      <install-progress />
+    </b-modal>
   </div>
-
 </template>
 
 <style lang="scss" scoped>

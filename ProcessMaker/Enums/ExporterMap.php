@@ -21,6 +21,7 @@ enum ExporterMap
             \ProcessMaker\Models\ScreenTemplates::class,
             \ProcessMaker\ImportExport\Exporters\ScreenTemplatesExporter::class,
         ],
+        'screen_translation' => [\ProcessMaker\Package\Translations\Models\Translatable::class, \ProcessMaker\Package\Translations\ImportExport\TranslatableExporter::class],
     ];
 
     public static function getModelClass(string $type): ?string
