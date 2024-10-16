@@ -71,10 +71,14 @@ class CasesController extends Controller
         $canCancel = (Auth::user()->can('cancel', $request->processVersion) && $requestCount === 1);
         // The user can see the comments
         $canViewComments = (Auth::user()->hasPermissionsFor('comments')->count() > 0) || class_exists(PackageServiceProvider::class);
-        // Check if the user has permission print for request
-        $canPrintScreens = $this->canUserPrintScreen($request);
-        // The user is Manager
+        // The user is Manager from the main request
         $isProcessManager = $request->process?->manager_id === Auth::user()->id;
+        // Check if the user has permission print for request
+        $canPrintScreens = $canOpenCase = $this->canUserCanOpenCase($request);
+        if (!$canOpenCase && !$isProcessManager) {
+            $this->authorize('view', $request);
+        }
+
         // Get the summary screen tranlations
         $this->summaryScreenTranslation($request);
 
@@ -91,19 +95,19 @@ class CasesController extends Controller
     }
 
     /**
-     * the user may or may not print forms
+     * The user can open the case
      *
      * @param ProcessRequest $request
      * @return bool
      */
-    private function canUserPrintScreen(ProcessRequest $request)
+    private function canUserCanOpenCase(ProcessRequest $request)
     {
-        //validate user is administrator
+        // Validate user is administrator
         if (Auth::user()->is_administrator) {
             return true;
         }
 
-        //validate user is participant or requester
+        // Validate user is participant or requester
         if (in_array(Auth::user()->id, $request->participants()->get()->pluck('id')->toArray())) {
             return true;
         }
