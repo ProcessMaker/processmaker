@@ -206,6 +206,7 @@ class RollbackProcessRequest
                 'failed_task_name' => $this->currentTask->element_name,
                 'new_task_name' => $this->newTask->element_name,
             ]),
+            'case_number' => isset($this->currentTask->case_number) ? $this->currentTask->case_number : null,
         ]);
     }
 }

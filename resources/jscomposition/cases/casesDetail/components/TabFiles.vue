@@ -1,35 +1,14 @@
 <script setup>
-import { ref, onMounted, onBeforeMount } from 'vue';
-import { getRequestId } from "../variables";
+import { ref } from 'vue';
+import { getRequest } from "../variables";
 
-const caseId = getRequestId();
-const request = ref({});
-const state = ref(0);
-const fileManager = ref(window.ProcessMaker.caseFileManager);
-
-const getRequest = () => {
-  ProcessMaker.apiClient
-    .get("parent-request-by-case", {
-      params: {
-        case_number: caseId,
-      }
-    })
-    .then((response) => {
-      request.value = response.data;
-      state.value += state.value + 1;
-    });
-};
-
-onBeforeMount(() => {
-  getRequest();
-});
+const requestFile = ref(getRequest());
+const fileManager = () => window.ProcessMaker.caseFileManager;
 
 </script>
 
 <template>
-  <div>
-    <component v-if="request.id" :is="fileManager" :process-request-id="request.id"></component>
-  </div>
+  <component v-if="requestFile.id" :is="fileManager()" :process-request-id="requestFile.id"></component>
 </template>
 
 <style scoped>

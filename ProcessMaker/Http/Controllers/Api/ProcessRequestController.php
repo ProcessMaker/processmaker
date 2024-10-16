@@ -401,6 +401,7 @@ class ProcessRequestController extends Controller
                 'commentable_id' => $request->id,
                 'subject' => 'Data edited',
                 'body' => $user_name . ' ' . $text,
+                'case_number' => isset($request->case_number) ? $request->case_number : null,
             ]);
         } else {
             $httpRequest->validate(ProcessRequest::rules($request));
@@ -629,6 +630,7 @@ class ProcessRequestController extends Controller
             'commentable_id' => $request->id,
             'subject' => __('Process Manually Completed'),
             'body' => $user->fullname . ' ' . __('manually completed the request from an error state'),
+            'case_number' => isset($request->case_number) ? $request->case_number : null,
         ]);
     }
 
@@ -842,7 +844,7 @@ class ProcessRequestController extends Controller
 
     /**
      * This endpoint returns requests by case number
-     *  
+     *
      * @param Request $request
      *
      * @return ApiCollection
@@ -863,14 +865,14 @@ class ProcessRequestController extends Controller
         ]);
 
         $query = ProcessRequest::forUser($user);
-        
+
         // Filter by case_number
         $query->filterByCaseNumber($request);
 
         // Apply ordering only if a valid order_by field is provided
         $query->applyOrdering($request);
         $response = $query->applyPagination($request);
-        
+
         // Get activeTasks and participants
         $response = $response->map(function ($processRequest) use ($request) {
             return new ProcessRequestResource($processRequest);
@@ -881,23 +883,22 @@ class ProcessRequestController extends Controller
 
     /**
      * This endpoint returns the parent request by case number
-     *  
+     *
      * @param Request $request
      *
      * @return ApiCollection
      */
+    public function getParentRequestByCase(Request $request)
+    {
+        // Validate the inputs, including optional ones
+        $request->validate([
+            'case_number' => 'required|integer',
+        ]);
 
-     public function getParentRequestByCase (Request $request)
-     {
-         // Validate the inputs, including optional ones
-         $request->validate([
-             'case_number' => 'required|integer',
-         ]);
- 
-         $response = ProcessRequest::where('case_number', $request->input('case_number'))
-                 ->whereNull('parent_request_id')
-                 ->first();
- 
-         return new ApiResource($response);
-     }
+        $response = ProcessRequest::where('case_number', $request->input('case_number'))
+                ->whereNull('parent_request_id')
+                ->first();
+
+        return new ApiResource($response);
+    }
 }

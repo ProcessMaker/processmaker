@@ -26,6 +26,16 @@
             <template slot="noOptions">
                 <slot name="noOptions">{{ $t("No Data Available") }}</slot>
             </template>
+            <template v-slot:option="{ option, search, index }">
+              <b-badge v-if="Object.hasOwn(option, 'count')"
+                       variant="secondary" 
+                       class="mr-2 custom-badges pl-2 pr-2 rounded-lg">
+               {{ option.count }}
+             </b-badge>
+              <span> 
+                {{ getOptionLabel(option, 'fullname') }} 
+              </span>
+            </template>
         </multiselect>
 
         <small v-if="error" class="text-danger">{{ error }}</small>
@@ -221,7 +231,7 @@
       },
       loadUsers (filter) {
         ProcessMaker.apiClient
-          .get("users" + (typeof filter === "string" ? "?filter=" + filter : ""))
+          .get("users_task_count" + (typeof filter === "string" ? "?filter=" + filter : ""))
           .then(response => {
             const users = response.data.data.map(user => this.addUsernameToFullName(user));
             this.users = users;
@@ -267,8 +277,31 @@
           let id = groupId.replace('group-', "");
           return id;
         }
-        
-      }
+      },
+      getOptionLabel (option, index) {
+        if (this.isEmpty(option)) 
+          return '';
+        if (option.isTag) 
+          return option.label;
+        if (option.$isLabel) 
+          return option.$groupLabel;
+        let label = this.customLabel(option, index);
+        if (this.isEmpty(label)) 
+          return '';
+        return label;
+      },
+      isEmpty (opt) {
+        if (opt === 0) 
+          return false;
+        if (Array.isArray(opt) && opt.length === 0) 
+          return true;
+        return !opt;
+      },
+      customLabel (option, label) {
+        if (this.isEmpty(option)) 
+          return '';
+        return label ? option[label] : option;
+      },
     },
   };
 </script>

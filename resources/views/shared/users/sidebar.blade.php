@@ -124,15 +124,6 @@
             </div>
 
             <div class="form-group">
-                {!! Form::label('language', __('Language')) !!}
-                <b-form-select id="language" v-model="formData.language" class="form-control" :options="langs">
-                </b-form-select>
-                <div class="invalid-feedback" role="alert" v-if="errors.language">
-                    @{{errors.language}}
-                </div>
-            </div>
-
-            <div class="form-group">
                 {!! Form::label('status', __('Status')) !!}
                 <b-form-select id="status" v-model="formData.status" class="form-control" :options="status">
                 </b-form-select>
