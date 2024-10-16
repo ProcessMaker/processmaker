@@ -7187,9 +7187,9 @@
                 "description": "Laravel passport oauth2 security.",
                 "flows": {
                     "authorizationCode": {
-                        "authorizationUrl": "http://localhost/oauth/authorize",
-                        "tokenUrl": "http://localhost/oauth/token",
-                        "refreshUrl": "http://localhost/token/refresh",
+                        "authorizationUrl": "http://processmaker.test/oauth/authorize",
+                        "tokenUrl": "http://processmaker.test/oauth/token",
+                        "refreshUrl": "http://processmaker.test/token/refresh",
                         "scopes": {}
                     }
                 }

@@ -15,11 +15,13 @@ class PopulateCaseStarted extends Upgrade
      */
     public function preflightChecks()
     {
-        //
+        // Add preflight checks if necessary
     }
 
     /**
-     * Run the upgrade migration.
+     * Run the upgrade migration to populate the cases_started table
+     * from the process_requests table while filtering and processing
+     * relevant data.
      *
      * @return void
      */
@@ -42,7 +44,9 @@ class PopulateCaseStarted extends Upgrade
 
             echo PHP_EOL . 'Cases started have been populated successfully.' . PHP_EOL;
         } catch (Exception $e) {
+            // Handle errors during the population process
             echo 'Failed to populate cases_started: ' . $e->getMessage() . PHP_EOL;
+            // You may want to log the error or perform other error handling here
         }
 
         echo PHP_EOL;
@@ -69,6 +73,8 @@ class PopulateCaseStarted extends Upgrade
      * excluding system categories and previously populated requests.
      *
      * @return void
+     *
+     * @throws Exception If there is an error creating the temporary table
      */
     private function createTemporaryTableWithNonSystemRequests()
     {
@@ -130,44 +136,44 @@ class PopulateCaseStarted extends Upgrade
         DB::statement('CREATE TEMPORARY TABLE process_requests_temp AS ' . $query->toSql(), $query->getBindings());
     }
 
+    /**
+     * Creates a temporary table with request tokens associated with
+     * the process requests.
+     *
+     * @return void
+     *
+     * @throws Exception If there is an error creating the temporary table
+     */
     private function createTemporaryTableWithRequestTokens()
     {
-        // Step 1: Create unique participants using Laravel's query builder
-        $uniqueParticipantsQuery = DB::table('process_request_tokens as pr')
-            ->select('pr.user_id', 'pr.element_id', 'pr.process_id', 'temp.case_number')
-            ->join('process_requests_temp as temp', 'pr.process_request_id', '=', 'temp.id')
-            ->where('pr.element_type', 'task')
-            ->distinct(); // Use distinct to avoid duplicates
-
-        DB::statement('CREATE TEMPORARY TABLE unique_participants AS ' . $uniqueParticipantsQuery->toSql(), $uniqueParticipantsQuery->getBindings());
-
         // Creating the query
         $query = DB::table('process_request_tokens as pr')
             ->join('process_requests_temp as temp', 'pr.process_request_id', '=', 'temp.id')
             ->select(
                 'temp.case_number',
-                DB::raw('
-                    (SELECT JSON_ARRAYAGG(user_id) 
-                        FROM (
-                            SELECT DISTINCT user_id 
-                            FROM unique_participants 
-                            WHERE case_number = unique_participants.case_number
-                        ) AS distinct_users) AS participants
-                    '), // Aggregate unique user_ids
+                DB::raw('JSON_ARRAYAGG(pr.user_id) as participants'),
                 DB::raw('JSON_ARRAYAGG(pr.id) as request_tokens'),
                 DB::raw('JSON_ARRAYAGG(JSON_OBJECT(
                     "id", pr.id,
+                    "element_type", pr.element_type,
                     "name", pr.element_name,
                     "element_id", pr.element_id,
                     "process_id", pr.process_id
                 )) as tasks')
             )
-            ->whereIn('pr.element_type', ['task'])
+            ->whereIn('pr.element_type', ['task', 'scriptTask', 'callActivity'])
             ->groupBy('temp.case_number');
 
         DB::statement('CREATE TEMPORARY TABLE process_request_tokens_tmp AS ' . $query->toSql(), $query->getBindings());
     }
 
+    /**
+     * Inserts the processed data into the cases_started table.
+     *
+     * @return void
+     *
+     * @throws Exception If there is an error during the insertion process
+     */
     private function insertIntoCasesStarted()
     {
         // Create the select query
@@ -191,34 +197,75 @@ class PopulateCaseStarted extends Upgrade
                 'prt1.user_id'
             );
 
-        // Insert the data into cases_started
-        DB::table('cases_started')->insertUsing([
-            'case_number',
-            'case_status',
-            'case_title',
-            'case_title_formatted',
-            'completed_at',
-            'created_at',
-            'initiated_at',
-            'keywords',
-            'participants',
-            'processes',
-            'request_tokens',
-            'requests',
-            'tasks',
-            'updated_at',
-            'user_id',
-        ], $selectQuery);
+        $results = $selectQuery->get();
+        $dataToInsert = $results->map(function ($item) {
+            return [
+                'case_number' => $item->case_number,
+                'case_status' => $item->case_status,
+                'case_title' => $item->case_title,
+                'case_title_formatted' => $item->case_title_formatted,
+                'completed_at' => $item->completed_at,
+                'created_at' => $item->created_at,
+                'initiated_at' => $item->initiated_at,
+                'keywords' => $item->keywords,
+                'participants' => $this->cleanParticipants($item->participants),
+                'processes' => $item->processes,
+                'request_tokens' => $item->request_tokens,
+                'requests' => $item->requests,
+                'tasks' => json_encode($this->filterAndRemoveType($item->tasks)),
+                'updated_at' => $item->updated_at,
+                'user_id' => $item->user_id,
+            ];
+        })->toArray();
+
+        // Insert data into the cases_started table
+        DB::table('cases_started')->insert($dataToInsert);
     }
 
     /**
-     * Reverse the upgrade migration.
+     * Filters out tasks and removes the element_type key from the tasks data.
+     *
+     * @param string $jsonData JSON string containing tasks
+     * @return array Filtered array of tasks without the element_type key
+     */
+    private function filterAndRemoveType($jsonData): array
+    {
+        // Decode the JSON string to an array
+        $data = json_decode($jsonData, true);
+
+        // Filter the data for tasks and remove the element_type key
+        return array_values(array_map(
+            fn ($item) => array_diff_key($item, ['element_type' => '']),
+            array_filter($data, fn ($item) => $item['element_type'] === 'task')
+        ));
+    }
+
+    /**
+     * Cleans up the participants data by removing null values and duplicates.
+     *
+     * @param string $jsonParticipants JSON string containing participants
+     * @return string JSON-encoded cleaned participants
+     */
+    private function cleanParticipants($jsonParticipants): string
+    {
+        // Decode the JSON string to an array
+        $participants = json_decode($jsonParticipants, true);
+        // Remove null values and duplicates
+        $cleaned = array_unique(array_filter($participants));
+
+        return json_encode(array_values($cleaned));
+    }
+
+    /**
+     * Reverse the upgrade migration, typically used for rollback operations.
      *
      * @return void
      */
     public function down()
     {
-        // Truncate the table cases_started
+        // You might want to drop the tables created or perform rollback actions
+        DB::statement('DROP TEMPORARY TABLE IF EXISTS process_requests_temp');
+        DB::statement('DROP TEMPORARY TABLE IF EXISTS process_request_tokens_tmp');
         DB::table('cases_started')->truncate();
     }
 }
