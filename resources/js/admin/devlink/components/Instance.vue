@@ -85,8 +85,10 @@ const install = (bundle) => {
 <template>
   <div>
     <instance-tabs ><template #bundles>
-    <div class="top-options">
-      <input v-model="filter" class="form-control col-10 search-input" @input="handleFilterChange">
+    <div class="top-options row">
+      <div class="col">
+        <input v-model="filter" class="form-control search-input" @input="handleFilterChange">
+      </div>
     </div>
     <div class="card instance-card">
       <b-table
@@ -135,40 +137,18 @@ const install = (bundle) => {
 
 <style lang="scss" scoped>
 .top-options {
-  display: flex;
-  justify-content: space-between;
   padding-bottom: 16px;
+
+  .search-input {
+    background: url(/img/search-icon.svg) no-repeat left;
+    background-position: 7px 8px;
+    background-size: 15px;
+    border-radius: 8px;
+  }
 }
-.search-input {
-  padding-left: 30px;
-  background: url(/img/search-icon.svg) no-repeat left;
-  background-position: 7px 8px;
-  background-size: 15px;
-  border-radius: 8px;
-}
-::v-deep .table {
-  border-bottom: 1px solid #e9edf1;
-}
-::v-deep .table > thead > tr > th {
-  border-top: none;
-  background-color: #FBFBFC;
-  border-right: 1px solid rgba(0, 0, 0, 0.125);
-  color: #4E5663;
-  font-weight: 600;
-  font-size: 14px;
-}
-::v-deep .table > tbody > tr > td {
-  color: #4E5663;
-  font-size: 14px;
-  font-weight: 400;
-}
-::v-deep .table > thead > tr > th:last-child {
-  border-right: none !important;
-  border-top-right-radius: 8px;
-}
-::v-deep .table > thead > tr > th:first-child {
-  border-top-left-radius: 8px;
-}
+
+@import "styles/components/table";
+
 .instance-card {
   border-radius: 8px;
   min-height: calc(-355px + 100vh);

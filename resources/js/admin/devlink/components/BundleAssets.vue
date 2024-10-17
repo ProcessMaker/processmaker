@@ -1,9 +1,11 @@
 <script setup>
 import { ref, onMounted, getCurrentInstance, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router/composables';
+import Header from './Header.vue';
 
 const vue = getCurrentInstance().proxy;
 const route = useRoute();
+const router = useRouter();
 const bundleId = route.params.id;
 const bundle = ref({});
 const loading = ref(true);
@@ -52,8 +54,8 @@ const remove = async (asset) => {
     {{ $t("Loading...") }}
   </div>
   <div v-else>
-    <h1>{{ bundle.name }} {{ $t("Assets") }}</h1>
-    <div v-if="bundle.assets.length">
+    <Header back="local-bundles">{{ bundle.name }} {{ $t("Assets") }}</Header>
+    <div v-if="bundle.assets.length" class="card instance-card">
       <b-table
         :items="bundle.assets"
         :fields="computedFields"
@@ -77,3 +79,14 @@ const remove = async (asset) => {
     </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+@import "styles/components/table";
+h3 {
+  font-size: 1.4em;
+}
+.instance-card {
+  border-radius: 8px;
+  min-height: calc(-355px + 100vh);
+}
+</style>
