@@ -72,6 +72,7 @@ mix
   .copy("node_modules/bpmn-font/dist", "public/css/bpmn-symbols");
 
 mix
+  .js("resources/js/print-layout.js", "public/js")
   .js("resources/js/app-layout.js", "public/js")
   .js("resources/js/process-map-layout.js", "public/js")
   .js("resources/js/processes/modeler/index.js", "public/js/processes/modeler")
