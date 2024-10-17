@@ -306,6 +306,7 @@
                             :name="task.element_name"
                             :header="false"
                             :case_number="task.process_request.case_number"
+                            :get-data="getCommentsData"
                           />
                         </template>
                       </div>
@@ -868,6 +869,16 @@
           },
           onInput(filter) {
             this.getUsers(filter);
+          },
+          getCommentsData: async () => {
+            const response = await ProcessMaker.apiClient.get("comments-by-case", {
+              params: {
+                type: "COMMENT,REPLY",
+                case_number: task?.process_request?.case_number,
+              },
+            });
+
+            return response;
           }
         },
         mounted() {
