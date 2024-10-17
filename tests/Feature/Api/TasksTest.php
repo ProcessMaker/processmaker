@@ -835,14 +835,19 @@ class TasksTest extends TestCase
 
     public function testGetAssignedUsersInGroupsRoute()
     {
-        $user = User::factory()->create(['status' => 'ACTIVE']);
+        $regularUser = User::factory()->create(['status' => 'ACTIVE', 'is_administrator' => false]);
+
+        $user1 = User::factory()->create(['status' => 'ACTIVE']);
         $user2 = User::factory()->create(['status' => 'ACTIVE']);
         $user3 = User::factory()->create(['status' => 'ACTIVE']);
+        $user4 = User::factory()->create(['status' => 'ACTIVE']);
+
         $group1 = Group::factory()->create();
         $group2 = Group::factory()->create();
+        $nestedGroup = Group::factory()->create();
 
         GroupMember::factory()->create([
-            'member_id' => $user->id,
+            'member_id' => $user1->id,
             'member_type' => User::class,
             'group_id' => $group1->id,
         ]);
@@ -858,16 +863,28 @@ class TasksTest extends TestCase
             'group_id' => $group2->id,
         ]);
 
+        GroupMember::factory()->create([
+            'member_id' => $user4->id,
+            'member_type' => User::class,
+            'group_id' => $nestedGroup->id,
+        ]);
+
+        GroupMember::factory()->create([
+            'member_id' => $nestedGroup->id,
+            'member_type' => Group::class,
+            'group_id' => $group2->id,
+        ]);
+
         $params = [
             'groups' => [$group1->id, $group2->id],
         ];
 
         $route = route('api.tasks.getAssignedUsersInGroups', $params);
-        $response = $this->apiCall('GET', $route);
+        $response = $this->actingAs($regularUser, 'api')->get($route);
         $response->assertStatus(200);
         $responseString = $response->json();
         $this->assertIsString($responseString);
         $userIds = explode(',', $responseString);
-        $this->assertEquals([$user->id, $user2->id, $user3->id], $userIds);
+        $this->assertEquals([$user1->id, $user2->id, $user3->id, $user4->id], $userIds);
     }
 }
