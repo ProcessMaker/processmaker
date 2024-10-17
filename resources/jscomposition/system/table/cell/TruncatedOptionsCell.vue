@@ -17,7 +17,7 @@
       class="!tw-absolute tw-right-0 tw-top-0  tw-h-full tw-flex tw-items-center">
       <div
         class="tw-self-center tw-px-2 tw-rounded-md hover:tw-cursor-pointer hover:tw-bg-gray-200 tw-bg-white "
-        @click.prevent.stop="onClick">
+        @click.prevent="onClick">
         <i class="fas fa-ellipsis-v" />
       </div>
 

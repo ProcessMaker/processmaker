@@ -48,9 +48,10 @@ export default defineComponent({
 
     const initCounters = async () => {
       let currentCounter = [];
+
       const resCounters = await getCounters({
         params: {
-          userId: route.params?.id == "all" ? null : user.id,
+          userId: user.id,
         },
       });
 
