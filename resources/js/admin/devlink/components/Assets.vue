@@ -44,12 +44,12 @@ onMounted(() => {
         </div>
         <!-- Content -->
         <div class="content">
-          <h3>{{ type.name }}</h3>
+          <h3>{{ $t(type.name) }}</h3>
         </div>
         <!-- Button -->
         <div class="button-container">
           <button @click.prevent="navigate(type)" class="view-button">
-            View
+            {{ $t('View') }}
           </button>
         </div>
       </div>
