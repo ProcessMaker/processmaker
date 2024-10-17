@@ -46,7 +46,7 @@ class TaskControllerTest extends TestCase
         $this->assertNotNull($response->json());
         $this->assertIsArray($response->json());
         $this->assertNotNull($response->headers->get('Cache-Control'));
-        $this->assertNotNull($response->headers->get('Expires'));
+        $this->assertNull($response->headers->get('Expires'));
     }
 
     public function testShowScreenCache()
