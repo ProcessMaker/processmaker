@@ -18,7 +18,7 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\ScreenType;
-use ProcessMaker\ProcessTranslations\ProcessTranslation;
+use ProcessMaker\ProcessTranslations\ScreenTranslation;
 use ProcessMaker\Query\SyntaxError;
 use ProcessMaker\Traits\ProjectAssetTrait;
 
@@ -682,15 +682,18 @@ class ScreenController extends Controller
         $draft = $screen->versions()->draft()->first();
         if (!$draft) {
             $draft = $screen;
+            $draft->screen_id = $draft->id;
         }
-        $processTranslation = new ProcessTranslation(null);
-        $transConfig = $processTranslation->translateScreen(
-            $draft,
-            $request->input('screenConfig'),
-            $request->input('inputData'),
-            $language);
 
-        return $transConfig;
+        $screenArray = $draft->toArray();
+        $screenTranslation = new ScreenTranslation();
+        $screenArray['config'] = $screenTranslation->evaluateMustache(
+            $request->input('screenConfig'), 
+            $request->input('inputData')
+        );
+        $translatedConfig = $screenTranslation->applyTranslations($screenArray);
+
+        return $translatedConfig;
     }
 
     public function updateDefaultTemplate(string $screenType, int $isPublic)
