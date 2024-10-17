@@ -20,6 +20,7 @@ use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\Task as Resource;
 use ProcessMaker\Http\Resources\TaskCollection;
 use ProcessMaker\Listeners\HandleRedirectListener;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
@@ -341,9 +342,22 @@ class TaskController extends Controller
     public function getAssignedUsersInGroups(Request $request)
     {
         $groups = $request->input('groups');
-        $users = GroupMember::whereIn('group_id', $groups)->pluck('member_id');
-        $uniqueUserIds = array_unique($users->toArray());
+        $userIds = GroupMember::whereIn('group_id', $groups)
+            ->where('member_type', User::class)
+            ->pluck('member_id')
+            ->toArray();
 
-        return response()->json(implode(',', $uniqueUserIds));
+        $subGroups = GroupMember::whereIn('group_id', $groups)
+            ->where('member_type', Group::class)
+            ->pluck('member_id');
+
+        if ($subGroups->count()) {
+            $userIds = array_merge($userIds, GroupMember::whereIn('group_id', $subGroups)
+                ->where('member_type', User::class)
+                ->pluck('member_id')
+                ->toArray());
+        }
+
+        return response()->json(implode(',', array_unique($userIds)));
     }
 }
