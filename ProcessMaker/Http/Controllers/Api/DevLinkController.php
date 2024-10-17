@@ -56,10 +56,7 @@ class DevLinkController extends Controller
         $devLink->url = $request->input('url');
         $devLink->saveOrFail();
 
-        return [
-            ...$devLink->toArray(),
-            'redirect_uri' => route('devlink.index'),
-        ];
+        return $devLink;
     }
 
     public function update(Request $request, DevLink $devLink)

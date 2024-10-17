@@ -127,7 +127,7 @@ const handleFilterChange = () => {
 };
 
 const urlIsValid = computed(() => {
-  return /^(https?:\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/.test(newUrl.value);
+  return /^(https?:\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(:\d{1,5})?$/.test(newUrl.value);
 });
 
 </script>
@@ -176,7 +176,7 @@ const urlIsValid = computed(() => {
           {{ data.item.name }}
         </template>
         <template #cell(status)="data">
-          <Status :id="data.item.id" />
+          <Status :devlink="data.item" />
         </template>
         <template #cell(menu)="data">
           <div class="btn-menu-container">
