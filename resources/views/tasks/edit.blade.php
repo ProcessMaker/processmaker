@@ -535,19 +535,27 @@
         },
         methods: {
           reassign() {
-            // The user shouldn’t be able to reassign the the current user is the only one in the pool of applicable users.
-            if (window.ProcessMaker.user.id == this.task.definition.assignedUsers) {
+            const assignedGroups = this.task.definition.assignedGroups;
+            const assignedUsers = this.task.definition.assignedUsers;
+            // The user shouldn’t be able to reassign the task if the current user is the only one in the pool of applicable users.
+            if (window.ProcessMaker.user.id == assignedUsers && !assignedGroups) {
               this.task.definition.allowReassignment = false;
             }
 
             // If a group is used, only the users inside the group/groups should be eligible for reassignment.
-            if (this.task.definition.assignedGroups && !this.userIsAdmin) {
-              this.getUsersInGroups(this.task.definition.assignedGroups);
-              return 'users?include_ids=' + this.assignedUserIds + '&status=ACTIVE';
+            if (assignedGroups && !this.userIsAdmin) {
+              this.getUsersInGroups(assignedGroups);
+              let assignedUserIds = this.assignedUserIds;
+              if (assignedUsers) {
+                let currentAssignedUsers = assignedUsers.split(',');
+                assignedUserIds += ',' + currentAssignedUsers.join(',');
+              }
+              return 'users?include_ids=' + assignedUserIds + '&status=ACTIVE';
+
             }  
 
             // Reassignment should only be available to users in the set pool of users
-            if (this.task.definition.assignedUsers && !this.userIsAdmin) {
+            if (assignedUsers && !this.userIsAdmin) {
               let currentAssignedUsers = this.task.definition.assignedUsers.split(',');
               let assignedUsers = currentAssignedUsers.filter(user => user !== window.ProcessMaker.user.id);
               return 'users?include_ids=' + assignedUsers + '&status=ACTIVE';
