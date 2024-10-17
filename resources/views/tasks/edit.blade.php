@@ -320,7 +320,7 @@
                       id='user'
                       v-model="selectedUser"
                       placeholder="{{__('Select the user to reassign to the task')}}"
-                      api="users?status=ACTIVE"
+                      :api="reassign()"
                       :multiple="false"
                       :show-labels="false"
                       :searchable="true"
@@ -443,6 +443,7 @@
           isPriority: false,
           userHasInteracted: false,
           caseTitle: "",
+          assignedUserIds: null
         },
         watch: {
           task: {
@@ -533,6 +534,46 @@
           },
         },
         methods: {
+          reassign() {
+            const assignedGroups = this.task.definition.assignedGroups;
+            const assignedUsers = this.task.definition.assignedUsers;
+            // The user shouldn’t be able to reassign the task if the current user is the only one in the pool of applicable users.
+            if (window.ProcessMaker.user.id == assignedUsers && !assignedGroups) {
+              this.task.definition.allowReassignment = false;
+            }
+
+            // If a group is used, only the users inside the group/groups should be eligible for reassignment.
+            if (assignedGroups && !this.userIsAdmin) {
+              this.getUsersInGroups(assignedGroups);
+              let assignedUserIds = this.assignedUserIds;
+              if (assignedUsers) {
+                let currentAssignedUsers = assignedUsers.split(',');
+                assignedUserIds += ',' + currentAssignedUsers.join(',');
+              }
+              return 'users?include_ids=' + assignedUserIds + '&status=ACTIVE';
+
+            }  
+
+            // Reassignment should only be available to users in the set pool of users
+            if (assignedUsers && !this.userIsAdmin) {
+              let currentAssignedUsers = this.task.definition.assignedUsers.split(',');
+              let assignedUsers = currentAssignedUsers.filter(user => user !== window.ProcessMaker.user.id);
+              return 'users?include_ids=' + assignedUsers + '&status=ACTIVE';
+            } else {
+              // If no group or users are used, all users should be eligible for reassignment.
+              return "users?status=ACTIVE";  
+            }           
+          },
+          getUsersInGroups(assignedGroups) {
+            let groups = assignedGroups.split(',');
+            ProcessMaker.apiClient.get("tasks/getAssignedUsersInGroups", {
+              params: {
+                groups: groups
+              }
+            }).then(response => {
+              this.assignedUserIds = response.data;
+            });
+          },
           createRule() {
             window.location.href = '/tasks/rules/new?' +
             `task_id=${this.task.id}&` +

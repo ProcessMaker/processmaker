@@ -62,6 +62,12 @@ class UserController extends Controller
      *         description="Comma separated list of IDs to exclude from the response",
      *         @OA\Schema(type="string", default=""),
      *     ),
+     *      @OA\Parameter(
+     *         name="include_ids",
+     *         in="query",
+     *         description="Comma separated list of IDs to exclude from the response",
+     *         @OA\Schema(type="string", default=""),
+     *     ),
      *
      *     @OA\Response(
      *         response=200,
@@ -109,6 +115,12 @@ class UserController extends Controller
         if ($exclude_ids) {
             $exclude_ids = explode(',', $exclude_ids);
             $query->whereNotIn('id', $exclude_ids);
+        }
+
+        $include_ids = $request->input('include_ids', '');
+        if ($include_ids) {
+            $include_ids = explode(',', $include_ids);
+            $query->whereIn('id', $include_ids);
         }
 
         if ($request->has('status')) {
