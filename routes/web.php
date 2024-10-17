@@ -25,7 +25,6 @@ use ProcessMaker\Http\Controllers\InboxRulesController;
 use ProcessMaker\Http\Controllers\NotificationController;
 use ProcessMaker\Http\Controllers\Process\EnvironmentVariablesController;
 use ProcessMaker\Http\Controllers\Process\ModelerController;
-use ProcessMaker\Http\Controllers\Process\ProcessTranslationController;
 use ProcessMaker\Http\Controllers\Process\ScreenBuilderController;
 use ProcessMaker\Http\Controllers\Process\ScreenController;
 use ProcessMaker\Http\Controllers\Process\ScriptController;
@@ -127,8 +126,6 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::delete('processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy')->middleware('can:archive-processes');
 
     Route::get('process_events/{process}', [ProcessController::class, 'triggerStartEventApi'])->name('process_events.trigger')->middleware('can:start,process');
-    Route::get('processes/{process}/export/translation/{language}', [ProcessTranslationController::class, 'export']);
-    Route::get('processes/{process}/import/translation', [ProcessTranslationController::class, 'import']);
 
     Route::get('about', [AboutController::class, 'index'])->name('about.index');
 
