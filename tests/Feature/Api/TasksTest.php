@@ -822,14 +822,52 @@ class TasksTest extends TestCase
         $jsonResponse = $response->json();
 
         $expectedFields = [
-            "richtext1",
-            "textarea1",
-            "input1",
-            "richtext2",
-            "textarea2",
-            "submit1",
+            'richtext1',
+            'textarea1',
+            'input1',
+            'richtext2',
+            'textarea2',
+            'submit1',
         ];
 
         $this->assertEquals($expectedFields, $jsonResponse);
+    }
+
+    public function testGetAssignedUsersInGroupsRoute()
+    {
+        $user = User::factory()->create(['status' => 'ACTIVE']);
+        $user2 = User::factory()->create(['status' => 'ACTIVE']);
+        $user3 = User::factory()->create(['status' => 'ACTIVE']);
+        $group1 = Group::factory()->create();
+        $group2 = Group::factory()->create();
+
+        GroupMember::factory()->create([
+            'member_id' => $user->id,
+            'member_type' => User::class,
+            'group_id' => $group1->id,
+        ]);
+        GroupMember::factory()->create([
+            'member_id' => $user2->id,
+            'member_type' => User::class,
+            'group_id' => $group1->id,
+        ]);
+
+        GroupMember::factory()->create([
+            'member_id' => $user3->id,
+            'member_type' => User::class,
+            'group_id' => $group2->id,
+        ]);
+
+        $params = [
+            'groups' => [$group1->id, $group2->id],
+        ];
+
+        $route = route('api.tasks.getAssignedUsersInGroups', $params);
+        $response = $this->apiCall('GET', $route);
+        $response->assertStatus(200);
+        $responseString = $response->json();
+        $this->assertIsString($responseString);
+        $userIds = explode(',', $responseString);
+        $this->assertEquals([$user->id, $user2->id, $user3->id], $userIds);
     }
 }
