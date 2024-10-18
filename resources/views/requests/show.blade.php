@@ -123,6 +123,7 @@
                     <template v-if="showScreenSummary">
                       <div class="p-3">
                         <vue-form-renderer ref="screen" :config="screenSummary.config" v-model="dataSummary"
+                          :custom-css="screenSummary.custom_css"
                           :computed="screenSummary.computed" />
                       </div>
                     </template>
@@ -130,6 +131,7 @@
                       <div class="card">
                         <div class="card-body">
                           <vue-form-renderer ref="screenRequestDetail" :config="screenRequestDetail"
+                            :custom-css="screenSummary.custom_css"
                             v-model="dataSummary" />
                         </div>
                       </div>
