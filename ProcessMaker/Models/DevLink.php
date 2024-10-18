@@ -25,6 +25,8 @@ class DevLink extends ProcessMakerModel
         'state',
     ];
 
+    protected $appends = ['redirect_uri'];
+
     public static function boot()
     {
         parent::boot();
@@ -36,11 +38,16 @@ class DevLink extends ProcessMakerModel
         });
     }
 
+    public function getRedirectUriAttribute()
+    {
+        return route('devlink.index');
+    }
+
     public function getClientUrl()
     {
         $params = [
             'devlink_id' => $this->id,
-            'redirect_uri' => route('devlink.index'),
+            'redirect_uri' => $this->redirect_uri,
         ];
 
         return $this->url . route('devlink.oauth-client', $params, false);
@@ -50,7 +57,7 @@ class DevLink extends ProcessMakerModel
     {
         $params = http_build_query([
             'client_id' => $this->client_id,
-            'redirect_uri' => route('devlink.index'),
+            'redirect_uri' => $this->redirect_uri,
             'response_type' => 'code',
             'state' => $this->generateNewState(),
         ]);

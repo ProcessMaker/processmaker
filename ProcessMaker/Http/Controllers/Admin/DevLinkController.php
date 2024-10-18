@@ -20,7 +20,7 @@ class DevLinkController extends Controller
 
         $updatedDevLink = $this->storeOauthCredentials($request);
         if ($updatedDevLink) {
-            return redirect(route('devlink.index'));
+            return redirect($updatedDevLink->redirect_uri);
         }
 
         return view('admin.devlink.index');
@@ -86,7 +86,7 @@ class DevLinkController extends Controller
                 'grant_type' => 'authorization_code',
                 'client_id' => $devlink->client_id,
                 'client_secret' => $devlink->client_secret,
-                'redirect_uri' => route('devlink.index'),
+                'redirect_uri' => $devlink->redirect_uri,
                 'code' => $request->input('code'),
             ]);
 
