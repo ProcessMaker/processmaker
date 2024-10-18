@@ -1,6 +1,6 @@
 <template>
   <span
-    v-if="initials"
+    v-if="!src"
     class="tw-inline-flex tw-items-center tw-justify-center tw-h-6 tw-w-6
       tw-rounded-full tw-bg-gray-500 tw-ring-1 tw-ring-white"
     @click.prevent="$emit('click')">
@@ -9,8 +9,8 @@
 
   <img
     v-else
-    class="tw-relative tw-z-30 tw-inline-block tw-h-6 tw-w-6 tw-rounded-full tw-ring-1 tw-ring-white"
-    src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+    class="tw-relative tw-z-[3] tw-inline-block tw-h-6 tw-w-6 tw-rounded-full tw-ring-1 tw-ring-white"
+    :src="src"
     alt=""
     @click.prevent="$emit('click')">
 </template>

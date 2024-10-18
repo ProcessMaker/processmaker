@@ -6,7 +6,7 @@
       :key="index"
       :header="counter.header"
       :body="counter.body"
-      :active="counter.active"
+      :active="index === active"
       class="tw-w-full"
       :color="counter.color"
       :icon="counter.icon"
@@ -14,50 +14,27 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, ref, computed, onMounted } from "vue";
+<script setup>
+import { onMounted } from "vue";
 import { ThreeSectionCard } from "../../../base/index";
 
-export default defineComponent({
-  components: { ThreeSectionCard },
-  props: {
-    value: {
-      type: Array,
-      default: () => [],
-    },
+const props = defineProps({
+  data: {
+    type: Array,
+    default: () => [],
   },
-  emits: ["input", "change", "update:value"],
-  setup(props, { emit }) {
-    const data = computed({
-      get() {
-        return props.value;
-      },
-      set(dt) {
-        emit("input", dt);
-      },
-    });
-
-    const onClick = (counter, idxCounter) => {
-      const dt = data.value.map((x, index) => {
-        x.active = false;
-
-        if (index == idxCounter) {
-          x.active = true;
-        }
-        return x;
-      });
-
-      data.value = dt;
-
-      emit("change", counter, idxCounter);
-    };
-
-    onMounted(() => {});
-
-    return {
-      data,
-      onClick,
-    };
+  active: {
+    type: Number,
+    default: () => 0,
   },
 });
+
+const emit = defineEmits(["change"]);
+
+const onClick = (counter, idxCounter) => {
+  emit("change", counter, idxCounter);
+};
+
+onMounted(() => {});
+
 </script>

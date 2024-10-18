@@ -110,6 +110,7 @@ export const participantsColumn = () => ({
       },
       formatter: (option, row, column, columns) => option.name,
       initials: (option, row, column, columns) => option.name[0],
+      src: (option, row, column, columns) => option.avatar,
     },
   }),
 });
