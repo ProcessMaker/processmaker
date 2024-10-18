@@ -322,14 +322,14 @@ class TaskController extends Controller
 
             $taskRefreshed = $task->refresh();
 
-            CaseUpdate::dispatch($task->processRequest, $taskRefreshed);
+            CaseUpdate::dispatchSync($task->processRequest, $taskRefreshed);
 
             return new Resource($taskRefreshed);
         } else {
             return abort(422);
         }
     }
-    
+
     public function updateReassign(Request $request)
     {
         $userToAssign = $request->input('user_id');
@@ -342,7 +342,7 @@ class TaskController extends Controller
                 //Reassign to the user.
                 $processRequestToken->reassign($userToAssign, $request->user());
                 $taskRefreshed = $processRequestToken->refresh();
-                CaseUpdate::dispatch($processRequestToken->processRequest, $taskRefreshed);
+                CaseUpdate::dispatchSync($processRequestToken->processRequest, $taskRefreshed);
             }
         }
     }

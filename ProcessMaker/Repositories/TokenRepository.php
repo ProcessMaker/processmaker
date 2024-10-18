@@ -164,7 +164,7 @@ class TokenRepository implements TokenRepositoryInterface
         $request = $token->getInstance();
         $request->notifyProcessUpdated('ACTIVITY_ACTIVATED', $token);
 
-        CaseUpdate::dispatch($request, $token);
+        CaseUpdate::dispatchSync($request, $token);
 
         if (!is_null($user)) {
             $this->validateAndSendActionByEmail($activity, $token, $user->email);
