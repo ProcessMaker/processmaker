@@ -47,7 +47,8 @@
         'process-templates',
         'pm-blocks',
         'projects',
-        'additional-asset-actions'
+        'additional-asset-actions',
+        'documentation'
     );
     @endphp
     <div class="container-fluid">
