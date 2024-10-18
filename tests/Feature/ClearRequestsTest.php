@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Console\Commands\ProcessmakerClearRequests;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Models\CaseParticipated;
+use ProcessMaker\Models\CaseStarted;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
@@ -311,6 +313,8 @@ class ClearRequestsTest extends TestCase
         $this->assertEquals(4, ScheduledTask::count());
         $this->assertEquals(5, ProcessRequest::count());
         $this->assertEquals(1, ProcessCollaboration::count());
+        $this->assertEquals(3, CaseParticipated::count());
+        $this->assertEquals(3, CaseStarted::count());
         $this->assertEquals(28, Comment::count());
         $this->assertEquals(2, Media::where('collection_name', 'local')->count());
 
@@ -322,6 +326,8 @@ class ClearRequestsTest extends TestCase
         $this->assertEquals(0, ProcessRequestToken::count());
         $this->assertEquals(0, ProcessRequest::count());
         $this->assertEquals(0, ProcessCollaboration::count());
+        $this->assertEquals(0, CaseParticipated::count());
+        $this->assertEquals(0, CaseStarted::count());
         // 3 comments about Process should remain
         $this->assertEquals(3, Comment::count());
         $this->assertEquals(1, Media::where('collection_name', 'local')->count());

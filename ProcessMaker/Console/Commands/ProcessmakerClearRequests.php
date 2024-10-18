@@ -3,6 +3,8 @@
 namespace ProcessMaker\Console\Commands;
 
 use Illuminate\Console\Command;
+use ProcessMaker\Models\CaseParticipated;
+use ProcessMaker\Models\CaseStarted;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\ProcessCollaboration;
@@ -13,7 +15,7 @@ use ProcessMaker\Models\ScheduledTask;
 
 class ProcessmakerClearRequests extends Command
 {
-    const message = 'Are you sure you\'d like to remove all requests and related data? Make sure you have backed up your database as this cannot be undone.';
+    const message = 'Are you sure you\'d like to remove all requests, cases and related data? Make sure you have backed up your database as this cannot be undone.';
 
     /**
      * The name and signature of the console command.
@@ -27,7 +29,7 @@ class ProcessmakerClearRequests extends Command
      *
      * @var string
      */
-    protected $description = 'Clear all requests / task data';
+    protected $description = 'Clear all requests / cases / task data';
 
     /**
      * Execute the console command.
@@ -45,6 +47,8 @@ class ProcessmakerClearRequests extends Command
             Comment::where('commentable_type', ProcessRequestToken::class)->delete();
             ProcessCollaboration::query()->truncate();
             ProcessRequest::query()->truncate();
+            CaseParticipated::query()->truncate();
+            CaseStarted::query()->truncate();
         }
     }
 }

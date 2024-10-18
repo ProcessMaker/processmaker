@@ -123,7 +123,7 @@ class CaseController extends Controller
         $totalMyRequest = null;
 
         // Check permission
-        if ($user->hasPermission('view-all_cases')) {
+        if ($user->hasPermission('view-all_cases') || $user->is_administrator) {
             // The total number of cases recorded in the platform. User Id send is overridden.
             $request->merge(['userId' => null]);
             $queryAllCases = $this->caseRepository->getAllCases($request);
@@ -146,7 +146,7 @@ class CaseController extends Controller
         $totalCompleted = $queryCompletedCases->count();
 
         // Check permission
-        if ($user->hasPermission('view-my_requests')) {
+        if ($user->hasPermission('view-my_requests') || $user->is_administrator) {
             // Only in progress requests
             $requestAux = new Request();
             $requestAux->replace(['type' => 'in_progress']);
