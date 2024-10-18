@@ -124,7 +124,6 @@ class DevLink extends ProcessMakerModel
             [
                 'name' => $bundleInfo['name'],
                 'published' => $bundleInfo['published'],
-                'locked' => $bundleInfo['locked'],
                 'version' => $bundleInfo['version'],
             ]
         );
