@@ -11,10 +11,9 @@ import TaskTable from "./TaskTable.vue";
 import RequestTable from "./RequestTable.vue";
 import TabHistory from "./TabHistory.vue";
 import CompletedForms from "./CompletedForms.vue";
+import TabFiles from "./TabFiles.vue";
 import Overview from "./Overview.vue";
-import { useStore } from "../variables";
 
-const store = useStore();
 const translate = ProcessMaker.i18n;
 
 const tabDefault = ref("tasks");
@@ -30,7 +29,7 @@ const tabs = [
     name: translate.t("Completed & Form"), href: "#completed_form", current: "completed", show: true, content: CompletedForms,
   },
   {
-    name: translate.t("File Manager"), href: "#file_manager", current: "file_manager", show: false, content: "",
+    name: translate.t("File Manager"), href: "#file_manager", current: "file_manager", show: true, content: TabFiles,
   },
   {
     name: translate.t("History"), href: "#history", current: "history", show: true, content: TabHistory,

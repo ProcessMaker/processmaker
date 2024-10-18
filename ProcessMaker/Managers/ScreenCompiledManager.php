@@ -92,6 +92,7 @@ class ScreenCompiledManager
     public function getLastScreenVersionId()
     {
         $row = DB::select('SELECT id FROM screen_versions ORDER BY id DESC LIMIT 1;');
+
         return $row[0]->id;
     }
 

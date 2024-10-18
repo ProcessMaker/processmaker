@@ -18,9 +18,9 @@ class MenuTranslation extends TranslationManager
     {
         $language = $this->getTargetLanguage();
         $translations = $this->getTranslations($language);
+
         return $this->applyTranslations($translations);
     }
-    
 
     private function getTranslations($language)
     {
