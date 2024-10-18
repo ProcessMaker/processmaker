@@ -43,7 +43,7 @@ class ScreenVersion extends ApiResource
         // If web entry, apply translations
         if (!$task) {
             // Apply translations to screen
-            $screenTranslation = new ScreenTranslation($screenVersion);
+            $screenTranslation = new ScreenTranslation();
             $screenVersion['config'] = $screenTranslation->applyTranslations($screenVersion);
             // Apply translations to nested screens
             if (!array_key_exists('nested', $screenVersion)) {
