@@ -237,13 +237,13 @@ class ProcessTranslation
         return $elements;
     }
 
-    public function applyTranslations($screen)
+    /**
+     * Get the current user Auth::user() language
+     *
+     * @return string
+     */
+    public static function getCurrentUserLanguage(): string
     {
-        if (!$screen) {
-            return;
-        }
-        $config = $screen['config'];
-        $translations = $screen['translations'];
         $targetLanguage = '';
 
         if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
@@ -255,6 +255,18 @@ class ProcessTranslation
         if (Auth::user() && Auth::user()->username !== '_pm4_anon_user') {
             $targetLanguage = Auth::user()->language;
         }
+
+        return $targetLanguage;
+    }
+
+    public function applyTranslations($screen)
+    {
+        if (!$screen) {
+            return;
+        }
+        $config = $screen['config'];
+        $translations = $screen['translations'];
+        $targetLanguage = self::getCurrentUserLanguage();
 
         if (!$translations) {
             return $config;

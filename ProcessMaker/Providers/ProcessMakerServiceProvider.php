@@ -25,6 +25,7 @@ use ProcessMaker\Jobs\SmartInbox;
 use ProcessMaker\LicensedPackageManifest;
 use ProcessMaker\Managers;
 use ProcessMaker\Managers\MenuManager;
+use ProcessMaker\Managers\ScreenCompiledManager;
 use ProcessMaker\Models;
 use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
@@ -157,6 +158,11 @@ class ProcessMakerServiceProvider extends ServiceProvider
                 app('migrator'),
                 app('events')
             );
+        });
+
+        // Register the compiled screen service
+        $this->app->singleton('compiledscreen', function ($app) {
+            return new ScreenCompiledManager();
         });
     }
 
