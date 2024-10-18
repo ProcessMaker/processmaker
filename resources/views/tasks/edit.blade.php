@@ -525,6 +525,9 @@
             return "card-header text-status " + header[status];
           },
           isAllowReassignment() {
+            if (ProcessMaker.user.id === this.task.definition.assignedUsers && !this.task.definition.assignedGroups) {  
+              return false;
+            }
             return this.task.definition.allowReassignment === "true";
           },
         },
@@ -878,7 +881,14 @@
             this.getUsers(filter);
           },
           setAssignedUsers(definition) {
-            this.assignedUsers = this.task.definition.assignedUsers;
+            console.log('setAssignedUsers', definition);
+
+            //  Display assigned users without current user
+            let currentAssignedUsers = definition.assignedUsers.split(',');
+            let assignedUsers = currentAssignedUsers.filter(user => user !== window.ProcessMaker.user.id);
+            this.assignedUsers = assignedUsers.join(',');
+
+
           }
         },
         mounted() {
