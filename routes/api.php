@@ -23,7 +23,6 @@ use ProcessMaker\Http\Controllers\Api\ProcessController;
 use ProcessMaker\Http\Controllers\Api\ProcessLaunchpadController;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestFileController;
-use ProcessMaker\Http\Controllers\Api\ProcessTranslationController;
 use ProcessMaker\Http\Controllers\Api\RecommendationsController;
 use ProcessMaker\Http\Controllers\Api\ScreenCategoryController;
 use ProcessMaker\Http\Controllers\Api\ScreenController;
