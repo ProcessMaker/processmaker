@@ -55,18 +55,28 @@ class PackageManager
     }
 
     /**
+     * Get all json translations registered from packages
+     *
+     * @return array
+     */
+    public function getJsonTranslationsRegistered() : array
+    {
+        return app()->translator->getLoader()->jsonPaths();
+    }
+
+    /**
      * Look into current packages and create a language file for each one
-     * 
+     *
      * @param $code The language code to create a language file of
      */
     public function createLanguageFile($code)
     {
         // Get current packages
-        $packages = app()->translator->getLoader()->jsonPaths();
+        $packages = $this->getJsonTranslationsRegistered();
 
         foreach ($packages as $package) {
             if (!file_exists("{$package}/en.json")) {
-                return ;
+                return;
             } else {
                 // If language does not exist, clone en.json without values
                 if (!file_exists("{$package}/{$code}.json")) {
@@ -78,8 +88,8 @@ class PackageManager
                         $value = '';
                     }
 
-                    // Get empty file with only keys, empty values 
-                    $baseFile = json_encode($data);
+                    // Get empty file with only keys, empty values
+                    $baseFile = json_encode($data, JSON_PRETTY_PRINT);
 
                     // Create file in package
                     file_put_contents("{$package}/{$code}.json", $baseFile);
@@ -90,15 +100,15 @@ class PackageManager
 
     /**
      * Delete a language file form all currently installed packages
-     * 
-     * @param $code The language code of which to delete the language file 
+     *
+     * @param $code The language code of which to delete the language file
      */
     public function deleteLanguageFile($code)
     {
-         // Get current packages
-         $packages = app()->translator->getLoader()->jsonPaths();
+        // Get current packages
+        $packages = $this->getJsonTranslationsRegistered();
 
-         foreach ($packages as $package) {
+        foreach ($packages as $package) {
             // Check if file exists in package
             if (File::exists("{$package}/{$code}.json")) {
                 // Delete file
