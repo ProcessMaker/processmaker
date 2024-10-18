@@ -13,6 +13,7 @@ const bundles = ref([]);
 const editModal = ref(null);
 const confirmDeleteModal = ref(null);
 const confirmIncreaseVersion = ref(null);
+const confirmUpdateVersion = ref(null);
 const filter = ref("");
 const actions = [
   { value: "increase-item", content: "Increase Version", conditional: "if(not(dev_link_id), true, false)" },
@@ -90,7 +91,7 @@ const onNavigate = (action, data, index) => {
       increaseVersionBundle(data);
       break;
     case "update-item":
-      edit(data);
+      updateVersionBundle(data);
       break;
     case "delete-item":
       deleteBundle(data);
@@ -133,6 +134,11 @@ const deleteBundle = (bundle) => {
   confirmDeleteModal.value.show();
 };
 
+const updateVersionBundle = (bundle) => {
+  selected.value = bundle;
+  confirmUpdateVersion.value.show();
+};
+
 const increaseVersionBundle = (bundle) => {
   selected.value = bundle;
   confirmIncreaseVersion.value.show();
@@ -154,6 +160,10 @@ const executeDelete = () => {
       confirmDeleteModal.value.hide();
       load();
     });
+};
+
+const executeUpdate = () => {
+  return null;
 };
 
 // Debounced function
@@ -210,6 +220,34 @@ const deleteWaring = computed(() => {
       @ok="executeIncrease"
     >
       <p>Are you sure you increase the version of {{ selected?.name }}?</p>
+    </b-modal>
+
+    <b-modal
+      ref="confirmUpdateVersion"
+      centered
+      content-class="modal-style"
+      :title="$t('Update Bundle Version')"
+      :ok-title="$t('Continue')"
+      :cancel-title="$t('Cancel')"
+      @ok="executeUpdate"
+    >
+      <div>
+        <p>Select how you want to update the bundle <strong>Testing Processes and Assets</strong></p>
+
+        <b-form-group>
+          <b-form-radio-group v-model="selectedOption" name="bundleUpdateOptions">
+            <b-form-radio value="quick-update">
+              Quick Update
+              <p class="text-muted">The current bundle will be replaced completely for the new version immediately.</p>
+            </b-form-radio>
+
+            <b-form-radio value="review-changes">
+              Review changes in bundle
+              <p class="text-muted">Check and compare the changes before updating the bundle.</p>
+            </b-form-radio>
+          </b-form-radio-group>
+        </b-form-group>
+      </div>
     </b-modal>
 
     <b-modal
