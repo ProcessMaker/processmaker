@@ -117,6 +117,7 @@ class CaseRepository implements CaseRepositoryInterface
             ]);
 
             $this->case->case_title = $instance->case_title;
+            $this->case->case_title_formatted = $instance->case_title_formatted;
             $this->case->case_status = $instance->status === CaseStatusConstants::ACTIVE ? CaseStatusConstants::IN_PROGRESS : $instance->status;
             $this->case->request_tokens = CaseUtils::storeRequestTokens($this->case->request_tokens, $token->getKey());
             $this->case->tasks = CaseUtils::storeTasks($this->case->tasks, $taskData);
