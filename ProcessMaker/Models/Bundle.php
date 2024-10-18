@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Exception\ExporterNotSupported;
+use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\Models\ProcessMakerModel;
 
@@ -16,13 +17,22 @@ class Bundle extends ProcessMakerModel
     protected $appends = ['asset_count'];
 
     protected $casts = [
-        'locked' => 'boolean',
         'published' => 'boolean',
     ];
 
     public function scopePublished($query)
     {
         return $query->where('published', true);
+    }
+
+    public function scopeEditable($query)
+    {
+        return $query->where('dev_link_id', null);
+    }
+
+    public function editable() : bool
+    {
+        return $this->dev_link_id === null;
     }
 
     public function assets()
@@ -97,10 +107,24 @@ class Bundle extends ProcessMakerModel
             throw new ExporterNotSupported();
         }
 
+        $this->validateEditable();
+
+        $exists = $this->assets()->where('asset_type', get_class($asset))->where('asset_id', $asset->id)->exists();
+        if ($exists) {
+            throw ValidationException::withMessages(['*' => 'Asset already exists in bundle']);
+        }
+
         BundleAsset::create([
             'bundle_id' => $this->id,
             'asset_type' => get_class($asset),
             'asset_id' => $asset->id,
         ]);
+    }
+
+    public function validateEditable()
+    {
+        if (!$this->editable()) {
+            throw ValidationException::withMessages(['*' => 'Bundle is not editable']);
+        }
     }
 }
