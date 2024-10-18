@@ -9,26 +9,6 @@ use ProcessMaker\Upgrades\UpgradeMigration as Upgrade;
 class PopulateCasesParticipated extends Upgrade
 {
     /**
-     * Run any validations/pre-run checks to ensure the environment, settings,
-     * packages installed, etc. are right correct to run this upgrade.
-     *
-     * Throw a \RuntimeException if the conditions are *NOT* correct for this
-     * upgrade migration to run. If this is not a required upgrade, then it
-     * will be skipped. Otherwise the exception thrown will be caught, noted,
-     * and will prevent the remaining migrations from continuing to run.
-     *
-     * Returning void or null denotes the checks were successful.
-     *
-     * @return void
-     *
-     * @throws \RuntimeException
-     */
-    public function preflightChecks()
-    {
-        //
-    }
-
-    /**
      * Run the upgrade migration.
      *
      * @return void
@@ -110,7 +90,7 @@ class PopulateCasesParticipated extends Upgrade
                 'pr.initiated_at',
                 'pr.completed_at',
                 'pr.created_at',
-                'pr.updated_at'
+                'pr.updated_at',
             ])
             ->join('process_request_tokens as prt', 'pr.id', '=', 'prt.process_request_id')
             ->join('users as u', 'prt.user_id', '=', 'u.id')
@@ -135,4 +115,3 @@ class PopulateCasesParticipated extends Upgrade
             ->orderBy('u.id');
     }
 }
-

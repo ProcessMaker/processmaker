@@ -2,7 +2,8 @@
   <BaseTable
     :columns="columns"
     :data="data"
-    class="tw-grow tw-overflow-y-scroll">
+    :placeholder="placeholder"
+    class="tw-overflow-y-scroll">
     <template
       v-for="(column, index) in columns"
       #[`theader-filter-${column.field}`]>
@@ -13,6 +14,9 @@
         :value="getFilter(index, column)"
         @change="e=> onChangeFilter(column, e, index)"
         @clear="e=> onClear(column, e, index)" />
+    </template>
+    <template #placeholder>
+      <slot name="placeholder" />
     </template>
   </BaseTable>
 </template>
@@ -31,6 +35,10 @@ const props = defineProps({
   data: {
     type: Array,
     default: () => [],
+  },
+  placeholder: {
+    type: Boolean,
+    default: () => false,
   },
 });
 
