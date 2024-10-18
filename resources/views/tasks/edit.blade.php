@@ -435,7 +435,8 @@
           userConfiguration: @json($userConfiguration),
           urlConfiguration:'users/configuration',
           users: [],
-          showTabs: true
+          showTabs: true,
+          assignedUsers: "",
         },
         watch: {
           task: {
@@ -851,7 +852,14 @@
             this.caseTitle = task.process_request.case_title;
           },
           getUsers(filter) {
-            ProcessMaker.apiClient.get(this.getUrlUsersTaskCount(filter)).then(response => {
+            if (this.task.definition.allowReassignment === "true" && !this.userIsAdmin) {
+              this.setAssignedUsers(this.task.definition);
+            }
+            ProcessMaker.apiClient.get(this.getUrlUsersTaskCount(filter), {
+              params: {
+                include_ids: this.assignedUsers
+              }
+            }).then(response => {
               this.users = [];
               for (let i in response.data.data) {
                 this.users.push({
@@ -868,6 +876,9 @@
           },
           onInput(filter) {
             this.getUsers(filter);
+          },
+          setAssignedUsers(definition) {
+            this.assignedUsers = this.task.definition.assignedUsers;
           }
         },
         mounted() {
