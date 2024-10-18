@@ -881,15 +881,34 @@
             this.getUsers(filter);
           },
           setAssignedUsers(definition) {
-            console.log('setAssignedUsers', definition);
+            // If a group is used, get all the users in that group, nested groups and merge with assignedUsers if applicable 
+            if (definition.assignedGroups && !this.userIsAdmin) {
+              this.getUsersInGroups(definition.assignedGroups);
+              let assignedUserIds = this.assignedUsers;
+              if (definition.assignedUsers) {
+                let currentAssignedUsers = definition.assignedUsers.split(',');
+                assignedUserIds += ',' + currentAssignedUsers.join(',');
+              }
+              this.assignedUsers = assignedUserIds;
+            }
 
-            //  Display assigned users without current user
-            let currentAssignedUsers = definition.assignedUsers.split(',');
-            let assignedUsers = currentAssignedUsers.filter(user => user !== window.ProcessMaker.user.id);
-            this.assignedUsers = assignedUsers.join(',');
-
-
-          }
+            //  Display assigned users
+            if (definition.assignedUsers && !this.userIsAdmin && !definition.assignedGroups) {
+              let currentAssignedUsers = definition.assignedUsers.split(',');
+              let assignedUsers = currentAssignedUsers.filter(user => user !== window.ProcessMaker.user.id);
+              this.assignedUsers = assignedUsers.join(',');
+            }
+          },
+          getUsersInGroups(assignedGroups) {
+            let groups = assignedGroups.split(',');
+            ProcessMaker.apiClient.get("tasks/getAssignedUsersInGroups", {
+              params: {
+                groups: groups
+              }
+            }).then(response => {
+              this.assignedUsers = response.data;
+            });
+          },
         },
         mounted() {
           this.caseTitleField(this.task);
