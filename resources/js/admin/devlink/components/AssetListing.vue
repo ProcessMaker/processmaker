@@ -5,6 +5,7 @@ import debounce from 'lodash/debounce';
 import InstanceTabs from './InstanceTabs.vue';
 import types from './assetTypes';
 import moment from 'moment';
+import Header from './Header.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -102,11 +103,13 @@ const handleFilterChange = () => {
 
 <template>
   <div>
+    <instance-tabs><template #assets>
     <div>
-      <instance-tabs />
-      <h3>{{ typeConfig.name }}</h3>
-      <div class="top-options">
-        <input v-model="filter" class="form-control col-10 search-input" @input="handleFilterChange">
+      <Header back="assets">{{ typeConfig.name }}</Header>
+      <div class="top-options row">
+        <div class="col">
+          <input v-model="filter" class="form-control search-input" @input="handleFilterChange">
+        </div>
       </div>
       <div class="card asset-listing-card">
         <div v-if="!typeConfig">
@@ -151,6 +154,7 @@ const handleFilterChange = () => {
         </div>
       </div>
     </div>
+    </template></instance-tabs>
   </div>
 </template>
 <style lang="scss" scoped>
@@ -160,35 +164,14 @@ const handleFilterChange = () => {
   padding-bottom: 16px;
 }
 .search-input {
-  padding-left: 30px;
   background: url(/img/search-icon.svg) no-repeat left;
   background-position: 7px 8px;
   background-size: 15px;
   border-radius: 8px;
 }
-::v-deep .table {
-  border-bottom: 1px solid #e9edf1;
-}
-::v-deep .table > thead > tr > th {
-  border-top: none;
-  background-color: #FBFBFC;
-  border-right: 1px solid rgba(0, 0, 0, 0.125);
-  color: #4E5663;
-  font-weight: 600;
-  font-size: 14px;
-}
-::v-deep .table > tbody > tr > td {
-  color: #4E5663;
-  font-size: 14px;
-  font-weight: 400;
-}
-::v-deep .table > thead > tr > th:last-child {
-  border-right: none !important;
-  border-top-right-radius: 8px;
-}
-::v-deep .table > thead > tr > th:first-child {
-  border-top-left-radius: 8px;
-}
+
+@import "styles/components/table";
+
 .asset-listing-card {
   border-radius: 8px;
   min-height: calc(-355px + 100vh);

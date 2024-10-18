@@ -184,23 +184,26 @@ const goToBundleAssets = (bundle) => {
 
 const deleteWaring = computed(() => {
   const name = selected?.value.name;
-  console.log("Name is " + name);
   return vue.$t('Are you sure you want to delete {{name}}?', { name });
 })
 </script>
 
 <template>
   <div>
-    <div class="top-options">
-      <input v-model="filter" class="form-control col-10 search-input" @input="handleFilterChange">
-      <b-button
-        variant="primary"
-        @click="createNewBundle"
-        class="new-button"
-      >
-      <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>
-      {{ $t('Create Bundle') }}
-      </b-button>
+    <div class="top-options row">
+      <div class="col">
+        <input v-model="filter" class="form-control search-input" @input="handleFilterChange">
+      </div>
+      <div class="col-2">
+        <b-button
+          variant="primary"
+          @click="createNewBundle"
+          class="new-button"
+        >
+        <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>
+        {{ $t('Create Bundle') }}
+        </b-button>
+      </div>
     </div>
     <b-modal
       ref="confirmDeleteModal"
@@ -269,6 +272,7 @@ const deleteWaring = computed(() => {
     <div class="card local-bundles-card">
       <b-table
         hover
+        class="clickable"
         @row-clicked="goToBundleAssets"
         :items="bundles"
         :fields="fields"
@@ -303,76 +307,35 @@ const deleteWaring = computed(() => {
 
 <style lang="scss" scoped>
 .top-options {
-  display: flex;
-  justify-content: space-between;
   padding-bottom: 16px;
+
+  .search-input {
+    background: url(/img/search-icon.svg) no-repeat left;
+    background-position: 7px 8px;
+    background-size: 15px;
+    border-radius: 8px;
+  }
+
+  .new-button {
+    width: 100%;
+    text-transform: none;
+    font-weight: 500;
+    font-size: 14px;
+  }
 }
-.search-input {
-  padding-left: 30px;
-  background: url(/img/search-icon.svg) no-repeat left;
-  background-position: 7px 8px;
-  background-size: 15px;
-  border-radius: 8px;
-}
-.ellipsis-devlink {
-  border-radius: 10px;
-  border: 1px solid #D7DDE5;
-}
-::v-deep .ellipsis-devlink .btn {
-  border-radius: 10px;
-}
-::v-deep .modal-style {
-  border-radius: 8px;
-}
-::v-deep .modal-header {
-  border-bottom: none;
-}
-::v-deep .modal-footer {
-  border-top: none;
-}
-::v-deep .modal-title {
-  font-size: 24px;
-  font-weight: 500;
-  color: #20242A;
-}
-::v-deep .modal-body {
-  font-size: 14px;
-  font-weight: 400;
-  color: #20242A;
-}
-::v-deep .table {
-  border-bottom: 1px solid #e9edf1;
-}
-::v-deep .table > thead > tr > th {
-  border-top: none;
-  background-color: #FBFBFC;
-  border-right: 1px solid rgba(0, 0, 0, 0.125);
-  color: #4E5663;
-  font-weight: 600;
-  font-size: 14px;
-}
-::v-deep .table > tbody > tr > td {
-  color: #4E5663;
-  font-size: 14px;
-  font-weight: 400;
-}
-::v-deep .table > tbody > tr {
-  cursor: pointer;
-}
-::v-deep .table > thead > tr > th:last-child {
-  border-right: none !important;
-  border-top-right-radius: 8px;
-}
-::v-deep .table > thead > tr > th:first-child {
-  border-top-left-radius: 8px;
-}
+
+@import "styles/components/table";
+
 .local-bundles-card {
   border-radius: 8px;
   min-height: calc(-355px + 100vh);
 }
-.new-button {
-  text-transform: none;
-  font-weight: 500;
-  font-size: 14px;
+.btn-menu {
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  background-color: transparent;
+}
+.btn-menu-container {
+  display: flex;
+  justify-content: flex-end;
 }
 </style>
