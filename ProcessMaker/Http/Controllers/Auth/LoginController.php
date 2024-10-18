@@ -67,12 +67,14 @@ class LoginController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function showLoginForm()
+    public function showLoginForm(Request $request)
     {
         $manager = App::make(LoginManager::class);
         $addons = $manager->list();
+        // Cheche if the user can by pass
+        $showForceLogin = $request->has('showLogin') && $request->get('showLogin') === 'true';
         // Review if we need to redirect the default SSO
-        if (config('app.enable_default_sso')) {
+        if (config('app.enable_default_sso') && !$showForceLogin) {
             $arrayAddons = $addons->toArray();
             $driver = $this->getDefaultSSO($arrayAddons);
             // If a default SSO was defined we will to redirect
