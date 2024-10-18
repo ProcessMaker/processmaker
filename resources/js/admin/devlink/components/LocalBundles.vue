@@ -2,6 +2,7 @@
 import { ref, onMounted, getCurrentInstance, computed } from 'vue';
 import debounce from 'lodash/debounce';
 import Origin from './Origin.vue';
+import BundleModal, { show as showBundleModal, hide as hideBundleModal } from './BundleModal.vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 
 const vue = getCurrentInstance().proxy;
@@ -11,6 +12,8 @@ const bundles = ref([]);
 const editModal = ref(null);
 const confirmDeleteModal = ref(null);
 const filter = ref("");
+const bundleModal = ref(null);
+
 
 onMounted(() => {
   load();
@@ -66,7 +69,9 @@ const reset = () => {
 
 const createNewBundle = () => {
   reset();
-  editModal.value.show();
+  if (bundleModal.value) {
+    bundleModal.value.show();
+  }
 }
 
 const create = () => {
@@ -79,7 +84,9 @@ const create = () => {
 
 const edit = (bundle) => {
   selected.value = { ...bundle };
-  editModal.value.show();
+  if (bundleModal.value) {
+    bundleModal.value.show();
+  }
 };
 
 const update = () => {
@@ -153,14 +160,8 @@ const deleteWaring = computed(() => {
       <p>{{ deleteWaring }}'</p>
     </b-modal>
 
-    <b-modal ref="editModal" :title="selected.id ? $t('Edit Bundle') : $t('Create New Bundle')" @ok="update" :ok-title="$t('Ok')" :cancel-title="$t('Cancel')">
-      <b-form-group :label="$t('Name')">
-        <b-form-input v-model="selected.name"></b-form-input>
-      </b-form-group>
-      <b-form-group v-if="canEdit(selected)" :label="$t('Published')">
-        <b-form-checkbox v-model="selected.published"></b-form-checkbox>
-      </b-form-group>
-    </b-modal>
+    <BundleModal ref="bundleModal" :bundle="selected" @update="update" />
+
     <div class="card local-bundles-card">
       <b-table
         hover
