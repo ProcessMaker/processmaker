@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\ImportExport\Exporters;
 
+use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +14,7 @@ use ProcessMaker\ImportExport\Options;
 use ProcessMaker\ImportExport\SignalHelper;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Managers\SignalManager;
+use ProcessMaker\Models\Embed;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
@@ -27,6 +29,7 @@ use Tests\TestCase;
 class ProcessExporterTest extends TestCase
 {
     use HelperTrait;
+    use WithFaker;
 
     /**
      *  Init admin user
@@ -35,54 +38,6 @@ class ProcessExporterTest extends TestCase
     {
         parent::setUp();
         $this->createAdminUser();
-    }
-
-    private function fixtures(): array
-    {
-        // Create simple screens. Extensive screen tests are in ScreenExporterTest.php
-        $cancelScreen = $this->createScreen('basic-form-screen', ['title' => 'Cancel Screen']);
-        $requestDetailScreen = $this->createScreen('basic-display-screen', ['title' => 'Request Detail Screen']);
-
-        $manager = User::factory()->create(['username' => 'manager']);
-        $group = Group::factory()->create([
-            'name' => 'Group',
-            'description' => 'My Example Group',
-            'manager_id' => $manager->id,
-        ]);
-        $user = User::factory()->create(['username' => 'testuser']);
-        $user->groups()->sync([$group->id]);
-
-        $process = $this->createProcess('basic-process', [
-            'name' => 'Process',
-            'user_id' => $user->id,
-            'cancel_screen_id' => $cancelScreen->id,
-            'request_detail_screen_id' => $requestDetailScreen->id,
-        ]);
-
-        // Notification Settings.
-        $processNotificationSetting1 = ProcessNotificationSetting::factory()->create([
-            'process_id' => $process->id,
-            'notifiable_type' => 'requester',
-            'notification_type' => 'assigned',
-        ]);
-        $processNotificationSetting2 = ProcessNotificationSetting::factory()->create([
-            'process_id' => $process->id,
-            'notifiable_type' => 'requester',
-            'notification_type' => 'assigned',
-            'element_id' => 'node_3',
-        ]);
-
-        $media = $this->createFakeImage($process);
-
-        return [
-            'process' => $process,
-            'cancelScreen' => $cancelScreen,
-            'requestDetailScreen' => $requestDetailScreen,
-            'user' => $user,
-            'processNotificationSetting1' => $processNotificationSetting1,
-            'processNotificationSetting2' => $processNotificationSetting2,
-            'media' => $media,
-        ];
     }
 
     public function testExport()
@@ -106,6 +61,7 @@ class ProcessExporterTest extends TestCase
         $this->assertContains($cancelScreen->uuid, $processDependentUuids);
         $this->assertContains($requestDetailScreen->uuid, $processDependentUuids);
         $this->assertContains($media->uuid, $processDependentUuids);
+        $this->assertContains($process->embed()->first()->uuid, $processDependentUuids);
     }
 
     public function testImport()
@@ -115,6 +71,7 @@ class ProcessExporterTest extends TestCase
             'cancelScreen' => $cancelScreen,
             'requestDetailScreen' => $requestDetailScreen,
             'user' => $user,
+            'embed' => $embed,
         ] = $this->fixtures();
 
         $this->runExportAndImport(
@@ -123,6 +80,7 @@ class ProcessExporterTest extends TestCase
             function () use ($process, $cancelScreen, $requestDetailScreen, $user) {
                 DB::delete('delete from process_notification_settings');
                 $process->forceDelete();
+                $process->embed()->delete();
                 $cancelScreen->delete();
                 $requestDetailScreen->delete();
                 $user->groups->first()->manager->delete();
@@ -135,6 +93,7 @@ class ProcessExporterTest extends TestCase
                 $this->assertEquals(0, User::where('username', 'testuser')->count());
                 $this->assertEquals(0, Group::where('name', 'Group')->count());
                 $this->assertEquals(0, Media::where('name', 'Image')->count());
+                $this->assertEquals(0, Embed::where('model_id', $process->id)->count());
             }
         );
 
@@ -156,6 +115,7 @@ class ProcessExporterTest extends TestCase
         $fakeFilePath = $media->id . '/' . $media->file_name;
         $this->assertFileExists(Storage::disk('public')->path($fakeFilePath));
         $this->assertEquals('a value', $media->getCustomProperty('a_custom_property'));
+        $this->assertEquals(1, $process->embed()->count());
     }
 
     public function testSignals()
@@ -460,28 +420,6 @@ class ProcessExporterTest extends TestCase
         $this->assertEquals(1, $newProcess->media()->count());
     }
 
-    private function createFakeImage(Process $process): Media
-    {
-        $media = Media::factory()->create([
-            'uuid' => '8ef7550c-2544-4642-91e1-732fb267179a',
-            'model_type' => Process::class,
-            'model_id' => $process->id,
-            'collection_name' => 'images_carousel',
-            'name' => 'image',
-            'file_name' => 'image.png',
-            'custom_properties' => ['a_custom_property' => 'a value'],
-        ]);
-
-        // Create a fake image and save it directly to the fake storage.
-        Storage::fake('public');
-        $fileName = $media->name . '.png';
-        $fileUpload = UploadedFile::fake()->image($fileName);
-        $fakeFilePath = $media->id . '/' . $fileName;
-        Storage::disk('public')->put($fakeFilePath, $fileUpload->getContent());
-
-        return $media;
-    }
-
     // Process with ABE screens
     public function testProcessABEScreen()
     {
@@ -568,5 +506,91 @@ class ProcessExporterTest extends TestCase
 
         // Assert that the process and screen exist in the database
         $this->assertDatabaseHas('processes', ['name' => $process->name]);
+    }
+
+    private function fixtures(): array
+    {
+        // Create simple screens. Extensive screen tests are in ScreenExporterTest.php
+        $cancelScreen = $this->createScreen('basic-form-screen', ['title' => 'Cancel Screen']);
+        $requestDetailScreen = $this->createScreen('basic-display-screen', ['title' => 'Request Detail Screen']);
+
+        $manager = User::factory()->create(['username' => 'manager']);
+        $group = Group::factory()->create([
+            'name' => 'Group',
+            'description' => 'My Example Group',
+            'manager_id' => $manager->id,
+        ]);
+        $user = User::factory()->create(['username' => 'testuser']);
+        $user->groups()->sync([$group->id]);
+
+        $process = $this->createProcess('basic-process', [
+            'name' => 'Process',
+            'user_id' => $user->id,
+            'cancel_screen_id' => $cancelScreen->id,
+            'request_detail_screen_id' => $requestDetailScreen->id,
+        ]);
+
+        // Notification Settings.
+        $processNotificationSetting1 = ProcessNotificationSetting::factory()->create([
+            'process_id' => $process->id,
+            'notifiable_type' => 'requester',
+            'notification_type' => 'assigned',
+        ]);
+        $processNotificationSetting2 = ProcessNotificationSetting::factory()->create([
+            'process_id' => $process->id,
+            'notifiable_type' => 'requester',
+            'notification_type' => 'assigned',
+            'element_id' => 'node_3',
+        ]);
+
+        return [
+            'process' => $process,
+            'cancelScreen' => $cancelScreen,
+            'requestDetailScreen' => $requestDetailScreen,
+            'user' => $user,
+            'processNotificationSetting1' => $processNotificationSetting1,
+            'processNotificationSetting2' => $processNotificationSetting2,
+            'media' => $this->createFakeImage($process),
+            'embed' => $this->createEmbed($process),
+        ];
+    }
+
+    private function createFakeImage(Process $process): Media
+    {
+        $media = Media::factory()->create([
+            'uuid' => '8ef7550c-2544-4642-91e1-732fb267179a',
+            'model_type' => Process::class,
+            'model_id' => $process->id,
+            'collection_name' => 'images_carousel',
+            'name' => 'image',
+            'file_name' => 'image.png',
+            'custom_properties' => ['a_custom_property' => 'a value'],
+        ]);
+
+        // Create a fake image and save it directly to the fake storage.
+        Storage::fake('public');
+        $fileName = $media->name . '.png';
+        $fileUpload = UploadedFile::fake()->image($fileName);
+        $fakeFilePath = $media->id . '/' . $fileName;
+        Storage::disk('public')->put($fakeFilePath, $fileUpload->getContent());
+
+        return $media;
+    }
+
+    /**
+     * Creates an Embed instance associated with the given process.
+     */
+    private function createEmbed(Process $process): Embed
+    {
+        return Embed::factory()->create([
+            'model_id' => $process->id,
+            'model_type' => Process::class,
+            'mime_type' => 'text/url',
+            'custom_properties' => json_encode([
+                'url' => $this->faker->url,
+                'type' => 'embed',
+            ]),
+            'order_column' => 1,
+        ]);
     }
 }
