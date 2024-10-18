@@ -10,6 +10,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
+use ProcessMaker\Package\Translations\Models\Language;
 use ProcessMaker\Package\Translations\Models\Translatable;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
@@ -89,6 +90,10 @@ class TranslationTest extends TestCase
             'Age' => 'Edad',
         ];
         $translatable->save();
+
+        // Install languages
+        Language::updateOrCreate(['code' => 'es', 'name' => 'Spanish'], ['installed' => 1]);
+        Language::updateOrCreate(['code' => 'pt', 'name' => 'Portuguese'], ['installed' => 1]);
 
         $responseData = $response->json();
         $items = collect($responseData['screen']['config'][0]['items']);
@@ -170,6 +175,8 @@ class TranslationTest extends TestCase
         ];
         $translatable->save();
 
+        Language::updateOrCreate(['code' => 'pt', 'name' => 'Portuguese'], ['installed' => 1]);
+
         // As portuguese is not translated, english must be used
         $response = $this->apiCall('GET', "$url?include=screen");
         $responseData = $response->json();
@@ -219,6 +226,8 @@ class TranslationTest extends TestCase
             'Age' => 'Edad',
         ];
         $translatable->save();
+
+        Language::updateOrCreate(['code' => 'es', 'name' => 'Spanish'], ['installed' => 1]);
 
         // Spanish has translation, so it should be used for the screen:
         $this->user = $spanishUser;

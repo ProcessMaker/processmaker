@@ -688,10 +688,10 @@ class ScreenController extends Controller
         $screenArray = $draft->toArray();
         $screenTranslation = new ScreenTranslation();
         $screenArray['config'] = $screenTranslation->evaluateMustache(
-            $request->input('screenConfig'), 
+            $request->input('screenConfig'),
             $request->input('inputData')
         );
-        $translatedConfig = $screenTranslation->applyTranslations($screenArray);
+        $translatedConfig = $screenTranslation->applyTranslations($screenArray, $language);
 
         return $translatedConfig;
     }

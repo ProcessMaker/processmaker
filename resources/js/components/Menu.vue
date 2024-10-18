@@ -48,6 +48,7 @@
       <div v-if="!sectionRight"
         class="text-right">
           <language-selector-button
+            id="language-screen-builder"
             class="ml-2"
             :type="'screen-builder'"
             :show-language-code="false">

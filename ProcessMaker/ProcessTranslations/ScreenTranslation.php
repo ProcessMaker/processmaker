@@ -16,12 +16,14 @@ class ScreenTranslation extends TranslationManager
     /**
      * Apply translations to a screen.
      * @param array $screen
+     * @param string $defaultLanguage
      * @return array
      */
-    public function applyTranslations($screen)
+    public function applyTranslations($screen, $defaultLanguage = '')
     {
         $config = $screen['config'];
-        $language = $this->getTargetLanguage();
+        $language = $this->getTargetLanguage($defaultLanguage);
+
         return $this->searchTranslations($screen['screen_id'], $config, $language);
     }
 
@@ -35,6 +37,7 @@ class ScreenTranslation extends TranslationManager
     {
         $mustacheEngine = new MustacheExpressionEvaluator();
         $configEvaluated = $mustacheEngine->render(json_encode($screenConfig), $data);
+
         return json_decode($configEvaluated, true);
     }
 
@@ -51,6 +54,7 @@ class ScreenTranslation extends TranslationManager
         foreach ($screens as $screen) {
             $screensArr[] = $this->getStringsByScreen($screen);
         }
+
         return collect($screensArr)->forget('config');
     }
 
@@ -67,6 +71,7 @@ class ScreenTranslation extends TranslationManager
         foreach ($screens as $screen) {
             $screensArr[] = $this->getStringsByScreen($screen);
         }
+
         return collect($screensArr)->forget('config');
     }
 
