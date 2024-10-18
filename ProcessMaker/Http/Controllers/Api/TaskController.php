@@ -344,6 +344,7 @@ class TaskController extends Controller
         $groups = $request->input('groups');
         $userIds = GroupMember::whereIn('group_id', $groups)
             ->where('member_type', User::class)
+            ->where('member_id', '!=', auth()->user()->id)
             ->pluck('member_id')
             ->toArray();
 
@@ -354,6 +355,7 @@ class TaskController extends Controller
         if ($subGroups->count()) {
             $userIds = array_merge($userIds, GroupMember::whereIn('group_id', $subGroups)
                 ->where('member_type', User::class)
+                ->where('member_id', '!=', auth()->user()->id)
                 ->pluck('member_id')
                 ->toArray());
         }
