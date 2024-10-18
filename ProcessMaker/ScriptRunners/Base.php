@@ -37,14 +37,14 @@ abstract class Base
     /**
      * Set the user to run this script as
      *
-     * @var \ProcessMaker\Models\User
+     * @var User
      */
     private $user;
 
     /**
      * Set the script executor
      *
-     * @var \ProcessMaker\Models\ScriptExecutor
+     * @var ScriptExecutor
      */
     private $scriptExecutor;
 
@@ -60,10 +60,10 @@ abstract class Base
      * @param array $data
      * @param array $config
      * @param int $timeout
-     * @param \ProcessMaker\Models\User $user
+     * @param User $user
      *
      * @return array
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function run($code, array $data, array $config, $timeout, ?User $user)
     {
@@ -82,6 +82,7 @@ abstract class Base
             $accessToken = Cache::remember('script-runner-' . $user->id, $expires, function () use ($user) {
                 $user->removeOldRunScriptTokens();
                 $token = new GenerateAccessToken($user);
+
                 return $token->getToken();
             });
             $environmentVariables[] = 'API_TOKEN=' . (!$isNayra ? escapeshellarg($accessToken) : $accessToken);
@@ -93,6 +94,7 @@ abstract class Base
         // Nayra Executor
         if ($isNayra) {
             $response = $this->handleNayraDocker($code, $data, $config, $timeout, $environmentVariables);
+
             return json_decode($response, true);
         }
 
@@ -104,6 +106,7 @@ abstract class Base
 
         // Set docker shared memory size
         $parameters .= ' --shm-size=' . env('DOCKER_SHARED_MEMORY', '256m');
+        $parameters .= ' --platform linux/amd64 ';
 
         // Add any custom parameters specified in the config file
         $parameters .= ' ' . config('app.processmaker_scripts_docker_params');
