@@ -49,7 +49,17 @@ class Comment extends ProcessMakerModel
     use SoftDeletes;
 
     protected $fillable = [
-        'user_id', 'parent_id', 'group_id', 'group_name', 'commentable_id', 'commentable_type', 'subject', 'body', 'hidden', 'type',
+        'user_id',
+        'parent_id',
+        'group_id',
+        'group_name',
+        'commentable_id',
+        'commentable_type',
+        'subject',
+        'body',
+        'hidden',
+        'type',
+        'case_number',
     ];
 
     protected $casts = [

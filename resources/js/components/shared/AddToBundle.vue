@@ -47,7 +47,7 @@ const save = (event) => {
       :state="!error"
       >
       <BackendSelect
-        url="devlink/local-bundles"
+        url="devlink/local-bundles?editable=true"
         value-field="id"
         text-field="name"
         v-model="selected"
