@@ -874,6 +874,7 @@
             const response = await ProcessMaker.apiClient.get("comments-by-case", {
               params: {
                 type: "COMMENT,REPLY",
+                order_direction: "desc",
                 case_number: task?.process_request?.case_number,
               },
             });
