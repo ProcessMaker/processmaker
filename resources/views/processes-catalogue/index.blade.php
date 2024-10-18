@@ -30,7 +30,7 @@
       Js::from(\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled())
     }};
     window.ProcessMaker.permission = {{
-      Js::from(\Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'projects'))
+      Js::from(\Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'projects', 'documentation'))
     }};
   </script>
   @foreach($manager->getScripts() as $script)
