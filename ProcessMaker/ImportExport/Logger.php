@@ -16,9 +16,9 @@ class Logger
 
     private $warnings = [];
 
-    private int $totalSteps = 0;
+    private int $totalSteps = 1;
 
-    private int $currentStep = 0;
+    private int $currentStep = 1;
 
     public function __construct($userId = null)
     {
