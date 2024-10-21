@@ -123,7 +123,12 @@ class CaseUtils
      */
     public static function storeTasks(Collection $tasks, ?array $taskData = []): Collection
     {
-        if (in_array($taskData['element_type'], self::ALLOWED_ELEMENT_TYPES) && !empty($taskData) && array_key_exists('id', $taskData) && array_key_exists('element_id', $taskData) && array_key_exists('name', $taskData) && array_key_exists('process_id', $taskData)) {
+        $requiredKeys = ['id', 'element_id', 'name', 'process_id', 'element_type'];
+
+        if (
+            !empty($taskData) && !array_diff($requiredKeys, array_keys($taskData))
+            && in_array($taskData['element_type'], self::ALLOWED_ELEMENT_TYPES)
+        ) {
             unset($taskData['element_type']);
             $tasks->push($taskData);
         }
