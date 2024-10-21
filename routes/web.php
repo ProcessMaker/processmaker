@@ -147,7 +147,7 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
         ->middleware('no-cache');
     Route::get('cases/{case_number}', [CasesController::class, 'show'])
         ->where('case_number', '[0-9]+')
-        ->name('cases.edit')
+        ->name('cases.show')
         ->middleware('no-cache');
 
     // Requests
