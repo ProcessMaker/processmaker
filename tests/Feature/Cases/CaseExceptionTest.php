@@ -147,5 +147,40 @@ class CaseExceptionTest extends TestCase
             ->assertExitCode(0);
 
         $this->assertDatabaseCount('cases_started', 2);
+        $this->assertDatabaseHas('cases_started', [
+            'case_number' => $this->instance->case_number,
+            'user_id' => $this->user->id,
+            'case_title' => $this->instance->case_title,
+            'case_status' => 'IN_PROGRESS',
+            'processes->[0]->id' => $this->process->id,
+            'processes->[0]->name' => $this->process->name,
+            'requests->[0]->id' => $this->instance->id,
+            'requests->[0]->name' => $this->instance->name,
+            'requests->[0]->parent_request_id' => $this->instance->parent_request_id ?? 0,
+            'request_tokens->[0]' => $this->token->id,
+            'tasks->[0]->id' => $this->token->id,
+            'tasks->[0]->element_id' => $this->token->element_id,
+            'tasks->[0]->name' => $this->token->element_name,
+            'tasks->[0]->process_id' => $this->token->process_id,
+            'participants->[0]' => $this->user->id,
+        ]);
+
+        $this->assertDatabaseHas('cases_started', [
+            'case_number' => $this->instance2->case_number,
+            'user_id' => $this->user->id,
+            'case_title' => $this->instance2->case_title,
+            'case_status' => 'IN_PROGRESS',
+            'processes->[0]->id' => $this->process->id,
+            'processes->[0]->name' => $this->process->name,
+            'requests->[0]->id' => $this->instance2->id,
+            'requests->[0]->name' => $this->instance2->name,
+            'requests->[0]->parent_request_id' => $this->instance2->parent_request_id ?? 0,
+            'request_tokens->[0]' => $this->token2->id,
+            'tasks->[0]->id' => $this->token2->id,
+            'tasks->[0]->element_id' => $this->token2->element_id,
+            'tasks->[0]->name' => $this->token2->element_name,
+            'tasks->[0]->process_id' => $this->token2->process_id,
+            'participants->[0]' => $this->user->id,
+        ]);
     }
 }

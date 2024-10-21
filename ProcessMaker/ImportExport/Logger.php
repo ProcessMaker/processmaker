@@ -16,6 +16,10 @@ class Logger
 
     private $warnings = [];
 
+    private int $totalSteps = 1;
+
+    private int $currentStep = 1;
+
     public function __construct($userId = null)
     {
         $this->pid = getmypid();
@@ -51,9 +55,14 @@ class Logger
         $this->dispatch('error', $message);
     }
 
+    public function status($message)
+    {
+        $this->dispatch('status', $message);
+    }
+
     public function exception($e)
     {
-        $this->dispatch('error', get_class($e) . ': ' . $e->getMessage());
+        $this->dispatch('error', get_class($e) . ': ' . $e->getMessage() . ' ' . $e->getTraceAsString());
     }
 
     private function dispatch($type, $message, $additionalParams = [])
@@ -71,11 +80,6 @@ class Logger
         $this->warnings[] = $message;
     }
 
-    public function getWarnings()
-    {
-        return $this->warnings;
-    }
-
     private function logToFile($type, $message, $additionalParams = [])
     {
         $params = '';
@@ -84,5 +88,30 @@ class Logger
         }
         $datetime = date('Y-m-d H:i:s');
         Storage::append(ImportV2::LOG_PATH, "[$this->pid] [$this->userId] [$datetime] [$type] $message" . $params);
+    }
+
+    public function setSteps($payloads)
+    {
+        $this->currentStep = 0;
+        $this->totalSteps = 0;
+
+        foreach ($payloads as $payload) {
+            // Multiply by 2 since each has a "saving" and an "associating" stage.
+            $this->totalSteps += count($payload['export']) * 2;
+        }
+    }
+
+    public function setStatus($type, $item = '')
+    {
+        if ($type === 'done') {
+            $this->dispatch('status', 'done', $this->warnings);
+
+            return;
+        }
+
+        $this->status(ucfirst($type) . ' ' . $item);
+        $this->currentStep++;
+
+        $this->dispatch('progress', round(($this->currentStep / $this->totalSteps) * 100));
     }
 }

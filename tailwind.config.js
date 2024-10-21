@@ -10,6 +10,9 @@ module.exports = {
     extend: {},
   },
   plugins: [],
+  corePlugins: {
+    preflight: false,
+  },
   safelist: [
     {
       pattern: /(bg|outline|border|text)-(gray|purple|blue|amber|green|gray|emerald|red)-(100|200|300|400|500)/,

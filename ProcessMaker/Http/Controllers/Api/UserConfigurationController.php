@@ -17,7 +17,7 @@ class UserConfigurationController extends Controller
             'isMenuCollapse' => true,
         ],
         'cases' => [
-            'isMenuCollapse' => true,
+            'isMenuCollapse' => false,
         ],
         'requests' => [
             'isMenuCollapse' => true,

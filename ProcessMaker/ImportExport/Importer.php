@@ -48,7 +48,8 @@ class Importer
 
             $count = count(Arr::where($this->manifest->all(), fn ($exporter) => $exporter->mode !== 'discard'));
             $this->logger->log("Importing {$count} assets");
-            foreach ($this->manifest->all() as $exporter) {
+            foreach ($this->manifest->all() as $uuid => $exporter) {
+                $this->logger->setStatus('saving', $uuid);
                 if ($exporter->mode !== 'discard') {
                     $this->logger->log('Importing ' . get_class($exporter->model));
                     if ($exporter->disableEventsWhenImporting) {
@@ -66,7 +67,8 @@ class Importer
             Schema::enableForeignKeyConstraints();
 
             // Now, run the import method in each Exporter class
-            foreach ($this->manifest->all() as $exporter) {
+            foreach ($this->manifest->all() as $uuid => $exporter) {
+                $this->logger->setStatus('associating', $uuid);
                 if ($exporter->mode !== 'discard') {
                     $this->logger->log('Associating ' . get_class($exporter->model));
                     $exporter->runImport($existingAssetInDatabase, $importingFromTemplate);
