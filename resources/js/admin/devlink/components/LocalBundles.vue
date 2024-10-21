@@ -2,9 +2,7 @@
 import { ref, onMounted, getCurrentInstance, computed } from 'vue';
 import debounce from 'lodash/debounce';
 import Origin from './Origin.vue';
-import VersionCheck from './VersionCheck.vue';
-import EllipsisMenu from '../../../components/shared/EllipsisMenu.vue';
-import InstallProgress from './InstallProgress.vue';
+import BundleModal, { show as showBundleModal, hide as hideBundleModal } from './BundleModal.vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 
 const vue = getCurrentInstance().proxy;
@@ -18,6 +16,8 @@ const confirmUpdateVersion = ref(null);
 const selectedOption = ref('update');
 const showInstallModal = ref(false);
 const filter = ref("");
+const bundleModal = ref(null);
+
 const actions = [
   { value: "increase-item", content: "Increase Version", conditional: "if(not(dev_link_id), true, false)" },
   { value: "update-item", content: "Update Version", conditional: "if(dev_link_id, true, false)" },
@@ -82,8 +82,10 @@ const reset = () => {
 
 const createNewBundle = () => {
   reset();
-  editModal.value.show();
-};
+  if (bundleModal.value) {
+    bundleModal.value.show();
+  }
+}
 
 const onNavigate = (action, data, index) => {
   switch (action.value) {
@@ -112,7 +114,9 @@ const create = () => {
 
 const edit = (bundle) => {
   selected.value = { ...bundle };
-  editModal.value.show();
+  if (bundleModal.value) {
+    bundleModal.value.show();
+  }
 };
 
 const update = () => {
@@ -225,6 +229,8 @@ const deleteWaring = computed(() => {
       <p>{{ deleteWaring }}'</p>
     </b-modal>
 
+    <BundleModal ref="bundleModal" :bundle="selected" @update="update" />
+
     <b-modal
       ref="confirmIncreaseVersion"
       centered
@@ -267,22 +273,6 @@ const deleteWaring = computed(() => {
       </div>
     </b-modal>
 
-    <b-modal
-      ref="editModal"
-      centered
-      content-class="modal-style"
-      :title="selected.id ? $t('Edit Bundle') : $t('Create New Bundle')"
-      @ok="update"
-      :ok-title="$t('Ok')"
-      :cancel-title="$t('Cancel')"
-    >
-      <b-form-group :label="$t('Name')">
-        <b-form-input v-model="selected.name"></b-form-input>
-      </b-form-group>
-      <b-form-group v-if="canEdit(selected)" :label="$t('Published')">
-        <b-form-checkbox v-model="selected.published"></b-form-checkbox>
-      </b-form-group>
-    </b-modal>
     <b-modal id="install-progress" size="lg" v-model="showInstallModal" :title="$t('Installation Progress')" hide-footer>
       <install-progress />
     </b-modal>

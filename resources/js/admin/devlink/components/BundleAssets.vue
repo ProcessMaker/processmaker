@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, getCurrentInstance, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router/composables';
+import BundleModal, { show as showBundleModal, hide as hideBundleModal } from './BundleModal.vue';
 import Header from './Header.vue';
 
 const vue = getCurrentInstance().proxy;
@@ -16,6 +17,37 @@ const fields = [
   { key: 'created_at', label: vue.$t('Created') },
   { key: 'menu', label: '' },
 ];
+const bundleModal = ref(null);
+const bundleAttributes = {
+  id: null,
+  name: '',
+  published: false,
+};
+
+const selectedBundle = ref(bundleAttributes);
+
+const openBundleModalForEdit = (bundle) => {
+  selectedBundle.value = { ...bundle };
+  if (bundleModal.value) {
+    bundleModal.value.show();
+  }
+};
+
+const update = () => {
+  if (selectedBundle.value.id === null) {
+    return;
+  }
+  ProcessMaker.apiClient
+    .put(`/devlink/local-bundles/${selectedBundle.value.id}`, selectedBundle.value)
+    .then((result) => {
+      loadAssets();
+    });
+};
+
+const updateBundle = (bundle) => {
+  selectedBundle.value = bundle;
+  update();
+};
 
 const computedFields = computed(() => {
   if (bundle.value.dev_link_id === null) {
@@ -54,7 +86,36 @@ const remove = async (asset) => {
     {{ $t("Loading...") }}
   </div>
   <div v-else>
-    <Header back="local-bundles">{{ bundle.name }} {{ $t("Assets") }}</Header>
+    <div class="row">
+      <div class="col">
+        <Header back="local-bundles">
+          {{ bundle.name }} {{ $t("Assets") }}
+        </Header>
+      </div>
+      <div class="col">
+        <div class="header">
+          <div class="header-right">
+            <b-button
+              v-if="bundle.dev_link_id !== null"
+              class="btn text-secondary icon-button"
+              variant="light"
+              :aria-label="$t('Edit Bundle')"
+              v-b-tooltip.hover
+              :title="$t('Edit Bundle')"
+              @click.prevent="openBundleModalForEdit(bundle)"
+            >
+              <i class="fas fa-edit" />
+            </b-button>
+
+            <b-button
+              variant="primary"
+              class="install-btn">
+              <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>{{ $t('Reinstall this Bundle') }}
+            </b-button>
+          </div>
+        </div>
+  </div>
+</div>   
     <div v-if="bundle.assets.length" class="card instance-card">
       <b-table
         :items="bundle.assets"
@@ -77,9 +138,65 @@ const remove = async (asset) => {
     <div v-else>
       No assets found in this bundle.
     </div>
+    <BundleModal ref="bundleModal" :bundle="selectedBundle" @update="updateBundle"/>
   </div>
 </template>
 
+<style scoped>
+.header {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  padding: 10px 0px;
+  background-color: white;
+  margin-right: 10px;
+}
+
+.header-left h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.header-right {
+  display: flex;
+  gap: 10px;
+}
+
+.edit-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.install-btn {
+  text-transform: none;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.install-btn i {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.install-btn:hover {
+  background-color: #0056b3;
+}
+
+.assets-btn {
+  background-color: white;
+  color: #007bff;
+  border: 1px solid #007bff;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.assets-btn:hover {
+  background-color: #f1f1f1;
+}
+</style>
 <style lang="scss" scoped>
 @import "styles/components/table";
 h3 {

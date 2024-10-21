@@ -11,7 +11,7 @@ const props = defineProps({
 
 <template>
   <div class="d-flex align-items-center mb-2 mt-2">
-    <a
+      <a
       class="float-left pr-3"
       style="font-size: 1.5em;"
       href="#"
@@ -22,9 +22,9 @@ const props = defineProps({
         aria-hidden="true"
       ></i>
     </a>
-    <h3>
-      <slot></slot>
-    </h3>
+      <h3>
+        <slot></slot>
+      </h3>
   </div>
 </template>
 
