@@ -32,7 +32,6 @@ const addSharedAsset = async (type) => {
       config: type.class,
       name: type.name,
     });
-    console.log('Asset added:', response.data);
     load();
   } catch (error) {
     console.error('Error adding asset:', error);
@@ -42,7 +41,6 @@ const addSharedAsset = async (type) => {
 const removeSharedAsset = async (assetId) => {
   try {
     const response = await ProcessMaker.apiClient.delete(`/devlink/remove-shared-asset/${assetId}`);
-    console.log('Asset removed:', response.data);
     load();
   } catch (error) {
     console.error('Error removing asset:', error);
