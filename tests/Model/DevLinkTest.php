@@ -81,7 +81,7 @@ class DevLinkTest extends TestCase
         $devLink = DevLink::factory()->create([
             'url' => 'http://remote-instance.test',
         ]);
-        $devLink->installRemoteBundle(123);
+        $devLink->installRemoteBundle(123, 'update');
 
         $bundle = Bundle::where('remote_id', 123)->first();
         $this->assertEquals('Test Bundle', $bundle->name);
