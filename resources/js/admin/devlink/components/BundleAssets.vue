@@ -2,9 +2,11 @@
 import { ref, onMounted, getCurrentInstance, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 import BundleModal, { show as showBundleModal, hide as hideBundleModal } from './BundleModal.vue';
+import Header from './Header.vue';
 
 const vue = getCurrentInstance().proxy;
 const route = useRoute();
+const router = useRouter();
 const bundleId = route.params.id;
 const bundle = ref({});
 const loading = ref(true);
@@ -84,31 +86,37 @@ const remove = async (asset) => {
     {{ $t("Loading...") }}
   </div>
   <div v-else>
-    <div class="header">
-      <div class="header-left">
-        <h2>{{ bundle.name }} {{ $t("Assets") }}</h2>
+    <div class="row">
+      <div class="col">
+        <Header back="local-bundles">
+          {{ bundle.name }} {{ $t("Assets") }}
+        </Header>
       </div>
-      <div class="header-right">
-        <b-button
-          v-if="bundle.dev_link_id === null"
-          class="btn text-secondary icon-button"
-          variant="light"
-          :aria-label="$t('Edit Bundle')"
-          v-b-tooltip.hover 
-          :title="$t('Edit Bundle')"
-          @click.prevent="openBundleModalForEdit(bundle)"
-        >
-          <i class="fas fa-edit" />
-        </b-button>
-       
-        <b-button
-          variant="primary"
-          class="install-btn">
-          <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>{{ $t('Reinstall this Bundle') }}
-        </b-button>
-      </div>
-    </div>
-    <div v-if="bundle.assets.length">
+      <div class="col">
+        <div class="header">
+          <div class="header-right">
+            <b-button
+              v-if="bundle.dev_link_id === null"
+              class="btn text-secondary icon-button"
+              variant="light"
+              :aria-label="$t('Edit Bundle')"
+              v-b-tooltip.hover
+              :title="$t('Edit Bundle')"
+              @click.prevent="openBundleModalForEdit(bundle)"
+            >
+              <i class="fas fa-edit" />
+            </b-button>
+
+            <b-button
+              variant="primary"
+              class="install-btn">
+              <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>{{ $t('Reinstall this Bundle') }}
+            </b-button>
+          </div>
+        </div>
+  </div>
+</div>   
+    <div v-if="bundle.assets.length" class="card instance-card">
       <b-table
         :items="bundle.assets"
         :fields="computedFields"
@@ -137,11 +145,11 @@ const remove = async (asset) => {
 <style scoped>
 .header {
   display: flex;
-  justify-content: space-between;
+  justify-content: end;
   align-items: center;
   padding: 10px 0px;
   background-color: white;
-  border-bottom: 1px solid #e0e0e0;
+  margin-right: 10px;
 }
 
 .header-left h2 {
@@ -188,5 +196,14 @@ const remove = async (asset) => {
 .assets-btn:hover {
   background-color: #f1f1f1;
 }
-
+</style>
+<style lang="scss" scoped>
+@import "styles/components/table";
+h3 {
+  font-size: 1.4em;
+}
+.instance-card {
+  border-radius: 8px;
+  min-height: calc(-355px + 100vh);
+}
 </style>

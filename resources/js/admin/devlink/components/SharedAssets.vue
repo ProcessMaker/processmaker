@@ -62,7 +62,7 @@ const updateEnabled = (type) => {
 const fields = [
   {
     key: 'name',
-    label: vue.$t('Name')
+    label: vue.$t('Type')
   },
   {
     key: 'option',
@@ -99,29 +99,7 @@ const fields = [
 </template>
 
 <style lang="scss" scoped>
-::v-deep .table {
-  border-bottom: 1px solid #e9edf1;
-}
-::v-deep .table > thead > tr > th {
-  border-top: none;
-  background-color: #FBFBFC;
-  border-right: 1px solid rgba(0, 0, 0, 0.125);
-  color: #4E5663;
-  font-weight: 600;
-  font-size: 14px;
-}
-::v-deep .table > tbody > tr > td {
-  color: #4E5663;
-  font-size: 14px;
-  font-weight: 400;
-}
-::v-deep .table > thead > tr > th:last-child {
-  border-right: none !important;
-  border-top-right-radius: 8px;
-}
-::v-deep .table > thead > tr > th:first-child {
-  border-top-left-radius: 8px;
-}
+@import 'styles/components/table';
 .shared-assets-card {
     border-radius: 8px;
     min-height: calc(-355px + 100vh);
