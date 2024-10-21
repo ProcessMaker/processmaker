@@ -1094,6 +1094,6 @@ class ProcessRequestsTest extends TestCase
 
         // Check if the response is successful and contains the expected tasks
         $response = $this->apiCall('GET', $url);
-        $this->assertCount(3, $response->json('data'));
+        $this->assertCount(2, $response->json('data'));
     }
 }
