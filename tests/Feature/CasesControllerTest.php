@@ -23,12 +23,12 @@ class CasesControllerTest extends TestCase
         ]);
 
         // Create request child
-        $childRequest = ProcessRequest::factory()->create([
+        ProcessRequest::factory()->create([
             'parent_request_id' => $parentRequest->id,
         ]);
 
         // Call the view
-        $response = $this->get(route('cases.edit', ['case_number' => $parentRequest->case_number]));
+        $response = $this->get(route('cases.show', ['case_number' => $parentRequest->case_number]));
 
         // Check the status
         $response->assertStatus(200);
