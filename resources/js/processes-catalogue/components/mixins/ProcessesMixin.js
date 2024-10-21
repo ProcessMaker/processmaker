@@ -69,6 +69,8 @@ const ProcessHeader = {
         "create-pm-blocks",
         "create-process-templates",
         "view-projects",
+        "view-documentation",
+        "edit-documentation",
       ];
       this.showEllipsis = this.$root.permission.some( (permission) => permissionsNeeded.includes(permission));
     },

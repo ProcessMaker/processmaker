@@ -704,6 +704,7 @@ class ScreenTemplate implements TemplateInterface
 
             // Get the current screen and screen page
             $screenId = $request->get('screenId');
+            $screen = Screen::where('id', $screenId)->firstOrFail();
             $currentScreenPage = $request->get('currentScreenPage');
 
             if (hasPackage('package-versions')) {
@@ -723,6 +724,7 @@ class ScreenTemplate implements TemplateInterface
                     $this->applyTemplateOption($option, $supportedOptionComponents, $template,
                         $newTemplateScreen, $screen, $templateOptions, $currentScreenPage);
                 }
+
                 $screen->save(); // Save the updated screen
             }
             Screen::where('id', $newScreenId)->delete(); // Clean up the temporary imported template screen

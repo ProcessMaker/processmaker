@@ -10,7 +10,7 @@
 
 @section('breadcrumbs')
   @include('shared.breadcrumbs', ['routes' => [
-      __('Cases') => route('cases.index'),
+      __('Cases') => route('cases-main.index'),
       $request->case_title . ' #' . $request->case_number => null,
   ]])
 @endsection
@@ -125,6 +125,10 @@
     const comentable_type = @json(get_class($request));
   </script>
   <script src="{{mix('js/composition/cases/casesDetail/edit.js')}}"></script>
+
+  @foreach($manager->getScripts() as $script)
+    <script src="{{$script}}"></script>
+  @endforeach
 @endsection
 
 @section('css')

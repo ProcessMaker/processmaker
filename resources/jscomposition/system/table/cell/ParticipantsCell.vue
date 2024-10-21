@@ -10,6 +10,7 @@
         <AppAvatar
           :class="`tw-bg-gray-500`"
           :initials="initials(participant, row, column, columns) || ''"
+          :src="src(participant, row, column, columns)"
           class="tw-cursor-pointer"
           @click="onClick(participant)" />
         <template #content>
@@ -70,6 +71,10 @@ export default defineComponent({
       default: new Function(),
     },
     initials: {
+      type: Function,
+      default: new Function(),
+    },
+    src: {
       type: Function,
       default: new Function(),
     },
