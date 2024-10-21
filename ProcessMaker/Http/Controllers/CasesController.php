@@ -32,6 +32,9 @@ class CasesController extends Controller
      */
     public function edit($case_number)
     {
+        // Load event ScreenBuilderStarting
+        $manager = app(ScreenBuilderManager::class);
+        event(new ScreenBuilderStarting($manager, 'FORM'));
         // Get all the request related to this case number
         $allRequests = ProcessRequest::where('case_number', $case_number)->get();
         $parentRequest = null;
@@ -70,6 +73,7 @@ class CasesController extends Controller
             'canViewComments',
             'canPrintScreens',
             'isProcessManager',
+            'manager'
         ));
     }
 
