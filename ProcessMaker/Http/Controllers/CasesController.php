@@ -3,7 +3,9 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Package\PackageComments\PackageServiceProvider;
 use ProcessMaker\ProcessTranslations\ScreenTranslation;
@@ -30,7 +32,7 @@ class CasesController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function edit($case_number)
+    public function show($case_number)
     {
         // Load event ScreenBuilderStarting
         $manager = app(ScreenBuilderManager::class);
