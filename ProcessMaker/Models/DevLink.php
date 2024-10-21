@@ -107,7 +107,7 @@ class DevLink extends ProcessMakerModel
         );
     }
 
-    public function installRemoteBundle($bundleId)
+    public function installRemoteBundle($bundleId, $updateType)
     {
         if (!$this->logger) {
             $this->logger = new Logger();
@@ -129,7 +129,6 @@ class DevLink extends ProcessMakerModel
             [
                 'name' => $bundleInfo['name'],
                 'published' => $bundleInfo['published'],
-                'locked' => $bundleInfo['locked'],
                 'version' => $bundleInfo['version'],
             ]
         );
@@ -137,22 +136,30 @@ class DevLink extends ProcessMakerModel
         $this->logger->status('Installing bundle on the this instance');
         $this->logger->setSteps($bundleExport['payloads']);
 
+        $options = [
+            'mode' => $updateType,
+            'saveAssetsMode' => 'saveAllAssets',
+            'isTemplate' => false,
+        ];
         $assets = [];
         foreach ($bundleExport['payloads'] as $payload) {
-            $assets[] = $this->import($payload);
+            $assets[] = $this->import($payload, $options);
         }
 
-        $this->logger->status('Syncing bundle assets');
-        $bundle->syncAssets($assets);
+        if ($updateType === 'update') {
+            $this->logger->status('Syncing bundle assets');
+            $bundle->syncAssets($assets);
+        }
 
         $this->logger->addWarning('Test warning message');
 
         $this->logger->setStatus('done');
     }
 
-    private function import(array $payload)
+    private function import(array $payload, $options = null)
     {
-        $importer = new Importer($payload, new Options([]), $this->logger);
+        $options = $options === null ? new Options([]) : new Options($options);
+        $importer = new Importer($payload, $options, $this->logger);
         $manifest = $importer->doImport();
 
         return $manifest[$payload['root']]->model;

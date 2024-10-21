@@ -13,6 +13,14 @@ const bundles = ref([]);
 const filter = ref("");
 const warnings = ref([]);
 const showInstallModal = ref(false);
+const confirmUpdateVersion = ref(null);
+const selectedOption = ref('update');
+const bundleAttributes = {
+  id: null,
+  name: '',
+  published: false,
+};
+const selected = ref(bundleAttributes);
 const fields = [
   {
     key: 'name',
@@ -48,6 +56,11 @@ const closeModal = () => {
   $("#warningsModal").modal("hide");
 };
 
+const updateVersionBundle = (bundle) => {
+  selected.value = bundle;
+  confirmUpdateVersion.value.show();
+};
+
 const load = () => {
   ProcessMaker.apiClient
     .get(`/devlink/${route.params.id}/remote-bundles?filter=${filter.value}`)
@@ -79,6 +92,16 @@ const install = (bundle) => {
     }
   });
 };
+const executeUpdate = (updateType) => {
+  showInstallModal.value = true;
+  ProcessMaker.apiClient
+    .post(`/devlink/${route.params.id}/remote-bundles/${selected.value.id}/install`, {
+      updateType,
+    })
+    .then((response) => {
+      // Handle the response as needed
+    });
+};
 
 </script>
 
@@ -100,7 +123,7 @@ const install = (bundle) => {
           <div class="btn-menu-container">
             <button
               class="btn install-bundle-btn"
-              @click.prevent="install(data.item)"
+              @click.prevent="updateVersionBundle(data.item)"
             >
               <i class="fp-cloud-download-outline"></i>
             </button>
@@ -128,6 +151,37 @@ const install = (bundle) => {
         </div>
       </div>
     </div>
+    <b-modal
+      ref="confirmUpdateVersion"
+      centered
+      size="lg"
+      content-class="modal-style"
+      :title="$t('Update Bundle Version')"
+      :ok-title="$t('Continue')"
+      :cancel-title="$t('Cancel')"
+      @ok="executeUpdate(selectedOption)"
+    >
+      <div>
+        <p class="mb-4">Select how you want to update the bundle <strong>Testing Processes and Assets</strong></p>
+
+        <b-form-group>
+          <b-form-radio-group v-model="selectedOption" name="bundleUpdateOptions">
+            <b-form-radio
+              class="mb-4"
+              value="update"
+            >
+              {{ $t('Quick Update') }}
+              <p class="text-muted">{{ $t('The current bundle will be replaced completely for the new version immediately.') }}</p>
+            </b-form-radio>
+
+            <b-form-radio value="copy">
+              {{ $t('Copy Changes') }}
+              <p class="text-muted">{{ $t('Copy and update bundle.') }}</p>
+            </b-form-radio>
+          </b-form-radio-group>
+        </b-form-group>
+      </div>
+    </b-modal>
     <b-modal id="install-progress" size="lg" v-model="showInstallModal" :title="$t('Installation Progress')" hide-footer>
       <install-progress />
     </b-modal>

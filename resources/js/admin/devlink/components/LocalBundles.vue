@@ -4,6 +4,7 @@ import debounce from 'lodash/debounce';
 import Origin from './Origin.vue';
 import VersionCheck from './VersionCheck.vue';
 import EllipsisMenu from '../../../components/shared/EllipsisMenu.vue';
+import InstallProgress from './InstallProgress.vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 
 const vue = getCurrentInstance().proxy;
@@ -14,6 +15,8 @@ const editModal = ref(null);
 const confirmDeleteModal = ref(null);
 const confirmIncreaseVersion = ref(null);
 const confirmUpdateVersion = ref(null);
+const selectedOption = ref('update');
+const showInstallModal = ref(false);
 const filter = ref("");
 const actions = [
   { value: "increase-item", content: "Increase Version", conditional: "if(not(dev_link_id), true, false)" },
@@ -162,8 +165,15 @@ const executeDelete = () => {
     });
 };
 
-const executeUpdate = () => {
-  return null;
+const executeUpdate = (updateType) => {
+  showInstallModal.value = true;
+  ProcessMaker.apiClient
+    .post(`/devlink/${selected.value.dev_link_id}/remote-bundles/${selected.value.remote_id}/install`, {
+      updateType,
+    })
+    .then((response) => {
+      // Handle the response as needed
+    });
 };
 
 // Debounced function
@@ -200,8 +210,8 @@ const deleteWaring = computed(() => {
           @click="createNewBundle"
           class="new-button"
         >
-        <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>
-        {{ $t('Create Bundle') }}
+          <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>
+          {{ $t('Create Bundle') }}
         </b-button>
       </div>
     </div>
@@ -228,25 +238,29 @@ const deleteWaring = computed(() => {
     <b-modal
       ref="confirmUpdateVersion"
       centered
+      size="lg"
       content-class="modal-style"
       :title="$t('Update Bundle Version')"
       :ok-title="$t('Continue')"
       :cancel-title="$t('Cancel')"
-      @ok="executeUpdate"
+      @ok="executeUpdate(selectedOption)"
     >
       <div>
-        <p>Select how you want to update the bundle <strong>Testing Processes and Assets</strong></p>
+        <p class="mb-4">Select how you want to update the bundle <strong>Testing Processes and Assets</strong></p>
 
         <b-form-group>
           <b-form-radio-group v-model="selectedOption" name="bundleUpdateOptions">
-            <b-form-radio value="quick-update">
-              Quick Update
-              <p class="text-muted">The current bundle will be replaced completely for the new version immediately.</p>
+            <b-form-radio
+              class="mb-4"
+              value="update"
+            >
+              {{ $t('Quick Update') }}
+              <p class="text-muted">{{ $t('The current bundle will be replaced completely for the new version immediately.') }}</p>
             </b-form-radio>
 
-            <b-form-radio value="review-changes">
-              Review changes in bundle
-              <p class="text-muted">Check and compare the changes before updating the bundle.</p>
+            <b-form-radio value="copy">
+              {{ $t('Copy Changes') }}
+              <p class="text-muted">{{ $t('Copy and update bundle.') }}</p>
             </b-form-radio>
           </b-form-radio-group>
         </b-form-group>
@@ -269,13 +283,16 @@ const deleteWaring = computed(() => {
         <b-form-checkbox v-model="selected.published"></b-form-checkbox>
       </b-form-group>
     </b-modal>
+    <b-modal id="install-progress" size="lg" v-model="showInstallModal" :title="$t('Installation Progress')" hide-footer>
+      <install-progress />
+    </b-modal>
     <div class="card local-bundles-card">
       <b-table
         hover
         class="clickable"
-        @row-clicked="goToBundleAssets"
         :items="bundles"
         :fields="fields"
+        @row-clicked="goToBundleAssets"
       >
         <template #cell(name)="data">
           {{ data.item.name }}

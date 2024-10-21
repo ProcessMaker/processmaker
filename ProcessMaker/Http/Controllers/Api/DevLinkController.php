@@ -167,11 +167,12 @@ class DevLinkController extends Controller
 
     public function installRemoteBundle(Request $request, DevLink $devLink, $remoteBundleId)
     {
+        $updateType = $request->input('updateType', 'update');
         DevLinkInstall::dispatch(
             $request->user()->id,
             $devLink->id,
             $remoteBundleId,
-            'update'
+            $updateType
         );
     }
 

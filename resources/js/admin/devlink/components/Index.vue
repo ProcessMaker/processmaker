@@ -168,14 +168,6 @@ const urlIsValid = computed(() => {
         </b-button>
       </div>
     </div>
-    <b-modal
-      ref="confirmDeleteModal"
-      centered
-      title="Delete DevLink"
-      @ok="executeDelete"
-    >
-      <p>Are you sure you want to delete {{ selected?.name }}?</p>
-    </b-modal>
 
     <b-modal
       id="create"
