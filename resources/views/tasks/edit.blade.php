@@ -306,6 +306,7 @@
                             :name="task.element_name"
                             :header="false"
                             :case_number="task.process_request.case_number"
+                            :get-data="getCommentsData"
                           />
                         </template>
                       </div>
@@ -879,6 +880,17 @@
           },
           onInput(filter) {
             this.getUsers(filter);
+          },
+          getCommentsData: async () => {
+            const response = await ProcessMaker.apiClient.get("comments-by-case", {
+              params: {
+                type: "COMMENT,REPLY",
+                order_direction: "desc",
+                case_number: task?.process_request?.case_number,
+              },
+            });
+
+            return response;
           },
           setAssignedUsers(definition) {
             // If a group is used, get all the users in that group, nested groups and merge with assignedUsers if applicable 
