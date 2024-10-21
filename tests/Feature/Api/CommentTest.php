@@ -229,7 +229,7 @@ class CommentTest extends TestCase
      *
      * @return void
      */
-    public function test_index_case_requires_case_number()
+    public function testIndexCaseRequiresCaseNumber()
     {
         // Call the endpoint without the 'case_number' parameter
         $response = $this->apiCall('GET', self::API_COMMENT_BY_CASE);
@@ -296,5 +296,73 @@ class CommentTest extends TestCase
         // Check if the response is successful and contains the expected tasks
         $response->assertStatus(200);
         $this->assertCount(8, $response->json('data'));
+    }
+
+    /**
+     * Test comments by case with pagination
+     */
+    public function testGetCommentByTypeByCasePagination()
+    {
+        $this->user = User::factory()->create([
+            'password' => Hash::make('password'),
+            'is_administrator' => false,
+        ]);
+        // Create a request1 then a task related to the request
+        $request1 = ProcessRequest::factory()->create();
+        $task1 = ProcessRequestToken::factory()->create([
+            'user_id' => $this->user->getKey(),
+            'process_request_id' => $request1->getKey(),
+        ]);
+        Comment::factory()->count(2)->create([
+            'commentable_id' => $request1->getKey(),
+            'commentable_type' => get_class($request1),
+            'case_number' => $request1->case_number,
+            'type' => 'LOG',
+            'hidden' => false,
+        ]);
+        Comment::factory()->count(2)->create([
+            'commentable_id' => $task1->getKey(),
+            'commentable_type' => get_class($task1),
+            'case_number' => $request1->case_number,
+            'type' => 'LOG',
+            'hidden' => false,
+        ]);
+        // Create a request2 with the same case_number then a task related to the request
+        $request2 = ProcessRequest::factory()->create([
+            'parent_request_id' => $request1->getKey(),
+        ]);
+        $task2 = ProcessRequestToken::factory()->create([
+            'user_id' => $this->user->getKey(),
+            'process_request_id' => $request2->getKey(),
+        ]);
+        Comment::factory()->count(2)->create([
+            'commentable_id' => $request2->getKey(),
+            'commentable_type' => get_class($request2),
+            'case_number' => $request1->case_number,
+            'type' => 'LOG',
+            'hidden' => false,
+        ]);
+        Comment::factory()->count(2)->create([
+            'commentable_id' => $task2->getKey(),
+            'commentable_type' => get_class($task2),
+            'case_number' => $request1->case_number,
+            'type' => 'LOG',
+            'hidden' => false,
+        ]);
+        // Call the endpoint with the 'case_number' parameter page 1
+        $filter = "?case_number=$request1->case_number&page=1&per_page=5";
+        $response = $this->apiCall('GET', self::API_COMMENT_BY_CASE . $filter);
+
+        // Check if the response is successful and contains the expected tasks
+        $response->assertStatus(200);
+        $this->assertCount(5, $response->json('data'));
+
+        // Call the endpoint with the 'case_number' parameter page 2
+        $filter = "?case_number=$request1->case_number&page=2&per_page=5";
+        $response = $this->apiCall('GET', self::API_COMMENT_BY_CASE . $filter);
+
+        // Check if the response is successful and contains the expected tasks
+        $response->assertStatus(200);
+        $this->assertCount(3, $response->json('data'));
     }
 }
