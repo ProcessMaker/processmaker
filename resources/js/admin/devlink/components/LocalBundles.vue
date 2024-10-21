@@ -2,6 +2,8 @@
 import { ref, onMounted, getCurrentInstance, computed } from 'vue';
 import debounce from 'lodash/debounce';
 import Origin from './Origin.vue';
+import VersionCheck from './VersionCheck.vue';
+import EllipsisMenu from '../../../components/shared/EllipsisMenu.vue';
 import BundleModal, { show as showBundleModal, hide as hideBundleModal } from './BundleModal.vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 
