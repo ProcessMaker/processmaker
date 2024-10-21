@@ -329,7 +329,7 @@ class TaskController extends Controller
             return abort(422);
         }
     }
-    
+
     public function updateReassign(Request $request)
     {
         $userToAssign = $request->input('user_id');

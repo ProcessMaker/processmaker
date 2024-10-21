@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Package\Translations\Models\Translatable;
 
-class ScreenTranslation
+class ScreenTranslation_old
 {
     protected $screen;
 

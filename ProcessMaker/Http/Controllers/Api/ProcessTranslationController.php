@@ -4,9 +4,8 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
-use ProcessMaker\Facades\ScreenCompiledManager;
-
 use function PHPUnit\Framework\isEmpty;
+use ProcessMaker\Facades\ScreenCompiledManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTranslationToken;
@@ -158,5 +157,4 @@ class ProcessTranslationController extends Controller
             'translations' => $screensTranslations,
         ]);
     }
-
 }

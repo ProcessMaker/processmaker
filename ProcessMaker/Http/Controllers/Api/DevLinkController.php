@@ -152,6 +152,14 @@ class DevLinkController extends Controller
         return $bundle;
     }
 
+    public function increaseBundleVersion(Bundle $bundle)
+    {
+        $bundle->version = $bundle->version + 1;
+        $bundle->saveOrFail();
+
+        return $bundle;
+    }
+
     public function deleteBundle(Bundle $bundle)
     {
         $bundle->delete();
@@ -159,11 +167,12 @@ class DevLinkController extends Controller
 
     public function installRemoteBundle(Request $request, DevLink $devLink, $remoteBundleId)
     {
+        $updateType = $request->input('updateType', 'update');
         DevLinkInstall::dispatch(
             $request->user()->id,
             $devLink->id,
             $remoteBundleId,
-            'update'
+            $updateType
         );
     }
 
@@ -229,6 +238,11 @@ class DevLinkController extends Controller
             $request->input('class'),
             $request->input('id')
         );
+    }
+
+    public function remoteBundleVersion(DevLink $devLink, $remoteBundleId)
+    {
+        return $devLink->remoteBundle($remoteBundleId);
     }
 
     public function deleteBundleAsset(BundleAsset $bundleAsset)

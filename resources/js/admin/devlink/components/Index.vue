@@ -3,6 +3,7 @@ import { ref, onMounted, computed, getCurrentInstance } from 'vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 import debounce from 'lodash/debounce';
 import Status from './Status.vue';
+import EllipsisMenu from '../../../components/shared/EllipsisMenu.vue';
 import { store } from '../common';
 
 const vue = getCurrentInstance().proxy;
@@ -11,6 +12,14 @@ const route = useRoute();
 const devlinks = ref([]);
 const editModal = ref(null);
 const filter = ref("");
+const actions = [
+  { value: "edit-item", content: "Edit" },
+  { value: "delete-item", content: "Delete" },
+];
+const customButton = {
+  icon: "fas fa-ellipsis-v",
+  content: "",
+};
 
 const fields = [
   {
@@ -48,6 +57,17 @@ const load = () => {
     .then((result) => {
       devlinks.value = result.data.data;
     });
+};
+
+const onNavigate = (action, data, index) => {
+  switch (action.value) {
+    case "edit-item":
+      editDevLink(data);
+      break;
+    case "delete-item":
+      deleteDevLink(data);
+      break;
+  }
 };
 
 const clear = () => {
@@ -149,7 +169,15 @@ const urlIsValid = computed(() => {
       </div>
     </div>
 
-    <b-modal id="create" :title="$t('Create new DevLink')" @hidden="clear" @ok="create" :ok-title="$t('Create')" :cancel-title="$t('Cancel')">
+    <b-modal
+      id="create"
+      centered
+      :title="$t('Create new DevLink')"
+      @hidden="clear"
+      @ok="create"
+      :ok-title="$t('Create')"
+      :cancel-title="$t('Cancel')"
+    >
       <b-form-group :label="$t('Name')">
         <b-form-input v-model="newName"></b-form-input>
       </b-form-group>
@@ -162,7 +190,14 @@ const urlIsValid = computed(() => {
       </b-form-group>
     </b-modal>
 
-    <b-modal ref="editModal" :title="$t('Edit DevLink')" @ok="updateDevLink" :ok-title="$t('Ok')" :cancel-title="$t('Cancel')">
+    <b-modal
+      ref="editModal"
+      centered
+      :title="$t('Edit DevLink')"
+      @ok="updateDevLink"
+      :ok-title="$t('Ok')"
+      :cancel-title="$t('Cancel')"
+    >
       <template v-if="selected">
         <b-form-group :label="$t('Name')">
           <b-form-input v-model="selected.name"></b-form-input>
@@ -184,24 +219,13 @@ const urlIsValid = computed(() => {
           <Status :id="data.item.id" />
         </template>
         <template #cell(menu)="data">
-          <div class="btn-menu-container">
-            <div class="btn-group" role="group" aria-label="Basic example">
-              <button
-                type="button"
-                class="btn btn-menu"
-                @click.prevent="editDevLink(data.item)"
-              >
-                <img src="/img/pencil-fill.svg">
-              </button>
-              <button
-                type="button"
-                class="btn btn-menu"
-                @click.prevent="deleteDevLink(data.item)"
-              >
-                <img src="/img/trash-fill.svg">
-              </button>
-            </div>
-          </div>
+          <EllipsisMenu
+            class="ellipsis-devlink"
+            :actions="actions"
+            :data="data.item"
+            :custom-button="customButton"
+            @navigate="onNavigate"
+          />
         </template>
       </b-table>
     </div>

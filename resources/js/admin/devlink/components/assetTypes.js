@@ -28,7 +28,7 @@ export default [
     name: 'Data Connectors',
     url: 'api.data-sources.index',
     class: 'ProcessMaker\\Packages\\Connectors\\DataSources\\Models\\DataSource',
-    icon: 'fp-script-outline',
+    icon: 'fp-copy',
     nameField: 'name',
   },
   {
