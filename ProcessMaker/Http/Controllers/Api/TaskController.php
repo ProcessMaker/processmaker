@@ -324,7 +324,7 @@ class TaskController extends Controller
 
             $taskRefreshed = $task->refresh();
 
-            CaseUpdate::dispatch($task->processRequest, $taskRefreshed);
+            CaseUpdate::dispatchSync($task->processRequest, $taskRefreshed);
 
             return new Resource($taskRefreshed);
         } else {
@@ -344,7 +344,7 @@ class TaskController extends Controller
                 //Reassign to the user.
                 $processRequestToken->reassign($userToAssign, $request->user());
                 $taskRefreshed = $processRequestToken->refresh();
-                CaseUpdate::dispatch($processRequestToken->processRequest, $taskRefreshed);
+                CaseUpdate::dispatchSync($processRequestToken->processRequest, $taskRefreshed);
             }
         }
     }
