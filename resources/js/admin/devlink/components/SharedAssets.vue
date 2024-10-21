@@ -1,7 +1,8 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, getCurrentInstance } from 'vue';
 import types from './assetTypes';
 
+const vue = getCurrentInstance().proxy;
 const assets = ref([]);
 
 onMounted(() => {
@@ -61,7 +62,7 @@ const updateEnabled = (type) => {
 const fields = [
   {
     key: 'name',
-    label: 'Name'
+    label: vue.$t('Name')
   },
   {
     key: 'option',
@@ -83,7 +84,7 @@ const fields = [
         :fields="fields"
       >
         <template #cell(name)="data">
-          <span><i class="fp-folder-outline" style="margin-right: 10px;"></i>{{ data.item.name }}</span>
+          <span><i class="fp-folder-outline" style="margin-right: 10px;"></i>{{ $t(data.item.name) }}</span>
         </template>
         <template #cell(option)="data">
           <b-form-checkbox
