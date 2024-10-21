@@ -25,7 +25,7 @@ class CasesJobTest extends TestCase
             'user_id' => $user->id,
         ]);
 
-        CaseStore::dispatch($instance);
+        CaseStore::dispatchSync($instance);
 
         Queue::assertPushed(CaseStore::class, 1);
     }
@@ -43,7 +43,7 @@ class CasesJobTest extends TestCase
             'process_request_id' => $instance->id,
         ]);
 
-        CaseUpdate::dispatch($instance, $token);
+        CaseUpdate::dispatchSync($instance, $token);
 
         Queue::assertPushed(CaseUpdate::class, 1);
     }
@@ -61,7 +61,7 @@ class CasesJobTest extends TestCase
             'process_request_id' => $instance->id,
         ]);
 
-        CaseUpdateStatus::dispatch($instance, $token);
+        CaseUpdateStatus::dispatchSync($instance, $token);
 
         Queue::assertPushed(CaseUpdateStatus::class, 1);
     }

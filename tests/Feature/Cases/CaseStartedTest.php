@@ -11,7 +11,6 @@ use Tests\TestCase;
 
 class CaseStartedTest extends TestCase
 {
-
     public function test_create_case()
     {
         $user = User::factory()->create();
@@ -382,7 +381,7 @@ class CaseStartedTest extends TestCase
         $repo = new CaseRepository();
         $repo->create($instance);
 
-        $this->assertDatabaseCount('cases_started', 0);
+        $this->assertDatabaseCount('cases_started', 1);
 
         $token = ProcessRequestToken::factory()->create([
             'user_id' => $user->id,
@@ -391,6 +390,6 @@ class CaseStartedTest extends TestCase
         ]);
 
         $repo->update($instance, $token);
-        $this->assertDatabaseCount('cases_started', 0);
+        $this->assertDatabaseCount('cases_started', 1);
     }
 }
