@@ -26,6 +26,7 @@
         <div id="language-selector"
           class="d-flex justify-content-end position-absolute language-button-container">
           <language-selector-button
+            id="language-login"
             :type="'login'">
           </language-selector-button>
         </div>

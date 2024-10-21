@@ -23,7 +23,6 @@ use ProcessMaker\Http\Controllers\Api\ProcessController;
 use ProcessMaker\Http\Controllers\Api\ProcessLaunchpadController;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestFileController;
-use ProcessMaker\Http\Controllers\Api\ProcessTranslationController;
 use ProcessMaker\Http\Controllers\Api\RecommendationsController;
 use ProcessMaker\Http\Controllers\Api\ScreenCategoryController;
 use ProcessMaker\Http\Controllers\Api\ScreenController;
@@ -209,6 +208,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('tasks/{task}/setViewed', [TaskController::class, 'setViewed'])->name('tasks.set_viewed')->middleware('can:viewScreen,task,screen');
     Route::put('tasks/{task}/setPriority', [TaskController::class, 'setPriority'])->name('tasks.priority');
     Route::put('tasks/updateReassign', [TaskController::class, 'updateReassign'])->name('tasks.updateReassign');
+    Route::get('tasks/getAssignedUsersInGroups', [TaskController::class, 'getAssignedUsersInGroups'])->name('tasks.getAssignedUsersInGroups');
 
     // TaskDrafts
     Route::put('drafts/{task}', [TaskDraftController::class, 'update'])->name('taskdraft.update');

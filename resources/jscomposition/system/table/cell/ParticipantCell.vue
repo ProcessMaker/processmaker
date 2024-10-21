@@ -6,6 +6,7 @@
       <AppAvatar
         :class="`tw-bg-gray-500`"
         :initials="initials(row, column, columns) || ''"
+        :src="src(row, column, columns)"
         class="tw-cursor-pointer"
         @click="onClick" />
       <template #content>
@@ -46,6 +47,10 @@ const props = defineProps({
     default: new Function(),
   },
   initials: {
+    type: Function,
+    default: new Function(),
+  },
+  src: {
     type: Function,
     default: new Function(),
   },
