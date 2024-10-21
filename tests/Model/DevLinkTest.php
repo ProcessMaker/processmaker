@@ -71,7 +71,6 @@ class DevLinkTest extends TestCase
                 'id' => 123,
                 'name' => 'Test Bundle',
                 'published' => true,
-                'locked' => false,
                 'version' => '5',
             ]),
             'http://remote-instance.test/api/1.0/devlink/export-local-bundle/123' => Http::response([

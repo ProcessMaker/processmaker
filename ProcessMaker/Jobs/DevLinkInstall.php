@@ -27,7 +27,7 @@ class DevLinkInstall implements ShouldQueue
         public int $userId,
         public int $devLinkId,
         public int $bundleId,
-        public string $importMode = 'update',
+        public string $importMode,
     ) {
     }
 
@@ -43,7 +43,7 @@ class DevLinkInstall implements ShouldQueue
 
         if ($lock->get()) {
             $this->devLink->logger->clear();
-            $this->devLink->installRemoteBundle($this->bundleId);
+            $this->devLink->installRemoteBundle($this->bundleId, $this->importMode);
             $lock->release();
         } else {
             // Don't throw exception because that will unlock the running job
