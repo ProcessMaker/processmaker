@@ -96,7 +96,7 @@ const remove = async (asset) => {
         <div class="header">
           <div class="header-right">
             <b-button
-              v-if="bundle.dev_link_id === null"
+              v-if="bundle.dev_link_id !== null"
               class="btn text-secondary icon-button"
               variant="light"
               :aria-label="$t('Edit Bundle')"
