@@ -52,7 +52,10 @@ import EllipsisMenu from "./EllipsisMenu.vue";
 
 const data = ref(null);
 const columnsConfig = ref(null);
-const filter = ref();
+const filter = ref({
+  field: null,
+  filter: "asc",
+});
 // Placeholder variables
 const showPlaceholder = ref(false);
 const placeholderType = ref("loading");
@@ -75,7 +78,7 @@ const getData = async () => {
       status: "CLOSED",
       includeScreen: 1,
       orderBy: filter.value?.field,
-      order_direction: filter.value?.value,
+      order_direction: filter.value?.filter,
       page: dataPagination.value.page,
       per_page: dataPagination.value.perPage,
     },
@@ -87,9 +90,9 @@ const getData = async () => {
 const setMetaPagination = (meta) => {
   dataPagination.value = {
     total: meta.total,
-    page: meta.currentPage,
-    pages: meta.lastPage,
-    perPage: meta.perPage,
+    page: meta.current_page,
+    pages: meta.last_page,
+    perPage: dataPagination.value.perPage,
   };
 };
 

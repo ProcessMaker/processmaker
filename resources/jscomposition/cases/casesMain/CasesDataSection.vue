@@ -34,6 +34,7 @@
 </template>
 <script setup>
 import { ref, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router/composables";
 import CaseFilter from "./components/CaseFilter.vue";
 import BadgesSection from "./components/BadgesSection.vue";
 import { Pagination } from "../../base";
@@ -58,6 +59,7 @@ const filters = ref([]);
 const table = ref();
 const showPlaceholder = ref(false);
 const placeholderType = ref("loading");
+const route = useRoute();
 
 const dataPagination = ref({
   total: 0,
@@ -82,7 +84,7 @@ const getData = async () => {
     params: {
       pageSize: dataPagination.value.perPage,
       page: dataPagination.value.page,
-      userId: user.id,
+      userId: route.params?.id == "all" ? null : user.id,
       search: search.value || null,
       filterBy: JSON.stringify(formatFilters(filters.value)), // Format filters without sortable
       sortBy: sortFilter ? `${sortFilter.field}:${sortFilter.sortable}` : null,

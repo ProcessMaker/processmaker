@@ -59,10 +59,11 @@ const assignedColumn = () => ({
     component: ParticipantCell,
     params: {
       click: (row, column, columns) => {
-        window.document.location = `/profile/${row.user.id}`;
+        window.document.location = `/profile/${row.user?.id}`;
       },
-      formatter: (row, column, columns) => row.user.fullname,
-      initials: (row, column, columns) => row.user.fullname[0],
+      formatter: (row, column, columns) => row.user?.fullname,
+      initials: (row, column, columns) => row.user?.fullname[0],
+      src: (row, column, columns) => row.user?.avatar,
     },
   }),
 });
