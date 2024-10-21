@@ -148,7 +148,7 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      *
      * @OA\Get(
-     *     path="/users_count_tasks",
+     *     path="/users_task_count",
      *     summary="Returns all users and their total tasks",
      *     operationId="getUsersTaskCount",
      *     tags={"Users"},
@@ -157,6 +157,12 @@ class UserController extends Controller
      *         in="query",
      *         description="Filter results by string. Searches First Name, Last Name, Email, or Username.",
      *         @OA\Schema(type="string"),
+     *     ),
+     *     @OA\Parameter(
+     *         name="include_ids",
+     *         in="query",
+     *         description="Comma separated list of user IDs to include in the response. Eg. 1,2,3",
+     *         @OA\Schema(type="string", default=""),
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -192,6 +198,12 @@ class UserController extends Controller
         }
 
         $query->where('status', 'ACTIVE');
+
+        $include_ids = $request->input('include_ids', '');
+        if (!empty($include_ids)) {
+            $include_ids = explode(',', $include_ids);
+            $query->whereIn('id', $include_ids);
+        }
 
         $query->select('*', DB::Raw("(SELECT COUNT(id) FROM process_request_tokens WHERE user_id=users.id AND status='ACTIVE' AND element_type='task') AS count"));
         $query->groupBy('users.id');

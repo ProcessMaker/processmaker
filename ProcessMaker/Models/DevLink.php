@@ -158,8 +158,6 @@ class DevLink extends ProcessMakerModel
             $bundle->syncAssets($assets);
         }
 
-        $this->logger->addWarning('Test warning message');
-
         $this->logger->setStatus('done');
     }
 

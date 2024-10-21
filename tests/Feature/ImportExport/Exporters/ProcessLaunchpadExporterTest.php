@@ -85,6 +85,7 @@ class ProcessLaunchpadExporterTest extends TestCase
         $this->addGlobalSignalProcess();
         [
             'process' => $process,
+            'launchpad' => $launchpad,
             'savedSearch1' => $savedSearch1,
             'savedSearch2' => $savedSearch2,
         ] = $this->fixtures();
@@ -96,8 +97,9 @@ class ProcessLaunchpadExporterTest extends TestCase
         $originalSavedSearch1Id = $savedSearch1->id;
         $savedSearch1->delete();
 
-        $optionsArray[$process->uuid] = ['mode' => 'copy'];
-        $optionsArray[$savedSearch2->uuid] = ['mode' => 'copy'];
+        $optionsArray[$process->uuid] = ['mode' => 'copy', 'saveAssetsMode' => 'saveAllAssets', 'discardedByParent' => false];
+        $optionsArray[$savedSearch2->uuid] = ['mode' => 'copy', 'saveAssetsMode' => 'saveAllAssets', 'discardedByParent' => false];
+        $optionsArray[$launchpad->uuid] = ['mode' => 'copy', 'saveAssetsMode' => 'saveAllAssets', 'discardedByParent' => false];
 
         $options = new Options($optionsArray);
         $importer = new Importer($payload, $options);
@@ -118,5 +120,12 @@ class ProcessLaunchpadExporterTest extends TestCase
         $this->assertNotEquals($originalSavedSearch1Id, $savedSearch1->id);
         $this->assertEquals($savedSearch1->id, $newSavedSearch1Id);
         $this->assertEquals($savedSearch2->id, $newSavedSearch2Id);
+
+        // Re-import the same process.
+        $importer = new Importer($payload, $options);
+        $importer->doImport();
+
+        $newProcess = Process::where('name', 'Process 3')->first();
+        $this->assertNotNull($newProcess->launchpad);
     }
 }
