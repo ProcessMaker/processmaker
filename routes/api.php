@@ -386,6 +386,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         Route::get('devlink/shared-assets', [DevLinkController::class, 'sharedAssets'])->name('devlink.shared-assets');
         Route::get('devlink/{devLink}/remote-assets', [DevLinkController::class, 'remoteAssets'])->name('devlink.remote-assets');
         Route::get('devlink/{devLink}/remote-assets-listing', [DevLinkController::class, 'remoteAssetsListing'])->name('devlink.remote-assets-listing');
+        Route::get('devlink/{devLink}/remote-version/{bundle}', [DevLinkController::class, 'remoteBundleVersion'])->name('devlink.remote-version');
         Route::post('devlink/add-shared-asset', [DevLinkController::class, 'addSharedAsset'])->name('devlink.add-shared-assets');
         Route::delete('devlink/remove-shared-asset/{setting}', [DevLinkController::class, 'removeSharedAsset'])->name('devlink.remove-shared-assets');
 
@@ -393,6 +394,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         Route::get('devlink/local-bundles/{bundle}', [DevLinkController::class, 'showBundle'])->name('devlink.local-bundle');
         Route::post('devlink/local-bundles', [DevLinkController::class, 'createBundle'])->name('devlink.create-bundle');
         Route::put('devlink/local-bundles/{bundle}', [DevLinkController::class, 'updateBundle'])->name('devlink.update-bundle');
+        Route::post('devlink/local-bundles/{bundle}/increase-version', [DevLinkController::class, 'increaseBundleVersion'])->name('devlink.increase-bundle-version');
         Route::post('devlink/local-bundles/{bundle}/add-assets', [DevLinkController::class, 'addAsset'])->name('devlink.add-asset');
         Route::delete('devlink/local-bundles/{bundle}', [DevLinkController::class, 'deleteBundle'])->name('devlink.delete-bundle');
         Route::delete('devlink/local-bundles/assets/{bundle_asset}', [DevLinkController::class, 'deleteBundleAsset'])->name('devlink.delete-bundle-asset');

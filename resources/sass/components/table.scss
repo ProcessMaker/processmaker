@@ -1,3 +1,29 @@
+.ellipsis-devlink {
+  border-radius: 10px;
+  border: 1px solid #D7DDE5;
+}
+::v-deep .modal-style {
+  border-radius: 8px;
+}
+::v-deep .modal-header {
+  border-bottom: none;
+}
+::v-deep .modal-footer {
+  border-top: none;
+}
+::v-deep .modal-title {
+  font-size: 24px;
+  font-weight: 500;
+  color: #20242A;
+}
+::v-deep .modal-body {
+  font-size: 14px;
+  font-weight: 400;
+  color: #20242A;
+}
+::v-deep .ellipsis-devlink .btn {
+  border-radius: 10px;
+}
 ::v-deep .table {
   border-bottom: 1px solid #e9edf1;
 }

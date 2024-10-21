@@ -2,6 +2,9 @@
 import { ref, onMounted, getCurrentInstance, computed } from 'vue';
 import debounce from 'lodash/debounce';
 import Origin from './Origin.vue';
+import VersionCheck from './VersionCheck.vue';
+import EllipsisMenu from '../../../components/shared/EllipsisMenu.vue';
+import InstallProgress from './InstallProgress.vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 
 const vue = getCurrentInstance().proxy;
@@ -10,7 +13,21 @@ const route = useRoute();
 const bundles = ref([]);
 const editModal = ref(null);
 const confirmDeleteModal = ref(null);
+const confirmIncreaseVersion = ref(null);
+const confirmUpdateVersion = ref(null);
+const selectedOption = ref('update');
+const showInstallModal = ref(false);
 const filter = ref("");
+const actions = [
+  { value: "increase-item", content: "Increase Version", conditional: "if(not(dev_link_id), true, false)" },
+  { value: "update-item", content: "Update Version", conditional: "if(dev_link_id, true, false)" },
+  { value: "edit-item", content: "Edit", conditional: "if(not(dev_link_id) , true, false)" },
+  { value: "delete-item", content: "Delete" },
+];
+const customButton = {
+  icon: "fas fa-ellipsis-v",
+  content: "",
+};
 
 onMounted(() => {
   load();
@@ -22,7 +39,7 @@ const load = () => {
     .then((result) => {
       bundles.value = result.data.data;
     });
-}
+};
 
 const fields = [
   {
@@ -51,7 +68,6 @@ const fields = [
   },
 ];
 
-
 const bundleAttributes = {
   id: null,
   name: '',
@@ -62,12 +78,29 @@ const selected = ref(bundleAttributes);
 
 const reset = () => {
   selected.value = { ...bundleAttributes };
-}
+};
 
 const createNewBundle = () => {
   reset();
   editModal.value.show();
-}
+};
+
+const onNavigate = (action, data, index) => {
+  switch (action.value) {
+    case "edit-item":
+      edit(data);
+      break;
+    case "increase-item":
+      increaseVersionBundle(data);
+      break;
+    case "update-item":
+      updateVersionBundle(data);
+      break;
+    case "delete-item":
+      deleteBundle(data);
+      break;
+  }
+};
 
 const create = () => {
   ProcessMaker.apiClient
@@ -104,12 +137,42 @@ const deleteBundle = (bundle) => {
   confirmDeleteModal.value.show();
 };
 
+const updateVersionBundle = (bundle) => {
+  selected.value = bundle;
+  confirmUpdateVersion.value.show();
+};
+
+const increaseVersionBundle = (bundle) => {
+  selected.value = bundle;
+  confirmIncreaseVersion.value.show();
+};
+
+const executeIncrease = () => {
+  ProcessMaker.apiClient
+    .post(`devlink/local-bundles/${selected.value.id}/increase-version`)
+    .then((result) => {
+      confirmIncreaseVersion.value.hide();
+      load();
+    });
+};
+
 const executeDelete = () => {
   ProcessMaker.apiClient
     .delete(`/devlink/local-bundles/${selected.value.id}`)
     .then((result) => {
       confirmDeleteModal.value.hide();
       load();
+    });
+};
+
+const executeUpdate = (updateType) => {
+  showInstallModal.value = true;
+  ProcessMaker.apiClient
+    .post(`/devlink/${selected.value.dev_link_id}/remote-bundles/${selected.value.remote_id}/install`, {
+      updateType,
+    })
+    .then((response) => {
+      // Handle the response as needed
     });
 };
 
@@ -147,16 +210,72 @@ const deleteWaring = computed(() => {
           @click="createNewBundle"
           class="new-button"
         >
-        <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>
-        {{ $t('Create Bundle') }}
+          <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>
+          {{ $t('Create Bundle') }}
         </b-button>
       </div>
     </div>
-    <b-modal ref="confirmDeleteModal" title="Delete Bundle" @ok="executeDelete">
+    <b-modal
+      ref="confirmDeleteModal"
+      centered
+      content-class="modal-style"
+      title="Delete Bundle"
+      @ok="executeDelete"
+    >
       <p>{{ deleteWaring }}'</p>
     </b-modal>
 
-    <b-modal ref="editModal" :title="selected.id ? $t('Edit Bundle') : $t('Create New Bundle')" @ok="update" :ok-title="$t('Ok')" :cancel-title="$t('Cancel')">
+    <b-modal
+      ref="confirmIncreaseVersion"
+      centered
+      content-class="modal-style"
+      title="Increase Version"
+      @ok="executeIncrease"
+    >
+      <p>Are you sure you increase the version of {{ selected?.name }}?</p>
+    </b-modal>
+
+    <b-modal
+      ref="confirmUpdateVersion"
+      centered
+      size="lg"
+      content-class="modal-style"
+      :title="$t('Update Bundle Version')"
+      :ok-title="$t('Continue')"
+      :cancel-title="$t('Cancel')"
+      @ok="executeUpdate(selectedOption)"
+    >
+      <div>
+        <p class="mb-4">Select how you want to update the bundle <strong>Testing Processes and Assets</strong></p>
+
+        <b-form-group>
+          <b-form-radio-group v-model="selectedOption" name="bundleUpdateOptions">
+            <b-form-radio
+              class="mb-4"
+              value="update"
+            >
+              {{ $t('Quick Update') }}
+              <p class="text-muted">{{ $t('The current bundle will be replaced completely for the new version immediately.') }}</p>
+            </b-form-radio>
+
+            <b-form-radio value="copy">
+              {{ $t('Copy Changes') }}
+              <p class="text-muted">{{ $t('Copy and update bundle.') }}</p>
+            </b-form-radio>
+          </b-form-radio-group>
+        </b-form-group>
+      </div>
+    </b-modal>
+
+    <b-modal
+      ref="editModal"
+      centered
+      content-class="modal-style"
+      :title="selected.id ? $t('Edit Bundle') : $t('Create New Bundle')"
+      @ok="update"
+      :ok-title="$t('Ok')"
+      :cancel-title="$t('Cancel')"
+    >
       <b-form-group :label="$t('Name')">
         <b-form-input v-model="selected.name"></b-form-input>
       </b-form-group>
@@ -164,13 +283,16 @@ const deleteWaring = computed(() => {
         <b-form-checkbox v-model="selected.published"></b-form-checkbox>
       </b-form-group>
     </b-modal>
+    <b-modal id="install-progress" size="lg" v-model="showInstallModal" :title="$t('Installation Progress')" hide-footer>
+      <install-progress />
+    </b-modal>
     <div class="card local-bundles-card">
       <b-table
         hover
         class="clickable"
-        @row-clicked="goToBundleAssets"
         :items="bundles"
         :fields="fields"
+        @row-clicked="goToBundleAssets"
       >
         <template #cell(name)="data">
           {{ data.item.name }}
@@ -183,26 +305,17 @@ const deleteWaring = computed(() => {
         <template #cell(origin)="data">
           <Origin :dev-link="data.item.dev_link"></Origin>
         </template>
+        <template #cell(version)="data">
+          {{ data.item.version }} <VersionCheck :dev-link="data.item"></VersionCheck>
+        </template>
         <template #cell(menu)="data">
-          <div class="btn-menu-container">
-            <div class="btn-group" role="group" aria-label="Basic example">
-              <button
-                v-if="canEdit(data.item)"
-                type="button"
-                class="btn btn-menu"
-                @click.prevent="edit(data.item)"
-              >
-                <img src="/img/pencil-fill.svg">
-              </button>
-              <button
-                type="button"
-                class="btn btn-menu"
-                @click.prevent="deleteBundle(data.item)"
-              >
-                <img src="/img/trash-fill.svg">
-              </button>
-            </div>
-          </div>
+          <EllipsisMenu
+            class="ellipsis-devlink"
+            :actions="actions"
+            :data="data.item"
+            :custom-button="customButton"
+            @navigate="onNavigate"
+          />
         </template>
       </b-table>
     </div>
