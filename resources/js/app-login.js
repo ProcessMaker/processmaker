@@ -57,7 +57,8 @@ window.ProcessMaker = {
 
 window.ProcessMaker.i18nPromise = i18next.use(Backend).init({
   lng: document.documentElement.lang,
-  fallbackLng: false,
+fallbackLng: "en", // default language when no translations
+  returnEmptyString: false, // When a translation is an empty string, return the default language, not empty
   nsSeparator: false,
   keySeparator: false,
   parseMissingKeyHandler(value) {
