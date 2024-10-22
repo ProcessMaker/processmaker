@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Events\UserCreated;
@@ -18,7 +19,6 @@ use ProcessMaker\Filters\SaveSession;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Users as UserResource;
-use ProcessMaker\Models\RecommendationUser;
 use ProcessMaker\Models\User;
 use ProcessMaker\RecommendationEngine;
 use ProcessMaker\TwoFactorAuthentication;
@@ -144,7 +144,7 @@ class UserController extends Controller
     /**
      * Display a listing of users and their task counts.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @return \Illuminate\Http\Response
      *
      * @OA\Get(
@@ -845,6 +845,12 @@ class UserController extends Controller
 
     public function updateLanguage(Request $request)
     {
+        if (Auth::user()->is_system) {
+            Cache::put('LANGUAGE_ANON_WEBENTRY', $request->input('language'), 15);
+
+            return response([], 204);
+        }
+
         $user = Auth::user();
         $original = $user->getOriginal();
         $user->language = $request->input('language')['code'];
