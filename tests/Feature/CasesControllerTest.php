@@ -34,5 +34,6 @@ class CasesControllerTest extends TestCase
 
         // Check the status
         $response->assertStatus(200);
+        // OTHER
     }
 }
