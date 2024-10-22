@@ -93,6 +93,15 @@ class PackageManager
 
                     // Create file in package
                     file_put_contents("{$package}/{$code}.json", $baseFile);
+
+                    // save new language backup
+                    if (File::exists("{$package}.orig")) {
+                        file_put_contents("{$package}.orig/{$code}.json", $baseFile);
+                    }
+
+                    //Add files gitignore
+                    copy(base_path('resources') . '/.gitignore', $package . '/../.gitignore');
+                    copy(lang_path() . '/.gitignore', $package . '/.gitignore');
                 }
             }
         }
