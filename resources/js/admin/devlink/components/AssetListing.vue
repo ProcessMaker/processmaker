@@ -23,20 +23,20 @@ const dateFormatter = (value) => {
 const fields = [
   {
     key: 'id',
-    label: 'ID'
+    label: vue.$t('ID'),
   },
   {
     key: typeConfig?.nameField || 'name',
-    label: 'Name'
+    label: vue.$t('Name'),
   },
   {
     key: 'created_at',
-    label: 'Created',
+    label: vue.$t('Created'),
     formatter: dateFormatter,
   },
   {
     key: 'updated_at',
-    label: 'Last Modified',
+    label: vue.$t('Last Modified'),
     formatter: dateFormatter,
   },
   {
@@ -54,7 +54,10 @@ const closeModal = () => {
 };
 
 const install = (asset) => {
-  vue.$bvModal.msgBoxConfirm('Are you sure you want to install this asset onto this instance?').then((confirm) => {
+  vue.$bvModal.msgBoxConfirm(vue.$t('Are you sure you want to install this asset onto this instance?'), {
+    okTitle: vue.$t('Ok'),
+    cancelTitle: vue.$t('Cancel')
+  }).then((confirm) => {
     if (confirm) {
       const params = {
         class: typeConfig.class,
@@ -63,7 +66,7 @@ const install = (asset) => {
       ProcessMaker.apiClient
         .post(`/devlink/${route.params.id}/install-remote-asset`, params)
         .then((response) => {
-          window.ProcessMaker.alert('Asset successfully installed', "success");
+          window.ProcessMaker.alert(vue.$t('Asset successfully installed'), "success");
           warnings.value = response.data.warnings_devlink;
           if (warnings.value.length > 0) {
             showModal();
@@ -84,7 +87,6 @@ const load = () => {
   ProcessMaker.apiClient
     .get(`devlink/${route.params.id}/remote-assets-listing?url=${typeConfig.url}&filter=${filter.value}`)
     .then((result) => {
-      console.log("Got", result.data.data);
       items.value = result.data.data;
     });
 };

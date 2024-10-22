@@ -27,11 +27,11 @@
       ], 'attributes' => 'v-cloak'])
 @endsection
 @section('content')
-  <div id="task">
+  <div id="task" v-cloak>
     <div class="menu-mask" :class="{ 'menu-open': showMenu }"></div>
     <div class="info-main" :class="{ 'menu-open': showMenu }">
       <div v-cloak class="container-fluid px-3">
-          <div class="d-flex flex-column flex-md-row">
+          <div class="d-flex flex-column flex-md-row container-height">
               <div class="flex-grow-1">
                   <div v-if="isSelfService" class="alert alert-primary" role="alert">
                       <button type="button" class="btn btn-primary" @click="claimTask">{{__('Claim Task')}}</button>
@@ -305,6 +305,8 @@
                             :readonly="task.status === 'CLOSED'"
                             :name="task.element_name"
                             :header="false"
+                            :case_number="task.process_request.case_number"
+                            :get-data="getCommentsData"
                           />
                         </template>
                       </div>
@@ -434,7 +436,8 @@
           userConfiguration: @json($userConfiguration),
           urlConfiguration:'users/configuration',
           users: [],
-          showTabs: true
+          showTabs: true,
+          assignedUsers: "",
         },
         watch: {
           task: {
@@ -523,6 +526,9 @@
             return "card-header text-status " + header[status];
           },
           isAllowReassignment() {
+            if (ProcessMaker.user.id === this.task.definition.assignedUsers && !this.task.definition.assignedGroups) {  
+              return false;
+            }
             return this.task.definition.allowReassignment === "true";
           },
         },
@@ -850,7 +856,14 @@
             this.caseTitle = task.process_request.case_title;
           },
           getUsers(filter) {
-            ProcessMaker.apiClient.get(this.getUrlUsersTaskCount(filter)).then(response => {
+            if (this.task.definition.allowReassignment === "true" && !this.userIsAdmin) {
+              this.setAssignedUsers(this.task.definition);
+            }
+            ProcessMaker.apiClient.get(this.getUrlUsersTaskCount(filter), {
+              params: {
+                include_ids: this.assignedUsers
+              }
+            }).then(response => {
               this.users = [];
               for (let i in response.data.data) {
                 this.users.push({
@@ -867,7 +880,47 @@
           },
           onInput(filter) {
             this.getUsers(filter);
-          }
+          },
+          getCommentsData: async () => {
+            const response = await ProcessMaker.apiClient.get("comments-by-case", {
+              params: {
+                type: "COMMENT,REPLY",
+                order_direction: "desc",
+                case_number: task?.process_request?.case_number,
+              },
+            });
+
+            return response;
+          },
+          setAssignedUsers(definition) {
+            // If a group is used, get all the users in that group, nested groups and merge with assignedUsers if applicable 
+            if (definition.assignedGroups && !this.userIsAdmin) {
+              this.getUsersInGroups(definition.assignedGroups);
+              let assignedUserIds = this.assignedUsers;
+              if (definition.assignedUsers) {
+                let currentAssignedUsers = definition.assignedUsers.split(',');
+                assignedUserIds += ',' + currentAssignedUsers.join(',');
+              }
+              this.assignedUsers = assignedUserIds;
+            }
+
+            //  Display assigned users
+            if (definition.assignedUsers && !this.userIsAdmin && !definition.assignedGroups) {
+              let currentAssignedUsers = definition.assignedUsers.split(',');
+              let assignedUsers = currentAssignedUsers.filter(user => user !== window.ProcessMaker.user.id);
+              this.assignedUsers = assignedUsers.join(',');
+            }
+          },
+          getUsersInGroups(assignedGroups) {
+            let groups = assignedGroups.split(',');
+            ProcessMaker.apiClient.get("tasks/getAssignedUsersInGroups", {
+              params: {
+                groups: groups
+              }
+            }).then(response => {
+              this.assignedUsers = response.data;
+            });
+          },
         },
         mounted() {
           this.caseTitleField(this.task);
@@ -1009,6 +1062,9 @@
   }
   .launchpad-link {
     margin-top: 5px;
+  }
+  .container-height {
+    height: calc(100vh - 200px);
   }
 </style>
 @endsection

@@ -31,6 +31,7 @@ class ProcessRequestsTest extends TestCase
     public $withPermissions = true;
 
     const API_TEST_URL = '/requests';
+
     const API_REQUESTS_BY_CASE = '/requests-by-case';
 
     const STRUCTURE = [
@@ -988,7 +989,7 @@ class ProcessRequestsTest extends TestCase
         $data = $response->json()['data'];
         $this->assertEmpty($data);
     }
-    
+
     /**
      * Get a list of Requests by Cases.
      */
@@ -999,9 +1000,9 @@ class ProcessRequestsTest extends TestCase
         ProcessRequest::factory()->count(9)->create([
             'parent_request_id' => $request->id,
         ]);
+        $filter = "?case_number=$request->case_number&include=activeTasks";
+        $url = self::API_REQUESTS_BY_CASE . $filter;
 
-        $url = self::API_REQUESTS_BY_CASE . '?case_number=' . $request->case_number;
-        
         $response = $this->apiCall('GET', $url);
 
         //Validate the header status code
@@ -1010,6 +1011,7 @@ class ProcessRequestsTest extends TestCase
         // Verify structure
         $response->assertJsonStructure([
             'data' => ['*' => self::STRUCTURE],
+            'data' => ['*' => array_merge(self::STRUCTURE, ['active_tasks'])],
             'meta',
         ]);
 
@@ -1021,7 +1023,7 @@ class ProcessRequestsTest extends TestCase
      * Get a list of Requests by Cases.
      */
     public function testRequestByCaseWithoutCaseNumber()
-    {        
+    {
         $response = $this->apiCall('GET', self::API_REQUESTS_BY_CASE);
 
         //Validate the header status code
@@ -1058,5 +1060,40 @@ class ProcessRequestsTest extends TestCase
 
         // has foo => bar
         $this->assertEquals('bar', $response->json()['data'][0]['data']['foo']);
+    }
+
+    /**
+     * Get a list of Requests by Cases pagination
+     */
+    public function testRequestByCasePagination()
+    {
+        ProcessRequest::query()->delete();
+        $request = ProcessRequest::factory()->create();
+        ProcessRequest::factory()->count(11)->create([
+            'parent_request_id' => $request->id,
+        ]);
+        // Call the endpoint with the 'case_number' parameter page 1
+        $filter = "?case_number=$request->case_number&include=activeTasks&page=1&per_page=5";
+        $url = self::API_REQUESTS_BY_CASE . $filter;
+
+        // Check if the response is successful and contains the expected tasks
+        $response = $this->apiCall('GET', $url);
+        $this->assertCount(5, $response->json('data'));
+
+        // Call the endpoint with the 'case_number' parameter page 2
+        $filter = "?case_number=$request->case_number&include=activeTasks&page=2&per_page=5";
+        $url = self::API_REQUESTS_BY_CASE . $filter;
+
+        // Check if the response is successful and contains the expected tasks
+        $response = $this->apiCall('GET', $url);
+        $this->assertCount(5, $response->json('data'));
+
+        // Call the endpoint with the 'case_number' parameter page 3
+        $filter = "?case_number=$request->case_number&include=activeTasks&page=3&per_page=5";
+        $url = self::API_REQUESTS_BY_CASE . $filter;
+
+        // Check if the response is successful and contains the expected tasks
+        $response = $this->apiCall('GET', $url);
+        $this->assertCount(2, $response->json('data'));
     }
 }

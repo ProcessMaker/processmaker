@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Jobs\DevLinkInstall;
 use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\DevLink;
 use ProcessMaker\Models\Setting;
@@ -91,6 +92,10 @@ class DevLinkController extends Controller
             $bundlesQuery->published();
         }
 
+        if ($request->has('editable')) {
+            $bundlesQuery->editable();
+        }
+
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $filter = '%' . $filter . '%';
@@ -128,7 +133,6 @@ class DevLinkController extends Controller
         $bundle = new Bundle();
         $bundle->name = $request->input('name');
         $bundle->published = (bool) $request->input('published', false);
-        $bundle->locked = (bool) $request->input('locked', false);
         $bundle->version = 1;
         $bundle->saveOrFail();
 
@@ -139,7 +143,6 @@ class DevLinkController extends Controller
     {
         $bundle->name = $request->input('name');
         $bundle->published = (bool) $request->input('published', false);
-        $bundle->locked = (bool) $request->input('locked', false);
         $bundle->version = $bundle->version + 1;
         $bundle->saveOrFail();
 
@@ -151,9 +154,14 @@ class DevLinkController extends Controller
         $bundle->delete();
     }
 
-    public function installRemoteBundle(DevLink $devLink, $remoteBundleId)
+    public function installRemoteBundle(Request $request, DevLink $devLink, $remoteBundleId)
     {
-        return $devLink->installRemoteBundle($remoteBundleId);
+        DevLinkInstall::dispatch(
+            $request->user()->id,
+            $devLink->id,
+            $remoteBundleId,
+            'update'
+        );
     }
 
     public function exportLocalBundle(Bundle $bundle)
@@ -170,19 +178,6 @@ class DevLinkController extends Controller
 
     public function addAsset(Request $request, Bundle $bundle)
     {
-        $request->validate([
-            'type' => ['required', 'string'],
-            'id' => Rule::unique('bundle_assets', 'asset_id')->where(function ($query) use ($request) {
-                $query->where([
-                    'asset_id' => $request->input('id'),
-                    'asset_type' => $request->input('type'),
-                ]);
-            }),
-        ],
-            [
-                'id.unique' => __('Asset already exists in bundle'),
-            ]);
-
         $asset = $request->input('type')::findOrFail($request->input('id'));
         $bundle->addAsset($asset);
     }

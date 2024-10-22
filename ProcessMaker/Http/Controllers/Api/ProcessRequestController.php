@@ -401,6 +401,7 @@ class ProcessRequestController extends Controller
                 'commentable_id' => $request->id,
                 'subject' => 'Data edited',
                 'body' => $user_name . ' ' . $text,
+                'case_number' => isset($request->case_number) ? $request->case_number : null,
             ]);
         } else {
             $httpRequest->validate(ProcessRequest::rules($request));
@@ -629,6 +630,7 @@ class ProcessRequestController extends Controller
             'commentable_id' => $request->id,
             'subject' => __('Process Manually Completed'),
             'body' => $user->fullname . ' ' . __('manually completed the request from an error state'),
+            'case_number' => isset($request->case_number) ? $request->case_number : null,
         ]);
     }
 
@@ -842,7 +844,7 @@ class ProcessRequestController extends Controller
 
     /**
      * This endpoint returns requests by case number
-     *  
+     *
      * @param Request $request
      *
      * @return ApiCollection
@@ -863,14 +865,14 @@ class ProcessRequestController extends Controller
         ]);
 
         $query = ProcessRequest::forUser($user);
-        
+
         // Filter by case_number
         $query->filterByCaseNumber($request);
 
         // Apply ordering only if a valid order_by field is provided
         $query->applyOrdering($request);
         $response = $query->applyPagination($request);
-        
+
         // Get activeTasks and participants
         $response = $response->map(function ($processRequest) use ($request) {
             return new ProcessRequestResource($processRequest);

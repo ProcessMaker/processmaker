@@ -1,9 +1,10 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, getCurrentInstance, computed } from 'vue';
 import debounce from 'lodash/debounce';
 import Origin from './Origin.vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 
+const vue = getCurrentInstance().proxy;
 const router = useRouter();
 const route = useRoute();
 const bundles = ref([]);
@@ -26,23 +27,23 @@ const load = () => {
 const fields = [
   {
     key: 'name',
-    label: 'Name'
+    label: vue.$t('Name')
   },
   {
     key: 'origin',
-    label: 'Origin'
+    label: vue.$t('Origin'),
   },
   {
     key: 'published',
-    label: 'Published',
+    label: vue.$t('Published'),
   },
   {
     key: 'asset_count',
-    label: 'Assets'
+    label: vue.$t('Assets'),
   },
   {
     key: 'version',
-    label: 'Version'
+    label: vue.$t('Version'),
   },
   {
     key: 'menu',
@@ -55,7 +56,6 @@ const bundleAttributes = {
   id: null,
   name: '',
   published: false,
-  locked: false,
 };
 
 const selected = ref(bundleAttributes);
@@ -120,6 +120,20 @@ const debouncedLoad = debounce(load, 300);
 const handleFilterChange = () => {
   debouncedLoad();
 };
+
+const canEdit = (bundle) => {
+  return bundle.dev_link === null;
+}
+
+const goToBundleAssets = (bundle) => {
+  router.push({ name: 'bundle-assets', params: { id: bundle.id } });
+}
+
+const deleteWaring = computed(() => {
+  const name = selected?.value.name;
+  console.log("Name is " + name);
+  return vue.$t('Are you sure you want to delete {{name}}?', { name });
+})
 </script>
 
 <template>
@@ -131,22 +145,20 @@ const handleFilterChange = () => {
         @click="createNewBundle"
         class="new-button"
       >
-      <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>Create Bundle
+      <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>
+      {{ $t('Create Bundle') }}
       </b-button>
     </div>
     <b-modal ref="confirmDeleteModal" title="Delete Bundle" @ok="executeDelete">
-      <p>Are you sure you want to delete {{ selected?.name }}?</p>
+      <p>{{ deleteWaring }}'</p>
     </b-modal>
 
-    <b-modal ref="editModal" :title="selected.id ? 'Edit Bundle' : 'Create New Bundle'" @ok="update">
-      <b-form-group label="Name">
+    <b-modal ref="editModal" :title="selected.id ? $t('Edit Bundle') : $t('Create New Bundle')" @ok="update" :ok-title="$t('Ok')" :cancel-title="$t('Cancel')">
+      <b-form-group :label="$t('Name')">
         <b-form-input v-model="selected.name"></b-form-input>
       </b-form-group>
-      <b-form-group label="Published">
+      <b-form-group v-if="canEdit(selected)" :label="$t('Published')">
         <b-form-checkbox v-model="selected.published"></b-form-checkbox>
-      </b-form-group>
-      <b-form-group label="Locked">
-        <b-form-checkbox v-model="selected.locked"></b-form-checkbox>
       </b-form-group>
     </b-modal>
     <div class="card local-bundles-card">
@@ -156,10 +168,10 @@ const handleFilterChange = () => {
       >
         <template #cell(name)="data">
           {{ data.item.name }}
-          <i v-if="data.item.locked" class="ml-2 fa fa-lock"></i>
+          <i v-if="!canEdit(data.item)" class="ml-2 fa fa-lock"></i>
         </template>
         <template #cell(published)="data">
-          <b-form-checkbox v-model="data.item.published" switch @change="updatePublished(data.item)">
+          <b-form-checkbox v-if="canEdit(data.item)" v-model="data.item.published" switch @change="updatePublished(data.item)">
           </b-form-checkbox>
         </template>
         <template #cell(origin)="data">
@@ -169,6 +181,7 @@ const handleFilterChange = () => {
           <div class="btn-menu-container">
             <div class="btn-group" role="group" aria-label="Basic example">
               <button
+                v-if="canEdit(data.item)"
                 type="button"
                 class="btn btn-menu"
                 @click.prevent="edit(data.item)"

@@ -17,7 +17,7 @@
             <draggable-file-upload class="text-center" v-if="!file || file && !fileIsValid" ref="file" v-model="file" :options="{singleFile: true}" :displayUploaderList="false" :accept="['application/json']"></draggable-file-upload>
             <div v-else class="text-left">
               <h5> {{ $t("You are about to import") }} <strong>{{processName}}</strong></h5>
-              <div class="border-dotted p-3 col-4 text-center font-weight-bold my-3">
+              <div class="border-dotted py-3 d-flex text-center font-weight-bold my-3">
                 {{file.name}}
                 <b-button 
                   variant="link" 

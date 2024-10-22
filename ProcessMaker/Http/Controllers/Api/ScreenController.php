@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use ProcessMaker\Events\ScreenCreated;
 use ProcessMaker\Events\ScreenDeleted;
 use ProcessMaker\Events\ScreenUpdated;
+use ProcessMaker\Facades\ScreenCompiledManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -17,7 +18,7 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\ScreenType;
-use ProcessMaker\ProcessTranslations\ProcessTranslation;
+use ProcessMaker\ProcessTranslations\ScreenTranslation;
 use ProcessMaker\Query\SyntaxError;
 use ProcessMaker\Traits\ProjectAssetTrait;
 
@@ -300,6 +301,10 @@ class ScreenController extends Controller
         $changes['tmp_screen_category_id'] = $request->input('screen_category_id');
         ScreenUpdated::dispatch($screen, $changes, $original);
         $this->updateScreenTemplate($screen);
+
+        // Clear the screens cache when a screen is updated. All cache is cleared
+        // because we don't know which nested screens affect to other screens
+        ScreenCompiledManager::clearCompiledAssets();
 
         return response([], 204);
     }
@@ -677,15 +682,18 @@ class ScreenController extends Controller
         $draft = $screen->versions()->draft()->first();
         if (!$draft) {
             $draft = $screen;
+            $draft->screen_id = $draft->id;
         }
-        $processTranslation = new ProcessTranslation(null);
-        $transConfig = $processTranslation->translateScreen(
-            $draft,
-            $request->input('screenConfig'),
-            $request->input('inputData'),
-            $language);
 
-        return $transConfig;
+        $screenArray = $draft->toArray();
+        $screenTranslation = new ScreenTranslation();
+        $screenArray['config'] = $screenTranslation->evaluateMustache(
+            $request->input('screenConfig'),
+            $request->input('inputData')
+        );
+        $translatedConfig = $screenTranslation->applyTranslations($screenArray, $language);
+
+        return $translatedConfig;
     }
 
     public function updateDefaultTemplate(string $screenType, int $isPublic)

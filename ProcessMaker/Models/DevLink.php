@@ -25,6 +25,17 @@ class DevLink extends ProcessMakerModel
         'state',
     ];
 
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($devLink) {
+            foreach ($devLink->bundles as $bundle) {
+                $bundle->delete();
+            }
+        });
+    }
+
     public function getClientUrl()
     {
         $params = [
@@ -91,6 +102,12 @@ class DevLink extends ProcessMakerModel
 
     public function installRemoteBundle($bundleId)
     {
+        if (!$this->logger) {
+            $this->logger = new Logger();
+        }
+
+        $this->logger->status(__('Downloading bundle from remote instance'));
+
         $bundleInfo = $this->client()->get(
             route('api.devlink.local-bundle', ['bundle' => $bundleId], false)
         )->json();
@@ -107,33 +124,28 @@ class DevLink extends ProcessMakerModel
             [
                 'name' => $bundleInfo['name'],
                 'published' => $bundleInfo['published'],
-                'locked' => $bundleInfo['locked'],
                 'version' => $bundleInfo['version'],
             ]
         );
+
+        $this->logger->status('Installing bundle on the this instance');
+        $this->logger->setSteps($bundleExport['payloads']);
 
         $assets = [];
         foreach ($bundleExport['payloads'] as $payload) {
             $assets[] = $this->import($payload);
         }
 
+        $this->logger->status('Syncing bundle assets');
         $bundle->syncAssets($assets);
 
-        return [
-            'warnings_devlink' => $this->logger->getWarnings(),
-        ];
+        $this->logger->setStatus('done');
     }
 
     private function import(array $payload)
     {
-        if (!$this->logger) {
-            $this->logger = new Logger();
-        }
-
         $importer = new Importer($payload, new Options([]), $this->logger);
         $manifest = $importer->doImport();
-
-        $manifest[$payload['root']]->model['warnings_devlink'] = $importer->logger->getWarnings();
 
         return $manifest[$payload['root']]->model;
     }
@@ -145,5 +157,10 @@ class DevLink extends ProcessMakerModel
         )->json();
 
         return $this->import($payload);
+    }
+
+    public function bundles()
+    {
+        return $this->hasMany(Bundle::class);
     }
 }
