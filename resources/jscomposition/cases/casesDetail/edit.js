@@ -146,6 +146,7 @@ const caseDetail = new Vue({
       const response = await getCommentsData({
         params: {
           type: "COMMENT,REPLY",
+          order_direction: "desc",
           case_number: request.case_number,
         },
       });

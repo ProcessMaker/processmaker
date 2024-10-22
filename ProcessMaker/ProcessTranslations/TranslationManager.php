@@ -2,20 +2,23 @@
 
 namespace ProcessMaker\ProcessTranslations;
 
-use Cookie;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use ProcessMaker\Package\PackageDynamicUI\Models\Menu;
 use ProcessMaker\Package\Translations\Models\Language;
 use ProcessMaker\Package\Translations\Models\Translatable;
 
 class TranslationManager
 {
-    public static function getTargetLanguage()
+    public static function getTargetLanguage($defaultLanguage = '')
     {
-        $targetLanguage = self::getBrowserLanguage();
+        if ($defaultLanguage) {
+            $targetLanguage = $defaultLanguage;
+        } else {
+            $targetLanguage = self::getBrowserLanguage();
+            $targetLanguage = self::getUserLanguage($targetLanguage);
+        }
+
         $targetLanguage = self::validateLanguage($targetLanguage);
-        $targetLanguage = self::getUserLanguage($targetLanguage);
 
         return $targetLanguage;
     }
@@ -39,7 +42,9 @@ class TranslationManager
         if (!Auth::user()->isAnonymous) {
             return Auth::user()->language;
         } elseif (Cache::has('LANGUAGE_ANON_WEBENTRY')) {
-            return Cache::get('LANGUAGE_ANON_WEBENTRY');
+            $languageAnon = Cache::get('LANGUAGE_ANON_WEBENTRY');
+
+            return $languageAnon['code'] ?? $language;
         }
 
         return $language;

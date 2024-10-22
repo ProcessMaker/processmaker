@@ -35,7 +35,7 @@ onMounted(() => {
 
 <template>
   <div>
-    <instance-tabs />
+    <instance-tabs><template #assets>
     <div class="card-grid">
       <div v-for="(type, index) in filteredTypes" :key="index" class="card">
         <!-- Icon -->
@@ -44,16 +44,17 @@ onMounted(() => {
         </div>
         <!-- Content -->
         <div class="content">
-          <h3>{{ type.name }}</h3>
+          <h3>{{ $t(type.name) }}</h3>
         </div>
         <!-- Button -->
         <div class="button-container">
           <button @click.prevent="navigate(type)" class="view-button">
-            View
+            {{ $t('View') }}
           </button>
         </div>
       </div>
     </div>
+    </template></instance-tabs>
   </div>
 </template>
 

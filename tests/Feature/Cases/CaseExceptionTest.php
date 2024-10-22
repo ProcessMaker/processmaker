@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Cases;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -11,6 +12,8 @@ use Tests\TestCase;
 
 class CaseExceptionTest extends TestCase
 {
+    use RefreshDatabase;
+
     protected $user;
 
     protected $process;
@@ -62,19 +65,33 @@ class CaseExceptionTest extends TestCase
         $this->assertDatabaseCount('cases_started', 0);
     }
 
-    public function test_create_case_missing_user_id(): void
+    public function test_create_case_with_null_user_id(): void
     {
+        // Disable exception handling for better test debugging
         $this->withoutExceptionHandling();
 
-        try {
-            $this->instance->user_id = null;
-            $repo = new CaseRepository();
-            $repo->create($this->instance);
-        } catch (\Exception $e) {
-            $this->assertStringContainsString('Column \'user_id\' cannot be null', $e->getMessage());
-        }
+        // Set the user_id to null to simulate a scenario where the user ID is not provided.
+        // This is a valid case for processes like the Expense Report, where user_id can be null.
+        $this->instance->user_id = null;
 
-        $this->assertDatabaseCount('cases_started', 0);
+        // Instantiate the repository responsible for handling case creation.
+        $repo = new CaseRepository();
+
+        // Attempt to create the case with a null user_id and ensure that the application
+        // allows this without throwing any exceptions or errors.
+        $repo->create($this->instance);
+
+        // Verify that a record was successfully inserted into the 'cases_started' table
+        // with 'user_id' set to null, which validates that null values are supported.
+        $this->assertDatabaseHas('cases_started', [
+            'user_id' => null,  // Ensure that user_id is null in the created case
+            // Additional assertions could include fields like 'case_title' or 'case_number'
+            // if they are unique for further validation
+        ]);
+
+        // Assert that exactly one record exists in the 'cases_started' table after this operation.
+        // This ensures the test is isolated and no leftover data from previous tests exists.
+        $this->assertDatabaseCount('cases_started', 1);
     }
 
     public function test_create_case_missing_case_title(): void
@@ -130,5 +147,40 @@ class CaseExceptionTest extends TestCase
             ->assertExitCode(0);
 
         $this->assertDatabaseCount('cases_started', 2);
+        $this->assertDatabaseHas('cases_started', [
+            'case_number' => $this->instance->case_number,
+            'user_id' => $this->user->id,
+            'case_title' => $this->instance->case_title,
+            'case_status' => 'IN_PROGRESS',
+            'processes->[0]->id' => $this->process->id,
+            'processes->[0]->name' => $this->process->name,
+            'requests->[0]->id' => $this->instance->id,
+            'requests->[0]->name' => $this->instance->name,
+            'requests->[0]->parent_request_id' => $this->instance->parent_request_id ?? 0,
+            'request_tokens->[0]' => $this->token->id,
+            'tasks->[0]->id' => $this->token->id,
+            'tasks->[0]->element_id' => $this->token->element_id,
+            'tasks->[0]->name' => $this->token->element_name,
+            'tasks->[0]->process_id' => $this->token->process_id,
+            'participants->[0]' => $this->user->id,
+        ]);
+
+        $this->assertDatabaseHas('cases_started', [
+            'case_number' => $this->instance2->case_number,
+            'user_id' => $this->user->id,
+            'case_title' => $this->instance2->case_title,
+            'case_status' => 'IN_PROGRESS',
+            'processes->[0]->id' => $this->process->id,
+            'processes->[0]->name' => $this->process->name,
+            'requests->[0]->id' => $this->instance2->id,
+            'requests->[0]->name' => $this->instance2->name,
+            'requests->[0]->parent_request_id' => $this->instance2->parent_request_id ?? 0,
+            'request_tokens->[0]' => $this->token2->id,
+            'tasks->[0]->id' => $this->token2->id,
+            'tasks->[0]->element_id' => $this->token2->element_id,
+            'tasks->[0]->name' => $this->token2->element_name,
+            'tasks->[0]->process_id' => $this->token2->process_id,
+            'participants->[0]' => $this->user->id,
+        ]);
     }
 }

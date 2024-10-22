@@ -123,7 +123,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     /**
      * Create or update an execution instance to a persistent storage.
      *
-     * @param \ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface $instance
+     * @param ExecutionInstanceInterface $instance
      */
     public function storeExecutionInstance(ExecutionInstanceInterface $instance)
     {
@@ -186,7 +186,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         // Set id
         $instance->setId($instance->getKey());
 
-        CaseStore::dispatch($instance);
+        CaseStore::dispatchSync($instance);
 
         // Persists collaboration
         $this->persistCollaboration($instance);
@@ -213,7 +213,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->mergeLatestStoredData();
         $instance->saveOrFail();
 
-        CaseUpdateStatus::dispatch($instance);
+        CaseUpdateStatus::dispatchSync($instance);
     }
 
     /**
@@ -238,6 +238,8 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         }
         $instance->mergeLatestStoredData();
         $instance->saveOrFail();
+
+        CaseUpdateStatus::dispatchSync($instance);
     }
 
     /**
@@ -262,7 +264,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->mergeLatestStoredData();
         $instance->saveOrFail();
 
-        CaseUpdateStatus::dispatch($instance);
+        CaseUpdateStatus::dispatchSync($instance);
     }
 
     /**

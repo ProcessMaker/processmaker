@@ -691,7 +691,7 @@ class ScreenController extends Controller
             $request->input('screenConfig'),
             $request->input('inputData')
         );
-        $translatedConfig = $screenTranslation->applyTranslations($screenArray);
+        $translatedConfig = $screenTranslation->applyTranslations($screenArray, $language);
 
         return $translatedConfig;
     }

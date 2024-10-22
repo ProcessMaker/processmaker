@@ -11,10 +11,12 @@ class CasesControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_edit_method_shows_correct_case_data()
+    public function test_edit_method_shows_correct_case_data_with_admin()
     {
-        // Create user
-        $user = User::factory()->create();
+        // Create user admin
+        $user = User::factory()->create([
+            'is_administrator' => true,
+        ]);
         $this->actingAs($user);
 
         // Create the main request
@@ -23,12 +25,12 @@ class CasesControllerTest extends TestCase
         ]);
 
         // Create request child
-        $childRequest = ProcessRequest::factory()->create([
+        ProcessRequest::factory()->create([
             'parent_request_id' => $parentRequest->id,
         ]);
 
         // Call the view
-        $response = $this->get(route('cases.edit', ['case_number' => $parentRequest->case_number]));
+        $response = $this->get(route('cases.show', ['case_number' => $parentRequest->case_number]));
 
         // Check the status
         $response->assertStatus(200);

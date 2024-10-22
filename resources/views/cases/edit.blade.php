@@ -10,7 +10,7 @@
 
 @section('breadcrumbs')
   @include('shared.breadcrumbs', ['routes' => [
-      __('Cases') => route('cases.index'),
+      __('Cases') => route('cases-main.index'),
       $request->case_title . ' #' . $request->case_number => null,
   ]])
 @endsection
@@ -129,6 +129,10 @@
     <!-- TODO: Replace with script injector like we do for modeler and screen builder -->
     <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
   @endif
+
+  @foreach($manager->getScripts() as $script)
+    <script src="{{$script}}"></script>
+  @endforeach
 @endsection
 
 @section('css')

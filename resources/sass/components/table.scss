@@ -1,0 +1,52 @@
+.ellipsis-devlink {
+  border-radius: 10px;
+  border: 1px solid #D7DDE5;
+}
+::v-deep .modal-style {
+  border-radius: 8px;
+}
+::v-deep .modal-header {
+  border-bottom: none;
+}
+::v-deep .modal-footer {
+  border-top: none;
+}
+::v-deep .modal-title {
+  font-size: 24px;
+  font-weight: 500;
+  color: #20242A;
+}
+::v-deep .modal-body {
+  font-size: 14px;
+  font-weight: 400;
+  color: #20242A;
+}
+::v-deep .ellipsis-devlink .btn {
+  border-radius: 10px;
+}
+::v-deep .table {
+  border-bottom: 1px solid #e9edf1;
+}
+::v-deep .table.clickable tr {
+  cursor: pointer;
+}
+::v-deep .table > thead > tr > th {
+  border-top: none;
+  background-color: #FBFBFC;
+  border-right: 1px solid rgba(0, 0, 0, 0.125);
+  color: #4E5663;
+  font-weight: 600;
+  font-size: 14px;
+}
+::v-deep .table > tbody > tr > td {
+  color: #4E5663;
+  font-size: 14px;
+  font-weight: 400;
+}
+::v-deep .table > thead > tr > th:last-child {
+  border-right: none !important;
+  border-top-right-radius: 8px;
+}
+::v-deep .table > thead > tr > th:first-child {
+  border-top-left-radius: 8px;
+}

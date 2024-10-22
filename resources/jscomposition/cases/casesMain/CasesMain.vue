@@ -7,15 +7,18 @@
       tw-border-gray-200 tw-border tw-space-y-4 tw-flex
       tw-flex-col tw-overflow-hidden tw-grow tw-shadow-md">
       <AppCounters
-        v-model="countersData"
+        :data="countersData"
+        :active="indexCounter"
         class="tw-w-full"
         @change="onChangeCounter" />
       <RouterView :key="route.fullPath" />
     </div>
   </div>
 </template>
-<script>
-import { defineComponent, ref, onMounted } from "vue";
+<script setup>
+import {
+  ref, onMounted, watch, onUnmounted,
+} from "vue";
 import { useRouter, useRoute } from "vue-router/composables";
 import AppCounters from "./components/AppCounters.vue";
 import { formatCounters } from "./utils/counters";
@@ -24,63 +27,57 @@ import { Breadcrums } from "../../system";
 import { configHomeBreadcrum } from "../../config/index";
 import { user } from "./variables";
 
-export default defineComponent({
-  components: {
-    AppCounters,
-    Breadcrums,
-  },
-  setup() {
-    const countersData = ref([]);
-    const router = useRouter();
-    const route = useRoute();
-    const pages = ref([]);
+const countersData = ref([]);
+const router = useRouter();
+const route = useRoute();
+const pages = ref([]);
+const indexCounter = ref(0);
 
-    const onChangeCounter = (counter) => {
-      if (typeof counter.url === "function") {
-        return counter.url();
-      }
+const onChangeCounter = (counter) => {
+  if (typeof counter.url === "function") {
+    return counter.url();
+  }
 
-      pages.value.pop();
-      pages.value.push({ name: counter.header, current: true });
+  router.push({ path: counter.url }).catch((e) => { });
+};
 
-      router.push({ path: counter.url }).catch((e) => { });
-    };
+const initCounters = async () => {
+  const resCounters = await getCounters({
+    params: {
+      userId: user.id,
+    },
+  });
 
-    const initCounters = async () => {
-      let currentCounter = [];
-      const resCounters = await getCounters({
-        params: {
-          userId: route.params?.id == "all" ? null : user.id,
-        },
-      });
+  countersData.value = formatCounters(resCounters);
+};
 
-      countersData.value = formatCounters(resCounters);
-      currentCounter = countersData.value.find((counter) => counter.url === route.path) ?? countersData.value[0];
+const updateBreadcrum = () => {
+  const index = indexCounter.value ?? 0;
+  pages.value = [
+    configHomeBreadcrum(),
+    { name: "Cases", href: "/cases", current: false },
+  ];
 
-      currentCounter.active = true;
-    };
+  pages.value.push({ name: countersData.value[index].header, current: true });
+};
 
-    const initBreadcrums = () => {
-      const currentCounter = countersData.value.find((e) => e.active) ?? countersData.value[0];
-      pages.value = [
-        configHomeBreadcrum(),
-        { name: "Cases", href: "/cases", current: false },
-      ];
+const updateCounter = () => {
+  indexCounter.value = countersData.value.findIndex((counter) => counter.url === route.path) ?? 0;
+};
 
-      pages.value.push({ name: currentCounter.header, current: true });
-    };
-
-    onMounted(async () => {
-      await initCounters();
-      initBreadcrums();
-    });
-
-    return {
-      countersData,
-      route,
-      onChangeCounter,
-      pages,
-    };
-  },
+const unwatchRoute = watch(() => route.path, () => {
+  updateCounter();
+  updateBreadcrum();
 });
+
+onUnmounted(() => {
+  unwatchRoute();
+});
+
+onMounted(async () => {
+  await initCounters();
+  updateBreadcrum();
+  updateCounter();
+});
+
 </script>

@@ -16,12 +16,13 @@ class ScreenTranslation extends TranslationManager
     /**
      * Apply translations to a screen.
      * @param array $screen
+     * @param string $defaultLanguage
      * @return array
      */
-    public function applyTranslations($screen)
+    public function applyTranslations($screen, $defaultLanguage = '')
     {
         $config = $screen['config'];
-        $language = $this->getTargetLanguage();
+        $language = $this->getTargetLanguage($defaultLanguage);
 
         return $this->searchTranslations($screen['screen_id'], $config, $language);
     }

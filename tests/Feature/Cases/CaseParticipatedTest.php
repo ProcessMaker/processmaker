@@ -365,4 +365,54 @@ class CaseParticipatedTest extends TestCase
             'completed_at' => now(),
         ]);
     }
+
+    public function test_update_case_title()
+    {
+        $user = User::factory()->create();
+        $user2 = User::factory()->create();
+        $process = Process::factory()->create([
+            'case_title' => 'New Expense report for {{name}}',
+        ]);
+        $instance = ProcessRequest::factory()->create([
+            'user_id' => $user->id,
+            'process_id' => $process->id,
+        ]);
+
+        $repo = new CaseRepository();
+        $repo->create($instance);
+
+        $this->assertDatabaseHas('cases_started', [
+            'user_id' => $user->id,
+            'case_number' => $instance->case_number,
+            'case_title' => $instance->case_title,
+            'case_title_formatted' => $instance->case_title_formatted,
+            'case_status' => 'IN_PROGRESS',
+        ]);
+
+        $token = ProcessRequestToken::factory()->create([
+            'user_id' => $user->id,
+            'process_request_id' => $instance->id,
+            'element_type' => 'task',
+        ]);
+        $instance->data = [
+            'name' => 'John Doe',
+        ];
+        $instance->save();
+
+        $repo->update($instance, $token);
+
+        $this->assertDatabaseCount('cases_participated', 1);
+        $this->assertDatabaseHas('cases_participated', [
+            'user_id' => $user->id,
+            'case_number' => $instance->case_number,
+            'case_title' => $instance->case_title,
+            'case_title_formatted' => $instance->case_title_formatted,
+            'case_status' => 'IN_PROGRESS',
+            'request_tokens->[0]' => $token->id,
+            'tasks->[0]->id' => $token->id,
+            'tasks->[0]->element_id' => $token->element_id,
+            'tasks->[0]->name' => $token->element_name,
+            'tasks->[0]->process_id' => $token->process_id,
+        ]);
+    }
 }

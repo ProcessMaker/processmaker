@@ -48,7 +48,7 @@ class CaseSyncRepository
                 $caseStartedRequests = CaseUtils::storeRequests(collect(), $requestData);
                 $caseStartedRequestTokens = collect();
                 $caseStartedTasks = collect();
-                $participants = $instance->participants->map->only('id', 'fullName', 'title', 'avatar');
+                $participants = $instance->participants->pluck('id');
                 $status = $instance->status === CaseStatusConstants::ACTIVE ? CaseStatusConstants::IN_PROGRESS : $instance->status;
 
                 $caseParticipatedData = self::prepareCaseStartedData($instance, $status, $participants);
@@ -214,8 +214,8 @@ class CaseSyncRepository
             $caseStartedRequests = CaseUtils::storeRequests($caseStartedRequests, $requestData);
 
             $participants = $participants
-                ->merge($subProcess->participants->map->only('id', 'fullName', 'title', 'avatar'))
-                ->unique('id')
+                ->merge($subProcess->participants->pluck('id'))
+                ->unique()
                 ->values();
 
             foreach ($subProcess->tokens as $spToken) {

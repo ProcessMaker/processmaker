@@ -148,6 +148,7 @@
                 </li>
             </ol>
             <language-selector-button
+                id="language-navbar"
                 class="ml-2"
                 :type="'navbar'"
                 :show-language-code="false">

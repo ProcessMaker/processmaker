@@ -3,6 +3,7 @@ import { ref, onMounted, getCurrentInstance } from 'vue';
 import debounce from 'lodash/debounce';
 import { useRouter, useRoute } from 'vue-router/composables';
 import InstanceTabs from './InstanceTabs.vue';
+import InstallProgress from './InstallProgress.vue';
 
 const vue = getCurrentInstance().proxy;
 const router = useRouter();
@@ -11,22 +12,31 @@ const route = useRoute();
 const bundles = ref([]);
 const filter = ref("");
 const warnings = ref([]);
+const showInstallModal = ref(false);
+const confirmUpdateVersion = ref(null);
+const selectedOption = ref('update');
+const bundleAttributes = {
+  id: null,
+  name: '',
+  published: false,
+};
+const selected = ref(bundleAttributes);
 const fields = [
   {
     key: 'name',
-    label: 'Name'
+    label: vue.$t('Name')
   },
   {
     key: 'version',
-    label: 'Version'
+    label: vue.$t('Version')
   },
   {
     key: 'created_at',
-    label: 'Creation Date'
+    label: vue.$t('Creation Date')
   },
   {
     key: 'updated_at',
-    label: 'Last Modification Date'
+    label: vue.$t('Last Modified')
   },
   {
     key: 'menu',
@@ -46,6 +56,11 @@ const closeModal = () => {
   $("#warningsModal").modal("hide");
 };
 
+const updateVersionBundle = (bundle) => {
+  selected.value = bundle;
+  confirmUpdateVersion.value.show();
+};
+
 const load = () => {
   ProcessMaker.apiClient
     .get(`/devlink/${route.params.id}/remote-bundles?filter=${filter.value}`)
@@ -63,28 +78,40 @@ const handleFilterChange = () => {
 };
 
 const install = (bundle) => {
-  vue.$bvModal.msgBoxConfirm('Are you sure you want to install this bundle?').then((confirm) => {
+  vue.$bvModal.msgBoxConfirm(vue.$t('Are you sure you want to install this bundle?'), {
+    okTitle: vue.$t('Ok'),
+    cancelTitle: vue.$t('Cancel')
+  }).then((confirm) => {
     if (confirm) {
+      showInstallModal.value = true;
       ProcessMaker.apiClient
         .post(`/devlink/${route.params.id}/remote-bundles/${bundle.id}/install`)
         .then((response) => {
-          warnings.value = response.data.warnings_devlink;
-          if (warnings.value.length > 0) {
-            showModal();
-          }
-          window.ProcessMaker.alert('Bundle successfully installed', "success");
+          // Handle the response as needed
         });
     }
   });
+};
+const executeUpdate = (updateType) => {
+  showInstallModal.value = true;
+  ProcessMaker.apiClient
+    .post(`/devlink/${route.params.id}/remote-bundles/${selected.value.id}/install`, {
+      updateType,
+    })
+    .then((response) => {
+      // Handle the response as needed
+    });
 };
 
 </script>
 
 <template>
   <div>
-    <instance-tabs />
-    <div class="top-options">
-      <input v-model="filter" class="form-control col-10 search-input" @input="handleFilterChange">
+    <instance-tabs ><template #bundles>
+    <div class="top-options row">
+      <div class="col">
+        <input v-model="filter" class="form-control search-input" @input="handleFilterChange">
+      </div>
     </div>
     <div class="card instance-card">
       <b-table
@@ -96,7 +123,7 @@ const install = (bundle) => {
           <div class="btn-menu-container">
             <button
               class="btn install-bundle-btn"
-              @click.prevent="install(data.item)"
+              @click.prevent="updateVersionBundle(data.item)"
             >
               <i class="fp-cloud-download-outline"></i>
             </button>
@@ -124,46 +151,58 @@ const install = (bundle) => {
         </div>
       </div>
     </div>
-  </div>
+    <b-modal
+      ref="confirmUpdateVersion"
+      centered
+      size="lg"
+      content-class="modal-style"
+      :title="$t('Update Bundle Version')"
+      :ok-title="$t('Continue')"
+      :cancel-title="$t('Cancel')"
+      @ok="executeUpdate(selectedOption)"
+    >
+      <div>
+        <p class="mb-4">Select how you want to update the bundle <strong>Testing Processes and Assets</strong></p>
 
+        <b-form-group>
+          <b-form-radio-group v-model="selectedOption" name="bundleUpdateOptions">
+            <b-form-radio
+              class="mb-4"
+              value="update"
+            >
+              {{ $t('Quick Update') }}
+              <p class="text-muted">{{ $t('The current bundle will be replaced completely for the new version immediately.') }}</p>
+            </b-form-radio>
+
+            <b-form-radio value="copy">
+              {{ $t('Copy Changes') }}
+              <p class="text-muted">{{ $t('Copy and update bundle.') }}</p>
+            </b-form-radio>
+          </b-form-radio-group>
+        </b-form-group>
+      </div>
+    </b-modal>
+    <b-modal id="install-progress" size="lg" v-model="showInstallModal" :title="$t('Installation Progress')" hide-footer>
+      <install-progress />
+    </b-modal>
+    </template></instance-tabs>
+  </div>
 </template>
 
 <style lang="scss" scoped>
 .top-options {
-  display: flex;
-  justify-content: space-between;
   padding-bottom: 16px;
+
+  .search-input {
+    background: url(/img/search-icon.svg) no-repeat left;
+    background-position: 7px 8px;
+    background-size: 15px;
+    border-radius: 8px;
+  }
 }
-.search-input {
-  padding-left: 30px;
-  background: url(/img/search-icon.svg) no-repeat left;
-  background-position: 7px 8px;
-  background-size: 15px;
-  border-radius: 8px;
-}
-::v-deep .table {
-  border-bottom: 1px solid #e9edf1;
-}
-::v-deep .table > thead > tr > th {
-  border-top: none;
-  background-color: #FBFBFC;
-  border-right: 1px solid rgba(0, 0, 0, 0.125);
-  color: #4E5663;
-  font-weight: 600;
-  font-size: 14px;
-}
-::v-deep .table > tbody > tr > td {
-  color: #4E5663;
-  font-size: 14px;
-  font-weight: 400;
-}
-::v-deep .table > thead > tr > th:last-child {
-  border-right: none !important;
-  border-top-right-radius: 8px;
-}
-::v-deep .table > thead > tr > th:first-child {
-  border-top-left-radius: 8px;
-}
+
+@import "styles/components/table";
+
 .instance-card {
   border-radius: 8px;
   min-height: calc(-355px + 100vh);
