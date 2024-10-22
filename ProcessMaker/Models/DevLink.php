@@ -25,6 +25,8 @@ class DevLink extends ProcessMakerModel
         'state',
     ];
 
+    protected $appends = ['redirect_uri'];
+
     public static function boot()
     {
         parent::boot();
@@ -36,11 +38,16 @@ class DevLink extends ProcessMakerModel
         });
     }
 
+    public function getRedirectUriAttribute()
+    {
+        return route('devlink.index');
+    }
+
     public function getClientUrl()
     {
         $params = [
             'devlink_id' => $this->id,
-            'redirect_uri' => route('devlink.index'),
+            'redirect_uri' => $this->redirect_uri,
         ];
 
         return $this->url . route('devlink.oauth-client', $params, false);
@@ -50,7 +57,7 @@ class DevLink extends ProcessMakerModel
     {
         $params = http_build_query([
             'client_id' => $this->client_id,
-            'redirect_uri' => route('devlink.index'),
+            'redirect_uri' => $this->redirect_uri,
             'response_type' => 'code',
             'state' => $this->generateNewState(),
         ]);
@@ -91,6 +98,13 @@ class DevLink extends ProcessMakerModel
         );
     }
 
+    public function remoteBundle($bundleId)
+    {
+        return $this->client()->get(
+            route('api.devlink.local-bundle', ['bundle' => $bundleId], false)
+        );
+    }
+
     public function remoteAssetsListing($request)
     {
         return $this->client()->get(
@@ -100,7 +114,7 @@ class DevLink extends ProcessMakerModel
         );
     }
 
-    public function installRemoteBundle($bundleId)
+    public function installRemoteBundle($bundleId, $updateType)
     {
         if (!$this->logger) {
             $this->logger = new Logger();
@@ -108,9 +122,7 @@ class DevLink extends ProcessMakerModel
 
         $this->logger->status(__('Downloading bundle from remote instance'));
 
-        $bundleInfo = $this->client()->get(
-            route('api.devlink.local-bundle', ['bundle' => $bundleId], false)
-        )->json();
+        $bundleInfo = $this->remoteBundle($bundleId)->json();
 
         $bundleExport = $this->client()->get(
             route('api.devlink.export-local-bundle', ['bundle' => $bundleId], false)
@@ -131,20 +143,28 @@ class DevLink extends ProcessMakerModel
         $this->logger->status('Installing bundle on the this instance');
         $this->logger->setSteps($bundleExport['payloads']);
 
+        $options = [
+            'mode' => $updateType,
+            'saveAssetsMode' => 'saveAllAssets',
+            'isTemplate' => false,
+        ];
         $assets = [];
         foreach ($bundleExport['payloads'] as $payload) {
-            $assets[] = $this->import($payload);
+            $assets[] = $this->import($payload, $options);
         }
 
-        $this->logger->status('Syncing bundle assets');
-        $bundle->syncAssets($assets);
+        if ($updateType === 'update') {
+            $this->logger->status('Syncing bundle assets');
+            $bundle->syncAssets($assets);
+        }
 
         $this->logger->setStatus('done');
     }
 
-    private function import(array $payload)
+    private function import(array $payload, $options = null)
     {
-        $importer = new Importer($payload, new Options([]), $this->logger);
+        $options = $options === null ? new Options([]) : new Options($options);
+        $importer = new Importer($payload, $options, $this->logger);
         $manifest = $importer->doImport();
 
         return $manifest[$payload['root']]->model;

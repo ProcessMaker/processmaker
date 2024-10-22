@@ -8,6 +8,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Jobs\DevLinkInstall;
 use ProcessMaker\Models\Bundle;
+use ProcessMaker\Models\BundleAsset;
 use ProcessMaker\Models\DevLink;
 use ProcessMaker\Models\Setting;
 
@@ -55,10 +56,7 @@ class DevLinkController extends Controller
         $devLink->url = $request->input('url');
         $devLink->saveOrFail();
 
-        return [
-            ...$devLink->toArray(),
-            'redirect_uri' => route('devlink.index'),
-        ];
+        return $devLink;
     }
 
     public function update(Request $request, DevLink $devLink)
@@ -141,8 +139,18 @@ class DevLinkController extends Controller
 
     public function updateBundle(Request $request, Bundle $bundle)
     {
+        $bundle->validateEditable();
+
         $bundle->name = $request->input('name');
         $bundle->published = (bool) $request->input('published', false);
+        $bundle->version = $bundle->version + 1;
+        $bundle->saveOrFail();
+
+        return $bundle;
+    }
+
+    public function increaseBundleVersion(Bundle $bundle)
+    {
         $bundle->version = $bundle->version + 1;
         $bundle->saveOrFail();
 
@@ -156,11 +164,12 @@ class DevLinkController extends Controller
 
     public function installRemoteBundle(Request $request, DevLink $devLink, $remoteBundleId)
     {
+        $updateType = $request->input('updateType', 'update');
         DevLinkInstall::dispatch(
             $request->user()->id,
             $devLink->id,
             $remoteBundleId,
-            'update'
+            $updateType
         );
     }
 
@@ -226,5 +235,17 @@ class DevLinkController extends Controller
             $request->input('class'),
             $request->input('id')
         );
+    }
+
+    public function remoteBundleVersion(DevLink $devLink, $remoteBundleId)
+    {
+        return $devLink->remoteBundle($remoteBundleId);
+    }
+
+    public function deleteBundleAsset(BundleAsset $bundleAsset)
+    {
+        $bundleAsset->delete();
+
+        return response()->json(['message' => 'Bundle asset association deleted.'], 200);
     }
 }
