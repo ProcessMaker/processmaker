@@ -27,7 +27,7 @@ class ScreenTemplatesFactory extends Factory
         return [
             'unique_template_id' => '',
             'name' => $this->faker->unique()->name(),
-            'description' => $this->faker->unique()->sentence(20),
+            'description' => $this->faker->unique()->text(100),
             'user_id' => User::factory()->create()->getKey(),
             'editing_screen_uuid' => null,
             'screen_type' => 'FORM',

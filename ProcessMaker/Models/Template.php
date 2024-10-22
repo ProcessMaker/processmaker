@@ -119,19 +119,26 @@ class Template extends ProcessMakerModel
         return $this->belongsTo($categoryClass, $categoryColumn)->withDefault();
     }
 
-    public static function rules($existing = null, $table = null)
+    /**
+     * Generate validation rules for the Template model.
+     *
+     * @param mixed $existing The existing record to ignore during uniqueness check.
+     * @param string|null $table The table name to use for the uniqueness check. Defaults to 'templates'.
+     */
+    public static function rules($existing = null, $table = null): array
     {
         $user = Auth::user();
-
-        $unique = Rule::unique($table ?? 'templates')->where(function ($query) use ($user, $table) {
-            if ($table === 'screen_templates') {
-                return $query->where('user_id', $user->id)->where('is_public', 0);
-            }
-        })->ignore($existing);
+        $unique = Rule::unique($table ?? 'templates')
+            ->where(function ($query) use ($user, $table) {
+                if ($table === 'screen_templates') {
+                    return $query->where('user_id', $user->id)->where('is_public', 0);
+                }
+            })
+            ->ignore($existing);
 
         return [
             'name' => ['required', $unique, 'alpha_spaces', 'max:255'],
-            'description' => 'required',
+            'description' => ['required', 'string', 'max:100'],
             'version' => ['required', 'regex:/^[0-9.]+$/'],
         ];
     }
