@@ -3,7 +3,23 @@
 @tailwind utilities;
 
 @layer base {
-    a{
-      color: #0872C2;
+    /* Tailwind preflight is disabled by default
+      In order to make it easy to add a border by simply adding the border class,
+      Tailwind overrides the default border styles for all elements with the following rules: */
+    *,
+    ::before,
+    ::after {
+      border-width: 0;
+      border-style: solid;
+      border-color: theme('borderColor.DEFAULT', currentColor);
+    }
+
+    /* Ordered and unordered lists are unstyled by default,
+      with no bullets/numbers and no margin or padding. */
+    ol,
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
     }
   }
