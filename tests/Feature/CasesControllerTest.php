@@ -11,10 +11,12 @@ class CasesControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_edit_method_shows_correct_case_data()
+    public function test_edit_method_shows_correct_case_data_with_admin()
     {
-        // Create user
-        $user = User::factory()->create();
+        // Create user admin
+        $user = User::factory()->create([
+            'is_administrator' => true,
+        ]);
         $this->actingAs($user);
 
         // Create the main request
