@@ -6,6 +6,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Events\ProcessArchived;
 use ProcessMaker\Events\ProcessCreated;
 use ProcessMaker\Events\ProcessPublished;
@@ -36,6 +37,7 @@ use ProcessMaker\Models\Script;
 use ProcessMaker\Models\Template;
 use ProcessMaker\Nayra\Exceptions\ElementNotFoundException;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
+use ProcessMaker\Package\Translations\Models\Language;
 use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 use ProcessMaker\Rules\BPMNValidation;
@@ -149,6 +151,7 @@ class ProcessController extends Controller
         if ($request->input('simplified_data_for_selector', false)) {
             $fields = $this->getRequestFields($request);
             $processes = $processes->select($fields);
+
             return new ApiCollection($processes->get());
         }
 
@@ -483,8 +486,8 @@ class ProcessController extends Controller
         if ($request->has('manager_id')) {
             $process->manager_id = $request->input('manager_id', null);
         }
-        
-        if($request->has('reassignment_users')) {
+
+        if ($request->has('reassignment_users')) {
             $process->setProperty('reassignment_users', $request->get('reassignment_users'));
         }
 
@@ -510,9 +513,16 @@ class ProcessController extends Controller
 
         // Save default language for anon web entry...
         if ($request->has(['default_for_anon_webentry', 'language_code'])) {
-            $process->default_anon_web_language = $request->input('default_for_anon_webentry') 
-                ? $request->input('language_code') 
+            $process->default_anon_web_language = $request->input('default_for_anon_webentry')
+                ? $request->input('language_code')
                 : null;
+
+            if (class_exists(Language::class)) {
+                $language = Language::where('code', $request->input('language_code'))->first();
+                if ($language) {
+                    Cache::put('LANGUAGE_ANON_WEBENTRY', $language, 120);
+                }
+            }
         }
 
         $isTemplate = Process::select('is_template')->where('id', $process->id)->value('is_template');
