@@ -126,6 +126,10 @@
     const comentable_type = @json(get_class($request));
   </script>
   <script src="{{mix('js/composition/cases/casesDetail/edit.js')}}"></script>
+
+  @foreach($manager->getScripts() as $script)
+    <script src="{{$script}}"></script>
+  @endforeach
 @endsection
 
 @section('css')
