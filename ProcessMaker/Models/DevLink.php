@@ -79,14 +79,30 @@ class DevLink extends ProcessMakerModel
         return $uuid;
     }
 
-    public function remoteBundles($request)
+    public function remoteBundles(string|null $filter)
     {
-        return $this->client()->get(
-            route('api.devlink.local-bundles',
-                ['published' => true,
-                    'filter' => $request->input('filter')],
-                false)
-        );
+        $params = [
+            'published' => true,
+        ];
+
+        if (!empty($filter)) {
+            $params['filter'] = $filter;
+        }
+
+        $result = $this->client()->get(
+            route('api.devlink.local-bundles', $params, false)
+        )->json();
+
+        $existingBundleRemoteIds = Bundle::where('dev_link_id', $this->id)->pluck('remote_id')->toArray();
+
+        // add is_installed property to the data
+        $result['data'] = array_map(function ($bundle) use ($existingBundleRemoteIds) {
+            $bundle['is_installed'] = in_array($bundle['id'], $existingBundleRemoteIds);
+
+            return $bundle;
+        }, $result['data']);
+
+        return $result;
     }
 
     public function remoteAssets($request)

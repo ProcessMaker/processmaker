@@ -123,7 +123,7 @@ class DevLinkController extends Controller
 
     public function remoteBundles(Request $request, DevLink $devLink)
     {
-        return $devLink->remoteBundles($request);
+        return $devLink->remoteBundles($request->input('filter'));
     }
 
     public function createBundle(Request $request)
