@@ -106,7 +106,7 @@ class DevLinkTest extends TestCase
         ]);
 
         Http::fake([
-            'http://remote-instance.test/api/1.0/devlink/local-bundles?published=1&filter=' => Http::response([
+            'http://remote-instance.test/api/1.0/devlink/local-bundles?published=1' => Http::response([
                 'data' => [
                     [
                         'id' => $existingInstalledRemoteBundle->remote_id,
@@ -118,7 +118,7 @@ class DevLinkTest extends TestCase
             ]),
         ]);
 
-        $bundles = $devLink->remoteBundles();
+        $bundles = $devLink->remoteBundles(null);
         $this->assertCount(2, $bundles['data']);
         $this->assertEquals($bundles['data'][0]['is_installed'], true);
         $this->assertEquals($bundles['data'][1]['is_installed'], false);
