@@ -5,6 +5,7 @@ import Origin from './Origin.vue';
 import VersionCheck from './VersionCheck.vue';
 import EllipsisMenu from '../../../components/shared/EllipsisMenu.vue';
 import BundleModal, { show as showBundleModal, hide as hideBundleModal } from './BundleModal.vue';
+import InstallProgress from './InstallProgress.vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 
 const vue = getCurrentInstance().proxy;
