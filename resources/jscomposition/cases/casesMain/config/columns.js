@@ -124,8 +124,26 @@ export const statusColumn = () => ({
     component: StatusCell,
   }),
   filter: {
-    dataType: "string",
+    dataType: "enum",
     operators: ["="],
+    config: {
+      options: [{
+        label: "In progress",
+        value: "in_progress",
+      },
+      {
+        label: "Completed",
+        value: "completed",
+      },
+      {
+        label: "Error",
+        value: "error",
+      },
+      {
+        label: "Canceled",
+        value: "canceled",
+      }],
+    },
   },
 });
 

@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layout',['content_margin' => 'tw-flex !tw-overflow-hidden'])
 
 @section('meta')
   <meta name="request-id" content="{{ $task->processRequest->id }}">
@@ -27,17 +27,17 @@
       ], 'attributes' => 'v-cloak'])
 @endsection
 @section('content')
-  <div id="task" v-cloak>
+  <div id="task" v-cloak class="tw-flex tw-w-full tw-grow">
     <div class="menu-mask" :class="{ 'menu-open': showMenu }"></div>
-    <div class="info-main" :class="{ 'menu-open': showMenu }">
-      <div v-cloak class="container-fluid px-3">
-          <div class="d-flex flex-column flex-md-row container-height">
-              <div class="flex-grow-1">
+    <div class="info-main" :class="['tw-w-full tw-flex tw-grow',{ 'menu-open': showMenu }]">
+      <div v-cloak class="tw-flex tw-w-full tw-grow">
+          <div class="tw-flex tw-w-full tw-grow">
+              <div class="tw-flex tw-flex-col tw-grow">
                   <div v-if="isSelfService" class="alert alert-primary" role="alert">
                       <button type="button" class="btn btn-primary" @click="claimTask">{{__('Claim Task')}}</button>
                       {{__('This task is unassigned, click Claim Task to assign yourself.')}}
                   </div>
-                  <div class="container-fluid h-100 d-flex flex-column" id="interactionListener">
+                  <div class="tw-flex tw-flex-col tw-grow tw-overflow-hidden" id="interactionListener">
                       @can('editData', $task->processRequest)
                           <ul v-if="task.process_request.status === 'ACTIVE'" id="tabHeader" role="tablist" class="nav nav-tabs">
                               <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab"
@@ -49,8 +49,8 @@
                                                       class="nav-link">{{__('Data')}}</a></li>
                           </ul>
                       @endcan
-                      <div id="tabContent" class="tab-content flex-grow-1">
-                          <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show h-100">
+                      <div id="tabContent" class="tab-content tw-flex tw-flex-col tw-grow tw-overflow-y-scroll">
+                          <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show">
                             @can('update', $task)
                               <task
                                 ref="task"
@@ -139,7 +139,7 @@
                     >
                         <div class="ml-md-3 mt-3 mt-md-0">
                           <div class="card collapse-content">
-                            <ul class="list-group list-group-flush w-100">
+                            <ul class="list-group list-group-flush w-100 tw-overflow-y-auto">
                               <li class="list-group-item">
                                 <div
                                   v-if="taskDraftsEnabled"
@@ -1062,9 +1062,6 @@
   }
   .launchpad-link {
     margin-top: 5px;
-  }
-  .container-height {
-    height: calc(100vh - 200px);
   }
 </style>
 @endsection

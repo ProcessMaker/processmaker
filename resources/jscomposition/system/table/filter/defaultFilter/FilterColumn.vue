@@ -23,6 +23,7 @@
               :value="filterOperator"
               :operators="filter.operators"
               :type="filter.dataType"
+              :config="filter.config"
               @change="(e) => onChangeFilterOperator(e)" />
           </div>
 

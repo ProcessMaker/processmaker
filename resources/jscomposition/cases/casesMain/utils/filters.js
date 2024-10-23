@@ -12,6 +12,11 @@ export const formatFilters = (filters) => {
       value = e.value.map((o) => o.value);
     }
 
+    // Case status is a filter dropdown
+    if (e.field === "case_status") {
+      value = e.value.value;
+    }
+
     return {
       subject: {
         type: "Field",
@@ -37,6 +42,11 @@ export const formatFilterBadges = (filters, columns) => {
 
     if (e.operator === "between" || e.operator === "in") {
       value = e.value.map((o) => o.value);
+    }
+
+    // Case status is a filter dropdown
+    if (e.field === "case_status") {
+      value = e.value.label;
     }
 
     // Format datetime value to badges
