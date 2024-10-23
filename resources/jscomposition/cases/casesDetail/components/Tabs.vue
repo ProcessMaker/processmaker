@@ -18,7 +18,7 @@
         </a>
       </template>
     </nav>
-    <div class="tw-flex tw-grow tw-overflow-hidden">
+    <div class="tw-flex tw-grow tw-overflow-x-hidden tw-overflow-y-auto">
       <slot :name="`${tabSelected}`">
         <component :is="content" />
       </slot>
