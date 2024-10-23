@@ -19,9 +19,10 @@
 <div
   id="case-detail"
   class="tw-p-4 tw-flex tw-overflow-hidden tw-space-x-2 tw-grow tw-h-full"
+  v-cloak
 >
     <case-detail class="tw-overflow-hidden tw-border tw-border-gray-200 tw-shadow-md tw-px-3
-      tw-flex-1 tw-bg-white tw-rounded-2xl">
+      tw-flex-1 tw-bg-white tw-rounded-2xl" v-cloak>
     </case-detail>
     <collapsable-container
       v-model="collapseContainer"
@@ -125,10 +126,6 @@
     const comentable_type = @json(get_class($request));
   </script>
   <script src="{{mix('js/composition/cases/casesDetail/edit.js')}}"></script>
-
-  @foreach($manager->getScripts() as $script)
-    <script src="{{$script}}"></script>
-  @endforeach
 @endsection
 
 @section('css')
