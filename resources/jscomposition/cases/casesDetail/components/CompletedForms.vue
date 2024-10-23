@@ -77,7 +77,7 @@ const getData = async () => {
       case_number: getCaseNumber(),
       status: "CLOSED",
       includeScreen: 1,
-      orderBy: filter.value?.field,
+      order_by: filter.value?.field,
       order_direction: filter.value?.filter,
       page: dataPagination.value.page,
       per_page: dataPagination.value.perPage,

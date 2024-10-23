@@ -51,7 +51,7 @@ const getData = async () => {
       case_number: getCaseNumber(),
       status: "ACTIVE",
       include: "activeTasks",
-      orderBy: filter.value?.field,
+      order_by: filter.value?.field,
       order_direction: filter.value?.value,
       page: dataPagination.value.page,
       per_page: dataPagination.value.perPage,
