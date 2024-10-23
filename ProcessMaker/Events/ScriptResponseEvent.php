@@ -65,7 +65,7 @@ class ScriptResponseEvent implements ShouldBroadcastNow
     public function broadcastWith()
     {
         $date = new Carbon();
-        $response = $this->cacheResponse($this->response);
+        $response = $this->cacheResponse();
 
         return [
             'type' => '.' . \get_class($this),

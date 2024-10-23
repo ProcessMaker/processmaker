@@ -145,7 +145,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
      * @param array $data
      * @param array $config
      */
-    public function runScript(array $data, array $config, $tokenId = '', $timeout = null, $sync = 1, $metadata = [])
+    public function runScript(array $data, array $config, $tokenId = '', $timeout = null, bool $sync = true, $metadata = [])
     {
         if (!$timeout) {
             $timeout = $this->timeout;

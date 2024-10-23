@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\Events\ScriptResponseEvent;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
@@ -61,10 +62,10 @@ class TestScript implements ShouldQueue
             // Just set the code but do not save the object (preview only)
             $this->script->code = $this->code;
             $this->script->nonce = $this->nonce;
-            $response = $this->script->runScript($this->data, $this->configuration);
+            $response = $this->script->runScript($this->data, $this->configuration, '', null, false);
+            \Log::debug('Response api microservice: ' . print_r($response, true));
 
-            // Todo compare if executor is custom $executor->type = 'custom'
-            if (!config('script-runner-microservice.base_url')) {
+            if ($this->script->scriptExecutor && $this->script->scriptExecutor->type === ScriptExecutorType::Custom) {
                 $this->sendResponse(200, $response);
             }
         } catch (Throwable $exception) {

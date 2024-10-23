@@ -3,6 +3,7 @@
 namespace ProcessMaker\ScriptRunners;
 
 use Illuminate\Contracts\Container\BindingResolutionException;
+use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptExecutor;
@@ -50,9 +51,7 @@ class ScriptRunner
     private function getScriptRunner(ScriptExecutor $executor): Base|ScriptMicroserviceRunner
     {
         // Todo compare if executor is custom $executor->type = 'custom'
-        if (config('script-runner-microservice.base_url')) {
-            return new ScriptMicroserviceRunner($this->script);
-        } else {
+        if ($executor->type === ScriptExecutorType::Custom) {
             $language = strtolower($executor->language);
             $runner = config("script-runners.{$language}.runner");
             if (!$runner) {
@@ -62,6 +61,8 @@ class ScriptRunner
 
                 return app()->make($class, ['scriptExecutor' => $executor]);
             }
+        } else {
+            return new ScriptMicroserviceRunner($this->script);
         }
     }
 

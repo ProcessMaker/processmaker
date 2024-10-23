@@ -5,6 +5,7 @@ namespace ProcessMaker\Jobs;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\Exception\ConfigurationException;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Facades\WorkflowManager;
@@ -68,6 +69,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
         }
 
         $errorHandling = null;
+        $scriptExecutor = null;
         try {
             if (empty($scriptRef)) {
                 $code = $element->getScript();
@@ -86,6 +88,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
                 if (!$script) {
                     throw new ConfigurationException(__('Script ":id" not found', ['id' => $scriptRef]));
                 }
+                $scriptExecutor = $script->scriptExecutor;
                 $script = $script->versionFor($instance);
             }
 
@@ -102,10 +105,9 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
                     'token_id' => $this->tokenId,
                 ],
             ];
-            $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling->timeout(), 0, $metadata);
+            $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling->timeout(), false, $metadata);
 
-            // Todo compare if executor is custom $executor->type = 'custom'
-            if (!config('script-runner-microservice.base_url')) {
+            if ($scriptExecutor && $scriptExecutor->type === ScriptExecutorType::Custom) {
                 $this->updateData($response);
             }
         } catch (ConfigurationException $exception) {

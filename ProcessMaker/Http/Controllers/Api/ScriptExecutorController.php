@@ -103,6 +103,7 @@ class ScriptExecutorController extends Controller
      */
     public function store(Request $request)
     {
+        $request->request->add(['type' => 'custom']);
         $this->checkAuth($request);
         $request->validate(ScriptExecutor::rules());
 
