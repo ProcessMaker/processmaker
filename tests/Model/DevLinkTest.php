@@ -91,4 +91,36 @@ class DevLinkTest extends TestCase
         $this->assertEquals('Screen 1', $bundle->assets[0]->asset->title);
         $this->assertEquals('Screen 2', $bundle->assets[1]->asset->title);
     }
+
+    public function testRemoteBundles()
+    {
+        Http::preventStrayRequests();
+
+        $devLink = DevLink::factory()->create([
+            'url' => 'http://remote-instance.test',
+        ]);
+
+        $existingInstalledRemoteBundle = Bundle::factory()->create([
+            'dev_link_id' => $devLink->id,
+            'remote_id' => 123,
+        ]);
+
+        Http::fake([
+            'http://remote-instance.test/api/1.0/devlink/local-bundles?published=1&filter=' => Http::response([
+                'data' => [
+                    [
+                        'id' => $existingInstalledRemoteBundle->remote_id,
+                    ],
+                    [
+                        'id' => 456,
+                    ],
+                ],
+            ]),
+        ]);
+
+        $bundles = $devLink->remoteBundles();
+        $this->assertCount(2, $bundles['data']);
+        $this->assertEquals($bundles['data'][0]['is_installed'], true);
+        $this->assertEquals($bundles['data'][1]['is_installed'], false);
+    }
 }
