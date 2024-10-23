@@ -371,7 +371,7 @@ class CaseParticipatedTest extends TestCase
         $user = User::factory()->create();
         $user2 = User::factory()->create();
         $process = Process::factory()->create([
-            'case_title' => 'New Expense report for {{name}}'
+            'case_title' => 'New Expense report for {{name}}',
         ]);
         $instance = ProcessRequest::factory()->create([
             'user_id' => $user->id,
@@ -395,7 +395,7 @@ class CaseParticipatedTest extends TestCase
             'element_type' => 'task',
         ]);
         $instance->data = [
-            'name' => 'John Doe'
+            'name' => 'John Doe',
         ];
         $instance->save();
 

@@ -5,6 +5,7 @@ namespace ProcessMaker\ProcessTranslations;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Package\Translations\Models\Language;
+use ProcessMaker\Package\Translations\Models\Translatable;
 
 class TranslationManager
 {

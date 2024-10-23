@@ -8,8 +8,8 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\SanitizeHelper;
 use ProcessMaker\Models\TaskDraft;
+use ProcessMaker\SanitizeHelper;
 
 class TaskDraftController extends Controller
 {
@@ -20,6 +20,7 @@ class TaskDraftController extends Controller
 
         if ($draft) {
             $draftData = $draft->data;
+
             return new ApiResource($draftData);
         }
 
@@ -33,12 +34,13 @@ class TaskDraftController extends Controller
         // Do not overwrite __deleted_files
         $deletedFiles = Arr::get($draft->data, '__deleted_files');
         $data = json_decode($request->getContent(), true);
-        $data = SanitizeHelper::sanitizeData( $data, null, $task->processRequest->do_not_sanitize ?? []);
+        $data = SanitizeHelper::sanitizeData($data, null, $task->processRequest->do_not_sanitize ?? []);
         if ($deletedFiles) {
             $data['__deleted_files'] = $deletedFiles;
         }
         $draft->data = $data;
         $draft->saveOrFail();
+
         return new ApiResource($draft);
     }
 
