@@ -12,7 +12,7 @@ export const formatFilters = (filters) => {
       value = e.value.map((o) => o.value);
     }
 
-    // Case status is a filter dropdown
+    // Case status is a dropdown filter, using for the API
     if (e.field === "case_status") {
       value = e.value.value;
     }
@@ -44,7 +44,7 @@ export const formatFilterBadges = (filters, columns) => {
       value = e.value.map((o) => o.value);
     }
 
-    // Case status is a filter dropdown
+    // Case status is a dropdown filter, using with badges
     if (e.field === "case_status") {
       value = e.value.label;
     }

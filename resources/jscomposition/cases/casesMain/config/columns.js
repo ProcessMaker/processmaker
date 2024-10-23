@@ -6,6 +6,7 @@ import {
   LinkCell,
 } from "../../../system/index";
 import { formatDate } from "../../../utils";
+import { t } from "i18next";
 
 export default {};
 /**
@@ -128,19 +129,19 @@ export const statusColumn = () => ({
     operators: ["="],
     config: {
       options: [{
-        label: "In progress",
+        label: t("In progress"),
         value: "in_progress",
       },
       {
-        label: "Completed",
+        label: t("Completed"),
         value: "completed",
       },
       {
-        label: "Error",
+        label: t("Error"),
         value: "error",
       },
       {
-        label: "Canceled",
+        label: t("Canceled"),
         value: "canceled",
       }],
     },
