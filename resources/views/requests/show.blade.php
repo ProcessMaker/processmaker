@@ -935,12 +935,6 @@
     text-transform: uppercase;
     margin-bottom: 0.5rem;
   }
-  .collapse-content {
-    min-width:0px;
-    max-width:400px;
-    width:315px;
-    height: calc(100vh - 200px);
-  }
   .active-style {
     background-color: #4ea075;
   }
