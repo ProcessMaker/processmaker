@@ -4,6 +4,7 @@ import {
   ParticipantsCell,
   StatusCell,
   LinkCell,
+  TruncatedColumn,
 } from "../../../system/index";
 import { formatDate } from "../../../utils";
 
@@ -71,11 +72,8 @@ export const processColumn = () => ({
   resizable: true,
   width: 200,
   cellRenderer: () => ({
-    component: TruncatedOptionsCell,
+    component: TruncatedColumn,
     params: {
-      click: (option, row, column, columns) => {
-        window.document.location = `/tasks/${option.id}/edit`;
-      },
       formatterOptions: (option, row, column, columns) => option.name,
     },
   }),
