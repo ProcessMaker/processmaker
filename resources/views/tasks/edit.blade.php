@@ -27,9 +27,13 @@
       ], 'attributes' => 'v-cloak'])
 @endsection
 @section('content')
-  <div id="task" v-cloak class="tw-flex tw-w-full tw-grow">
-    <div class="menu-mask" :class="{ 'menu-open': showMenu }"></div>
-    <div class="info-main" :class="['tw-w-full tw-flex tw-grow',{ 'menu-open': showMenu }]">
+  <div id="task"
+    v-cloak
+    class="tw-flex tw-w-full tw-grow">
+    <div class="menu-mask"
+      :class="{ 'menu-open': showMenu }"></div>
+    <div class="info-main"
+      :class="['tw-w-full tw-flex tw-grow',{ 'menu-open': showMenu }]">
       <div v-cloak class="tw-flex tw-w-full tw-grow">
           <div class="tw-flex tw-w-full tw-grow">
               <div class="tw-flex tw-flex-col tw-grow">
@@ -37,7 +41,8 @@
                       <button type="button" class="btn btn-primary" @click="claimTask">{{__('Claim Task')}}</button>
                       {{__('This task is unassigned, click Claim Task to assign yourself.')}}
                   </div>
-                  <div class="tw-flex tw-flex-col tw-grow tw-overflow-hidden" id="interactionListener">
+                  <div id="interactionListener"
+                    class="tw-flex tw-flex-col tw-grow tw-overflow-hidden">
                       @can('editData', $task->processRequest)
                           <ul v-if="task.process_request.status === 'ACTIVE'" id="tabHeader" role="tablist" class="nav nav-tabs">
                               <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab"
