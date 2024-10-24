@@ -20,7 +20,7 @@
 
     <transition :name="animation">
       <div
-        v-if="show"
+        v-show="show"
         ref="containerRef"
         class="tw-fixed tw-mt-1 tw-rounded-lg tw-z-10 tw-shadow-lg tw-bg-white tw-ring-1 tw-ring-inset tw-ring-gray-300"
         :style="{ width: `${widthContainer}px`, top: `${top}px` }">
@@ -86,7 +86,7 @@ export default defineComponent({
       default: () => [],
     },
     value: {
-      type: Object,
+      type: [Object, null],
       default: () => null,
     },
   },
@@ -138,17 +138,7 @@ export default defineComponent({
       const viewportHeight = window.innerHeight;
 
       widthContainer.value = rect.width || 100;
-
-      let container = inputRef.value.parentElement;
-      let topPosition = 0;
-
-      while (container && container !== document.body) {
-        // If the container has scroll, we add their offsets
-        if (container.scrollTop || container.scrollLeft) {
-          topPosition += container.scrollTop;
-        }
-        container = container.parentElement;
-      }
+      let topPosition = rect.top;
 
       // Check: Does the dropdown menu have space down?
       if (rect.top + containerRect.height > viewportHeight) {
@@ -158,7 +148,7 @@ export default defineComponent({
         return;
       }
 
-      top.value = inputRef.value.offsetTop - topPosition;
+      top.value = topPosition;
     };
 
     const addBodyListener = () => {

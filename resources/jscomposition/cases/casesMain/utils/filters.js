@@ -1,23 +1,28 @@
 import { formatDate } from "../../../utils";
 
 export const formatFilters = (filters) => {
-  const response = filters.map((e) => {
-    let { value } = e;
+  const response = filters.map((element) => {
+    let { value } = element;
 
-    if (!e.operator) {
+    if (!element.operator) {
       return null;
     }
 
-    if (e.operator === "between" || e.operator === "in") {
-      value = e.value.map((o) => o.value);
+    if (element.operator === "between" || element.operator === "in") {
+      value = element.value.map((o) => o.value);
+    }
+
+    // Case status is a dropdown filter, using for the API
+    if (element.field === "case_status") {
+      value = element.value.value;
     }
 
     return {
       subject: {
         type: "Field",
-        value: e.field,
+        value: element.field,
       },
-      operator: e.operator,
+      operator: element.operator,
       value,
     };
   });
@@ -27,16 +32,21 @@ export const formatFilters = (filters) => {
 
 // Format filters to convert in badges data
 export const formatFilterBadges = (filters, columns) => {
-  const response = filters.map((e) => {
-    let { value } = e;
-    const col = columns.find((c) => c.field === e.field);
+  const response = filters.map((element) => {
+    let { value } = element;
+    const col = columns.find((c) => c.field === element.field);
 
-    if (!e.operator) {
+    if (!element.operator) {
       return null;
     }
 
-    if (e.operator === "between" || e.operator === "in") {
-      value = e.value.map((o) => o.value);
+    if (element.operator === "between" || element.operator === "in") {
+      value = element.value.map((o) => o.value);
+    }
+
+    // Case status is a dropdown filter, using with badges
+    if (element.field === "case_status") {
+      value = element.value.label;
     }
 
     // Format datetime value to badges
@@ -46,8 +56,8 @@ export const formatFilterBadges = (filters, columns) => {
 
     return {
       fieldName: col.header,
-      field: e.field,
-      operator: e.operator,
+      field: element.field,
+      operator: element.operator,
       value,
     };
   });
