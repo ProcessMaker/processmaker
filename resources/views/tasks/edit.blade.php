@@ -31,7 +31,7 @@
   id="task"
   v-cloak
   class="tw-flex tw-w-full tw-grow">
-  <div :class="[ 'menu-mask',{'menu-open': showMenu }]" />
+  <div :class="['menu-mask',{'menu-open': showMenu }]"></div>
   <div :class="['info-main tw-w-full tw-flex tw-grow',{ 'menu-open': showMenu }]">
     <div
       v-cloak
