@@ -32,28 +32,58 @@
   v-cloak
   class="tw-flex tw-w-full tw-grow">
   <div :class="[ 'menu-mask',{'menu-open': showMenu }]" />
-
-  <div class="info-main"
-    :class="['tw-w-full tw-flex tw-grow',{ 'menu-open': showMenu }]">
-    <div v-cloak class="tw-flex tw-w-full tw-grow">
+  <div :class="['info-main tw-w-full tw-flex tw-grow',{ 'menu-open': showMenu }]">
+    <div
+      v-cloak
+      class="tw-flex tw-w-full tw-grow">
       <div class="tw-flex tw-w-full tw-grow">
         <div class="tw-flex tw-flex-col tw-grow">
-          <div v-if="isSelfService" class="alert alert-primary" role="alert">
-            <button type="button" class="btn btn-primary" @click="claimTask">{{__('Claim Task')}}</button>
+          <div 
+            v-if="isSelfService"
+            class="alert alert-primary"
+            role="alert">
+            <button 
+              type="button"
+              class="btn btn-primary"
+              @click="claimTask">{{__('Claim Task')}}
+            </button>
             {{__('This task is unassigned, click Claim Task to assign yourself.')}}
           </div>
-          <div id="interactionListener"
+          <div
+            id="interactionListener"
             class="tw-flex tw-flex-col tw-grow tw-overflow-hidden">
             @can('editData', $task->processRequest)
-            <ul v-if="task.process_request.status === 'ACTIVE'" id="tabHeader" role="tablist" class="nav nav-tabs">
-              <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab"
-                  aria-controls="tab-form" aria-selected="true"
-                  class="nav-link active">{{__('Form')}}</a></li>
-              <li class="nav-item"><a id="summary-tab" data-toggle="tab" href="#tab-data" role="tab"
-                  aria-controls="tab-data" aria-selected="false"
-                  @click="resizeMonaco"
-                  class="nav-link">{{__('Data')}}</a></li>
-            </ul>
+              <ul
+                v-if="task.process_request.status === 'ACTIVE'"
+                id="tabHeader"
+                role="tablist"
+                class="nav nav-tabs">
+                <li class="nav-item">
+                  <a
+                    id="pending-tab"
+                    data-toggle="tab"
+                    href="#tab-form"
+                    role="tab"
+                    aria-controls="tab-form"
+                    aria-selected="true"
+                    class="nav-link active">
+                    {{__('Form')}}
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a
+                    id="summary-tab"
+                    data-toggle="tab"
+                    href="#tab-data"
+                    role="tab"
+                    aria-controls="tab-data"
+                    aria-selected="false"
+                    @click="resizeMonaco"
+                    class="nav-link">
+                    {{__('Data')}}
+                  </a>
+                </li>
+              </ul>
             @endcan
             <div id="tabContent" class="tab-content tw-flex tw-flex-col tw-grow tw-overflow-y-scroll">
               <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show">
