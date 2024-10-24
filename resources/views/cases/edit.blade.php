@@ -168,12 +168,5 @@
     text-transform: uppercase;
     margin-bottom: 0.5rem;
   }
-  .btn-outline-custom {
-    border-radius: 4px;
-    border: 1px solid var(--borders, #CDDDEE);
-    background: linear-gradient(180deg, #fff 0%, rgb(255 255 255 / 0%) 100%), #fbfbfb;
-    box-shadow: 0px 0px 3px -2px rgba(0, 0, 0, 0.10);
-    color: var(--text-only, #556271);
-  }
 </style>
 @endsection
