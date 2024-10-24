@@ -838,6 +838,8 @@ class ScreenTemplate implements TemplateInterface
                 $this->setScreenConfig($screen);
             }
 
+            $templateComponents = $this->removeFormMultiColumns($templateComponents);
+
             $screenConfig = $screen->config;
             // Check if the currentScreenPage exists in the screenConfig array
             if (!isset($screenConfig[$currentScreenPage])) {
@@ -849,6 +851,33 @@ class ScreenTemplate implements TemplateInterface
 
             $screen->config = $screenConfig;
         }
+    }
+
+    public function removeFormMultiColumns(&$templateComponents)
+    {
+        foreach ($templateComponents as $key => &$component) {
+            // Check if the component is "FormMultiColumn"
+            if (isset($component['component']) && $component['component'] === 'FormMultiColumn') {
+                // Extract the "items" from the FormMultiColumn
+                if (isset($component['items']) && is_array($component['items'])) {
+                    foreach ($component['items'] as $childItems) {
+                        foreach ($childItems as $childItem) {
+                            // Append child items to the main array
+                            $templateComponents[] = $childItem;
+                        }
+                    }
+                }
+                // Remove the FormMultiColumn component
+                unset($templateComponents[$key]);
+            } else {
+                // If the "items" key exists, recurse into it
+                if (isset($component['items']) && is_array($component['items'])) {
+                    $this->removeFormMultiColumns($component['items']);
+                }
+            }
+        }
+
+        return $templateComponents;
     }
 
     private function getTemplateComponents($newTemplateScreen, $templateOptions, $supportedComponents)
