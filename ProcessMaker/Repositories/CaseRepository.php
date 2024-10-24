@@ -71,7 +71,7 @@ class CaseRepository implements CaseRepositoryInterface
                 'user_id' => $instance->user_id,
                 'case_title' => $instance->case_title,
                 'case_title_formatted' => $instance->case_title_formatted,
-                'case_status' => $instance->status === CaseStatusConstants::ACTIVE ? CaseStatusConstants::IN_PROGRESS : $instance->status,
+                'case_status' => CaseUtils::getStatus($instance->status),
                 'processes' => CaseUtils::storeProcesses(collect(), $processData),
                 'requests' => CaseUtils::storeRequests(collect(), $requestData),
                 'request_tokens' => [],
@@ -118,7 +118,7 @@ class CaseRepository implements CaseRepositoryInterface
 
             $this->case->case_title = $instance->case_title;
             $this->case->case_title_formatted = $instance->case_title_formatted;
-            $this->case->case_status = $instance->status === CaseStatusConstants::ACTIVE ? CaseStatusConstants::IN_PROGRESS : $instance->status;
+            $this->case->case_status = CaseUtils::getStatus($instance->status);
             $this->case->request_tokens = CaseUtils::storeRequestTokens($this->case->request_tokens, $token->getKey());
             $this->case->tasks = CaseUtils::storeTasks($this->case->tasks, $taskData);
             $this->case->keywords = CaseUtils::getKeywords($dataKeywords);
@@ -146,11 +146,13 @@ class CaseRepository implements CaseRepositoryInterface
         }
 
         try {
+            $caseStatus = CaseUtils::getStatus($instance->status);
+
             $data = [
-                'case_status' => $instance->status,
+                'case_status' => $caseStatus,
             ];
 
-            if ($instance->status === CaseStatusConstants::COMPLETED) {
+            if ($caseStatus === CaseStatusConstants::COMPLETED) {
                 $data['completed_at'] = Carbon::now();
             }
 
