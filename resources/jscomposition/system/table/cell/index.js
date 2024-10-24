@@ -5,6 +5,7 @@ import StatusCell from "./StatusCell.vue";
 import CaseTitleCell from "./CaseTitleCell.vue";
 import LinkCell from "./LinkCell.vue";
 import CollapseFormCell from "./CollapseFormCell.vue";
+import TruncatedColumn from "./TruncatedColumn.vue";
 
 export {
   ParticipantsCell,
@@ -14,4 +15,5 @@ export {
   LinkCell,
   CollapseFormCell,
   ParticipantCell,
+  TruncatedColumn,
 };
