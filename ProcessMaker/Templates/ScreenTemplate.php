@@ -844,6 +844,9 @@ class ScreenTemplate implements TemplateInterface
                 throw new MissingScreenPageException();
             }
 
+            $templateComponents = ScreenTemplateHelper::getScreenComponents($newTemplateScreen->config,
+                $supportedComponents, false)[0]['items'];
+
             $screenConfig[$currentScreenPage]['items'] =
                 array_merge($screenConfig[$currentScreenPage]['items'], $templateComponents);
 
