@@ -403,6 +403,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
         Route::post('devlink/{devLink}/remote-bundles/{remoteBundleId}/install', [DevLinkController::class, 'installRemoteBundle'])->name('devlink.install-remote-bundle');
         Route::post('devlink/{devLink}/install-remote-asset', [DevLinkController::class, 'installRemoteAsset'])->name('devlink.install-remote-asset');
+        Route::post('devlink/local-bundles/{bundle}/reinstall', [DevLinkController::class, 'reinstallBundle'])->name('devlink.reinstall-bundle');
 
         // Put these last to avoid conflicts with the other devlink routes
         Route::get('devlink/{devLink}', [DevLinkController::class, 'show'])->name('devlink.show');

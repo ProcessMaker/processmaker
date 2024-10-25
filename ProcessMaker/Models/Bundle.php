@@ -187,8 +187,6 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
         $options = new Options([
             'mode' => $mode,
-            // 'saveAssetsMode' => 'saveAllAssets',
-            // 'isTemplate' => false,
         ]);
         $assets = [];
         foreach ($payloads as $payload) {
@@ -201,13 +199,15 @@ class Bundle extends ProcessMakerModel implements HasMedia
         }
     }
 
-    public function reinstall(string $mode)
+    public function reinstall(string $mode, Logger $logger = null)
     {
         $media = $this->newestVersionFile();
 
         $content = file_get_contents($media->getPath());
         $payloads = json_decode(gzdecode($content), true);
 
-        $this->install($payloads, $mode);
+        $this->install($payloads, $mode, $logger);
+
+        $logger->setStatus('done');
     }
 }

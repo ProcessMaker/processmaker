@@ -7,9 +7,17 @@ const confirmUpdateVersion = ref(null);
 const selected = ref(null);
 const selectedOption = ref('update');
 const showInstallModal = ref(false);
+const reinstall = ref(false);
+const title = computed(() => {
+  if (reinstall.value) {
+    return 'Reinstall Bundle';
+  }
+  return 'Update Bundle';
+});
 
-const show = (bundle) => {
+const show = (bundle, shouldReinstall = false) => {
   selected.value = bundle;
+  reinstall.value = shouldReinstall;
   confirmUpdateVersion.value.show();
 }
 
@@ -18,13 +26,23 @@ defineExpose({
 });
 
 const updateBundleText = computed(() => {
+  if (reinstall.value) {
+    return vue.$t('Are you sure you want to reinstall <strong>{{ selectedBundleName }}</strong>? This will overwrite any changes that have been made to the assets.', { selectedBundleName: selected.value?.name });
+  }
   return vue.$t('Select how you would like to update the bundle <strong>{{ selectedBundleName }}</strong>.', { selectedBundleName: selected.value?.name });
 });
 
 const executeUpdate = (updateType) => {
   showInstallModal.value = true;
+  let url;
+  if (reinstall.value) {
+    url = `devlink/local-bundles/${selected.value.id}/reinstall`
+  } else {
+    url = `/devlink/${selected.value.dev_link_id}/remote-bundles/${selected.value.remote_id}/install`
+  }
+
   ProcessMaker.apiClient
-    .post(`/devlink/${selected.value.dev_link_id}/remote-bundles/${selected.value.remote_id}/install`, {
+    .post(url, {
       updateType,
     })
     .then((response) => {
@@ -41,7 +59,7 @@ const executeUpdate = (updateType) => {
       centered
       size="lg"
       content-class="modal-style"
-      :title="$t('Update Bundle')"
+      :title="$t(title)"
       :ok-title="$t('Continue')"
       :cancel-title="$t('Cancel')"
       @ok="executeUpdate(selectedOption)"
@@ -49,7 +67,7 @@ const executeUpdate = (updateType) => {
       <div>
         <p v-html="updateBundleText"></p>
 
-        <b-form-group>
+        <b-form-group v-if="!reinstall">
           <b-form-radio-group
             v-model="selectedOption"
             name="bundleUpdateOptions"

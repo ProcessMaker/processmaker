@@ -2410,5 +2410,8 @@
   "Create new copies of bundle assets." : "Create new copies of bundle assets.",
   "Existing assets on this instance will be updated. Warning: this will overwrite any changes you made to the assets on this instance." : "Existing assets on this instance will be updated. Warning: this will overwrite any changes you made to the assets on this instance.",
   "Select how you would like to update the bundle <strong>{{ selectedBundleName }}</strong>.": "Select how you would like to update the bundle <strong>{{ selectedBundleName }}</strong>.",
-  "Are you sure you increase the version of <strong>{{ selectedBundleName }}</strong>?": "Are you sure you increase the version of <strong>{{ selectedBundleName }}</strong>?"
+  "Are you sure you increase the version of <strong>{{ selectedBundleName }}</strong>?": "Are you sure you increase the version of <strong>{{ selectedBundleName }}</strong>?",
+  "Update Available": "Update Available",
+  "Reinstall This Bundle": "Reinstall This Bundle",
+  "Reinstall Bundle": "Reinstall Bundle"
 }

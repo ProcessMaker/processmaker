@@ -172,6 +172,17 @@ class DevLinkController extends Controller
         );
     }
 
+    public function reinstallBundle(Request $request, Bundle $bundle)
+    {
+        DevLinkInstall::dispatch(
+            $request->user()->id,
+            $bundle->dev_link_id,
+            $bundle->id,
+            'update',
+            true
+        );
+    }
+
     public function exportLocalBundle(Bundle $bundle)
     {
         return ['payloads' => $bundle->export()];

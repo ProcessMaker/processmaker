@@ -131,7 +131,7 @@ class DevLink extends ProcessMakerModel
         );
     }
 
-    public function installRemoteBundle($bundleId, $updateType)
+    public function installRemoteBundle($remoteBundleId, $updateType)
     {
         if (!$this->logger) {
             $this->logger = new Logger();
@@ -139,15 +139,15 @@ class DevLink extends ProcessMakerModel
 
         $this->logger->status(__('Downloading bundle from remote instance'));
 
-        $bundleInfo = $this->remoteBundle($bundleId)->json();
+        $bundleInfo = $this->remoteBundle($remoteBundleId)->json();
 
         $bundleExport = $this->client()->get(
-            route('api.devlink.export-local-bundle', ['bundle' => $bundleId], false)
+            route('api.devlink.export-local-bundle', ['bundle' => $remoteBundleId], false)
         )->json();
 
         $bundle = Bundle::updateOrCreate(
             [
-                'remote_id' => $bundleId,
+                'remote_id' => $remoteBundleId,
                 'dev_link_id' => $this->id,
             ],
             [
