@@ -3,8 +3,7 @@
 namespace ProcessMaker\Repositories;
 
 use Illuminate\Support\Collection;
-use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
-use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
+use ProcessMaker\Constants\CaseStatusConstants;
 
 class CaseUtils
 {
@@ -23,7 +22,7 @@ class CaseUtils
     {
         $caseNumber = (string) $caseNumber;
         $keywords = array_map(
-            fn($i) => self::CASE_NUMBER_PREFIX . substr($caseNumber, 0, $i),
+            fn ($i) => self::CASE_NUMBER_PREFIX . substr($caseNumber, 0, $i),
             range(1, strlen($caseNumber))
         );
 
@@ -165,6 +164,23 @@ class CaseUtils
         foreach ($mapping as $key => $property) {
             $data[$key] = data_get($object, $property);
         }
+
         return $data;
+    }
+
+    /**
+     * The getStatus function returns the status of a case as "IN_PROGRESS" if it is "ACTIVE", otherwise it returns the
+     * current status.
+     *
+     * @param string instanceStatus The `instanceStatus` parameter is a string that represents the status of a case
+     * instance. The `getStatus` function compares this status with the `ACTIVE` status defined in the
+     * `CaseStatusConstants` class. If the `instanceStatus` is `ACTIVE`, the function returns `IN_PROGRESS
+     *
+     * @return If the  is equal to CaseStatusConstants::ACTIVE, then CaseStatusConstants::IN_PROGRESS will
+     * be returned. Otherwise,  will be returned as is.
+     */
+    public static function getStatus(string $instanceStatus)
+    {
+        return $instanceStatus === CaseStatusConstants::ACTIVE ? CaseStatusConstants::IN_PROGRESS : $instanceStatus;
     }
 }

@@ -371,7 +371,7 @@ class FileController extends Controller
 
     public function showLogs(Media $file)
     {
-        $response = MediaLog::with('user')
+        $response = MediaLog::with('user:id,username,firstname,lastname')
                         ->where('media_id', $file->id)
                         ->orderBy('created_at', 'desc')
                         ->get();
