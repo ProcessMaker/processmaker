@@ -23,7 +23,7 @@ trait TaskControllerIndexMethods
         $includeData = in_array('data', $includes);
 
         $query = ProcessRequestToken::exclude(['data'])->with([
-            'processRequest' => function($q) use ($includeData) {
+            'processRequest' => function ($q) use ($includeData) {
                 if (!$includeData) {
                     return $q->exclude(['data']);
                 }

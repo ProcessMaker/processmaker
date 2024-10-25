@@ -1217,7 +1217,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             // Validate if user can reassign
             Gate::forUser($requestingUser)->authorize('reassign', $this);
             // Reassign user
-            $this->is_self_service = 0; //When reassigning the user, it is not necessary to claim the task. 
+            $this->is_self_service = 0; //When reassigning the user, it is not necessary to claim the task.
             $this->reassignTo($toUserId);
             $this->persistUserData($toUserId);
             $reassingAction = true;

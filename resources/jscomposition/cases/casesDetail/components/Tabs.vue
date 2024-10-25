@@ -46,6 +46,7 @@ export default defineComponent({
     const selectTab = (tab) => {
       content.value = tab.content;
       tabSelected.value = tab.current;
+      ProcessMaker.EventBus.$emit('case-tab-switched', tab);
     };
 
     const defaultTab = () => props.tabs.find((tab) => tab.current === tabSelected.value);

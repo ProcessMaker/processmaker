@@ -23,7 +23,7 @@ class CaseUtils
     {
         $caseNumber = (string) $caseNumber;
         $keywords = array_map(
-            fn($i) => self::CASE_NUMBER_PREFIX . substr($caseNumber, 0, $i),
+            fn ($i) => self::CASE_NUMBER_PREFIX . substr($caseNumber, 0, $i),
             range(1, strlen($caseNumber))
         );
 
@@ -165,6 +165,7 @@ class CaseUtils
         foreach ($mapping as $key => $property) {
             $data[$key] = data_get($object, $property);
         }
+
         return $data;
     }
 }
