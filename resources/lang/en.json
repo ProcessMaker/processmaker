@@ -317,6 +317,8 @@
   "Client ID": "Client ID",
   "Client Secret": "Client Secret",
   "Close": "Close",
+  "Collection Name": "Collection Name",
+  "Collection Record Control is not available for Anonymous Web Entry": "Collection Record Control is not available for Anonymous Web Entry",
   "Collection Select": "Collection Select",
   "Collections": "Collections",
   "Color": "Color",
