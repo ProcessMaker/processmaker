@@ -91,6 +91,9 @@ export default {
   methods: {
     toggleSuggestions() {
       this.showSuggestions = !this.showSuggestions;
+      if (this.showSuggestions) {
+        this.fetchSuggestions();
+      }
     },
     generateScript() {
       this.$emit("generate-script", this.text);

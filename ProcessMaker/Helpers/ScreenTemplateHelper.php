@@ -284,37 +284,89 @@ class ScreenTemplateHelper
         return $flattenedItems;
     }
 
-    // Parse the CSS string into an associative array
+    /**
+     * Parses a CSS string into an associative array of selectors and their properties.
+     *
+     * @param string $cssString The CSS string to parse.
+     * @return array An associative array where keys are CSS selectors and values are arrays of properties.
+     */
     public static function parseCss($cssString)
     {
         $rules = [];
-        // Regex to match complex CSS selectors, allowing for any selector pattern
-        preg_match_all('/(?:\/\*.*?\*\*\/|([^{}]+))\s*\{(?:\/\*.*?\*\*\/|([^}]*))\}/', $cssString, $matches, PREG_SET_ORDER);
+
+        // Regex to match CSS rules, allowing for comments
+        preg_match_all('/([^{]+)\s*\{([^}]*)\}/s', $cssString, $matches, PREG_SET_ORDER);
 
         foreach ($matches as $match) {
             $fullSelector = trim($match[1]); // Full CSS selector
             $propertiesString = trim($match[2]); // Properties between the brackets
 
-            // Split properties into key-value pairs
-            $propertiesArray = explode(';', $propertiesString);
-            $properties = [];
+            $properties = self::parseProperties($propertiesString);
 
-            foreach ($propertiesArray as $property) {
-                $propertyParts = explode(':', $property);
-                if (count($propertyParts) == 2) {
-                    $key = trim($propertyParts[0]);
-                    $value = trim($propertyParts[1]);
-                    if (!empty($key) && !empty($value)) {
-                        $properties[$key] = $value;
-                    }
-                }
+            // Only add to rules if selector and properties are non-empty
+            if (!empty($fullSelector) && !empty($properties)) {
+                $rules[$fullSelector] = $properties;
             }
-
-            // Add rule for the selector
-            $rules[$fullSelector] = $properties;
         }
 
         return $rules;
+    }
+
+    /**
+     * Parses a string of CSS properties and returns an associative array of property-value pairs.
+     *
+     * @param string $propertiesString The string of CSS properties to parse.
+     * @return array An associative array of properties.
+     */
+    private static function parseProperties($propertiesString)
+    {
+        $properties = [];
+
+        // Split properties into individual declarations, capturing inline comments
+        preg_match_all('/([^;]+;)(?:\s*\/\*.*?\*\/)?/s', $propertiesString, $propertyMatches);
+
+        foreach ($propertyMatches[0] as $property) {
+            $property = trim($property);
+            $keyValue = self::extractKeyValue($property);
+
+            if ($keyValue) {
+                list($key, $value) = $keyValue;
+
+                // Only add to properties if both key and value are non-empty
+                if (!empty($key) && !empty($value)) {
+                    $properties[$key] = $value; // Add key-value pair
+                }
+            }
+        }
+
+        return $properties;
+    }
+
+    /**
+     * Extracts the key and value from a CSS property string.
+     *
+     * @param string $property The CSS property string to extract key-value from.
+     * @return array|null An array containing the key and value, or null if not valid.
+     */
+    private static function extractKeyValue($property)
+    {
+        if (preg_match('/(.*?)(\/\*.*?\*\/)?$/s', $property, $parts)) {
+            $keyValue = explode(':', $parts[1], 2);
+
+            if (count($keyValue) == 2) {
+                $key = trim($keyValue[0]);
+                $value = trim(rtrim($keyValue[1], ';')); // Trim the trailing semicolon
+
+                // Combine value with inline comment if present
+                if (!empty($parts[2])) {
+                    $value .= ' ' . trim($parts[2]);
+                }
+
+                return [$key, $value]; // Return key and value as an array
+            }
+        }
+
+        return null; // Return null if the property is not valid
     }
 
     // Merge the two CSS arrays
