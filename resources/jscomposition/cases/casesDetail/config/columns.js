@@ -20,9 +20,7 @@ const taskNumberColumn = () => ({
   cellRenderer: () => ({
     component: LinkCell,
     params: {
-      click: (row, column, columns) => {
-        window.document.location = `/tasks/${row.id}/edit`;
-      },
+      href: (row) => `/tasks/${row.id}/edit`,
     },
   }),
 });
@@ -36,9 +34,7 @@ const taskNameColumn = () => ({
   cellRenderer: () => ({
     component: LinkCell,
     params: {
-      click: (row, column, columns) => {
-        window.document.location = `/tasks/${row.id}/edit`;
-      },
+      href: (row) => `/tasks/${row.id}/edit`,
     },
   }),
 });
@@ -87,9 +83,7 @@ const requestIdColumn = () => ({
   cellRenderer: () => ({
     component: LinkCell,
     params: {
-      click: (row, column, columns) => {
-        window.document.location = `/requests/${row.id}`;
-      },
+      href: (row) => `/requests/${row.id}`,
     },
   }),
 });
@@ -111,9 +105,7 @@ const taskColumn = () => ({
   cellRenderer: () => ({
     component: TruncatedOptionsCell,
     params: {
-      click: (option, row, column, columns) => {
-        window.document.location = `/tasks/${option.id}/edit`;
-      },
+      href: (row) => `/tasks/${row.id}/edit`,
       formatterOptions: (option, row, column, columns) => option.element_name,
     },
   }),

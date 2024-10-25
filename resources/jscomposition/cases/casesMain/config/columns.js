@@ -39,9 +39,7 @@ export const caseNumberColumn = () => ({
   cellRenderer: () => ({
     component: LinkCell,
     params: {
-      click: (row, column, columns) => {
-        window.document.location = `/cases/${row.case_number}`;
-      },
+      href: (row) => `/cases/${row.case_number}`,
     },
   }),
 });
@@ -54,9 +52,7 @@ export const caseTitleColumn = () => ({
   cellRenderer: () => ({
     component: CaseTitleCell,
     params: {
-      click: (row, column, columns) => {
-        window.document.location = `/cases/${row.case_number}`;
-      },
+      href: (row) => `/cases/${row.case_number}`,
     },
   }),
   filter: {
@@ -89,9 +85,7 @@ export const taskColumn = () => ({
   cellRenderer: () => ({
     component: TruncatedOptionsCell,
     params: {
-      click: (option, row, column, columns) => {
-        window.document.location = `/tasks/${option.id}/edit`;
-      },
+      href: (option) => `/tasks/${option.id}/edit`,
       formatterOptions: (option, row, column, columns) => option.name,
     },
   }),
