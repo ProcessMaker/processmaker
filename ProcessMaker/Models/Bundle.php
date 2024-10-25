@@ -208,6 +208,6 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
         $this->install($payloads, $mode, $logger);
 
-        $logger->setStatus('done');
+        $logger?->setStatus('done');
     }
 }
