@@ -207,32 +207,32 @@ class GenerateMenus
                     'id' => 'process-scripts',
                 ])->data('order', 2);
             }
+            if ($this->userHasPermission('view-collections')) {
+                $submenu->add(__('Collections'), [
+                    'route' => 'plugin-collections-index',
+                    'customicon' => 'nav-icon fas fa-database',
+                    'id' => 'collection',
+                ])->data('order', 3);
+            }
             if ($this->userHasPermission('view-screens')) {
                 $submenu->add(__('Screens'), [
                     'route' => 'screens.index',
                     'icon' => 'fa-file-alt',
                     'id' => 'process-screens',
-                ])->data('order', 3);
+                ])->data('order', 4);
             }
             if ($this->userHasPermission('view-environment_variables')) {
                 $submenu->add(__('Environment Variables'), [
                     'route' => 'environment-variables.index',
                     'icon' => 'fa-lock',
                     'id' => 'process-environment',
-                ])->data('order', 4);
+                ])->data('order', 5);
             }
             if ($this->userHasPermission('edit-processes')) {
                 $submenu->add(__('Signals'), [
                     'route' => 'signals.index',
                     'customicon' => 'nav-icon fas bpmn-icon-end-event-signal',
                     'id' => 'signal',
-                ])->data('order', 5);
-            }
-            if ($this->userHasPermission('view-collections')) {
-                $submenu->add(__('Collections'), [
-                    'route' => 'plugin-collections-index',
-                    'customicon' => 'nav-icon fas fa-database',
-                    'id' => 'collection',
                 ])->data('order', 6);
             }
         });
