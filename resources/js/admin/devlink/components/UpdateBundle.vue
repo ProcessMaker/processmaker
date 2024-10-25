@@ -57,7 +57,7 @@ const executeUpdate = (updateType) => {
           >
             <b-form-radio value="update">
               {{ $t('Update Bundle Assets') }}
-              <p class="text-muted">{{ $t('Existing assets on this instance will be updated.') }}</p>
+              <p class="text-muted">{{ $t('Existing assets on this instance will be updated. Warning: this will overwrite any changes you made to the assets on this instance.') }}</p>
             </b-form-radio>
 
             <b-form-radio value="copy">

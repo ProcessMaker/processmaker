@@ -5,12 +5,17 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Exception\ExporterNotSupported;
 use ProcessMaker\Exception\ValidationException;
-use ProcessMaker\ImportExport\Exporter;
+use ProcessMaker\ImportExport\Importer;
+use ProcessMaker\ImportExport\Logger;
+use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\ProcessMakerModel;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Bundle extends ProcessMakerModel
+class Bundle extends ProcessMakerModel implements HasMedia
 {
     use HasFactory;
+    use InteractsWithMedia;
 
     protected $guarded = ['id'];
 
@@ -126,5 +131,83 @@ class Bundle extends ProcessMakerModel
         if (!$this->editable()) {
             throw ValidationException::withMessages(['*' => 'Bundle is not editable']);
         }
+    }
+
+    public function filesSortedByVersion()
+    {
+        return $this->getMedia()->map(function ($media) {
+            return [
+                $media,
+                $media->getCustomProperty('version'),
+            ];
+        })->sort(function ($a, $b) {
+            // newest versions first
+            return version_compare($a[1], $b[1]) * -1;
+        })->map(function ($item) {
+            return $item[0];
+        });
+    }
+
+    public function newestVersionFile()
+    {
+        return $this->filesSortedByVersion()->first();
+    }
+
+    public function savePayloadsToFile(array $payloads)
+    {
+        $this->addMediaFromString(
+            gzencode(
+                json_encode($payloads)
+            ),
+        )->usingFileName('payloads.json.gz')
+        ->withCustomProperties(['version' => $this->version])
+        ->toMediaCollection();
+
+        // Keep only the 3 most recent versions
+        $count = 0;
+        foreach ($this->filesSortedByVersion() as $media) {
+            if ($count >= 3) {
+                $media->delete();
+            }
+            $count++;
+        }
+    }
+
+    public function install(array $payloads, $mode, $logger = null)
+    {
+        if ($logger === null) {
+            $logger = new Logger();
+        }
+
+        $logger->status('Saving the bundle locally');
+        $this->savePayloadsToFile($payloads);
+
+        $logger->status('Installing bundle on the this instance');
+        $logger->setSteps($payloads);
+
+        $options = new Options([
+            'mode' => $mode,
+            // 'saveAssetsMode' => 'saveAllAssets',
+            // 'isTemplate' => false,
+        ]);
+        $assets = [];
+        foreach ($payloads as $payload) {
+            $assets[] = DevLink::import($payload, $options, $logger);
+        }
+
+        if ($mode === 'update') {
+            $logger->status('Syncing bundle assets');
+            $this->syncAssets($assets);
+        }
+    }
+
+    public function reinstall(string $mode)
+    {
+        $media = $this->newestVersionFile();
+
+        $content = file_get_contents($media->getPath());
+        $payloads = json_decode(gzdecode($content), true);
+
+        $this->install($payloads, $mode);
     }
 }

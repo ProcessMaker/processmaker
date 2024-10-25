@@ -143,7 +143,6 @@ class DevLinkController extends Controller
 
         $bundle->name = $request->input('name');
         $bundle->published = (bool) $request->input('published', false);
-        $bundle->version = $bundle->version + 1;
         $bundle->saveOrFail();
 
         return $bundle;
