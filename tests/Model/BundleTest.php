@@ -59,4 +59,29 @@ class BundleTest extends TestCase
         $this->assertEquals($screen1->id, $bundle->assets[0]->asset_id);
         $this->assertEquals($screen3->id, $bundle->assets[1]->asset_id);
     }
+
+    public function testReinstallBundle()
+    {
+        // Remote
+        $screen = Screen::factory()->create(['title' => 'Original Screen Name']);
+        $screenUuid = $screen->uuid;
+        $bundle = Bundle::factory()->create();
+        $bundle->syncAssets([$screen]);
+        $payloads = $bundle->export();
+
+        $bundle->delete();
+        $screen->delete();
+
+        // Local
+        $bundle = Bundle::factory()->create();
+        $bundle->install($payloads, 'copy');
+
+        $screen = Screen::where('uuid', $screenUuid)->firstOrFail();
+        $screen->title = 'New Screen Name';
+        $screen->save();
+
+        $this->assertEquals('New Screen Name', $screen->refresh()->title);
+        $bundle->reinstall('update');
+        $this->assertEquals('Original Screen Name', $screen->refresh()->title);
+    }
 }

@@ -401,7 +401,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         Route::get('devlink/export-local-bundle/{bundle}', [DevLinkController::class, 'exportLocalBundle'])->name('devlink.export-local-bundle');
         Route::get('devlink/export-local-asset', [DevLinkController::class, 'exportLocalAsset'])->name('devlink.export-local-asset');
 
-        Route::post('devlink/{devLink}/remote-bundles/{removeBundleId}/install', [DevLinkController::class, 'installRemoteBundle'])->name('devlink.install-remote-bundle');
+        Route::post('devlink/{devLink}/remote-bundles/{remoteBundleId}/install', [DevLinkController::class, 'installRemoteBundle'])->name('devlink.install-remote-bundle');
         Route::post('devlink/{devLink}/install-remote-asset', [DevLinkController::class, 'installRemoteAsset'])->name('devlink.install-remote-asset');
 
         // Put these last to avoid conflicts with the other devlink routes

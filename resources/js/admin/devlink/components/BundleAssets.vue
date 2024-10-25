@@ -3,6 +3,7 @@ import { ref, onMounted, getCurrentInstance, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 import BundleModal, { show as showBundleModal, hide as hideBundleModal } from './BundleModal.vue';
 import Header from './Header.vue';
+import UpdateBundle from './UpdateBundle.vue';
 
 const vue = getCurrentInstance().proxy;
 const route = useRoute();
@@ -18,35 +19,25 @@ const fields = [
   { key: 'menu', label: '' },
 ];
 const bundleModal = ref(null);
-const bundleAttributes = {
-  id: null,
-  name: '',
-  published: false,
-};
+const bundleForEdit = ref({});
+const reinstallBundle = ref(null);
 
-const selectedBundle = ref(bundleAttributes);
-
-const openBundleModalForEdit = (bundle) => {
-  selectedBundle.value = { ...bundle };
+const openBundleModalForEdit = () => {
+  bundleForEdit.value = { ...bundle.value };
   if (bundleModal.value) {
     bundleModal.value.show();
   }
 };
 
-const update = () => {
-  if (selectedBundle.value.id === null) {
+const updateBundle = () => {
+  if (bundleForEdit.value.id === null) {
     return;
   }
   ProcessMaker.apiClient
-    .put(`/devlink/local-bundles/${selectedBundle.value.id}`, selectedBundle.value)
-    .then((result) => {
+    .put(`/devlink/local-bundles/${bundleForEdit.value.id}`, bundleForEdit.value)
+    .then(() => {
       loadAssets();
     });
-};
-
-const updateBundle = (bundle) => {
-  selectedBundle.value = bundle;
-  update();
 };
 
 const computedFields = computed(() => {
@@ -96,18 +87,20 @@ const remove = async (asset) => {
         <div class="header">
           <div class="header-right">
             <b-button
-              v-if="bundle.dev_link_id !== null"
+              v-if="bundle.dev_link_id === null"
               class="btn text-secondary icon-button"
               variant="light"
               :aria-label="$t('Edit Bundle')"
               v-b-tooltip.hover
               :title="$t('Edit Bundle')"
-              @click.prevent="openBundleModalForEdit(bundle)"
+              @click.prevent="openBundleModalForEdit()"
             >
               <i class="fas fa-edit" />
             </b-button>
 
             <b-button
+              v-if="bundle.dev_link_id !== null"
+              @click.prevent="reinstallBundle.show(bundle)"
               variant="primary"
               class="install-btn">
               <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>{{ $t('Reinstall this Bundle') }}
@@ -138,7 +131,8 @@ const remove = async (asset) => {
     <div v-else>
       No assets found in this bundle.
     </div>
-    <BundleModal ref="bundleModal" :bundle="selectedBundle" @update="updateBundle"/>
+    <BundleModal ref="bundleModal" :bundle="bundleForEdit" @update="updateBundle"/>
+    <UpdateBundle ref="reinstallBundle"></UpdateBundle>
   </div>
 </template>
 

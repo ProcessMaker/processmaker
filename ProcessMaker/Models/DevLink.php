@@ -10,6 +10,7 @@ use ProcessMaker\ImportExport\Logger;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\ProcessMakerModel;
 use Ramsey\Uuid\Type\Integer;
+use ZipArchive;
 
 class DevLink extends ProcessMakerModel
 {
@@ -79,14 +80,30 @@ class DevLink extends ProcessMakerModel
         return $uuid;
     }
 
-    public function remoteBundles($request)
+    public function remoteBundles(string|null $filter)
     {
-        return $this->client()->get(
-            route('api.devlink.local-bundles',
-                ['published' => true,
-                    'filter' => $request->input('filter')],
-                false)
-        );
+        $params = [
+            'published' => true,
+        ];
+
+        if (!empty($filter)) {
+            $params['filter'] = $filter;
+        }
+
+        $result = $this->client()->get(
+            route('api.devlink.local-bundles', $params, false)
+        )->json();
+
+        $existingBundleRemoteIds = Bundle::where('dev_link_id', $this->id)->pluck('remote_id')->toArray();
+
+        // add is_installed property to the data
+        $result['data'] = array_map(function ($bundle) use ($existingBundleRemoteIds) {
+            $bundle['is_installed'] = in_array($bundle['id'], $existingBundleRemoteIds);
+
+            return $bundle;
+        }, $result['data']);
+
+        return $result;
     }
 
     public function remoteAssets($request)
@@ -140,34 +157,9 @@ class DevLink extends ProcessMakerModel
             ]
         );
 
-        $this->logger->status('Installing bundle on the this instance');
-        $this->logger->setSteps($bundleExport['payloads']);
-
-        $options = [
-            'mode' => $updateType,
-            'saveAssetsMode' => 'saveAllAssets',
-            'isTemplate' => false,
-        ];
-        $assets = [];
-        foreach ($bundleExport['payloads'] as $payload) {
-            $assets[] = $this->import($payload, $options);
-        }
-
-        if ($updateType === 'update') {
-            $this->logger->status('Syncing bundle assets');
-            $bundle->syncAssets($assets);
-        }
+        $bundle->install($bundleExport['payloads'], $updateType, $this->logger);
 
         $this->logger->setStatus('done');
-    }
-
-    private function import(array $payload, $options = null)
-    {
-        $options = $options === null ? new Options([]) : new Options($options);
-        $importer = new Importer($payload, $options, $this->logger);
-        $manifest = $importer->doImport();
-
-        return $manifest[$payload['root']]->model;
     }
 
     public function installRemoteAsset(string $class, int $id) : ProcessMakerModel
@@ -176,11 +168,24 @@ class DevLink extends ProcessMakerModel
             route('api.devlink.export-local-asset', ['class' => $class, 'id' => $id], false)
         )->json();
 
-        return $this->import($payload);
+        $logger = new Logger();
+        $options = new Options([
+            'mode' => 'update',
+        ]);
+
+        return self::import($payload, $options, $logger);
     }
 
     public function bundles()
     {
         return $this->hasMany(Bundle::class);
+    }
+
+    public static function import(array $payload, Options $options, Logger $logger)
+    {
+        $importer = new Importer($payload, $options, $logger);
+        $manifest = $importer->doImport();
+
+        return $manifest[$payload['root']]->model;
     }
 }
