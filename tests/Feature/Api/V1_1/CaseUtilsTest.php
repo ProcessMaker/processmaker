@@ -4,6 +4,7 @@ namespace Tests\Feature\Api\V1_1;
 
 use Illuminate\Support\Collection;
 use PHPUnit\Framework\TestCase;
+use ProcessMaker\Constants\CaseStatusConstants;
 use ProcessMaker\Repositories\CaseUtils;
 
 class CaseUtilsTest extends TestCase
@@ -173,5 +174,26 @@ class CaseUtilsTest extends TestCase
             'nested_property' => null,
         ];
         $this->assertEquals($expected, CaseUtils::extractData($object, $mapping));
+    }
+
+    public function testGetStatusInProgress()
+    {
+        $instanceStatus = CaseStatusConstants::ACTIVE;
+        $expected = CaseStatusConstants::IN_PROGRESS;
+        $this->assertEquals($expected, CaseUtils::getStatus($instanceStatus));
+    }
+
+    public function testGetStatusCompleted()
+    {
+        $instanceStatus = CaseStatusConstants::COMPLETED;
+        $expected = CaseStatusConstants::COMPLETED;
+        $this->assertEquals($expected, CaseUtils::getStatus($instanceStatus));
+    }
+
+    public function testGetStatusError()
+    {
+        $instanceStatus = 'ERROR';
+        $expected = 'ERROR';
+        $this->assertEquals($expected, CaseUtils::getStatus($instanceStatus));
     }
 }
