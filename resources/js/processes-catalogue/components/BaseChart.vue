@@ -176,33 +176,42 @@ export default {
      * Both packages go always together
      */
     fetchChart() {
-      if (ProcessMaker.packages.includes("package-collections") && this.chartId !== null && this.chartId !== 0) {
-        ProcessMaker.apiClient
-          .get(`saved-searches/charts/${this.chartId}`, { timeout: 0 })
-          .then((response) => {
-            this.charts = response.data;
-            this.transform(this.charts);
-          })
-          .catch((error) => {
-            console.error("Error", error);
-          });
-      } else {
-        ProcessMaker.apiClient
-          .get(`requests/${this.process.id}/default-chart`)
-          .then((response) => {
-            const { data } = response.data;
-            this.defaultData = {
-              labels: data.labels,
-              datasets: [
-                {
-                  label: data.datasets.label,
-                  data: data.datasets.data,
-                  backgroundColor: Object.values(data.datasets.backgroundColor),
-                },
-              ],
-            };
-          });
+      if (!ProcessMaker.packages.includes("package-collections") && this.chartId === null && this.chartId === 0) {
+        this.getDefaultData();
+        return;
       }
+      ProcessMaker.apiClient
+        .get(`saved-searches/charts/${this.chartId}`, { timeout: 0 })
+        .then((response) => {
+          this.charts = response.data;
+          this.transform(this.charts);
+        })
+        .catch(() => {
+          this.getDefaultData();
+        });
+    },
+    /**
+     * Draw the default chart
+     */
+    getDefaultData() {
+      ProcessMaker.apiClient
+        .get(`requests/${this.process.id}/default-chart`)
+        .then((response) => {
+          const { data } = response.data;
+          this.defaultData = {
+            labels: data.labels,
+            datasets: [
+              {
+                label: data.datasets.label,
+                data: data.datasets.data,
+                backgroundColor: Object.values(data.datasets.backgroundColor),
+              },
+            ],
+          };
+        })
+        .catch((error) => {
+          console.error("Error", error);
+        });
     },
     refresh() {
       this.transform(this.chart);

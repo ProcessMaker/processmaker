@@ -71,7 +71,7 @@
           ],
           [
             'name' => __('Cases'),
-            'url' => route('cases.index'),
+            'url' => route('requests.index'),
             'isActive' => Request::path() === 'cases',
           ],
           [

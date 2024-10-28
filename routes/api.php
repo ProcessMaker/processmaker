@@ -227,6 +227,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     // Cases
     Route::get('requests-by-case', [ProcessRequestController::class, 'getRequestsByCase'])->name('requests.index.case');
+    Route::get('parent-request-by-case', [ProcessRequestController::class, 'getParentRequestByCase'])->name('requests.getParentRequestByCase');
     // Requests
     Route::get('requests', [ProcessRequestController::class, 'index'])->name('requests.index'); // Already filtered in controller
     Route::get('requests/{process}/count', [ProcessRequestController::class, 'getCount'])->name('requests.count');

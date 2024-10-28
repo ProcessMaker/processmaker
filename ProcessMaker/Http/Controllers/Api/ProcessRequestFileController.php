@@ -95,8 +95,12 @@ class ProcessRequestFileController extends Controller
 
         // Register the Event
         if (!empty($filter)) {
-            foreach ($media as $singleMedia) {
-                FilesAccessed::dispatch($filter, $request, $singleMedia);
+            if ($media instanceof Collection) {
+                foreach ($media as $singleMedia) {
+                    FilesAccessed::dispatch($filter, $request, $singleMedia);
+                }
+            } elseif ($media instanceof Media) {
+                FilesAccessed::dispatch($filter, $request, $media);
             }
         }
 

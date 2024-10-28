@@ -241,7 +241,7 @@ class SanitizeHelper
         if (self::renderHtmlIsEnabled($item, 'FormTextArea', 'richtext')) {
             $elements[] = ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name']);
         } elseif (self::renderHtmlIsEnabled($item, 'FormHtmlViewer', 'renderVarHtml')) {
-            preg_match_all("/{{([^{}]*)}}/", $item['config']['content'], $matches);
+            preg_match_all('/{{([^{}]*)}}/', $item['config']['content'], $matches);
             if ($matches && $matches[1]) {
                 foreach ($matches[1] as $variable) {
                     $elements[] = ($parent ? $parent . '.' . $variable : $variable);

@@ -6,6 +6,7 @@ import VersionCheck from './VersionCheck.vue';
 import EllipsisMenu from '../../../components/shared/EllipsisMenu.vue';
 import BundleModal, { show as showBundleModal, hide as hideBundleModal } from './BundleModal.vue';
 import { useRouter, useRoute } from 'vue-router/composables';
+import UpdateBundle from './UpdateBundle.vue';
 
 const vue = getCurrentInstance().proxy;
 const router = useRouter();
@@ -13,15 +14,14 @@ const route = useRoute();
 const bundles = ref([]);
 const editModal = ref(null);
 const confirmDeleteModal = ref(null);
-const confirmIncreaseVersion = ref(null);
+const confirmPublishNewVersion = ref(null);
 const confirmUpdateVersion = ref(null);
-const selectedOption = ref('update');
-const showInstallModal = ref(false);
 const filter = ref("");
 const bundleModal = ref(null);
+const updateBundle = ref(null);
 
 const actions = [
-  { value: "increase-item", content: "Increase Version", conditional: "if(not(dev_link_id), true, false)" },
+  { value: "increase-item", content: "Publish New Version", conditional: "if(not(dev_link_id), true, false)" },
   { value: "update-item", content: "Update Version", conditional: "if(dev_link_id, true, false)" },
   { value: "edit-item", content: "Edit", conditional: "if(not(dev_link_id) , true, false)" },
   { value: "delete-item", content: "Delete" },
@@ -145,19 +145,19 @@ const deleteBundle = (bundle) => {
 
 const updateVersionBundle = (bundle) => {
   selected.value = bundle;
-  confirmUpdateVersion.value.show();
+  updateBundle.value.show(bundle);
 };
 
 const increaseVersionBundle = (bundle) => {
   selected.value = bundle;
-  confirmIncreaseVersion.value.show();
+  confirmPublishNewVersion.value.show();
 };
 
 const executeIncrease = () => {
   ProcessMaker.apiClient
     .post(`devlink/local-bundles/${selected.value.id}/increase-version`)
     .then((result) => {
-      confirmIncreaseVersion.value.hide();
+      confirmPublishNewVersion.value.hide();
       load();
     });
 };
@@ -168,17 +168,6 @@ const executeDelete = () => {
     .then((result) => {
       confirmDeleteModal.value.hide();
       load();
-    });
-};
-
-const executeUpdate = (updateType) => {
-  showInstallModal.value = true;
-  ProcessMaker.apiClient
-    .post(`/devlink/${selected.value.dev_link_id}/remote-bundles/${selected.value.remote_id}/install`, {
-      updateType,
-    })
-    .then((response) => {
-      // Handle the response as needed
     });
 };
 
@@ -201,7 +190,12 @@ const goToBundleAssets = (bundle) => {
 const deleteWaring = computed(() => {
   const name = selected?.value.name;
   return vue.$t('Are you sure you want to delete {{name}}?', { name });
-})
+});
+
+const confirmPublishNewVersionText = computed(() => {
+  return vue.$t('Are you sure you increase the version of <strong>{{ selectedBundleName }}</strong>?', { selectedBundleName: selected.value?.name });
+});
+
 </script>
 
 <template>
@@ -234,50 +228,17 @@ const deleteWaring = computed(() => {
     <BundleModal ref="bundleModal" :bundle="selected" @update="update" />
 
     <b-modal
-      ref="confirmIncreaseVersion"
+      ref="confirmPublishNewVersion"
       centered
       content-class="modal-style"
-      title="Increase Version"
+      title="Publish New Version"
       @ok="executeIncrease"
     >
-      <p>Are you sure you increase the version of {{ selected?.name }}?</p>
+      <p v-html="confirmPublishNewVersionText"></p>
     </b-modal>
 
-    <b-modal
-      ref="confirmUpdateVersion"
-      centered
-      size="lg"
-      content-class="modal-style"
-      :title="$t('Update Bundle Version')"
-      :ok-title="$t('Continue')"
-      :cancel-title="$t('Cancel')"
-      @ok="executeUpdate(selectedOption)"
-    >
-      <div>
-        <p class="mb-4">Select how you want to update the bundle <strong>Testing Processes and Assets</strong></p>
+    <UpdateBundle ref="updateBundle"></UpdateBundle>
 
-        <b-form-group>
-          <b-form-radio-group v-model="selectedOption" name="bundleUpdateOptions">
-            <b-form-radio
-              class="mb-4"
-              value="update"
-            >
-              {{ $t('Quick Update') }}
-              <p class="text-muted">{{ $t('The current bundle will be replaced completely for the new version immediately.') }}</p>
-            </b-form-radio>
-
-            <b-form-radio value="copy">
-              {{ $t('Copy Changes') }}
-              <p class="text-muted">{{ $t('Copy and update bundle.') }}</p>
-            </b-form-radio>
-          </b-form-radio-group>
-        </b-form-group>
-      </div>
-    </b-modal>
-
-    <b-modal id="install-progress" size="lg" v-model="showInstallModal" :title="$t('Installation Progress')" hide-footer>
-      <install-progress />
-    </b-modal>
     <div class="card local-bundles-card">
       <b-table
         hover
