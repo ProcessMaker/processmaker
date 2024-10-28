@@ -382,6 +382,8 @@
     var screenFields = @json($screenFields);
     window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
 
+    window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name);
+    window.Processmaker.user = @json($currentUser);
   </script>
     @foreach($manager->getScripts() as $script)
         <script src="{{$script}}"></script>
@@ -939,8 +941,6 @@
           this.getUsers("");
         }
       });
-      window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name);
-      window.Processmaker.user = @json($currentUser);
     </script>
 @endsection
 
@@ -1020,12 +1020,6 @@
     text-transform: uppercase;
     margin-bottom: 0.5rem;
   }
-  .collapse-content {
-    min-width:0px;
-    max-width:400px;
-    width:315px;
-    height: calc(100vh - 200px);
-  }
   .open-style {
     background-color: #4ea075;
   }
@@ -1064,7 +1058,7 @@
     margin-top: 5px;
   }
   .container-height {
-    height: calc(100vh - 200px);
+    height: calc(100vh - 145px);
   }
 </style>
 @endsection

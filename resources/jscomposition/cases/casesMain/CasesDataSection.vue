@@ -1,26 +1,25 @@
 <template>
-  <div
-    class="tw-w-full tw-space-y-3 tw-flex tw-flex-col tw-overflow-hidden tw-grow">
+  <div class="tw-w-full tw-space-y-3 tw-flex tw-flex-col tw-overflow-hidden tw-grow">
     <CaseFilter @enter="onChangeSearch" />
-
     <BadgesSection
       v-model="badgesData"
-      @remove="onRemoveBadge" />
-
+      @remove="onRemoveBadge"
+    />
     <FilterableTable
       ref="table"
       :columns="columnsConfig"
       :data="data"
       :placeholder="showPlaceholder"
       class="tw-flex tw-flex-col tw-grow tw-overflow-y-scroll"
-      @changeFilter="onChangeFilter">
+      @changeFilter="onChangeFilter"
+    >
       <template #placeholder>
         <TablePlaceholder
           :placeholder="placeholderType"
-          class="tw-grow" />
+          class="tw-grow"
+        />
       </template>
     </FilterableTable>
-
     <Pagination
       :class="{
         ' tw-opacity-50':showPlaceholder
@@ -29,7 +28,8 @@
       :page="dataPagination.page"
       :pages="dataPagination.pages"
       @perPage="onPerPage"
-      @go="onGo" />
+      @go="onGo"
+    />
   </div>
 </template>
 <script setup>
@@ -60,6 +60,7 @@ const table = ref();
 const showPlaceholder = ref(false);
 const placeholderType = ref("loading");
 const route = useRoute();
+const defaultSort = ref("case_number:desc");
 
 const dataPagination = ref({
   total: 0,
@@ -84,10 +85,10 @@ const getData = async () => {
     params: {
       pageSize: dataPagination.value.perPage,
       page: dataPagination.value.page,
-      userId: route.params?.id == "all" ? null : user.id,
+      userId: route.params?.id === "all" ? null : user.id,
       search: search.value || null,
       filterBy: JSON.stringify(formatFilters(filters.value)), // Format filters without sortable
-      sortBy: sortFilter ? `${sortFilter.field}:${sortFilter.sortable}` : null,
+      sortBy: sortFilter ? `${sortFilter.field}:${sortFilter.sortable}` : defaultSort.value,
     },
   });
   return response;

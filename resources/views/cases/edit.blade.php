@@ -43,7 +43,9 @@
                     <li class="tw-flex tw-items-center tw-justify-center">
                       <button
                         type="button"
-                        class="tw-w-full tw-border tw-border-gray-300 tw-px-3 tw-py-2 tw-shadow-sm tw-rounded-md"
+                        class="tw-flex tw-justify-center tw-items-center tw-gap-2
+                          tw-w-full tw-border tw-border-solid tw-border-gray-300 tw-px-3 tw-py-2 tw-shadow-sm tw-rounded-md tw-text-gray-600
+                          tw-bg-gradient-to-b tw-from-white tw-to-transparent tw-via-white/5 tw-bg-gray-50"
                         aria-haspopup="dialog"
                         @click="onCancel"
                       >
@@ -126,6 +128,10 @@
     const comentable_type = @json(get_class($request));
   </script>
   <script src="{{mix('js/composition/cases/casesDetail/edit.js')}}"></script>
+  @if (hasPackage('package-files'))
+    <!-- TODO: Replace with script injector like we do for modeler and screen builder -->
+    <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
+  @endif
 
   @foreach($manager->getScripts() as $script)
     <script src="{{$script}}"></script>

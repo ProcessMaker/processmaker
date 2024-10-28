@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Providers;
 
+use Illuminate\Database\Console\Migrations\MigrateCommand;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\PackageManifest;
@@ -14,7 +15,6 @@ use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
 use Lavary\Menu\Menu;
-use Illuminate\Database\Console\Migrations\MigrateCommand;
 use ProcessMaker\Console\Migration\ExtendedMigrateCommand;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ScreenBuilderStarting;
