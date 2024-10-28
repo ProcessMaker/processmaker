@@ -105,6 +105,7 @@
                   name="{{ $request->name }}"
                   :readonly="request.status === 'COMPLETED'"
                   :get-data="getCommentsData"
+                  :is-case="true"
                   :case_number="{{ $request->case_number }}"
                 />
               </template>
