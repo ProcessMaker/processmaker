@@ -1,6 +1,6 @@
 <template>
   <th
-    class="tw-relative"
+    class="tw-relative thead-resizable"
     :style="{ width: width + 'px' }">
     <div
       class="tw-py-4 tw-px-3 tw-text-left tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis">
@@ -14,8 +14,8 @@
     </div>
 
     <div
-      class="tw-absolute tw-right-0 tw-top-0 tw-w-1
-        tw-h-full tw-cursor-col-resize tw-select-none tw-border-r tw-border-gray-400"
+      class="tw-absolute tw-right-0 tw-top-0 tw-w-1 tw-border-r
+        tw-h-full tw-cursor-col-resize tw-select-none tw-border-gray-400"
       @mousedown="column.resizable ? columnResize.startResize($event) : null" />
   </th>
 </template>
@@ -56,3 +56,8 @@ export default defineComponent({
   },
 });
 </script>
+<style>
+.thead-resizable:nth-last-child(-n+2) > div:nth-last-child(1) {
+  border-right-width: 0px;
+}
+</style>
