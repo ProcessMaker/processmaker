@@ -13,6 +13,31 @@ class CaseUtils
 
     const CASE_NUMBER_PREFIX = 'cn_';
 
+    const PROCESS_FIELDS = [
+        'id' => 'id',
+        'name' => 'name',
+    ];
+
+    const REQUEST_FIELDS = [
+        'id' => 'id',
+        'name' => 'name',
+        'parent_request_id' => 'parentRequest.id',
+    ];
+
+    const TASK_FIELDS = [
+        'id' => 'id',
+        'element_id' => 'element_id',
+        'name' => 'element_name',
+        'process_id' => 'process_id',
+        'element_type' => 'element_type',
+        'status' => 'status',
+    ];
+
+    const KEYWORD_FIELDS = [
+        'case_number' => 'case_number',
+        'case_title' => 'case_title',
+    ];
+
     /**
      * Get the case number split into keywords.
      * @param int $caseNumber
@@ -122,14 +147,12 @@ class CaseUtils
      */
     public static function storeTasks(Collection $tasks, ?array $taskData = []): Collection
     {
-        $requiredKeys = ['id', 'element_id', 'name', 'process_id', 'element_type'];
-
         if (
-            !empty($taskData) && !array_diff($requiredKeys, array_keys($taskData))
+            !empty($taskData) && !array_diff(array_keys(self::TASK_FIELDS), array_keys($taskData))
             && in_array($taskData['element_type'], self::ALLOWED_ELEMENT_TYPES)
         ) {
             unset($taskData['element_type']);
-            $tasks->push($taskData);
+            $tasks->prepend($taskData);
         }
 
         return $tasks->unique('id')->values();
@@ -155,11 +178,14 @@ class CaseUtils
      * Extract data from an object based on a mapping array.
      *
      * @param object $object The object to extract data from.
-     * @param array $mapping An associative array where keys are the desired keys in the output array and values are the corresponding properties in the object.
+     * @param string $mapping An associative array where keys are the desired keys in the output array and values are the corresponding properties in the object.
      * @return array The extracted data as an associative array.
      */
-    public static function extractData(object $object, array $mapping): array
+    public static function extractData(object $object, string $fieldType): array
     {
+        $fields = $fieldType . '_FIELDS';
+        $mapping = constant('self::' . $fields);
+
         $data = [];
         foreach ($mapping as $key => $property) {
             $data[$key] = data_get($object, $property);

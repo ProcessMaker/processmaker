@@ -30,24 +30,9 @@ class CaseParticipatedRepository
         }
 
         try {
-            $processData = CaseUtils::extractData($token->processRequest->process, [
-                'id' => 'id',
-                'name' => 'name',
-            ]);
-
-            $requestData = CaseUtils::extractData($token->processRequest, [
-                'id' => 'id',
-                'name' => 'name',
-                'parent_request_id' => 'parentRequest.id',
-            ]);
-
-            $taskData = CaseUtils::extractData($token, [
-                'id' => 'id',
-                'element_id' => 'element_id',
-                'name' => 'element_name',
-                'process_id' => 'process_id',
-                'element_type' => 'element_type',
-            ]);
+            $processData = CaseUtils::extractData($token->processRequest->process, 'PROCESS');
+            $requestData = CaseUtils::extractData($token->processRequest, 'REQUEST');
+            $taskData = CaseUtils::extractData($token, 'TASK');
 
             CaseParticipated::create([
                 'user_id' => $token->user->id,
@@ -84,24 +69,9 @@ class CaseParticipatedRepository
                 return;
             }
 
-            $processData = CaseUtils::extractData($token->processRequest->process, [
-                'id' => 'id',
-                'name' => 'name',
-            ]);
-
-            $requestData = CaseUtils::extractData($token->processRequest, [
-                'id' => 'id',
-                'name' => 'name',
-                'parent_request_id' => 'parentRequest.id',
-            ]);
-
-            $taskData = CaseUtils::extractData($token, [
-                'id' => 'id',
-                'element_id' => 'element_id',
-                'name' => 'element_name',
-                'process_id' => 'process_id',
-                'element_type' => 'element_type',
-            ]);
+            $processData = CaseUtils::extractData($token->processRequest->process, 'PROCESS');
+            $requestData = CaseUtils::extractData($token->processRequest, 'REQUEST');
+            $taskData = CaseUtils::extractData($token, 'TASK');
 
             $this->caseParticipated->updateOrFail([
                 'case_title' => $case->case_title,

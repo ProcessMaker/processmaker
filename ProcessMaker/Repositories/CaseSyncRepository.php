@@ -32,16 +32,8 @@ class CaseSyncRepository
                     continue;
                 }
 
-                $processData = CaseUtils::extractData($instance->process, [
-                    'id' => 'id',
-                    'name' => 'name',
-                ]);
-
-                $requestData = CaseUtils::extractData($instance, [
-                    'id' => 'id',
-                    'name' => 'name',
-                    'parent_request_id' => 'parentRequest.id',
-                ]);
+                $processData = CaseUtils::extractData($instance->process, 'PROCESS');
+                $requestData = CaseUtils::extractData($instance, 'REQUEST');
 
                 $caseStartedProcesses = CaseUtils::storeProcesses(collect(), $processData);
                 $caseStartedRequests = CaseUtils::storeRequests(collect(), $requestData);
@@ -56,10 +48,7 @@ class CaseSyncRepository
 
                 self::processChildRequests($instance, $caseParticipatedData, $caseStartedProcesses, $caseStartedRequests, $participants, $caseStartedRequestTokens, $caseStartedTasks);
 
-                $dataKeywords = CaseUtils::extractData($instance, [
-                    'case_number' => 'case_number',
-                    'case_title' => 'case_title',
-                ]);
+                $dataKeywords = CaseUtils::extractData($instance, 'KEYWORD');
 
                 $caseStarted = CaseStarted::updateOrCreate(
                     ['case_number' => $instance->case_number],
@@ -101,21 +90,9 @@ class CaseSyncRepository
      */
     private static function prepareCaseStartedData($instance, $status, $participants)
     {
-        $processData = CaseUtils::extractData($instance->process, [
-            'id' => 'id',
-            'name' => 'name',
-        ]);
-
-        $requestData = CaseUtils::extractData($instance, [
-            'id' => 'id',
-            'name' => 'name',
-            'parent_request_id' => 'parentRequest.id',
-        ]);
-
-        $dataKeywords = CaseUtils::extractData($instance, [
-            'case_number' => 'case_number',
-            'case_title' => 'case_title',
-        ]);
+        $processData = CaseUtils::extractData($instance->process, 'PROCESS');
+        $requestData = CaseUtils::extractData($instance, 'REQUEST');
+        $dataKeywords = CaseUtils::extractData($instance, 'KEYWORD');
 
         return [
             'case_title' => $instance->case_title,
@@ -193,16 +170,8 @@ class CaseSyncRepository
         $instance, &$caseParticipatedData, &$caseStartedProcesses, &$caseStartedRequests, &$participants, &$caseStartedRequestTokens, &$caseStartedTasks
     ) {
         foreach ($instance->childRequests as $subProcess) {
-            $processData = CaseUtils::extractData($subProcess->process, [
-                'id' => 'id',
-                'name' => 'name',
-            ]);
-
-            $requestData = CaseUtils::extractData($subProcess, [
-                'id' => 'id',
-                'name' => 'name',
-                'parent_request_id' => 'parentRequest.id',
-            ]);
+            $processData = CaseUtils::extractData($subProcess->process, 'PROCESS');
+            $requestData = CaseUtils::extractData($subProcess, 'REQUEST');
 
             $caseParticipatedData['processes'] = CaseUtils::storeProcesses(collect(), $processData);
             $caseParticipatedData['requests'] = CaseUtils::storeRequests(collect(), $requestData);
