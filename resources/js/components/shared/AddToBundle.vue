@@ -33,7 +33,7 @@ const save = (event) => {
       modal.value.hide();
       window.ProcessMaker.alert(vue.$t('Asset added to bundle'), 'success');
     }).catch(e => {
-      error.value = e.response?.data?.message || e.message;
+      error.value = e.response?.data?.error?.message || e.message;
     })
   }
 };

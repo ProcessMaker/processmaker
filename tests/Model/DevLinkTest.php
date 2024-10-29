@@ -3,6 +3,7 @@
 namespace Tests\Model;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\DevLink;
 use ProcessMaker\Models\Screen;
@@ -55,6 +56,8 @@ class DevLinkTest extends TestCase
 
     public function testInstallRemoteBundle()
     {
+        Storage::fake('local');
+
         $screen1 = Screen::factory()->create(['title' => 'Screen 1']);
         $screen2 = Screen::factory()->create(['title' => 'Screen 2']);
         $bundle = Bundle::factory()->create([]);
@@ -90,6 +93,13 @@ class DevLinkTest extends TestCase
         $this->assertCount(2, $bundle->assets);
         $this->assertEquals('Screen 1', $bundle->assets[0]->asset->title);
         $this->assertEquals('Screen 2', $bundle->assets[1]->asset->title);
+
+        // test that we saved the payload
+        $media = $bundle->getMedia();
+        $this->assertCount(1, $media);
+        $gzPath = $media[0]->getPath();
+        $payloads = json_decode(gzdecode(file_get_contents($gzPath)), true);
+        $this->assertCount(2, $payloads);
     }
 
     public function testRemoteBundles()
@@ -122,5 +132,108 @@ class DevLinkTest extends TestCase
         $this->assertCount(2, $bundles['data']);
         $this->assertEquals($bundles['data'][0]['is_installed'], true);
         $this->assertEquals($bundles['data'][1]['is_installed'], false);
+    }
+
+    public function testUpdateBundle()
+    {
+        Storage::fake('local');
+
+        // Remote Instance
+        $screen = Screen::factory()->create(['title' => 'Screen Name']);
+        $bundle = Bundle::factory()->create([]);
+        $bundle->syncAssets([$screen]);
+        $exports = $bundle->export();
+        $screenUuid = $screen->uuid;
+
+        $screen->delete();
+        $bundle->delete();
+
+        $exportsNewScreenName = $exports;
+        $exportsNewScreenName[0]['export'][$screen->uuid]['attributes']['title'] = 'Screen Name Updated';
+
+        // Local Instance
+        $devLink = DevLink::factory()->create([
+            'url' => 'http://remote-instance.test',
+        ]);
+
+        $existingBundle = Bundle::factory()->create([
+            'dev_link_id' => $devLink->id,
+            'remote_id' => 123,
+            'version' => '1',
+        ]);
+
+        Http::fake([
+            'http://remote-instance.test/api/1.0/devlink/local-bundles/123' => Http::sequence()
+                ->push([
+                    'id' => 123,
+                    'name' => 'Test Bundle',
+                    'published' => true,
+                    'version' => '2',
+                ], 200)
+                ->push([
+                    'id' => 123,
+                    'name' => 'Test Bundle',
+                    'published' => true,
+                    'version' => '3',
+                ], 200)
+                ->push([
+                    'id' => 123,
+                    'name' => 'Test Bundle',
+                    'published' => true,
+                    'version' => '4',
+                ], 200)
+                ->push([
+                    'id' => 123,
+                    'name' => 'Test Bundle',
+                    'published' => true,
+                    'version' => '8',
+                ], 200)
+                ->push([
+                    'id' => 123,
+                    'name' => 'Test Bundle',
+                    'published' => true,
+                    'version' => '9',
+                ], 200),
+            'http://remote-instance.test/api/1.0/devlink/export-local-bundle/123' => Http::sequence()
+                ->push([
+                    'payloads' => $exports,
+                ], 200)
+                ->push([
+                    'payloads' => $exportsNewScreenName,
+                ], 200)
+                ->push([
+                    'payloads' => $exportsNewScreenName,
+                ], 200)
+                ->push([
+                    'payloads' => $exportsNewScreenName,
+                ], 200)
+                ->push([
+                    'payloads' => $exportsNewScreenName,
+                ], 200),
+        ]);
+
+        $devLink->installRemoteBundle(123, 'update');
+        $screen = Screen::where('uuid', $screenUuid)->first();
+        $this->assertEquals('Screen Name', $screen->title);
+
+        $devLink->installRemoteBundle(123, 'update');
+        $screen->refresh();
+        $this->assertEquals('Screen Name Updated', $screen->title);
+
+        // Check saved media
+        $media = $existingBundle->getMedia();
+        $this->assertCount(2, $media);
+        $this->assertEquals($media[0]->getCustomProperty('version'), '2');
+        $this->assertEquals($media[1]->getCustomProperty('version'), '3');
+
+        // only the latest 3 versions should be saved
+        $devLink->installRemoteBundle(123, 'update');
+        $devLink->installRemoteBundle(123, 'update');
+        $devLink->installRemoteBundle(123, 'update');
+
+        $media = $existingBundle->refresh()->getMedia();
+        $this->assertCount(3, $media);
+        $savedVersions = $media->map(fn ($m) => $m->getCustomProperty('version'))->toArray();
+        $this->assertEquals(['4', '8', '9'], $savedVersions);
     }
 }
