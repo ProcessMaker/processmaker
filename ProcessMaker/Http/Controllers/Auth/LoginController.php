@@ -384,7 +384,7 @@ class LoginController extends Controller
     private function setupLanguage(Request $request, User $user)
     {
         $language = $request->cookies->get('language');
-        if ($language) {
+        if ($language && $language !== 'null') {
             $user->language = json_decode($language)->code;
             $user->save();
         }

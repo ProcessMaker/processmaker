@@ -1,22 +1,11 @@
 <template>
   <div class="tw-flex tw-relative tw-text-nowrap tw-whitespace-nowrap tw-p-3">
     <div class="tw-overflow-hidden tw-text-ellipsis ">
-      <a
-        v-if="href !== null"
-        class="hover:tw-text-blue-400 tw-text-gray-500"
-        :href="href(row[column.field][0])"
-      >
-        {{ getValue() }}
-      </a>
-      <span
-        v-else
-        class="hover:tw-text-blue-400 tw-text-gray-500 hover:tw-cursor-pointer"
-        href="#"
-        @click.prevent.stop="onClickOption(row[column.field][0], 0)"
-      >
+      <span class="tw-text-gray-500">
         {{ getValue() }}
       </span>
     </div>
+
     <AppPopover
       v-if="optionsModel.length > 1"
       v-model="show"
@@ -30,6 +19,7 @@
       >
         <i class="fas fa-ellipsis-v" />
       </div>
+
       <template #content>
         <ul
           class="tw-bg-white tw-list-none tw-text-gray-600
@@ -41,18 +31,7 @@
               :key="index"
               class="hover:tw-bg-gray-100"
             >
-              <a
-                v-if="href !== null"
-                class="tw-flex tw-py-2 tw-px-4 transition duration-300 hover:tw-bg-gray-200"
-                :href="getLink(option)"
-              >
-                {{ getValueOption(option, index) }}
-              </a>
-              <span
-                v-else
-                class="tw-flex tw-py-2 tw-px-4 transition duration-300 hover:tw-bg-gray-200 hover:tw-cursor-pointer"
-                @click.prevent.stop="onClickOption(option, index)"
-              >
+              <span class="tw-flex tw-py-2 tw-px-4 transition duration-300">
                 {{ getValueOption(option, index) }}
               </span>
             </li>
@@ -84,17 +63,9 @@ export default defineComponent({
       type: Object,
       default: () => ({}),
     },
-    click: {
-      type: Function,
-      default: new Function(),
-    },
     formatterOptions: {
       type: Function,
       default: new Function(),
-    },
-    href: {
-      type: Function,
-      default: null,
     },
   },
   setup(props) {
@@ -108,7 +79,7 @@ export default defineComponent({
       return props.row[props.column.field].length ? props.row[props.column.field][0].name : "";
     };
 
-    const getValueOption = (option, index) => {
+    const getValueOption = (option) => {
       if (isFunction(props.formatterOptions)) {
         return props.formatterOptions(option, props.row, props.column, props.columns);
       }
@@ -119,10 +90,6 @@ export default defineComponent({
       show.value = !show.value;
     };
 
-    const onClickOption = (option, index) => {
-      props.click && props.click(option, props.row, props.column, props.columns);
-    };
-
     const onClose = () => {
       show.value = false;
     };
@@ -131,7 +98,6 @@ export default defineComponent({
       show,
       optionsModel,
       onClose,
-      onClickOption,
       onClick,
       getValue,
       getValueOption,

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, getCurrentInstance, computed } from 'vue';
+import { ref, onMounted, getCurrentInstance, computed, reactive, set } from 'vue';
 import debounce from 'lodash/debounce';
 import Origin from './Origin.vue';
 import VersionCheck from './VersionCheck.vue';
@@ -19,16 +19,25 @@ const confirmUpdateVersion = ref(null);
 const filter = ref("");
 const bundleModal = ref(null);
 const updateBundle = ref(null);
+const updatesAvailable = reactive({});
 
 const actions = [
   { value: "increase-item", content: "Publish New Version", conditional: "if(not(dev_link_id), true, false)" },
-  { value: "update-item", content: "Update Version", conditional: "if(dev_link_id, true, false)" },
+  { value: "update-item", content: "Update Bundle", conditional: "if(update_available, true, false)" },
+  { value: "reinstall-item", content: "Reinstall Bundle", conditional: "if(dev_link_id, true, false)" },
   { value: "edit-item", content: "Edit", conditional: "if(not(dev_link_id) , true, false)" },
   { value: "delete-item", content: "Delete" },
-];
+]
+const updateBundleAction = {
+  value: "increase-item", content: "Publish New Version", conditional: "if(not(dev_link_id), true, false)"
+};
 const customButton = {
   icon: "fas fa-ellipsis-v",
   content: "",
+};
+
+const setUpdateAvailable = (bundle, updateAvailable) => {
+  set(updatesAvailable, bundle.id, updateAvailable);
 };
 
 onMounted(() => {
@@ -100,6 +109,9 @@ const onNavigate = (action, data, index) => {
     case "update-item":
       updateVersionBundle(data);
       break;
+    case "reinstall-item":
+      updateVersionBundle(data, true);
+      break;
     case "delete-item":
       deleteBundle(data);
       break;
@@ -143,9 +155,9 @@ const deleteBundle = (bundle) => {
   confirmDeleteModal.value.show();
 };
 
-const updateVersionBundle = (bundle) => {
+const updateVersionBundle = (bundle, reinstall = false) => {
   selected.value = bundle;
-  updateBundle.value.show(bundle);
+  updateBundle.value.show(bundle, reinstall);
 };
 
 const increaseVersionBundle = (bundle) => {
@@ -259,13 +271,13 @@ const confirmPublishNewVersionText = computed(() => {
           <Origin :dev-link="data.item.dev_link"></Origin>
         </template>
         <template #cell(version)="data">
-          {{ data.item.version }} <VersionCheck :dev-link="data.item"></VersionCheck>
+          {{ data.item.version }} <VersionCheck @updateAvailable="setUpdateAvailable(data.item, $event)" :dev-link="data.item"></VersionCheck>
         </template>
         <template #cell(menu)="data">
           <EllipsisMenu
             class="ellipsis-devlink"
             :actions="actions"
-            :data="data.item"
+            :data="{ ...data.item, update_available: updatesAvailable[data.item.id] ?? false }"
             :custom-button="customButton"
             @navigate="onNavigate"
           />
