@@ -64,3 +64,21 @@ export const formatFilterBadges = (filters, columns) => {
 
   return response.filter((e) => e);
 };
+
+export const getDefaultFilters = (id) => {
+  const filters = {
+    default: [{
+      field: "case_status",
+      operator: "=",
+      value: {
+        label: "In progress",
+        value: "in_progress",
+      },
+    }],
+    in_progress: [],
+    completed: [],
+    all: [],
+  };
+
+  return filters[id] || filters.default;
+};

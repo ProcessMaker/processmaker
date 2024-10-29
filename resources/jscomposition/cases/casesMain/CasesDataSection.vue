@@ -3,21 +3,18 @@
     <CaseFilter @enter="onChangeSearch" />
     <BadgesSection
       v-model="badgesData"
-      @remove="onRemoveBadge"
-    />
+      @remove="onRemoveBadge" />
     <FilterableTable
       ref="table"
       :columns="columnsConfig"
       :data="data"
       :placeholder="showPlaceholder"
       class="tw-flex tw-flex-col tw-grow tw-overflow-y-scroll"
-      @changeFilter="onChangeFilter"
-    >
+      @changeFilter="onChangeFilter">
       <template #placeholder>
         <TablePlaceholder
           :placeholder="placeholderType"
-          class="tw-grow"
-        />
+          class="tw-grow" />
       </template>
     </FilterableTable>
     <Pagination
@@ -28,8 +25,7 @@
       :page="dataPagination.page"
       :pages="dataPagination.pages"
       @perPage="onPerPage"
-      @go="onGo"
-    />
+      @go="onGo" />
   </div>
 </template>
 <script setup>
@@ -42,7 +38,7 @@ import { getColumns } from "./config/columns";
 import { FilterableTable, TablePlaceholder } from "../../system";
 import * as api from "./api";
 import { user } from "./variables";
-import { formatFilters, formatFilterBadges } from "./utils";
+import { formatFilters, formatFilterBadges, getDefaultFilters } from "./utils";
 
 const props = defineProps({
   listId: {
@@ -55,7 +51,7 @@ const badgesData = ref([]);
 const columnsConfig = ref();
 const data = ref();
 const search = ref();
-const filters = ref([]);
+const filters = ref(getDefaultFilters(props.listId) || []);
 const table = ref();
 const showPlaceholder = ref(false);
 const placeholderType = ref("loading");
@@ -151,6 +147,7 @@ onMounted(async () => {
   await hookGetData();
 
   columnsConfig.value = getColumns(props.listId);
+  badgesData.value = formatFilterBadges(filters.value, columnsConfig.value);
 });
 </script>
 <style scoped>
