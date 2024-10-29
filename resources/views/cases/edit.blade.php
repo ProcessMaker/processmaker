@@ -127,6 +127,7 @@
     const processId = @json($request->process->id);
     const canViewComments = @json($canViewComments);
     const comentable_type = @json(get_class($request));
+    const requestCount = @json($requestCount);
   </script>
   <script src="{{mix('js/composition/cases/casesDetail/edit.js')}}"></script>
   @if (hasPackage('package-files'))
