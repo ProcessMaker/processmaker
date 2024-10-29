@@ -13,12 +13,17 @@ class CaseTaskRepository
     {
     }
 
+    public function setTable(string $table): void
+    {
+        $this->table = $table;
+    }
+
     /**
      * The function `updateCaseStartedTaskStatus` updates the status of a task in a case started record.
      */
     public function updateCaseStartedTaskStatus()
     {
-        $this->table = 'cases_started';
+        $this->setTable('cases_started');
         $this->updateTaskStatus();
     }
 
@@ -27,7 +32,7 @@ class CaseTaskRepository
      */
     public function updateCaseParticipatedTaskStatus()
     {
-        $this->table = 'cases_participated';
+        $this->setTable('cases_participated');
         $this->updateTaskStatus();
     }
 
@@ -70,7 +75,7 @@ class CaseTaskRepository
      * - `case_number`: The case number associated with the task ID
      * - `task_index`: The index of the task within the `tasks` JSON column that matches the provided task ID
      */
-    private function findCaseByTaskId(int $caseNumber, string $taskId): ?object
+    public function findCaseByTaskId(int $caseNumber, string $taskId): ?object
     {
         return DB::table($this->table)
             ->select([
@@ -94,7 +99,7 @@ class CaseTaskRepository
      * @param string status The `updateTaskStatusInCase` function is used to update the status of a specific task in a
      * case. The parameters are as follows:
      */
-    private function updateTaskStatusInCase(int $caseNumber, string $taskIndex, string $status): void
+    public function updateTaskStatusInCase(int $caseNumber, string $taskIndex, string $status): void
     {
         DB::table($this->table)
             ->where('case_number', $caseNumber)
