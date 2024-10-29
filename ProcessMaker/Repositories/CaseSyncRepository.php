@@ -139,6 +139,7 @@ class CaseSyncRepository
                     'name' => $token->element_name,
                     'process_id' => $token->process_id,
                     'element_type' => $token->element_type,
+                    'status' => $token->status,
                 ];
 
                 $caseParticipatedData['processes'] = CaseUtils::storeProcesses($caseParticipatedData['processes'], $processData);
