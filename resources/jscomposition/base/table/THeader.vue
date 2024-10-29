@@ -56,7 +56,7 @@ export default defineComponent({
   },
 });
 </script>
-<style>
+<style scoped>
 .thead-resizable:nth-last-child(-n+2) > div:nth-last-child(1) {
   border-right-width: 0px;
 }
