@@ -50,7 +50,7 @@
                         @click="onCancel"
                       >
                         <i class="fas fa-ban"></i>
-                        <span>{{ __('Cancel Request') }}</span>
+                        <span>{{ __('Cancel Case') }}</span>
                       </button>
                     </li>
                   @endif
