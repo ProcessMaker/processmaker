@@ -171,7 +171,6 @@ export const getColumns = (type) => {
       processColumn(),
       taskColumn(),
       participantsColumn(),
-      statusColumn(),
       startedColumn(),
     ],
     completed: [
@@ -180,7 +179,6 @@ export const getColumns = (type) => {
       processColumn(),
       taskColumn(),
       participantsColumn(),
-      statusColumn(),
       startedColumn(),
       completedColumn(),
     ],
