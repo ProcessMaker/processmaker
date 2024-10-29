@@ -75,7 +75,8 @@ class CasesController extends Controller
             'canViewComments',
             'canPrintScreens',
             'isProcessManager',
-            'manager'
+            'manager',
+            'requestCount'
         ));
     }
 
