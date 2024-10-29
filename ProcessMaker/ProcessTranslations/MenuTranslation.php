@@ -36,7 +36,7 @@ class MenuTranslation extends TranslationManager
 
     private function applyTranslations($translations)
     {
-        if (!$translations) {
+        if (!$translations || !hasPackage('package-translations')) {
             return $this->menu;
         }
 

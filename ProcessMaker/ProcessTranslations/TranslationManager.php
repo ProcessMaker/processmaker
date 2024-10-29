@@ -18,7 +18,9 @@ class TranslationManager
             $targetLanguage = self::getUserLanguage($targetLanguage);
         }
 
-        $targetLanguage = self::validateLanguage($targetLanguage);
+        if (hasPackage('package-translations')) {
+            $targetLanguage = self::validateLanguage($targetLanguage);
+        }
 
         return $targetLanguage;
     }
