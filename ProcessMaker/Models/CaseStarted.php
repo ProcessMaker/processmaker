@@ -38,11 +38,8 @@ class CaseStarted extends ProcessMakerModel
         'request_tokens' => AsCollection::class,
         'tasks' => AsCollection::class,
         'participants' => AsCollection::class,
-    ];
-
-    protected $dates = [
-        'initiated_at',
-        'completed_at',
+        'completed_at' => 'datetime:c',
+        'initiated_at' => 'datetime:c',
     ];
 
     protected static function newFactory(): Factory
