@@ -7,6 +7,7 @@ import {
   TruncatedColumn,
 } from "../../../system/index";
 import { formatDate } from "../../../utils";
+import { t } from "i18next";
 
 export default {};
 /**
@@ -116,8 +117,26 @@ export const statusColumn = () => ({
     component: StatusCell,
   }),
   filter: {
-    dataType: "string",
+    dataType: "enum",
     operators: ["="],
+    config: {
+      options: [{
+        label: t("In progress"),
+        value: "in_progress",
+      },
+      {
+        label: t("Completed"),
+        value: "completed",
+      },
+      {
+        label: t("Error"),
+        value: "error",
+      },
+      {
+        label: t("Canceled"),
+        value: "canceled",
+      }],
+    },
   },
 });
 
