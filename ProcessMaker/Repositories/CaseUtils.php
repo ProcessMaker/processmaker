@@ -152,6 +152,7 @@ class CaseUtils
             && in_array($taskData['element_type'], self::ALLOWED_ELEMENT_TYPES)
         ) {
             unset($taskData['element_type']);
+            $taskData['id'] = (string)$taskData['id'];
             $tasks->prepend($taskData);
         }
 
