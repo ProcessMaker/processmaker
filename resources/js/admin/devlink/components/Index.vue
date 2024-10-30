@@ -228,7 +228,7 @@ const urlIsValid = computed(() => {
           />
         </template>
       </b-table>
-      <div class="div-message d-flex flex-column justify-content-center align-items-center">
+      <div v-if="devlinks.length === 0" class="div-message d-flex flex-column justify-content-center align-items-center">
         <div class="div-message-title">{{ $t("No linked instances of ProcessMaker") }}</div>
         <div>{{ $t("Use the button Add Instance") }}</div>
       </div>

@@ -271,7 +271,7 @@ const confirmPublishNewVersionText = computed(() => {
           />
         </template>
       </b-table>
-      <div class="div-message d-flex flex-column justify-content-center align-items-center">
+      <div v-if="bundles.length === 0" class="div-message d-flex flex-column justify-content-center align-items-center">
         <div class="div-message-title">{{ $t("No bundles of assets to display") }}</div>
         <div>{{ $t("Create a bundle to easily share assets and settings between ProcessMaker instances.") }}</div>
       </div>
