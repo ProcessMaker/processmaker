@@ -174,12 +174,12 @@ class CaseControllerTest extends TestCase
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['sortBy' => 'completed_at:asc']));
         $response->assertStatus(200);
         $response->assertJsonCount($cases->count(), 'data');
-        $response->assertJsonPath('data.0.completed_at', $casesSorted->first()->completed_at->format('Y-m-d H:i:s'));
+        $response->assertJsonPath('data.0.completed_at', $casesSorted->first()->completed_at->format('c'));
 
         $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['sortBy' => 'completed_at:desc']));
         $response->assertStatus(200);
         $response->assertJsonCount($cases->count(), 'data');
-        $response->assertJsonPath('data.0.completed_at', $casesSorted->last()->completed_at->format('Y-m-d H:i:s'));
+        $response->assertJsonPath('data.0.completed_at', $casesSorted->last()->completed_at->format('c'));
     }
 
     public function test_get_all_cases_sort_by_invalid_field(): void

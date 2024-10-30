@@ -3,6 +3,7 @@ import BetweenOperator from "./BetweenOperator.vue";
 import InOperator from "./InOperator.vue";
 import DateOperator from "./DateOperator.vue";
 import DateBetweenOperator from "./DateBetweenOperator.vue";
+import OptionsOperator from "./OptionsOperator.vue";
 
 const operatorType = [
   {
@@ -29,6 +30,11 @@ const operatorType = [
     operator: ["between"],
     type: ["datetime"],
     component: () => DateBetweenOperator,
+  },
+  {
+    operator: ["="],
+    type: ["enum"],
+    component: () => OptionsOperator,
   },
 ];
 

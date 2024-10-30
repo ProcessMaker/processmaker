@@ -143,7 +143,6 @@ class DevLinkController extends Controller
 
         $bundle->name = $request->input('name');
         $bundle->published = (bool) $request->input('published', false);
-        $bundle->version = $bundle->version + 1;
         $bundle->saveOrFail();
 
         return $bundle;
@@ -170,6 +169,17 @@ class DevLinkController extends Controller
             $devLink->id,
             $remoteBundleId,
             $updateType
+        );
+    }
+
+    public function reinstallBundle(Request $request, Bundle $bundle)
+    {
+        DevLinkInstall::dispatch(
+            $request->user()->id,
+            $bundle->dev_link_id,
+            $bundle->id,
+            'update',
+            true
         );
     }
 

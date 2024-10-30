@@ -5,7 +5,18 @@
       :hover="false"
       position="bottom">
       <i
+        v-if="!props.value?.sortable"
         class="hover:tw-cursor-pointer tw-px-1 fas fa-ellipsis-v"
+        @click.prevent="onClick" />
+
+      <i
+        v-if="props.value?.sortable == 'asc'"
+        class="hover:tw-cursor-pointer fas fa-sort-amount-up-alt"
+        @click.prevent="onClick" />
+
+      <i
+        v-if="props.value?.sortable == 'desc'"
+        class="hover:tw-cursor-pointer fas fa-sort-amount-down-alt"
         @click.prevent="onClick" />
 
       <template #content>
@@ -23,6 +34,7 @@
               :value="filterOperator"
               :operators="filter.operators"
               :type="filter.dataType"
+              :config="filter.config"
               @change="(e) => onChangeFilterOperator(e)" />
           </div>
 
@@ -108,8 +120,8 @@ const onApply = () => {
   const filter = filterOperator.value;
 
   emit("change", {
+    ...props.value,
     ...filter,
-    sortable: null,
   });
 
   show.value = false;

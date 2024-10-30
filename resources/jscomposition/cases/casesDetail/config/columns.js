@@ -20,9 +20,7 @@ const taskNumberColumn = () => ({
   cellRenderer: () => ({
     component: LinkCell,
     params: {
-      click: (row, column, columns) => {
-        window.document.location = `/tasks/${row.id}/edit`;
-      },
+      href: (row) => `/tasks/${row.id}/edit`,
     },
   }),
 });
@@ -36,9 +34,7 @@ const taskNameColumn = () => ({
   cellRenderer: () => ({
     component: LinkCell,
     params: {
-      click: (row, column, columns) => {
-        window.document.location = `/tasks/${row.id}/edit`;
-      },
+      href: (row) => `/tasks/${row.id}/edit`,
     },
   }),
 });
@@ -74,7 +70,7 @@ const dueDateColumn = () => ({
   resizable: true,
   width: 200,
   filter: true,
-  formatter: (row, column, columns) => formatDate(row.due_at),
+  formatter: (row, column, columns) => formatDate(row.due_at, "datetime"),
 });
 
 // Columns for Requests
@@ -82,14 +78,12 @@ const requestIdColumn = () => ({
   field: "id",
   header: "Request ID",
   resizable: true,
-  filter: { type: "sortable" },
+  filter: true,
   width: 150,
   cellRenderer: () => ({
     component: LinkCell,
     params: {
-      click: (row, column, columns) => {
-        window.document.location = `/requests/${row.id}`;
-      },
+      href: (row) => `/requests/${row.id}`,
     },
   }),
 });
@@ -99,7 +93,7 @@ const processRequestColumn = () => ({
   header: "Process Name",
   resizable: true,
   width: 200,
-  filter: { type: "sortable" },
+  filter: true,
 });
 
 const taskColumn = () => ({
@@ -111,9 +105,7 @@ const taskColumn = () => ({
   cellRenderer: () => ({
     component: TruncatedOptionsCell,
     params: {
-      click: (option, row, column, columns) => {
-        window.document.location = `/tasks/${option.id}/edit`;
-      },
+      href: (row) => `/tasks/${row.id}/edit`,
       formatterOptions: (option, row, column, columns) => option.element_name,
     },
   }),
@@ -122,7 +114,7 @@ const taskColumn = () => ({
 const statusColumn = () => ({
   field: "status",
   header: "Status",
-  filter: { type: "sortable" },
+  filter: true,
   resizable: true,
   width: 140,
   cellRenderer: () => ({
@@ -133,10 +125,10 @@ const statusColumn = () => ({
 const startedColumn = () => ({
   field: "initiated_at",
   header: "Started",
-  filter: { type: "sortable" },
+  filter: true,
   resizable: true,
   width: 200,
-  formatter: (row, column, columns) => formatDate(row.initiated_at),
+  formatter: (row, column, columns) => formatDate(row.initiated_at, "datetime"),
 });
 
 const completedDateColumn = () => ({
@@ -144,7 +136,7 @@ const completedDateColumn = () => ({
   header: "Completed",
   resizable: true,
   width: 200,
-  formatter: (row, column, columns) => formatDate(row.completed_at),
+  formatter: (row, column, columns) => formatDate(row.completed_at, "datetime"),
 });
 
 const actionColumn = () => ({

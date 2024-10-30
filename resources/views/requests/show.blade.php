@@ -817,7 +817,7 @@
           );
         },
         onReturnCase() {
-          window.open(`../cases/${request.case_number}`);
+          window.location = `../cases/${request.case_number}`;
         },
         completeRequest() {
           ProcessMaker.confirmModal(

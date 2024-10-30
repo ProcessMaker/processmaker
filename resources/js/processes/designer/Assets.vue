@@ -69,6 +69,36 @@
         </b-card>
       </b-card-group>
     </div>
+    <div class="pl-2 col-4">
+      <b-card-group deck>
+        <b-card
+          v-for="(asset, index) in assetsPackageExtra"
+          :key="index"
+          bg-variant="light"
+          class="text-center"
+          @mouseover="toggleButtons(index, 'package-extra', true)"
+          @mouseleave="toggleButtons(index, 'package-extra', false)"
+        >
+          <template v-if="!showButtonsPackageExtra[index]">
+            <asset
+              :color="asset.color"
+              :icon="asset.icon"
+              :image_icon="asset.image_icon"
+              :asset_name="asset.asset_name"
+            />
+          </template>
+
+          <template v-if="showButtonsPackageExtra[index]">
+            <asset-buttons
+              :asset_name_all="asset.asset_name_all"
+              :asset_name_new="asset.asset_name_new"
+              :url-path="asset.urlPath"
+              :url-asset="asset.urlAsset"
+            />
+          </template>
+        </b-card>
+      </b-card-group>
+    </div>
   </div>
 </template>
 <script>
@@ -141,6 +171,8 @@ export default {
           urlPath: "/designer/flow-genies",
           urlAsset: "/designer/flow-genies?create=true",
         },
+      ],
+      assetsPackageExtra: [
         {
           color: "#5E4FE2",
           icon: "fas fa-database",
@@ -152,7 +184,8 @@ export default {
         },
       ],
       showButtonsCore: new Array(3).fill(false),
-      showButtonsPackage: new Array(4).fill(false),
+      showButtonsPackage: new Array(3).fill(false),
+      showButtonsPackageExtra: new Array(3).fill(false),
     };
   },
   methods: {
@@ -162,6 +195,9 @@ export default {
       }
       if (section === "package") {
         this.$set(this.showButtonsPackage, index, status);
+      }
+      if (section === "package-extra") {
+        this.$set(this.showButtonsPackageExtra, index, status);
       }
     },
     hasPermission() {
