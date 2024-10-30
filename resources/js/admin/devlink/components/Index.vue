@@ -4,6 +4,7 @@ import { useRouter, useRoute } from 'vue-router/composables';
 import debounce from 'lodash/debounce';
 import Status from './Status.vue';
 import EllipsisMenu from '../../../components/shared/EllipsisMenu.vue';
+import DeleteModal from './DeleteModal.vue';
 import { store } from '../common';
 
 const vue = getCurrentInstance().proxy;
@@ -11,6 +12,8 @@ const router = useRouter();
 const route = useRoute();
 const devlinks = ref([]);
 const editModal = ref(null);
+const deleteModal = ref(null);
+const deleteWarningTitle = ref(vue.$t("Delete Confirmation"));
 const filter = ref("");
 const actions = [
   { value: "edit-item", content: "Edit" },
@@ -115,20 +118,17 @@ const updateDevLink = () => {
     });
 };
 
-const deleteDevLink = async (devlink) => {
-  selected.value = devlink;
-  const confirm = await vue.$bvModal.msgBoxConfirm(
-    vue.$t('Are you sure you want to delete {{name}}?', {
-      name: selected.value.name
-    }), {
-    okTitle: vue.$t('Ok'),
-    cancelTitle: vue.$t('Cancel')
-  });
+const deleteWarning = computed(() => {
+  const name = selected.value?.name;
+  return vue.$t('Are you sure you want to delete <strong>{{name}}</strong>? The action is irreversible.', { name });
+});
 
-  if (!confirm) {
-    return;
-  }
+const deleteDevLink = (devlink) => {
+  selected.value = { ...devlink };
+  deleteModal.value.show();
+};
 
+const destroyDevLink = async () => {
   await ProcessMaker.apiClient.delete(`/devlink/${selected.value.id}`);
   load();
 };
@@ -204,6 +204,9 @@ const urlIsValid = computed(() => {
         </b-form-group>
       </template>
     </b-modal>
+
+    <DeleteModal ref="deleteModal" :title="deleteWarningTitle" :message="deleteWarning" @delete="destroyDevLink" />
+
     <div class="card linked-instances-card">
       <b-table
         hover
@@ -255,6 +258,7 @@ tr:hover {
 }
 
 @import "styles/components/table";
+@import "styles/components/modal";
 
 .linked-instances-card {
   border-radius: 8px;

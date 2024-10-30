@@ -4,7 +4,8 @@ import debounce from 'lodash/debounce';
 import Origin from './Origin.vue';
 import VersionCheck from './VersionCheck.vue';
 import EllipsisMenu from '../../../components/shared/EllipsisMenu.vue';
-import BundleModal, { show as showBundleModal, hide as hideBundleModal } from './BundleModal.vue';
+import BundleModal from './BundleModal.vue';
+import DeleteModal from './DeleteModal.vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 import UpdateBundle from './UpdateBundle.vue';
 
@@ -19,6 +20,7 @@ const confirmUpdateVersion = ref(null);
 const filter = ref("");
 const bundleModal = ref(null);
 const updateBundle = ref(null);
+const deleteWarningTitle = ref(vue.$t("Delete Confirmation"));
 
 const actions = [
   { value: "increase-item", content: "Publish New Version", conditional: "if(not(dev_link_id), true, false)" },
@@ -187,9 +189,9 @@ const goToBundleAssets = (bundle) => {
   router.push({ name: 'bundle-assets', params: { id: bundle.id } });
 }
 
-const deleteWaring = computed(() => {
+const deleteWarning = computed(() => {
   const name = selected?.value.name;
-  return vue.$t('Are you sure you want to delete {{name}}?', { name });
+  return vue.$t('Are you sure you want to delete <strong>{{name}}</strong>? The action is irreversible.', { name });
 });
 
 const confirmPublishNewVersionText = computed(() => {
@@ -215,15 +217,8 @@ const confirmPublishNewVersionText = computed(() => {
         </b-button>
       </div>
     </div>
-    <b-modal
-      ref="confirmDeleteModal"
-      centered
-      content-class="modal-style"
-      title="Delete Bundle"
-      @ok="executeDelete"
-    >
-      <p>{{ deleteWaring }}'</p>
-    </b-modal>
+
+    <DeleteModal ref="confirmDeleteModal" :message="deleteWarning" :title="deleteWarningTitle" @delete="executeDelete" />
 
     <BundleModal ref="bundleModal" :bundle="selected" @update="update" />
 
@@ -295,6 +290,38 @@ const confirmPublishNewVersionText = computed(() => {
 }
 
 @import "styles/components/table";
+@import "styles/components/modal";
+::v-deep .delete-modal-style .modal-header .delete-icon {
+  width: 48px;
+  height: 48px;
+  background-color: #FEE6E5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: #EC5962;
+  font-size: 26px;
+}
+::v-deep .delete-modal-style .modal-body-text {
+  font-size: 16px;
+  font-weight: 500;
+}
+::v-deep .delete-modal-style .modal-footer {
+  background-color: #FBFBFC;
+  border-top: 1px solid #E9ECF1;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+::v-deep .delete-modal-style .modal-footer .btn-primary {
+  border: none;
+  background-color: #EC5962;
+  color: #FFFFFF;
+}
+::v-deep .delete-modal-style .modal-footer .btn-secondary {
+  border: 1px solid #D7DDE5;
+  background-color: #FFFFFF;
+  color: #20242A;
+}
 
 .local-bundles-card {
   border-radius: 8px;
