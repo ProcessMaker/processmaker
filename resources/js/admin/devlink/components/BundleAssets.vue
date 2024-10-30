@@ -4,6 +4,7 @@ import { useRouter, useRoute } from 'vue-router/composables';
 import BundleModal, { show as showBundleModal, hide as hideBundleModal } from './BundleModal.vue';
 import Header from './Header.vue';
 import UpdateBundle from './UpdateBundle.vue';
+import VersionCheck from './VersionCheck.vue';
 
 const vue = getCurrentInstance().proxy;
 const route = useRoute();
@@ -21,6 +22,7 @@ const fields = [
 const bundleModal = ref(null);
 const bundleForEdit = ref({});
 const reinstallBundle = ref(null);
+const updateAvailable = ref(false);
 
 const openBundleModalForEdit = () => {
   bundleForEdit.value = { ...bundle.value };
@@ -81,6 +83,7 @@ const remove = async (asset) => {
       <div class="col">
         <Header back="local-bundles">
           {{ bundle.name }} {{ $t("Assets") }}
+          <VersionCheck @updateAvailable="updateAvailable = $event" :dev-link="bundle"></VersionCheck>
         </Header>
       </div>
       <div class="col">
@@ -99,11 +102,18 @@ const remove = async (asset) => {
             </b-button>
 
             <b-button
-              v-if="bundle.dev_link_id !== null"
+              v-if="updateAvailable"
               @click.prevent="reinstallBundle.show(bundle)"
               variant="primary"
               class="install-btn">
-              <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>{{ $t('Reinstall this Bundle') }}
+              <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>{{ $t('Update Bundle') }}
+            </b-button>
+            <b-button
+              v-if="bundle.dev_link_id !== null"
+              @click.prevent="reinstallBundle.show(bundle, true)"
+              variant="primary"
+              class="install-btn">
+              <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>{{ $t('Reinstall This Bundle') }}
             </b-button>
           </div>
         </div>

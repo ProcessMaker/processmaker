@@ -13,6 +13,7 @@ import TabHistory from "./TabHistory.vue";
 import CompletedForms from "./CompletedForms.vue";
 import TabFiles from "./TabFiles.vue";
 import Overview from "./Overview.vue";
+import { getRequestCount } from "../variables/index";
 
 const translate = ProcessMaker.i18n;
 
@@ -35,7 +36,7 @@ const tabs = [
     name: translate.t("History"), href: "#history", current: "history", show: true, content: TabHistory,
   },
   {
-    name: translate.t("Requests"), href: "#requests", current: "requests", show: true, content: RequestTable,
+    name: translate.t("Requests"), href: "#requests", current: "requests", show: getRequestCount() !== 1, content: RequestTable,
   },
 ];
 

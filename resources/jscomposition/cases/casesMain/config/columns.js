@@ -4,8 +4,10 @@ import {
   ParticipantsCell,
   StatusCell,
   LinkCell,
+  TruncatedColumn,
 } from "../../../system/index";
 import { formatDate } from "../../../utils";
+import { t } from "i18next";
 
 export default {};
 /**
@@ -39,9 +41,7 @@ export const caseNumberColumn = () => ({
   cellRenderer: () => ({
     component: LinkCell,
     params: {
-      click: (row, column, columns) => {
-        window.document.location = `/cases/${row.case_number}`;
-      },
+      href: (row) => `/cases/${row.case_number}`,
     },
   }),
 });
@@ -54,9 +54,7 @@ export const caseTitleColumn = () => ({
   cellRenderer: () => ({
     component: CaseTitleCell,
     params: {
-      click: (row, column, columns) => {
-        window.document.location = `/cases/${row.case_number}`;
-      },
+      href: (row) => `/cases/${row.case_number}`,
     },
   }),
   filter: {
@@ -71,11 +69,8 @@ export const processColumn = () => ({
   resizable: true,
   width: 200,
   cellRenderer: () => ({
-    component: TruncatedOptionsCell,
+    component: TruncatedColumn,
     params: {
-      click: (option, row, column, columns) => {
-        window.document.location = `/tasks/${option.id}/edit`;
-      },
       formatterOptions: (option, row, column, columns) => option.name,
     },
   }),
@@ -89,9 +84,7 @@ export const taskColumn = () => ({
   cellRenderer: () => ({
     component: TruncatedOptionsCell,
     params: {
-      click: (option, row, column, columns) => {
-        window.document.location = `/tasks/${option.id}/edit`;
-      },
+      href: (option) => `/tasks/${option.id}/edit`,
       formatterOptions: (option, row, column, columns) => option.name,
     },
   }),
@@ -124,8 +117,26 @@ export const statusColumn = () => ({
     component: StatusCell,
   }),
   filter: {
-    dataType: "string",
+    dataType: "enum",
     operators: ["="],
+    config: {
+      options: [{
+        label: t("In progress"),
+        value: "in_progress",
+      },
+      {
+        label: t("Completed"),
+        value: "completed",
+      },
+      {
+        label: t("Error"),
+        value: "error",
+      },
+      {
+        label: t("Canceled"),
+        value: "canceled",
+      }],
+    },
   },
 });
 
@@ -171,7 +182,6 @@ export const getColumns = (type) => {
       processColumn(),
       taskColumn(),
       participantsColumn(),
-      statusColumn(),
       startedColumn(),
     ],
     completed: [
@@ -180,7 +190,6 @@ export const getColumns = (type) => {
       processColumn(),
       taskColumn(),
       participantsColumn(),
-      statusColumn(),
       startedColumn(),
       completedColumn(),
     ],

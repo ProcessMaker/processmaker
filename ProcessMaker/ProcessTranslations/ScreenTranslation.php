@@ -22,7 +22,12 @@ class ScreenTranslation extends TranslationManager
     public function applyTranslations($screen, $defaultLanguage = '')
     {
         $config = $screen['config'];
+        if (!hasPackage('package-translations')) {
+            return $config;
+        }
+
         $language = $this->getTargetLanguage($defaultLanguage);
+
 
         return $this->searchTranslations($screen['screen_id'], $config, $language);
     }

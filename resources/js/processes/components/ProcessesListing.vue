@@ -103,7 +103,7 @@
                 <ellipsis-menu
                   v-if="header.field === 'actions'"
                   class="process-table"
-                  :actions="processActions"
+                  :actions="processActionsWithAddToBundle"
                   :permission="permission"
                   :data="row"
                   :is-documenter-installed="isDocumenterInstalled"
@@ -268,6 +268,17 @@ export default {
       this.apiDataLoading = false;
       this.apiNoResults = false;
     });
+  },
+  computed: {
+    processActionsWithAddToBundle() {
+      return this.processActions.toSpliced(7, 0, {
+        value: "add-to-bundle",
+        content: "Add to Bundle",
+        icon: "fas fa-folder-plus",
+        permission: "admin",
+        emit_on_root: 'add-to-bundle',
+      });
+    }
   },
 };
 </script>
