@@ -10,6 +10,7 @@
     <component
       :is="operatorType?.component()"
       :value="modelValue"
+      :config="config"
       placeholder="Type value"
       class="tw-flex-1"
       @change="onChangeValue" />
@@ -75,6 +76,10 @@ export default defineComponent({
       default: () => "string", // string , number , datetime
     },
     value: {
+      type: Object,
+      default: () => null,
+    },
+    config: {
       type: Object,
       default: () => null,
     },

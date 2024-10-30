@@ -34,6 +34,7 @@ class CaseResource extends ApiResource
     public function toArray($request): array
     {
         $data = [];
+        $attributes = $this->attributesToArray();
 
         foreach (static::$defaultFields as $field) {
             if ($field === 'participants') {
@@ -43,7 +44,7 @@ class CaseResource extends ApiResource
                 continue;
             }
 
-            $data[$field] = $this->$field;
+            $data[$field] = $attributes[$field] ?? $this->$field;
         }
 
         return $data;
@@ -57,7 +58,7 @@ class CaseResource extends ApiResource
      */
     private function getParticipantData(array $participants): array
     {
-        return array_map(fn($participant) => self::$users->get($participant), $participants);
+        return array_map(fn ($participant) => self::$users->get($participant), $participants);
     }
 
     /**

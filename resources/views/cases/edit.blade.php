@@ -50,7 +50,7 @@
                         @click="onCancel"
                       >
                         <i class="fas fa-ban"></i>
-                        <span>{{ __('Cancel Request') }}</span>
+                        <span>{{ __('Cancel Case') }}</span>
                       </button>
                     </li>
                   @endif
@@ -105,6 +105,7 @@
                   name="{{ $request->name }}"
                   :readonly="request.status === 'COMPLETED'"
                   :get-data="getCommentsData"
+                  :is-case="true"
                   :case_number="{{ $request->case_number }}"
                 />
               </template>
@@ -126,6 +127,7 @@
     const processId = @json($request->process->id);
     const canViewComments = @json($canViewComments);
     const comentable_type = @json(get_class($request));
+    const requestCount = @json($requestCount);
   </script>
   <script src="{{mix('js/composition/cases/casesDetail/edit.js')}}"></script>
   @if (hasPackage('package-files'))
