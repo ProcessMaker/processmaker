@@ -59,6 +59,7 @@ class CaseUtilsTest extends TestCase
             'name' => 'Task 1',
             'process_id' => 1001,
             'element_type' => 'task',
+            'status' => 'ACTIVE',
         ];
         $result = CaseUtils::storeTasks($tasks, $taskData);
         $this->assertEquals(1, $result->count());
@@ -67,6 +68,7 @@ class CaseUtilsTest extends TestCase
             'element_id' => 101,
             'name' => 'Task 1',
             'process_id' => 1001,
+            'status' => 'ACTIVE',
         ], $result->first());
     }
 
@@ -77,28 +79,6 @@ class CaseUtilsTest extends TestCase
         $result = CaseUtils::storeParticipants($participants, $participantId);
         $this->assertEquals(1, $result->count());
         $this->assertEquals($participantId, $result->first());
-    }
-
-    public function test_extract_data()
-    {
-        $object = (object) [
-            'id' => 1,
-            'name' => 'Test Object',
-            'nested' => (object) [
-                'property' => 'Nested Value',
-            ],
-        ];
-        $mapping = [
-            'id' => 'id',
-            'name' => 'name',
-            'nested_property' => 'nested.property',
-        ];
-        $expected = [
-            'id' => 1,
-            'name' => 'Test Object',
-            'nested_property' => 'Nested Value',
-        ];
-        $this->assertEquals($expected, CaseUtils::extractData($object, $mapping));
     }
 
     public function test_store_processes_with_empty_data()
@@ -141,56 +121,76 @@ class CaseUtilsTest extends TestCase
         $this->assertEquals(0, $result->count());
     }
 
-    public function test_extract_data_with_empty_object()
+    public function test_extract_data_process()
     {
-        $object = (object) [];
-        $mapping = [
-            'id' => 'id',
-            'name' => 'name',
-            'nested_property' => 'nested.property',
-        ];
-        $expected = [
-            'id' => null,
-            'name' => null,
-            'nested_property' => null,
-        ];
-        $this->assertEquals($expected, CaseUtils::extractData($object, $mapping));
-    }
-
-    public function test_extract_data_with_partial_object()
-    {
-        $object = (object) [
-            'id' => 1,
-            'name' => 'Test Object',
-        ];
-        $mapping = [
-            'id' => 'id',
-            'name' => 'name',
-            'nested_property' => 'nested.property',
+        $object = (object)[
+            'process' => (object)[
+                'id' => 1,
+                'name' => 'Process 1',
+            ],
         ];
         $expected = [
             'id' => 1,
-            'name' => 'Test Object',
-            'nested_property' => null,
+            'name' => 'Process 1',
         ];
-        $this->assertEquals($expected, CaseUtils::extractData($object, $mapping));
+        $this->assertEquals($expected, CaseUtils::extractData($object->process, 'PROCESS'));
     }
 
-    public function testGetStatusInProgress()
+    public function test_extract_data_request()
+    {
+        $object = (object)[
+            'processRequest' => (object)[
+                'id' => 1,
+                'name' => 'Request 1',
+                'parentRequest' => (object)[
+                    'id' => 2,
+                ],
+            ],
+        ];
+        $expected = [
+            'id' => 1,
+            'name' => 'Request 1',
+            'parent_request_id' => 2,
+        ];
+        $this->assertEquals($expected, CaseUtils::extractData($object->processRequest, 'REQUEST'));
+    }
+
+    public function test_extract_data_task()
+    {
+        $object = (object)[
+            'id' => 1,
+            'element_id' => 101,
+            'element_name' => 'Task 1',
+            'process_id' => 1001,
+            'element_type' => 'task',
+            'status' => 'ACTIVE',
+        ];
+        $expected = [
+            'id' => 1,
+            'element_id' => 101,
+            'name' => 'Task 1',
+            'process_id' => 1001,
+            'element_type' => 'task',
+            'status' => 'ACTIVE',
+        ];
+        $this->assertEquals($expected, CaseUtils::extractData($object, 'TASK'));
+    }
+
+    public function test_get_status_in_progress()
     {
         $instanceStatus = CaseStatusConstants::ACTIVE;
         $expected = CaseStatusConstants::IN_PROGRESS;
         $this->assertEquals($expected, CaseUtils::getStatus($instanceStatus));
     }
 
-    public function testGetStatusCompleted()
+    public function test_get_status_completed()
     {
         $instanceStatus = CaseStatusConstants::COMPLETED;
         $expected = CaseStatusConstants::COMPLETED;
         $this->assertEquals($expected, CaseUtils::getStatus($instanceStatus));
     }
 
-    public function testGetStatusError()
+    public function test_get_status_error()
     {
         $instanceStatus = 'ERROR';
         $expected = 'ERROR';

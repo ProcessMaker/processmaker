@@ -50,21 +50,9 @@ class CaseRepository implements CaseRepositoryInterface
         }
 
         try {
-            $processData = CaseUtils::extractData($instance->process, [
-                'id' => 'id',
-                'name' => 'name',
-            ]);
-
-            $requestData = CaseUtils::extractData($instance, [
-                'id' => 'id',
-                'name' => 'name',
-                'parent_request_id' => 'parentRequest.id',
-            ]);
-
-            $dataKeywords = CaseUtils::extractData($instance, [
-                'case_number' => 'case_number',
-                'case_title' => 'case_title',
-            ]);
+            $processData = CaseUtils::extractData($instance->process, 'PROCESS');
+            $requestData = CaseUtils::extractData($instance, 'REQUEST');
+            $dataKeywords = CaseUtils::extractData($instance, 'KEYWORD');
 
             CaseStarted::create([
                 'case_number' => $instance->case_number,
@@ -103,18 +91,8 @@ class CaseRepository implements CaseRepositoryInterface
         }
 
         try {
-            $taskData = CaseUtils::extractData($token, [
-                'id' => 'id',
-                'element_id' => 'element_id',
-                'name' => 'element_name',
-                'process_id' => 'process_id',
-                'element_type' => 'element_type',
-            ]);
-
-            $dataKeywords = CaseUtils::extractData($instance, [
-                'case_number' => 'case_number',
-                'case_title' => 'case_title',
-            ]);
+            $taskData = CaseUtils::extractData($token, 'TASK');
+            $dataKeywords = CaseUtils::extractData($instance, 'KEYWORD');
 
             $this->case->case_title = $instance->case_title;
             $this->case->case_title_formatted = $instance->case_title_formatted;
@@ -220,16 +198,8 @@ class CaseRepository implements CaseRepositoryInterface
         }
 
         try {
-            $processData = CaseUtils::extractData($instance->process, [
-                'id' => 'id',
-                'name' => 'name',
-            ]);
-
-            $requestData = CaseUtils::extractData($instance, [
-                'id' => 'id',
-                'name' => 'name',
-                'parent_request_id' => 'parentRequest.id',
-            ]);
+            $processData = CaseUtils::extractData($instance->process, 'PROCESS');
+            $requestData = CaseUtils::extractData($instance, 'REQUEST');
 
             // Store the sub-processes and requests
             $this->case->processes = CaseUtils::storeProcesses($this->case->processes, $processData);

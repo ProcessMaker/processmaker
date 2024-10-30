@@ -186,6 +186,7 @@ class CaseStartedTest extends TestCase
             'tasks->[0]->element_id' => $token->element_id,
             'tasks->[0]->name' => $token->element_name,
             'tasks->[0]->process_id' => $token->process_id,
+            'tasks->[0]->status' => $token->status,
         ]);
 
         $token2 = ProcessRequestToken::factory()->create([
@@ -201,10 +202,11 @@ class CaseStartedTest extends TestCase
             'user_id' => $user->id,
             'case_title' => $instance->case_title,
             'case_status' => 'IN_PROGRESS',
-            'tasks->[1]->id' => $token2->id,
-            'tasks->[1]->element_id' => $token2->element_id,
-            'tasks->[1]->name' => $token2->element_name,
-            'tasks->[1]->process_id' => $token2->process_id,
+            'tasks->[0]->id' => $token2->id,
+            'tasks->[0]->element_id' => $token2->element_id,
+            'tasks->[0]->name' => $token2->element_name,
+            'tasks->[0]->process_id' => $token2->process_id,
+            'tasks->[0]->status' => $token2->status,
         ]);
     }
 
