@@ -51,11 +51,14 @@ class DevLinkTest extends TestCase
         ]);
 
         Http::fake([
-            'remote-instance.test/*' => function ($request) {
+            'remote-instance.test/*' => function ($request) use ($screen) {
                 $httpRequest = new \Illuminate\Http\Request();
                 $httpRequest->replace($request->data());
 
                 $response = (new DevLinkController)->exportLocalAsset($httpRequest);
+
+                // Modify to ensure it gets installed, since we are on the same instance
+                $response['export'][$screen->uuid]['attributes']['title'] = 'Modified title';
 
                 return Http::response($response, 200);
             },
@@ -70,6 +73,9 @@ class DevLinkTest extends TestCase
             ['id' => $screen->id, 'class' => $screen::class]
         );
 
-        $this->assertEquals($screen->uuid, $response->json()['uuid']);
+        $this->assertEquals('queued', $response->json()['status']);
+
+        $screen->refresh();
+        $this->assertEquals('Modified title', $screen->title);
     }
 }
