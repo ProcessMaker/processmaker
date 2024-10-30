@@ -2412,5 +2412,9 @@
   "Create new copies of bundle assets." : "Create new copies of bundle assets.",
   "Existing assets on this instance will be updated." : "Existing assets on this instance will be updated.",
   "Select how you would like to update the bundle <strong>{{ selectedBundleName }}</strong>.": "Select how you would like to update the bundle <strong>{{ selectedBundleName }}</strong>.",
-  "Are you sure you increase the version of <strong>{{ selectedBundleName }}</strong>?": "Are you sure you increase the version of <strong>{{ selectedBundleName }}</strong>?"
+  "Are you sure you increase the version of <strong>{{ selectedBundleName }}</strong>?": "Are you sure you increase the version of <strong>{{ selectedBundleName }}</strong>?",
+  "No linked instances of ProcessMaker": "No linked instances of ProcessMaker",
+  "Use the button Add Instance": "Use the button Add Instance",
+  "No bundles of assets to display": "No bundles of assets to display",
+  "Create a bundle to easily share assets and settings between ProcessMaker instances.": "Create a bundle to easily share assets and settings between ProcessMaker instances."
 }

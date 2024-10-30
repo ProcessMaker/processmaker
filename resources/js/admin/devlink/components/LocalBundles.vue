@@ -271,6 +271,10 @@ const confirmPublishNewVersionText = computed(() => {
           />
         </template>
       </b-table>
+      <div class="div-message d-flex flex-column justify-content-center align-items-center">
+        <div class="div-message-title">{{ $t("No bundles of assets to display") }}</div>
+        <div>{{ $t("Create a bundle to easily share assets and settings between ProcessMaker instances.") }}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -307,5 +311,16 @@ const confirmPublishNewVersionText = computed(() => {
 .btn-menu-container {
   display: flex;
   justify-content: flex-end;
+}
+.div-message {
+  position: absolute;
+  top: 50px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+}
+.div-message-title {
+  font-size: larger;
+  padding-bottom: 5px;
 }
 </style>
