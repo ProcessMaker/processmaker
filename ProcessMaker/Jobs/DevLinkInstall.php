@@ -19,6 +19,16 @@ class DevLinkInstall implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    const TYPE_INSTALL_BUNDLE = 'install_bundle';
+
+    const TYPE_REINSTALL_BUNDLE = 'reinstall_bundle';
+
+    const TYPE_IMPORT_ASSET = 'import_asset';
+
+    const MODE_UPDATE = 'update';
+
+    const MODE_COPY = 'copy';
+
     public $tries = 1;
 
     public $maxExceptions = 1;
@@ -26,9 +36,10 @@ class DevLinkInstall implements ShouldQueue
     public function __construct(
         public int $userId,
         public int $devLinkId,
-        public int $bundleId,
+        public string $class,
+        public int $id,
         public string $importMode,
-        public bool $reinstall = false,
+        public string $type,
     ) {
     }
 
@@ -44,12 +55,20 @@ class DevLinkInstall implements ShouldQueue
 
         if ($lock->get()) {
             DB::transaction(function () use ($devLink, $logger) {
-                if ($this->reinstall) {
-                    $bundle = Bundle::findOrFail($this->bundleId);
-                    $bundle->reinstall($this->importMode, $logger);
-                } else {
-                    $devLink->logger = $logger;
-                    $devLink->installRemoteBundle($this->bundleId, $this->importMode);
+                switch($this->type) {
+                    case self::TYPE_INSTALL_BUNDLE:
+                        $devLink->logger = $logger;
+                        $devLink->installRemoteBundle($this->id, $this->importMode);
+                        break;
+                    case self::TYPE_REINSTALL_BUNDLE:
+                        $bundle = Bundle::findOrFail($this->id);
+                        $bundle->reinstall($this->importMode, $logger);
+                        break;
+                    case self::TYPE_IMPORT_ASSET:
+                        $devLink->installRemoteAsset($this->class, $this->id, $logger);
+                        break;
+                    default:
+                        break;
                 }
             });
             $lock->release();
