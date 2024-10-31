@@ -196,13 +196,15 @@ class PopulateCaseStarted extends Upgrade
                 DB::raw('JSON_ARRAYAGG(JSON_OBJECT(
                     "id", pr.id,
                     "element_type", pr.element_type,
+                    "status", pr.status,
                     "name", pr.element_name,
                     "element_id", pr.element_id,
                     "process_id", pr.process_id
                 )) as tasks')
             )
             ->whereIn('pr.element_type', ['task'])
-            ->groupBy('temp.case_number');
+            ->groupBy('temp.case_number')
+            ->groupBy('part.participants');
 
             DB::enableQueryLog();
             DB::statement('CREATE TEMPORARY TABLE process_request_tokens_tmp AS ' . $query->toSql(), $query->getBindings());
