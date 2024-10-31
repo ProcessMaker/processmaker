@@ -268,7 +268,8 @@ class PopulateCaseStarted extends Upgrade
                 prt1.case_title_formatted, prt1.completed_at,
                 prt1.created_at, prt1.initiated_at, prt1.processes,
                 prt2.request_tokens, prt1.requests, prt1.updated_at,
-                prt1.user_id
+                prt1.user_id,
+                prt2.participants
             SQL
         );
     }
