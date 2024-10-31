@@ -172,7 +172,18 @@ class PopulateCaseStarted extends Upgrade
             ->whereIn('pr.element_type', ['task', 'scriptTask', 'callActivity'])
             ->groupBy('temp.case_number');
 
-        DB::statement('CREATE TEMPORARY TABLE process_request_tokens_tmp AS ' . $query->toSql(), $query->getBindings());
+            DB::enableQueryLog();
+            DB::statement('CREATE TEMPORARY TABLE process_request_tokens_tmp AS ' . $query->toSql(), $query->getBindings());
+        // Get Queryes
+        $queryLog = DB::getQueryLog();
+        foreach ($queryLog as $log) {
+            $query = $log['query'];
+            foreach ($log['bindings'] as $binding) {
+            $query = preg_replace('/\?/', "'$binding'", $query, 1);
+            }
+            echo $query . "\n"; // Imprimir el query final
+            echo PHP_EOL;
+        }
     }
 
     /**
