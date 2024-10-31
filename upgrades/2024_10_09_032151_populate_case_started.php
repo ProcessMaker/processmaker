@@ -266,14 +266,21 @@ class PopulateCaseStarted extends Upgrade
         DB::table('cases_started')->truncate();
     }
 
+    /**
+     * Check if exist inconsitency in "process_request" table
+     */
     private function validateDataConsistency()
     {
-        // SELECT case_number, count(*)
-        // FROM `process_requests`
-        // where parent_request_id is null
-        //       and case_number is null
-        // group by case_number
-        // having
-        // count(*) > 1
+        $results = DB::table('process_requests')
+            ->select('case_number', DB::raw('count(*) as total'))
+            ->whereNull('parent_request_id')
+            ->whereNull('case_number')
+            ->groupBy('case_number')
+            ->having('total', '>', 1)
+            ->first();
+
+        if (!is_null($results)) {
+            throw new Exception('Inconsistency detected, multiple records with null parent for the same request.');
+        }
     }
 }
