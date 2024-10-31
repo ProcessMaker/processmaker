@@ -130,7 +130,7 @@ export default defineComponent({
     onMounted(() => {
       // Filter the data before render
       if (props.filterData) {
-        optionsModel.value = props.filterData(props.row, props.column.field, props.columns);
+        optionsModel.value = props.filterData(props.row, props.column, props.columns);
       }
     });
 
