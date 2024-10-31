@@ -47,7 +47,9 @@ class PopulateCaseStarted extends Upgrade
         $this->insertIntoCasesStarted();
         $this->logTimeElapsed('Inserted data into cases_started', $startTime);
 
-        echo PHP_EOL . 'Cases started have been populated successfully.' . PHP_EOL;
+        $count = DB::table('cases_started')->count();
+
+        echo PHP_EOL . "Cases started have been populated successfully. Total cases: {$count}" . PHP_EOL;
 
         echo PHP_EOL;
     }
@@ -133,18 +135,7 @@ class PopulateCaseStarted extends Upgrade
                 DB::raw("IF(process_requests.status = 'ACTIVE', 'IN_PROGRESS', process_requests.status)")
             ); // Group by all selected fields that are not aggregated
 
-        DB::enableQueryLog();
         DB::statement('CREATE TEMPORARY TABLE process_requests_temp AS ' . $query->toSql(), $query->getBindings());
-        // Get Queryes
-        $queryLog = DB::getQueryLog();
-        foreach ($queryLog as $log) {
-            $query = $log['query'];
-            foreach ($log['bindings'] as $binding) {
-            $query = preg_replace('/\?/', "'$binding'", $query, 1);
-            }
-            echo $query . "\n"; // Imprimir el query final
-            echo PHP_EOL;
-        }
     }
 
     /**
@@ -206,18 +197,7 @@ class PopulateCaseStarted extends Upgrade
             ->groupBy('temp.case_number')
             ->groupBy('part.participants');
 
-            DB::enableQueryLog();
             DB::statement('CREATE TEMPORARY TABLE process_request_tokens_tmp AS ' . $query->toSql(), $query->getBindings());
-        // Get Queryes
-        $queryLog = DB::getQueryLog();
-        foreach ($queryLog as $log) {
-            $query = $log['query'];
-            foreach ($log['bindings'] as $binding) {
-            $query = preg_replace('/\?/', "'$binding'", $query, 1);
-            }
-            echo $query . "\n"; // Imprimir el query final
-            echo PHP_EOL;
-        }
     }
 
     /**
