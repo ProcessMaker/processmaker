@@ -111,7 +111,12 @@ export default {
           icon = "fas fa-comment";
           description = this.$t("Design functional rule-based modern chat style experiences.");
           break;
-
+        case "ADVANCED":
+          type = "ADVANCED";
+          typeHuman = "Advanced";
+          icon = "fa fa-book";
+          description = this.$t("Design Advanced interactive and complex multi-page forms.");
+          break;
         default:
           type = "FORM";
           typeHuman = this.$t("Form");
