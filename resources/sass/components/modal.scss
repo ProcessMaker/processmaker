@@ -28,7 +28,13 @@
     color: #20242A;
     text-transform: none;
 }
+::v-deep .modal-footer .btn-secondary:hover {
+    background-color: #E9ECF1;
+}
 ::v-deep .modal-footer .btn-primary {
     background-color: #2773F3;
     text-transform: none;
+}
+::v-deep .modal-footer .btn-primary:hover {
+    background-color: #1E5AC7;
 }

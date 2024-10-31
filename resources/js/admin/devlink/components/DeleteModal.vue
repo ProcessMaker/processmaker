@@ -89,6 +89,9 @@ export default {
   background-color: #EC5962;
   color: #FFFFFF;
 }
+::v-deep .modal-footer .btn-primary:hover {
+  background-color: #c74a51; /* Color más oscuro para el hover */
+}
 ::v-deep .modal-footer .btn-secondary {
   border: 1px solid #D7DDE5;
   background-color: #FFFFFF;
