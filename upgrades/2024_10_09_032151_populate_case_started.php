@@ -326,7 +326,7 @@ class PopulateCaseStarted extends Upgrade
         $results = DB::table('process_requests')
             ->select('case_number', DB::raw('count(*) as total'))
             ->whereNull('parent_request_id')
-            ->whereNull('case_number')
+            ->whereNotNull('case_number')
             ->groupBy('case_number')
             ->having('total', '>', 1)
             ->first();
