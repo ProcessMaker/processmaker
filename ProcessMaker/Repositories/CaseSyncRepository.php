@@ -3,6 +3,7 @@
 namespace ProcessMaker\Repositories;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use ProcessMaker\Models\CaseParticipated;
 use ProcessMaker\Models\CaseStarted;
 use ProcessMaker\Models\ProcessRequest;
@@ -39,7 +40,7 @@ class CaseSyncRepository
                 $caseStartedRequests = CaseUtils::storeRequests(collect(), $requestData);
                 $caseStartedRequestTokens = collect();
                 $caseStartedTasks = collect();
-                $participants = $instance->participants->pluck('id');
+                $participants = self::getParticipantsFromInstance($instance);
                 $status = CaseUtils::getStatus($instance->status);
 
                 $caseParticipatedData = self::prepareCaseStartedData($instance, $status, $participants);
@@ -67,6 +68,24 @@ class CaseSyncRepository
                         'keywords' => CaseUtils::getKeywords($dataKeywords),
                     ],
                 );
+                // copy all the columns from cases_started to cases_participated, except for the user_id
+                $sql = "UPDATE cases_participated AS cp
+                INNER JOIN cases_started AS cs ON cp.case_number = cs.case_number
+                SET
+                    cp.case_title = cs.case_title,
+                    cp.case_title_formatted = cs.case_title_formatted,
+                    cp.case_status = cs.case_status,
+                    cp.processes = cs.processes,
+                    cp.requests = cs.requests,
+                    cp.request_tokens = cs.request_tokens,
+                    cp.tasks = cs.tasks,
+                    cp.participants = cs.participants,
+                    cp.initiated_at = cs.initiated_at,
+                    cp.completed_at = cs.completed_at,
+                    cp.keywords = cs.keywords
+                WHERE cp.case_number = '{$instance->case_number}';
+                ";
+                DB::statement($sql);
 
                 $successes[] = $caseStarted->case_number;
             } catch (\Exception $e) {
@@ -78,6 +97,19 @@ class CaseSyncRepository
             'successes' => $successes,
             'errors' => $errors,
         ];
+    }
+
+    /**
+     * Get the participants from the instance.
+     *
+     * @param ProcessRequest|\Illuminate\Database\Eloquent\Builder $instance
+     * @return Collection
+     */
+    private static function getParticipantsFromInstance(ProcessRequest|\Illuminate\Database\Eloquent\Builder $instance)
+    {
+        return $instance->participants()
+            ->whereIn('process_request_tokens.element_type', CaseUtils::ALLOWED_ELEMENT_TYPES)
+            ->pluck('process_request_tokens.user_id');
     }
 
     /**
@@ -120,38 +152,39 @@ class CaseSyncRepository
      */
     private static function processTokens($instance, &$caseParticipatedData, &$caseStartedRequestTokens, &$caseStartedTasks)
     {
-        foreach ($instance->tokens as $token) {
-            if (in_array($token->element_type, CaseUtils::ALLOWED_REQUEST_TOKENS)) {
-                $processData = [
-                    'id' => $instance->process->id,
-                    'name' => $instance->process->name,
-                ];
+        $tokens = $instance->tokens()->select('id', 'element_id', 'element_name', 'process_id', 'element_type', 'status', 'user_id')
+            ->whereIn('element_type', CaseUtils::ALLOWED_ELEMENT_TYPES)
+            ->get();
+        foreach ($tokens as $token) {
+            $processData = [
+                'id' => $instance->process->id,
+                'name' => $instance->process->name,
+            ];
 
-                $requestData = [
-                    'id' => $instance->id,
-                    'name' => $instance->name,
-                    'parent_request_id' => $instance?->parentRequest?->id,
-                ];
+            $requestData = [
+                'id' => $instance->id,
+                'name' => $instance->name,
+                'parent_request_id' => $instance?->parent_request_id,
+            ];
 
-                $taskData = [
-                    'id' => $token->getKey(),
-                    'element_id' => $token->element_id,
-                    'name' => $token->element_name,
-                    'process_id' => $token->process_id,
-                    'element_type' => $token->element_type,
-                    'status' => $token->status,
-                ];
+            $taskData = [
+                'id' => $token->getKey(),
+                'element_id' => $token->element_id,
+                'name' => $token->element_name,
+                'process_id' => $token->process_id,
+                'element_type' => $token->element_type,
+                'status' => $token->status,
+            ];
 
-                $caseParticipatedData['processes'] = CaseUtils::storeProcesses($caseParticipatedData['processes'], $processData);
-                $caseParticipatedData['requests'] = CaseUtils::storeRequests($caseParticipatedData['requests'], $requestData);
-                $caseParticipatedData['request_tokens'] = CaseUtils::storeRequestTokens($caseParticipatedData['request_tokens'], $token->getKey());
-                $caseParticipatedData['tasks'] = CaseUtils::storeTasks($caseParticipatedData['tasks'], $taskData);
+            $caseParticipatedData['processes'] = CaseUtils::storeProcesses($caseParticipatedData['processes'], $processData);
+            $caseParticipatedData['requests'] = CaseUtils::storeRequests($caseParticipatedData['requests'], $requestData);
+            $caseParticipatedData['request_tokens'] = CaseUtils::storeRequestTokens($caseParticipatedData['request_tokens'], $token->getKey());
+            $caseParticipatedData['tasks'] = CaseUtils::storeTasks($caseParticipatedData['tasks'], $taskData);
 
-                $caseStartedRequestTokens = CaseUtils::storeRequestTokens($caseStartedRequestTokens, $token->getKey());
-                $caseStartedTasks = CaseUtils::storeTasks($caseStartedTasks, $taskData);
+            $caseStartedRequestTokens = CaseUtils::storeRequestTokens($caseStartedRequestTokens, $token->getKey());
+            $caseStartedTasks = CaseUtils::storeTasks($caseStartedTasks, $taskData);
 
-                self::syncCasesParticipated($instance->case_number, $token->user_id, $caseParticipatedData);
-            }
+            self::syncCasesParticipated($instance->case_number, $token->user_id, $caseParticipatedData);
         }
     }
 
@@ -183,7 +216,7 @@ class CaseSyncRepository
             $caseStartedRequests = CaseUtils::storeRequests($caseStartedRequests, $requestData);
 
             $participants = $participants
-                ->merge($subProcess->participants->pluck('id'))
+                ->merge(self::getParticipantsFromInstance($subProcess))
                 ->unique()
                 ->values();
 
@@ -194,9 +227,10 @@ class CaseSyncRepository
                     'name' => $spToken->element_name,
                     'process_id' => $spToken->process_id,
                     'element_type' => $spToken->element_type,
+                    'status' => $spToken->status,
                 ];
 
-                if (in_array($spToken->element_type, CaseUtils::ALLOWED_REQUEST_TOKENS)) {
+                if (in_array($spToken->element_type, CaseUtils::ALLOWED_ELEMENT_TYPES)) {
                     $caseParticipatedData['processes'] = CaseUtils::storeProcesses($caseParticipatedData['processes'], $processData);
                     $caseParticipatedData['requests'] = CaseUtils::storeRequests($caseParticipatedData['requests'], $requestData);
                     $caseParticipatedData['request_tokens'] = CaseUtils::storeRequestTokens($caseParticipatedData['request_tokens'], $spToken->getKey());
