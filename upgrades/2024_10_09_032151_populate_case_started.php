@@ -38,6 +38,9 @@ class PopulateCaseStarted extends Upgrade
         $this->createTemporaryTableWithNonSystemRequests();
         $this->logTimeElapsed('Created temporary table with non-system requests', $startTime);
 
+        $this->createTemporaryParticipantsTable();
+        $this->logTimeElapsed('Created temporary table with participants', $startTime);
+
         $this->createTemporaryTableWithRequestTokens();
         $this->logTimeElapsed('Created temporary table with request tokens', $startTime);
 
@@ -145,6 +148,34 @@ class PopulateCaseStarted extends Upgrade
     }
 
     /**
+     * Creates a temporary table from process_request_tokens,
+     * obtaining unique user_id by case_number
+     *
+     * @return void
+     *
+     * @throws Exception If there is an error creating the temporary table
+     */
+    private function createTemporaryParticipantsTable()
+    {
+        DB::statement('CREATE TEMPORARY TABLE participants_temp AS
+        SELECT 
+            JSON_ARRAYAGG(user_id) AS participants,
+            case_number
+        FROM (
+            SELECT DISTINCT
+            pr.user_id,
+            temp.case_number
+            FROM
+            process_request_tokens pr
+            INNER JOIN
+            process_requests_temp temp ON pr.process_request_id = temp.id
+            WHERE
+            pr.user_id IS NOT NULL
+        ) X
+        GROUP BY case_number');
+    }
+
+    /**
      * Creates a temporary table with request tokens associated with
      * the process requests.
      *
@@ -157,9 +188,10 @@ class PopulateCaseStarted extends Upgrade
         // Creating the query
         $query = DB::table('process_request_tokens as pr')
             ->join('process_requests_temp as temp', 'pr.process_request_id', '=', 'temp.id')
+            ->join('participants_temp as part', 'temp.case_number', '=', 'part.case_number')
             ->select(
                 'temp.case_number',
-                DB::raw('JSON_ARRAYAGG(pr.user_id) as participants'),
+                'part.participants',
                 DB::raw('JSON_ARRAYAGG(pr.id) as request_tokens'),
                 DB::raw('JSON_ARRAYAGG(JSON_OBJECT(
                     "id", pr.id,
@@ -169,7 +201,7 @@ class PopulateCaseStarted extends Upgrade
                     "process_id", pr.process_id
                 )) as tasks')
             )
-            ->whereIn('pr.element_type', ['task', 'scriptTask', 'callActivity'])
+            ->whereIn('pr.element_type', ['task'])
             ->groupBy('temp.case_number');
 
             DB::enableQueryLog();
@@ -196,49 +228,47 @@ class PopulateCaseStarted extends Upgrade
     private function insertIntoCasesStarted()
     {
         // Create the select query
-        $selectQuery = DB::table('process_requests_temp as prt1')
-            ->join('process_request_tokens_tmp as prt2', 'prt1.case_number', '=', 'prt2.case_number')
-            ->select(
-                'prt1.case_number',
-                'prt1.status as case_status',
-                'prt1.case_title',
-                'prt1.case_title_formatted',
-                'prt1.completed_at',
-                'prt1.created_at',
-                'prt1.initiated_at',
-                DB::raw("CONCAT('cn_', prt1.case_number, ' ', prt1.case_title) as keywords"),
-                'prt2.participants',
-                'prt1.processes',
-                'prt2.request_tokens',
-                'prt1.requests',
-                'prt2.tasks',
-                'prt1.updated_at',
-                'prt1.user_id'
-            );
-
-        $results = $selectQuery->get();
-        $dataToInsert = $results->map(function ($item) {
-            return [
-                'case_number' => $item->case_number,
-                'case_status' => $item->case_status,
-                'case_title' => $item->case_title,
-                'case_title_formatted' => $item->case_title_formatted,
-                'completed_at' => $item->completed_at,
-                'created_at' => $item->created_at,
-                'initiated_at' => $item->initiated_at,
-                'keywords' => $item->keywords,
-                'participants' => $this->cleanParticipants($item->participants),
-                'processes' => $item->processes,
-                'request_tokens' => $item->request_tokens,
-                'requests' => $item->requests,
-                'tasks' => json_encode($this->filterAndRemoveType($item->tasks)),
-                'updated_at' => $item->updated_at,
-                'user_id' => $item->user_id,
-            ];
-        })->toArray();
-
-        // Insert data into the cases_started table
-        DB::table('cases_started')->insert($dataToInsert);
+        DB::statement(<<<SQL
+            INSERT INTO cases_started (
+                case_number, case_status, case_title, case_title_formatted,
+                completed_at, created_at, initiated_at, keywords,
+                participants, processes, request_tokens, requests,
+                tasks, updated_at, user_id
+            )
+            SELECT 
+                prt1.case_number,
+                prt1.status as case_status,
+                prt1.case_title,
+                prt1.case_title_formatted,
+                prt1.completed_at,
+                prt1.created_at,
+                prt1.initiated_at,
+                CONCAT('cn_', prt1.case_number, ' ', prt1.case_title) as keywords,
+                COALESCE(prt2.participants, JSON_ARRAY()) as participants,
+                prt1.processes,
+                COALESCE(prt2.request_tokens, JSON_ARRAY()) as request_tokens,
+                prt1.requests,
+                COALESCE(prt2.tasks, JSON_ARRAY()) as tasks,
+                prt1.updated_at,
+                prt1.user_id
+            FROM process_requests_temp as prt1
+            LEFT JOIN process_request_tokens_tmp as prt2 
+                ON prt1.case_number = prt2.case_number
+            LEFT JOIN JSON_TABLE(
+                COALESCE(prt2.participants, JSON_ARRAY()),
+                "$[*]" COLUMNS (
+                    participant JSON PATH "$"
+                )
+            ) AS jt
+            ON 1 = 1
+            GROUP BY 
+                prt1.case_number, prt1.status, prt1.case_title,
+                prt1.case_title_formatted, prt1.completed_at,
+                prt1.created_at, prt1.initiated_at, prt1.processes,
+                prt2.request_tokens, prt1.requests, prt1.updated_at,
+                prt1.user_id
+            SQL
+        );
     }
 
     /**
