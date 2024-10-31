@@ -163,13 +163,19 @@ class DevLinkController extends Controller
 
     public function installRemoteBundle(Request $request, DevLink $devLink, $remoteBundleId)
     {
-        $updateType = $request->input('updateType', 'update');
+        $updateType = $request->input('updateType', DevLinkInstall::MODE_UPDATE);
         DevLinkInstall::dispatch(
             $request->user()->id,
             $devLink->id,
+            Bundle::class,
             $remoteBundleId,
-            $updateType
+            $updateType,
+            DevLinkInstall::TYPE_INSTALL_BUNDLE,
         );
+
+        return [
+            'status' => 'queued',
+        ];
     }
 
     public function reinstallBundle(Request $request, Bundle $bundle)
@@ -177,10 +183,15 @@ class DevLinkController extends Controller
         DevLinkInstall::dispatch(
             $request->user()->id,
             $bundle->dev_link_id,
+            Bundle::class,
             $bundle->id,
-            'update',
-            true
+            DevLinkInstall::MODE_UPDATE,
+            DevLinkInstall::TYPE_REINSTALL_BUNDLE,
         );
+
+        return [
+            'status' => 'queued',
+        ];
     }
 
     public function exportLocalBundle(Bundle $bundle)
@@ -241,10 +252,18 @@ class DevLinkController extends Controller
 
     public function installRemoteAsset(Request $request, DevLink $devLink)
     {
-        return $devLink->installRemoteAsset(
+        DevLinkInstall::dispatch(
+            $request->user()->id,
+            $devLink->id,
             $request->input('class'),
-            $request->input('id')
+            $request->input('id'),
+            DevLinkInstall::MODE_UPDATE,
+            DevLinkInstall::TYPE_IMPORT_ASSET
         );
+
+        return [
+            'status' => 'queued',
+        ];
     }
 
     public function remoteBundleVersion(DevLink $devLink, $remoteBundleId)

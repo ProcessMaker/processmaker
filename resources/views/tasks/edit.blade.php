@@ -1,4 +1,4 @@
-@extends('layouts.layout',['content_margin' => 'tw-flex !tw-overflow-hidden'])
+@extends('layouts.layout')
 
 @section('meta')
   <meta name="request-id" content="{{ $task->processRequest->id }}">
@@ -30,12 +30,11 @@
 <div
   id="task"
   v-cloak
-  class="tw-flex tw-w-full tw-grow">
-  <div :class="['menu-mask',{'menu-open': showMenu }]"></div>
-  <div :class="['info-main tw-w-full tw-flex tw-grow',{ 'menu-open': showMenu }]">
+>
+  <div class="menu-mask" :class="{ 'menu-open': showMenu }"></div>
+  <div class="info-main" :class="{ 'menu-open': showMenu }">
     <div
-      v-cloak
-      class="tw-flex tw-w-full tw-grow">
+      class="tw-flex tw-w-full tw-grow px-3">
       <div class="tw-flex tw-w-full tw-grow">
         <div class="tw-flex tw-flex-col tw-grow">
           <div 

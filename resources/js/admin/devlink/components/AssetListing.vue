@@ -6,6 +6,7 @@ import InstanceTabs from './InstanceTabs.vue';
 import types from './assetTypes';
 import moment from 'moment';
 import Header from './Header.vue';
+import InstallProgress from './InstallProgress.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -15,7 +16,7 @@ const typeConfig = types.find((type) => type.type === route.params.type);
 
 const items = ref([]);
 const filter = ref("");
-const warnings = ref([]);
+const showInstallModal = ref(false);
 
 const dateFormatter = (value) => {
   return moment(value).format(ProcessMaker.user.datetime_format);
@@ -46,13 +47,6 @@ const fields = [
   },
 ];
 
-const showModal = () => {
-  $("#warningsModal").modal("show");
-};
-
-const closeModal = () => {
-  $("#warningsModal").modal("hide");
-};
 
 const install = (asset) => {
   vue.$bvModal.msgBoxConfirm(vue.$t('Are you sure you want to install this asset onto this instance?'), {
@@ -60,6 +54,7 @@ const install = (asset) => {
     cancelTitle: vue.$t('Cancel')
   }).then((confirm) => {
     if (confirm) {
+      showInstallModal.value = true;
       const params = {
         class: typeConfig.class,
         id: asset.id
@@ -67,11 +62,6 @@ const install = (asset) => {
       ProcessMaker.apiClient
         .post(`/devlink/${route.params.id}/install-remote-asset`, params)
         .then((response) => {
-          window.ProcessMaker.alert(vue.$t('Asset successfully installed'), "success");
-          warnings.value = response.data.warnings_devlink;
-          if (warnings.value.length > 0) {
-            showModal();
-          }
         });
     }
   });
@@ -134,27 +124,10 @@ const handleFilterChange = () => {
         </b-table>
       </div>
     </div>
-    <div class="modal fade" id="warningsModal" tabindex="-1" role="dialog" aria-labelledby="warningsModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-body">
-            <h5>Warnings</h5>
-            <ul>
-              <li
-                v-for="(warning, index) in warnings"
-                :key="index"
-              >
-                {{ warning }}
-              </li>
-            </ul>
-          </div>
-          <div class="modal-footer">
-            <button type="button" @click="closeModal()" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
     </template></instance-tabs>
+    <b-modal id="install-progress" size="lg" v-model="showInstallModal" :title="$t('Installation Progress')" hide-footer>
+      <install-progress />
+    </b-modal>
   </div>
 </template>
 <style lang="scss" scoped>

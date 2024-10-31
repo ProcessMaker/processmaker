@@ -41,7 +41,8 @@ class PopulateCommentsCaseNumber extends Upgrade
             ->where('comments.commentable_type', 'ProcessMaker\\Models\\ProcessRequestToken')
             ->whereNull('comments.case_number')
             ->select('comments.id', 'process_requests.case_number')
-            ->chunkById($chunkSize, function ($comments) {
+            ->orderBy('comments.id', 'asc')
+            ->chunk($chunkSize, function ($comments) {
                 foreach ($comments as $comment) {
                     // Update the comments.case_number with ptrocess_requests.case_number
                     DB::table('comments')
@@ -55,7 +56,8 @@ class PopulateCommentsCaseNumber extends Upgrade
             ->where('comments.commentable_type', 'ProcessMaker\\Models\\ProcessRequest')
             ->whereNull('comments.case_number')
             ->select('comments.id', 'process_requests.case_number')
-            ->chunkById($chunkSize, function ($comments) {
+            ->orderBy('comments.id', 'asc')
+            ->chunk($chunkSize, function ($comments) {
                 foreach ($comments as $comment) {
                     // Update the comments.case_number with ptrocess_requests.case_number
                     DB::table('comments')

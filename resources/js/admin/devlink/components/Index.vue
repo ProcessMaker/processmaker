@@ -231,6 +231,10 @@ const urlIsValid = computed(() => {
           />
         </template>
       </b-table>
+      <div v-if="devlinks.length === 0" class="div-message d-flex flex-column justify-content-center align-items-center">
+        <div class="div-message-title">{{ $t("No linked instances of ProcessMaker") }}</div>
+        <div>{{ $t("Use the button Add Instance") }}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -271,5 +275,16 @@ tr:hover {
 .btn-menu-container {
   display: flex;
   justify-content: flex-end;
+}
+.div-message {
+  position: absolute;
+  top: 50px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+}
+.div-message-title {
+  font-size: larger;
+  padding-bottom: 5px;
 }
 </style>

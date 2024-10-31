@@ -162,18 +162,23 @@ class DevLink extends ProcessMakerModel
         $this->logger->setStatus('done');
     }
 
-    public function installRemoteAsset(string $class, int $id) : ProcessMakerModel
+    public function installRemoteAsset(string $class, int $id, Logger $logger) : ProcessMakerModel
     {
         $payload = $this->client()->get(
             route('api.devlink.export-local-asset', ['class' => $class, 'id' => $id], false)
         )->json();
 
-        $logger = new Logger();
         $options = new Options([
             'mode' => 'update',
         ]);
 
-        return self::import($payload, $options, $logger);
+        $logger->setSteps([$payload]);
+
+        $model = self::import($payload, $options, $logger);
+
+        $logger->setStatus('done');
+
+        return $model;
     }
 
     public function bundles()
