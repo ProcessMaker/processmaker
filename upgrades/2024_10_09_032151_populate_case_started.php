@@ -32,22 +32,16 @@ class PopulateCaseStarted extends Upgrade
 
         $startTime = microtime(true); // Start the timer
 
-        try {
-            $this->createTemporaryTableWithNonSystemRequests();
-            $this->logTimeElapsed('Created temporary table with non-system requests', $startTime);
+        $this->createTemporaryTableWithNonSystemRequests();
+        $this->logTimeElapsed('Created temporary table with non-system requests', $startTime);
 
-            $this->createTemporaryTableWithRequestTokens();
-            $this->logTimeElapsed('Created temporary table with request tokens', $startTime);
+        $this->createTemporaryTableWithRequestTokens();
+        $this->logTimeElapsed('Created temporary table with request tokens', $startTime);
 
-            $this->insertIntoCasesStarted();
-            $this->logTimeElapsed('Inserted data into cases_started', $startTime);
+        $this->insertIntoCasesStarted();
+        $this->logTimeElapsed('Inserted data into cases_started', $startTime);
 
-            echo PHP_EOL . 'Cases started have been populated successfully.' . PHP_EOL;
-        } catch (Exception $e) {
-            // Handle errors during the population process
-            echo 'Failed to populate cases_started: ' . $e->getMessage() . PHP_EOL;
-            // You may want to log the error or perform other error handling here
-        }
+        echo PHP_EOL . 'Cases started have been populated successfully.' . PHP_EOL;
 
         echo PHP_EOL;
     }
