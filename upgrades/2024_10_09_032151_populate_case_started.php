@@ -130,7 +130,18 @@ class PopulateCaseStarted extends Upgrade
                 DB::raw("IF(process_requests.status = 'ACTIVE', 'IN_PROGRESS', process_requests.status)")
             ); // Group by all selected fields that are not aggregated
 
+        DB::enableQueryLog();
         DB::statement('CREATE TEMPORARY TABLE process_requests_temp AS ' . $query->toSql(), $query->getBindings());
+        // Get Queryes
+        $queryLog = DB::getQueryLog();
+        foreach ($queryLog as $log) {
+            $query = $log['query'];
+            foreach ($log['bindings'] as $binding) {
+            $query = preg_replace('/\?/', "'$binding'", $query, 1);
+            }
+            echo $query . "\n"; // Imprimir el query final
+            echo PHP_EOL;
+        }
     }
 
     /**
