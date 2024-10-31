@@ -4,11 +4,10 @@ namespace ProcessMaker\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use ProcessMaker\Models\Comment;
 
 class UpdateCommentsCaseNumber extends Command
 {
-    const CHUNK_SIZE = 5000;
+    const CHUNK_SIZE = 2000;
 
     /**
      * The name and signature of the console command.
@@ -43,7 +42,11 @@ class UpdateCommentsCaseNumber extends Command
             ->orderBy('comments.id', 'asc')
             ->chunk($chunkSize, function ($comments) {
                 $updates = $comments->mapWithKeys(function ($comment) {
-                    return [$comment->id => ['case_number' => $comment->case_number]];
+                    if (!is_null($comment->case_number) && !empty($comment->case_number)) {
+                        return [$comment->id => ['case_number' => $comment->case_number]];
+                    }
+
+                    return [];
                 })->toArray();
                 // Execute in bath the update
                 if (!empty($updates)) {
@@ -53,6 +56,7 @@ class UpdateCommentsCaseNumber extends Command
                     }
                     $query .= ' END WHERE id IN (' . implode(',', array_keys($updates)) . ')';
                     DB::statement($query);
+                    $this->info(count($updates) . ' comments updated in this chunk related to ProcessRequestToken');
                 }
             });
         // Update the comments related to ProcessRequest
@@ -64,7 +68,11 @@ class UpdateCommentsCaseNumber extends Command
             ->orderBy('comments.id', 'asc')
             ->chunk($chunkSize, function ($comments) {
                 $updates = $comments->mapWithKeys(function ($comment) {
-                    return [$comment->id => ['case_number' => $comment->case_number]];
+                    if (!is_null($comment->case_number) && !empty($comment->case_number)) {
+                        return [$comment->id => ['case_number' => $comment->case_number]];
+                    }
+
+                    return [];
                 })->toArray();
                 // Execute in bath the update
                 if (!empty($updates)) {
@@ -74,6 +82,7 @@ class UpdateCommentsCaseNumber extends Command
                     }
                     $query .= ' END WHERE id IN (' . implode(',', array_keys($updates)) . ')';
                     DB::statement($query);
+                    $this->info(count($updates) . ' comments updated in this chunk related to ProcessRequest');
                 }
             });
 

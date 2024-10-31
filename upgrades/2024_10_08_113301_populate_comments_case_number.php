@@ -1,11 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Upgrades\UpgradeMigration as Upgrade;
 
 class PopulateCommentsCaseNumber extends Upgrade
 {
-    const CHUNK_SIZE = 5000;
+    const CHUNK_SIZE = 2000;
 
     /**
      * Run any validations/pre-run checks to ensure the environment, settings,
@@ -44,7 +45,11 @@ class PopulateCommentsCaseNumber extends Upgrade
             ->orderBy('comments.id', 'asc')
             ->chunk($chunkSize, function ($comments) {
                 $updates = $comments->mapWithKeys(function ($comment) {
-                    return [$comment->id => ['case_number' => $comment->case_number]];
+                    if (!is_null($comment->case_number) && !empty($comment->case_number)) {
+                        return [$comment->id => ['case_number' => $comment->case_number]];
+                    }
+
+                    return [];
                 })->toArray();
                 // Execute in bath the update
                 if (!empty($updates)) {
@@ -54,6 +59,7 @@ class PopulateCommentsCaseNumber extends Upgrade
                     }
                     $query .= ' END WHERE id IN (' . implode(',', array_keys($updates)) . ')';
                     DB::statement($query);
+                    Log::info(count($updates) . ' comments updated in this chunk related to ProcessRequestToken');
                 }
             });
         // Update the comments related to ProcessRequest
@@ -75,6 +81,7 @@ class PopulateCommentsCaseNumber extends Upgrade
                     }
                     $query .= ' END WHERE id IN (' . implode(',', array_keys($updates)) . ')';
                     DB::statement($query);
+                    Log::info(count($updates) . ' comments updated in this chunk related to ProcessRequest');
                 }
             });
     }
