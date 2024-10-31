@@ -27,6 +27,9 @@ class PopulateCaseStarted extends Upgrade
      */
     public function up()
     {
+        // @todo add a validation to check the data consistency
+        $this->validateDataConsistency();
+
         DB::table('cases_started')->truncate();
         echo PHP_EOL . '    Populating case_started from process_requests' . PHP_EOL;
 
@@ -261,5 +264,16 @@ class PopulateCaseStarted extends Upgrade
         DB::statement('DROP TEMPORARY TABLE IF EXISTS process_requests_temp');
         DB::statement('DROP TEMPORARY TABLE IF EXISTS process_request_tokens_tmp');
         DB::table('cases_started')->truncate();
+    }
+
+    private function validateDataConsistency()
+    {
+        // SELECT case_number, count(*)
+        // FROM `process_requests`
+        // where parent_request_id is null
+        //       and case_number is null
+        // group by case_number
+        // having
+        // count(*) > 1
     }
 }
