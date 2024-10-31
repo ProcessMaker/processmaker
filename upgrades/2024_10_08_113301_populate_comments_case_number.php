@@ -71,7 +71,11 @@ class PopulateCommentsCaseNumber extends Upgrade
             ->orderBy('comments.id', 'asc')
             ->chunk($chunkSize, function ($comments) {
                 $updates = $comments->mapWithKeys(function ($comment) {
-                    return [$comment->id => ['case_number' => $comment->case_number]];
+                    if (!is_null($comment->case_number) && !empty($comment->case_number)) {
+                        return [$comment->id => ['case_number' => $comment->case_number]];
+                    }
+
+                    return [];
                 })->toArray();
                 // Execute in bath the update
                 if (!empty($updates)) {
