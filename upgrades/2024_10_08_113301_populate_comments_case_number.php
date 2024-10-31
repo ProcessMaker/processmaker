@@ -43,11 +43,17 @@ class PopulateCommentsCaseNumber extends Upgrade
             ->select('comments.id', 'process_requests.case_number')
             ->orderBy('comments.id', 'asc')
             ->chunk($chunkSize, function ($comments) {
-                foreach ($comments as $comment) {
-                    // Update the comments.case_number with ptrocess_requests.case_number
-                    DB::table('comments')
-                        ->where('id', $comment->id)
-                        ->update(['case_number' => $comment->case_number]);
+                $updates = $comments->mapWithKeys(function ($comment) {
+                    return [$comment->id => ['case_number' => $comment->case_number]];
+                })->toArray();
+                // Execute in bath the update
+                if (!empty($updates)) {
+                    $query = 'UPDATE comments SET case_number = CASE id';
+                    foreach ($updates as $id => $data) {
+                        $query .= " WHEN {$id} THEN '{$data['case_number']}'";
+                    }
+                    $query .= ' END WHERE id IN (' . implode(',', array_keys($updates)) . ')';
+                    DB::statement($query);
                 }
             });
         // Update the comments related to ProcessRequest
@@ -58,11 +64,17 @@ class PopulateCommentsCaseNumber extends Upgrade
             ->select('comments.id', 'process_requests.case_number')
             ->orderBy('comments.id', 'asc')
             ->chunk($chunkSize, function ($comments) {
-                foreach ($comments as $comment) {
-                    // Update the comments.case_number with ptrocess_requests.case_number
-                    DB::table('comments')
-                        ->where('id', $comment->id)
-                        ->update(['case_number' => $comment->case_number]);
+                $updates = $comments->mapWithKeys(function ($comment) {
+                    return [$comment->id => ['case_number' => $comment->case_number]];
+                })->toArray();
+                // Execute in bath the update
+                if (!empty($updates)) {
+                    $query = 'UPDATE comments SET case_number = CASE id';
+                    foreach ($updates as $id => $data) {
+                        $query .= " WHEN {$id} THEN '{$data['case_number']}'";
+                    }
+                    $query .= ' END WHERE id IN (' . implode(',', array_keys($updates)) . ')';
+                    DB::statement($query);
                 }
             });
     }
