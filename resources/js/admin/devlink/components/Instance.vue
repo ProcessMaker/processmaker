@@ -65,7 +65,10 @@ const load = () => {
   ProcessMaker.apiClient
     .get(`/devlink/${route.params.id}/remote-bundles?filter=${filter.value}`)
     .then((result) => {
-      bundles.value = result.data.data;
+      bundles.value = result.data.data.filter(bundle =>{
+        // Do not show remote bundles
+        return bundle.dev_link_id === null;
+      });
     });
 };
 
