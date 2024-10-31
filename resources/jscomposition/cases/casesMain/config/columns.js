@@ -90,7 +90,6 @@ export const taskColumn = () => ({
         if (row.case_status === "COMPLETED") {
           return [];
         }
-
         return row.tasks.filter((el) => el.status === "ACTIVE");
       },
     },
