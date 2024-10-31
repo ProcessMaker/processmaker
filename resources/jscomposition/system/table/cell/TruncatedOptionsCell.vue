@@ -39,8 +39,7 @@
               class="hover:tw-bg-gray-100">
               <a
                 v-if="href !== null"
-                class="tw-flex tw-py-2 tw-px-4 transition duration-300
-                 hover:tw-bg-gray-100 tw-text-gray-500 hover:tw-text-blue-400"
+                class="tw-flex tw-py-2 tw-px-4 transition duration-300 hover:tw-bg-gray-100 hover:tw-text-blue-400"
                 :href="getLink(option)"
               >
                 {{ getValueOption(option, index) }}
