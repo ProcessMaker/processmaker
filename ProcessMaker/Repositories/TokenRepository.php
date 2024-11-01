@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Mustache_Engine;
 use ProcessMaker\Mail\TaskActionByEmail;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\ProcessAbeRequestToken;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest as Instance;
@@ -128,8 +129,10 @@ class TokenRepository implements TokenRepositoryInterface
                     $token->self_service_groups = ['users' => $evaluatedUsers, 'groups' => $evaluatedGroups];
                     break;
                 case 'process_variable':
-                    $evaluatedUsers = $selfServiceUsers ? $token->getInstance()->getDataStore()->getData($selfServiceUsers) : [];
-                    $evaluatedGroups = $selfServiceGroups ? $token->getInstance()->getDataStore()->getData($selfServiceGroups) : [];
+                    $dataManager = new DataManager();
+                    $tokenData = $dataManager->getData($token);
+                    $evaluatedUsers = $selfServiceUsers ? $tokenData[$selfServiceUsers] ?? null: [];
+                    $evaluatedGroups = $selfServiceGroups ? $tokenData[$selfServiceGroups] ?? null : [];
 
                     // If we have single values we put it inside an array
                     $evaluatedUsers = is_array($evaluatedUsers) ? $evaluatedUsers : [$evaluatedUsers];
