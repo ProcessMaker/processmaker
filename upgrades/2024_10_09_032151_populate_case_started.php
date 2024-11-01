@@ -162,7 +162,7 @@ class PopulateCaseStarted extends Upgrade
             process_requests_temp temp ON pr.process_request_id = temp.id
             WHERE
             pr.user_id IS NOT NULL
-            AND prt.element_type = "task"
+            AND pr.element_type = "task"
         ) X
         GROUP BY case_number');
     }
