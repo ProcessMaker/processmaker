@@ -162,6 +162,7 @@ class PopulateCaseStarted extends Upgrade
             process_requests_temp temp ON pr.process_request_id = temp.id
             WHERE
             pr.user_id IS NOT NULL
+            AND prt.element_type = "task"
         ) X
         GROUP BY case_number');
     }
@@ -210,7 +211,7 @@ class PopulateCaseStarted extends Upgrade
     private function insertIntoCasesStarted()
     {
         // Create the select query
-        DB::statement(<<<SQL
+        DB::statement(<<<'SQL'
             INSERT INTO cases_started (
                 case_number, case_status, case_title, case_title_formatted,
                 completed_at, created_at, initiated_at, keywords,
