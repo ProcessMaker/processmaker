@@ -197,7 +197,7 @@ class PopulateCaseStarted extends Upgrade
             ->groupBy('temp.case_number')
             ->groupBy('part.participants');
 
-            DB::statement('CREATE TEMPORARY TABLE process_request_tokens_tmp AS ' . $query->toSql(), $query->getBindings());
+        DB::statement('CREATE TEMPORARY TABLE process_request_tokens_tmp AS ' . $query->toSql(), $query->getBindings());
     }
 
     /**
