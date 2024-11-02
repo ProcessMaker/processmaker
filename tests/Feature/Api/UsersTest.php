@@ -5,6 +5,12 @@ namespace Tests\Feature\Api;
 use Database\Seeders\PermissionSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Http\UploadedFile;
+use ProcessMaker\Models\Group;
+use ProcessMaker\Models\GroupMember;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\Recommendation;
 use ProcessMaker\Models\RecommendationUser;
 use ProcessMaker\Models\Setting;
@@ -796,5 +802,70 @@ class UsersTest extends TestCase
         $this->apiCall('PUT', $url, $data);
 
         $this->assertEquals(0, RecommendationUser::where('user_id', $this->user->id)->count());
+    }
+
+    public function testGetUsersTaskCount()
+    {
+        $admin = $this->user;
+        $user = User::factory()->create();
+        $groupUser = User::factory()->create();
+        $group = Group::factory()->create();
+        GroupMember::factory()->create([
+            'group_id' => $group->id,
+            'member_id' => $groupUser->id,
+            'member_type' => User::class,
+        ]);
+
+        $process = Process::factory()->create([
+            'user_id' => $admin->id,
+        ]);
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'user_id' => $admin->id,
+        ]);
+
+        // Assign user to node_1
+        ProcessTaskAssignment::factory()->create([
+            'process_id' => $process->id,
+            'process_task_id' => 'node_1',
+            'assignment_type' => User::class,
+            'assignment_id' => $user->id,
+        ]);
+
+        // Assign group to node_1
+        ProcessTaskAssignment::factory()->create([
+            'process_id' => $process->id,
+            'process_task_id' => 'node_1',
+            'assignment_type' => Group::class,
+            'assignment_id' => $group->id,
+        ]);
+
+        $tasks = ProcessRequestToken::factory(3)->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'element_id' => 'node_1',
+            'user_id' => $user->id,
+            'status' => 'ACTIVE',
+        ]);
+
+        $result = $this->apiCall('GET', route('api.users.users_task_count', [
+            'assignable_for_task_id' => $tasks[0]->id,
+        ]));
+
+        $users = $result->json()['data'];
+
+        // Assert only the $user and $groupUser are in the list
+        $this->assertEqualsCanonicalizing([$user->id, $groupUser->id], collect($users)->pluck('id')->toArray());
+
+        // Assert the $user has 3 active tasks
+        $tokenCount = collect($users)->first(fn ($r) => $r['id'] === $user->id)['active_tasks_count'];
+        $this->assertEquals(3, $tokenCount);
+
+        // Make a request without specifying assignable_for_task_id
+        $result = $this->apiCall('GET', route('api.users.users_task_count'));
+        $users = $result->json()['data'];
+
+        // Assert the list of users now contains the admin user
+        $this->assertContains($admin->id, collect($users)->pluck('id')->toArray());
     }
 }

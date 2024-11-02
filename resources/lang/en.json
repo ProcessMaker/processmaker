@@ -2422,5 +2422,7 @@
   "No linked instances of ProcessMaker": "No linked instances of ProcessMaker",
   "Use the button Add Instance": "Use the button Add Instance",
   "No bundles of assets to display": "No bundles of assets to display",
-  "Create a bundle to easily share assets and settings between ProcessMaker instances.": "Create a bundle to easily share assets and settings between ProcessMaker instances."
+  "Create a bundle to easily share assets and settings between ProcessMaker instances.": "Create a bundle to easily share assets and settings between ProcessMaker instances.",
+  "In addition to the process manager, these users and groups will have permission to reassign any task in this process, regardless of the \"Allow Reassignment\" task setting.": "In addition to the process manager, these users and groups will have permission to reassign any task in this process, regardless of the \"Allow Reassignment\" task setting.",
+  "Reassignment Permission": "Reassignment Permission"
 }

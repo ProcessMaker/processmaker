@@ -188,7 +188,7 @@
                                     <b-col>
                                       <div class="form-group">
                                         <div class="d-flex justify-content-between">
-                                          <label class="typo__label">{{__('Reassignment')}}</label>
+                                          <label class="typo__label">{{__('Reassignment Permission')}}</label>
                                           <b-button size="sm"
                                                     variant="outline-light"
                                                     class="p-0"
@@ -200,6 +200,7 @@
                                         <processes-permissions ref="listReassignment"
                                                                :reassignments="reassignmentUsers">
                                         </processes-permissions>
+                                        <small>{{__('In addition to the process manager, these users and groups will have permission to reassign any task in this process, regardless of the "Allow Reassignment" task setting.')}}</small>
                                       </div>
                                     </b-col>
                                   </b-row>
