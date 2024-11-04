@@ -90,7 +90,7 @@ export default {
   color: #FFFFFF;
 }
 ::v-deep .modal-footer .btn-primary:hover {
-  background-color: #c74a51; /* Color más oscuro para el hover */
+  background-color: #c74a51;
 }
 ::v-deep .modal-footer .btn-secondary {
   border: 1px solid #D7DDE5;
