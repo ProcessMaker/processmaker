@@ -90,19 +90,15 @@ class PopulateCaseStarted extends Upgrade
                 $subquery->select('case_number')->from('cases_started');
             })
             ->select(
-                'process_requests.id',
+                DB::raw('min(process_requests.id) as id'),
                 'process_requests.case_number',
-                'process_requests.user_id',
-                'process_requests.case_title',
-                'process_requests.case_title_formatted',
-                'process_requests.initiated_at',
-                'process_requests.created_at',
-                'process_requests.completed_at',
-                'process_requests.updated_at',
-                'process_requests.name',
-                'process_requests.parent_request_id',
-                'processes.id as process_id',
-                'processes.name as process_name',
+                DB::raw('min(process_requests.user_id) as user_id'),
+                DB::raw('max(process_requests.case_title) as case_title'),
+                DB::RAW('max(process_requests.case_title_formatted) as case_title_formatted'),
+                DB::raw('min(process_requests.initiated_at) as initiated_at'),
+                DB::raw('min(process_requests.created_at) as created_at'),
+                DB::raw('max(process_requests.completed_at) as completed_at'),
+                DB::raw('max(process_requests.updated_at) as updated_at'),
                 DB::raw('
                     JSON_ARRAYAGG(
                         JSON_OBJECT(
@@ -120,19 +116,10 @@ class PopulateCaseStarted extends Upgrade
                         )
                     ) as requests
                 '), // Collect requests in an array of objects
-                DB::raw("IF(process_requests.status = 'ACTIVE', 'IN_PROGRESS', process_requests.status) as status")
+                DB::raw("max(IF(process_requests.status = 'ACTIVE', 'IN_PROGRESS', process_requests.status)) as status")
             )
             ->groupBy(
-                'process_requests.id',
-                'process_requests.case_number',
-                'process_requests.user_id',
-                'process_requests.case_title',
-                'process_requests.case_title_formatted',
-                'process_requests.initiated_at',
-                'process_requests.created_at',
-                'process_requests.completed_at',
-                'process_requests.updated_at',
-                DB::raw("IF(process_requests.status = 'ACTIVE', 'IN_PROGRESS', process_requests.status)")
+                'process_requests.case_number'
             ); // Group by all selected fields that are not aggregated
 
         DB::statement('CREATE TEMPORARY TABLE process_requests_temp AS ' . $query->toSql(), $query->getBindings());
@@ -159,7 +146,7 @@ class PopulateCaseStarted extends Upgrade
             FROM
             process_request_tokens pr
             INNER JOIN
-            process_requests_temp temp ON pr.process_request_id = temp.id
+            process_requests temp ON pr.process_request_id = temp.id
             WHERE
             pr.user_id IS NOT NULL
             AND pr.element_type = "task"
@@ -179,7 +166,7 @@ class PopulateCaseStarted extends Upgrade
     {
         // Creating the query
         $query = DB::table('process_request_tokens as pr')
-            ->join('process_requests_temp as temp', 'pr.process_request_id', '=', 'temp.id')
+            ->join('process_requests as temp', 'pr.process_request_id', '=', 'temp.id')
             ->join('participants_temp as part', 'temp.case_number', '=', 'part.case_number')
             ->select(
                 'temp.case_number',
