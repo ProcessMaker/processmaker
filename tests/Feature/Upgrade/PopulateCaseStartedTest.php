@@ -276,6 +276,115 @@ class PopulateCaseStartedTest extends TestCase
         $this->assertEqualsCanonicalizing($expectedData, $processesArray, 'The processes data in cases_started should match the expected data');
     }
 
+    public function testCasesStarteRequestsColumn()
+    {
+        // Instantiate the migration class
+        $populateCaseStarted = new PopulateCaseStarted();
+
+        // Confirm the initial state of the `cases_started` table
+        $initialCount = DB::table('cases_started')->count();
+        $this->assertEquals(0, $initialCount, 'cases_started table should be empty before migration');
+
+        // Create test users
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        // Create test processes
+        $process1 = Process::factory()->create();
+        $process2 = Process::factory()->create();
+        // Create sample ProcessRequests for both users
+        $processRequest1 = ProcessRequest::factory()->create([
+            'user_id' => $user1->id,
+            'name' => $process1->name,
+            'process_id' => $process1->id,
+        ]);
+        $processRequest2 = ProcessRequest::factory()->create([
+            'user_id' => $user2->id,
+            'parent_request_id' => $processRequest1->id,
+            'name' => $process2->name,
+            'process_id' => $process1->id,
+        ]);
+
+        // Create ProcessRequestTokens for processRequest1
+        ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest1->id,
+            'process_id' => $processRequest1->process_id,
+            'element_type' => 'startEvent',
+            'status' => 'TRIGGERED',
+            'element_id' => 'node_1',
+            'user_id' => $user1->id,
+        ]);
+        ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest1->id,
+            'process_id' => $processRequest1->process_id,
+            'element_type' => 'callActivity',
+            'status' => 'CLOSED',
+            'element_id' => 'node_51',
+            'user_id' => $user1->id,
+            'subprocess_request_id' => $processRequest2->id,
+        ]);
+        ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest1->id,
+            'process_id' => $processRequest1->process_id,
+            'element_type' => 'task',
+            'status' => 'ACTIVE',
+            'element_id' => 'node_12',
+            'user_id' => $user1->id,
+        ]);
+
+        // Create ProcessRequestTokens for processRequest2
+        ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest2->id,
+            'process_id' => $processRequest2->process_id,
+            'element_type' => 'startEvent',
+            'status' => 'TRIGGERED',
+            'element_id' => 'node_1',
+            'user_id' => $user1->id,
+        ]);
+        ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest2->id,
+            'process_id' => $processRequest2->process_id,
+            'element_type' => 'task',
+            'status' => 'CLOSED',
+            'element_id' => 'node_2',
+            'user_id' => $user1->id,
+        ]);
+        ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest2->id,
+            'process_id' => $processRequest2->process_id,
+            'element_type' => 'task',
+            'status' => 'CLOSED',
+            'element_id' => 'node_12',
+            'user_id' => $user1->id,
+        ]);
+        ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest2->id,
+            'process_id' => $processRequest2->process_id,
+            'element_type' => 'end_event',
+            'status' => 'CLOSED',
+            'element_id' => 'node_25',
+            'user_id' => null,
+        ]);
+
+        // Run the migration
+        $populateCaseStarted->up();
+
+        // Validate that the ProcessRequest1 has a corresponding entry in `cases_started`
+        $casesStartedRecord = DB::table('cases_started')->where('case_number', $processRequest1->case_number)->first();
+        $this->assertNotNull($casesStartedRecord, 'ProcessRequest should have a corresponding record in cases_started');
+
+        // Expected data structure for `cases_started.processes` column
+        $expectedData = [
+            ['id' => $processRequest1->id, 'name' => $processRequest1->name, 'parent_request_id' => $processRequest1->parent_request_id],
+            ['id' => $processRequest2->id, 'name' => $processRequest2->name, 'parent_request_id' => $processRequest1->parent_request_id],
+        ];
+
+        // Decode the JSON data from `cases_started.requests`
+        $requestsArray = json_decode($casesStartedRecord->requests);
+
+        // Assert both arrays contain the same items in any order
+        $this->assertEqualsCanonicalizing($expectedData, $requestsArray, 'The requests data in cases_started should match the expected data');
+    }
+
     /**
      * Helper function to map ProcessRequest status to cases_started status
      *
