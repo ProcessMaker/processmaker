@@ -94,7 +94,7 @@ class PopulateCaseStarted extends Upgrade
                 'process_requests.case_number',
                 DB::raw('min(process_requests.user_id) as user_id'),
                 DB::raw('max(process_requests.case_title) as case_title'),
-                DB::RAW('max(process_requests.case_title_formatted) as case_title_formatted'),
+                DB::raw('max(process_requests.case_title_formatted) as case_title_formatted'),
                 DB::raw('min(process_requests.initiated_at) as initiated_at'),
                 DB::raw('min(process_requests.created_at) as created_at'),
                 DB::raw('max(process_requests.completed_at) as completed_at'),
@@ -304,9 +304,27 @@ class PopulateCaseStarted extends Upgrade
             ->first();
 
         if (!is_null($results)) {
-            throw new Exception('Inconsistency detected, multiple records with null parent for the same request. '
-                . 'Case number: ' . $results->case_number . ' Count of parent Requests: ' . $results->total
-            );
+            $warning = 'Inconsistency detected, multiple records with null parent for the same request. '
+                . 'Case number: ' . $results->case_number . ' Count of parent Requests: ' . $results->total;
+            echo PHP_EOL . $warning . PHP_EOL;
+            // Ask to continue
+            if ($this->confirm($warning . ' Do you want to continue?')) {
+                return;
+            }
         }
+    }
+
+    function confirm($message)
+    {
+        // Show the confirmation message with a "yes/no" prompt
+        echo $message . " (yes/no): ";
+    
+        // Get user input from the command line
+        $handle = fopen("php://stdin", "r");
+        $response = trim(fgets($handle));
+        fclose($handle);
+    
+        // Check if the response is "yes"
+        return strtolower($response) === 'yes';
     }
 }
