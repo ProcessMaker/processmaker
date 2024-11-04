@@ -304,7 +304,9 @@ class PopulateCaseStarted extends Upgrade
             ->first();
 
         if (!is_null($results)) {
-            throw new Exception('Inconsistency detected, multiple records with null parent for the same request.');
+            throw new Exception('Inconsistency detected, multiple records with null parent for the same request. '
+                . 'Case number: ' . $results->case_number . ' Count of parent Requests: ' . $results->total
+            );
         }
     }
 }
