@@ -9,6 +9,7 @@ use Mustache_Engine;
 use ProcessMaker\Jobs\CaseUpdate;
 use ProcessMaker\Mail\TaskActionByEmail;
 use ProcessMaker\Managers\DataManager;
+use ProcessMaker\Models\FeelExpressionEvaluator;
 use ProcessMaker\Models\ProcessAbeRequestToken;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest as Instance;
@@ -132,8 +133,9 @@ class TokenRepository implements TokenRepositoryInterface
                 case 'process_variable':
                     $dataManager = new DataManager();
                     $tokenData = $dataManager->getData($token);
-                    $evaluatedUsers = $selfServiceUsers ? $tokenData[$selfServiceUsers] ?? null: [];
-                    $evaluatedGroups = $selfServiceGroups ? $tokenData[$selfServiceGroups] ?? null : [];
+                    $feel = new FeelExpressionEvaluator();
+                    $evaluatedUsers = $selfServiceUsers ? $feel->render($selfServiceUsers, $tokenData) ?? null: [];
+                    $evaluatedGroups = $selfServiceGroups ? $feel->render($selfServiceGroups, $tokenData) ?? null : [];
 
                     // If we have single values we put it inside an array
                     $evaluatedUsers = is_array($evaluatedUsers) ? $evaluatedUsers : [$evaluatedUsers];
