@@ -30,7 +30,7 @@ class PopulateCaseStarted extends Upgrade
         // @todo add a validation to check the data consistency
         $this->validateDataConsistency();
 
-        DB::table('cases_started')->truncate();
+        DB::table('cases_started')->delete();
         echo PHP_EOL . '    Populating case_started from process_requests' . PHP_EOL;
 
         $startTime = microtime(true); // Start the timer
