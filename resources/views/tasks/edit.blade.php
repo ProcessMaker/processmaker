@@ -891,8 +891,7 @@
             });
           },
           getUrlUsersTaskCount(filter) {
-            let url = "users_task_count?filter=" + filter;
-            return url;
+            return "users_task_count?filter=" + filter;
           },
           onInput(filter) {
             this.getUsers(filter);
@@ -952,7 +951,6 @@
             this.sendUserHasInteracted();
           });
           this.defineUserConfiguration();
-          this.getUsers("");
         }
       });
     </script>
