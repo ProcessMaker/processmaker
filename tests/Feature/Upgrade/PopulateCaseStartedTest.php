@@ -265,8 +265,8 @@ class PopulateCaseStartedTest extends TestCase
 
         // Expected data structure for `cases_started.processes` column
         $expectedData = [
-            ['id' => $processRequest1->process_id, 'name' => $processRequest1->name],
-            ['id' => $processRequest2->process_id, 'name' => $processRequest2->name],
+            (object) ['id' => $processRequest1->process_id, 'name' => $processRequest1->name],
+            (object) ['id' => $processRequest2->process_id, 'name' => $processRequest2->name],
         ];
 
         // Decode the JSON data from `cases_started.processes`
@@ -374,8 +374,8 @@ class PopulateCaseStartedTest extends TestCase
 
         // Expected data structure for `cases_started.processes` column
         $expectedData = [
-            ['id' => $processRequest1->id, 'name' => $processRequest1->name, 'parent_request_id' => $processRequest1->parent_request_id],
-            ['id' => $processRequest2->id, 'name' => $processRequest2->name, 'parent_request_id' => $processRequest1->parent_request_id],
+            (object) ['id' => $processRequest1->id, 'name' => $processRequest1->name, 'parent_request_id' => $processRequest1->parent_request_id],
+            (object) ['id' => $processRequest2->id, 'name' => $processRequest2->name, 'parent_request_id' => $processRequest1->parent_request_id],
         ];
 
         // Decode the JSON data from `cases_started.requests`
