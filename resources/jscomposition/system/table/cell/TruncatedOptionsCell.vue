@@ -43,7 +43,7 @@
             >
               <a
                 v-if="href !== null"
-                class="tw-flex tw-py-2 tw-px-4 transition duration-300 hover:tw-bg-gray-200"
+                class="tw-flex tw-py-2 tw-px-4 transition duration-300 tw-text-gray-500 hover:tw-bg-gray-200 hover:tw-text-blue-400"
                 :href="href(option)"
               >
                 {{ getValueOption(option, index) }}
@@ -63,7 +63,7 @@
   </div>
 </template>
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import { isFunction } from "lodash";
 import { AppPopover } from "../../../base/index";
 
@@ -93,6 +93,11 @@ export default defineComponent({
       default: new Function(),
     },
     href: {
+      type: Function,
+      default: null,
+    },
+    // Filter Data, method to filter the input data
+    filterData: {
       type: Function,
       default: null,
     },
@@ -126,6 +131,13 @@ export default defineComponent({
     const onClose = () => {
       show.value = false;
     };
+
+    onMounted(() => {
+      // Filter the data before render
+      if (props.filterData) {
+        optionsModel.value = props.filterData(props.row, props.column, props.columns);
+      }
+    });
 
     return {
       show,
