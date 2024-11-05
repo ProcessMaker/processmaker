@@ -83,7 +83,6 @@ class PopulateCaseStarted extends Upgrade
         $query = DB::table('process_requests')
             ->join('processes', 'process_requests.process_id', '=', 'processes.id')
             ->join('process_categories', 'processes.process_category_id', '=', 'process_categories.id')
-            ->whereNull('process_requests.parent_request_id') // Filter out subrequests
             ->where('process_categories.is_system', false) // Filter out system categories
             ->whereNotIn('process_requests.case_number', function ($subquery) {
                 // Filter out requests that have already been populated in the cases_started table
