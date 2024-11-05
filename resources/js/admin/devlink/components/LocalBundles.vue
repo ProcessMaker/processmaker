@@ -22,6 +22,7 @@ const updateBundle = ref(null);
 const updatesAvailable = reactive({});
 
 const actions = [
+  { value: "open-item", content: "Open" },
   { value: "increase-item", content: "Publish New Version", conditional: "if(not(dev_link_id), true, false)" },
   { value: "update-item", content: "Update Bundle", conditional: "if(update_available, true, false)" },
   { value: "reinstall-item", content: "Reinstall Bundle", conditional: "if(dev_link_id, true, false)" },
@@ -100,6 +101,9 @@ const createNewBundle = () => {
 
 const onNavigate = (action, data, index) => {
   switch (action.value) {
+    case "open-item":
+      goToBundleAssets(data);
+      break;
     case "edit-item":
       edit(data);
       break;
