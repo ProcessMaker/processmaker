@@ -7,6 +7,7 @@ use Illuminate\Validation\Rule;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Jobs\DevLinkInstall;
+use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\BundleAsset;
 use ProcessMaker\Models\DevLink;
@@ -210,6 +211,18 @@ class DevLinkController extends Controller
     {
         $asset = $request->input('type')::findOrFail($request->input('id'));
         $bundle->addAsset($asset);
+    }
+    
+    public function addAssetToBundles(Request $request)
+    {
+        $bundles = $request->input('bundles');
+        foreach ($bundles as $id) {
+            $bundle = Bundle::find($id);
+            if ($bundle) {
+                $asset = $request->input('type')::findOrFail($request->input('id'));
+                $bundle->addAssetToBundles($asset);
+            }
+        }
     }
 
     public function sharedAssets(Request $request)
