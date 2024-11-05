@@ -339,8 +339,8 @@
             <div class="form-group">
               {!!Form::label('user', __('User'))!!}
               <p-m-dropdown-suggest v-model="selectedUser"
-                :options="users"
-                @pmds-input="onInput"
+                :options="reassignUsers"
+                @pmds-input="onReassignInput"
                 :placeholder="$t('Type here to search')">
                 <template v-slot:pre-text="{ option }">
                   <b-badge variant="secondary"
@@ -354,7 +354,7 @@
               <button type="button" class="btn btn-outline-secondary" @click="cancelReassign">
                 {{__('Cancel')}}
               </button>
-              <button type="button" class="btn btn-secondary" @click="reassignUser" :disabled="disabled">
+              <button type="button" class="btn btn-secondary" @click="reassignUser(true)" :disabled="disabled">
                 {{__('Reassign')}}
               </button>
             </div>
@@ -427,7 +427,6 @@
           task,
           draftTask,
           userHasAccessToTask,
-          selectedUser: null,
           hasErrors: false,
           redirectInProcess: false,
           formData: {},
@@ -451,9 +450,7 @@
           showMenu: true,
           userConfiguration: @json($userConfiguration),
           urlConfiguration:'users/configuration',
-          users: [],
           showTabs: true,
-          allowReassignment: false,
         },
         watch: {
           task: {
@@ -542,17 +539,8 @@
             const status = (this.task.advanceStatus || '').toUpperCase();
             return "card-header text-status " + header[status];
           },
-          currentTaskUserId() {
-            return this.task?.user_id ?? this.task?.user?.id;
-          }
         },
         methods: {
-          setAllowReassignment() {
-            window.ProcessMaker.apiClient.get('tasks/user-can-reassign?tasks=' + this.task.id)
-              .then((response) => {
-                this.allowReassignment = response.data[this.task.id];
-              });
-          },
           defineUserConfiguration() {
             this.userConfiguration = JSON.parse(this.userConfiguration.ui_configuration);
             this.showMenu = this.userConfiguration.tasks.isMenuCollapse;
@@ -641,7 +629,7 @@
           show () {
             this.selectedUser = null;
             this.showReassignment = true;
-            this.getUsers("");
+            this.getReassignUsers();
           },
           showQuickFill () {
             this.redirect(`/tasks/${this.task.id}/edit/quickfill`);
@@ -649,19 +637,6 @@
           cancelReassign () {
             this.selectedUser = null;
             this.showReassignment = false;
-          },
-          reassignUser () {
-            if (this.selectedUser) {
-              ProcessMaker.apiClient
-                .put("tasks/" + this.task.id, {
-                  user_id: this.selectedUser
-                })
-                .then(response => {
-                  this.showReassignment = false;
-                  this.selectedUser = null;
-                  this.redirect('/tasks');
-                });
-            }
           },
           redirect(to, forceRedirect = false) {
             if (this.redirectInProcess && !forceRedirect) {
@@ -875,29 +850,6 @@
           caseTitleField(task) {
             this.caseTitle = task.process_request.case_title;
           },
-          getUsers(filter) {
-            const params = { filter };
-            if (this.task?.id) {
-              params.assignable_for_task_id = this.task.id;
-            }
-
-            ProcessMaker.apiClient.get('users_task_count', { params }).then(response => {
-              this.users = [];
-              response.data.data.forEach((user) => {
-                if (this.currentTaskUserId === user.id) {
-                  return;
-                }
-                this.users.push({
-                  text: user.fullname,
-                  value: user.id,
-                  active_tasks_count: user.active_tasks_count
-                });
-              });
-            });
-          },
-          onInput: _.debounce(function (filter) {
-            this.getUsers(filter);
-          }, 300),
           getCommentsData: async () => {
             const response = await ProcessMaker.apiClient.get("comments-by-case", {
               params: {
