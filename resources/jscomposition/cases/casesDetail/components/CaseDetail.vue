@@ -13,6 +13,7 @@ import TabHistory from "./TabHistory.vue";
 import CompletedForms from "./CompletedForms.vue";
 import TabFiles from "./TabFiles.vue";
 import Overview from "./Overview.vue";
+import TabSummary from "./TabSummary.vue";
 import { getRequestCount } from "../variables/index";
 
 const translate = ProcessMaker.i18n;
@@ -21,23 +22,53 @@ const tabDefault = ref("tasks");
 
 const tabs = [
   {
-    name: translate.t("Tasks"), href: "#tasks", current: "tasks", show: true, content: TaskTable,
+    name: translate.t("Tasks"),
+    href: "#tasks",
+    current: "tasks",
+    show: true,
+    content: TaskTable,
   },
   {
-    name: translate.t("Overview"), href: "#overview", current: "overview", show: true, content: Overview,
+    name: translate.t("Overview"),
+    href: "#overview",
+    current: "overview",
+    show: true,
+    content: Overview,
   },
   {
-    name: translate.t("Completed & Form"), href: "#completed_form", current: "completed", show: true, content: CompletedForms,
+    name: translate.t("Summary"),
+    href: "#summary",
+    current: "summary",
+    show: true,
+    content: TabSummary,
   },
   {
-    name: translate.t("File Manager"), href: "#file_manager", current: "file_manager", show: true, content: TabFiles,
+    name: translate.t("Completed & Form"),
+    href: "#completed_form",
+    current: "completed",
+    show: true,
+    content: CompletedForms,
   },
   {
-    name: translate.t("History"), href: "#history", current: "history", show: true, content: TabHistory,
+    name: translate.t("File Manager"),
+    href: "#file_manager",
+    current: "file_manager",
+    show: true,
+    content: TabFiles,
   },
   {
-    name: translate.t("Requests"), href: "#requests", current: "requests", show: getRequestCount() !== 1, content: RequestTable,
+    name: translate.t("History"),
+    href: "#history",
+    current: "history",
+    show: true,
+    content: TabHistory,
+  },
+  {
+    name: translate.t("Requests"),
+    href: "#requests",
+    current: "requests",
+    show: getRequestCount() !== 1,
+    content: RequestTable,
   },
 ];
-
 </script>

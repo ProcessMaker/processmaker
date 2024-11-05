@@ -51,6 +51,12 @@ class CasesController extends Controller
         $request->participants;
         $request->user;
         $request->summary = [];
+        
+        if ($request->status === 'CANCELED' && $request->process->cancel_screen_id) {
+            $request->summary_screen = $request->process->cancelScreen;
+        } else {
+            $request->summary_screen = $request->getSummaryScreen();
+        }
         // The user canCancel if has the processPermission and the case has only one request
         $canCancel = (Auth::user()->can('cancel', $request->processVersion) && $requestCount === 1);
         // The user can see the comments
