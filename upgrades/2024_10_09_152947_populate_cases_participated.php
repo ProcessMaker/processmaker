@@ -1,9 +1,6 @@
 <?php
 
-use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use ProcessMaker\Repositories\CaseUtils;
 use ProcessMaker\Upgrades\UpgradeMigration as Upgrade;
 
 class PopulateCasesParticipated extends Upgrade
@@ -15,15 +12,12 @@ class PopulateCasesParticipated extends Upgrade
      */
     public function up()
     {
-        $this->validateDataConsistency();
+        $total_participants = $this->validateDataConsistency();
 
         DB::table('cases_participated')->truncate();
-        echo PHP_EOL . '    Populating case_participated from process_requests' . PHP_EOL;
+        echo PHP_EOL . '    Populating case_participated from cases_started' . PHP_EOL;
 
         $startTime = microtime(true); // Start the timer
-
-        $this->createTemporaryTableWithNonSystemRequests();
-        $this->logTimeElapsed('Created temporary table with non-system requests', $startTime);
 
         $this->createTemporaryParticipantsTable();
         $this->logTimeElapsed('Created temporary table with participants', $startTime);
@@ -33,7 +27,8 @@ class PopulateCasesParticipated extends Upgrade
 
         $count = DB::table('cases_participated')->count();
 
-        echo PHP_EOL . "Cases Participated have been populated successfully. Total cases: {$count}" . PHP_EOL;
+        echo PHP_EOL . "Cases Started participants. Total cases started participants: {$total_participants}" . PHP_EOL;
+        echo PHP_EOL . "Cases Participated have been populated successfully. Total cases participated: {$count}" . PHP_EOL;
 
         echo PHP_EOL;
     }
@@ -65,68 +60,6 @@ class PopulateCasesParticipated extends Upgrade
     }
 
     /**
-     * Creates a temporary table with request tokens associated with
-     * the process requests.
-     *
-     * @return void
-     *
-     * @throws Exception If there is an error creating the temporary table
-     */
-    private function createTemporaryTableWithNonSystemRequests()
-    {
-        // Creating the query
-        $query = DB::table('process_requests')
-        ->select([
-            'process_requests.id',
-            'process_requests.case_number',
-            'process_requests.user_id',
-            'process_requests.case_title',
-            'process_requests.case_title_formatted',
-            'process_requests.initiated_at',
-            'process_requests.created_at',
-            'process_requests.completed_at',
-            'process_requests.updated_at',
-            'process_requests.name',
-            'process_requests.parent_request_id',
-            'processes.id as process_id',
-            'processes.name as process_name',
-            DB::raw("IF(process_requests.status = 'ACTIVE', 'IN_PROGRESS', process_requests.status) as status"),
-            DB::raw("JSON_ARRAYAGG(
-                JSON_OBJECT(
-                    'id', processes.id,
-                    'name', processes.name
-                )
-            ) as processes"),
-            DB::raw("JSON_ARRAYAGG(
-                JSON_OBJECT(
-                    'id', process_requests.id,
-                    'name', process_requests.name,
-                    'parent_request_id', process_requests.parent_request_id
-                )
-            ) as requests"),
-        ])
-        ->join('processes', 'process_requests.process_id', '=', 'processes.id')
-        ->join('process_categories', 'processes.process_category_id', '=', 'process_categories.id')
-        ->whereNull('process_requests.parent_request_id')
-        ->where('process_categories.is_system', '=', false)
-        ->groupBy([
-            'process_requests.id',
-            'process_requests.case_number',
-            'process_requests.user_id',
-            'process_requests.case_title',
-            'process_requests.case_title_formatted',
-            'process_requests.initiated_at',
-            'process_requests.created_at',
-            'process_requests.completed_at',
-            'process_requests.updated_at',
-            DB::raw("IF(process_requests.status = 'ACTIVE', 'IN_PROGRESS', process_requests.status)"),
-        ]);
-
-        // Execute the query and create a temporary table
-        DB::statement('CREATE TEMPORARY TABLE process_requests_temp2 AS ' . $query->toSql(), $query->getBindings());
-    }
-
-    /**
      * Creates a temporary table from process_request_tokens,
      * obtaining unique user_id by case_number
      *
@@ -137,15 +70,30 @@ class PopulateCasesParticipated extends Upgrade
     private function createTemporaryParticipantsTable()
     {
         // Build the query for `participants_temp2`
-        $query = DB::table('process_request_tokens as prt')
+        $query = DB::table('cases_started as cs')
             ->select([
-                'prt.user_id',
-                'pr.case_number',
+                DB::raw('participants.item as user_id'),
+                'cs.case_number',
+                'cs.case_title',
+                'cs.case_title_formatted',
+                'cs.case_status',
+                'cs.processes',
+                'cs.requests',
+                'cs.request_tokens',
+                'cs.tasks',
+                'cs.participants',
+                'cs.initiated_at',
+                'cs.completed_at',
+                'cs.created_at',
+                'cs.updated_at',
+                'cs.keywords',
             ])
-            ->join('process_requests_temp2 as pr', 'prt.process_request_id', '=', 'pr.id')
-            ->whereNotNull('prt.user_id')
-            ->where('prt.element_type', '=', 'task')
-            ->groupBy(['pr.case_number', 'prt.user_id']);
+            ->join(
+                DB::raw('JSON_TABLE(cs.participants, \'$[*]\' COLUMNS(item INT PATH \'$\')) AS participants'),
+                function ($join) {
+                    // The join condition is essentially empty, just joins for each item in participants
+                }
+            );
 
         // Execute the query and create the temporary table
         DB::statement('CREATE TEMPORARY TABLE participants_temp2 AS ' . $query->toSql(), $query->getBindings());
@@ -153,50 +101,46 @@ class PopulateCasesParticipated extends Upgrade
 
     private function insertIntoCasesParticipated()
     {
-        $insertQuery = DB::table('cases_started as prt1')
-            ->join('participants_temp2 as part', 'prt1.case_number', '=', 'part.case_number')
+        $insertQuery = DB::table('participants_temp2 as part')
             ->select([
-                'prt1.case_number',
-                'prt1.case_status',
-                'prt1.case_title',
-                'prt1.case_title_formatted',
-                'prt1.completed_at',
-                'prt1.created_at',
-                'prt1.initiated_at',
-                'prt1.keywords',
-                'prt1.participants',
-                'prt1.processes',
-                'prt1.request_tokens',
-                'prt1.requests',
-                'prt1.tasks',
-                'prt1.updated_at',
                 'part.user_id',
+                'part.case_number',
+                'part.case_title',
+                'part.case_title_formatted',
+                'part.case_status',
+                'part.processes',
+                'part.requests',
+                'part.request_tokens',
+                'part.tasks',
+                'part.participants',
+                'part.initiated_at',
+                'part.completed_at',
+                'part.created_at',
+                'part.updated_at',
+                'part.keywords',
             ]);
 
         // Perform the insert and return the number of affected rows
         return DB::table('cases_participated')->insertUsing([
-            'case_number', 'case_status', 'case_title', 'case_title_formatted',
-            'completed_at', 'created_at', 'initiated_at', 'keywords',
-            'participants', 'processes', 'request_tokens', 'requests',
-            'tasks', 'updated_at', 'user_id',
+            'user_id', 'case_number', 'case_title', 'case_title_formatted', 'case_status',
+            'processes', 'requests', 'request_tokens', 'tasks', 'participants',
+            'initiated_at', 'completed_at', 'created_at', 'updated_at', 'keywords',
         ], $insertQuery);
     }
 
     /**
-     * Check if exist inconsitency in "process_request" table
+     * Check if exist inconsistency in "process_request" table
      */
     private function validateDataConsistency()
     {
-        $results = DB::table('process_requests')
-            ->select('case_number', DB::raw('count(*) as total'))
-            ->whereNull('parent_request_id')
-            ->whereNotNull('case_number')
-            ->groupBy('case_number')
-            ->having('total', '>', 1)
+        $results = DB::table('cases_started')
+            ->select(DB::raw('sum(json_length(participants)) total_participants'))
             ->first();
 
-        if (!is_null($results)) {
+        if (is_null($results)) {
             throw new Exception('Inconsistency detected, multiple records with null parent for the same request.');
         }
+
+        return $results->total_participants;
     }
 }
