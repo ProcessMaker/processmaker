@@ -128,7 +128,7 @@
                   <div class="card">
                     <div class="card-body">
                       <vue-form-renderer ref="screenRequestDetail" :config="screenRequestDetail"
-                        :custom-css="screenSummary?.custom_css"
+                        :custom-css="screenSummary?.custom_css" 
                         v-model="dataSummary" />
                     </div>
                   </div>
