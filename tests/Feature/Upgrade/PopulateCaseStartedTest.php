@@ -2,8 +2,8 @@
 
 namespace Tests\Upgrades;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Mockery;
 use PopulateCaseStarted;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
@@ -11,11 +11,9 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 
-// use Illuminate\Foundation\Testing\RefreshDatabase;
-
 class PopulateCaseStartedTest extends TestCase
 {
-    // use RefreshDatabase;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {
