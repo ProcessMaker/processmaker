@@ -14,7 +14,7 @@ class PopulateCasesParticipated extends Upgrade
     {
         $total_participants = $this->validateDataConsistency();
 
-        DB::table('cases_participated')->truncate();
+        DB::table('cases_participated')->delete();
         echo PHP_EOL . '    Populating case_participated from cases_started' . PHP_EOL;
 
         $startTime = microtime(true); // Start the timer
@@ -40,7 +40,7 @@ class PopulateCasesParticipated extends Upgrade
      */
     public function down()
     {
-        DB::table('cases_participated')->truncate();
+        DB::table('cases_participated')->delete();
     }
 
     /**
@@ -69,6 +69,8 @@ class PopulateCasesParticipated extends Upgrade
      */
     private function createTemporaryParticipantsTable()
     {
+        DB::statement('DROP TEMPORARY TABLE IF EXISTS participants_temp2');
+
         // Build the query for `participants_temp2`
         $query = DB::table('cases_started as cs')
             ->select([

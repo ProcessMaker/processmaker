@@ -3,6 +3,7 @@
 namespace Tests\Upgrades;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use ProcessMaker\Models\CaseStarted;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -77,6 +78,44 @@ class PopulateCasesParticipatedTest extends TestCase
         ])->run();
     }
 
+    private function getCaseStartedData($tokens)
+    {
+        $processes = collect([
+            [
+                'id' => $this->process->id,
+                'name' => $this->process->name,
+            ],
+        ]);
+
+        $requests = collect([
+            [
+                'id' => $this->request->id,
+                'name' => $this->request->name,
+                'parent_request_id' => $this->request->parent_request_id,
+            ],
+        ]);
+
+        $tasks = $tokens->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'element_id' => $item->element_id,
+                'name' => $item->element_name,
+                'process_id' => $item->process_id,
+                'status' => $item->status,
+            ];
+        });
+
+        $requestTokens = $tokens->pluck('id');
+
+        return [
+            'processes' => $processes->toArray(),
+            'requests' => $requests->toArray(),
+            'tasks' => $tasks->toArray(),
+            'request_tokens' => $requestTokens->toArray(),
+            'participants' => $tokens->pluck('user_id')->unique()->values()->toArray(),
+        ];
+    }
+
     public function test_one_participant()
     {
         $tokens = ProcessRequestToken::factory()->count(5)->create([
@@ -85,15 +124,19 @@ class PopulateCasesParticipatedTest extends TestCase
             'element_type' => 'task',
         ]);
 
+        $case = CaseStarted::factory()->create(array_merge([
+            'user_id' => $this->user->id
+        ], $this->getCaseStartedData($tokens)));
+
         $this->upgrade();
 
         $this->assertDatabaseCount('cases_participated', 1);
         $this->assertDatabaseHas('cases_participated', [
             'user_id' => $this->user->id,
-            'case_number' => $this->request->case_number,
-            'case_title' => $this->request->case_title,
-            'case_title_formatted' => $this->request->case_title_formatted,
-            'case_status' => 'IN_PROGRESS',
+            'case_number' => $case->case_number,
+            'case_title' => $case->case_title,
+            'case_title_formatted' => $case->case_title_formatted,
+            'case_status' => $case->case_status,
             'processes->[0]->id' => $this->process->id,
             'processes->[0]->name' => $this->process->name,
             'requests->[0]->id' => $this->request->id,
@@ -116,7 +159,7 @@ class PopulateCasesParticipatedTest extends TestCase
 
     public function test_multiple_participants()
     {
-        $tokens = ProcessRequestToken::factory()->count(5)->create([
+        $tokens1 = ProcessRequestToken::factory()->count(5)->create([
             'user_id' => $this->user->id,
             'process_request_id' => $this->request->id,
             'element_type' => 'task',
@@ -134,29 +177,36 @@ class PopulateCasesParticipatedTest extends TestCase
             'element_type' => 'task',
         ]);
 
+        $tokens = $tokens1->merge($tokens2)->merge($tokens3);
+
+        $data = $this->getCaseStartedData($tokens);
+
+        $case = CaseStarted::factory()->create(array_merge([
+            'user_id' => $this->user->id
+        ], $data));
+
         $this->upgrade();
 
         $this->assertDatabaseCount('cases_participated', 3);
         $this->assertDatabaseHas('cases_participated', [
             'user_id' => $this->user->id,
-            'case_number' => $this->request->case_number,
-            'case_title' => $this->request->case_title,
-            'case_title_formatted' => $this->request->case_title_formatted,
-            'case_status' => 'IN_PROGRESS',
+            'case_number' => $case->case_number,
+            'case_title' => $case->case_title,
+            'case_title_formatted' => $case->case_title_formatted,
+            'case_status' => $case->case_status,
             'processes->[0]->id' => $this->process->id,
             'processes->[0]->name' => $this->process->name,
             'requests->[0]->id' => $this->request->id,
             'requests->[0]->name' => $this->request->name,
             'requests->[0]->parent_request_id' => $this->request->parent_request_id,
-            'request_tokens' => 1,
-            'request_tokens->[0]' => $tokens[0]->id,
+            'request_tokens->[0]' => $tokens1[0]->id,
             'request_tokens->[9]' => $tokens2[4]->id,
             'request_tokens->[14]' => $tokens3[4]->id,
-            'tasks->[0]->id' => $tokens[0]->id,
-            'tasks->[0]->element_id' => $tokens[0]->element_id,
-            'tasks->[0]->name' => $tokens[0]->element_name,
-            'tasks->[0]->process_id' => $tokens[0]->process_id,
-            'tasks->[0]->status' => $tokens[0]->status,
+            'tasks->[0]->id' => $tokens1[0]->id,
+            'tasks->[0]->element_id' => $tokens1[0]->element_id,
+            'tasks->[0]->name' => $tokens1[0]->element_name,
+            'tasks->[0]->process_id' => $tokens1[0]->process_id,
+            'tasks->[0]->status' => $tokens1[0]->status,
             'tasks->[9]->id' => $tokens2[4]->id,
             'tasks->[9]->element_id' => $tokens2[4]->element_id,
             'tasks->[9]->name' => $tokens2[4]->element_name,
@@ -168,26 +218,26 @@ class PopulateCasesParticipatedTest extends TestCase
             'tasks->[14]->process_id' => $tokens3[4]->process_id,
             'tasks->[14]->status' => $tokens3[4]->status,
         ]);
+
         $this->assertDatabaseHas('cases_participated', [
             'user_id' => $this->user2->id,
-            'case_number' => $this->request->case_number,
-            'case_title' => $this->request->case_title,
-            'case_title_formatted' => $this->request->case_title_formatted,
-            'case_status' => 'IN_PROGRESS',
+            'case_number' => $case->case_number,
+            'case_title' => $case->case_title,
+            'case_title_formatted' => $case->case_title_formatted,
+            'case_status' => $case->case_status,
             'processes->[0]->id' => $this->process->id,
             'processes->[0]->name' => $this->process->name,
             'requests->[0]->id' => $this->request->id,
             'requests->[0]->name' => $this->request->name,
             'requests->[0]->parent_request_id' => $this->request->parent_request_id,
-            'request_tokens' => 1,
-            'request_tokens->[0]' => $tokens[0]->id,
+            'request_tokens->[0]' => $tokens1[0]->id,
             'request_tokens->[9]' => $tokens2[4]->id,
             'request_tokens->[14]' => $tokens3[4]->id,
-            'tasks->[0]->id' => $tokens[0]->id,
-            'tasks->[0]->element_id' => $tokens[0]->element_id,
-            'tasks->[0]->name' => $tokens[0]->element_name,
-            'tasks->[0]->process_id' => $tokens[0]->process_id,
-            'tasks->[0]->status' => $tokens[0]->status,
+            'tasks->[0]->id' => $tokens1[0]->id,
+            'tasks->[0]->element_id' => $tokens1[0]->element_id,
+            'tasks->[0]->name' => $tokens1[0]->element_name,
+            'tasks->[0]->process_id' => $tokens1[0]->process_id,
+            'tasks->[0]->status' => $tokens1[0]->status,
             'tasks->[9]->id' => $tokens2[4]->id,
             'tasks->[9]->element_id' => $tokens2[4]->element_id,
             'tasks->[9]->name' => $tokens2[4]->element_name,
@@ -203,44 +253,51 @@ class PopulateCasesParticipatedTest extends TestCase
 
     public function test_participants()
     {
-        ProcessRequestToken::factory()->count(5)->create([
+        $tokens1 = ProcessRequestToken::factory()->count(5)->create([
             'user_id' => $this->user->id,
             'process_request_id' => $this->request->id,
             'element_type' => 'task',
         ]);
 
-        ProcessRequestToken::factory()->count(5)->create([
+        $tokens2 = ProcessRequestToken::factory()->count(5)->create([
             'user_id' => $this->user2->id,
             'process_request_id' => $this->request->id,
             'element_type' => 'task',
         ]);
 
-        ProcessRequestToken::factory()->count(5)->create([
+        $tokens3 = ProcessRequestToken::factory()->count(5)->create([
             'user_id' => $this->user3->id,
             'process_request_id' => $this->request->id,
             'element_type' => 'task',
         ]);
+
+        $tokens = $tokens1->merge($tokens2)->merge($tokens3);
+        $data = $this->getCaseStartedData($tokens);
+
+        $case = CaseStarted::factory()->create(array_merge([
+            'user_id' => $this->user->id
+        ], $data));
 
         $this->upgrade();
 
         $this->assertDatabaseCount('cases_participated', 3);
         $this->assertDatabaseHas('cases_participated', [
             'user_id' => $this->user->id,
-            'case_number' => $this->request->case_number,
+            'case_number' => $case->case_number,
             'participants->[0]' => $this->user->id,
             'participants->[1]' => $this->user2->id,
             'participants->[2]' => $this->user3->id,
         ]);
         $this->assertDatabaseHas('cases_participated', [
             'user_id' => $this->user2->id,
-            'case_number' => $this->request->case_number,
+            'case_number' => $case->case_number,
             'participants->[0]' => $this->user->id,
             'participants->[1]' => $this->user2->id,
             'participants->[2]' => $this->user3->id,
         ]);
         $this->assertDatabaseHas('cases_participated', [
             'user_id' => $this->user3->id,
-            'case_number' => $this->request->case_number,
+            'case_number' => $case->case_number,
             'participants->[0]' => $this->user->id,
             'participants->[1]' => $this->user2->id,
             'participants->[2]' => $this->user3->id,
@@ -249,7 +306,7 @@ class PopulateCasesParticipatedTest extends TestCase
 
     public function test_request_tokens()
     {
-        $tokens = ProcessRequestToken::factory()->count(2)->create([
+        $tokens1 = ProcessRequestToken::factory()->count(2)->create([
             'user_id' => $this->user->id,
             'process_request_id' => $this->request->id,
             'element_type' => 'task',
@@ -267,14 +324,21 @@ class PopulateCasesParticipatedTest extends TestCase
             'element_type' => 'task',
         ]);
 
+        $tokens = $tokens1->merge($tokens2)->merge($tokens3);
+        $data = $this->getCaseStartedData($tokens);
+
+        $case = CaseStarted::factory()->create(array_merge([
+            'user_id' => $this->user->id
+        ], $data));
+
         $this->upgrade();
 
         $this->assertDatabaseCount('cases_participated', 3);
         $this->assertDatabaseHas('cases_participated', [
             'user_id' => $this->user->id,
-            'case_number' => $this->request->case_number,
-            'request_tokens->[0]' => $tokens[0]->id,
-            'request_tokens->[1]' => $tokens[1]->id,
+            'case_number' => $case->case_number,
+            'request_tokens->[0]' => $tokens1[0]->id,
+            'request_tokens->[1]' => $tokens1[1]->id,
             'request_tokens->[2]' => $tokens2[0]->id,
             'request_tokens->[3]' => $tokens2[1]->id,
             'request_tokens->[4]' => $tokens2[2]->id,
@@ -283,9 +347,9 @@ class PopulateCasesParticipatedTest extends TestCase
         ]);
         $this->assertDatabaseHas('cases_participated', [
             'user_id' => $this->user2->id,
-            'case_number' => $this->request->case_number,
-            'request_tokens->[0]' => $tokens[0]->id,
-            'request_tokens->[1]' => $tokens[1]->id,
+            'case_number' => $case->case_number,
+            'request_tokens->[0]' => $tokens1[0]->id,
+            'request_tokens->[1]' => $tokens1[1]->id,
             'request_tokens->[2]' => $tokens2[0]->id,
             'request_tokens->[3]' => $tokens2[1]->id,
             'request_tokens->[4]' => $tokens2[2]->id,
@@ -294,9 +358,9 @@ class PopulateCasesParticipatedTest extends TestCase
         ]);
         $this->assertDatabaseHas('cases_participated', [
             'user_id' => $this->user3->id,
-            'case_number' => $this->request->case_number,
-            'request_tokens->[0]' => $tokens[0]->id,
-            'request_tokens->[1]' => $tokens[1]->id,
+            'case_number' => $case->case_number,
+            'request_tokens->[0]' => $tokens1[0]->id,
+            'request_tokens->[1]' => $tokens1[1]->id,
             'request_tokens->[2]' => $tokens2[0]->id,
             'request_tokens->[3]' => $tokens2[1]->id,
             'request_tokens->[4]' => $tokens2[2]->id,
@@ -307,7 +371,7 @@ class PopulateCasesParticipatedTest extends TestCase
 
     public function test_tasks()
     {
-        $tokens = ProcessRequestToken::factory()->count(2)->create([
+        $tokens1 = ProcessRequestToken::factory()->count(2)->create([
             'user_id' => $this->user->id,
             'process_request_id' => $this->request->id,
             'element_type' => 'task',
@@ -328,16 +392,23 @@ class PopulateCasesParticipatedTest extends TestCase
             'status' => 'ACTIVE',
         ]);
 
+        $tokens = $tokens1->merge($tokens2)->merge($tokens3);
+        $data = $this->getCaseStartedData($tokens);
+
+        $case = CaseStarted::factory()->create(array_merge([
+            'user_id' => $this->user->id
+        ], $data));
+
         $this->upgrade();
 
         $this->assertDatabaseCount('cases_participated', 3);
         $this->assertDatabaseHas('cases_participated', [
             'user_id' => $this->user->id,
-            'case_number' => $this->request->case_number,
-            'tasks->[0]->id' => $tokens[0]->id,
-            'tasks->[0]->status' => $tokens[0]->status,
-            'tasks->[1]->id' => $tokens[1]->id,
-            'tasks->[1]->status' => $tokens[1]->status,
+            'case_number' => $case->case_number,
+            'tasks->[0]->id' => $tokens1[0]->id,
+            'tasks->[0]->status' => $tokens1[0]->status,
+            'tasks->[1]->id' => $tokens1[1]->id,
+            'tasks->[1]->status' => $tokens1[1]->status,
             'tasks->[2]->id' => $tokens2[0]->id,
             'tasks->[2]->status' => $tokens2[0]->status,
             'tasks->[3]->id' => $tokens2[1]->id,
@@ -353,33 +424,45 @@ class PopulateCasesParticipatedTest extends TestCase
 
     public function test_sub_processes()
     {
-        ProcessRequestToken::factory()->count(2)->create([
+        $tokens1 = ProcessRequestToken::factory()->count(2)->create([
             'user_id' => $this->user->id,
             'process_request_id' => $this->request->id,
             'element_type' => 'task',
             'status' => 'ACTIVE',
         ]);
 
-        ProcessRequestToken::factory()->count(3)->create([
+        $tokens2 = ProcessRequestToken::factory()->count(3)->create([
             'user_id' => $this->user2->id,
             'process_request_id' => $this->request->id,
             'element_type' => 'task',
             'status' => 'COMPLETED',
         ]);
 
-        ProcessRequestToken::factory()->count(2)->create([
+        $tokens3 = ProcessRequestToken::factory()->count(2)->create([
             'user_id' => $this->user3->id,
             'process_request_id' => $this->childRequest1->id,
             'element_type' => 'task',
             'status' => 'ACTIVE',
         ]);
 
+        $tokens = $tokens1->merge($tokens2)->merge($tokens3);
+        $data = $this->getCaseStartedData($tokens);
+
+        $data['processes'] = collect($data['processes'])->push([
+            'id' => $this->subProcess1->id,
+            'name' => $this->subProcess1->name,
+        ])->toArray();
+
+        $case = CaseStarted::factory()->create(array_merge([
+            'user_id' => $this->user->id
+        ], $data));
+
         $this->upgrade();
 
         $this->assertDatabaseCount('cases_participated', 3);
         $this->assertDatabaseHas('cases_participated', [
             'user_id' => $this->user->id,
-            'case_number' => $this->request->case_number,
+            'case_number' => $case->case_number,
             'processes->[0]->id' => $this->process->id,
             'processes->[0]->name' => $this->process->name,
             'processes->[1]->id' => $this->subProcess1->id,
@@ -389,33 +472,58 @@ class PopulateCasesParticipatedTest extends TestCase
 
     public function test_child_requests()
     {
-        ProcessRequestToken::factory()->count(2)->create([
+        $tokens1 = ProcessRequestToken::factory()->count(2)->create([
             'user_id' => $this->user->id,
             'process_request_id' => $this->request->id,
             'element_type' => 'task',
             'status' => 'ACTIVE',
         ]);
 
-        ProcessRequestToken::factory()->count(3)->create([
+        $tokens2 = ProcessRequestToken::factory()->count(3)->create([
             'user_id' => $this->user2->id,
             'process_request_id' => $this->childRequest1->id,
             'element_type' => 'task',
             'status' => 'COMPLETED',
         ]);
 
-        ProcessRequestToken::factory()->count(2)->create([
+        $tokens3 = ProcessRequestToken::factory()->count(2)->create([
             'user_id' => $this->user3->id,
             'process_request_id' => $this->childRequest2->id,
             'element_type' => 'task',
             'status' => 'ACTIVE',
         ]);
 
+        $tokens = $tokens1->merge($tokens2)->merge($tokens3);
+        $data = $this->getCaseStartedData($tokens);
+
+        $data['processes'] = collect($data['processes'])->push([
+            'id' => $this->subProcess1->id,
+            'name' => $this->subProcess1->name,
+        ])->push([
+            'id' => $this->subProcess2->id,
+            'name' => $this->subProcess2->name,
+        ])->toArray();
+
+        $data['requests'] = collect($data['requests'])->push([
+            'id' => $this->childRequest1->id,
+            'name' => $this->childRequest1->name,
+            'parent_request_id' => $this->childRequest1->parent_request_id,
+        ])->push([
+            'id' => $this->childRequest2->id,
+            'name' => $this->childRequest2->name,
+            'parent_request_id' => $this->childRequest2->parent_request_id,
+        ])->toArray();
+
+        $case = CaseStarted::factory()->create(array_merge([
+            'user_id' => $this->user->id
+        ], $data));
+
         $this->upgrade();
 
         $this->assertDatabaseCount('cases_participated', 3);
         $this->assertDatabaseHas('cases_participated', [
             'user_id' => $this->user->id,
-            'case_number' => $this->request->case_number,
+            'case_number' => $case->case_number,
             'processes->[0]->id' => $this->process->id,
             'processes->[0]->name' => $this->process->name,
             'processes->[1]->id' => $this->subProcess1->id,
@@ -436,7 +544,7 @@ class PopulateCasesParticipatedTest extends TestCase
 
     public function test_sub_process_tasks()
     {
-        $tokens = ProcessRequestToken::factory()->count(2)->create([
+        $tokens1 = ProcessRequestToken::factory()->count(2)->create([
             'user_id' => $this->user->id,
             'process_request_id' => $this->request->id,
             'element_type' => 'task',
@@ -457,12 +565,37 @@ class PopulateCasesParticipatedTest extends TestCase
             'status' => 'ACTIVE',
         ]);
 
+        $tokens = $tokens1->merge($tokens2)->merge($tokens3);
+        $data = $this->getCaseStartedData($tokens);
+
+        $data['processes'] = collect($data['processes'])->push([
+            'id' => $this->subProcess1->id,
+            'name' => $this->subProcess1->name,
+        ])->push([
+            'id' => $this->subProcess2->id,
+            'name' => $this->subProcess2->name,
+        ])->toArray();
+
+        $data['requests'] = collect($data['requests'])->push([
+            'id' => $this->childRequest1->id,
+            'name' => $this->childRequest1->name,
+            'parent_request_id' => $this->childRequest1->parent_request_id,
+        ])->push([
+            'id' => $this->childRequest2->id,
+            'name' => $this->childRequest2->name,
+            'parent_request_id' => $this->childRequest2->parent_request_id,
+        ])->toArray();
+
+        $case = CaseStarted::factory()->create(array_merge([
+            'user_id' => $this->user->id
+        ], $data));
+
         $this->upgrade();
 
         $this->assertDatabaseCount('cases_participated', 3);
         $this->assertDatabaseHas('cases_participated', [
             'user_id' => $this->user->id,
-            'case_number' => $this->request->case_number,
+            'case_number' => $case->case_number,
             'processes->[0]->id' => $this->process->id,
             'processes->[0]->name' => $this->process->name,
             'processes->[1]->id' => $this->subProcess1->id,
@@ -482,7 +615,7 @@ class PopulateCasesParticipatedTest extends TestCase
 
         $this->assertDatabaseHas('cases_participated', [
             'user_id' => $this->user->id,
-            'case_number' => $this->request->case_number,
+            'case_number' => $case->case_number,
             'tasks->[0]->id' => $tokens[0]->id,
             'tasks->[1]->id' => $tokens[1]->id,
             'tasks->[2]->id' => $tokens2[0]->id,
@@ -494,7 +627,7 @@ class PopulateCasesParticipatedTest extends TestCase
 
         $this->assertDatabaseHas('cases_participated', [
             'user_id' => $this->user2->id,
-            'case_number' => $this->request->case_number,
+            'case_number' => $case->case_number,
             'tasks->[0]->id' => $tokens[0]->id,
             'tasks->[1]->id' => $tokens[1]->id,
             'tasks->[2]->id' => $tokens2[0]->id,
@@ -506,7 +639,7 @@ class PopulateCasesParticipatedTest extends TestCase
 
         $this->assertDatabaseHas('cases_participated', [
             'user_id' => $this->user3->id,
-            'case_number' => $this->request->case_number,
+            'case_number' => $case->case_number,
             'tasks->[0]->id' => $tokens[0]->id,
             'tasks->[1]->id' => $tokens[1]->id,
             'tasks->[2]->id' => $tokens2[0]->id,
