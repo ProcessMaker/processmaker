@@ -29,6 +29,7 @@ class ScreenComponents
                 'FormRecordList',
                 'FormLoop',
                 'FormNestedScreen',
+                'FormCollectionRecordControl',
                 'FormButton',
                 'FileUpload',
                 'FileDownload',

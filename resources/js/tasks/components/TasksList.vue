@@ -327,7 +327,7 @@ export default {
       type: String,
       default: "tasks",
     },
-    verifyUrlToFalse: {
+    processesIManage: {
       type: Boolean,
       default: false
     }
@@ -851,7 +851,7 @@ export default {
     verifyURL(string) {
       const currentUrl = window.location.href;
       let isInUrl = currentUrl.includes(string);
-      if (this.verifyUrlToFalse) {
+      if (this.processesIManage) {
         isInUrl = false;
       }
       return isInUrl;

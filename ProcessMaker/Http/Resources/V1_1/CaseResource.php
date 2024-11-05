@@ -58,7 +58,7 @@ class CaseResource extends ApiResource
      */
     private function getParticipantData(array $participants): array
     {
-        return array_map(fn($participant) => self::$users->get($participant), $participants);
+        return array_map(fn ($participant) => self::$users->get($participant), $participants);
     }
 
     /**

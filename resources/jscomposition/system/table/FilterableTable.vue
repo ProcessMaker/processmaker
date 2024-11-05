@@ -3,7 +3,8 @@
     :columns="columns"
     :data="data"
     :placeholder="placeholder"
-    class="tw-overflow-y-scroll">
+    class="tw-grow"
+  >
     <template
       v-for="(column, index) in columns"
       #[`theader-filter-${column.field}`]>

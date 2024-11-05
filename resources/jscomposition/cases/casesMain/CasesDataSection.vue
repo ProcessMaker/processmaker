@@ -10,7 +10,6 @@
       :columns="columnsConfig"
       :data="data"
       :placeholder="showPlaceholder"
-      class="tw-flex tw-flex-col tw-grow tw-overflow-y-scroll"
       @changeFilter="onChangeFilter"
     >
       <template #placeholder>

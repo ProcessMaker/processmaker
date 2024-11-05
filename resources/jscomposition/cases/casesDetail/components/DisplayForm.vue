@@ -7,34 +7,40 @@
         tw-float-end tw-absolute tw-right-4 tw-top-4
         tw-font-semibold tw-text-gray-500 tw-shadow-sm
         tw-ring-1 tw-ring-gray-300 hover:tw-bg-gray-50 tw-gap-2"
-      @click="onPrint">
+      @click="onPrint"
+    >
       <i class="fa fa-print tw-text-gray-600" />
     </button>
 
     <transition
       name="fade"
-      mode="in-out">
+      mode="in-out"
+    >
       <div
         v-show="showPlaceholder"
         class="tw-flex tw-grow tw-w-full tw-h-full tw-pointer-events-none
-          tw-absolute tw-left-0 tw-top-0 tw-z-10 tw-justify-center tw-items-center">
+          tw-absolute tw-left-0 tw-top-0 tw-z-10 tw-justify-center tw-items-center"
+      >
         <LoadingPlaceholder />
       </div>
     </transition>
 
     <transition
       name="fade"
-      mode="in-out">
+      mode="in-out"
+    >
       <div
         v-show="!showPlaceholder && screen"
-        class="tw-pointer-events-none">
+        class="tw-pointer-events-none"
+      >
         <vue-form-renderer
           v-if="screen !== null"
           v-model="previewData"
           :data="previewData"
-          :config="screen.config"
+          :config="configScreen"
           :custom-css="screen.custom_css"
-          :show-errors="true" />
+          :show-errors="true"
+        />
       </div>
     </transition>
   </div>
@@ -54,7 +60,33 @@ const props = defineProps({
 
 const previewData = computed(() => props.data.taskData);
 const screen = ref(null);
+const configScreen = ref({});
 const showPlaceholder = ref(false);
+
+const disableForm = (screenConfig) => {
+  if (screenConfig instanceof Array) {
+    for (let i = screenConfig.length - 1; i >= 0; i -= 1) {
+      if (
+        screenConfig[i].component === "FormButton"
+        || screenConfig[i].component === "FileUpload"
+        || screenConfig[i].component === "PhotoVideo"
+      ) {
+        screenConfig.splice(i, 1);
+      } else {
+        disableForm(screenConfig[i]);
+      }
+    }
+  }
+  if (screenConfig.config !== undefined) {
+    screenConfig.config.disabled = true;
+    screenConfig.config.readonly = true;
+    screenConfig.config.editable = false;
+  }
+  if (screenConfig.items !== undefined) {
+    disableForm(screenConfig.items);
+  }
+  return screenConfig;
+};
 
 const getScreen = async (screenId) => {
   showPlaceholder.value = true;
@@ -66,6 +98,7 @@ const getScreen = async (screenId) => {
 
     if (response.data) {
       screen.value = response.data;
+      configScreen.value = disableForm(screen.value.config);
     }
   }, 300);
 };

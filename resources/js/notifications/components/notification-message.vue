@@ -109,14 +109,14 @@ export default {
   margin-bottom: 1em;
 }
 .bubble {
-  background-color: lighten($primary, 55%);
+  background-color: lighten($primary, 40%);
   border-radius: 1em;
   padding: 1em;
   margin-top: 1em;
 }
 .bubble-sm {
   font-size: 0.8em;
-  background-color: lighten($primary, 55%);
+  background-color: lighten($primary, 40%);
   border-radius: 1em;
   padding: 1em;
   margin-top: 1em;
