@@ -707,13 +707,13 @@ class ScreenTemplate implements TemplateInterface
             $screen = Screen::where('id', $screenId)->firstOrFail();
             $currentScreenPage = $request->get('currentScreenPage');
 
-            if (hasPackage('package-versions')) {
-                // Fetch the latest screen version
-                $screen = \ProcessMaker\Models\ScreenVersion::where('screen_id', $screenId)->latest()->firstOrFail();
-            } else {
-                // Fallback: Use the screen model instead
-                $screen = Screen::where('id', $screenId)->firstOrFail();
+            $hasVersionsPackage = hasPackage('package-versions');
+
+            if ($hasVersionsPackage) {
+                $screenVersion = \ProcessMaker\Models\ScreenVersion::where('screen_id', $screenId)->latest()->firstOrFail();
             }
+
+            $currentScreen = $hasVersionsPackage ? $screenVersion : $screen;
 
             // Get the selected template options
             $templateOptions = $request->get('templateOptions', []);
@@ -722,8 +722,20 @@ class ScreenTemplate implements TemplateInterface
             if (is_array($templateOptions)) {
                 foreach ($templateOptions as $option) {
                     $this->applyTemplateOption($option, $supportedOptionComponents, $template,
-                        $newTemplateScreen, $screen, $templateOptions, $currentScreenPage);
+                        $newTemplateScreen, $currentScreen, $templateOptions, $currentScreenPage);
                 }
+
+                // Copy the updated config from screenVersion to screen
+                // This is needed to save the changes to the current screen when applying a template to the screen version
+                if ($hasVersionsPackage) {
+                    $screen->config = $currentScreen->config;
+                    $screen->custom_css = $currentScreen->custom_css;
+                    $screen->save();
+                }
+                // This will save the changes to the screen versions table if installed else it will save the standard screen
+                $currentScreen->save();
+
+                $screen->save(); // Save the updated screen
 
                 $screen->save(); // Save the updated screen
             }
@@ -776,7 +788,7 @@ class ScreenTemplate implements TemplateInterface
     }
 
     private function applyTemplateOption($option, $supportedOptionComponents,
-    $template, $newTemplateScreen, $screen, $templateOptions, $currentScreenPage)
+    $template, $newTemplateScreen, $currentScreen, $templateOptions, $currentScreenPage)
     {
         // Check if the option is supported before applying
         if (!array_key_exists($option, $supportedOptionComponents)) {
@@ -784,14 +796,14 @@ class ScreenTemplate implements TemplateInterface
         }
         switch ($option) {
             case 'CSS':
-                $this->mergeCss($screen, $template);
+                $this->mergeCss($currentScreen, $template);
                 break;
             case 'Layout':
-                $this->mergeLayout($screen, $currentScreenPage, $newTemplateScreen,
+                $this->mergeLayout($currentScreen, $currentScreenPage, $newTemplateScreen,
                     $templateOptions, $supportedOptionComponents[$option]);
                 break;
             case 'Fields':
-                $this->mergeFields($screen, $currentScreenPage, $newTemplateScreen,
+                $this->mergeFields($currentScreen, $currentScreenPage, $newTemplateScreen,
                     $templateOptions, $supportedOptionComponents[$option]);
                 break;
             default:
