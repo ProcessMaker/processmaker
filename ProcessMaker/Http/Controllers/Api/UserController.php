@@ -203,12 +203,15 @@ class UserController extends Controller
         $query->withCount('activeTasks');
 
         $include_ids = [];
-        if ($request->has('include_ids')) {
-            $include_ids_string = $request->input('include_ids', '');
+        $include_ids_string = $request->input('include_ids', '');
+        if (!empty($include_ids_string)) {
             $include_ids = explode(',', $include_ids_string);
         } elseif ($request->has('assignable_for_task_id')) {
             $task = ProcessRequestToken::findOrFail($request->input('assignable_for_task_id'));
-            $include_ids = $task->process->getAssignableUsers($task->element_id);
+            if ($task->getAssignmentRule() === 'user_group') {
+                // Limit the list of users to those that can be assigned to the task
+                $include_ids = $task->process->getAssignableUsers($task->element_id);
+            }
         }
 
         if (!empty($include_ids)) {

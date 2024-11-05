@@ -222,7 +222,7 @@
                             </template>
                           </div>
                           <div class="col-6">
-                            <template v-if="isAllowReassignment || userIsAdmin || userIsProcessManager">
+                            <template v-if="allowReassignment">
                               <button
                                 v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
                                 type="button"
@@ -345,7 +345,7 @@
                 <template v-slot:pre-text="{ option }">
                   <b-badge variant="secondary"
                     class="mr-2 custom-badges pl-2 pr-2 rounded-lg">
-                    @{{ option.count }}
+                    @{{ option.active_tasks_count }}
                   </b-badge>
                 </template>
               </p-m-dropdown-suggest>
@@ -453,7 +453,7 @@
           urlConfiguration:'users/configuration',
           users: [],
           showTabs: true,
-          assignedUsers: "",
+          allowReassignment: false,
         },
         watch: {
           task: {
@@ -462,6 +462,7 @@
               window.ProcessMaker.breadcrumbs.taskTitle = task.element_name;
               if (task && oldTask && task.id !== oldTask.id) {
                 history.replaceState(null, null, `/tasks/${task.id}/edit`);
+                this.setAllowReassignment();
               }
               if (task.draft) {
                 this.lastAutosave = moment(this.draftTask.updated_at).format("DD MMMM YYYY | HH:mm");
@@ -541,14 +542,17 @@
             const status = (this.task.advanceStatus || '').toUpperCase();
             return "card-header text-status " + header[status];
           },
-          isAllowReassignment() {
-            if (ProcessMaker.user.id === this.task.definition.assignedUsers && !this.task.definition.assignedGroups) {  
-              return false;
-            }
-            return this.task.definition.allowReassignment === "true";
-          },
+          currentTaskUserId() {
+            return this.task?.user_id ?? this.task?.user?.id;
+          }
         },
         methods: {
+          setAllowReassignment() {
+            window.ProcessMaker.apiClient.get('tasks/user-can-reassign?tasks=' + this.task.id)
+              .then((response) => {
+                this.allowReassignment = response.data[this.task.id];
+              });
+          },
           defineUserConfiguration() {
             this.userConfiguration = JSON.parse(this.userConfiguration.ui_configuration);
             this.showMenu = this.userConfiguration.tasks.isMenuCollapse;
@@ -872,31 +876,28 @@
             this.caseTitle = task.process_request.case_title;
           },
           getUsers(filter) {
-            if (this.task.definition.allowReassignment === "true" && !this.userIsAdmin) {
-              this.setAssignedUsers(this.task.definition);
+            const params = { filter };
+            if (this.task?.id) {
+              params.assignable_for_task_id = this.task.id;
             }
-            ProcessMaker.apiClient.get(this.getUrlUsersTaskCount(filter), {
-              params: {
-                include_ids: this.assignedUsers
-              }
-            }).then(response => {
+
+            ProcessMaker.apiClient.get('users_task_count', { params }).then(response => {
               this.users = [];
-              for (let i in response.data.data) {
+              response.data.data.forEach((user) => {
+                if (this.currentTaskUserId === user.id) {
+                  return;
+                }
                 this.users.push({
-                  text: response.data.data[i].fullname,
-                  value: response.data.data[i].id,
-                  count: response.data.data[i].count
+                  text: user.fullname,
+                  value: user.id,
+                  active_tasks_count: user.active_tasks_count
                 });
-              }
+              });
             });
           },
-          getUrlUsersTaskCount(filter) {
-            let url = "users_task_count?filter=" + filter;
-            return url;
-          },
-          onInput(filter) {
+          onInput: _.debounce(function (filter) {
             this.getUsers(filter);
-          },
+          }, 300),
           getCommentsData: async () => {
             const response = await ProcessMaker.apiClient.get("comments-by-case", {
               params: {
@@ -907,35 +908,6 @@
             });
 
             return response;
-          },
-          setAssignedUsers(definition) {
-            // If a group is used, get all the users in that group, nested groups and merge with assignedUsers if applicable 
-            if (definition.assignedGroups && !this.userIsAdmin) {
-              this.getUsersInGroups(definition.assignedGroups);
-              let assignedUserIds = this.assignedUsers;
-              if (definition.assignedUsers) {
-                let currentAssignedUsers = definition.assignedUsers.split(',');
-                assignedUserIds += ',' + currentAssignedUsers.join(',');
-              }
-              this.assignedUsers = assignedUserIds;
-            }
-
-            //  Display assigned users
-            if (definition.assignedUsers && !this.userIsAdmin && !definition.assignedGroups) {
-              let currentAssignedUsers = definition.assignedUsers.split(',');
-              let assignedUsers = currentAssignedUsers.filter(user => user !== window.ProcessMaker.user.id);
-              this.assignedUsers = assignedUsers.join(',');
-            }
-          },
-          getUsersInGroups(assignedGroups) {
-            let groups = assignedGroups.split(',');
-            ProcessMaker.apiClient.get("tasks/getAssignedUsersInGroups", {
-              params: {
-                groups: groups
-              }
-            }).then(response => {
-              this.assignedUsers = response.data;
-            });
           },
         },
         mounted() {
@@ -952,7 +924,7 @@
             this.sendUserHasInteracted();
           });
           this.defineUserConfiguration();
-          this.getUsers("");
+          this.setAllowReassignment();
         }
       });
     </script>
