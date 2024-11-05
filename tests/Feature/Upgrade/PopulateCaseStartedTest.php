@@ -192,7 +192,7 @@ class PopulateCaseStartedTest extends TestCase
             'user_id' => $user2->id,
             'parent_request_id' => $processRequest1->id,
             'name' => $process2->name,
-            'process_id' => $process1->id,
+            'process_id' => $process2->id,
         ]);
 
         // Create ProcessRequestTokens for processRequest1
@@ -301,7 +301,7 @@ class PopulateCaseStartedTest extends TestCase
             'user_id' => $user2->id,
             'parent_request_id' => $processRequest1->id,
             'name' => $process2->name,
-            'process_id' => $process1->id,
+            'process_id' => $process2->id,
         ]);
 
         // Create ProcessRequestTokens for processRequest1
@@ -375,7 +375,7 @@ class PopulateCaseStartedTest extends TestCase
         // Expected data structure for `cases_started.processes` column
         $expectedData = [
             (object) ['id' => $processRequest1->id, 'name' => $processRequest1->name, 'parent_request_id' => $processRequest1->parent_request_id],
-            (object) ['id' => $processRequest2->id, 'name' => $processRequest2->name, 'parent_request_id' => $processRequest1->parent_request_id],
+            (object) ['id' => $processRequest2->id, 'name' => $processRequest2->name, 'parent_request_id' => $processRequest2->parent_request_id],
         ];
 
         // Decode the JSON data from `cases_started.requests`
