@@ -276,7 +276,7 @@ class PopulateCaseStartedTest extends TestCase
         $this->assertEqualsCanonicalizing($expectedData, $processesArray, 'The processes data in cases_started should match the expected data');
     }
 
-    public function testCasesStarteRequestsColumn()
+    public function testCasesStartedRequestsColumn()
     {
         // Instantiate the migration class
         $populateCaseStarted = new PopulateCaseStarted();
