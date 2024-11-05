@@ -107,6 +107,7 @@ const ListMixin = {
               }${filterParams
               }${this.getSortParam()
               }&non_system=true` +
+              `&processesIManage=${(this.processesIManage ? 'true' : 'false')}` +
               advancedFilter +
               this.columnsQuery,
               {
