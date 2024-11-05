@@ -27,7 +27,7 @@
     >
 
     <span class="pagination-total">
-      of {{ totalPageCount }}
+      {{ totalPageCountLabel }}
     </span>
 
     <b-button
@@ -125,14 +125,19 @@ export default {
     totalPageCount() {
       return this.meta.total_pages;
     },
+    totalPageCountLabel() {
+      return `${this.$t("of")} ${this.meta.total_pages}`;
+    },
     totalItems() {
       if (this.meta.total === 1) {
-        return `${this.meta.total} item`;
+        //return `${this.meta.total} ${this.$t("item")}`;
+        return this.$t('{{count}} Item', { count: this.meta.total });
       }
-      return `${this.meta.total} items`;
+      return this.$t('{{count}} Items', { count: this.meta.total });
+      //return `${this.meta.total} ${this.$t("items")}`;
     },
     perPageButton() {
-      return `${this.meta.per_page} per Page`;
+      return `${this.meta.per_page} ${this.$t("Per page")}`;
     },
     pageInputPlaceholder() {
       return `${this.currentPage}`;
