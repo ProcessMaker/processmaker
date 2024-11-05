@@ -36,7 +36,7 @@
       });
   
       const canEdit = (bundle) => {
-        return bundle.dev_link === null;
+        return bundle.dev_link_id === null;
       };
   
       const onOk = () => {
