@@ -74,6 +74,7 @@
                 </li>
               @endif
 
+<<<<<<< Updated upstream
               <template v-for="{ tab } in packages">
                 <li class="nav-item">
                   <a class="nav-link" :id="tab.id" data-toggle="tab" :href="'#' + tab.target" role="tab"
@@ -81,6 +82,251 @@
                     @{{ tab.name }}
                   </a>
                 </li>
+=======
+                  <template v-for="{ tab } in packages">
+                    <li class="nav-item">
+                      <a class="nav-link" :id="tab.id" data-toggle="tab" :href="'#' + tab.target" role="tab"
+                        @click="switchTab(tab.target)">
+                        @{{ tab.name }}
+                      </a>
+                    </li>
+                  </template>
+
+                  <li class="nav-item" v-show="canViewPrint">
+                    <a class="nav-link" id="forms-tab" data-toggle="tab" href="#forms" role="tab" aria-controls="forms"
+                      aria-selected="false" @click="switchTab('forms')">
+                      {{ __('Forms') }}
+                    </a>
+                  </li>
+                  @isset($addons)
+                    @foreach ($addons as $addon) @if (!empty($addon['title']))
+                      <li class="nav-item">
+                        <a class="nav-link" id="{{ $addon['id'] . '-tab' }}" data-toggle="tab" href="{{ '#' . $addon['id'] }}"
+                          role="tab" aria-controls="{{ $addon['id'] }}" aria-selected="false">
+                          {{ __($addon['title']) }}
+                        </a>
+                      </li>
+                    @endif @endforeach
+                  @endisset
+                </template>
+              </ul>
+              <div class="tab-content" id="requestTabContent">
+                <div class="tab-pane card card-body border-top-0 p-0" :class="{ active: activeErrors }" id="errors"
+                  role="tabpanel" aria-labelledby="errors-tab">
+                  <request-errors :errors="errorLogs"></request-errors>
+                </div>
+                <div class="tab-pane fade show card card-body border-top-0 p-0" :class="{ active: activePending }"
+                  id="pending" role="tabpanel" aria-labelledby="pending-tab">
+                  <request-detail ref="pending" :process-request-id="requestId" status="ACTIVE"
+                    :is-process-manager="{{ $isProcessManager ? 'true' : 'false' }}"
+                    :is-admin="{{ Auth::user()->is_administrator ? 'true' : 'false' }}">
+                  </request-detail>
+                </div>
+                <div class="card card-body border-top-0 p-0"
+                  v-bind:class="{ 'tab-pane':true, active: showSummary && !activePending}" id="summary" role="tabpanel"
+                  aria-labelledby="summary-tab">
+                  <template v-if="showSummary">
+                    <template v-if="showScreenSummary">
+                      <div class="p-3">
+                        <vue-form-renderer ref="screen" :config="screenSummary.config" v-model="dataSummary"
+                          :custom-css="screenSummary?.custom_css"
+                          :computed="screenSummary.computed" />
+                      </div>
+                    </template>
+                    <template v-if="showScreenRequestDetail && !showScreenSummary">
+                      <div class="card">
+                        <div class="card-body">
+                          <vue-form-renderer ref="screenRequestDetail" :config="screenRequestDetail"
+                            :custom-css="screenSummary?.custom_css"
+                            v-model="dataSummary" />
+                        </div>
+                      </div>
+                    </template>
+                    <template v-if="!showScreenSummary && !showScreenRequestDetail">
+                      <template v-if="summary.length > 0">
+                        <template v-if="!activePending">
+                          <div class="card border-0">
+                            <data-summary :summary="dataSummary"></data-summary>
+                          </div>
+                        </template>
+                        <template v-else>
+                          <div class="card border-0">
+                            <div class="card-header bg-white">
+                              <h5 class="m-0">
+                                {{ __('Request In Progress') }}
+                              </h5>
+                            </div>
+
+                            <div class="card-body">
+                              <p class="card-text">
+                                {{ __('This Request is currently in progress.') }}
+                                {{ __('This screen will be populated once the Request is completed.') }}
+                              </p>
+                            </div>
+                          </div>
+                        </template>
+                      </template>
+                      <template v-else>
+                        <div class="card border-0">
+                          <div class="card-header bg-white">
+                            <h5 class="m-0">
+                              {{ __('No Data Found') }}
+                            </h5>
+                          </div>
+
+                          <div class="card-body">
+                            <p class="card-text">
+                              {{ __("Sorry, this request doesn't contain any information.") }}
+                            </p>
+                          </div>
+                        </div>
+                      </template>
+
+                    </template>
+                  </template>
+                </div>
+                @if ($request->status === 'COMPLETED')
+                  @can('editData', $request)
+                    <div id="editdata" role="tabpanel" aria-labelledby="editdata"
+                      class="tab-pane card card-body border-top-0 p-3">
+                      @include('tasks.editdata')
+                    </div>
+                  @endcan
+                @endif
+                <div class="tab-pane fade card card-body border-top-0 p-0" id="completed" role="tabpanel"
+                  aria-labelledby="completed-tab">
+                  <request-detail ref="completed" :process-request-id="requestId" status="CLOSED"
+                    :is-admin="{{ Auth::user()->is_administrator ? 'true' : 'false' }}">
+                  </request-detail>
+                </div>
+
+                <template v-for="{ tab, component } in packages">
+                  <div class="tab-pane fade card card-body border-top-0 p-0" :id="tab.target" role="tabpanel">
+                    <component :is="component" :process-request-id="requestId"></component>
+                  </div>
+                </template>
+
+                <div class="tab-pane fade card card-body border-top-0 p-3" id="files" role="tabpanel"
+                  aria-labelledby="files-tab">
+                  <div class="card">
+                    <div>
+                      <table class="vuetable table-hover table">
+                        <thead>
+                          <tr>
+                            <th>{{ __('File Name') }}</th>
+                            <th>{{ __('MIME Type') }}</th>
+                            <th>{{ __('Created At') }}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @foreach ($files as $file)
+                            <tr>
+                              <td>
+                                <a
+                                  href="{{ url('request/' . $request->id . '/files/' . $file->id) }}">{{ $file->file_name }}</a>
+                              </td>
+                              <td>{{ $file->mime_type }}</td>
+                              <td>{{ $file->created_at->format('m/d/y h:i a') }}</td>
+                            </tr>
+                          @endforeach
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-pane fade card card-body border-top-0 p-0" id="forms" role="tabpanel"
+                  aria-labelledby="forms-tab" v-show="canViewPrint">
+                  <request-screens :id="requestId" :information="dataSummary" ref="forms">
+                  </request-screens>
+                </div>
+                <div v-if="activeTab === 'overview'" class="tab-pane fade p-0" id="overview" role="tabpanel"
+                  aria-labelledby="overview-tab">
+                  <div class="card" style="border-top: none !important;">
+                    <div class="card-body">
+                      <h4>
+                        {{ __(':name In-Flight Map', ['name' => $request->process->name]) }}
+                      </h4>
+                      <div v-if="isObjectLoading" class="d-flex justify-content-center">
+                        <div class="spinner-border text-primary" role="status"></div>
+                      </div>
+                      <div :class="{ 'hidden': isObjectLoading }">
+                        <object ref="processMap" class="card"
+                          data="{{ route('modeler.inflight', [
+                            'process' => $request->process->id,
+                            'request' => $request->id
+                          ]) }}"
+                          width="100%"
+                          :height="isObjectLoading ? 'auto' : '640px'"
+                          frameborder="0"
+                          type="text/html"
+                          style="border-radius: 4px;"
+                          @load="onLoadedObject">
+                          <!-- Accessible Alternative Content -->
+                          <p>
+                            {{ __('Content not available. Check settings or try a different device.') }}
+                          </p>
+                        </object>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                @isset($addons)
+                  @foreach ($addons as $addon)
+                    <div class="tab-pane fade show" id="{{ $addon['id'] }}" role="tabpanel"
+                      aria-labelledby="{{ $addon['id'] }}">
+                      {!! $addon['content'] !!}
+                    </div>
+                  @endforeach
+                @endisset
+              </div>
+            </div>
+              <timeline commentable_id="{{ $request->getKey() }}" commentable_type="{{ get_class($request) }}"
+                :adding="false" :readonly="request.status === 'COMPLETED'" 
+                :timeline="false" />
+          </div>
+
+          @if (shouldShow('requestStatusContainer'))
+            <div class="slide-control">
+              <a href="#" @click="hideMenu">
+                <i class="fa" :class="{ 'fa-caret-left' : !showMenu, 'fa-caret-right' : showMenu }"></i>
+              </a>
+            </div>
+            <div class="menu">
+              <template v-if="statusLabel">
+                <ul class="nav nav-tabs nav-collapse" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button
+                      id="details-tab"
+                      :class="{'nav-link': true, active: showInfo }"
+                      data-bs-toggle="tab"
+                      data-bs-target="#details"
+                      type="button"
+                      role="tab"
+                      aria-controls="details"
+                      aria-selected="true"
+                      @click="switchTabInfo('details')"
+                    >
+                      @{{ __('Details') }}
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button
+                      id="comments-tab"
+                      :class="{'nav-link': true, active: !showInfo }"
+                      data-bs-toggle="tab"
+                      data-bs-target="#comments"
+                      type="button"
+                      role="tab"
+                      aria-controls="comments"
+                      aria-selected="false"
+                      @click="switchTabInfo('comments')"
+                    >
+                      @{{ __('Comments') }}
+                    </button>
+                  </li>
+                </ul>
+>>>>>>> Stashed changes
               </template>
 
               <li class="nav-item" v-show="canViewPrint">
