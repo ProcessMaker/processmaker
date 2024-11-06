@@ -27,10 +27,10 @@
                 <slot name="noOptions">{{ $t("No Data Available") }}</slot>
             </template>
             <template v-slot:option="{ option, search, index }">
-              <b-badge v-if="Object.hasOwn(option, 'count')"
+              <b-badge v-if="Object.hasOwn(option, 'active_tasks_count')"
                        variant="secondary" 
                        class="mr-2 custom-badges pl-2 pr-2 rounded-lg">
-               {{ option.count }}
+               {{ option.active_tasks_count }}
              </b-badge>
               <span> 
                 {{ getOptionLabel(option, 'fullname') }} 

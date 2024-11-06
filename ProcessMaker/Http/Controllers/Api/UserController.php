@@ -187,6 +187,7 @@ class UserController extends Controller
     public function getUsersTaskCount(Request $request)
     {
         $query = User::nonSystem();
+        $query->select('id', 'username', 'firstname', 'lastname');
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
