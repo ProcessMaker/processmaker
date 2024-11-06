@@ -99,7 +99,7 @@ class PopulateCaseStartedTest extends TestCase
         // Confirm record insertion into cases_started
         $finalCount = DB::table('cases_started')->count();
         $this->assertEquals($processRequests->count(), $finalCount, 'cases_started count should match the number of ProcessRequests created');
-        $casesStartedRecord = DB::table('cases_started')->where('case_number', $processRequest->id)->first();
+        $casesStartedRecord = DB::table('cases_started')->where('case_number', $processRequest->case_number)->first();
         $this->assertNotNull($casesStartedRecord, 'Each ProcessRequest should have a corresponding record in cases_started');
 
         $tokensArray = json_decode($casesStartedRecord->request_tokens, true);
@@ -157,7 +157,7 @@ class PopulateCaseStartedTest extends TestCase
         // Confirm record insertion into cases_started
         $finalCount = DB::table('cases_started')->count();
         $this->assertEquals($processRequests->count(), $finalCount, 'cases_started count should match the number of ProcessRequests created');
-        $casesStartedRecord = DB::table('cases_started')->where('case_number', $processRequest->id)->first();
+        $casesStartedRecord = DB::table('cases_started')->where('case_number', $processRequest->case_number)->first();
         $this->assertNotNull($casesStartedRecord, 'Each ProcessRequest should have a corresponding record in cases_started');
         // Prepare the participants record
         $tokensArray = json_decode($casesStartedRecord->participants, true);
