@@ -34,7 +34,7 @@
         class="tw-pointer-events-none"
       >
         <div
-          v-for="(page, index) in configScreen"
+          v-for="(page, index) in pagesPrintable"
           :key="index"
           class="card"
         >
