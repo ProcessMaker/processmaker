@@ -8,6 +8,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ProcessMaker\Filters\Filter;
 use ProcessMaker\Managers\DataManager;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
@@ -317,6 +318,20 @@ trait TaskControllerIndexMethods
         $query->where(function ($query) use ($user) {
             $query->where('user_id', $user->id)
                 ->orWhereIn('id', $user->availableSelfServiceTaskIds());
+        });
+    }
+    
+    public function applyProcessManager($query, $user)
+    {
+        $ids = Process::select(['id'])
+            ->where('properties->manager_id', $user->id)
+            ->where('status', 'ACTIVE')
+            ->get()
+            ->toArray();
+
+        $query->orWhere(function ($query) use ($ids) {
+            $query->whereIn('process_request_tokens.process_id', array_column($ids, 'id'))
+                ->where('process_request_tokens.status', 'ACTIVE');
         });
     }
 }

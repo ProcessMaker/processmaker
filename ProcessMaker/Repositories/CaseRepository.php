@@ -131,7 +131,7 @@ class CaseRepository implements CaseRepositoryInterface
             ];
 
             if ($caseStatus === CaseStatusConstants::COMPLETED) {
-                $data['completed_at'] = Carbon::now();
+                $data['completed_at'] = $instance->completed_at;
             }
 
             // Update the case started and case participated
@@ -153,19 +153,13 @@ class CaseRepository implements CaseRepositoryInterface
     {
         $user = $token->user;
 
-        if (!$user) {
-            return;
+        $this->case->participants = CaseUtils::storeParticipants($this->case->participants, $user?->id);
+
+        if (!is_null($user?->id)) {
+            $this->caseParticipatedRepository->create($this->case, $user->id);
         }
 
-        $participantExists = $this->case->participants->contains($user->id);
-
-        if (!$participantExists) {
-            $this->case->participants->push($user->id);
-
-            $this->caseParticipatedRepository->create($this->case, $token);
-        }
-
-        $this->caseParticipatedRepository->update($this->case, $token);
+        $this->caseParticipatedRepository->update($this->case);
     }
 
     /**
@@ -206,6 +200,8 @@ class CaseRepository implements CaseRepositoryInterface
             $this->case->requests = CaseUtils::storeRequests($this->case->requests, $requestData);
 
             $this->case->saveOrFail();
+
+            $this->caseParticipatedRepository->update($this->case);
         } catch (\Exception $e) {
             Log::error('CaseException: ' . $e->getMessage());
             Log::error('CaseException: ' . $e->getTraceAsString());

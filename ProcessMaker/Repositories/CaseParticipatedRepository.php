@@ -2,10 +2,10 @@
 
 namespace ProcessMaker\Repositories;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\CaseParticipated;
 use ProcessMaker\Models\CaseStarted;
-use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 
 class CaseParticipatedRepository
 {
@@ -20,74 +20,72 @@ class CaseParticipatedRepository
      * Store a new case participated.
      *
      * @param CaseStarted $case
-     * @param TokenInterface $token
+     * @param int $userId
      * @return void
      */
-    public function create(CaseStarted $case, TokenInterface $token): void
+    public function create(CaseStarted $case, int $userId): void
     {
-        if ($this->checkIfCaseParticipatedExist($token->user->id, $case->case_number)) {
-            return;
-        }
-
         try {
-            $processData = CaseUtils::extractData($token->processRequest->process, 'PROCESS');
-            $requestData = CaseUtils::extractData($token->processRequest, 'REQUEST');
-            $taskData = CaseUtils::extractData($token, 'TASK');
-
-            CaseParticipated::create([
-                'user_id' => $token->user->id,
-                'case_number' => $case->case_number,
-                'case_title' => $case->case_title,
-                'case_title_formatted' => $case->case_title_formatted,
-                'case_status' => $case->case_status,
-                'processes' => CaseUtils::storeProcesses(collect(), $processData),
-                'requests' => CaseUtils::storeRequests(collect(), $requestData),
-                'request_tokens' => CaseUtils::storeRequestTokens(collect(), $token->getKey()),
-                'tasks' => CaseUtils::storeTasks(collect(), $taskData),
-                'participants' => $case->participants,
-                'initiated_at' => $case->initiated_at,
-                'completed_at' => null,
-                'keywords' => $case->keywords,
-            ]);
+            CaseParticipated::updateOrCreate(
+                [
+                    'case_number' => $case->case_number,
+                    'user_id' => $userId,
+                ],
+                $this->mapCaseToArray($case, $userId)
+            );
         } catch (\Exception $e) {
-            Log::error('CaseException: ' . $e->getMessage());
-            Log::error('CaseException: ' . $e->getTraceAsString());
+            $this->logException($e);
         }
     }
 
     /**
-     * Update the case participated.
+     * Update the cases participated.
      *
      * @param CaseStarted $case
-     * @param TokenInterface $token
      * @return void
      */
-    public function update(CaseStarted $case, TokenInterface $token)
+    public function update(CaseStarted $case): void
     {
         try {
-            if (!$this->checkIfCaseParticipatedExist($token->user->id, $case->case_number)) {
-                return;
-            }
-
-            $processData = CaseUtils::extractData($token->processRequest->process, 'PROCESS');
-            $requestData = CaseUtils::extractData($token->processRequest, 'REQUEST');
-            $taskData = CaseUtils::extractData($token, 'TASK');
-
-            $this->caseParticipated->updateOrFail([
-                'case_title' => $case->case_title,
-                'case_title_formatted' => $case->case_title_formatted,
-                'case_status' => $case->case_status,
-                'processes' => CaseUtils::storeProcesses($this->caseParticipated->processes, $processData),
-                'requests' => CaseUtils::storeRequests($this->caseParticipated->requests, $requestData),
-                'request_tokens' => CaseUtils::storeRequestTokens($this->caseParticipated->request_tokens, $token->getKey()),
-                'tasks' => CaseUtils::storeTasks($this->caseParticipated->tasks, $taskData),
-                'participants' => $case->participants,
-                'keywords' => $case->keywords,
-            ]);
+            CaseParticipated::where('case_number', $case->case_number)
+                ->update($this->mapCaseToArray($case));
         } catch (\Exception $e) {
-            Log::error('CaseException: ' . $e->getMessage());
-            Log::error('CaseException: ' . $e->getTraceAsString());
+            $this->logException($e);
         }
+    }
+
+    /**
+     * Maps properties of a `CaseStarted` object to an array, optionally including a user ID.
+     *
+     * @param CaseStarted case Takes a `CaseStarted` object and parameter as input and returns an array with specific
+     * properties mapped from the `CaseStarted` object.
+     * @param int userId Takes an optional `userId` parameter.
+     *
+     * @return array An array containing various properties of a CaseStarted object. If a userId is
+     * provided, it will also include the user_id in the returned array.
+     */
+    private function mapCaseToArray(CaseStarted $case, int $userId = null): array
+    {
+        $data = [
+            'case_number' => $case->case_number,
+            'case_title' => $case->case_title,
+            'case_title_formatted' => $case->case_title_formatted,
+            'case_status' => $case->case_status,
+            'processes' => $case->processes,
+            'requests' => $case->requests,
+            'request_tokens' => $case->request_tokens,
+            'tasks' => $case->tasks,
+            'participants' => $case->participants,
+            'initiated_at' => $case->initiated_at,
+            'completed_at' => $case->completed_at,
+            'keywords' => $case->keywords,
+        ];
+
+        if ($userId !== null) {
+            $data['user_id'] = $userId;
+        }
+
+        return $data;
     }
 
     /**
@@ -103,27 +101,13 @@ class CaseParticipatedRepository
             CaseParticipated::where('case_number', $caseNumber)
                 ->update($statusData);
         } catch (\Exception $e) {
-            Log::error('CaseException: ' . $e->getMessage());
-            Log::error('CaseException: ' . $e->getTraceAsString());
+            $this->logException($e);
         }
     }
 
-    /**
-     * Check if a case participated exists.
-     * If it exists, store the instance in the property.
-     * The property is used to update the JSON fields of the case participated.
-     *
-     * @param int $userId
-     * @param int $caseNumber
-     *
-     * @return bool
-     */
-    private function checkIfCaseParticipatedExist(int $userId, int $caseNumber): bool
+    private function logException(\Exception $e): void
     {
-        $this->caseParticipated = CaseParticipated::where('user_id', $userId)
-            ->where('case_number', $caseNumber)
-            ->first();
-
-        return !is_null($this->caseParticipated);
+        Log::error('CaseException: ' . $e->getMessage());
+        Log::error('CaseException: ' . $e->getTraceAsString());
     }
 }

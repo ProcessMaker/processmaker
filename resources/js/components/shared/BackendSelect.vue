@@ -1,6 +1,7 @@
 <script setup>
-import { defineProps, onMounted, ref, watch, defineEmits } from 'vue';
+import { defineProps, onMounted, ref, watch, defineEmits, getCurrentInstance } from 'vue';
 
+const vue = getCurrentInstance().proxy;
 const options = ref([]);
 const value = ref(props.value);
 const emit = defineEmits(['input']);
@@ -20,7 +21,7 @@ const props = defineProps({
     required: true
   },
   value: {
-    type: Object,
+    type: Array,
   }
 });
 
@@ -38,8 +39,9 @@ onMounted(() => {
 
 <template>
   <div>
-    <multiselect v-model="value" deselect-label="Can't remove this value" :track-by="props.valueField" :label="props.textField"
-      placeholder="Select one" :options="options" :searchable="false" :allow-empty="false">
+    <multiselect v-model="value" :deselect-label="vue.$t('Can\'t remove this value')" :track-by="props.valueField" :label="props.textField"
+                 :placeholder="vue.$t('Type here to search')" :options="options" :searchable="true" :allow-empty="false" 
+                 :multiple="true">
     </multiselect>
   </div>
 </template>
