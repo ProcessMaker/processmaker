@@ -86,6 +86,12 @@ export const taskColumn = () => ({
     params: {
       href: (option) => `/tasks/${option.id}/edit`,
       formatterOptions: (option, row, column, columns) => option.name,
+      filterData: (row, column, columns) => {
+        if (row.case_status === "COMPLETED") {
+          return [];
+        }
+        return row.tasks.filter((el) => el.status === "ACTIVE");
+      },
     },
   }),
 });
