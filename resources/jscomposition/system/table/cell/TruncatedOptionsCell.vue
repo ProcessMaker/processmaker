@@ -44,7 +44,7 @@
               <a
                 v-if="href !== null"
                 class="tw-flex tw-py-2 tw-px-4 transition duration-300 hover:tw-bg-gray-200"
-                :href="getLink(option)"
+                :href="href(option)"
               >
                 {{ getValueOption(option, index) }}
               </a>

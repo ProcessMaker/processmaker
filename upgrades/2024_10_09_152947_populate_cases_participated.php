@@ -1,9 +1,6 @@
 <?php
 
-use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use ProcessMaker\Repositories\CaseUtils;
 use ProcessMaker\Upgrades\UpgradeMigration as Upgrade;
 
 class PopulateCasesParticipated extends Upgrade
@@ -15,52 +12,25 @@ class PopulateCasesParticipated extends Upgrade
      */
     public function up()
     {
-        try {
-            DB::table('cases_participated')->truncate();
+        $total_participants = $this->validateDataConsistency();
 
-            $this->getProcessRequests()
-                ->chunk(1000, function ($rows) {
-                    $casesParticipated = [];
+        DB::table('cases_participated')->delete();
+        echo PHP_EOL . '    Populating case_participated from cases_started' . PHP_EOL;
 
-                    foreach ($rows as $row) {
-                        $processes = CaseUtils::storeProcesses(collect(json_decode($row->processes)));
-                        $requests = CaseUtils::storeRequests(collect(json_decode($row->requests)));
-                        $requestTokens = CaseUtils::storeRequestTokens(collect(json_decode($row->request_tokens)));
-                        $tasks = CaseUtils::storeTasks(collect(json_decode($row->tasks)));
-                        $participants = CaseUtils::storeParticipants(collect(json_decode($row->participants)));
+        $startTime = microtime(true); // Start the timer
 
-                        $dataKeywords = [
-                            'case_number' => $row->case_number,
-                            'case_title' => $row->case_title,
-                        ];
+        $this->createTemporaryParticipantsTable();
+        $this->logTimeElapsed('Created temporary table with participants', $startTime);
 
-                        array_push($casesParticipated, [
-                            'user_id' => $row->user_id,
-                            'case_number' => $row->case_number,
-                            'case_title' => $row->case_title,
-                            'case_title_formatted' => $row->case_title_formatted,
-                            'case_status' => $row->case_status,
-                            'processes' => $processes,
-                            'requests' => $requests,
-                            'request_tokens' => $requestTokens,
-                            'tasks' => $tasks,
-                            'participants' => $participants,
-                            'initiated_at' => $row->initiated_at,
-                            'completed_at' => $row->completed_at,
-                            'created_at' => $row->created_at,
-                            'updated_at' => $row->updated_at,
-                            'keywords' => CaseUtils::getKeywords($dataKeywords),
-                        ]);
-                    }
+        $this->insertIntoCasesParticipated();
+        $this->logTimeElapsed('Inserted data into cases_participated', $startTime);
 
-                    DB::table('cases_participated')->insert($casesParticipated);
+        $count = DB::table('cases_participated')->count();
 
-                    Log::info('Inserted ' . count($casesParticipated) . ' cases participated records');
-                });
-        } catch (Exception $e) {
-            Log::error($e->getMessage());
-            echo $e->getMessage();
-        }
+        echo PHP_EOL . "Cases Started participants. Total cases started participants: {$total_participants}" . PHP_EOL;
+        echo PHP_EOL . "Cases Participated have been populated successfully. Total cases participated: {$count}" . PHP_EOL;
+
+        echo PHP_EOL;
     }
 
     /**
@@ -70,48 +40,109 @@ class PopulateCasesParticipated extends Upgrade
      */
     public function down()
     {
-        DB::table('cases_participated')->truncate();
+        DB::table('cases_participated')->delete();
     }
 
-    protected function getProcessRequests(): Builder
+    /**
+     * Log the time elapsed since the start of the process.
+     *
+     * @param string $message Message to log
+     * @param float $startTime Time when the processing started (in microseconds)
+     * @return void
+     */
+    private function logTimeElapsed(string $message, float $startTime): void
     {
-        return DB::table('process_requests as pr')
+        $currentTime = microtime(true);
+        $timeElapsed = $currentTime - $startTime;
+
+        // Format the elapsed time to 4 decimal places for higher precision
+        echo "    {$message} - Time elapsed: " . number_format($timeElapsed, 4) . ' seconds' . PHP_EOL;
+    }
+
+    /**
+     * Creates a temporary table from process_request_tokens,
+     * obtaining unique user_id by case_number
+     *
+     * @return void
+     *
+     * @throws Exception If there is an error creating the temporary table
+     */
+    private function createTemporaryParticipantsTable()
+    {
+        DB::statement('DROP TEMPORARY TABLE IF EXISTS participants_temp2');
+
+        // Build the query for `participants_temp2`
+        $query = DB::table('cases_started as cs')
             ->select([
-                'u.id as user_id',
-                'pr.case_number',
-                'pr.case_title',
-                'pr.case_title_formatted',
-                DB::raw("IF(pr.status = 'ACTIVE', 'IN_PROGRESS', pr.status) as case_status"),
-                DB::raw('JSON_ARRAYAGG(JSON_OBJECT("id", pc.id, "name", pc.name)) as processes'),
-                DB::raw('JSON_ARRAYAGG(JSON_OBJECT("id", pr.id, "name", pc.name, "parent_request_id", pr.parent_request_id)) as requests'),
-                DB::raw('JSON_ARRAYAGG(prt.id) as request_tokens'),
-                DB::raw('JSON_ARRAYAGG(IF(prt.element_type != "callActivity", JSON_OBJECT("id", prt.id, "name", prt.element_name, "element_id", prt.element_id, "process_id", prt.process_id), NULL)) as tasks'),
-                'par.participants',
-                'pr.initiated_at',
-                'pr.completed_at',
-                'pr.created_at',
-                'pr.updated_at',
+                DB::raw('participants.item as user_id'),
+                'cs.case_number',
+                'cs.case_title',
+                'cs.case_title_formatted',
+                'cs.case_status',
+                'cs.processes',
+                'cs.requests',
+                'cs.request_tokens',
+                'cs.tasks',
+                'cs.participants',
+                'cs.initiated_at',
+                'cs.completed_at',
+                'cs.created_at',
+                'cs.updated_at',
+                'cs.keywords',
             ])
-            ->join('process_request_tokens as prt', 'pr.id', '=', 'prt.process_request_id')
-            ->join('users as u', 'prt.user_id', '=', 'u.id')
-            ->join('processes as pc', 'pr.process_id', '=', 'pc.id')
-            ->joinSub(
-                DB::table('users as u2')
-                    ->selectRaw('JSON_ARRAYAGG(u2.id) as participants, pr2.case_number')
-                    ->join('process_request_tokens as prt2', 'u2.id', '=', 'prt2.user_id')
-                    ->join('process_requests as pr2', 'prt2.process_request_id', '=', 'pr2.id')
-                    ->whereNotNull('pr2.case_number')
-                    ->groupBy('pr2.case_number'),
-                'par',
-                'par.case_number',
-                '=',
-                'pr.case_number'
-            )
-            ->whereIn('pr.status', ['ACTIVE', 'COMPLETED'])
-            ->whereIn('prt.element_type', ['task', 'callActivity', 'scriptTask'])
-            ->whereNotNull('pr.case_number')
-            ->groupBy('u.id', 'pr.id')
-            ->orderBy('pr.id')
-            ->orderBy('u.id');
+            ->join(
+                DB::raw('JSON_TABLE(cs.participants, \'$[*]\' COLUMNS(item INT PATH \'$\')) AS participants'),
+                function ($join) {
+                    // The join condition is essentially empty, just joins for each item in participants
+                }
+            );
+
+        // Execute the query and create the temporary table
+        DB::statement('CREATE TEMPORARY TABLE participants_temp2 AS ' . $query->toSql(), $query->getBindings());
+    }
+
+    private function insertIntoCasesParticipated()
+    {
+        $insertQuery = DB::table('participants_temp2 as part')
+            ->select([
+                'part.user_id',
+                'part.case_number',
+                'part.case_title',
+                'part.case_title_formatted',
+                'part.case_status',
+                'part.processes',
+                'part.requests',
+                'part.request_tokens',
+                'part.tasks',
+                'part.participants',
+                'part.initiated_at',
+                'part.completed_at',
+                'part.created_at',
+                'part.updated_at',
+                'part.keywords',
+            ]);
+
+        // Perform the insert and return the number of affected rows
+        return DB::table('cases_participated')->insertUsing([
+            'user_id', 'case_number', 'case_title', 'case_title_formatted', 'case_status',
+            'processes', 'requests', 'request_tokens', 'tasks', 'participants',
+            'initiated_at', 'completed_at', 'created_at', 'updated_at', 'keywords',
+        ], $insertQuery);
+    }
+
+    /**
+     * Check if exist inconsistency in "process_request" table
+     */
+    private function validateDataConsistency()
+    {
+        $results = DB::table('cases_started')
+            ->select(DB::raw('sum(json_length(participants)) total_participants'))
+            ->first();
+
+        if (is_null($results)) {
+            throw new Exception('Inconsistency detected, multiple records with null parent for the same request.');
+        }
+
+        return $results->total_participants;
     }
 }

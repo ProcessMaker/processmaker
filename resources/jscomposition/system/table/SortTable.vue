@@ -5,7 +5,8 @@
     :data="data"
     :config="config"
     :placeholder="placeholder"
-    class="tw-grow tw-overflow-y-scroll">
+    class="tw-grow"
+  >
     <template
       v-for="(column, index) in columns"
       #[`theader-filter-${column.field}`]>

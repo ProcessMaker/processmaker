@@ -141,6 +141,10 @@ class TaskController extends Controller
         // Apply filter overdue
         $query->overdue($request->input('overdue'));
 
+        if ($request->input('processesIManage') === 'true') {
+            $this->applyProcessManager($query, $user);
+        }
+
         // If only the total is being requested (by a Saved Search), send it now
         if ($getTotal === true) {
             return $query->count();
