@@ -152,6 +152,7 @@ class CaseUtils
             && in_array($taskData['element_type'], self::ALLOWED_ELEMENT_TYPES)
         ) {
             unset($taskData['element_type']);
+            // This field is converted to string because: The Json_Search in MySQL only works with strings
             $taskData['id'] = (string)$taskData['id'];
             $tasks->prepend($taskData);
         }

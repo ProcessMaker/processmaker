@@ -20,12 +20,12 @@
                 ...
               </a>
             </div>
-            <div class="text-right">
+            <div class="d-flex justify-content-between align-items-center">
               <button
               :href="getNewRequestLinkHref(process, event)"
               @click.prevent="newRequestLink(process, event);"
               :disabled="disabled"
-              class="btn btn-primary btn-sm"
+              class="btn btn-primary btn-sm d-flex align-items-center"
               v-uni-aria-describedby="event.id.toString()"
               data-test="new-request-modal-process-start-button"
               :data-test-by-key="`new-request-modal-process-start-button-${process.id}-${event.id.toString()}`"

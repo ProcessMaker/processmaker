@@ -359,13 +359,14 @@ class CaseStartedTest extends TestCase
         ]);
 
         $instance->status = 'COMPLETED';
+        $instance->completed_at = now();
         $repo->updateStatus($instance, $token);
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $instance->case_number,
             'user_id' => $user->id,
             'case_title' => $instance->case_title,
             'case_status' => 'COMPLETED',
-            'completed_at' => now(),
+            'completed_at' => $instance->completed_at,
             'tasks->[0]->id' => $token->id,
             'tasks->[0]->element_id' => $token->element_id,
             'tasks->[0]->name' => $token->element_name,

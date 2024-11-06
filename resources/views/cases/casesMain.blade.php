@@ -1,6 +1,7 @@
 @extends('layouts.layout',['content_margin' => '', 'overflow-auto' => ''])
 
 @section('title')
+  {{ __('Cases') }}
 @endsection
 
 @section('sidebar')
