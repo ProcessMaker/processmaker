@@ -1,20 +1,22 @@
 <template>
   <div class="tw-flex tw-relative tw-text-nowrap tw-whitespace-nowrap tw-p-3">
-    <div class="tw-overflow-hidden tw-text-ellipsis ">
+    <div
+      v-if="optionsModel.length"
+      class="tw-overflow-hidden tw-text-ellipsis">
       <a
         v-if="href !== null"
         class="hover:tw-text-blue-400 tw-text-gray-500"
-        :href="href(row[column.field][0])"
+        :href="href(optionsModel[0])"
       >
-        {{ getValue() }}
+        {{ getValueOption(optionsModel[0], 0) }}
       </a>
       <span
         v-else
         class="hover:tw-text-blue-400 tw-text-gray-500 hover:tw-cursor-pointer"
         href="#"
-        @click.prevent.stop="onClickOption(row[column.field][0], 0)"
+        @click.prevent.stop="onClickOption(optionsModel[0], 0)"
       >
-        {{ getValue() }}
+        {{ getValueOption(optionsModel[0], 0) }}
       </span>
     </div>
     <AppPopover
@@ -106,14 +108,7 @@ export default defineComponent({
     const show = ref(false);
     const optionsModel = ref(props.row[props.column.field]);
 
-    const getValue = () => {
-      if (isFunction(props.column?.formatter)) {
-        return props.column?.formatter(props.row, props.column, props.columns);
-      }
-      return props.row[props.column.field].length ? props.row[props.column.field][0].name : "";
-    };
-
-    const getValueOption = (option, index) => {
+    const getValueOption = (option) => {
       if (isFunction(props.formatterOptions)) {
         return props.formatterOptions(option, props.row, props.column, props.columns);
       }
@@ -145,7 +140,6 @@ export default defineComponent({
       onClose,
       onClickOption,
       onClick,
-      getValue,
       getValueOption,
     };
   },
