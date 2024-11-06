@@ -6,8 +6,8 @@
       :data="data"
       :config="config"
       :placeholder="showPlaceholder"
-      class="tw-flex tw-flex-col tw-grow tw-overflow-y-scroll"
-      @changeFilter="onChangeFilter">
+      @changeFilter="onChangeFilter"
+    >
       <template
         v-for="(item, index) in data"
         #[`container-row-${index}`]>

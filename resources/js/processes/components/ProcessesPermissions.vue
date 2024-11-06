@@ -1,7 +1,7 @@
 <template>
   <div class="reassignment-user-selector-container p-0">
     <b-form-group v-if="showUserSelector"
-                  class="floating">
+                  class="floating w-100 reassignment-user-selector-search">
       <b-dropdown id="reassignmentUserSelector"
                   size="sm"
                   variant="light"
@@ -10,7 +10,7 @@
                   class="reassignment-user-selector-border rounded-sm">
         <template v-slot:button-content>
           <div class="d-flex align-items-center">
-            <div @click.stop="handleClose" class="pr-2">X</div>
+            <i class="fa fa-search pmql-icons"></i>
             <b-form-input v-model="selectedText"
                           :placeholder="selectedOption ? selectedOption.text : $t('Type here to search users')"
                           size="sm"
@@ -86,8 +86,9 @@
     mounted() {
       this.requestUser("");
       document.addEventListener("click", (event) => {
-        if (event.target.id !== "reassignmentUserSelectorInput") {
-          this.showMenu(false);
+        if (event.target.id !== "reassignmentUserSelectorInput" &&
+                event.target.parentNode.id !== "buttonReassignmentClicked") {
+          this.showUserSelector = false;
         }
       });
     },
@@ -104,7 +105,13 @@
     },
     methods: {
       add() {
-        this.showUserSelector = true;
+        this.showUserSelector = !this.showUserSelector;
+        if (this.showUserSelector) {
+          this.requestUser("");
+          this.$nextTick(() => {
+            this.showMenu(true);
+          });
+        }
       },
       confirmDelete(id) {
         this.itemToRemove = id;
@@ -188,19 +195,40 @@
     top: 0px;
     left: 0px;
     will-change: transform;
+    margin-top: 6px;
+  }
+  .reassignment-user-selector-border .dropdown-menu {
+    width: 100%;
+    border: none !important;
+    max-height: 250px;
+    overflow-y: auto;
+  }
+  .reassignment-user-selector-border > button {
+    background-color: white !important;
   }
 </style>
 <style scoped>
+  .reassignment-user-selector-search {
+    padding: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.125);
+    height: 300px;
+  }
   .reassignment-user-selector-border {
     border: 1px solid #CDDDEE;
     box-shadow: 0 0 5px #CDDDEE;
+    width: 100%;
+  }
+  .reassignment-user-selector-border > :first-child {
+    width: 100%;
   }
   .reassignment-user-selector-input {
     border: 1px solid white;
     padding-top: 0px;
     padding-bottom: 0px;
     height: auto;
-    width: 350px;
+    width: 100%;
   }
   .reassignment-user-selector-input:focus {
     box-shadow: none !important;
@@ -209,7 +237,6 @@
 
   .reassignment-user-selector-container {
     position: relative;
-    margin-top: 20px;
   }
 
   .floating {
@@ -237,5 +264,4 @@
     padding-bottom: 0;
     border-bottom: 0;
   }
-
 </style>

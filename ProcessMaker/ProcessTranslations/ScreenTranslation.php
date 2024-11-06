@@ -28,7 +28,6 @@ class ScreenTranslation extends TranslationManager
 
         $language = $this->getTargetLanguage($defaultLanguage);
 
-
         return $this->searchTranslations($screen['screen_id'], $config, $language);
     }
 

@@ -1,0 +1,40 @@
+::v-deep .modal-content {
+    border-radius: 16px;
+    border: 1px solid #E9ECF1;
+}
+::v-deep .modal-header {
+    border-bottom: none;
+}
+::v-deep .modal-title {
+    font-size: 24px;
+    font-weight: 500;
+}
+::v-deep .modal-body {
+    font-size: 14px;
+    font-weight: 400;
+}
+::v-deep .modal-footer {
+    border-top: none;
+    margin-top: 0px !important;
+}
+::v-deep .modal-footer .btn {
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+}
+::v-deep .modal-footer .btn-secondary {
+    background-color: white;
+    border: none;
+    color: #20242A;
+    text-transform: none;
+}
+::v-deep .modal-footer .btn-secondary:hover {
+    background-color: #E9ECF1;
+}
+::v-deep .modal-footer .btn-primary {
+    background-color: #2773F3;
+    text-transform: none;
+}
+::v-deep .modal-footer .btn-primary:hover {
+    background-color: #1E5AC7;
+}

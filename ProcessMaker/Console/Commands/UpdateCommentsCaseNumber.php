@@ -4,11 +4,10 @@ namespace ProcessMaker\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use ProcessMaker\Models\Comment;
 
 class UpdateCommentsCaseNumber extends Command
 {
-    const CHUNK_SIZE = 5000;
+    const CHUNK_SIZE = 2000;
 
     /**
      * The name and signature of the console command.
@@ -42,11 +41,22 @@ class UpdateCommentsCaseNumber extends Command
             ->select('comments.id', 'process_requests.case_number')
             ->orderBy('comments.id', 'asc')
             ->chunk($chunkSize, function ($comments) {
-                foreach ($comments as $comment) {
-                    // Update the comments.case_number with ptrocess_requests.case_number
-                    DB::table('comments')
-                        ->where('id', $comment->id)
-                        ->update(['case_number' => $comment->case_number]);
+                $updates = $comments->mapWithKeys(function ($comment) {
+                    if (!is_null($comment->case_number) && !empty($comment->case_number)) {
+                        return [$comment->id => ['case_number' => $comment->case_number]];
+                    }
+
+                    return [];
+                })->toArray();
+                // Execute in bath the update
+                if (!empty($updates)) {
+                    $query = 'UPDATE comments SET case_number = CASE id';
+                    foreach ($updates as $id => $data) {
+                        $query .= " WHEN {$id} THEN '{$data['case_number']}'";
+                    }
+                    $query .= ' END WHERE id IN (' . implode(',', array_keys($updates)) . ')';
+                    DB::statement($query);
+                    $this->info(count($updates) . ' comments updated in this chunk related to ProcessRequestToken');
                 }
             });
         // Update the comments related to ProcessRequest
@@ -57,11 +67,22 @@ class UpdateCommentsCaseNumber extends Command
             ->select('comments.id', 'process_requests.case_number')
             ->orderBy('comments.id', 'asc')
             ->chunk($chunkSize, function ($comments) {
-                foreach ($comments as $comment) {
-                    // Update the comments.case_number with ptrocess_requests.case_number
-                    DB::table('comments')
-                        ->where('id', $comment->id)
-                        ->update(['case_number' => $comment->case_number]);
+                $updates = $comments->mapWithKeys(function ($comment) {
+                    if (!is_null($comment->case_number) && !empty($comment->case_number)) {
+                        return [$comment->id => ['case_number' => $comment->case_number]];
+                    }
+
+                    return [];
+                })->toArray();
+                // Execute in bath the update
+                if (!empty($updates)) {
+                    $query = 'UPDATE comments SET case_number = CASE id';
+                    foreach ($updates as $id => $data) {
+                        $query .= " WHEN {$id} THEN '{$data['case_number']}'";
+                    }
+                    $query .= ' END WHERE id IN (' . implode(',', array_keys($updates)) . ')';
+                    DB::statement($query);
+                    $this->info(count($updates) . ' comments updated in this chunk related to ProcessRequest');
                 }
             });
 

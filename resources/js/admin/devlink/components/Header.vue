@@ -31,5 +31,6 @@ const props = defineProps({
 <style lang="scss" scoped>
 h3 {
   font-size: 1.4em;
+  margin-bottom: 0;
 }
 </style>
