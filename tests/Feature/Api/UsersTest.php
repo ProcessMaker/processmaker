@@ -820,7 +820,7 @@ class UsersTest extends TestCase
             'user_id' => $admin->id,
         ]);
 
-        $bpmn = file_get_contents(__DIR__ . '/../../fixtures/task_with_user_group_assignment.bpmn');
+        $bpmn = file_get_contents(__DIR__ . '/../../Fixtures/task_with_user_group_assignment.bpmn');
         $bpmn = str_replace([
             '[assigned-users]',
             '[assigned-groups]',
