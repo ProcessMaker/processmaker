@@ -10,6 +10,7 @@ const router = useRouter();
 const route = useRoute();
 
 const bundles = ref([]);
+const loading = ref(true);
 const filter = ref("");
 const warnings = ref([]);
 const showInstallModal = ref(false);
@@ -69,6 +70,7 @@ const load = () => {
         // Do not show remote bundles
         return bundle.dev_link_id === null;
       });
+      loading.value = false;
     });
 };
 
@@ -117,7 +119,11 @@ const executeUpdate = (updateType) => {
       </div>
     </div>
     <div class="card instance-card">
+      <div v-if="loading" class="mt-3 ml-3">
+        {{ $t("Loading...") }}
+      </div>
       <b-table
+        v-if="!loading"
         :items="bundles"
         :fields="fields"
         class="instance-table"

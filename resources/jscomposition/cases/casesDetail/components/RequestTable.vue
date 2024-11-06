@@ -1,13 +1,12 @@
 <template>
-  <div
-    class="tw-flex tw-flex-col tw-w-full tw-grow tw-py-3 tw-overflow-hidden tw-space-y-3">
+  <div class="tw-flex tw-flex-col tw-w-full tw-grow tw-py-3 tw-overflow-hidden tw-space-y-3">
     <SortTable
       id="task-table"
       :columns="columnsConfig"
       :data="data"
       :placeholder="showPlaceholder"
-      class="tw-flex tw-flex-col tw-grow tw-overflow-y-scroll"
-      @changeFilter="onChangeFilter">
+      @changeFilter="onChangeFilter"
+    >
       <template #placeholder>
         <TablePlaceholder
           :placeholder="placeholderType"

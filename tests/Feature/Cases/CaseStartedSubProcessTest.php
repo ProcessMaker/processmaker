@@ -208,8 +208,10 @@ class CaseStartedSubProcessTest extends TestCase
             'user_id' => $this->user2->id,
             'case_title' => $this->parentRequest->case_title,
             'case_status' => 'IN_PROGRESS',
-            'processes->[0]->id' => $this->subProcess->id,
-            'processes->[0]->name' => $this->subProcess->name,
+            'processes->[0]->id' => $this->process->id,
+            'processes->[0]->name' => $this->process->name,
+            'processes->[1]->id' => $this->subProcess->id,
+            'processes->[1]->name' => $this->subProcess->name,
         ]);
     }
 
@@ -243,9 +245,12 @@ class CaseStartedSubProcessTest extends TestCase
             'user_id' => $this->user2->id,
             'case_title' => $this->parentRequest->case_title,
             'case_status' => 'IN_PROGRESS',
-            'requests->[0]->id' => $this->childRequest->id,
-            'requests->[0]->name' => $this->childRequest->name,
-            'requests->[0]->parent_request_id' => $this->childRequest->parent_request_id,
+            'requests->[0]->id' => $this->parentRequest->id,
+            'requests->[0]->name' => $this->parentRequest->name,
+            'requests->[0]->parent_request_id' => $this->parentRequest->parent_request_id,
+            'requests->[1]->id' => $this->childRequest->id,
+            'requests->[1]->name' => $this->childRequest->name,
+            'requests->[1]->parent_request_id' => $this->childRequest->parent_request_id,
         ]);
     }
 
@@ -275,7 +280,8 @@ class CaseStartedSubProcessTest extends TestCase
             'user_id' => $this->user2->id,
             'case_title' => $this->parentRequest->case_title,
             'case_status' => 'IN_PROGRESS',
-            'request_tokens->[0]' => $this->childToken2->id,
+            'request_tokens->[0]' => $this->parentToken->id,
+            'request_tokens->[1]' => $this->childToken->id,
         ]);
     }
 
@@ -297,16 +303,21 @@ class CaseStartedSubProcessTest extends TestCase
             'user_id' => $this->user->id,
             'case_title' => $this->parentRequest->case_title,
             'case_status' => 'IN_PROGRESS',
-            'tasks->[0]->id' => $this->childToken->id,
-            'tasks->[0]->element_id' => $this->childToken->element_id,
-            'tasks->[0]->name' => $this->childToken->element_name,
-            'tasks->[0]->process_id' => $this->childToken->process_id,
-            'tasks->[0]->status' => $this->childToken->status,
-            'tasks->[1]->id' => $this->parentToken->id,
-            'tasks->[1]->element_id' => $this->parentToken->element_id,
-            'tasks->[1]->name' => $this->parentToken->element_name,
-            'tasks->[1]->process_id' => $this->parentToken->process_id,
-            'tasks->[1]->status' => $this->parentToken->status,
+            'tasks->[0]->id' => $this->childToken2->id,
+            'tasks->[0]->element_id' => $this->childToken2->element_id,
+            'tasks->[0]->name' => $this->childToken2->element_name,
+            'tasks->[0]->process_id' => $this->childToken2->process_id,
+            'tasks->[0]->status' => $this->childToken2->status,
+            'tasks->[1]->id' => $this->childToken->id,
+            'tasks->[1]->element_id' => $this->childToken->element_id,
+            'tasks->[1]->name' => $this->childToken->element_name,
+            'tasks->[1]->process_id' => $this->childToken->process_id,
+            'tasks->[1]->status' => $this->childToken->status,
+            'tasks->[2]->id' => $this->parentToken->id,
+            'tasks->[2]->element_id' => $this->parentToken->element_id,
+            'tasks->[2]->name' => $this->parentToken->element_name,
+            'tasks->[2]->process_id' => $this->parentToken->process_id,
+            'tasks->[2]->status' => $this->parentToken->status,
         ]);
         $this->assertDatabaseHas('cases_participated', [
             'case_number' => $this->parentRequest->case_number,
@@ -317,10 +328,17 @@ class CaseStartedSubProcessTest extends TestCase
             'tasks->[0]->element_id' => $this->childToken2->element_id,
             'tasks->[0]->name' => $this->childToken2->element_name,
             'tasks->[0]->process_id' => $this->childToken2->process_id,
-            'tasks->[1]->id' => null,
-            'tasks->[1]->element_id' => null,
-            'tasks->[1]->name' => null,
-            'tasks->[1]->process_id' => null,
+            'tasks->[0]->status' => $this->childToken2->status,
+            'tasks->[1]->id' => $this->childToken->id,
+            'tasks->[1]->element_id' => $this->childToken->element_id,
+            'tasks->[1]->name' => $this->childToken->element_name,
+            'tasks->[1]->process_id' => $this->childToken->process_id,
+            'tasks->[1]->status' => $this->childToken->status,
+            'tasks->[2]->id' => $this->parentToken->id,
+            'tasks->[2]->element_id' => $this->parentToken->element_id,
+            'tasks->[2]->name' => $this->parentToken->element_name,
+            'tasks->[2]->process_id' => $this->parentToken->process_id,
+            'tasks->[2]->status' => $this->parentToken->status,
         ]);
     }
 
@@ -338,6 +356,7 @@ class CaseStartedSubProcessTest extends TestCase
         $this->assertDatabaseCount('cases_participated', 2);
 
         $this->childRequest->status = 'COMPLETED';
+        $this->childRequest->completed_at = now();
         $repo->updateStatus($this->childRequest);
 
         $this->assertDatabaseHas('cases_started', [
@@ -359,24 +378,25 @@ class CaseStartedSubProcessTest extends TestCase
         ]);
 
         $this->parentRequest->status = 'COMPLETED';
+        $this->parentRequest->completed_at = now();
         $repo->updateStatus($this->parentRequest);
 
         $this->assertDatabaseHas('cases_started', [
             'case_number' => $this->parentRequest->case_number,
             'case_status' => 'COMPLETED',
-            'completed_at' => now(),
+            'completed_at' => $this->parentRequest->completed_at,
         ]);
         $this->assertDatabaseHas('cases_participated', [
             'case_number' => $this->parentRequest->case_number,
             'user_id' => $this->user->id,
             'case_status' => 'COMPLETED',
-            'completed_at' => now(),
+            'completed_at' => $this->parentRequest->completed_at,
         ]);
         $this->assertDatabaseHas('cases_participated', [
             'case_number' => $this->parentRequest->case_number,
             'user_id' => $this->user2->id,
             'case_status' => 'COMPLETED',
-            'completed_at' => now(),
+            'completed_at' => $this->parentRequest->completed_at,
         ]);
     }
 }

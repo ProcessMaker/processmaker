@@ -193,6 +193,7 @@
                                                     variant="outline-light"
                                                     class="p-0"
                                                     @click="reassignmentClicked"
+                                                    id="buttonReassignmentClicked"
                                                     pill>
                                             <img src="/img/button-small-plus-blue.svg" :alt="$t('Clear unsaved filters')"/>
                                           </b-button>

@@ -176,4 +176,8 @@
     .separator-ol {
         padding: 0px 0px 0px 2px;
     }
+    .navbar-toggler:focus {
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(114, 128, 146, 0.5);
+    }
 </style>
