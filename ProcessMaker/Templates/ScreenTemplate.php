@@ -736,8 +736,6 @@ class ScreenTemplate implements TemplateInterface
                 $currentScreen->save();
 
                 $screen->save(); // Save the updated screen
-
-                $screen->save(); // Save the updated screen
             }
             Screen::where('id', $newScreenId)->delete(); // Clean up the temporary imported template screen
         } catch (ModelNotFoundException $e) {
