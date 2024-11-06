@@ -225,4 +225,156 @@ class RequestTest extends TestCase
         // check custom detail screen is displayed instead default summary
         $response->assertSee('TEST WITH CUSTOM REQUEST DETAIL SCREEN');
     }
+
+    /**
+     * Test show default summary tab when the status is InProgress
+     * Without custom screen "Request Detail Screen"
+     * @return void
+     */
+    public function testRequestInProgressWithDataDefaultSummary()
+    {
+        $process = Process::factory()->create();
+        $requestCanceled = ProcessRequest::factory()->create([
+            'name' => $process->name,
+            'process_id' => $process->id,
+            'data' => ['form_input_1' => 'TEST DATA'],
+            'status' => 'ACTIVE',
+        ]);
+
+        // Get the URL
+        $response = $this->webCall('GET', '/requests/' . $requestCanceled->id);
+        $response->assertStatus(200);
+        // Check the correct view is called
+        $response->assertViewIs('requests.show');
+        $response->assertSee('Request In Progress');
+    }
+
+    /**
+     * Test show default summary tab when the status is Completed
+     * Without custom screen "Cancel Screen"
+     * @return void
+     */
+    public function testRequestCanceledDefaultSummary()
+    {
+        $process = Process::factory()->create();
+        $requestCompleted = ProcessRequest::factory()->create([
+            'name' => $process->name,
+            'process_id' => $process->id,
+            'data' => [],
+            'status' => 'CANCELED',
+        ]);
+
+        // Get the URL
+        $response = $this->webCall('GET', '/requests/' . $requestCompleted->id);
+        $response->assertStatus(200);
+        // Check the correct view is called
+        $response->assertViewIs('requests.show');
+        $response->assertSee('No Data Found');
+    }
+
+    /**
+     * Test show default summary tab when the status is Completed
+     * Without end event custom screen "Summary screen"
+     * @return void
+     */
+    public function testRequestCompletedDefaultSummary()
+    {
+        $process = Process::factory()->create();
+        $requestCompleted = ProcessRequest::factory()->create([
+            'name' => $process->name,
+            'process_id' => $process->id,
+            'data' => [],
+            'status' => 'COMPLETED',
+        ]);
+
+        // Get the URL
+        $response = $this->webCall('GET', '/requests/' . $requestCompleted->id);
+        $response->assertStatus(200);
+        // Check the correct view is called
+        $response->assertViewIs('requests.show');
+        $response->assertSee('No Data Found');
+    }
+
+    /**
+     * Test show default summary tab when the status is Completed
+     * Without end event custom screen "Summary screen"
+     * @return void
+     */
+    public function testRequestCompletedWithDataDefaultSummary()
+    {
+        $process = Process::factory()->create();
+        $requestCompleted = ProcessRequest::factory()->create([
+            'name' => $process->name,
+            'process_id' => $process->id,
+            'data' => ['form_input_1' => 'TEST DATA'],
+            'status' => 'COMPLETED',
+        ]);
+
+        // Get the URL
+        $response = $this->webCall('GET', '/requests/' . $requestCompleted->id);
+        $response->assertStatus(200);
+        // Check the correct view is called
+        $response->assertViewIs('requests.show');
+        $response->assertSee('TEST DATA');
+    }
+
+    /**
+     * Test show custom screen in the summary tab when the status is In Progress
+     * With custom screen "Request Detail Screen"
+     * @return void
+     */
+    public function testRequestInprogressWithCustomScreenSummaryTab()
+    {
+        $screen = Screen::factory()->create([
+            'type' => 'DISPLAY',
+            'config' => $this->screen,
+        ]);
+        $process = Process::factory()->create([
+            'request_detail_screen_id' => $screen->id,
+        ]);
+        $requestActive = ProcessRequest::factory()->create([
+            'name' => $process->name,
+            'process_id' => $process->id,
+            'data' => ['form_input_1' => 'TEST DATA'],
+            'status' => 'ACTIVE',
+        ]);
+
+        // Get the URL
+        $response = $this->webCall('GET', '/requests/' . $requestActive->id);
+        $response->assertStatus(200);
+        // Check the correct view is called
+        $response->assertViewIs('requests.show');
+        // Check custom detail screen is displayed instead default summary
+        $response->assertSee('TEST WITH CUSTOM REQUEST DETAIL SCREEN');
+    }
+
+    /**
+     * Test show custom screen in the summary tab when the status is Canceled
+     * With custom screen "Cancel Screen"
+     * @return void
+     */
+    public function testRequestCanceledWithCustomScreenSummaryTab()
+    {
+        $screen = Screen::factory()->create([
+            'type' => 'DISPLAY',
+            'config' => $this->screen,
+        ]);
+        $process = Process::factory()->create([
+            'cancel_screen_id' => $screen->id,
+        ]);
+        $requestCanceled = ProcessRequest::factory()->create([
+            'name' => $process->name,
+            'process_id' => $process->id,
+            'data' => ['form_input_1' => 'TEST DATA'],
+            'status' => 'CANCELED',
+        ]);
+
+        // Get the URL
+        $response = $this->webCall('GET', '/requests/' . $requestCanceled->id);
+        $response->assertStatus(200);
+        // Check the correct view is called
+        $response->assertViewIs('requests.show');
+        // Check custom detail screen is displayed instead default summary
+        $response->assertSee('TEST WITH CUSTOM REQUEST DETAIL SCREEN');
+    }
 }
