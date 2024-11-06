@@ -30,7 +30,7 @@ class PopulateCaseStarted extends Upgrade
         // @todo add a validation to check the data consistency
         $this->validateDataConsistency();
 
-        DB::table('cases_started')->truncate();
+        DB::table('cases_started')->delete();
         echo PHP_EOL . '    Populating case_started from process_requests' . PHP_EOL;
 
         $startTime = microtime(true); // Start the timer
@@ -83,26 +83,23 @@ class PopulateCaseStarted extends Upgrade
         $query = DB::table('process_requests')
             ->join('processes', 'process_requests.process_id', '=', 'processes.id')
             ->join('process_categories', 'processes.process_category_id', '=', 'process_categories.id')
-            ->whereNull('process_requests.parent_request_id') // Filter out subrequests
             ->where('process_categories.is_system', false) // Filter out system categories
+            ->whereNotNull('process_requests.case_number')
+            ->whereNull('process_requests.parent_request_id')
             ->whereNotIn('process_requests.case_number', function ($subquery) {
                 // Filter out requests that have already been populated in the cases_started table
                 $subquery->select('case_number')->from('cases_started');
             })
             ->select(
-                'process_requests.id',
+                DB::raw('min(process_requests.id) as id'),
                 'process_requests.case_number',
-                'process_requests.user_id',
-                'process_requests.case_title',
-                'process_requests.case_title_formatted',
-                'process_requests.initiated_at',
-                'process_requests.created_at',
-                'process_requests.completed_at',
-                'process_requests.updated_at',
-                'process_requests.name',
-                'process_requests.parent_request_id',
-                'processes.id as process_id',
-                'processes.name as process_name',
+                DB::raw('min(process_requests.user_id) as user_id'),
+                DB::raw('max(process_requests.case_title) as case_title'),
+                DB::raw('max(process_requests.case_title_formatted) as case_title_formatted'),
+                DB::raw('min(process_requests.initiated_at) as initiated_at'),
+                DB::raw('min(process_requests.created_at) as created_at'),
+                DB::raw('max(process_requests.completed_at) as completed_at'),
+                DB::raw('max(process_requests.updated_at) as updated_at'),
                 DB::raw('
                     JSON_ARRAYAGG(
                         JSON_OBJECT(
@@ -120,22 +117,44 @@ class PopulateCaseStarted extends Upgrade
                         )
                     ) as requests
                 '), // Collect requests in an array of objects
-                DB::raw("IF(process_requests.status = 'ACTIVE', 'IN_PROGRESS', process_requests.status) as status")
+                DB::raw("max(IF(process_requests.status = 'ACTIVE', 'IN_PROGRESS', process_requests.status)) as status")
             )
             ->groupBy(
-                'process_requests.id',
-                'process_requests.case_number',
-                'process_requests.user_id',
-                'process_requests.case_title',
-                'process_requests.case_title_formatted',
-                'process_requests.initiated_at',
-                'process_requests.created_at',
-                'process_requests.completed_at',
-                'process_requests.updated_at',
-                DB::raw("IF(process_requests.status = 'ACTIVE', 'IN_PROGRESS', process_requests.status)")
+                'process_requests.case_number'
             ); // Group by all selected fields that are not aggregated
 
         DB::statement('CREATE TEMPORARY TABLE process_requests_temp AS ' . $query->toSql(), $query->getBindings());
+
+        DB::statement(<<<SQL
+        CREATE TEMPORARY TABLE process_requests_children_temp AS SELECT 
+            pr.`case_number`, 
+            JSON_ARRAYAGG(
+                JSON_OBJECT(
+                    "id", p.`id`,
+                    "name", p.`name`
+                )
+            ) AS processes,
+            JSON_ARRAYAGG(
+                JSON_OBJECT(
+                    "id", pr.`id`,
+                    "name", pr.`name`,
+                    "parent_request_id", pr.`parent_request_id`
+                )
+            ) AS requests
+        FROM 
+            `process_requests` pr
+        INNER JOIN 
+            `processes` p ON pr.`process_id` = p.`id`
+        INNER JOIN 
+            `process_categories` pc ON p.`process_category_id` = pc.`id`
+        WHERE  
+            pc.`is_system` = 0
+            AND pr.`case_number` NOT IN (SELECT `case_number` FROM `cases_started`)
+            AND case_number is not null
+            AND pr.parent_request_id is not null
+        GROUP BY 
+            pr.`case_number`;
+        SQL);
     }
 
     /**
@@ -148,23 +167,24 @@ class PopulateCaseStarted extends Upgrade
      */
     private function createTemporaryParticipantsTable()
     {
-        DB::statement('CREATE TEMPORARY TABLE participants_temp AS
-        SELECT 
-            JSON_ARRAYAGG(user_id) AS participants,
+        DB::statement(<<<SQL
+            CREATE temporary table participants_temp as
+            SELECT JSON_ARRAYAGG(user_id) as participants,
             case_number
-        FROM (
-            SELECT DISTINCT
-            pr.user_id,
-            temp.case_number
-            FROM
-            process_request_tokens pr
-            INNER JOIN
-            process_requests_temp temp ON pr.process_request_id = temp.id
-            WHERE
-            pr.user_id IS NOT NULL
-            AND pr.element_type = "task"
-        ) X
-        GROUP BY case_number');
+            from
+                (   select
+                        DISTINCT
+                        pr.user_id,
+                        temp.case_number
+                    from
+                        process_request_tokens pr inner join
+                        process_requests temp on pr.process_request_id  = temp.id
+                    where
+                        pr.user_id is not null
+                        and pr.element_type = 'task'
+                ) X
+            group by case_number;
+        SQL);
     }
 
     /**
@@ -179,7 +199,7 @@ class PopulateCaseStarted extends Upgrade
     {
         // Creating the query
         $query = DB::table('process_request_tokens as pr')
-            ->join('process_requests_temp as temp', 'pr.process_request_id', '=', 'temp.id')
+            ->join('process_requests as temp', 'pr.process_request_id', '=', 'temp.id')
             ->join('participants_temp as part', 'temp.case_number', '=', 'part.case_number')
             ->select(
                 'temp.case_number',
@@ -228,30 +248,17 @@ class PopulateCaseStarted extends Upgrade
                 prt1.initiated_at,
                 CONCAT('cn_', prt1.case_number, ' ', prt1.case_title) as keywords,
                 COALESCE(prt2.participants, JSON_ARRAY()) as participants,
-                prt1.processes,
+                JSON_MERGE_PRESERVE(prt1.processes, COALESCE(prtc.processes, JSON_ARRAY())) as processes,
                 COALESCE(prt2.request_tokens, JSON_ARRAY()) as request_tokens,
-                prt1.requests,
+                JSON_MERGE_PRESERVE(prt1.requests, COALESCE(prtc.requests, JSON_ARRAY())) as requests,
                 COALESCE(prt2.tasks, JSON_ARRAY()) as tasks,
                 prt1.updated_at,
                 prt1.user_id
             FROM process_requests_temp as prt1
+            LEFT JOIN process_requests_children_temp as prtc
+                ON prt1.case_number = prtc.case_number
             LEFT JOIN process_request_tokens_tmp as prt2 
                 ON prt1.case_number = prt2.case_number
-            LEFT JOIN JSON_TABLE(
-                COALESCE(prt2.participants, JSON_ARRAY()),
-                "$[*]" COLUMNS (
-                    participant JSON PATH "$"
-                )
-            ) AS jt
-            ON 1 = 1
-            GROUP BY 
-                prt1.case_number, prt1.status, prt1.case_title,
-                prt1.case_title_formatted, prt1.completed_at,
-                prt1.created_at, prt1.initiated_at, prt1.processes,
-                prt2.request_tokens, prt1.requests, prt1.updated_at,
-                prt1.user_id,
-                prt2.participants,
-                prt2.tasks
             SQL
         );
     }
@@ -317,7 +324,27 @@ class PopulateCaseStarted extends Upgrade
             ->first();
 
         if (!is_null($results)) {
-            throw new Exception('Inconsistency detected, multiple records with null parent for the same request.');
+            $warning = 'Inconsistency detected, multiple records with null parent for the same request. '
+                . 'Case number: ' . $results->case_number . ' Count of parent Requests: ' . $results->total;
+            echo PHP_EOL . $warning . PHP_EOL;
+            // Ask to continue
+            if ($this->confirm($warning . ' Do you want to continue?')) {
+                return;
+            }
         }
+    }
+
+    function confirm($message)
+    {
+        // Show the confirmation message with a "yes/no" prompt
+        echo $message . " (yes/no): ";
+    
+        // Get user input from the command line
+        $handle = fopen("php://stdin", "r");
+        $response = trim(fgets($handle));
+        fclose($handle);
+    
+        // Check if the response is "yes"
+        return strtolower($response) === 'yes';
     }
 }
