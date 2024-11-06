@@ -50,6 +50,10 @@ const computedFields = computed(() => {
   return fields.filter(field => field.key !== 'menu');
 });
 
+const isLocal = computed(() => {
+  return bundle.value.dev_link_id === null;
+});
+
 const loadAssets = async () => {
   loading.value = true;
   const response = await window.ProcessMaker.apiClient.get(`/api/1.0/devlink/local-bundles/${bundleId}`);
@@ -126,6 +130,7 @@ const remove = async (asset) => {
       >
         <template #cell(name)="data">
           <a :href="data.item.url" target="_blank">{{ data.item.name }}</a>
+          <i v-if="!isLocal" class="ml-2 fa fa-lock"></i>
         </template>
 
         <template #cell(menu)="data">
