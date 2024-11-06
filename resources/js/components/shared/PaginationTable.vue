@@ -130,11 +130,9 @@ export default {
     },
     totalItems() {
       if (this.meta.total === 1) {
-        //return `${this.meta.total} ${this.$t("item")}`;
         return this.$t('{{count}} Item', { count: this.meta.total });
       }
       return this.$t('{{count}} Items', { count: this.meta.total });
-      //return `${this.meta.total} ${this.$t("items")}`;
     },
     perPageButton() {
       return `${this.meta.per_page} ${this.$t("Per page")}`;
