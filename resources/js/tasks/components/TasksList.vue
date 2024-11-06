@@ -663,6 +663,9 @@ export default {
       return link;
     },
     previewTasks(info, size = null, fromButton = null) {
+      if (!info || !this.$refs.preview) {
+        return;
+      }
       this.tooltipFromButton = fromButton;
       this.selectedRow = info.id;
       this.$refs.preview.showSideBar(info, this.data.data, true, size);

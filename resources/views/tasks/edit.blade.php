@@ -572,10 +572,11 @@
             });
           },
           createRule() {
+            const processId = this.task.process_id || this.task.process_request?.process_id;
             window.location.href = '/tasks/rules/new?' +
             `task_id=${this.task.id}&` +
             `element_id=${this.task.element_id}&` +
-            `process_id=${this.task.process_id}`;
+            `process_id=${processId}`;
           },
           completed(processRequestId, endEventDestination = null) {
             // avoid redirection if using a customized renderer
