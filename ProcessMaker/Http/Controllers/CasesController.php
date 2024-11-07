@@ -5,9 +5,9 @@ namespace ProcessMaker\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Models\Screen;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Package\PackageComments\PackageServiceProvider;
 use ProcessMaker\ProcessTranslations\ScreenTranslation;
 
@@ -74,7 +74,7 @@ class CasesController extends Controller
         }
 
         // Get the summary screen tranlations
-        //$this->summaryScreenTranslation($request);
+        $this->summaryScreenTranslation($request);
 
         // Return the view
         return view('cases.edit', compact(
