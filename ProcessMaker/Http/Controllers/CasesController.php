@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Package\PackageComments\PackageServiceProvider;
@@ -50,13 +51,16 @@ class CasesController extends Controller
         }
         $request->participants;
         $request->user;
-        $request->summary = [];
-        
+        // Load the data and key values
+        $request->summary = $request->summary();
+        // Load the screen configured in "Cancel Screen"
         if ($request->status === 'CANCELED' && $request->process->cancel_screen_id) {
             $request->summary_screen = $request->process->cancelScreen;
         } else {
             $request->summary_screen = $request->getSummaryScreen();
         }
+        // Load the screen configured in "Request Detail Screen"
+        $request->request_detail_screen = Screen::find($request->process->request_detail_screen_id);
         // The user canCancel if has the processPermission and the case has only one request
         $canCancel = (Auth::user()->can('cancel', $request->processVersion) && $requestCount === 1);
         // The user can see the comments
@@ -70,7 +74,7 @@ class CasesController extends Controller
         }
 
         // Get the summary screen tranlations
-        $this->summaryScreenTranslation($request);
+        //$this->summaryScreenTranslation($request);
 
         // Return the view
         return view('cases.edit', compact(

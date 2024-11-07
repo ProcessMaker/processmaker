@@ -5,7 +5,7 @@ import Timeline from "../../../js/components/Timeline.vue";
 import { CollapsableContainer } from "../../base";
 import { cases } from "./store";
 import { updateUserConfiguration, getUserConfiguration, getCommentsData } from "./api";
-import { useStore, getRequest, getComentableType } from "./variables";
+import { useStore, getRequest, getRequestId } from "./variables";
 
 Vue.globalStore.registerModule("core:cases", cases);
 
@@ -26,6 +26,8 @@ const caseDetail = new Vue({
       packages: [],
       processId,
       canViewComments,
+      disabled: false,
+      retryDisabled: false,
       tabDefault: "details",
       collapseContainer: true,
       tabs: [
@@ -152,6 +154,21 @@ const caseDetail = new Vue({
       });
 
       return response;
+    },
+    okCancel() {
+      // single click
+      if (this.disabled) {
+        return;
+      }
+      this.disabled = true;
+      ProcessMaker.apiClient.put(`requests/${getRequestId()}`, {
+        status: "CANCELED",
+      }).then(() => {
+        ProcessMaker.alert(this.$t("The request was canceled."), "success");
+        window.location.reload();
+      }).catch(() => {
+        this.disabled = false;
+      });
     },
   },
 });
