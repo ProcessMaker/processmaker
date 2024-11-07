@@ -4,7 +4,9 @@ import Tabs from "./components/Tabs.vue";
 import Timeline from "../../../js/components/Timeline.vue";
 import { CollapsableContainer } from "../../base";
 import { cases } from "./store";
-import { updateUserConfiguration, getUserConfiguration, getCommentsData } from "./api";
+import {
+  updateUserConfiguration, getUserConfiguration, getCommentsData, updateRequest,
+} from "./api";
 import { useStore, getRequest, getRequestId } from "./variables";
 
 Vue.globalStore.registerModule("core:cases", cases);
@@ -155,20 +157,22 @@ const caseDetail = new Vue({
 
       return response;
     },
-    okCancel() {
+    async okCancel() {
       // single click
       if (this.disabled) {
         return;
       }
       this.disabled = true;
-      ProcessMaker.apiClient.put(`requests/${getRequestId()}`, {
-        status: "CANCELED",
-      }).then(() => {
+      try {
+        const response = await updateRequest(getRequestId(), {
+          status: "CANCELED",
+        });
+
         ProcessMaker.alert(this.$t("The request was canceled."), "success");
         window.location.reload();
-      }).catch(() => {
+      } catch (error) {
         this.disabled = false;
-      });
+      }
     },
   },
 });
