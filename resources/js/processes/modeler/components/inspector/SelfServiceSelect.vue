@@ -16,6 +16,7 @@
             v-model="selectedAssignment"
             :hide-users="false"
             :multiple="false" 
+            :activeTasksCount="true"
         />
       </div>
       <div class="card-footer text-right p-2">
