@@ -33,5 +33,4 @@ const screens = {
  */
 
 const request = ref(getRequest());
-
 </script>
