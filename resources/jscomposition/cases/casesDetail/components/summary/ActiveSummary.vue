@@ -1,13 +1,13 @@
 <template>
   <div
-    v-if="request?.request_detail_screen"
+    v-if="requestDetailScreen"
     class="tw-flex tw-w-full">
     <vue-form-renderer
       ref="screen"
       v-model="dataSummary"
-      :config="request?.request_detail_screen?.config"
-      :custom-css="request?.request_detail_screen?.custom_css"
-      :computed="request?.request_detail_screen?.computed" />
+      :config="requestDetailScreen?.config"
+      :custom-css="requestDetailScreen?.custom_css"
+      :computed="requestDetailScreen?.computed" />
   </div>
 
   <MessageDefault
@@ -30,4 +30,6 @@ const props = defineProps({
 });
 
 const dataSummary = computed(() => dateFormatSummary(props.request.summary));
+
+const requestDetailScreen = computed(() => props.request?.request_detail_screen);
 </script>

@@ -16,20 +16,19 @@ import moment from "moment-timezone";
  */
 
 export const dateFormatSummary = (summary) => {
-  const options = {};
+  const formatDate = (value, format) => moment(value)
+    .tz(window.ProcessMaker.user.timezone)
+    .format(format);
 
-  summary.forEach((option) => {
-    if (option.type === "datetime") {
-      options[option.key] = moment(option.value)
-        .tz(window.ProcessMaker.user.timezone)
-        .format("MM/DD/YYYY HH:mm");
-    } else if (option.type === "date") {
-      options[option.key] = moment(option.value)
-        .tz(window.ProcessMaker.user.timezone)
-        .format("MM/DD/YYYY");
-    } else {
-      options[option.key] = option.value;
-    }
-  });
-  return options;
+  const dateFormats = {
+    datetime: "MM/DD/YYYY HH:mm",
+    date: "MM/DD/YYYY",
+  };
+
+  return summary.reduce((options, { type, key, value }) => {
+    options[key] = dateFormats[type]
+      ? formatDate(value, dateFormats[type])
+      : value;
+    return options;
+  }, {});
 };
