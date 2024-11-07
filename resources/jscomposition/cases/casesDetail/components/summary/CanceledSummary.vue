@@ -37,5 +37,4 @@ const props = defineProps({
 const dataSummary = computed(() => dateFormatSummary(props.request.summary));
 
 const summaryScreen = computed(() => props.request?.summary_screen);
-
 </script>
