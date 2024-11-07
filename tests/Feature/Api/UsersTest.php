@@ -819,31 +819,28 @@ class UsersTest extends TestCase
         $process = Process::factory()->create([
             'user_id' => $admin->id,
         ]);
+
+        $bpmn = file_get_contents(__DIR__ . '/../../Fixtures/task_with_user_group_assignment.bpmn');
+        $bpmn = str_replace([
+            '[assigned-users]',
+            '[assigned-groups]',
+        ], [
+            $user->id,
+            $group->id,
+        ], $bpmn);
+
+        $process->bpmn = $bpmn; // Save separately from factory::create to utilize ProcessTaskAssignmentsTrait
+        $process->save();
+
         $request = ProcessRequest::factory()->create([
             'process_id' => $process->id,
             'user_id' => $admin->id,
         ]);
 
-        // Assign user to node_1
-        ProcessTaskAssignment::factory()->create([
-            'process_id' => $process->id,
-            'process_task_id' => 'node_1',
-            'assignment_type' => User::class,
-            'assignment_id' => $user->id,
-        ]);
-
-        // Assign group to node_1
-        ProcessTaskAssignment::factory()->create([
-            'process_id' => $process->id,
-            'process_task_id' => 'node_1',
-            'assignment_type' => Group::class,
-            'assignment_id' => $group->id,
-        ]);
-
         $tasks = ProcessRequestToken::factory(3)->create([
             'process_id' => $process->id,
             'process_request_id' => $request->id,
-            'element_id' => 'node_1',
+            'element_id' => 'node_2',
             'user_id' => $user->id,
             'status' => 'ACTIVE',
         ]);
