@@ -117,11 +117,6 @@
 @endsection
 
 @section('js')
-  @if (hasPackage('package-files'))
-  <!-- TODO: Replace with script injector like we do for modeler and screen builder -->
-  <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
-  @endif
-
   <script>
     const data = @json($request->getRequestData());
     const requestId = @json($request->getKey());
@@ -134,6 +129,12 @@
     const comentable_type = @json(get_class($request));
     const requestCount = @json($requestCount);
   </script>
+  
+  @if (hasPackage('package-files'))
+  <!-- TODO: Replace with script injector like we do for modeler and screen builder -->
+  <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
+  @endif
+
   <script src="{{mix('js/composition/cases/casesDetail/edit.js')}}"></script>
 
   @foreach($manager->getScripts() as $script)
