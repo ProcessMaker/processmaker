@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Cases;
 
+use Database\Factories\ProcessMaker\Models\ProcessCategoryFactory;
+use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -394,5 +396,27 @@ class CaseStartedTest extends TestCase
 
         $repo->update($instance, $token);
         $this->assertDatabaseCount('cases_started', 1);
+    }
+
+    public function test_try_store_docusign_authorization_request()
+    {
+        $category = ProcessCategoryFactory::new()->create([
+            'name' => 'DocuSign',
+            'status' => 'ACTIVE',
+            'is_system' => true,
+        ]);
+
+        $process = Process::factory()->create([
+            'bpmn' => file_get_contents(base_path('tests/Feature/ImportExport/fixtures/process-docusign-authorization.bpmn.xml')),
+            'process_category_id' => $category->id,
+        ]);
+
+        $startEvent = $process->getDefinitions()->getStartEvent('node_1');
+        $request = WorkflowManager::triggerStartEvent($process, $startEvent, [
+            'storeInEnv' => true,
+        ]);
+
+        $this->assertDatabaseCount('cases_started', 0);
+        $this->assertDatabaseCount('cases_participated', 0);
     }
 }
