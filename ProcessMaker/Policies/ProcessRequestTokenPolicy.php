@@ -6,6 +6,7 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Support\Facades\Request;
 use ProcessMaker\Models\AnonymousUser;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
@@ -106,6 +107,26 @@ class ProcessRequestTokenPolicy
 
     public function reassign(User $user, ProcessRequestToken $task)
     {
+        // If user is process manager
+        if ($user->id === $task->process->managerId) {
+            return true;
+        }
+
+        // If user exists in the list of reassign users for the process
+        $reassignmentPermissions = $task->process->getProperty('reassignment_permissions');
+        if (is_array($reassignmentPermissions)) {
+            $allowedUsers = collect($reassignmentPermissions['users']);
+            foreach ($reassignmentPermissions['groups'] as $groupId) {
+                $group = Group::findOrFail($groupId);
+                $allowedUsers = $allowedUsers->merge(
+                    $group->recursive_users->pluck('id')
+                );
+            }
+            if ($allowedUsers->contains($user->id)) {
+                return true;
+            }
+        }
+
         if ($user->can('update', $task)) {
             $definitions = $task->getDefinition();
             if (empty($definitions['allowReassignment']) || $definitions['allowReassignment'] === 'false') {

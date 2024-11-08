@@ -589,4 +589,11 @@ class User extends Authenticatable implements HasMedia
         // return the refreshed user instance
         return $this;
     }
+
+    public function activeTasks()
+    {
+        return $this->hasMany(ProcessRequestToken::class, 'user_id')
+                    ->where('status', 'ACTIVE')
+                    ->where('element_type', 'task');
+    }
 }

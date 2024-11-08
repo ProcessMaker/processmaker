@@ -10,6 +10,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityReassignment;
@@ -425,33 +426,21 @@ class TaskController extends Controller
         }
     }
 
-    /**
-     * Returns a comma-separated list of user IDs that are members of the groups specified in the "groups" query parameter.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function getAssignedUsersInGroups(Request $request)
+    public function userCanReassign(Request $request)
     {
-        $groups = $request->input('groups');
-        $userIds = GroupMember::whereIn('group_id', $groups)
-            ->where('member_type', User::class)
-            ->where('member_id', '!=', auth()->user()->id)
-            ->pluck('member_id')
-            ->toArray();
+        $taskIds = $request->input('tasks', '');
+        $tasks = explode(',', $taskIds);
 
-        $subGroups = GroupMember::whereIn('group_id', $groups)
-            ->where('member_type', Group::class)
-            ->pluck('member_id');
-
-        if ($subGroups->count()) {
-            $userIds = array_merge($userIds, GroupMember::whereIn('group_id', $subGroups)
-                ->where('member_type', User::class)
-                ->where('member_id', '!=', auth()->user()->id)
-                ->pluck('member_id')
-                ->toArray());
+        if (empty($tasks)) {
+            return response()->json(['message' => __('No tasks selected')], 422);
         }
 
-        return response()->json(implode(',', array_unique($userIds)));
+        $response = [];
+        foreach ($tasks as $taskId) {
+            $task = ProcessRequestToken::findOrFail($taskId);
+            $response[$taskId] = Gate::forUser($request->user())->allows('reassign', $task);
+        }
+
+        return response()->json($response);
     }
 }
