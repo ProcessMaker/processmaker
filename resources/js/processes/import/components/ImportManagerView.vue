@@ -546,9 +546,9 @@ export default {
                     });
                 }
 
-                if (response.message === 'ProcessMaker\\Exception\\ImportPasswordException: password required') {
+                if (response.message.startsWith('ProcessMaker\\Exception\\ImportPasswordException: password required')) {
                     this.showEnterPasswordModal();
-                } else if (response.message === 'ProcessMaker\\Exception\\ImportPasswordException: incorrect password') {
+                } else if (response.message.startsWith('ProcessMaker\\Exception\\ImportPasswordException: incorrect password')) {
                     this.passwordError = "Incorrect password";
                 } else if (response.type === 'error') {
                     this.$root.allowDownloadDebug = true;
