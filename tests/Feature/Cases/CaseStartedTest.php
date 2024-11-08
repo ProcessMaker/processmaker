@@ -416,6 +416,11 @@ class CaseStartedTest extends TestCase
             'storeInEnv' => true,
         ]);
 
+        \Log::shouldReceive('error')
+            ->withArgs(function ($message) {
+                return str_contains($message, 'CaseException: case number not found, method=updateCaseStartedTask');
+            });
+
         $this->assertDatabaseCount('cases_started', 0);
         $this->assertDatabaseCount('cases_participated', 0);
     }
