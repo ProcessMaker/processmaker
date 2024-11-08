@@ -102,7 +102,7 @@
     </svg>
 
     <div class="tw-px-2">
-      <span>{{ `${totalModel} items` }} </span>
+      <span>{{ totalModelLabel }} </span>
     </div>
 
     <div>
@@ -116,7 +116,7 @@
             class="tw-flex tw-full tw-items-center tw-space-x-2"
             @click.prevent.stop="toogleShow()">
             <span>
-              {{ `${selectedOption.value} ${$t("per page")}` }}
+              {{ `${selectedOption.value} ${$t("Per page")}` }}
             </span>
             <i
               class=" hover:tw-bg-gray-100 tw-rounded-md hover:tw-cursor-pointer tw-p-1 fas fa-chevron-down" />
@@ -152,20 +152,26 @@ const props = defineProps({
 
 const emit = defineEmits(["perPage", "go"]);
 
-const totalModel = computed(() => props.total);
+const totalModelLabel = computed(() => {
+  if (props.total === 0) {
+    return `${t("{{count}} Item", { count: props.total })}`;
+  }
+  return `${t("{{count}} Items", { count: props.total })}`;
+});
+
 const pageModel = ref(props.page);
 const optionsPerPage = [
   {
     value: 15,
-    label: `15 ${t("items")}`,
+    label: `${t("15 items")}`,
   },
   {
     value: 30,
-    label: `30 ${t("items")}`,
+    label: `${t("30 items")}`,
   },
   {
     value: 50,
-    label: `50 ${t("items")}`,
+    label: `${t("50 items")}`,
   },
 ];
 
