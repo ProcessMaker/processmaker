@@ -222,7 +222,7 @@
                             </template>
                           </div>
                           <div class="col-6">
-                            <template v-if="isAllowReassignment || userIsAdmin || userIsProcessManager">
+                            <template v-if="allowReassignment">
                               <button
                                 v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
                                 type="button"
@@ -339,13 +339,13 @@
             <div class="form-group">
               {!!Form::label('user', __('User'))!!}
               <p-m-dropdown-suggest v-model="selectedUser"
-                :options="users"
-                @pmds-input="onInput"
+                :options="reassignUsers"
+                @pmds-input="onReassignInput"
                 :placeholder="$t('Type here to search')">
                 <template v-slot:pre-text="{ option }">
                   <b-badge variant="secondary"
                     class="mr-2 custom-badges pl-2 pr-2 rounded-lg">
-                    @{{ option.count }}
+                    @{{ option.active_tasks_count }}
                   </b-badge>
                 </template>
               </p-m-dropdown-suggest>
@@ -354,7 +354,7 @@
               <button type="button" class="btn btn-outline-secondary" @click="cancelReassign">
                 {{__('Cancel')}}
               </button>
-              <button type="button" class="btn btn-secondary" @click="reassignUser" :disabled="disabled">
+              <button type="button" class="btn btn-secondary" @click="reassignUser(true)" :disabled="disabled">
                 {{__('Reassign')}}
               </button>
             </div>
@@ -427,7 +427,6 @@
           task,
           draftTask,
           userHasAccessToTask,
-          selectedUser: null,
           hasErrors: false,
           redirectInProcess: false,
           formData: {},
@@ -451,9 +450,7 @@
           showMenu: true,
           userConfiguration: @json($userConfiguration),
           urlConfiguration:'users/configuration',
-          users: [],
           showTabs: true,
-          assignedUsers: "",
         },
         watch: {
           task: {
@@ -462,6 +459,7 @@
               window.ProcessMaker.breadcrumbs.taskTitle = task.element_name;
               if (task && oldTask && task.id !== oldTask.id) {
                 history.replaceState(null, null, `/tasks/${task.id}/edit`);
+                this.setAllowReassignment();
               }
               if (task.draft) {
                 this.lastAutosave = moment(this.draftTask.updated_at).format("DD MMMM YYYY | HH:mm");
@@ -540,12 +538,6 @@
             };
             const status = (this.task.advanceStatus || '').toUpperCase();
             return "card-header text-status " + header[status];
-          },
-          isAllowReassignment() {
-            if (ProcessMaker.user.id === this.task.definition.assignedUsers && !this.task.definition.assignedGroups) {  
-              return false;
-            }
-            return this.task.definition.allowReassignment === "true";
           },
         },
         methods: {
@@ -637,7 +629,7 @@
           show () {
             this.selectedUser = null;
             this.showReassignment = true;
-            this.getUsers("");
+            this.getReassignUsers();
           },
           showQuickFill () {
             this.redirect(`/tasks/${this.task.id}/edit/quickfill`);
@@ -645,19 +637,6 @@
           cancelReassign () {
             this.selectedUser = null;
             this.showReassignment = false;
-          },
-          reassignUser () {
-            if (this.selectedUser) {
-              ProcessMaker.apiClient
-                .put("tasks/" + this.task.id, {
-                  user_id: this.selectedUser
-                })
-                .then(response => {
-                  this.showReassignment = false;
-                  this.selectedUser = null;
-                  this.redirect('/tasks');
-                });
-            }
           },
           redirect(to, forceRedirect = false) {
             if (this.redirectInProcess && !forceRedirect) {
@@ -871,31 +850,6 @@
           caseTitleField(task) {
             this.caseTitle = task.process_request.case_title;
           },
-          getUsers(filter) {
-            if (this.task.definition.allowReassignment === "true" && !this.userIsAdmin) {
-              this.setAssignedUsers(this.task.definition);
-            }
-            ProcessMaker.apiClient.get(this.getUrlUsersTaskCount(filter), {
-              params: {
-                include_ids: this.assignedUsers
-              }
-            }).then(response => {
-              this.users = [];
-              for (let i in response.data.data) {
-                this.users.push({
-                  text: response.data.data[i].fullname,
-                  value: response.data.data[i].id,
-                  count: response.data.data[i].count
-                });
-              }
-            });
-          },
-          getUrlUsersTaskCount(filter) {
-            return "users_task_count?filter=" + filter;
-          },
-          onInput(filter) {
-            this.getUsers(filter);
-          },
           getCommentsData: async () => {
             const response = await ProcessMaker.apiClient.get("comments-by-case", {
               params: {
@@ -906,35 +860,6 @@
             });
 
             return response;
-          },
-          setAssignedUsers(definition) {
-            // If a group is used, get all the users in that group, nested groups and merge with assignedUsers if applicable 
-            if (definition.assignedGroups && !this.userIsAdmin) {
-              this.getUsersInGroups(definition.assignedGroups);
-              let assignedUserIds = this.assignedUsers;
-              if (definition.assignedUsers) {
-                let currentAssignedUsers = definition.assignedUsers.split(',');
-                assignedUserIds += ',' + currentAssignedUsers.join(',');
-              }
-              this.assignedUsers = assignedUserIds;
-            }
-
-            //  Display assigned users
-            if (definition.assignedUsers && !this.userIsAdmin && !definition.assignedGroups) {
-              let currentAssignedUsers = definition.assignedUsers.split(',');
-              let assignedUsers = currentAssignedUsers.filter(user => user !== window.ProcessMaker.user.id);
-              this.assignedUsers = assignedUsers.join(',');
-            }
-          },
-          getUsersInGroups(assignedGroups) {
-            let groups = assignedGroups.split(',');
-            ProcessMaker.apiClient.get("tasks/getAssignedUsersInGroups", {
-              params: {
-                groups: groups
-              }
-            }).then(response => {
-              this.assignedUsers = response.data;
-            });
           },
         },
         mounted() {
@@ -951,6 +876,7 @@
             this.sendUserHasInteracted();
           });
           this.defineUserConfiguration();
+          this.setAllowReassignment();
         }
       });
     </script>

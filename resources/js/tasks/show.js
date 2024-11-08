@@ -15,6 +15,7 @@ import autosaveMixins from "../modules/autosave/autosaveMixin";
 import draftFileUploadMixin from "../modules/autosave/draftFileUploadMixin";
 import Mustache from "mustache";
 import TaskSaveNotification from "./components/TaskSaveNotification.vue";
+import reassignMixin from "../common/reassignMixin";
 
 Vue.use(Vuex);
 Vue.use("task", Task);
@@ -32,6 +33,7 @@ Vue.component("PMDropdownSuggest", PMDropdownSuggest);
 
 Vue.mixin(autosaveMixins);
 Vue.mixin(draftFileUploadMixin);
+Vue.mixin(reassignMixin);
 
 window.debounce = debounce;
 window.Vuex = Vuex;
