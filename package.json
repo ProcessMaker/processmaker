@@ -56,7 +56,7 @@
         "@panter/vue-i18next": "^0.15.2",
         "@processmaker/modeler": "1.62.2",
         "@processmaker/processmaker-bpmn-moddle": "0.16.0",
-        "@processmaker/screen-builder": "2.99.5",
+        "@processmaker/screen-builder": "2.99.5-patch.tce",
         "@processmaker/vue-form-elements": "0.60.1",
         "@processmaker/vue-multiselect": "2.3.0",
         "@tinymce/tinymce-vue": "2.0.0",
