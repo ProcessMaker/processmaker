@@ -130,7 +130,7 @@ class CaseRepository implements CaseRepositoryInterface
                 'case_status' => $caseStatus,
             ];
 
-            if ($caseStatus === CaseStatusConstants::COMPLETED) {
+            if (in_array($caseStatus, [CaseStatusConstants::COMPLETED, CaseStatusConstants::CANCELED])) {
                 $data['completed_at'] = $instance->completed_at;
             }
 

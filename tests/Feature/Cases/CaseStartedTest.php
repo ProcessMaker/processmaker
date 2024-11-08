@@ -374,6 +374,62 @@ class CaseStartedTest extends TestCase
         ]);
     }
 
+    public function test_update_case_started_status_to_canceled()
+    {
+        $process = Process::factory()->create();
+        $user = User::factory()->create();
+
+        $instance = ProcessRequest::factory()->create([
+            'user_id' => $user->id,
+            'process_id' => $process->id,
+        ]);
+
+        $repo = new CaseRepository();
+        $repo->create($instance);
+
+        $this->assertDatabaseCount('cases_started', 1);
+        $this->assertDatabaseHas('cases_started', [
+            'case_number' => $instance->case_number,
+            'user_id' => $user->id,
+            'case_title' => $instance->case_title,
+            'case_status' => 'IN_PROGRESS',
+        ]);
+
+        $token = ProcessRequestToken::factory()->create([
+            'user_id' => $user->id,
+            'process_request_id' => $instance->id,
+            'element_type' => 'task',
+        ]);
+
+        $repo->update($instance, $token);
+
+        $this->assertDatabaseHas('cases_started', [
+            'case_number' => $instance->case_number,
+            'user_id' => $user->id,
+            'case_title' => $instance->case_title,
+            'case_status' => 'IN_PROGRESS',
+            'completed_at' => null,
+            'request_tokens->[0]' => $token->id,
+        ]);
+
+        $instance->status = 'CANCELED';
+        $instance->completed_at = now();
+
+        $repo->updateStatus($instance, $token);
+
+        $this->assertDatabaseHas('cases_started', [
+            'case_number' => $instance->case_number,
+            'user_id' => $user->id,
+            'case_title' => $instance->case_title,
+            'case_status' => 'CANCELED',
+            'completed_at' => $instance->completed_at,
+            'tasks->[0]->id' => $token->id,
+            'tasks->[0]->element_id' => $token->element_id,
+            'tasks->[0]->name' => $token->element_name,
+            'tasks->[0]->process_id' => $token->process_id,
+        ]);
+    }
+
     public function test_try_update_if_case_has_not_been_created()
     {
         $user = User::factory()->create();
