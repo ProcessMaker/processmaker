@@ -62,4 +62,30 @@ class FormalExpressionTest extends TestCase
         // Check the expression date('H:i', null, user_tz) == user_schedule_time
         $this->assertTrue($userScheduleTime === $feelDate);
     }
+
+    public function testArrayGet()
+    {
+        $data = [
+            '_parent' => [
+                'request_id' => '123',
+                'config' => [ 'callback' => true ]
+            ],
+            'request' => ['request_id' => '122']
+        ];
+
+        $formalExp = new FormalExpression();
+        $formalExp->setLanguage('FEEL');
+
+        $formalExp->setBody('arrayget(_parent, "config.callback", false)');
+        $callback = $formalExp($data);
+        $this->assertEquals(true, $callback);
+
+        $formalExp->setBody('arrayget(_parent, "request_id", null)');
+        $callback = $formalExp($data);
+        $this->assertEquals('123', $callback);
+
+        $formalExp->setBody('arrayget(request, "request_id", null)');
+        $callback = $formalExp($data);
+        $this->assertEquals('122', $callback);
+    }
 }
