@@ -697,7 +697,7 @@ class TokenRepository implements TokenRepositoryInterface
     private function updateCaseStartedTask(TokenInterface $token): void
     {
         if (is_null($token->getInstance()->case_number)) {
-            Log::error('CaseException: case number not found, method=updateCaseStartedTask, instance=' . $token->getInstance()->getKey());
+            Log::info('CaseException: case number not found, method=updateCaseStartedTask, instance=' . $token->getInstance()->getKey());
 
             return;
         }
