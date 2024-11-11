@@ -48,6 +48,7 @@
                           tw-bg-gradient-to-b tw-from-white tw-to-transparent tw-via-white/5 tw-bg-gray-50"
                         aria-haspopup="dialog"
                         @click="onCancel"
+                        data-test="cancel-case-button"
                       >
                         <i class="fas fa-ban"></i>
                         <span>{{ __('Cancel Case') }}</span>
