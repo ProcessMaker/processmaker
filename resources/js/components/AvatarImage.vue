@@ -4,6 +4,7 @@
     <template v-for="(value, key) in options">
       <div class="vertical-view">
       <b-button
+        v-if="value.initials"
         ref="button"
         :variant="variant(value)"
         class="avatar-button rounded-circle overflow-hidden p-0 m-0 d-inline-flex"
@@ -44,7 +45,7 @@
               {{ limitCharacters(value.name) }}
             </template>
           </span>
-          <span v-else>ProcessMaker</span>
+          <span v-else><b-badge class="status-alternative-a">{{ $t('Unclaimed') }}</b-badge></span>
       </span>
       </div>
     </template>
