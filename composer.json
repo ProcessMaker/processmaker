@@ -162,7 +162,7 @@
                 "package-process-optimization": "1.10.0",
                 "package-product-analytics": "1.5.8",
                 "package-projects": "dev-1.4.0+patch-ellucian-b",
-                "package-savedsearch": "1.34.1",
+                "package-savedsearch": "dev-1.34.1+patch-birmingham-a",
                 "package-sentry": "1.8.0",
                 "package-signature": "1.12.0",
                 "package-testing": "1.3.1",
