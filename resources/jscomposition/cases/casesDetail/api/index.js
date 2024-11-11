@@ -62,3 +62,9 @@ export const getCommentsData = (params) => {
 
   return response;
 };
+
+export const updateRequest = async (id, data) => {
+  const response = await ProcessMaker.apiClient.put(`requests/${id}`, data);
+
+  return response;
+};
