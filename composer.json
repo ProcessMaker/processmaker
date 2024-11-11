@@ -164,7 +164,7 @@
                 "package-process-documenter": "1.10.0",
                 "package-process-optimization": "1.10.0",
                 "package-product-analytics": "1.5.8",
-                "package-projects": "1.6.3",
+                "package-projects": "dev-1.6.3+patch-ellucian",
                 "package-rpa": "1.1.0",
                 "package-savedsearch": "1.37.1",
                 "package-slideshow": "1.1.2",
