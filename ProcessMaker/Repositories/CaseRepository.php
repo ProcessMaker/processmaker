@@ -118,6 +118,12 @@ class CaseRepository implements CaseRepositoryInterface
      */
     public function updateStatus(ExecutionInstanceInterface $instance): void
     {
+        if (is_null($instance->case_number)) {
+            Log::error('case started not found, method=updateStatus, instance=' . $instance->getKey());
+
+            return;
+        }
+
         // If a sub-process is completed, do not update the case started status
         if (!is_null($instance->parent_request_id)) {
             return;

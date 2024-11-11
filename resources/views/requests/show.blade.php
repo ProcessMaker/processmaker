@@ -276,7 +276,7 @@
               </div>
             </div>
               <timeline commentable_id="{{ $request->getKey() }}" commentable_type="{{ get_class($request) }}"
-                :adding="false" :readonly="request.status === 'COMPLETED'" 
+                :adding="false" :readonly="request.status === 'COMPLETED'"
                 :timeline="false" />
           </div>
 
@@ -463,7 +463,7 @@
                           name="{{ $request->name }}"
                           :readonly="request.status === 'COMPLETED'"
                           :header="false"
-                          :case_number="{{ $request->case_number }}"
+                          :case_number="{{ json_encode($request->case_number ?? null) }}"
                         />
                       </template>
                     </div>
@@ -675,7 +675,7 @@
           this.userConfiguration.requests.isMenuCollapse = this.showMenu;
           ProcessMaker.apiClient
             .put(
-              this.urlConfiguration, 
+              this.urlConfiguration,
               {
                 ui_configuration: this.userConfiguration,
               }
@@ -875,7 +875,7 @@
               ProcessMaker.apiClient.post(`tasks/${errorTaskId}/rollback`).then(response => {
                 location.reload();
               });
-            } 
+            }
           )
         },
       },
