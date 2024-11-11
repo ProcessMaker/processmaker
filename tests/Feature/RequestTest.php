@@ -4,9 +4,11 @@ namespace Tests\Feature;
 
 use Database\Seeders\PermissionSeeder;
 use Illuminate\Http\Testing\File;
+use ProcessMaker\Models\CategoryAssignment;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\PermissionAssignment;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
@@ -174,6 +176,39 @@ class RequestTest extends TestCase
 
         $response = $this->apiCall('GET', '/requests?total=true&pmql=(status = "Completed")');
         $response->assertJson(['meta' => ['total' => 2]]);
+    }
+
+    /**
+     * Test show default summary tab
+     * @return void
+     */
+    public function testRequestShowWithCaseNumberNull()
+    {
+        $category = ProcessCategory::factory()->create([
+            'is_system' => true,
+        ]);
+        $systemProcess = Process::factory()->create([
+            'name' => 'some system process',
+            'process_category_id' => $category,
+        ]);
+        // Create the main request
+        $parentRequest = ProcessRequest::factory()->create([
+            'parent_request_id' => null,
+        ]);
+
+        // Create request child
+        $childRequest = ProcessRequest::factory()->create([
+            'parent_request_id' => $parentRequest->id,
+            'process_id' => $systemProcess->id,
+            'case_number' => null,
+        ]);
+
+        // Get the URL
+        $response = $this->webCall('GET', '/requests/' . $childRequest->id);
+
+        $response->assertStatus(200);
+        // Check the correct view is called
+        $response->assertViewIs('requests.show');
     }
 
     /**
