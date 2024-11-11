@@ -21,52 +21,23 @@ const tabDefault = ref("tasks");
 
 const tabs = [
   {
-    name: translate.t("Tasks"),
-    href: "#tasks",
-    current: "tasks",
-    show: true,
-    content: TaskTable,
-    "data-test": "tab-case-tasks"
+    name: translate.t("Tasks"), href: "#tasks", current: "tasks", show: true, content: TaskTable,
   },
   {
-    name: translate.t("Overview"),
-    href: "#overview",
-    current: "overview",
-    show: true,
-    content: Overview,
-    "data-test": "tab-case-overview"
+    name: translate.t("Overview"), href: "#overview", current: "overview", show: true, content: Overview,
   },
   {
-    name: translate.t("Completed & Form"),
-    href: "#completed_form",
-    current: "completed",
-    show: true,
-    content: CompletedForms,
-    "data-test": "tab-case-completed-form"
+    name: translate.t("Completed & Form"), href: "#completed_form", current: "completed", show: true, content: CompletedForms,
   },
   {
-    name: translate.t("File Manager"),
-    href: "#file_manager",
-    current: "file_manager",
-    show: true,
-    content: TabFiles,
-    "data-test": "tab-case-files"
+    name: translate.t("File Manager"), href: "#file_manager", current: "file_manager", show: true, content: TabFiles,
   },
   {
-    name: translate.t("History"),
-    href: "#history",
-    current: "history",
-    show: true,
-    content: TabHistory,
-    "data-test": "tab-case-history"
+    name: translate.t("History"), href: "#history", current: "history", show: true, content: TabHistory,
   },
   {
-    name: translate.t("Requests"),
-    href: "#requests",
-    current: "requests",
-    show: getRequestCount() !== 1,
-    content: RequestTable,
-    "data-test": "tab-case-requests"
+    name: translate.t("Requests"), href: "#requests", current: "requests", show: getRequestCount() !== 1, content: RequestTable,
   },
 ];
+
 </script>
