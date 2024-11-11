@@ -118,16 +118,17 @@ const onApply = () => {
 };
 
 const iconClass = () => {
-  let filter = "fas fa-ellipsis-v";
+  const { operator, sortable } = props.value || {};
 
-  if (props.value?.operator) {
-    filter = "fas fa-filter";
-  } else if (props.value?.sortable === "asc") {
-    filter = "fas fa-sort-amount-up-alt";
-  } else if (props.value?.sortable === "desc") {
-    filter = "fas fa-sort-amount-down-alt";
+  if (operator) {
+    return "fas fa-filter";
   }
 
-  return filter;
+  const sortIcons = {
+    asc: "fas fa-sort-amount-up-alt",
+    desc: "fas fa-sort-amount-down-alt",
+  };
+
+  return sortIcons[sortable] || "fas fa-ellipsis-v";
 };
 </script>
