@@ -43,6 +43,7 @@
       <b-card-group deck>
         <b-card
           v-for="(asset, index) in assetsPackage"
+          v-if="isPackageInstalled(asset.package)"
           :key="index"
           bg-variant="light"
           class="text-center"
@@ -122,6 +123,7 @@ export default {
           asset_name_new: "New Decision Table",
           urlPath: "/designer/decision-tables",
           urlAsset: "/designer/decision-tables?create=true",
+          package: "package-decision-engine",
         },
         {
           color: "#B5D3E7",
@@ -131,6 +133,7 @@ export default {
           asset_name_new: "New Data Connector",
           urlPath: "/designer/data-sources",
           urlAsset: "/designer/data-sources?create=true",
+          package: "package-data-sources",
         },
         {
           color: "#556271",
@@ -140,6 +143,7 @@ export default {
           asset_name_new: `${this.$t("New")} Genie`,
           urlPath: "/designer/flow-genies",
           urlAsset: "/designer/flow-genies?create=true",
+          package: "package-ai",
         },
       ],
       showButtonsCore: new Array(3).fill(false),
@@ -147,6 +151,9 @@ export default {
     };
   },
   methods: {
+    isPackageInstalled(packageName) {
+      return window.ProcessMaker?.packages?.includes(packageName);
+    },
     toggleButtons(index, section, status) {
       if (section === "core") {
         this.$set(this.showButtonsCore, index, status);
