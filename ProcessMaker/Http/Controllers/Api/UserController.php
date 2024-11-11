@@ -19,6 +19,7 @@ use ProcessMaker\Filters\SaveSession;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Users as UserResource;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\RecommendationEngine;
 use ProcessMaker\TwoFactorAuthentication;
@@ -186,6 +187,7 @@ class UserController extends Controller
     public function getUsersTaskCount(Request $request)
     {
         $query = User::nonSystem();
+        $query->select('id', 'username', 'firstname', 'lastname');
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
@@ -199,14 +201,23 @@ class UserController extends Controller
 
         $query->where('status', 'ACTIVE');
 
-        $include_ids = $request->input('include_ids', '');
-        if (!empty($include_ids)) {
-            $include_ids = explode(',', $include_ids);
-            $query->whereIn('id', $include_ids);
+        $query->withCount('activeTasks');
+
+        $include_ids = [];
+        $include_ids_string = $request->input('include_ids', '');
+        if (!empty($include_ids_string)) {
+            $include_ids = explode(',', $include_ids_string);
+        } elseif ($request->has('assignable_for_task_id')) {
+            $task = ProcessRequestToken::findOrFail($request->input('assignable_for_task_id'));
+            if ($task->getAssignmentRule() === 'user_group') {
+                // Limit the list of users to those that can be assigned to the task
+                $include_ids = $task->process->getAssignableUsers($task->element_id);
+            }
         }
 
-        $query->select('*', DB::Raw("(SELECT COUNT(id) FROM process_request_tokens WHERE user_id=users.id AND status='ACTIVE' AND element_type='task') AS count"));
-        $query->groupBy('users.id');
+        if (!empty($include_ids)) {
+            $query->whereIn('id', $include_ids);
+        }
 
         $response = $query->orderBy(
             $request->input('order_by', 'username'),

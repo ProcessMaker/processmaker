@@ -68,7 +68,14 @@ class ScreenExporter extends ExporterBase
 
         // There should only be one default interstitial screen
         if ($screen->key === 'interstitial') {
-            $screen->key = null;
+            $existingScreenInterstitial = Screen::where('key', 'interstitial')->first();
+            // If the screen we are trying to import is not this system's default interstitial screen
+            // then set the key to null since there should only be one default interstitial screen
+            if ($existingScreenInterstitial && $existingScreenInterstitial->id !== $screen->id) {
+                $screen->key = null;
+            }
+            // On the other hand, if this import is attempting to update the default interstitial screen,
+            // that should be allowed and there should be no changes to the key or id, but the config will be updated.
         }
 
         $success = $screen->saveOrFail();

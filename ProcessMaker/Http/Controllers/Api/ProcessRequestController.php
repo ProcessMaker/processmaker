@@ -24,6 +24,7 @@ use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
 use ProcessMaker\Jobs\CancelRequest;
+use ProcessMaker\Jobs\CaseUpdateStatus;
 use ProcessMaker\Jobs\TerminateRequest;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Comment;
@@ -602,6 +603,8 @@ class ProcessRequestController extends Controller
         // Close process request
         $request->status = 'CANCELED';
         $request->save();
+        // Update case status
+        CaseUpdateStatus::dispatchSync($request);
 
         event(new RequestAction($request, RequestAction::ACTION_CANCELED));
     }

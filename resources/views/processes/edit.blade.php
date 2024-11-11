@@ -187,20 +187,12 @@
                                     </b-col>
                                     <b-col>
                                       <div class="form-group">
-                                        <div class="d-flex justify-content-between">
-                                          <label class="typo__label">{{__('Reassignment')}}</label>
-                                          <b-button size="sm"
-                                                    variant="outline-light"
-                                                    class="p-0"
-                                                    @click="reassignmentClicked"
-                                                    id="buttonReassignmentClicked"
-                                                    pill>
-                                            <img src="/img/button-small-plus-blue.svg" :alt="$t('Clear unsaved filters')"/>
-                                          </b-button>
-                                        </div>
-                                        <processes-permissions ref="listReassignment"
-                                                               :reassignments="reassignmentUsers">
-                                        </processes-permissions>
+                                        <select-user-group
+                                            :label="$t('Reassignment Permission')"
+                                            v-model="reassignmentPermissions"
+                                            :multiple="true"
+                                        />
+                                        <small>{{__('In addition to the process manager, these users and groups will have permission to reassign any task in this process, regardless of the "Allow Reassignment" task setting.')}}</small>
                                       </div>
                                     </b-col>
                                   </b-row>
@@ -593,7 +585,10 @@
                     manager: @json($process->manager),
                     activeTab: "",
                     noElementsFoundMsg: 'Oops! No elements found. Consider changing the search query.',
-                    reassignmentUsers: []
+                    reassignmentPermissions: {
+                        users: [],
+                        groups: []
+                    },
                 }
                 },
                 mounted() {
@@ -602,8 +597,9 @@
                         this.canCancel.push(this.processManagerOption());
                     }
                     
-                    if (_.get(this.formData, 'properties.reassignment_users')) {
-                        this.reassignmentUsers = _.get(this.formData, 'properties.reassignment_users');
+                    const reassignmentPermissions = _.get(this.formData, 'properties.reassignment_permissions');
+                    if (reassignmentPermissions) {
+                        this.reassignmentPermissions = reassignmentPermissions;
                     }
 
                     this.selectedProjects = this.assignedProjects.length > 0 ? this.assignedProjects.map(project => project.id) : null;
@@ -702,7 +698,7 @@
                     this.formData.cancel_screen_id = this.formatValueScreen(this.screenCancel);
                     this.formData.request_detail_screen_id = this.formatValueScreen(this.screenRequestDetail);
                     this.formData.manager_id = this.formatValueScreen(this.manager);
-                    this.formData.reassignment_users = this.$refs["listReassignment"].getItems();
+                    this.formData.reassignment_permissions = this.reassignmentPermissions;
                     
                     ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
                     .then(response => {

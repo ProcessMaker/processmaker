@@ -164,7 +164,7 @@ const caseDetail = new Vue({
       }
       this.disabled = true;
       try {
-        const response = await updateRequest(getRequestId(), {
+        await updateRequest(getRequestId(), {
           status: "CANCELED",
         });
 

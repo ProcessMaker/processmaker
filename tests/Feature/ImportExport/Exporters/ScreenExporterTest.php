@@ -256,4 +256,78 @@ class ScreenExporterTest extends TestCase
         $this->assertEquals($newChild2->id, Arr::get($newParent->config, '0.items.1.items.0.items.1.0.config.screen'));
         $this->assertEquals($newChild3->id, Arr::get($newParent->config, '0.items.1.items.1.config.screen'));
     }
+
+    public function testInterstitalUpdate()
+    {
+        $screen = Screen::factory()->create([
+            'title' => 'Updated Interstitial',
+            'key' => 'interstitial',
+            'config' => [
+                ['items' => [
+                    ['component' => 'Bar'],
+                ]],
+            ],
+        ]);
+
+        $exporter = new Exporter();
+        $exporter->exportScreen($screen);
+        $payload = $exporter->payload();
+
+        // Lets pretend we're on a different instance now
+        $screen->delete();
+        $screen = Screen::factory()->create([
+            'title' => 'Existing Interstitial',
+            'key' => 'interstitial',
+            'config' => [
+                ['items' => [
+                    ['component' => 'Foo'],
+                ]],
+            ],
+        ]);
+
+        $options = new Options([
+            $screen->uuid => ['mode' => 'update'],
+        ]);
+        $importer = new Importer($payload, $options);
+        $importer->doImport();
+
+        $this->assertEquals(1, Screen::where('key', 'interstitial')->count());
+        $screen->refresh();
+        $this->assertEquals('Updated Interstitial', $screen->title);
+        $this->assertEquals('interstitial', $screen->key);
+        $this->assertEquals('Bar', $screen->config[0]['items'][0]['component']);
+    }
+
+    public function testAttemptToAddMultipleInterstials()
+    {
+        $screen = Screen::factory()->create([
+            'title' => 'Default Interstitial',
+            'key' => 'interstitial',
+            'config' => [
+                ['items' => [
+                    ['component' => 'Bar'],
+                ]],
+            ],
+        ]);
+
+        $exporter = new Exporter();
+        $exporter->exportScreen($screen);
+        $payload = $exporter->payload();
+
+        // Import a copy of the screen (Original still exists)
+        $options = new Options([
+            $screen->uuid => ['mode' => 'copy'],
+        ]);
+        $importer = new Importer($payload, $options);
+        $importer->doImport();
+
+        $this->assertEquals(1, Screen::where('key', 'interstitial')->count());
+        $screen->refresh();
+        $this->assertEquals('Default Interstitial', $screen->title);
+        $this->assertEquals('interstitial', $screen->key);
+        $this->assertEquals('Bar', $screen->config[0]['items'][0]['component']);
+
+        $newInterstitial = Screen::where('title', 'Default Interstitial 2')->firstOrFail();
+        $this->assertNull($newInterstitial->key);
+    }
 }

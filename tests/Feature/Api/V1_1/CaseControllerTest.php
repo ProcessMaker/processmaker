@@ -147,6 +147,41 @@ class CaseControllerTest extends TestCase
         $response->assertJsonCount($casesC->count(), 'data');
     }
 
+    public function test_get_my_cases_by_status(): void
+    {
+        $userA = self::createUser('user_a');
+        $casesA = self::createCasesStartedForUser($userA->id, 5, ['case_status' => CaseStatusConstants::IN_PROGRESS]);
+        $casesB = self::createCasesStartedForUser($userA->id, 5, ['case_status' => CaseStatusConstants::COMPLETED]);
+        $totalCases = $casesA->count() + $casesB->count();
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['userId' => $userA->id]));
+        $response->assertStatus(200);
+        $response->assertJsonCount($totalCases, 'data');
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['userId' => $userA->id, 'status' => CaseStatusConstants::IN_PROGRESS]));
+        $response->assertStatus(200);
+        $response->assertJsonCount($casesA->count(), 'data');
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['userId' => $userA->id, 'status' => CaseStatusConstants::COMPLETED]));
+        $response->assertStatus(200);
+        $response->assertJsonCount($casesB->count(), 'data');
+
+        $casesA->each(function ($case) {
+            $case->update(['case_status' => CaseStatusConstants::CANCELED]);
+        });
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['userId' => $userA->id]));
+        $response->assertStatus(200);
+        $response->assertJsonCount($totalCases, 'data');
+
+        $casesA->each(function ($case) use ($response) {
+            $response->assertJsonFragment([
+                'case_number' => $case->case_number,
+                'case_status' => CaseStatusConstants::CANCELED,
+            ]);
+        });
+    }
+
     public function test_get_all_cases_sort_by_case_number(): void
     {
         $userA = self::createUser('user_a');

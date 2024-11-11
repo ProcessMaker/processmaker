@@ -314,10 +314,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->save();
         $token->setId($token->getKey());
 
-        // Update Case Started Task
-        $caseTaskRepo = new CaseTaskRepository($token->getInstance()->case_number, $token);
-        $caseTaskRepo->updateCaseStartedTaskStatus();
-        $caseTaskRepo->updateCaseParticipatedTaskStatus();
+        $this->updateCaseStartedTask($token);
 
         $request = $token->getInstance();
         $request->notifyProcessUpdated('ACTIVITY_EXCEPTION', $token);
@@ -354,10 +351,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->save();
         $token->setId($token->getKey());
 
-        // Update Case Started Task
-        $caseTaskRepo = new CaseTaskRepository($token->getInstance()->case_number, $token);
-        $caseTaskRepo->updateCaseStartedTaskStatus();
-        $caseTaskRepo->updateCaseParticipatedTaskStatus();
+        $this->updateCaseStartedTask($token);
 
         $request = $token->getInstance();
         $request->notifyProcessUpdated('ACTIVITY_COMPLETED', $token);
@@ -689,5 +683,27 @@ class TokenRepository implements TokenRepositoryInterface
     public function persistEventBasedGatewayActivated(EventBasedGatewayInterface $eventBasedGateway, TokenInterface $passedToken, CollectionInterface $consumedTokens)
     {
         Log::info('persistEventBasedGatewayActivated');
+    }
+
+    /**
+     * The function updates the status of a case task.
+     *
+     * @param TokenInterface token The `token` parameter in the `updateCaseStartedTask` function is an object of type
+     * `TokenInterface`. It is used to access the instance's case number and pass the token itself to the
+     * `CaseTaskRepository` constructor for further processing.
+     *
+     * @return void
+     */
+    private function updateCaseStartedTask(TokenInterface $token): void
+    {
+        if (is_null($token->getInstance()->case_number)) {
+            Log::info('CaseException: case number not found, method=updateCaseStartedTask, instance=' . $token->getInstance()->getKey());
+
+            return;
+        }
+
+        $caseTaskRepo = new CaseTaskRepository($token->getInstance()->case_number, $token);
+        $caseTaskRepo->updateCaseStartedTaskStatus();
+        $caseTaskRepo->updateCaseParticipatedTaskStatus();
     }
 }

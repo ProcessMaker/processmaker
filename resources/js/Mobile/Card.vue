@@ -131,7 +131,7 @@ export default {
         return this.item.case_number;
       }
       if (this.type === "tasks") {
-        return this.item.process_request.id;
+        return this.item.process_request.case_number;
       }
       return null;
     },

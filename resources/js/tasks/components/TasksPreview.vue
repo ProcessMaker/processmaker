@@ -143,7 +143,7 @@
                     >
                   </b-button>
                   <b-button
-                    v-if="isAllowReassignment || isUserAdmin || isProcessManager"
+                    v-if="allowReassignment"
                     class="btn text-secondary icon-button"
                     variant="light"
                     :aria-label="$t('Reassign')"
@@ -187,16 +187,15 @@
             </div>
             <div class="flex-grow-1">
               <PMDropdownSuggest v-model="selectedUser"
-                                 :options="users"
-                                 @onInput="onInput"
-                                 @onSelectedOption="onSelectedOption"
+                                 :options="reassignUsers"
+                                 @onInput="onReassignInput"
                                  :placeholder="$t('Type here to search')">
                 <template v-slot:pre-text="{ option }">
-                  <b-badge variant="secondary" class="mr-2 custom-badges pl-2 pr-2 rounded-lg">{{ option.count }}</b-badge>
+                  <b-badge variant="secondary" class="mr-2 custom-badges pl-2 pr-2 rounded-lg">{{ option.active_tasks_count }}</b-badge>
                 </template>
               </PMDropdownSuggest>
             </div>
-            <button type="button" class="btn btn-primary btn-sm ml-2" @click="reassignUser" :disabled="disabled">
+            <button type="button" class="btn btn-primary btn-sm ml-2" @click="reassignUser(false)" :disabled="disabled">
               {{ $t('Assign') }}
             </button>
             <button type="button" class="btn btn-outline-secondary btn-sm ml-2" @click="cancelReassign">
@@ -263,15 +262,14 @@ import QuickFillPreview from "./QuickFillPreview.vue";
 import PreviewMixin from "./PreviewMixin";
 import autosaveMixins from "../../modules/autosave/autosaveMixin.js"
 import PMDropdownSuggest from "../../components/PMDropdownSuggest.vue";
+import reassignMixin from "../../common/reassignMixin";
 
 export default {
   components: { SplitpaneContainer, TaskLoading, QuickFillPreview, TaskSaveNotification, EllipsisMenu, PMDropdownSuggest },
-  mixins: [PreviewMixin, autosaveMixins],
+  mixins: [PreviewMixin, autosaveMixins, reassignMixin],
   props: ["tooltipButton", "propPreview"],
   data(){
     return {
-      selectedUser: null,
-      users: []
     };
   },
   watch: {
@@ -294,6 +292,7 @@ export default {
 
         if (task?.id !== previousTask?.id) {
           this.userHasInteracted = false;
+          this.setAllowReassignment();
         } 
       },
     },
@@ -328,23 +327,11 @@ export default {
     this.screenWidthPx = window.innerWidth;
     window.addEventListener('resize', this.updateScreenWidthPx);
     this.getUser();
-    this.getUsers("");
+    this.setAllowReassignment();
   },
   computed: {
     disabled() {
       return this.selectedUser ? false : true;
-    },
-    isAllowReassignment() {
-      if (this.taskDefinition.definition) {
-        return this.taskDefinition.definition.allowReassignment === "true";
-      }
-      return false;
-    },
-    isUserAdmin() {
-      return this.user.is_administrator;
-    },
-    isProcessManager() {
-      return this.task.process_obj.properties.manager_id === ProcessMaker.user.id;
     },
   },
   methods: {
@@ -416,26 +403,13 @@ export default {
           this.userHasInteracted = false;
         });
     },
-    reassignUser() {
-      if (this.selectedUser) {
-        ProcessMaker.apiClient
-          .put("tasks/" + this.task.id, {
-            user_id: this.selectedUser
-          })
-          .then(response => {
-            this.$emit("on-reassign-user", this.selectedUser);
-            this.showReassignment = false;
-            this.selectedUser = null;
-            this.getUsers("");
-          });
-      }
-    },
     cancelReassign() {
       this.showReassignment = false;
       this.selectedUser = null;
     },
     openReassignment() {
       this.showReassignment = !this.showReassignment;
+      this.getReassignUsers();
     },
     getTaskDefinitionForReassignmentPermission() {
       ProcessMaker.apiClient
@@ -451,27 +425,6 @@ export default {
           this.user = response.data;
         });
     },
-    getUsers(filter) {
-      ProcessMaker.apiClient.get(this.getUrlUsersTaskCount(filter)).then(response => {
-        this.users = [];
-        for (let i in response.data.data) {
-          this.users.push({
-            text: response.data.data[i].fullname,
-            value: response.data.data[i].id,
-            count: response.data.data[i].count
-          });
-        }
-      });
-    },
-    getUrlUsersTaskCount(filter) {
-      let url = "users_task_count?filter=" + filter;
-      return url;
-    },
-    onInput(filter) {
-      this.getUsers(filter);
-    },
-    onSelectedOption(item) {
-    }
   }
 };
 </script>

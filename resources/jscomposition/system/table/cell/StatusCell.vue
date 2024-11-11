@@ -9,31 +9,32 @@
 </template>
 <script>
 import { defineComponent, computed } from "vue";
+import { t } from "i18next";
 
 export const statuses = {
   DRAFT: {
     color: "red",
-    label: "Draft",
+    label: `${t("Draft")}`,
   },
   CANCELED: {
     color: "red",
-    label: "Canceled",
+    label: `${t("Canceled")}`,
   },
   COMPLETED: {
     color: "blue",
-    label: "Completed",
+    label: `${t("Completed")}`,
   },
   ERROR: {
     color: "red",
-    label: "Error",
+    label: `${t("Error")}`,
   },
   IN_PROGRESS: {
     color: "green",
-    label: "In progress",
+    label: `${t("In Progress")}`,
   },
   ACTIVE: {
     color: "green",
-    label: "In progress",
+    label: `${t("In Progress")}`,
   },
 };
 
