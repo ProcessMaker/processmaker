@@ -1,11 +1,12 @@
 <template>
   <Tabs
     :tab-default="tabDefault"
-    :tabs="tabs" />
+    :tabs="tabs"
+  />
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { computed } from "vue";
 import Tabs from "./Tabs.vue";
 import TaskTable from "./TaskTable.vue";
 import RequestTable from "./RequestTable.vue";
@@ -13,13 +14,22 @@ import TabHistory from "./TabHistory.vue";
 import CompletedForms from "./CompletedForms.vue";
 import TabFiles from "./TabFiles.vue";
 import Overview from "./Overview.vue";
-import { getRequestCount } from "../variables/index";
+import ErrorsTab from "./ErrorsTab.vue";
+import { getRequestCount, isErrors } from "../variables/index";
 
 const translate = ProcessMaker.i18n;
 
-const tabDefault = ref("tasks");
+const tabDefault = computed(() => {
+  if (isErrors()) {
+    return "errors";
+  }
+  return "tasks";
+});
 
 const tabs = [
+  {
+    name: translate.t("Errors"), href: "#errors", current: "errors", show: isErrors(), content: ErrorsTab,
+  },
   {
     name: translate.t("Tasks"), href: "#tasks", current: "tasks", show: true, content: TaskTable,
   },
