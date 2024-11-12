@@ -23,7 +23,7 @@ export const formatFilters = (filters) => {
         value: element.field,
       },
       operator: element.operator,
-      value,
+      value: value || "",
     };
   });
 
@@ -51,7 +51,7 @@ export const formatFilterBadges = (filters, columns) => {
 
     // Format datetime value to badges
     if (col.filter.dataType === "datetime") {
-      value = value.find ? value.map((o) => formatDate(o)) : formatDate(value);
+      value = value && value.find ? value.map((o) => formatDate(o)) : formatDate(value);
     }
 
     return {
