@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Cache;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Models\MustacheExpressionEvaluator;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScreenVersion as ScreenVersionModel;
 use ProcessMaker\Package\Translations\Models\Translatable;
 
 class ScreenTranslation extends TranslationManager
@@ -15,20 +16,20 @@ class ScreenTranslation extends TranslationManager
 
     /**
      * Apply translations to a screen.
-     * @param array $screen
+     * @param ScreenVersionModel $screen
      * @param string $defaultLanguage
      * @return array
      */
-    public function applyTranslations($screen, $defaultLanguage = '')
+    public function applyTranslations(ScreenVersionModel $screen, $defaultLanguage = '')
     {
-        $config = $screen['config'];
+        $config = $screen->config;
         if (!hasPackage('package-translations')) {
             return $config;
         }
 
         $language = $this->getTargetLanguage($defaultLanguage);
 
-        return $this->searchTranslations($screen['screen_id'], $config, $language);
+        return $this->searchTranslations($screen->screen_id, $config, $language);
     }
 
     /**
@@ -111,25 +112,40 @@ class ScreenTranslation extends TranslationManager
             $screensInProcess = $screenIds;
         }
 
-        $nestedScreens = [];
+        $fields = array_merge(['id', 'translations', 'config'], $withColumns);
+
+        $screens = collect();
         foreach ($screensInProcess as $screenId) {
-            $screen = Screen::find($screenId);
+            $screen = !$this->screenExists($screens, $screenId) ? $this->loadScreen($screenId, $fields) : null;
             if ($screen) {
-                $nestedScreens = array_merge($nestedScreens, $screen->nestedScreenIds());
+                $screens->push($screen);
+                foreach ($screen->nestedScreenIds() as $nestedScreenId) {
+                    $nestedScreen = !$this->screenExists($screens, $nestedScreenId) ? $this->loadScreen($nestedScreenId, $fields) : null;
+                    if ($nestedScreen) {
+                        $screens->push($nestedScreen);
+                    }
+                }
             }
         }
 
-        $screensInProcess = collect(array_merge($screensInProcess, $nestedScreens))->unique();
-
-        $fields = array_merge(['id', 'translations', 'config'], $withColumns);
-
-        $screens = Screen::whereIn('id', $screensInProcess)
-            ->get()
-            ->map
-            ->only($fields)
-            ->values();
-
         return $screens;
+    }
+
+    private function loadScreen(int $screenId, array $columns) : ?Screen
+    {
+        $screen = Screen::select($columns)->where('id', $screenId)->first();
+
+        if ($screen) {
+            $screenVersion = $screen->getLatestVersion();
+            $screen->config = $screenVersion->config;
+        }
+
+        return $screen;
+    }
+
+    private function screenExists(&$screens, $screenId)
+    {
+        return $screens->where('id', $screenId)->first();
     }
 
     private function getScreenIdsInProcess($process)

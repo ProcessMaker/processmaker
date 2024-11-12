@@ -7,7 +7,7 @@ use ProcessMaker\Http\Resources\ScreenVersion as ScreenVersionResource;
 use ProcessMaker\Http\Resources\Users;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\ScreenVersion as ScreenVersionModel;
 use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\User;
 use ProcessMaker\ProcessTranslations\ScreenTranslation;
@@ -71,6 +71,7 @@ trait TaskResourceIncludes
 
     private function includeScreen($request)
     {
+        \Log::info('includeScreen');
         $array = ['screen' => null];
 
         $screen = $this->getScreenVersion();
@@ -88,13 +89,13 @@ trait TaskResourceIncludes
         if ($array['screen']) {
             // Apply translations to screen
             $screenTranslation = new ScreenTranslation();
-            $array['screen']['config'] = $screenTranslation->applyTranslations($array['screen']);
+            $array['screen']['config'] = $screenTranslation->applyTranslations(new ScreenVersionModel($array['screen']));
             $array['screen']['config'] = $this->removeInspectorMetadata($array['screen']['config']);
 
             // Apply translations to nested screens
             if (array_key_exists('nested', $array['screen'])) {
                 foreach ($array['screen']['nested'] as &$nestedScreen) {
-                    $nestedScreen['config'] = $screenTranslation->applyTranslations($nestedScreen);
+                    $nestedScreen['config'] = $screenTranslation->applyTranslations(new ScreenVersionModel($nestedScreen));
                     $nestedScreen['config'] = $this->removeInspectorMetadata($nestedScreen['config']);
                 }
             }
@@ -142,7 +143,7 @@ trait TaskResourceIncludes
         if ($interstitial['interstitial_screen']) {
             // Translate interstitials
             $screenTranslation = new ScreenTranslation();
-            $translatedConf = $screenTranslation->applyTranslations($interstitial['interstitial_screen']);
+            $translatedConf = $screenTranslation->applyTranslations($interstitial['interstitial_screen']->getLatestVersion());
             $interstitial['interstitial_screen']['config'] = $translatedConf;
 
             // Remove inspector metadata

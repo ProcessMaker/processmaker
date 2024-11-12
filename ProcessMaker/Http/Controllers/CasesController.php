@@ -116,9 +116,8 @@ class CasesController extends Controller
     public function summaryScreenTranslation(ProcessRequest $request): void
     {
         if ($request->summary_screen) {
-            $screenArray = $request->summary_screen->toArray();
             $screenTranslation = new ScreenTranslation();
-            $request->summary_screen['config'] = $screenTranslation->applyTranslations($screenArray);
+            $request->summary_screen['config'] = $screenTranslation->applyTranslations($request->summary_screen->getLatestVersion());
         }
     }
 }
