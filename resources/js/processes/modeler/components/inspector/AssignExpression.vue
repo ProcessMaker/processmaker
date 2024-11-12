@@ -25,6 +25,7 @@
             v-model="assignedExpression"
             :hide-users="false"
             :multiple="false"
+            :activeTasksCount="true"
           />
         </div>
       </div>
@@ -85,6 +86,7 @@
         :hide-users="false"
         :multiple="false" 
         :helper="$t('If no evaluations are true')"
+        :activeTasksCount="true"
       />
     </div>
   </div>

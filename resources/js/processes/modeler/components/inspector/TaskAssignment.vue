@@ -19,7 +19,8 @@
             :label="$t('Assigned Users/Groups')"
             v-model="assignments"
             :hide-users="hideUsers"
-            :multiple="true" />
+            :multiple="true"
+            :activeTasksCount="true" />
 
           <div v-if="showAssignByVariable">
             <label class="mt-1">{{ $t('Variable Name (Users)') }}</label>
