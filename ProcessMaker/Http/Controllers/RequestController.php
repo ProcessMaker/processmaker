@@ -133,6 +133,11 @@ class RequestController extends Controller
         if (!$userHasCommentsForMedia && !$userHasCommentsForRequest) {
             $this->authorize('view', $request);
         }
+        // Get the case number of parent request if the case number is null
+        // The case_number is null when the subprocess is related to the system like [ActionByEmail]
+        if (is_null($request->case_number)) {
+            $request->case_number = ProcessRequest::where('id', $request->parent_request_id)->value('case_number');
+        }
 
         $request->participants;
         $request->user;
