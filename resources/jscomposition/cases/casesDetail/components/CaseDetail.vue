@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-import { computed, onBeforeMount } from "vue";
+import { computed } from "vue";
 import Tabs from "./Tabs.vue";
 import TaskTable from "./TaskTable.vue";
 import RequestTable from "./RequestTable.vue";
@@ -19,7 +19,19 @@ import { getRequestCount, isErrors } from "../variables/index";
 
 const translate = ProcessMaker.i18n;
 
+const urlTabs = [
+  "tasks",
+  "overview",
+  "completed_form",
+  "file_manager",
+  "history",
+  "requests",
+];
+
 const tabDefault = computed(() => {
+  if (urlTabs.includes(window.location.hash.substring(1))) {
+    return window.location.hash.substring(1);
+  }
   if (isErrors()) {
     return "errors";
   }
@@ -49,25 +61,5 @@ const tabs = [
     name: translate.t("Requests"), href: "#requests", current: "requests", show: getRequestCount() !== 1, content: RequestTable,
   },
 ];
-
-const urlTabs = [
-  "tasks",
-  "overview",
-  "completed_form",
-  "file_manager",
-  "history",
-  "requests",
-];
-
-const checkURL = () => {
-  const hash = window.location.hash.substring(1);
-  if (urlTabs.includes(hash)) {
-    tabDefault.value = hash;
-  }
-};
-
-onBeforeMount(() => {
-  checkURL();
-});
 
 </script>
