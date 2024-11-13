@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Resources;
 
 use Illuminate\Support\Arr;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScreenVersion as ScreenVersionModel;
 use ProcessMaker\ProcessTranslations\ScreenTranslation;
 
 class ScreenVersion extends ApiResource
@@ -44,13 +45,13 @@ class ScreenVersion extends ApiResource
         if (!$task) {
             // Apply translations to screen
             $screenTranslation = new ScreenTranslation();
-            $screenVersion['config'] = $screenTranslation->applyTranslations($screenVersion);
+            $screenVersion['config'] = $screenTranslation->applyTranslations(new ScreenVersionModel($screenVersion));
             // Apply translations to nested screens
             if (!array_key_exists('nested', $screenVersion)) {
                 return $screenVersion;
             }
             foreach ($screenVersion['nested'] as &$nestedScreen) {
-                $nestedScreen['config'] = $screenTranslation->applyTranslations($nestedScreen);
+                $nestedScreen['config'] = $screenTranslation->applyTranslations(new ScreenVersionModel($nestedScreen));
             }
         }
 

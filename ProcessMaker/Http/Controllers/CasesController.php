@@ -7,6 +7,7 @@ use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Package\PackageComments\PackageServiceProvider;
 use ProcessMaker\ProcessTranslations\ScreenTranslation;
 
@@ -50,7 +51,16 @@ class CasesController extends Controller
         }
         $request->participants;
         $request->user;
-        $request->summary = [];
+        // Load the data and key values
+        $request->summary = $request->summary();
+        // Load the screen configured in "Cancel Screen"
+        if ($request->status === 'CANCELED' && $request->process->cancel_screen_id) {
+            $request->summary_screen = $request->process->cancelScreen;
+        } else {
+            $request->summary_screen = $request->getSummaryScreen();
+        }
+        // Load the screen configured in "Request Detail Screen"
+        $request->request_detail_screen = Screen::find($request->process->request_detail_screen_id);
         // The user canCancel if has the processPermission and the case has only one request
         $canCancel = (Auth::user()->can('cancel', $request->processVersion) && $requestCount === 1);
         // The user can see the comments
@@ -116,9 +126,8 @@ class CasesController extends Controller
     public function summaryScreenTranslation(ProcessRequest $request): void
     {
         if ($request->summary_screen) {
-            $screenArray = $request->summary_screen->toArray();
             $screenTranslation = new ScreenTranslation();
-            $request->summary_screen['config'] = $screenTranslation->applyTranslations($screenArray);
+            $request->summary_screen['config'] = $screenTranslation->applyTranslations($request->summary_screen->getLatestVersion());
         }
     }
 }

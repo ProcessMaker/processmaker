@@ -28,6 +28,8 @@ const caseDetail = new Vue({
       packages: [],
       processId,
       canViewComments,
+      disabled: false,
+      retryDisabled: false,
       tabDefault: "details",
       collapseContainer: true,
       tabs: [
