@@ -19,6 +19,7 @@ use ProcessMaker\Filters\SaveSession;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Users as UserResource;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\RecommendationEngine;
 use ProcessMaker\TwoFactorAuthentication;
@@ -186,6 +187,7 @@ class UserController extends Controller
     public function getUsersTaskCount(Request $request)
     {
         $query = User::nonSystem();
+        $query->select('id', 'username', 'firstname', 'lastname');
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
@@ -199,14 +201,23 @@ class UserController extends Controller
 
         $query->where('status', 'ACTIVE');
 
-        $include_ids = $request->input('include_ids', '');
-        if (!empty($include_ids)) {
-            $include_ids = explode(',', $include_ids);
-            $query->whereIn('id', $include_ids);
+        $query->withCount('activeTasks');
+
+        $include_ids = [];
+        $include_ids_string = $request->input('include_ids', '');
+        if (!empty($include_ids_string)) {
+            $include_ids = explode(',', $include_ids_string);
+        } elseif ($request->has('assignable_for_task_id')) {
+            $task = ProcessRequestToken::findOrFail($request->input('assignable_for_task_id'));
+            if ($task->getAssignmentRule() === 'user_group') {
+                // Limit the list of users to those that can be assigned to the task
+                $include_ids = $task->process->getAssignableUsers($task->element_id);
+            }
         }
 
-        $query->select('*', DB::Raw("(SELECT COUNT(id) FROM process_request_tokens WHERE user_id=users.id AND status='ACTIVE' AND element_type='task') AS count"));
-        $query->groupBy('users.id');
+        if (!empty($include_ids)) {
+            $query->whereIn('id', $include_ids);
+        }
 
         $response = $query->orderBy(
             $request->input('order_by', 'username'),
@@ -406,6 +417,27 @@ class UserController extends Controller
                 return $response;
             }
         }
+        if ($fields['email'] !== $original['email']) {
+            if (!isset($fields['valpassword'])) {
+                return response([
+                    'message' => __(
+                        'A valid authentication is required for for update the email.'
+                    ),
+                    'errors' => [
+                        'email' => [
+                            __(
+                                'The password is required.'
+                            ),
+                        ],
+                    ],
+                ], 422);
+            } else {
+                $response = $this->validateBeforeChange(Auth::user(), $fields['valpassword']);
+                if ($response) {
+                    return $response;
+                }
+            }
+        }
         if (Auth::user()->is_administrator && $request->has('is_administrator')) {
             // user must be an admin to make another user an admin
             $user->is_administrator = $request->get('is_administrator');
@@ -449,6 +481,32 @@ class UserController extends Controller
                     'cell' => [
                         __(
                             'A valid Cell phone number is required for SMS two-factor authentication.'
+                        ),
+                    ],
+                ],
+            ], 422);
+        }
+
+        return false;
+    }
+
+    /**
+     * Validate the phone number for SMS two-factor authentication.
+     *
+     * @param User $user User to validate
+     * @param mixed $password String to validate
+     */
+    private function validateBeforeChange(User $user, $password)
+    {
+        if (!Hash::check($password, $user->password)) {
+            return response([
+                'message' => __(
+                    'A valid authentication is required for for update the email.'
+                ),
+                'errors' => [
+                    'email' => [
+                        __(
+                            'The authentication is incorrect.'
                         ),
                     ],
                 ],

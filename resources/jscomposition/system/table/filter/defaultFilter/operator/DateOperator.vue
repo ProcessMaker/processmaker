@@ -1,5 +1,6 @@
 <template>
   <input
+    :value="model"
     type="datetime-local"
     class="tw-px-2 tw-block tw-w-full tw-rounded-md
         tw-border-0 tw-py-2 tw-text-gray-900 tw-shadow-sm tw-ring-1
@@ -7,12 +8,22 @@
           focus:tw-ring-2 focus:tw-ring-inset"
     @change="$emit('change', $event.target.value)">
 </template>
-<script>
-import { defineComponent } from "vue";
+<script setup>
+import { computed } from "vue";
 
-export default defineComponent({
-  setup() {
-    return {};
+const props = defineProps({
+  value: {
+    type: String,
+    default: () => "",
+  },
+});
+
+const emit = defineEmits(["change"]);
+
+const model = computed({
+  get: () => props.value,
+  set: (value) => {
+    emit("change", value);
   },
 });
 </script>

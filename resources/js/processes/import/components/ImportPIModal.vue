@@ -100,6 +100,7 @@ export default {
           window.location = `/modeler/${response.data.id}`;
         })
         .catch(error => {
+          window.ProcessMaker.alert(this.$t('An error ocurred, please check the PI process file and try again.'), 'danger');
           console.error(error);
         });
     },

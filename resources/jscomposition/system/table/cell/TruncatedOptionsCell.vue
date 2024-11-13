@@ -1,20 +1,22 @@
 <template>
   <div class="tw-flex tw-relative tw-text-nowrap tw-whitespace-nowrap tw-p-3">
-    <div class="tw-overflow-hidden tw-text-ellipsis ">
+    <div
+      v-if="optionsModel.length"
+      class="tw-overflow-hidden tw-text-ellipsis">
       <a
         v-if="href !== null"
         class="hover:tw-text-blue-400 tw-text-gray-500"
-        :href="href(row[column.field][0])"
+        :href="href(optionsModel[0])"
       >
-        {{ getValue() }}
+        {{ getValueOption(optionsModel[0], 0) }}
       </a>
       <span
         v-else
         class="hover:tw-text-blue-400 tw-text-gray-500 hover:tw-cursor-pointer"
         href="#"
-        @click.prevent.stop="onClickOption(row[column.field][0], 0)"
+        @click.prevent.stop="onClickOption(optionsModel[0], 0)"
       >
-        {{ getValue() }}
+        {{ getValueOption(optionsModel[0], 0) }}
       </span>
     </div>
     <AppPopover
@@ -43,7 +45,7 @@
             >
               <a
                 v-if="href !== null"
-                class="tw-flex tw-py-2 tw-px-4 transition duration-300 hover:tw-bg-gray-200"
+                class="tw-flex tw-py-2 tw-px-4 transition duration-300 tw-text-gray-500 hover:tw-bg-gray-200 hover:tw-text-blue-400"
                 :href="href(option)"
               >
                 {{ getValueOption(option, index) }}
@@ -63,7 +65,7 @@
   </div>
 </template>
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import { isFunction } from "lodash";
 import { AppPopover } from "../../../base/index";
 
@@ -96,19 +98,17 @@ export default defineComponent({
       type: Function,
       default: null,
     },
+    // Filter Data, method to filter the input data
+    filterData: {
+      type: Function,
+      default: null,
+    },
   },
   setup(props) {
     const show = ref(false);
     const optionsModel = ref(props.row[props.column.field]);
 
-    const getValue = () => {
-      if (isFunction(props.column?.formatter)) {
-        return props.column?.formatter(props.row, props.column, props.columns);
-      }
-      return props.row[props.column.field].length ? props.row[props.column.field][0].name : "";
-    };
-
-    const getValueOption = (option, index) => {
+    const getValueOption = (option) => {
       if (isFunction(props.formatterOptions)) {
         return props.formatterOptions(option, props.row, props.column, props.columns);
       }
@@ -127,13 +127,19 @@ export default defineComponent({
       show.value = false;
     };
 
+    onMounted(() => {
+      // Filter the data before render
+      if (props.filterData) {
+        optionsModel.value = props.filterData(props.row, props.column, props.columns);
+      }
+    });
+
     return {
       show,
       optionsModel,
       onClose,
       onClickOption,
       onClick,
-      getValue,
       getValueOption,
     };
   },

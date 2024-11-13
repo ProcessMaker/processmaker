@@ -33,11 +33,12 @@
               class="nav-link task-nav-link"
               id="inbox-tab"
               :data-toggle="isDataLoading ? '' : 'tab'"
-              href="#inbox" role="tab"
+              href="#"
+              role="tab"
               aria-controls="inbox"
               @click.prevent="!isDataLoading ? switchTab('inbox') : null"
               aria-selected="true"
-              :class="{ 'active': inbox }"
+              :class="{ 'active': tab === 'inbox' }"
             >
               {{ __('Inbox') }}
             </a>
@@ -47,11 +48,12 @@
               class="nav-link task-nav-link"
               id="priority-tab"
               :data-toggle="isDataLoading ? '' : 'tab'"
-              href="#inbox" role="tab"
+              href="#"
+              role="tab"
               aria-controls="inbox"
               @click.prevent="!isDataLoading ? switchTab('priority') : null"
               aria-selected="true"
-              :class="{ 'active': priority }"
+              :class="{ 'active': tab === 'priority' }"
             >
               {{ __('Priority') }}
             </a>
@@ -61,12 +63,12 @@
               class="nav-link task-nav-link"
               id="drafts-tab"
               :data-toggle="isDataLoading ? '' : 'tab'"
-              href="#inbox"
+              href="#"
               role="tab"
               aria-controls="inbox"
               @click.prevent="!isDataLoading ? switchTab('draft') : null"
               aria-selected="true"
-              :class="{ 'active': draft }"
+              :class="{ 'active': tab === 'draft' }"
               v-if="taskDraftsEnabled"
             >
               {{ __('Drafts') }}

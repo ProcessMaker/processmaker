@@ -5,6 +5,12 @@ namespace Tests\Feature\Api;
 use Database\Seeders\PermissionSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Http\UploadedFile;
+use ProcessMaker\Models\Group;
+use ProcessMaker\Models\GroupMember;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\Recommendation;
 use ProcessMaker\Models\RecommendationUser;
 use ProcessMaker\Models\Setting;
@@ -377,8 +383,12 @@ class UsersTest extends TestCase
         // Load the starting user data
         $verify = $this->apiCall('GET', $url);
 
+        // Send the same email to avoid the email validation
+        $updateData = $this->getUpdatedData();
+        $updateData['email'] = $verify['email'];
+
         // Post saved success
-        $response = $this->apiCall('PUT', $url, $this->getUpdatedData());
+        $response = $this->apiCall('PUT', $url, $updateData);
 
         // Validate the header status code
         $response->assertStatus(204);
@@ -397,12 +407,14 @@ class UsersTest extends TestCase
     {
         $faker = Faker::create();
 
-        $url = self::API_TEST_URL . '/' . User::factory()->create()->id;
+        $user = User::factory()->create();
+
+        $url = self::API_TEST_URL . '/' . $user->id;
 
         // Post saved success
         $response = $this->apiCall('PUT', $url, [
             'username' => 'updatemytestusername',
-            'email' => $faker->email(),
+            'email' => $user->email,
             'firstname' => $faker->firstName(),
             'lastname' => $faker->lastName(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
@@ -723,8 +735,11 @@ class UsersTest extends TestCase
         // Load the starting user data
         $verify = $this->apiCall('GET', $url);
 
+        $updateData = $this->getUpdatedData();
+        $updateData['email'] = $verify['email'];
+
         // Post saved success
-        $response = $this->apiCall('PUT', $url, $this->getUpdatedData());
+        $response = $this->apiCall('PUT', $url, $updateData);
 
         // Validate the header status code
         $response->assertStatus(204);
@@ -754,7 +769,10 @@ class UsersTest extends TestCase
         // Load the starting user data
         $verify = $this->apiCall('GET', $url);
 
-        $response = $this->apiCall('PUT', $url, $this->getUpdatedData());
+        $updateData = $this->getUpdatedData();
+        $updateData['email'] = $verify['email'];
+
+        $response = $this->apiCall('PUT', $url, $updateData);
 
         // Validate the header status code
         $response->assertStatus(403);
@@ -765,8 +783,11 @@ class UsersTest extends TestCase
         $this->user->refresh();
         $this->flushSession();
 
+        $updateData = $this->getUpdatedData();
+        $updateData['email'] = $verify['email'];
+
         // Post saved success
-        $response = $this->apiCall('PUT', $url, $this->getUpdatedData());
+        $response = $this->apiCall('PUT', $url, $updateData);
 
         // Validate the header status code
         $response->assertStatus(204);
@@ -787,8 +808,12 @@ class UsersTest extends TestCase
         $this->assertEquals(1, RecommendationUser::where('user_id', $this->user->id)->count());
 
         $url = self::API_TEST_URL . '/' . $this->user->id;
+
+        $updateData = $this->getUpdatedData();
+        $updateData['email'] = $this->user->email;
+
         $data = [
-            ...$this->getUpdatedData(),
+            ...$updateData,
             'meta' => [
                 'disableRecommendations' => true,
             ],
@@ -796,5 +821,67 @@ class UsersTest extends TestCase
         $this->apiCall('PUT', $url, $data);
 
         $this->assertEquals(0, RecommendationUser::where('user_id', $this->user->id)->count());
+    }
+
+    public function testGetUsersTaskCount()
+    {
+        $admin = $this->user;
+        $user = User::factory()->create();
+        $groupUser = User::factory()->create();
+        $group = Group::factory()->create();
+        GroupMember::factory()->create([
+            'group_id' => $group->id,
+            'member_id' => $groupUser->id,
+            'member_type' => User::class,
+        ]);
+
+        $process = Process::factory()->create([
+            'user_id' => $admin->id,
+        ]);
+
+        $bpmn = file_get_contents(__DIR__ . '/../../Fixtures/task_with_user_group_assignment.bpmn');
+        $bpmn = str_replace([
+            '[assigned-users]',
+            '[assigned-groups]',
+        ], [
+            $user->id,
+            $group->id,
+        ], $bpmn);
+
+        $process->bpmn = $bpmn; // Save separately from factory::create to utilize ProcessTaskAssignmentsTrait
+        $process->save();
+
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'user_id' => $admin->id,
+        ]);
+
+        $tasks = ProcessRequestToken::factory(3)->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'element_id' => 'node_2',
+            'user_id' => $user->id,
+            'status' => 'ACTIVE',
+        ]);
+
+        $result = $this->apiCall('GET', route('api.users.users_task_count', [
+            'assignable_for_task_id' => $tasks[0]->id,
+        ]));
+
+        $users = $result->json()['data'];
+
+        // Assert only the $user and $groupUser are in the list
+        $this->assertEqualsCanonicalizing([$user->id, $groupUser->id], collect($users)->pluck('id')->toArray());
+
+        // Assert the $user has 3 active tasks
+        $tokenCount = collect($users)->first(fn ($r) => $r['id'] === $user->id)['active_tasks_count'];
+        $this->assertEquals(3, $tokenCount);
+
+        // Make a request without specifying assignable_for_task_id
+        $result = $this->apiCall('GET', route('api.users.users_task_count'));
+        $users = $result->json()['data'];
+
+        // Assert the list of users now contains the admin user
+        $this->assertContains($admin->id, collect($users)->pluck('id')->toArray());
     }
 }

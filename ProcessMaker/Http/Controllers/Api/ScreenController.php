@@ -679,21 +679,18 @@ class ScreenController extends Controller
      */
     public function translate(Request $request, Screen $screen, $language)
     {
-        $draft = $screen->versions()->draft()->first();
-        if (!$draft) {
-            $draft = $screen;
-            $draft->screen_id = $draft->id;
-        }
+        // get latest version published
+        $screenVersion = $screen->getLatestVersion();
 
-        $screenArray = $draft->toArray();
         $screenTranslation = new ScreenTranslation();
-        $screenArray['config'] = $screenTranslation->evaluateMustache(
+
+        // evaluate mustache
+        $screenVersion->config = $screenTranslation->evaluateMustache(
             $request->input('screenConfig'),
             $request->input('inputData')
         );
-        $translatedConfig = $screenTranslation->applyTranslations($screenArray, $language);
 
-        return $translatedConfig;
+        return $screenTranslation->applyTranslations($screenVersion, $language);
     }
 
     public function updateDefaultTemplate(string $screenType, int $isPublic)

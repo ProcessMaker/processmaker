@@ -2,16 +2,16 @@
   <td
     class="tw-relative"
     :style="{ width: `${column.width}px` }">
-    <div v-if="!column.cellRenderer">
+    <template v-if="!column.cellRenderer">
       <slot
         :columns="columns"
         :column="column"
         :row="row">
-        <div class="tw-p-3">
+        <div class="tw-p-3 tw-text-ellipsis tw-text-nowrap tw-overflow-hidden">
           {{ getValue() }}
         </div>
       </slot>
-    </div>
+    </template>
     <component
       :is="getComponent()"
       v-else

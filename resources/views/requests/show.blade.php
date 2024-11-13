@@ -276,7 +276,7 @@
               </div>
             </div>
               <timeline commentable_id="{{ $request->getKey() }}" commentable_type="{{ get_class($request) }}"
-                :adding="false" :readonly="request.status === 'COMPLETED'" 
+                :adding="false" :readonly="request.status === 'COMPLETED'"
                 :timeline="false" />
           </div>
 
@@ -344,6 +344,7 @@
                             @endif
                             <li class="list-group-item">
                               <button type="button" class="btn btn-outline-custom btn-block" @click="onReturnCase"
+                                data-test="request-go-to-case"
                                 aria-haspopup="dialog">
                                 <i class="fa fa-arrow-up"></i>
                                 {{ __('Go to Case') }}
@@ -463,7 +464,7 @@
                           name="{{ $request->name }}"
                           :readonly="request.status === 'COMPLETED'"
                           :header="false"
-                          :case_number="{{ $request->case_number }}"
+                          :case_number="{{ json_encode($request->case_number ?? null) }}"
                         />
                       </template>
                     </div>
@@ -675,7 +676,7 @@
           this.userConfiguration.requests.isMenuCollapse = this.showMenu;
           ProcessMaker.apiClient
             .put(
-              this.urlConfiguration, 
+              this.urlConfiguration,
               {
                 ui_configuration: this.userConfiguration,
               }
@@ -817,7 +818,7 @@
           );
         },
         onReturnCase() {
-          window.location = `../cases/${request.case_number}`;
+          window.location.replace(`/cases/${request.case_number}`);
         },
         completeRequest() {
           ProcessMaker.confirmModal(
@@ -875,7 +876,7 @@
               ProcessMaker.apiClient.post(`tasks/${errorTaskId}/rollback`).then(response => {
                 location.reload();
               });
-            } 
+            }
           )
         },
       },

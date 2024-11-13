@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Lavary\Menu\Facade as Menu;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Setting;
@@ -114,6 +115,11 @@ class GenerateMenus
                     'icon' => 'fa-infinity',
                 ]);
 
+                $submenu->add(__('Script Executors'), [
+                    'route' => 'script-executors.index',
+                    'icon' => 'fa-code',
+                ]);
+
                 $devlinkIcon = base64_encode(file_get_contents(base_path('resources/img/devlink.svg')));
                 $submenu->add(__('DevLink'), [
                     'route' => 'devlink.index',
@@ -208,7 +214,7 @@ class GenerateMenus
                     'id' => 'process-scripts',
                 ])->data('order', 2);
             }
-            if ($this->userHasPermission('view-collections')) {
+            if (hasPackage('package-collections') && $this->userHasPermission('view-collections')) {
                 $submenu->add(__('Collections'), [
                     'route' => 'plugin-collections-index',
                     'customicon' => 'nav-icon fas fa-database',
@@ -323,7 +329,7 @@ class GenerateMenus
 
     public static function userHasPermission($permission)
     {
-        $user = \Auth::user();
+        $user = Auth::user();
 
         if (!$user || !$user->is_administrator) {
             return $user && $user->can($permission) && $user->hasPermission($permission);

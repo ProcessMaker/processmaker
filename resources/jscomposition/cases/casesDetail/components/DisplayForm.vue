@@ -33,21 +33,32 @@
         v-show="!showPlaceholder && screen"
         class="tw-pointer-events-none"
       >
-        <vue-form-renderer
-          v-if="screen !== null"
-          v-model="previewData"
-          :data="previewData"
-          :config="configScreen"
-          :custom-css="screen.custom_css"
-          :show-errors="true"
-        />
+        <div
+          v-for="(page, index) in pagesPrintable"
+          :key="index"
+          class="card"
+        >
+          <div class="card-body">
+            <vue-form-renderer
+              v-if="screen !== null"
+              ref="formRender"
+              v-model="previewData"
+              :data="previewData"
+              :config="configScreen"
+              :custom-css="screen.custom_css"
+              :show-errors="true"
+            />
+          </div>
+        </div>
       </div>
     </transition>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from "vue";
+import {
+  onMounted, ref, computed, nextTick,
+} from "vue";
 import { getScreenData } from "../api/index";
 import LoadingPlaceholder from "./placeholder/LoadingPlaceholder.vue";
 
@@ -62,6 +73,35 @@ const previewData = computed(() => props.data.taskData);
 const screen = ref(null);
 const configScreen = ref({});
 const showPlaceholder = ref(false);
+const pagesPrintable = ref([]);
+const formRender = ref([]);
+
+const findPagesInNavButtons = (object, found = []) => {
+  if (object.items) {
+    object.items.forEach((item) => {
+      findPagesInNavButtons(item, found);
+    });
+  } else if (object instanceof Array) {
+    object.forEach((item) => {
+      findPagesInNavButtons(item, found);
+    });
+  } else if (object.config && object.config.event === "pageNavigate" && object.config.eventData) {
+    const page = parseInt(object.config.eventData, 10);
+    if (found.indexOf(page) === -1) {
+      found.push(page);
+    }
+  }
+};
+
+const loadPages = () => {
+  const pages = [0];
+  if (screen.value.config instanceof Array) {
+    screen.value.config.forEach((page) => {
+      findPagesInNavButtons(page, pages);
+    });
+  }
+  return pages;
+};
 
 const disableForm = (screenConfig) => {
   if (screenConfig instanceof Array) {
@@ -88,6 +128,16 @@ const disableForm = (screenConfig) => {
   return screenConfig;
 };
 
+const loadPagesPrint = () => {
+  nextTick(() => {
+    formRender.value.forEach((page, index) => {
+      if (page.setCurrentPage) {
+        page.setCurrentPage(pagesPrintable.value[index]);
+      }
+    });
+  });
+};
+
 const getScreen = async (screenId) => {
   showPlaceholder.value = true;
 
@@ -98,7 +148,9 @@ const getScreen = async (screenId) => {
 
     if (response.data) {
       screen.value = response.data;
+      pagesPrintable.value = loadPages();
       configScreen.value = disableForm(screen.value.config);
+      loadPagesPrint();
     }
   }, 300);
 };

@@ -37,14 +37,9 @@
               width="20"
               height="20"
             />
-            <b-form-checkbox v-else-if="column.field === 'check_control'"
-                             v-model="headCheckbox"
-                             @change="changeHeadCheckbox">
-            </b-form-checkbox>
             <span v-else>{{ $t(column.label) }}</span>
           </div>
           <b-tooltip
-            v-if="column.field !== 'check_control'"
             :key="index"
             :target="`tasks-table-column-${column.field}`"
             custom-class="pm-table-tooltip-header"
@@ -152,12 +147,6 @@
                   </span>
                   <span>{{ getNestedPropertyValue(row, header) }}</span>
                 </template>
-                <template v-else-if="header.field === 'check_control'">
-                  <b-form-checkbox :checked="arrayOfCheckedRows.includes(row.id)"
-                                   ref="checkboxRegister"
-                                   @change="changeCheckbox($event, row)">
-                  </b-form-checkbox>
-                </template>
                 <template v-else-if="header.field === 'is_priority'">
                   <span>
                     <img
@@ -232,7 +221,6 @@
       :tooltip-button="tooltipFromButton"
       @onSetViewed="setViewed"
       @onWatchShowPreview="onWatchShowPreview"
-      @on-reassign-user="onReassignUser"
     >
       <template v-slot:header="{ close, screenFilteredTaskData, taskReady }">
         <slot name="preview-header" v-bind:close="close" v-bind:screenFilteredTaskData="screenFilteredTaskData" v-bind:taskReady="taskReady"></slot>
@@ -410,8 +398,6 @@ export default {
       hideTimer: null,
       ellipsisShow: false,
       columnMouseover: null,
-      headCheckbox: false,
-      arrayOfCheckedRows: []
     };
   },
   computed: {
@@ -464,7 +450,6 @@ export default {
       }
       this.$emit('count', newData.meta?.total);
       this.$emit("tab-count", newData.meta?.total);
-      this.checkHeadCheckboxAfterChangeData();
     },
     shouldShowLoader(value) {
       if (this.apiNoResults) {
@@ -663,6 +648,9 @@ export default {
       return link;
     },
     previewTasks(info, size = null, fromButton = null) {
+      if (!info || !this.$refs.preview) {
+        return;
+      }
       this.tooltipFromButton = fromButton;
       this.selectedRow = info.id;
       this.$refs.preview.showSideBar(info, this.data.data, true, size);
@@ -684,19 +672,19 @@ export default {
     },
     formatStatus(props) {
       let color = "success";
-      let label = "In Progress";
+      let label = this.$t("In Progress");
 
       if (props.status === "ACTIVE") {
         if (props.is_self_service) {
           color = "danger";
-          label = "Self Service";
+          label = this.$t("Self Service");
         } else if (props.advanceStatus === "overdue") {
           color = "danger";
-          label = "Overdue";
+          label = this.$t("Overdue");
         }
       } else if (props.status === "CLOSED") {
         color = "primary";
-        label = "Completed";
+        label = this.$t("Completed");
       }
 
       return `
@@ -935,48 +923,6 @@ export default {
     handleColumnMouseleave() {
       this.columnMouseover = null;
     },
-    addCheckedItem(value, row) {
-      if (value === true) {
-        if (!this.arrayOfCheckedRows.includes(row.id)) {
-          this.arrayOfCheckedRows.push(row.id);
-        }
-      } else {
-        let index = this.arrayOfCheckedRows.indexOf(row.id);
-        this.arrayOfCheckedRows.splice(index, 1);
-      }
-      this.$emit('add-checked-item', this.arrayOfCheckedRows);
-    },
-    getArrayOfCheckedRows() {
-      return this.arrayOfCheckedRows;
-    },
-    clearArrayOfCheckedRows() {
-      this.arrayOfCheckedRows = [];
-    },
-    changeHeadCheckbox(event) {
-      this.data.data.forEach(row => {
-        this.addCheckedItem(event, row);
-      });
-    },
-    changeCheckbox(event, row) {
-      this.addCheckedItem(event, row);
-      this.$nextTick(() => {
-        if (this.$refs.checkboxRegister) {
-          let sw = this.$refs.checkboxRegister.every(item => item.checked === true);
-          this.headCheckbox = sw;
-        }
-      });
-    },
-    checkHeadCheckboxAfterChangeData() {
-      this.$nextTick(() => {
-        if (this.$refs.checkboxRegister) {
-          let sw = this.$refs.checkboxRegister.every(item => item.checked === true);
-          this.headCheckbox = sw;
-        }
-      });
-    },
-    onReassignUser(idUser) {
-      this.fetch();
-    }
   },
 };
 </script>

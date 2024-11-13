@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use ProcessMaker\i18nHelper;
 use ProcessMaker\Models\JsonData;
 use ProcessMaker\Models\User;
+use ProcessMaker\Package\Auth\Models\SsoUser;
 use ProcessMaker\Traits\HasControllerAddons;
 
 class ProfileController extends Controller
@@ -43,6 +44,11 @@ class ProfileController extends Controller
             }
         );
 
+        $ssoUser = false;
+        if (class_exists(SsoUser::class)) {
+            $ssoUser = SsoUser::where('user_id', $currentUser->id)->exists();
+        }
+
         // Get global and valid 2FA preferences for the user
         $enabled2FA = config('password-policies.2fa_enabled', false);
         $global2FAEnabled = config('password-policies.2fa_method', []);
@@ -53,7 +59,7 @@ class ProfileController extends Controller
 
         return view('profile.edit',
             compact('currentUser', 'states', 'timezones', 'countries', 'datetimeFormats',
-                'status', 'enabled2FA', 'global2FAEnabled', 'is2FAEnabledForGroup', 'addons'));
+                'status', 'enabled2FA', 'global2FAEnabled', 'is2FAEnabledForGroup', 'addons', 'ssoUser'));
     }
 
     /**

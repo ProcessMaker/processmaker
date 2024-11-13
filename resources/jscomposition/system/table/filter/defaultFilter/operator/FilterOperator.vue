@@ -38,7 +38,7 @@ const defaultOperators = [
   },
   {
     value: "<",
-    label: ">",
+    label: "<",
   },
   {
     value: "<=",

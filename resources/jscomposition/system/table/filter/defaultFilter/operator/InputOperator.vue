@@ -8,7 +8,7 @@
     @change="$emit('change', $event.target.value)">
 </template>
 <script setup>
-import { ref } from "vue";
+import { computed } from "vue";
 
 const props = defineProps({
   value: {
@@ -17,5 +17,13 @@ const props = defineProps({
   },
 });
 
-const model = ref(props.value);
+const emit = defineEmits(["change"]);
+
+const model = computed({
+  get: () => props.value,
+  set: (value) => {
+    emit("change", value);
+  },
+});
+
 </script>

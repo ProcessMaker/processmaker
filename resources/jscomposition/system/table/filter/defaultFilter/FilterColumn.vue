@@ -5,18 +5,8 @@
       :hover="false"
       position="bottom">
       <i
-        v-if="!props.value?.sortable"
-        class="hover:tw-cursor-pointer tw-px-1 fas fa-ellipsis-v"
-        @click.prevent="onClick" />
-
-      <i
-        v-if="props.value?.sortable == 'asc'"
-        class="hover:tw-cursor-pointer fas fa-sort-amount-up-alt"
-        @click.prevent="onClick" />
-
-      <i
-        v-if="props.value?.sortable == 'desc'"
-        class="hover:tw-cursor-pointer fas fa-sort-amount-down-alt"
+        class="hover:tw-cursor-pointer hover:hover:tw-text-blue-500"
+        :class="iconClass()"
         @click.prevent="onClick" />
 
       <template #content>
@@ -125,5 +115,20 @@ const onApply = () => {
   });
 
   show.value = false;
+};
+
+const iconClass = () => {
+  const { operator, sortable } = props.value || {};
+
+  if (operator) {
+    return "fas fa-filter";
+  }
+
+  const sortIcons = {
+    asc: "fas fa-sort-amount-up-alt",
+    desc: "fas fa-sort-amount-down-alt",
+  };
+
+  return sortIcons[sortable] || "fas fa-ellipsis-v";
 };
 </script>

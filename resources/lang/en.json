@@ -2424,5 +2424,13 @@
   "No linked instances of ProcessMaker": "No linked instances of ProcessMaker",
   "Use the button Add Instance": "Use the button Add Instance",
   "No bundles of assets to display": "No bundles of assets to display",
-  "Create a bundle to easily share assets and settings between ProcessMaker instances.": "Create a bundle to easily share assets and settings between ProcessMaker instances."
+  "Create a bundle to easily share assets and settings between ProcessMaker instances.": "Create a bundle to easily share assets and settings between ProcessMaker instances.",
+  "In addition to the process manager, these users and groups will have permission to reassign any task in this process, regardless of the \"Allow Reassignment\" task setting.": "In addition to the process manager, these users and groups will have permission to reassign any task in this process, regardless of the \"Allow Reassignment\" task setting.",
+  "Reassignment Permission": "Reassignment Permission",
+  "This task can not be reassigned": "This task can not be reassigned",
+  "Start New Case": "Start New Case",
+  "No Case to Start": "No Case to Start",
+  "No Cases to Show": "No Cases to Show",
+  "Drafts": "Drafts",
+  "An error ocurred, please check the PI process file and try again.": "An error ocurred, please check the PI process file and try again."
 }
