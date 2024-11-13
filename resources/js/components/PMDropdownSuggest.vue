@@ -124,6 +124,10 @@
   }
   .pm-dds-border > .dropdown-menu {
     width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
   }
   .pm-dds-show {
     display: block;
@@ -131,6 +135,10 @@
     transform: translate3d(-1px, 30px, 0px);
     top: 0px;
     left: 0px;
+    max-height: 200px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
   }
   .pm-dds-item > .dropdown-item {
     display: flex;
