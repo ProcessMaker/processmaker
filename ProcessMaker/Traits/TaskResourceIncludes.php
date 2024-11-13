@@ -71,7 +71,6 @@ trait TaskResourceIncludes
 
     private function includeScreen($request)
     {
-        \Log::info('includeScreen');
         $array = ['screen' => null];
 
         $screen = $this->getScreenVersion();
