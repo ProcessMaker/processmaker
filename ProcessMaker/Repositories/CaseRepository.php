@@ -135,8 +135,11 @@ class CaseRepository implements CaseRepositoryInterface
             }
 
             // Update the case started and case participated
-            CaseStarted::where('case_number', $instance->case_number)->update($data);
-            $this->caseParticipatedRepository->updateStatus($instance->case_number, $data);
+
+            if (!is_null($instance->case_number)) {
+                CaseStarted::where('case_number', $instance->case_number)->update($data);
+                $this->caseParticipatedRepository->updateStatus($instance->case_number, $data);
+            }
         } catch (\Exception $e) {
             Log::error('CaseException: ' . $e->getMessage());
             Log::error('CaseException: ' . $e->getTraceAsString());

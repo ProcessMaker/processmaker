@@ -355,9 +355,11 @@ class TokenRepository implements TokenRepositoryInterface
         $token->setId($token->getKey());
 
         // Update Case Started Task
-        $caseTaskRepo = new CaseTaskRepository($token->getInstance()->case_number, $token);
-        $caseTaskRepo->updateCaseStartedTaskStatus();
-        $caseTaskRepo->updateCaseParticipatedTaskStatus();
+        if (!is_null($token->getInstance()->case_number,)) {
+            $caseTaskRepo = new CaseTaskRepository($token->getInstance()->case_number, $token);
+            $caseTaskRepo->updateCaseStartedTaskStatus();
+            $caseTaskRepo->updateCaseParticipatedTaskStatus();
+        }
 
         $request = $token->getInstance();
         $request->notifyProcessUpdated('ACTIVITY_COMPLETED', $token);
