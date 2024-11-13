@@ -2431,5 +2431,6 @@
   "Start New Case": "Start New Case",
   "No Case to Start": "No Case to Start",
   "No Cases to Show": "No Cases to Show",
-  "Drafts": "Drafts"
+  "Drafts": "Drafts",
+  "An error ocurred, please check the PI process file and try again.": "An error ocurred, please check the PI process file and try again."
 }
