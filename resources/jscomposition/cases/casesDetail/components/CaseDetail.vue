@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-import { ref, onBeforeMount } from "vue";
+import { computed } from "vue";
 import Tabs from "./Tabs.vue";
 import TaskTable from "./TaskTable.vue";
 import RequestTable from "./RequestTable.vue";
@@ -15,13 +15,40 @@ import CompletedForms from "./CompletedForms.vue";
 import TabFiles from "./TabFiles.vue";
 import Overview from "./Overview.vue";
 import TabSummary from "./TabSummary.vue";
-import { getRequestCount, getRequestStatus } from "../variables/index";
+import ErrorsTab from "./ErrorsTab.vue";
+import { getRequestCount, getRequestStatus, isErrors } from "../variables/index";
 
 const translate = ProcessMaker.i18n;
 
-const tabDefault = ref("tasks");
+const urlTabs = [
+  "errors",
+  "tasks",
+  "overview",
+  "summary",
+  "completed_form",
+  "file_manager",
+  "history",
+  "requests",
+];
+
+const tabDefault = computed(() => {
+  if (urlTabs.includes(window.location.hash.substring(1))) {
+    return window.location.hash.substring(1);
+  }
+  if (isErrors()) {
+    return "errors";
+  }
+  return "tasks";
+});
 
 const tabs = [
+  {
+    name: translate.t("Errors"),
+    href: "#errors",
+    current: "errors",
+    show: isErrors(),
+    content: ErrorsTab,
+  },
   {
     name: translate.t("Tasks"),
     href: "#tasks",
@@ -46,7 +73,7 @@ const tabs = [
   {
     name: translate.t("Completed & Form"),
     href: "#completed_form",
-    current: "completed",
+    current: "completed_form",
     show: true,
     content: CompletedForms,
   },
@@ -72,26 +99,4 @@ const tabs = [
     content: RequestTable,
   },
 ];
-
-const urlTabs = [
-  "tasks",
-  "overview",
-  "summary",
-  "completed_form",
-  "file_manager",
-  "history",
-  "requests",
-];
-
-const checkURL = () => {
-  const hash = window.location.hash.substring(1);
-  if (urlTabs.includes(hash)) {
-    tabDefault.value = hash;
-  }
-};
-
-onBeforeMount(() => {
-  checkURL();
-});
-
 </script>

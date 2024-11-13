@@ -17,3 +17,7 @@ export const getComentableType = () => comentable_type;
 export const getProcessName = () => request.process.name;
 
 export const getRequestCount = () => requestCount;
+
+export const getErrors = () => errorLogs;
+
+export const isErrors = () => request.status === "ERROR";
