@@ -115,6 +115,26 @@ class CasesControllerTest extends TestCase
     }
 
     /**
+     * Test show default summary tab when the status is Error
+     * @return void
+     */
+    public function testCaseErrorWithDataDefaultSummary()
+    {
+        $process = Process::factory()->create();
+        $requestCanceled = ProcessRequest::factory()->create([
+            'name' => $process->name,
+            'process_id' => $process->id,
+            'data' => ['form_input_1' => 'TEST DATA'],
+            'status' => 'ERROR',
+        ]);
+        $response = $this->webCall('GET', self::URL_CASES . $requestCanceled->case_number);
+        // Get the URL
+        $response->assertStatus(200);
+        // Check the correct view is called
+        $response->assertViewIs('cases.edit');
+    }
+
+    /**
      * Test show default summary tab when the status is InProgress
      * Without custom screen "Request Detail Screen"
      * @return void
