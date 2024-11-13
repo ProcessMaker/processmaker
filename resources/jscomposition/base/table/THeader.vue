@@ -5,7 +5,7 @@
     <div
       class="tw-py-4 tw-px-3 tw-text-left tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis">
       <slot>
-        {{ getValue() }}
+        {{ $t(getValue()) }}
       </slot>
     </div>
 
