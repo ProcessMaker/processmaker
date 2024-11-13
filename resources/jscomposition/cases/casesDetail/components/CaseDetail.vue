@@ -15,7 +15,7 @@ import CompletedForms from "./CompletedForms.vue";
 import TabFiles from "./TabFiles.vue";
 import Overview from "./Overview.vue";
 import TabSummary from "./TabSummary.vue";
-import { getRequestCount } from "../variables/index";
+import { getRequestCount, getRequestStatus } from "../variables/index";
 
 const translate = ProcessMaker.i18n;
 
@@ -40,7 +40,7 @@ const tabs = [
     name: translate.t("Summary"),
     href: "#summary",
     current: "summary",
-    show: true,
+    show: getRequestStatus() !== 'ERROR',
     content: TabSummary,
   },
   {
