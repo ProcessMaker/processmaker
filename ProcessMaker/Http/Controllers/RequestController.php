@@ -201,6 +201,16 @@ class RequestController extends Controller
 
         UserResourceView::setViewed(Auth::user(), $request);
         $userConfiguration = (new UserConfigurationController())->index();
+        $requestUser = $request->user->only([
+            'id',
+            'username',
+            'fullname',
+            'firstname',
+            'lastname',
+            'avatar',
+            'timezone',
+            'datetime_format',
+        ]);
 
         return view('requests.show', compact(
             'request',
@@ -217,6 +227,7 @@ class RequestController extends Controller
             'eligibleRollbackTask',
             'errorTask',
             'userConfiguration',
+            'requestUser',
         ));
     }
 

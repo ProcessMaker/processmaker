@@ -493,6 +493,8 @@
     window.PM4ConfigOverrides = {
       requestFiles: @json($request->requestFiles())
     };
+    window.Processmaker.user = @json($requestUser);
+
     const request = @json($request);
   </script>
 
