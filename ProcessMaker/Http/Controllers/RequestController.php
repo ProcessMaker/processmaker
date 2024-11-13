@@ -287,8 +287,7 @@ class RequestController extends Controller
     {
         if ($request->summary_screen) {
             $screenTranslation = new ScreenTranslation();
-            $translatedConf = $screenTranslation->applyTranslations($request->summary_screen->toArray());
-            $request->summary_screen['config'] = $translatedConf;
+            $request->summary_screen['config'] = $screenTranslation->applyTranslations($request->summary_screen->getLatestVersion());
         }
     }
 }
