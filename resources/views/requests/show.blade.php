@@ -344,6 +344,7 @@
                             @endif
                             <li class="list-group-item">
                               <button type="button" class="btn btn-outline-custom btn-block" @click="onReturnCase"
+                                data-test="request-go-to-case"
                                 aria-haspopup="dialog">
                                 <i class="fa fa-arrow-up"></i>
                                 {{ __('Go to Case') }}

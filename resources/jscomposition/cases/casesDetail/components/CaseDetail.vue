@@ -1,11 +1,12 @@
 <template>
   <Tabs
     :tab-default="tabDefault"
-    :tabs="tabs" />
+    :tabs="tabs"
+  />
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onBeforeMount } from "vue";
 import Tabs from "./Tabs.vue";
 import TaskTable from "./TaskTable.vue";
 import RequestTable from "./RequestTable.vue";
@@ -71,4 +72,26 @@ const tabs = [
     content: RequestTable,
   },
 ];
+
+const urlTabs = [
+  "tasks",
+  "overview",
+  "summary",
+  "completed_form",
+  "file_manager",
+  "history",
+  "requests",
+];
+
+const checkURL = () => {
+  const hash = window.location.hash.substring(1);
+  if (urlTabs.includes(hash)) {
+    tabDefault.value = hash;
+  }
+};
+
+onBeforeMount(() => {
+  checkURL();
+});
+
 </script>
