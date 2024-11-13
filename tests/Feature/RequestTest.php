@@ -207,6 +207,27 @@ class RequestTest extends TestCase
     }
 
     /**
+     * Test show the request is when the status is Error
+     * @return void
+     */
+    public function testRequestError()
+    {
+        $process = Process::factory()->create();
+        $requestCanceled = ProcessRequest::factory()->create([
+            'name' => $process->name,
+            'process_id' => $process->id,
+            'data' => ['form_input_1' => 'TEST DATA'],
+            'status' => 'ERROR',
+        ]);
+
+        // Get the URL
+        $response = $this->webCall('GET', '/requests/' . $requestCanceled->id);
+        $response->assertStatus(200);
+        // Check the correct view is called
+        $response->assertViewIs('requests.show');
+    }
+
+    /**
      * Test show default summary tab
      * @return void
      */
