@@ -110,12 +110,12 @@ export default {
       ],
       fields: [
         {
-          title: () => "Name",
+          title: () => this.$t("Name"),
           name: "__slot:title",
           sortField: "title",
         },
         {
-          title: () => "Modified",
+          title: () => this.$t("Modified"),
           name: "updated_at",
           sortField: "updated_at",
           callback: "formatDate",
