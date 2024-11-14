@@ -475,4 +475,59 @@ class CaseStartedTest extends TestCase
         $this->assertDatabaseCount('cases_started', 0);
         $this->assertDatabaseCount('cases_participated', 0);
     }
+
+    public function test_try_store_error_status_on_log_error()
+    {
+        $user = User::factory()->create([
+            'is_administrator' => true,
+        ]);
+
+        $process = Process::factory()->create([
+            'bpmn' => file_get_contents(base_path('tests/Feature/ImportExport/fixtures/process-abe.xml')),
+            'user_id' => $user->id,
+        ]);
+
+        $this->be($user);
+
+        $startEvent = $process->getDefinitions()->getStartEvent('node_1');
+        $request = WorkflowManager::triggerStartEvent($process, $startEvent, []);
+
+        $this->assertDatabaseCount('cases_started', 1);
+        $this->assertDatabaseHas('cases_started', [
+            'case_number' => $request->case_number,
+            'case_status' => 'IN_PROGRESS',
+        ]);
+        $this->assertDatabaseCount('cases_participated', 1);
+        $this->assertDatabaseHas('cases_participated', [
+            'user_id' => $user->id,
+            'case_number' => $request->case_number,
+            'case_status' => 'IN_PROGRESS',
+        ]);
+
+        $formTask = $request->tokens()->where('element_id', 'node_2')->firstOrFail();
+
+        // Next ABE should fail because there is no a valid IMAP configuration
+        WorkflowManager::completeTask($process, $request, $formTask, ['someValue' => 123]);
+
+        $abe = $request->tokens()->where('element_id', 'node_45')->firstOrFail();
+
+        $this->assertDatabaseHas('cases_started', [
+            'case_number' => $request->case_number,
+            'case_status' => 'ERROR',
+            'tasks->[0]->id' => $formTask->id,
+            'tasks->[1]->id' => null,
+            'request_tokens->[0]' => $formTask->id,
+            'request_tokens->[1]' => $abe->id,
+        ]);
+
+        $this->assertDatabaseHas('cases_participated', [
+            'user_id' => $user->id,
+            'case_number' => $request->case_number,
+            'case_status' => 'ERROR',
+            'tasks->[0]->id' => $formTask->id,
+            'tasks->[1]->id' => null,
+            'request_tokens->[0]' => $formTask->id,
+            'request_tokens->[1]' => $abe->id,
+        ]);
+    }
 }
