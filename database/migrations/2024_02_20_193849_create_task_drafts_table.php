@@ -16,6 +16,8 @@ return new class extends Migration
             $table->integer('task_id');
             $table->json('data');
             $table->timestamps();
+            
+            $table->index('task_id', 'taskId');
         });
     }
 
