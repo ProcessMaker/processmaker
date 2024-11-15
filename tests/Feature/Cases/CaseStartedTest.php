@@ -462,8 +462,8 @@ class CaseStartedTest extends TestCase
             'is_system' => true,
         ]);
 
-        $process = Process::factory()->create([
-            'bpmn' => file_get_contents(base_path('tests/Feature/ImportExport/fixtures/process-docusign-authorization.bpmn.xml')),
+        $bpmnFile = 'tests/Fixtures/process-docusign-authorization.bpmn.xml';
+        $process = $this->createProcessFromBPMN($bpmnFile, [
             'process_category_id' => $category->id,
         ]);
 
@@ -482,8 +482,8 @@ class CaseStartedTest extends TestCase
             'is_administrator' => true,
         ]);
 
-        $process = Process::factory()->create([
-            'bpmn' => file_get_contents(base_path('tests/Feature/ImportExport/fixtures/process-abe.xml')),
+        $bpmnFile = 'tests/Fixtures/process-abe.bpmn.xml';
+        $process = $this->createProcessFromBPMN($bpmnFile, [
             'user_id' => $user->id,
         ]);
 
