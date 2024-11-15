@@ -276,6 +276,55 @@ class CaseControllerSearchTest extends TestCase
         $response->assertJsonCount(5, 'data');
     }
 
+    public function test_search_by_case_title_with_underscore(): void
+    {
+        $caseTitle1 = 'credit_evaluation_process';
+        $caseTitle2 = 'another_case_title';
+
+        CaseControllerTest::createCasesStartedForUser($this->user->id, 5, ['case_title' => $caseTitle1, 'keywords' => $caseTitle1]);
+        CaseControllerTest::createCasesStartedForUser($this->user->id, 5, ['case_title' => $caseTitle2, 'keywords' => $caseTitle2]);
+
+        $this->assertDatabaseCount('cases_started', 10);
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases'));
+        $response->assertStatus(200);
+        $response->assertJsonCount(10, 'data');
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => 'credit']));
+        $response->assertStatus(200);
+        $response->assertJsonCount(5, 'data');
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => 'credit_evaluation']));
+        $response->assertStatus(200);
+        $response->assertJsonCount(5, 'data');
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => 'credit_evaluation_process']));
+        $response->assertStatus(200);
+        $response->assertJsonCount(5, 'data');
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => 'another_case']));
+        $response->assertStatus(200);
+        $response->assertJsonCount(5, 'data');
+    }
+
+    public function test_search_by_case_title_with_two_or_less_characters(): void
+    {
+        $caseTitle1 = 'Case LP';
+
+        CaseControllerTest::createCasesStartedForUser($this->user->id, 5, ['case_title' => $caseTitle1, 'keywords' => $caseTitle1]);
+
+        $this->assertDatabaseCount('cases_started', 5);
+
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases'));
+        $response->assertStatus(200);
+        $response->assertJsonCount(5, 'data');
+
+        // Since the case title has a word with two characters "LP", the search shouldn't return any result.
+        $response = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['search' => $caseTitle1]));
+        $response->assertStatus(200);
+        $response->assertJsonCount(0, 'data');
+    }
+
     protected function connectionsToTransact()
     {
         return [];
