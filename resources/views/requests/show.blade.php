@@ -130,8 +130,8 @@
                     <template v-if="showScreenRequestDetail && !showScreenSummary">
                       <div class="card">
                         <div class="card-body">
-                          <vue-form-renderer ref="screenRequestDetail" :config="screenRequestDetail"
-                            :custom-css="screenSummary?.custom_css"
+                          <vue-form-renderer ref="screenRequestDetail" :config="screenRequestDetail.config"
+                            :custom-css="screenRequestDetail.custom_css"
                             v-model="dataSummary" />
                         </div>
                       </div>
@@ -615,7 +615,17 @@
          * Get Screen request detail
          * */
         screenRequestDetail() {
-          return this.request.request_detail_screen ? this.request.request_detail_screen.config : null;
+          if (!this.request.request_detail_screen) {
+            return {
+              config: null,
+              custom_css: null,
+            };
+          }
+
+          return {
+            config: this.request.request_detail_screen.config,
+            custom_css: this.request.request_detail_screen.custom_css
+          };
         },
         classStatusCard() {
           let header = {
