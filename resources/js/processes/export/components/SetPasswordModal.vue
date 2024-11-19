@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import Modal from "../../../components/shared/Modal";
+import Modal from "../../../components/shared/Modal.vue";
 import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
 
 export default {

@@ -36,8 +36,8 @@
 </template>
 
 <script>
-import DataFormatSelector from './DataFormatSelector';
-import DataMaskSelector from './DataMaskSelector';
+import DataFormatSelector from './DataFormatSelector.vue';
+import DataMaskSelector from './DataMaskSelector.vue';
 
 export default {
   components: {
