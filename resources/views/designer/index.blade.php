@@ -59,6 +59,6 @@
 <script>
     window.Processmaker.user = @json($currentUser);
 </script>
-<script src="{{mix('js/processes/newDesigner.js')}}"></script>
+@vite('resources/js/processes/newDesigner.js')
 @endsection
 

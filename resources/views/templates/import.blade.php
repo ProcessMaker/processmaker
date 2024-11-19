@@ -27,5 +27,5 @@
 @endsection
 
 @section('js')
-  <script src="{{ mix('js/templates/import/index.js') }}"></script>
+  @vite('resources/js/templates/import/index.js')
 @endsection

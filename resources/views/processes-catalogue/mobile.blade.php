@@ -30,7 +30,7 @@
   @foreach($manager->getScripts() as $script)
     <script src="{{$script}}"></script>
   @endforeach
-  <script src="{{mix('js/processes-catalogue/index.js')}}"></script>
+  @vite('resources/js/processes-catalogue/index.js')
   <script>
     window.Processmaker.user = @json($currentUser);
   </script>

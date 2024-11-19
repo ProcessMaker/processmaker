@@ -26,7 +26,7 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/admin/settings/index.js')}}"></script>
+    @vite('resources/js/admin/settings/index.js')
     @if($errors->has('error'))
         <script>
             window.ProcessMaker.alert("{{ $errors->first('error') }}", 'danger');
