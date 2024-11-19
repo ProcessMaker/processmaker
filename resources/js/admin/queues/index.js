@@ -8,7 +8,7 @@ import router from "./router";
 window.$ = window.jQuery = require("jquery");
 window.Popper = require("popper.js").default;
 
-require("bootstrap");
+import "bootstrap";
 
 $("body").tooltip({
   selector: "[data-toggle=tooltip]",

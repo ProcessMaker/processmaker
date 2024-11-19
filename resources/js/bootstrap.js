@@ -36,30 +36,38 @@ import PMDropdownSuggest from './components/PMDropdownSuggest';
 import "@processmaker/screen-builder/dist/vue-form-builder.css";
 
 window.__ = translator;
-window._ = require("lodash");
+import _ from "lodash";
+window._ = _;
 window.Popper = require("popper.js").default;
 
 /**
  * Give node plugins access to our custom screen builder components
  */
-window.ProcessmakerComponents = require("./processes/screen-builder/components");
+import ProcessmakerComponents from "./processes/screen-builder/components";
+window.ProcessmakerComponents = ProcessmakerComponents;
 
 /**
  * Give node plugins access to additional components
  */
-window.SharedComponents = require("./components/shared");
+import SharedComponents from "./components/shared";
+window.SharedComponents = SharedComponents;
 
-window.ProcessesComponents = require("./processes/components");
-window.ScreensComponents = require("./processes/screens/components");
-window.ScriptsComponents = require("./processes/scripts/components");
-window.ProcessesCatalogueComponents = require("./processes-catalogue/components/utils");
+import ProcessesComponents from "./processes/components";
+window.ProcessesComponents = ProcessesComponents;
+import ScreensComponents from "./processes/screens/components";
+window.ScreensComponents = ScreensComponents;
+import ScriptsComponents from "./processes/scripts/components";
+window.ScriptsComponents = ScriptsComponents;
+import ProcessesCatalogueComponents from "./processes-catalogue/components/utils";
+window.ProcessesCatalogueComponents = ProcessesCatalogueComponents;
 
 window.PMDropdownSuggest = PMDropdownSuggest;
 
 /**
  * Exporting Modeler inspector components
  */
-window.ModelerInspector = require("./processes/modeler/components/inspector");
+import ModelerInspector from "./processes/modeler/components/inspector";
+window.ModelerInspector = ModelerInspector;
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
  * for JavaScript based Bootstrap features such as modals and tabs. This
@@ -86,11 +94,15 @@ window.Vue.use(VueCookies);
 if (!document.head.querySelector("meta[name=\"is-horizon\"]")) {
   window.Vue.use(Router);
 }
-window.VueMonaco = require("vue-monaco");
+import VueMonaco from "vue-monaco";
+window.VueMonaco = VueMonaco;
 
-window.ScreenBuilder = require("@processmaker/screen-builder");
-window.VueFormElements = require("@processmaker/vue-form-elements");
-window.Modeler = require("@processmaker/modeler");
+import ScreenBuilder from "@processmaker/screen-builder";
+window.ScreenBuilder = ScreenBuilder;
+import VueFormElements from "@processmaker/vue-form-elements";
+window.VueFormElements = VueFormElements;
+import Modeler from "@processmaker/modeler";
+window.Modeler = Modeler;
 
 window.VueRouter = Router;
 
@@ -227,7 +239,8 @@ window.ProcessMaker.i18nPromise.then(() => { translationsLoaded = true; });
  * REST api endpoints through oauth authentication
  *
  */
-window.ProcessMaker.apiClient = require("axios");
+import ProcessMaker.apiClient from "axios";
+window.ProcessMaker.apiClient = ProcessMaker.apiClient;
 
 window.ProcessMaker.apiClient.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
