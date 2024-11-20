@@ -3,9 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 
@@ -73,5 +71,24 @@ class AuthTest extends TestCase
         $response->assertRedirect('/');
 
         $response->assertSessionHasNoErrors();
+    }
+
+    /**
+     * 
+     * Test logout flow
+     */
+    public function testLogoutStandard()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user, 'web');
+        // open logout url
+        $response = $this->get('logout');
+
+        // Verify it redirects to the login page
+        $response->assertRedirect('/login');
+
+        // Verify if the user is logged out
+        $response = $this->get(route('home'));
+        $response->assertRedirect('/login');
     }
 }
