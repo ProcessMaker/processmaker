@@ -125,9 +125,7 @@ class DevLink extends ProcessMakerModel
     public function remoteAssetsListing($request)
     {
         return $this->client()->get(
-            route($request->input('url'),
-                ['filter' => $request->input('filter')],
-                false)
+            route($request->input('url'), $request->all(), false)
         );
     }
 
