@@ -12,6 +12,7 @@ use Log;
 use ProcessMaker\Events\ProcessUpdated;
 use ProcessMaker\Exception\PmqlMethodException;
 use ProcessMaker\Helpers\DataTypeHelper;
+use ProcessMaker\Jobs\CaseUpdateStatus;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
@@ -579,6 +580,8 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         Log::error($exception);
         if (!$this->isNonPersistent()) {
             $this->save();
+            // Update Case status
+            CaseUpdateStatus::dispatchSync($this);
         }
     }
 
