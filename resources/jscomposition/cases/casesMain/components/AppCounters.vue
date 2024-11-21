@@ -10,6 +10,7 @@
       class="tw-w-full"
       :color="counter.color"
       :icon="counter.icon"
+      :id="counter.id"
       @click="onClick(counter, index)" />
   </div>
 </template>

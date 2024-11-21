@@ -242,7 +242,8 @@
 
           for (let record of data.data) {
             //format Status
-            record["owner"] = this.formatAvatar(record["user"]);
+            const usePmDefaultLabel = !record['user'];
+            record["owner"] = this.formatAvatar(record["user"], usePmDefaultLabel);
             record["category_list"] = this.formatCategory(record["categories"]);
           }
           return data;

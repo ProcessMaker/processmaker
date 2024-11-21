@@ -59,7 +59,9 @@ return [
     // All of the Laravel SAML IdP event / listener mappings.
     'events' => [
         'CodeGreenCreative\SamlIdp\Events\Assertion' => [],
-        'Illuminate\Auth\Events\Logout' => ['CodeGreenCreative\SamlIdp\Listeners\SamlLogout'],
+        // Disable the logout event listener because it causes a redirect abort
+        // Note: saml logout redirect is being processed in the LoginController::beforeLogout
+        // 'Illuminate\Auth\Events\Logout' => ['CodeGreenCreative\SamlIdp\Listeners\SamlLogout'],
         'Illuminate\Auth\Events\Authenticated' => ['ProcessMaker\Listeners\SamlAuthenticated'],
         'Illuminate\Auth\Events\Login' => ['ProcessMaker\Listeners\SamlLogin'],
     ],
