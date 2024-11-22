@@ -1,5 +1,5 @@
 <template>
-  <div class="tw-overflow-hidden tw-flex -tw-space-x-1 tw-items-center tw-justify-center">
+  <div class="tw-overflow-hidden tw-flex -tw-space-x-1 tw-items-center tw-justify-left">
     <div
       v-for="(participant, index) in participants"
       :key="index"

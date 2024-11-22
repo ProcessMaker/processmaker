@@ -58,6 +58,7 @@ use ProcessMaker\Validation\CategoryRule;
  *   schema="scriptsPreview",
  *   @OA\Property(property="status", type="string"),
  *   @OA\Property(property="key", type="string"),
+ *   @OA\Property(property="output", type="object"),
  * )
  */
 class Script extends ProcessMakerModel implements ScriptInterface
