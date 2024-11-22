@@ -116,11 +116,17 @@ class ScreenTranslation extends TranslationManager
 
         $screens = collect();
         foreach ($screensInProcess as $screenId) {
-            $screen = !$this->screenExists($screens, $screenId) ? $this->loadScreen($screenId, $fields) : null;
+            if (!$screenId) {
+                continue;
+            }
+            $screen = !$this->screenExists($screens, $screenId) ? $this->loadScreen((int) $screenId, $fields) : null;
             if ($screen) {
                 $screens->push($screen);
                 foreach ($screen->nestedScreenIds() as $nestedScreenId) {
-                    $nestedScreen = !$this->screenExists($screens, $nestedScreenId) ? $this->loadScreen($nestedScreenId, $fields) : null;
+                    if (!$nestedScreenId) {
+                        continue;
+                    }
+                    $nestedScreen = !$this->screenExists($screens, $nestedScreenId) ? $this->loadScreen((int) $nestedScreenId, $fields) : null;
                     if ($nestedScreen) {
                         $screens->push($nestedScreen);
                     }
@@ -143,7 +149,7 @@ class ScreenTranslation extends TranslationManager
         return $screen;
     }
 
-    private function screenExists(&$screens, $screenId)
+    private function screenExists($screens, $screenId)
     {
         return $screens->where('id', $screenId)->first();
     }

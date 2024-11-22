@@ -100,8 +100,12 @@ class PackageManager
                     }
 
                     //Add files gitignore
-                    copy(base_path('resources') . '/.gitignore', $package . '/../.gitignore');
-                    copy(lang_path() . '/.gitignore', $package . '/.gitignore');
+                    if (File::exists(base_path('resources') . '/.gitignore')) {
+                        copy(base_path('resources') . '/.gitignore', $package . '/../.gitignore');
+                    }
+                    if (File::exists(lang_path() . '/.gitignore')) {
+                        copy(lang_path() . '/.gitignore', $package . '/.gitignore');
+                    }
                 }
             }
         }
@@ -122,6 +126,11 @@ class PackageManager
             if (File::exists("{$package}/{$code}.json")) {
                 // Delete file
                 File::delete("{$package}/{$code}.json");
+            }
+            // Check if file exists in package lang.orig
+            if (File::exists(str_replace('/lang/', '/lang.orig/', "{$package}/{$code}.json"))) {
+                // Delete file
+                File::delete(str_replace('/lang/', '/lang.orig/', "{$package}/{$code}.json"));
             }
         }
     }

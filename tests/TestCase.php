@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Bus;
 use PDOException;
 use ProcessMaker\Jobs\RefreshArtisanCaches;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestLock;
 use ProcessMaker\Models\SecurityLog;
@@ -104,6 +105,26 @@ abstract class TestCase extends BaseTestCase
         } catch (\RuntimeException $e) {
             Artisan::call('passport:install');
         }
+    }
+
+    /**
+     * Create a process from a BPMN file and additional process data in PHP.
+     *
+     * @param string bpmnFile The `bpmnFile` parameter is a string that represents the path of a BPMN file located in the
+     * `tests/Fixtures/` directory.
+     * @param array attributes The `attributes` parameter is an array that allows you to pass additional data when
+     * creating a process from BPMN. By merging this data with the default data obtained from the BPMN file.
+     *
+     * @return The function `createProcessFromBPMN` is returning a new instance of the `Process` model that is created
+     * using the `factory()` method.
+     */
+    protected function createProcessFromBPMN(string $bpmnFile, array $attributes = []): Process
+    {
+        $data = [
+            'bpmn' => file_get_contents(base_path($bpmnFile)),
+        ];
+
+        return Process::factory()->create(array_merge($data, $attributes));
     }
 
     /**

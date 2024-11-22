@@ -34,7 +34,7 @@ export default [
   {
     type: 'collections',
     name: 'Collections',
-    url: 'api.collections.index',
+    url: 'saved_searches.collections.index',
     class: 'ProcessMaker\\Plugins\\Collections\\Models\\Collection',
     icon: 'fp-bpmn-data-store',
     nameField: 'name',
@@ -45,12 +45,12 @@ export default [
     url: 'api.decision-tables.index',
     class: 'ProcessMaker\\Package\\PackageDecisionEngine\\Models\\DecisionTable',
     icon: 'fp-table',
-    nameField: 'name',
+    nameField: 'title',
   },
   {
     type: 'flow-genies',
     name: 'FlowGenies',
-    url: 'api.flow_genie.index',
+    url: 'flow_genie.index',
     class: 'ProcessMaker\\Package\\PackageAi\\Models\\FlowGenie',
     icon: 'fp-flowgenie-outline',
     nameField: 'name',
