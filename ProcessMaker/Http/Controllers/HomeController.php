@@ -14,10 +14,15 @@ class HomeController extends Controller
         if (Auth::check()) {
             // Redirect to home dynamic only if the package was enable
             if (hasPackage('package-dynamic-ui')) {
-                $user = \Auth::user();
-                $homePage = \ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::getHomePage($user);
+                $user = Auth::user();
+                $customDashboardExists = \ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::where('type', 'DASHBOARD')
+                    ->count() > 0;
 
-                return redirect($homePage);
+                if ($customDashboardExists) {
+                    $homePage = \ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::getHomePage($user);
+
+                    return redirect($homePage);
+                }
             }
 
             // Redirect to the default view
