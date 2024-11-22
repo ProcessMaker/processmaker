@@ -39,6 +39,10 @@ export default {
   props: {
     filter: {},
     process: Object,
+    advancedFilter: {
+      type: Object,
+      default: () => null,
+    },
   },
   data() {
     return {
@@ -77,7 +81,14 @@ export default {
   },
   mounted() {
     const filter = this.process ? ` AND (process_id = ${this.process.id})` : "";
-    this.pmql = `(user_id = ${ProcessMaker.user.id}) AND (status = "In Progress")${filter}`;
+    // Check if advanced filters are provided
+    if (this.advancedFilter?.filters) {
+      // Set pmql to filter by user_id
+      this.pmql = `(user_id = ${ProcessMaker.user.id})`;
+    } else {
+      // Set pmql to filter by user_id and status, including process filter if available
+      this.pmql = `(user_id = ${ProcessMaker.user.id}) AND (status = "In Progress")${filter}`;
+    }
   },
   methods: {
     updatePmql(value) {
@@ -85,6 +96,29 @@ export default {
     },
     updateOrder(value) {
       this.sortOrder[0].sortField = value;
+    },
+    /**
+     * Generates the advanced filter query string for the API request.
+     * If advanced filters are provided, it formats them by removing keys that start with an underscore
+     * and then encodes them as a query string.
+     *
+     * @returns {string} The encoded advanced filter query string or an empty string if no filters are provided.
+     */
+    getAdvancedFilter() {
+      if (this.advancedFilter?.filters) {
+        this.pmql = '';
+
+        // Format the filters by removing keys that start with an underscore
+        let formattedFilter = this.advancedFilter.filters.map(obj =>
+          Object.fromEntries(Object.entries(obj).filter(([key, _]) => !key.startsWith('_')))
+        );
+
+        // Encode the formatted filters as a query string
+        return "&advanced_filter=" + encodeURIComponent(JSON.stringify(formattedFilter));
+      }
+      
+      // Return an empty string if no filters are provided
+      return "";
     },
   },
 };
