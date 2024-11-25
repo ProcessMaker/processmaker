@@ -3,7 +3,7 @@ name: Translate Strings
 on:
   push:
     branches:
-      - develop
+      - observation/FOUR-13273
     paths:
       - 'resources/lang/en.json'
   workflow_dispatch:
