@@ -33,6 +33,12 @@ class TranslateEmptyStrings extends Command
      */
     public function handle()
     {
+        if (env('OPENAI_API_KEY') === null) {
+            $this->error('OPENAI_API_KEY is not set');
+
+            return;
+        }
+
         $langCode = $this->option('lang');
 
         $this->info('-----------------------------------');
@@ -42,7 +48,7 @@ class TranslateEmptyStrings extends Command
 
         $this->info('-----------------------------------');
         $this->info('Translating packages empty strings');
-        $this->info('-----------------------------------');    
+        $this->info('-----------------------------------');
         $this->translatePackagesEmptyStrings($langCode);
     }
 
@@ -80,12 +86,12 @@ class TranslateEmptyStrings extends Command
 
             // Filter files by language code if specified
             if ($langCode) {
-                $this->files = array_filter($this->files, function($file) use ($langCode) {
+                $this->files = array_filter($this->files, function ($file) use ($langCode) {
                     return str_contains($file, "/{$langCode}.json") || str_contains($file, "/{$langCode}/");
                 });
             }
 
-            foreach ($this->files as $file) {    
+            foreach ($this->files as $file) {
                 $this->translateEmptyStringsInFile($file);
             }
         }
@@ -98,18 +104,18 @@ class TranslateEmptyStrings extends Command
 
         $this->files = [];
         $this->listFiles($packagePath);
-        
+
         // Ignore filesIgnore from files
-        $this->files = array_filter($this->files, function($file) use ($filesIgnore) {
+        $this->files = array_filter($this->files, function ($file) use ($filesIgnore) {
             foreach ($filesIgnore as $ignore) {
                 if (str_contains($file, $ignore)) {
                     return false;
                 }
             }
+
             return true;
         });
     }
-
 
     private function translateEmptyStringsInFile($file)
     {
@@ -123,7 +129,7 @@ class TranslateEmptyStrings extends Command
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             echo $langArray;
-            throw new \Exception("JSON decode error: " . json_last_error_msg());
+            throw new \Exception('JSON decode error: ' . json_last_error_msg());
         }
 
         // Filter for empty values
@@ -136,12 +142,12 @@ class TranslateEmptyStrings extends Command
             // Split empty values into chunks of 100
             $chunks = array_chunk($emptyValues, 100, true);
             $totalChunks = count($chunks);
-            
+
             $this->info('Translating: ' . $file);
             foreach ($chunks as $index => $chunk) {
                 $this->info(sprintf('Processing chunk %d/%d', $index + 1, $totalChunks));
                 $translatedChunk = $this->callOpenAI($chunk, $file);
-                
+
                 // Update only existing keys in langArray
                 foreach ($translatedChunk as $key => $value) {
                     if (array_key_exists($key, $langArray)) {
@@ -150,12 +156,12 @@ class TranslateEmptyStrings extends Command
                         $this->info('Key not found: ' . $key);
                     }
                 }
-                
+
                 // Save after each chunk is translated
                 file_put_contents($file, json_encode($langArray, JSON_PRETTY_PRINT));
             }
         } elseif (!$this->option('verbose')) {
-            $this->line("No empty values found.");
+            $this->line('No empty values found.');
         }
     }
 
@@ -165,7 +171,7 @@ class TranslateEmptyStrings extends Command
             'model' => 'gpt-4o',
             'max_tokens' => 16380,
             'temperature' => 0.0,
-            'response_format' => ["type" => "json_object"],
+            'response_format' => ['type' => 'json_object'],
             'messages' => [
                 ['role' => 'system', 'content' => 'Act as an expert i18n assistant. Identify the language based in this path' . $file . ' After that translate the values of the given array.'],
                 ['role' => 'user', 'content' => '
@@ -185,9 +191,9 @@ Return the keys exactly as they are in the original json.
 ' . json_encode($emptyValues)],
             ],
         ]);
-     
+
         $fullResponse = '';
-        
+
         $totalKeys = count($emptyValues);
 
         if ($this->option('verbose')) {
@@ -197,17 +203,17 @@ Return the keys exactly as they are in the original json.
         $bar = $this->output->createProgressBar($totalKeys);
         $bar->setFormat('%current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%');
         $bar->start();
-        
+
         $jsonStarted = false;
         $openBraces = 0;
         $translatedPairs = 0;
-        
+
         foreach ($stream as $response) {
             $content = $response->choices[0]->delta->content;
             // Remove extra backslashes before appending
             $content = str_replace('\\\\', '\\', $content);
             $fullResponse .= $content;
-            
+
             // Track JSON structure
             for ($i = 0; $i < strlen($content); $i++) {
                 $char = $content[$i];
@@ -217,21 +223,20 @@ Return the keys exactly as they are in the original json.
                 } elseif ($char === '}') {
                     $openBraces--;
                 }
-                
+
                 // Count completed key-value pairs by detecting commas when we're inside valid JSON
                 if ($jsonStarted && $openBraces > 0 && $char === ',') {
                     $translatedPairs++;
                     $bar->advance();
                 }
             }
-                
+
             // Handle the last pair which won't have a comma
             if ($jsonStarted && $openBraces === 0 && $translatedPairs < $totalKeys) {
                 $bar->advance();
             }
-
         }
-        
+
         $bar->finish();
         $this->newLine();
 
@@ -242,14 +247,15 @@ Return the keys exactly as they are in the original json.
         $decoded = json_decode($fullResponse, true);
         if ($decoded === null) {
             // Print JSON error if decoding failed
-            $this->error("JSON decode error: " . json_last_error_msg());
+            $this->error('JSON decode error: ' . json_last_error_msg());
             // Try cleaning the response before decoding
             $cleanResponse = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $fullResponse);
             $decoded = json_decode($cleanResponse, true);
             if ($decoded === null) {
-                throw new \RuntimeException("Failed to decode JSON response after cleaning");
+                throw new \RuntimeException('Failed to decode JSON response after cleaning');
             }
         }
+
         return $decoded;
     }
 
