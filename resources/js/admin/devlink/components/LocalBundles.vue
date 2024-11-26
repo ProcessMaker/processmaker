@@ -85,6 +85,7 @@ const fields = [
 const bundleAttributes = {
   id: null,
   name: '',
+  description: '',
   published: false,
 };
 
