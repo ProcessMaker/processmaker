@@ -41,7 +41,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             Middleware\GenerateMenus::class,
             \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class,
-            \ProcessMaker\Http\Middleware\IgnoreMapFiles::class,
+            Middleware\IgnoreMapFiles::class,
         ],
         'api' => [
             // API Middleware is defined with routeMiddleware below.
@@ -83,6 +83,8 @@ class Kernel extends HttpKernel
         'session_kill' => Middleware\SessionControlKill::class,
         'no-cache' => Middleware\NoCache::class,
         'admin' => Middleware\IsAdmin::class,
+        'etag.set' => Middleware\Etag\SetEtag::class,
+        'etag.if-none-match' => Middleware\Etag\IfNoneMatch::class,
     ];
 
     /**
