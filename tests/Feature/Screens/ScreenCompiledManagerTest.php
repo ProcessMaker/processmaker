@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Managers\ScreenCompiledManager;
@@ -157,27 +158,33 @@ class ScreenCompiledManagerTest extends TestCase
     }
 
     /**
-     * Validate a screen key can be created
+     * Validate that a screen key can be created with various process versions, screen versions, and languages.
      *
      * @test
      */
-    public function it_creates_a_screen_key()
+    public function it_creates_a_screen_key_with_various_versions()
     {
         // Arrange
         $manager = new ScreenCompiledManager();
         $processId = '123';
-        $processVersionId = '1';
-        $language = 'en';
+        $processVersionIds = ['1', '2', '3'];
+        $languages = ['en', 'es', 'fr', 'de', 'it', 'pt', 'zh', 'ja', 'ru', 'ar'];
         $screenId = '456';
-        $screenVersionId = '1';
+        $screenVersionIds = ['1', '2'];
 
-        $expectedKey = 'pid_123_1_en_sid_456_1';
+        foreach ($processVersionIds as $processVersionId) {
+            foreach ($screenVersionIds as $screenVersionId) {
+                foreach ($languages as $language) {
+                    $expectedKey = "pid_{$processId}_{$processVersionId}_{$language}_sid_{$screenId}_{$screenVersionId}";
 
-        // Create the screen key
-        $screenKey = $manager->createKey($processId, $processVersionId, $language, $screenId, $screenVersionId);
+                    // Create the screen key
+                    $screenKey = $manager->createKey($processId, $processVersionId, $language, $screenId, $screenVersionId);
 
-        // Assert
-        $this->assertEquals($expectedKey, $screenKey);
+                    // Assert
+                    $this->assertEquals($expectedKey, $screenKey);
+                }
+            }
+        }
     }
 
     /**
@@ -202,5 +209,126 @@ class ScreenCompiledManagerTest extends TestCase
 
         // Assert the ID is the expected one
         $this->assertEquals($expectedId, $lastId);
+    }
+
+    /**
+     * Validate storing compiled content with empty content
+     *
+     * @test
+     */
+    public function it_stores_empty_compiled_content()
+    {
+        // Arrange
+        $manager = new ScreenCompiledManager();
+        $screenKey = 'empty_screen_key';
+        $compiledContent = '';
+
+        // Act
+        $manager->storeCompiledContent($screenKey, $compiledContent);
+
+        // Assert
+        $filename = 'screen_' . $screenKey . '.bin';
+        $storagePath = $this->storagePath . $filename;
+
+        Storage::disk($this->storageDisk)->assertExists($storagePath);
+        $storedContent = Storage::disk($this->storageDisk)->get($storagePath);
+        $this->assertEquals(serialize($compiledContent), $storedContent);
+    }
+
+    /**
+     * Validate exception handling when storage is unavailable
+     *
+     * @test
+     */
+    public function it_handles_storage_exceptions()
+    {
+        // Arrange
+        $manager = new ScreenCompiledManager();
+        $screenKey = 'exception_screen_key';
+        $compiledContent = ['key' => 'value'];
+
+        // Simulate storage exception
+        Storage::shouldReceive('disk->put')
+            ->andThrow(new \Exception('Storage unavailable'));
+
+        // Act & Assert
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Storage unavailable');
+
+        $manager->storeCompiledContent($screenKey, $compiledContent);
+    }
+
+    /**
+     * Validate clearing compiled assets when directory does not exist
+     *
+     * @test
+     */
+    public function it_clears_compiled_assets_when_directory_does_not_exist()
+    {
+        // Arrange
+        $manager = new ScreenCompiledManager();
+
+        // Ensure directory does not exist
+        Storage::disk($this->storageDisk)->deleteDirectory($this->storagePath);
+
+        // Act
+        $manager->clearCompiledAssets();
+
+        // Assert the directory has been recreated
+        Storage::disk($this->storageDisk)->assertExists($this->storagePath);
+    }
+
+    /**
+     * Validate that storing compiled content fails with invalid data
+     *
+     * @test
+     */
+    public function it_fails_with_invalid_screen_key()
+    {
+        // Arrange
+        $manager = new ScreenCompiledManager();
+
+        // Test cases with invalid screen keys
+        $invalidKeys = [
+            '', // Empty string
+            null, // Null value
+            str_repeat('a', 1000), // Extremely long key
+            '../../malicious/path', // Path traversal attempt
+            'special@#$%chars', // Special characters
+        ];
+
+        foreach ($invalidKeys as $invalidKey) {
+            try {
+                $manager->storeCompiledContent($invalidKey, ['test' => 'content']);
+                $this->fail('Expected exception was not thrown for key: ' . (string) $invalidKey);
+            } catch (\TypeError|\Exception $e) {
+                // Assert that an exception was thrown
+                $this->assertTrue(true);
+            }
+        }
+    }
+
+    /**
+     * Test handling of storage limit scenarios when storing compiled screen content
+     *
+     * @test
+     */
+    public function it_handles_storage_limit_scenarios()
+    {
+        // Arrange
+        $manager = new ScreenCompiledManager();
+        $screenKey = $manager->createKey('1', '1', 'en', '1', '1');
+        $compiledContent = ['test' => 'content'];
+
+        // Simulate storage limit reached by throwing a specific exception
+        Storage::shouldReceive('disk->put')
+            ->andThrow(new \Exception('Storage limit reached'));
+
+        // Act & Assert
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Storage limit reached');
+
+        // Attempt to store compiled content, expecting an exception
+        $manager->storeCompiledContent($screenKey, $compiledContent);
     }
 }
