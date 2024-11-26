@@ -31,7 +31,15 @@ class CreatePermissionViewAllCasesAllRequests extends Upgrade
         DB::table('permissions')
             ->where('group', 'Cases')
             ->update(['group' => self::NEW_NAME_GROUP]);
-        // Create new permissions view-all_cases view-all_requests
+        // Update with the correct label "View All Request"
+        // Summer 2024: PO requested change to "View All Cases"
+        // Fall 2024: PO requested revert to "View All Request"
+        $permission = Permission::where('name', 'view-all_requests')->first();
+        if ($permission && $permission->title == 'View All Cases') {
+            $permission->title = 'View All Request';
+            $permission->save();
+        }
+        // Create new permissions [view-all_cases, view-all_requests]
         $this->createPermissions();
     }
 
