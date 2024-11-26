@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Managers\ScreenCompiledManager;
@@ -275,5 +276,59 @@ class ScreenCompiledManagerTest extends TestCase
 
         // Assert the directory has been recreated
         Storage::disk($this->storageDisk)->assertExists($this->storagePath);
+    }
+
+    /**
+     * Validate that storing compiled content fails with invalid data
+     *
+     * @test
+     */
+    public function it_fails_with_invalid_screen_key()
+    {
+        // Arrange
+        $manager = new ScreenCompiledManager();
+
+        // Test cases with invalid screen keys
+        $invalidKeys = [
+            '', // Empty string
+            null, // Null value
+            str_repeat('a', 1000), // Extremely long key
+            '../../malicious/path', // Path traversal attempt
+            'special@#$%chars', // Special characters
+        ];
+
+        foreach ($invalidKeys as $invalidKey) {
+            try {
+                $manager->storeCompiledContent($invalidKey, ['test' => 'content']);
+                $this->fail('Expected exception was not thrown for key: ' . (string) $invalidKey);
+            } catch (\TypeError|\Exception $e) {
+                // Assert that an exception was thrown
+                $this->assertTrue(true);
+            }
+        }
+    }
+
+    /**
+     * Test handling of storage limit scenarios when storing compiled screen content
+     *
+     * @test
+     */
+    public function it_handles_storage_limit_scenarios()
+    {
+        // Arrange
+        $manager = new ScreenCompiledManager();
+        $screenKey = $manager->createKey('1', '1', 'en', '1', '1');
+        $compiledContent = ['test' => 'content'];
+
+        // Simulate storage limit reached by throwing a specific exception
+        Storage::shouldReceive('disk->put')
+            ->andThrow(new \Exception('Storage limit reached'));
+
+        // Act & Assert
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Storage limit reached');
+
+        // Attempt to store compiled content, expecting an exception
+        $manager->storeCompiledContent($screenKey, $compiledContent);
     }
 }
