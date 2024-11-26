@@ -2,12 +2,14 @@
 
 namespace Tests\Feature\Api;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
 class SettingSessionControlTest extends TestCase
 {
     use RequestHelper;
+    use RefreshDatabase;
 
     private function upgrade()
     {
@@ -27,7 +29,7 @@ class SettingSessionControlTest extends TestCase
         $response->assertJsonFragment(['name' => 'Device restriction', 'key' => 'session-control.device_restriction', 'format' => 'choice']);
         $response->assertJsonFragment(['name' => 'Session Inactivity', 'key' => 'session.lifetime', 'format' => 'text']);
 
-        $this->assertDatabaseCount('settings', 3);
+        $this->assertDatabaseCount('settings', 21);
         $this->assertDatabaseCount('security_logs', 0);
     }
 
