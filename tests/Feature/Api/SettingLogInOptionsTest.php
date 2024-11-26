@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Api;
 
-use ProcessMaker\Models\SecurityLog;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -35,9 +34,7 @@ class SettingLogInOptionsTest extends TestCase
         $response->assertJsonFragment(['name' => 'Require Two Step Authentication', 'key' => 'password-policies.2fa_enabled', 'format' => 'boolean']);
         $response->assertJsonFragment(['name' => 'Two Step Authentication Method', 'key' => 'password-policies.2fa_method', 'format' => 'checkboxes']);
 
-        $securityLogs = SecurityLog::where('event', 'SettingsUpdated')->count();
-
-        $this->assertEquals(0, $securityLogs);
+        $this->assertDatabaseCount('security_logs', 0);
     }
 
     public function testUpdatePasswordSetByUserSetting()
