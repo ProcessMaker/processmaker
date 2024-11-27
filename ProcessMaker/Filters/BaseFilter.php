@@ -27,6 +27,8 @@ abstract class BaseFilter
 
     public const TYPE_PROCESS = 'Process';
 
+    public const TYPE_PROCESS_NAME = 'ProcessName';
+
     public const TYPE_RELATIONSHIP = 'Relationship';
 
     public string|null $subjectValue;
@@ -96,6 +98,8 @@ abstract class BaseFilter
             $this->valueAliasAdapter($valueAliasMethod, $query);
         } elseif ($this->subjectType === self::TYPE_PROCESS) {
             $this->filterByProcessId($query);
+        } elseif ($this->subjectType === self::TYPE_PROCESS_NAME) {
+            $this->filterByProcessName($query);
         } elseif ($this->subjectType === self::TYPE_RELATIONSHIP) {
             $this->filterByRelationship($query);
         } elseif ($this->isJsonData() && $query->getModel() instanceof ProcessRequestToken) {
@@ -224,6 +228,10 @@ abstract class BaseFilter
             return $this->relationshipSubjectTypeParts()[1];
         }
 
+        if ($this->subjectType === self::TYPE_PROCESS_NAME) {
+            return 'name';
+        }
+
         return $this->subjectValue;
     }
 
@@ -295,6 +303,18 @@ abstract class BaseFilter
             });
         } else {
             $this->applyQueryBuilderMethod($query);
+        }
+    }
+
+    private function filterByProcessName(Builder $query): void
+    {
+        if ($query->getModel() instanceof ProcessRequestToken) {
+            $query->whereIn('process_request_id', function ($query) {
+                $query->select('id')->from('process_requests');
+                $this->applyQueryBuilderMethod($query);
+            });
+        } else {
+            $query->whereIn('name', (array) $this->value());
         }
     }
 
