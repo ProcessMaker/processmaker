@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use ProcessMaker\Facades\Metrics;
 use ProcessMaker\Http\Controllers\AboutController;
 use ProcessMaker\Http\Controllers\Admin\AuthClientController;
 use ProcessMaker\Http\Controllers\Admin\CssOverrideController;
@@ -230,3 +231,10 @@ Route::get('/unavailable', [UnavailableController::class, 'show'])->name('error.
 
 // SAML Metadata Route
 Route::resource('/saml/metadata', MetadataController::class)->only('index');
+
+// Metrics Route
+Route::get('/metrics', function () {
+    return response(Metrics::renderMetrics(), 200, [
+        'Content-Type' => 'text/plain; version=0.0.4',
+    ]);
+});
