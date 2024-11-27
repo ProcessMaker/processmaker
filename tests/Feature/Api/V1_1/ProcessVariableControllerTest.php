@@ -21,7 +21,6 @@ class ProcessVariableControllerTest extends TestCase
         $this->actingAs($this->user);
     }
 
-
     /**
      * Test successful variables retrieval with pagination
      */
