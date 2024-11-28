@@ -1,218 +1,112 @@
-<script setup>
-import { ref, onMounted, getCurrentInstance, computed } from 'vue';
-import { useRouter, useRoute } from 'vue-router/composables';
-import BundleModal, { show as showBundleModal, hide as hideBundleModal } from './BundleModal.vue';
-import Header from './Header.vue';
-import UpdateBundle from './UpdateBundle.vue';
-import VersionCheck from './VersionCheck.vue';
-
-const vue = getCurrentInstance().proxy;
-const route = useRoute();
-const router = useRouter();
-const bundleId = route.params.id;
-const bundle = ref({});
-const loading = ref(true);
-const fields = [
-  { key: 'name', label: vue.$t('Name') },
-  { key: 'type', label: vue.$t('Type') },
-  { key: 'updated_at', label: vue.$t('Last Modified') },
-  { key: 'created_at', label: vue.$t('Created') },
-  { key: 'menu', label: '' },
-];
-const bundleModal = ref(null);
-const bundleForEdit = ref({});
-const reinstallBundle = ref(null);
-const updateAvailable = ref(false);
-
-const openBundleModalForEdit = () => {
-  bundleForEdit.value = { ...bundle.value };
-  if (bundleModal.value) {
-    bundleModal.value.show();
-  }
-};
-
-const updateBundle = () => {
-  if (bundleForEdit.value.id === null) {
-    return;
-  }
-  ProcessMaker.apiClient
-    .put(`/devlink/local-bundles/${bundleForEdit.value.id}`, bundleForEdit.value)
-    .then(() => {
-      loadAssets();
-    });
-};
-
-const computedFields = computed(() => {
-  if (bundle.value.dev_link_id === null) {
-    return fields;
-  }
-  // remove the menu field
-  return fields.filter(field => field.key !== 'menu');
-});
-
-const isLocal = computed(() => {
-  return bundle.value.dev_link_id === null;
-});
-
-const loadAssets = async () => {
-  loading.value = true;
-  const response = await window.ProcessMaker.apiClient.get(`/api/1.0/devlink/local-bundles/${bundleId}`);
-  bundle.value = response.data;
-  loading.value = false;
-}
-
-onMounted(async () => {
-  await loadAssets();
-});
-
-const remove = async (asset) => {
-  const confirm = await vue.$bvModal.msgBoxConfirm(vue.$t('Are you sure you want to remote this asset from the bundle?'), {
-    okTitle: vue.$t('Ok'),
-    cancelTitle: vue.$t('Cancel'),
-  });
-  if (!confirm) {
-    return;
-  }
-  await window.ProcessMaker.apiClient.delete(`/api/1.0/devlink/local-bundles/assets/${asset.id}`);
-  await loadAssets();
-};
-</script>
-
 <template>
-  <div v-if="loading">
-    {{ $t("Loading...") }}
-  </div>
-  <div v-else>
-    <div class="row">
-      <div class="col">
-        <Header back="local-bundles">
-          {{ bundle.name }} {{ $t("Assets") }}
-          <VersionCheck @updateAvailable="updateAvailable = $event" :dev-link="bundle"></VersionCheck>
-        </Header>
+  <div class="card-grid">
+    <div v-for="(type, index) in assetTypes" :key="index" class="card">
+      <!-- Icon -->
+      <div class="icon-container">
+        <i :class="type.icon"></i>
       </div>
-      <div class="col">
-        <div class="header">
-          <div class="header-right">
-            <b-button
-              v-if="bundle.dev_link_id === null"
-              class="btn text-secondary icon-button"
-              variant="light"
-              :aria-label="$t('Edit Bundle')"
-              v-b-tooltip.hover
-              :title="$t('Edit Bundle')"
-              @click.prevent="openBundleModalForEdit()"
-            >
-              <i class="fas fa-edit" />
-            </b-button>
-
-            <b-button
-              v-if="updateAvailable"
-              @click.prevent="reinstallBundle.show(bundle)"
-              variant="primary"
-              class="install-btn">
-              <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>{{ $t('Update Bundle') }}
-            </b-button>
-            <b-button
-              v-if="bundle.dev_link_id !== null"
-              @click.prevent="reinstallBundle.show(bundle, true)"
-              variant="primary"
-              class="install-btn">
-              <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>{{ $t('Reinstall This Bundle') }}
-            </b-button>
-          </div>
-        </div>
-  </div>
-</div>   
-    <div v-if="bundle.assets.length" class="card instance-card">
-      <b-table
-        :items="bundle.assets"
-        :fields="computedFields"
-      >
-        <template #cell(name)="data">
-          <a :href="data.item.url" target="_blank">{{ data.item.name }}</a>
-          <i v-if="!isLocal" class="ml-2 fa fa-lock"></i>
-        </template>
-
-        <template #cell(menu)="data">
-          <button
-            class="btn install-asset-btn"
-            @click.prevent="remove(data.item)"
-          >
-            <i class="fa fa-trash"></i>
-          </button>
-        </template>
-      </b-table>
+      <!-- Content -->
+      <div class="content">
+        <h3>{{ $t(type.name) }}</h3>
+      </div>
+      <!-- Button -->
+      <div class="button-container">
+        <button @click.prevent="navigate(type)" class="view-button">
+          {{ $t('View') }}
+        </button>
+      </div>
     </div>
-    <div v-else>
-      No assets found in this bundle.
-    </div>
-    <BundleModal ref="bundleModal" :bundle="bundleForEdit" @update="updateBundle"/>
-    <UpdateBundle ref="reinstallBundle"></UpdateBundle>
   </div>
 </template>
 
-<style scoped>
-.header {
-  display: flex;
-  justify-content: end;
-  align-items: center;
-  padding: 10px 0px;
-  background-color: white;
-  margin-right: 10px;
-}
+<script setup>
+import assetTypes from './assetTypes';
 
-.header-left h2 {
-  margin: 0;
-  font-size: 1.5rem;
-}
+const props = defineProps({
+  assets: {
+    type: Array,
+  },
+});
 
-.header-right {
-  display: flex;
-  gap: 10px;
-}
+defineEmits(['view']);
 
-.edit-btn {
-  background: transparent;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-}
+const getAssetCount = (type) => {
+  return props.assets.filter(asset => asset.type === type).length;
+};
+</script>
 
-.install-btn {
-  text-transform: none;
-  font-weight: 500;
-  font-size: 14px;
-}
-
-.install-btn i {
-  margin-right: 8px;
-  font-size: 16px;
-}
-
-.install-btn:hover {
-  background-color: #0056b3;
-}
-
-.assets-btn {
-  background-color: white;
-  color: #007bff;
-  border: 1px solid #007bff;
-  padding: 8px 16px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.assets-btn:hover {
-  background-color: #f1f1f1;
-}
-</style>
 <style lang="scss" scoped>
-@import "styles/components/table";
-h3 {
-  font-size: 1.4em;
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(387px, 1fr));
+  gap: 8px;
+  padding: 24px;
 }
-.instance-card {
+
+.card {
+  display: flex;
+  flex-direction: unset;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-radius: 12px;
+  border: 1px solid #E9ECF1;
+}
+
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  background-color: #F3F5F7;
+  border-radius: 50%;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+}
+
+.content {
+  flex-grow: 1;
+  margin-left: 15px;
+}
+
+h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: #20242A;
+}
+
+p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #728092;
+}
+
+.button-container {
+  display: flex;
+  align-items: center;
+}
+
+.view-button {
+  background-color: white;
+  color: #20242A;
+  font-weight: 500;
+  padding: 6px 12px;
+  border: 1px solid #D7DDE5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  min-height: calc(-355px + 100vh);
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.view-button:hover {
+  background-color: #f1f3f5;
 }
 </style>
