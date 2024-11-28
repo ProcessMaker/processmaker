@@ -320,7 +320,7 @@ trait TaskControllerIndexMethods
                 ->orWhereIn('id', $user->availableSelfServiceTaskIds());
         });
     }
-    
+
     public function applyProcessManager($query, $user)
     {
         $ids = Process::select(['id'])
@@ -329,7 +329,7 @@ trait TaskControllerIndexMethods
             ->get()
             ->toArray();
 
-        $query->orWhere(function ($query) use ($ids) {
+        $query->where(function ($query) use ($ids) {
             $query->whereIn('process_request_tokens.process_id', array_column($ids, 'id'))
                 ->where('process_request_tokens.status', 'ACTIVE');
         });
