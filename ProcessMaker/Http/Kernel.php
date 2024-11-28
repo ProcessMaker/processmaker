@@ -83,8 +83,7 @@ class Kernel extends HttpKernel
         'session_kill' => Middleware\SessionControlKill::class,
         'no-cache' => Middleware\NoCache::class,
         'admin' => Middleware\IsAdmin::class,
-        'etag.set' => Middleware\Etag\SetEtag::class,
-        'etag.if-none-match' => Middleware\Etag\IfNoneMatch::class,
+        'etag' => Middleware\Etag\HandleEtag::class,
     ];
 
     /**
