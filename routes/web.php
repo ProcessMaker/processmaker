@@ -129,6 +129,11 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
 
     Route::get('about', [AboutController::class, 'index'])->name('about.index');
 
+
+    Route::get('chat-test', function () {
+        return view('test.chat');
+    });
+
     Route::get('profile/edit', [ProfileController::class, 'edit'])->name('profile.edit')->middleware('can:edit-personal-profile');
     Route::get('profile/{id}', [ProfileController::class, 'show'])->name('profile.show');
     // Ensure our modeler loads at a distinct url
@@ -230,3 +235,4 @@ Route::get('/unavailable', [UnavailableController::class, 'show'])->name('error.
 
 // SAML Metadata Route
 Route::resource('/saml/metadata', MetadataController::class)->only('index');
+
