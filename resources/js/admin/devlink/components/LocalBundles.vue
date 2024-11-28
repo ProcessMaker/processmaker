@@ -203,7 +203,7 @@ const canEdit = (bundle) => {
 }
 
 const goToBundleAssets = (bundle) => {
-  router.push({ name: 'bundle-assets', params: { id: bundle.id } });
+  router.push({ name: 'bundle-detail', params: { id: bundle.id } });
 }
 
 const deleteWarning = computed(() => {

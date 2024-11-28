@@ -7,6 +7,8 @@ import Assets from "./components/Assets";
 import AssetListing from "./components/AssetListing";
 import SharedAssets from "./components/SharedAssets";
 import BundleAssets from "./components/BundleAssets";
+import BundleDetail from "./components/BundleDetail.vue";
+import BundleContent from "./components/BundleContent.vue";
 
 Vue.use(VueRouter);
 const router = new VueRouter({
@@ -32,7 +34,14 @@ const router = new VueRouter({
     {
       name: "bundle-assets",
       path: "/local-bundles/:id",
-      component: BundleAssets,
+      component: BundleContent,
+      children: [
+        {
+          name: "bundle-detail",
+          path: "",
+          component: BundleDetail,
+        },
+      ],
     },
     {
       name: 'assets',
