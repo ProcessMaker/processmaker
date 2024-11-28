@@ -15,10 +15,52 @@ use Illuminate\Support\Facades\Cache;
 class ProcessVariableController extends Controller
 {
     /**
+     * @OA\Schema(
+     *     schema="Variable",
+     *     type="object",
+     *     @OA\Property(property="id", type="integer", example=1),
+     *     @OA\Property(property="process_id", type="integer", example=1),
+     *     @OA\Property(property="uuid", type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000"),
+     *     @OA\Property(property="data_type", type="string", enum={"string", "number", "boolean", "array"}, example="string"),
+     *     @OA\Property(property="label", type="string", example="Variable 1 for Process 1"),
+     *     @OA\Property(property="name", type="string", example="var_1_1"),
+     *     @OA\Property(
+     *         property="asset",
+     *         type="object",
+     *         @OA\Property(property="id", type="string", example="asset_1_1"),
+     *         @OA\Property(property="type", type="string", enum={"sensor", "actuator", "controller", "device"}, example="sensor"),
+     *         @OA\Property(property="name", type="string", example="Asset 1 for Process 1"),
+     *         @OA\Property(property="uuid", type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000")
+     *     ),
+     *     @OA\Property(property="created_at", type="string", format="date-time"),
+     *     @OA\Property(property="updated_at", type="string", format="date-time")
+     * )
+     * @OA\Schema(
+     *     schema="PaginationMeta",
+     *     type="object",
+     *     @OA\Property(property="current_page", type="integer", example=1),
+     *     @OA\Property(property="from", type="integer", example=1),
+     *     @OA\Property(property="last_page", type="integer", example=5),
+     *     @OA\Property(property="path", type="string", example="http://processmaker.com/processes/variables"),
+     *     @OA\Property(property="per_page", type="integer", example=20),
+     *     @OA\Property(property="to", type="integer", example=20),
+     *     @OA\Property(property="total", type="integer", example=100),
+     *     @OA\Property(
+     *         property="links",
+     *         type="object",
+     *         @OA\Property(property="first", type="string", example="http://processmaker.com/processes/variables?page=1"),
+     *         @OA\Property(property="last", type="string", example="http://processmaker.com/processes/variables?page=5"),
+     *         @OA\Property(property="prev", type="string", nullable=true),
+     *         @OA\Property(property="next", type="string", example="http://processmaker.com/processes/variables?page=2")
+     *     )
+     * )
      * @OA\Get(
-     *     path="/api/1.1/processes/variables",
+     *     path="/processes/variables",
      *     summary="Get variables for multiple processes with pagination",
-     *     tags={"Processes"},
+     *     servers={
+     *         @OA\Server(url=L5_SWAGGER_API_V1_1, description="API v1.1 Server")
+     *     },
+     *     tags={"Processes Variables"},
      *     @OA\Parameter(
      *         name="processIds",
      *         in="query",
