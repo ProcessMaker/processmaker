@@ -14,7 +14,7 @@ class HandleEtag
     /**
      * Handle an incoming request.
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, ?string $scope = null): Response
     {
         // Save original method and support HEAD requests.
         $originalMethod = $request->getMethod();
@@ -25,8 +25,11 @@ class HandleEtag
         // Handle response.
         $response = $next($request);
 
+        // Determine if the ETag should include user-specific data.
+        $includeUser = $scope === 'user';
+
         // Generate ETag for the response.
-        $etag = EtagManager::getEtag($request, $response);
+        $etag = EtagManager::getEtag($request, $response, $includeUser);
         if ($etag) {
             // Set the ETag header.
             $response->setEtag($etag);

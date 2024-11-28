@@ -4,6 +4,8 @@ namespace ProcessMaker\Tests\Feature\Etag;
 
 use Illuminate\Support\Facades\Route;
 use ProcessMaker\Http\Middleware\Etag\HandleEtag;
+use ProcessMaker\Http\Resources\Caching\EtagManager;
+use ProcessMaker\Models\User;
 use Tests\TestCase;
 
 class HandleEtagTest extends TestCase
@@ -66,5 +68,20 @@ class HandleEtagTest extends TestCase
 
         $response->assertStatus(304);
         $response->assertHeader('ETag', '"' . md5($this->response) . '"');
+    }
+
+    public function testDefaultGetEtagGeneratesCorrectEtagWithUser()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        Route::middleware('etag:user')->any(self::TEST_ROUTE, function () {
+            return response($this->response, 200);
+        });
+
+        $response = $this->get(self::TEST_ROUTE);
+
+        $expectedEtag = '"' . md5($user->id . $this->response) . '"';
+        $response->assertHeader('ETag', $expectedEtag);
     }
 }
