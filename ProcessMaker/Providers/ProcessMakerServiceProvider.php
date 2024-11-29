@@ -30,6 +30,7 @@ use ProcessMaker\Managers\ScreenCompiledManager;
 use ProcessMaker\Models;
 use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
+use RuntimeException;
 
 /**
  * Provide our ProcessMaker specific services.
@@ -167,7 +168,11 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton('setting.cache', function ($app) {
-            return new SettingCacheManager($app->make('cache'));
+            if ($app['config']->get('cache.default')) {
+                return new SettingCacheManager($app->make('cache'));
+            } else {
+                throw new RuntimeException('Cache configuration is missing.');
+            }
         });
     }
 

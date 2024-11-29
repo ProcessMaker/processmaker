@@ -2,7 +2,9 @@
 
 namespace ProcessMaker\Cache\Settings;
 
+use Exception;
 use Illuminate\Cache\CacheManager;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Cache\CacheInterface;
 
 class SettingCacheManager implements CacheInterface
@@ -36,7 +38,13 @@ class SettingCacheManager implements CacheInterface
      */
     public function get(string $key, mixed $default = null): mixed
     {
-        return $this->cacheManager->get($key, $default);
+        try {
+            return $this->cacheManager->get($key, $default);
+        } catch (Exception $e) {
+            Log::error('Cache error: ' . $e->getMessage());
+        }
+
+        return null;
     }
 
     /**
