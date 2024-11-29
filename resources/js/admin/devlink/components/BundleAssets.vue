@@ -8,6 +8,7 @@
       <!-- Content -->
       <div class="content">
         <h3>{{ $t(type.name) }}</h3>
+        <span class="asset-count">{{ getAssetCount(type.type) }}</span>
       </div>
       <!-- Button -->
       <div class="button-container">
@@ -71,6 +72,12 @@ const getAssetCount = (type) => {
 .content {
   flex-grow: 1;
   margin-left: 15px;
+}
+
+.asset-count {
+  font-size: 14px;
+  font-weight: 400;
+  color: #728092;
 }
 
 h3 {

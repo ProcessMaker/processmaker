@@ -36,9 +36,8 @@ defineEmits(['update:modelValue']);
 <style lang="scss" scoped>
 .sidebar {
   width: 250px;
-  background: white;
   border-right: 1px solid #e0e0e0;
-  padding: 20px 0;
+  padding: 20px;
 }
 
 .sidebar-item {
@@ -49,12 +48,14 @@ defineEmits(['update:modelValue']);
   color: #596372;
 
   &:hover {
-    background: #EAF2FF;
+    background-color: #EAF2FF;
+    border-radius: 8px;
   }
 
   &.active {
-    background: #EAF2FF;
+    background-color: #EAF2FF;
     color: #2773F3;
+    border-radius: 8px;
   }
 }
 </style>
