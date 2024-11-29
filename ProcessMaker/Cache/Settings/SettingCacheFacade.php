@@ -1,13 +1,13 @@
 <?php
 
-namespace ProcessMaker\Cache;
+namespace ProcessMaker\Cache\Settings;
 
 use Illuminate\Support\Facades\Facade;
 
 /**
  * Class SettingCacheFacade
  *
- * @mixin \ProcessMaker\Cache\SettingCache
+ * @mixin \ProcessMaker\Cache\Settings\SettingCacheManager
  *
  * @package ProcessMaker\Cache
  */
