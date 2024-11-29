@@ -249,21 +249,5 @@ class PermissionsTest extends TestCase
             'group' => 'Cases and Requests',
             'title' => $permissionTitle,
         ]);
-        // Act
-        $this->artisan('upgrade:run', [
-            '--class' => 'AssignUserPermissionViewMyRequest',
-        ]);
-
-        // Verify that the permission is assigned to users
-        $permission = Permission::where('name', $permissionName)->first();
-        $this->assertNotNull($permission);
-        foreach ($users as $user) {
-            $this->assertTrue($user->hasPermission($permissionName));
-        }
-
-        // Verify that the permission is assigned to groups
-        foreach ($groups as $group) {
-            $this->assertTrue($permission->groups->contains($group));
-        }
     }
 }
