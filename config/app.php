@@ -203,6 +203,7 @@ return [
         'SkinManager' => ProcessMaker\Facades\SkinManager::class,
         'Theme' => Igaster\LaravelTheme\Facades\Theme::class,
         'WorkspaceManager' => ProcessMaker\Facades\WorkspaceManager::class,
+        'SettingCache' => ProcessMaker\Cache\Settings\SettingCacheFacade::class,
     ])->toArray(),
 
     'debug_blacklist' => [
@@ -246,7 +247,7 @@ return [
     // Process Request security log rate limit: 1 per day (86400 seconds)
     'process_request_errors_rate_limit' => env('PROCESS_REQUEST_ERRORS_RATE_LIMIT', 1),
     'process_request_errors_rate_limit_duration' => env('PROCESS_REQUEST_ERRORS_RATE_LIMIT_DURATION', 86400),
-    
+
     'default_colors' => [
         'primary' => '#2773F3',
         'secondary' => '#728092',
