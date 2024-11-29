@@ -21,7 +21,7 @@ class AssignUserPermissionViewMyRequest extends Upgrade
     }
 
     /**
-     * Assign view-my_requests permission to active users and groups
+     * Assign view-my_requests permission to active users
      *
      * @param int $permissionId The ID of the permission
      * @return void

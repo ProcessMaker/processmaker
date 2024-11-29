@@ -234,30 +234,34 @@ class PermissionsTest extends TestCase
      */
     public function testSetPermissionsViewMyRequestForUsersAndGroupCreated()
     {
-        //Set up the users and groups
+        // Set up the users and groups
         $users = User::factory()->count(5)->create();
         $groups = Group::factory()->count(3)->create();
 
-        //Run the seeder
+        // Run the seeder
         $this->seed(PermissionSeeder::class);
         $permissionName = 'view-my_requests';
         $permissionTitle = 'View My Requests';
 
-        //Verify that the permission exists
+        // Verify that the permission exists
         $this->assertDatabaseHas('permissions', [
             'name' => $permissionName,
             'group' => 'Cases and Requests',
             'title' => $permissionTitle,
         ]);
+        // Act
+        $this->artisan('upgrade:run', [
+            '--class' => 'AssignUserPermissionViewMyRequest',
+        ]);
 
-        //Verify that the permission is assigned to users
+        // Verify that the permission is assigned to users
         $permission = Permission::where('name', $permissionName)->first();
         $this->assertNotNull($permission);
         foreach ($users as $user) {
             $this->assertTrue($user->hasPermission($permissionName));
         }
 
-        //Verify that the permission is assigned to groups
+        // Verify that the permission is assigned to groups
         foreach ($groups as $group) {
             $this->assertTrue($permission->groups->contains($group));
         }
