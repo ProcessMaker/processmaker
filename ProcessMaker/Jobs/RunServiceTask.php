@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Jobs;
 
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Exception\ConfigurationException;
@@ -127,8 +128,11 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             $error->setName($message);
 
             $token->setProperty('error', $error);
-            $exceptionClass = get_class($exception);
-            $modifiedException = new $exceptionClass($message);
+            if ($message !== $exception->getMessage()) {
+                $modifiedException = new Exception($message, $exception->getCode(), $exception);
+            } else {
+                $modifiedException = $exception;
+            }
             $token->logError($modifiedException, $element);
 
             Log::error('Service task failed: ' . $implementation . ' - ' . $message);
