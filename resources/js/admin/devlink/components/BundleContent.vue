@@ -16,6 +16,5 @@ const activeSection = ref('summary');
 <style lang="scss" scoped>
 .page-container {
 display: flex;
-justify-content: space-between;
 }
 </style>

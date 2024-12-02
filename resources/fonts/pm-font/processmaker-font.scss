@@ -1,10 +1,10 @@
 @font-face {font-family: "processmaker-font";
-  src: url('processmaker-font.eot?t=1732826065474'); /* IE9*/
-  src: url('processmaker-font.eot?t=1732826065474#iefix') format('embedded-opentype'), /* IE6-IE8 */
-  url("processmaker-font.woff2?t=1732826065474") format("woff2"),
-  url("processmaker-font.woff?t=1732826065474") format("woff"),
-  url('processmaker-font.ttf?t=1732826065474') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
-  url('processmaker-font.svg?t=1732826065474#processmaker-font') format('svg'); /* iOS 4.1- */
+  src: url('processmaker-font.eot?t=1733152989884'); /* IE9*/
+  src: url('processmaker-font.eot?t=1733152989884#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url("processmaker-font.woff2?t=1733152989884") format("woff2"),
+  url("processmaker-font.woff?t=1733152989884") format("woff"),
+  url('processmaker-font.ttf?t=1733152989884') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+  url('processmaker-font.svg?t=1733152989884#processmaker-font') format('svg'); /* iOS 4.1- */
 }
 
 [class^="fp-"], [class*=" fp-"] {
@@ -49,14 +49,15 @@
 .fp-play-outline:before { content: "\ea21"; }
 .fp-plus-thin:before { content: "\ea22"; }
 .fp-plus:before { content: "\ea23"; }
-.fp-screen-outline:before { content: "\ea24"; }
-.fp-script-outline:before { content: "\ea25"; }
-.fp-slack-notification:before { content: "\ea26"; }
-.fp-slack:before { content: "\ea27"; }
-.fp-slideshow:before { content: "\ea28"; }
-.fp-table:before { content: "\ea29"; }
-.fp-trash:before { content: "\ea2a"; }
-.fp-unlink:before { content: "\ea2b"; }
+.fp-remove-outlined:before { content: "\ea24"; }
+.fp-screen-outline:before { content: "\ea25"; }
+.fp-script-outline:before { content: "\ea26"; }
+.fp-slack-notification:before { content: "\ea27"; }
+.fp-slack:before { content: "\ea28"; }
+.fp-slideshow:before { content: "\ea29"; }
+.fp-table:before { content: "\ea2a"; }
+.fp-trash:before { content: "\ea2b"; }
+.fp-unlink:before { content: "\ea2c"; }
 
 $fp-bpmn-action-by-email: "\ea01";
 $fp-bpmn-data-connector: "\ea02";
@@ -93,12 +94,13 @@ $fp-pdf: "\ea20";
 $fp-play-outline: "\ea21";
 $fp-plus-thin: "\ea22";
 $fp-plus: "\ea23";
-$fp-screen-outline: "\ea24";
-$fp-script-outline: "\ea25";
-$fp-slack-notification: "\ea26";
-$fp-slack: "\ea27";
-$fp-slideshow: "\ea28";
-$fp-table: "\ea29";
-$fp-trash: "\ea2a";
-$fp-unlink: "\ea2b";
+$fp-remove-outlined: "\ea24";
+$fp-screen-outline: "\ea25";
+$fp-script-outline: "\ea26";
+$fp-slack-notification: "\ea27";
+$fp-slack: "\ea28";
+$fp-slideshow: "\ea29";
+$fp-table: "\ea2a";
+$fp-trash: "\ea2b";
+$fp-unlink: "\ea2c";
 
