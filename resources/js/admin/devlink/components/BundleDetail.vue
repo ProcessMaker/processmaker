@@ -69,13 +69,26 @@
       <p class="description-section-text">{{ bundle.description || $t('No description available') }}</p>
     </div>
 
+    <div class="divider" />
+
+    <!-- Assets -->
+    <div class="assets-section-title">
+      {{ $t('Assets') }}
+    </div>
     <BundleAssets
       :assets="bundle.assets"
     />
 
     <BundleConfigurations
-      :configurations="platformConfigs"
+      :configurations="platformConfigurations"
+      title="Platform Configurations"
     />
+
+    <BundleConfigurations
+      :configurations="settings"
+      title="Settings"
+    />
+
     <BundleModal
       ref="bundleModal"
       :bundle="bundleForEdit"
@@ -95,7 +108,8 @@ import UpdateBundle from './UpdateBundle.vue';
 import BundleAssets from './BundleAssets.vue';
 import BundleConfigurations from './BundleConfigurations.vue';
 import VersionCheck from './VersionCheck.vue';
-
+import platformConfigurations from './platformConfigurations';
+import settings from './settings';
 const bundle = ref({});
 const bundleModal = ref(null);
 const reinstallBundle = ref(null);
@@ -104,12 +118,6 @@ const route = useRoute();
 const bundleId = route.params.id;
 const bundleForEdit = ref({});
 const updateAvailable = ref(false);
-
-const platformConfigs = ref([
-  { key: 'users', label: 'Users', status: 'All', enabled: true },
-  { key: 'groups', label: 'Groups', status: 'Not shared', enabled: false },
-  // ... otras configuraciones
-]);
 
 const loadAssets = async () => {
   loading.value = true;
@@ -183,6 +191,21 @@ width: 100%;
   color: #4E5663;
   font-weight: 400;
   text-align: justify;
+}
+.divider {
+  border-top: 1px solid #E9ECF1;
+  height: 1px;
+  margin-top: 12px;
+  margin-bottom: 24px;
+  margin-left: 24px;
+  margin-right: 24px;
+}
+.assets-section-title {
+  font-size: 18px;
+  font-weight: 500;
+  padding-left: 24px;
+  padding-right: 24px;
+  margin-bottom: 8px;
 }
 ::v-deep .btn {
   font-size: 14px;

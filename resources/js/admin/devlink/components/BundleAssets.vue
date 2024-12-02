@@ -8,7 +8,7 @@
       <!-- Content -->
       <div class="content">
         <h3>{{ $t(type.name) }}</h3>
-        <span class="asset-count">{{ getAssetCount(type.type) }}</span>
+        <span class="asset-count">{{ getAssetCount(type.type) }} items</span>
       </div>
       <!-- Button -->
       <div class="button-container">
@@ -21,7 +21,10 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router/composables';
 import assetTypes from './assetTypes';
+
+const router = useRouter();
 
 const props = defineProps({
   assets: {
@@ -32,7 +35,17 @@ const props = defineProps({
 defineEmits(['view']);
 
 const getAssetCount = (type) => {
-  return props.assets.filter(asset => asset.type === type).length;
+  return props.assets?.filter(asset => asset.type.toUpperCase() === type.toUpperCase()).length;
+};
+
+const navigate = (type) => {
+  router.push({ 
+    name: 'bundle-asset-listing', 
+    params: { type: type.type },
+    state: { assets: props.assets.filter(asset => 
+      asset.type.toUpperCase() === type.type.toUpperCase()
+    )}
+  });
 };
 </script>
 

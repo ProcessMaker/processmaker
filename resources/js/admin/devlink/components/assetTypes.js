@@ -1,6 +1,6 @@
 export default [
   {
-    type: 'processes',
+    type: 'process',
     name: 'Processes',
     url: 'api.processes.index',
     class: 'ProcessMaker\\Models\\Process',
