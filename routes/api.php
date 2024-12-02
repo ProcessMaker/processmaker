@@ -208,7 +208,9 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('tasks/{task}/setViewed', [TaskController::class, 'setViewed'])->name('tasks.set_viewed')->middleware('can:viewScreen,task,screen');
     Route::put('tasks/{task}/setPriority', [TaskController::class, 'setPriority'])->name('tasks.priority');
     Route::put('tasks/updateReassign', [TaskController::class, 'updateReassign'])->name('tasks.updateReassign');
-    Route::get('tasks/user-can-reassign', [TaskController::class, 'userCanReassign'])->name('tasks.user_can_reassign');
+    Route::get('tasks/user-can-reassign', [TaskController::class, 'userCanReassign'])
+        ->middleware('etag:user')
+        ->name('tasks.user_can_reassign');
 
     // TaskDrafts
     Route::put('drafts/{task}', [TaskDraftController::class, 'update'])->name('taskdraft.update');
