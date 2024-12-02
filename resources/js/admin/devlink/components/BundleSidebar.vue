@@ -3,7 +3,7 @@
     <div
       class="sidebar-item"
       :class="{ active: modelValue === 'summary' }"
-      @click="$emit('update:modelValue', 'summary')"
+      @click="$emit('type-change', 'summary')"
     >
       {{ $t('Summary') }}
     </div>
@@ -12,7 +12,7 @@
       :key="item.type"
       class="sidebar-item"
       :class="{ active: modelValue === item.type }"
-      @click="$emit('update:modelValue', item.type)"
+      @click="$emit('type-change', item.type)"
     >
       {{ $t(item.name) }}
     </div>

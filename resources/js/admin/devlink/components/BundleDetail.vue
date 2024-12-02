@@ -55,6 +55,7 @@
           v-if="bundle.dev_link_id === null"
           variant="primary"
           class="btn-publish"
+          @click="publishBundle"
         >
           {{ $t('Publish') }}
         </b-button>
@@ -97,11 +98,21 @@
     <UpdateBundle
       ref="reinstallBundle"
     />
+
+    <b-modal
+      ref="confirmPublishNewVersion"
+      centered
+      content-class="modal-style"
+      title="Publish New Version"
+      @ok="executeIncrease"
+    >
+      <p v-html="confirmPublishNewVersionText"></p>
+    </b-modal>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed, getCurrentInstance } from 'vue';
 import { useRoute } from 'vue-router/composables';
 import BundleModal, { show as showBundleModal, hide as hideBundleModal } from './BundleModal.vue';
 import UpdateBundle from './UpdateBundle.vue';
@@ -110,6 +121,8 @@ import BundleConfigurations from './BundleConfigurations.vue';
 import VersionCheck from './VersionCheck.vue';
 import platformConfigurations from './platformConfigurations';
 import settings from './settings';
+
+const vue = getCurrentInstance().proxy;
 const bundle = ref({});
 const bundleModal = ref(null);
 const reinstallBundle = ref(null);
@@ -118,6 +131,8 @@ const route = useRoute();
 const bundleId = route.params.id;
 const bundleForEdit = ref({});
 const updateAvailable = ref(false);
+const selected = ref(null);
+const confirmPublishNewVersion = ref(null);
 
 const loadAssets = async () => {
   loading.value = true;
@@ -141,6 +156,23 @@ const updateBundle = () => {
     .put(`/devlink/local-bundles/${bundleForEdit.value.id}`, bundleForEdit.value)
     .then(() => {
       loadAssets();
+    });
+};
+
+const confirmPublishNewVersionText = computed(() => {
+  return vue.$t('Are you sure you increase the version of <strong>{{ bundleName }}</strong>?', { bundleName: bundle.value?.name });
+});
+
+const publishBundle = () => {
+  selected.value = bundle.value;
+  confirmPublishNewVersion.value.show();
+};
+
+const executeIncrease = () => {
+  ProcessMaker.apiClient
+    .post(`devlink/local-bundles/${selected.value.id}/increase-version`)
+    .then((result) => {
+      confirmPublishNewVersion.value.hide();
     });
 };
 

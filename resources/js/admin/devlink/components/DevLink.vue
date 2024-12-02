@@ -19,7 +19,7 @@ const route = useRoute();
         </b-tab>
         <b-tab
           :title="$t('Local Bundles')"
-          :active="route.name === 'local-bundles' || route.name === 'bundle-assets' || route.name === 'bundle-detail'"
+          :active="route.name === 'local-bundles' || route.name === 'bundle-assets' || route.name === 'bundle-detail' || route.name === 'bundle-asset-listing'"
           @click="router.push({ name: 'local-bundles' })"
           >
           <router-view></router-view>
