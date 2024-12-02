@@ -49,15 +49,12 @@ trait HasAuthorization
             if (in_array($group->id, $processedGroups)) {
                 return $permissions;
             }
-
             // Add the group in the processedList
             $processedGroups[] = $group->id;
-
-            // Cargar permisos del grupo actual
+            // Load permissions
             $groupPermissions = $group->permissions->pluck('name')->toArray();
             $permissions = array_merge($permissions, $groupPermissions);
-
-            // Procesar grupos anidados
+            // Review groups
             foreach ($group->groupMembersFromMemberable as $member) {
                 $memberGroup = $member->group;
                 $permissions = $this->loadPermissionOfGroups(
