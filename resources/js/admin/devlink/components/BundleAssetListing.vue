@@ -16,7 +16,6 @@ const loadAssets = async () => {
   loading.value = true;
   const response = await window.ProcessMaker.apiClient.get(`/api/1.0/devlink/local-bundles/${bundleId}`);
   items.value = response.data.assets.filter(asset => asset.type.toUpperCase() === route.params.type.toUpperCase());
-  console.log(items.value);
   loading.value = false;
 };
 
@@ -77,7 +76,7 @@ const fields = [
           <div class="btn-menu-container">
             <button
               class="btn install-asset-btn"
-              @click.prevent="install(data.item)"
+              @click.prevent="removeAsset(data.item)"
             >
               <i class="fp-remove-outlined"></i>
             </button>
