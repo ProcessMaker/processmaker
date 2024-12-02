@@ -7,7 +7,7 @@ namespace ProcessMaker\Http\Controllers\Api\V1_1;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use ProcessMaker\Facades\ScreenCompiledManager;
+use ProcessMaker\Cache\Screens\ScreenCacheFactory;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\V1_1\TaskInterstitialResource;
 use ProcessMaker\Http\Resources\V1_1\TaskResource;
@@ -102,31 +102,43 @@ class TaskController extends Controller
         $task = ProcessRequestToken::select(
             array_merge($this->defaultFields, ['process_request_id', 'process_id'])
         )
-        // eager loading process_request.process_version_id
         ->with([
-            'processRequest'=> function ($query) {
+            'processRequest' => function ($query) {
                 $query->select('id', 'process_version_id');
             },
         ])->findOrFail($taskId);
 
-        // Prepare the key for the screen cache
+        // Get screen version and prepare cache key
         $processId = $task->process_id;
         $processVersionId = $task->processRequest->process_version_id;
         $language = TranslationManager::getTargetLanguage();
         $screenVersion = $task->getScreenVersion();
-        $key = ScreenCompiledManager::createKey($processId, $processVersionId, $language, $screenVersion->screen_id, $screenVersion->id);
 
-        // Get the screen content from the cache or compile it
-        $translatedScreen = ScreenCompiledManager::getCompiledContent($key);
-        if (!isset($translatedScreen)) {
+        // Get the appropriate cache handler based on configuration
+        $screenCache = ScreenCacheFactory::create();
+
+        // Create cache key
+        $key = $screenCache->createKey(
+            (int) $processId,
+            (int) $processVersionId,
+            $language,
+            (int) $screenVersion->screen_id,
+            (int) $screenVersion->id
+        );
+
+        // Try to get the screen from cache
+        $translatedScreen = $screenCache->get($key);
+
+        if ($translatedScreen === null) {
+            // If not in cache, create new response
             $response = new TaskScreen($task);
             $translatedScreen = $response->toArray(request())['screen'];
-            ScreenCompiledManager::storeCompiledContent($key, $translatedScreen);
+
+            // Store in cache
+            $screenCache->set($key, $translatedScreen);
         }
 
-        $response = response($translatedScreen, 200);
-
-        return $response;
+        return response($translatedScreen, 200);
     }
 
     public function showInterstitial($taskId)
