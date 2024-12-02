@@ -4,7 +4,7 @@ namespace Tests\Feature\Cache;
 
 use Tests\TestCase;
 
-class SettingCacheTest extends TestCase
+class SettingCacheManagerTest extends TestCase
 {
     public function testGet()
     {
