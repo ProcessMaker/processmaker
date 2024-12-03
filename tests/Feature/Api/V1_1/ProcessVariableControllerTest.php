@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api\V1_1;
 
 use ProcessMaker\Models\User;
+use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 
@@ -37,9 +38,9 @@ class ProcessVariableControllerTest extends TestCase
                         'id',
                         'process_id',
                         'uuid',
-                        'data_type',
+                        'format',
                         'label',
-                        'name',
+                        'field',
                         'asset' => [
                             'id',
                             'type',
@@ -65,7 +66,7 @@ class ProcessVariableControllerTest extends TestCase
         $responseData = $response->json();
         $this->assertEquals(15, $responseData['meta']['per_page']);
         $this->assertEquals(1, $responseData['meta']['current_page']);
-        
+
         // Since we're generating 10 variables per process (3 processes = 30 total)
         $this->assertEquals(30, $responseData['meta']['total']);
     }
@@ -108,7 +109,7 @@ class ProcessVariableControllerTest extends TestCase
         // Ensure no duplicate IDs between pages
         $firstPageIds = collect($firstPage['data'])->pluck('id');
         $secondPageIds = collect($secondPage['data'])->pluck('id');
-        
+
         $this->assertEquals(0, $firstPageIds->intersect($secondPageIds)->count());
     }
 
@@ -118,9 +119,9 @@ class ProcessVariableControllerTest extends TestCase
     public function test_process_ids_filtering(): void
     {
         $response = $this->apiCall('GET', '/api/1.1/processes/variables?processIds=1,2&per_page=50');
-        
+
         $responseData = $response->json();
-        
+
         // Check that only requested process IDs are returned
         $uniqueProcessIds = collect($responseData['data'])
             ->pluck('process_id')
@@ -129,8 +130,46 @@ class ProcessVariableControllerTest extends TestCase
             ->all();
 
         $this->assertEquals([1, 2], $uniqueProcessIds);
-        
+
         // Since we generate 10 variables per process, total should be 20
         $this->assertEquals(20, $responseData['meta']['total']);
+    }
+
+    /**
+     * Test filtering with savedSearchId parameter
+     */
+    public function test_saved_search_id_filtering(): void
+    {
+        // Create a saved search with specific columns
+        $savedSearch = SavedSearch::factory()->create([
+            'meta' => [
+                'columns' => [
+                    [
+                        'label' => 'Variable 1',
+                        'field' => 'data.var_1_1',
+                        'default' => null,
+                    ],
+                    [
+                        'label' => 'Variable 2',
+                        'field' => 'data.var_1_2',
+                        'default' => null,
+                    ],
+                ],
+            ],
+        ]);
+
+        // Make request with savedSearchId
+        $response = $this->apiCall('GET', '/api/1.1/processes/variables?processIds=1&savedSearchId=' . $savedSearch->id);
+
+        $responseData = $response->json();
+
+        // Check that the filtered variables do not include the fields from the saved search
+        $filteredFields = collect($responseData['data'])->pluck('field');
+
+        $this->assertFalse($filteredFields->contains('data.var_1_1'));
+        $this->assertFalse($filteredFields->contains('data.var_1_2'));
+
+        // Check that the total count is reduced by the number of excluded fields
+        $this->assertEquals(8, $responseData['meta']['total']); // 10 total - 2 excluded
     }
 }
