@@ -43,7 +43,6 @@ mix
   ], "public/builds/login/js/vendor.js");
 
 mix
-  .js("resources/js/admin/auth/passwords/change.js", "public/js/admin/auth/passwords/change.js")
   .js("resources/js/translations/index.js", "public/js/translations")
   .js("resources/js/app-login.js", "public/builds/login/js");
 
