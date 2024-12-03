@@ -13,11 +13,6 @@ class SettingCacheTest extends TestCase
     use RequestHelper;
     use RefreshDatabase;
 
-    /* public function setUp(): void
-    {
-        parent::setUp();
-    } */
-
     private function upgrade()
     {
         $this->artisan('migrate', [
@@ -65,12 +60,11 @@ class SettingCacheTest extends TestCase
     public function testGetSettingByKeyNotCached(): void
     {
         $key = 'password-policies.uppercase';
-        \SettingCache::delete($key);
 
         $this->upgrade();
         $this->trackQueries();
 
-        $setting = Setting::byKey($key, true);
+        $setting = Setting::byKey($key);
 
         $this->assertEquals(1, self::getQueryCount());
         $this->assertEquals($key, $setting->key);
@@ -86,12 +80,11 @@ class SettingCacheTest extends TestCase
     public function testGetSettingByKeyCachedAfterUpdate(): void
     {
         $key = 'password-policies.special';
-        \SettingCache::delete($key);
 
         $this->upgrade();
         $this->trackQueries();
 
-        $setting = Setting::byKey($key, true);
+        $setting = Setting::byKey($key);
 
         $this->assertEquals(1, self::getQueryCount());
         $this->assertEquals($key, $setting->key);
@@ -115,8 +108,10 @@ class SettingCacheTest extends TestCase
         $this->withoutExceptionHandling();
         $key = 'non-existing-key';
 
+        $callback = fn() => Setting::where('key', $key)->first();
+
         $this->expectException(\InvalidArgumentException::class);
-        $setting = Setting::byKey($key, true);
+        $setting = \SettingCache::getOrCache($key, $callback);
 
         $this->assertNull($setting);
     }

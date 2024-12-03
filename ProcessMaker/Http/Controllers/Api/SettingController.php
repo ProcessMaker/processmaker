@@ -243,9 +243,6 @@ class SettingController extends Controller
         $original = array_intersect_key($setting->getOriginal(), $setting->getDirty());
         $setting->save();
 
-        // Store the setting in the cache
-        \SettingCache::set($setting->key, $setting);
-
         if ($setting->key === 'password-policies.2fa_enabled') {
             // Update all groups with the new 2FA setting
             Group::where('enabled_2fa', '!=', $setting->config)
@@ -254,6 +251,9 @@ class SettingController extends Controller
 
         // Register the Event
         SettingsUpdated::dispatch($setting, $setting->getChanges(), $original);
+
+        // Store the setting in the cache
+        \SettingCache::set($setting->key, $setting->refresh());
 
         return response([], 204);
     }
