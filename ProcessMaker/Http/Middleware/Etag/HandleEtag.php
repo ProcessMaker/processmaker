@@ -14,22 +14,23 @@ class HandleEtag
     /**
      * Handle an incoming request.
      */
-    public function handle(Request $request, Closure $next, ?string $scope = null): Response
+    public function handle(Request $request, Closure $next): Response
     {
-        // Save original method and support HEAD requests.
-        $originalMethod = $request->getMethod();
-        if ($request->isMethod('HEAD')) {
-            $request->setMethod('GET');
+        // Process only GET and HEAD methods.
+        if (!$request->isMethod('GET') && !$request->isMethod('HEAD')) {
+            return $next($request);
         }
 
         // Handle response.
         $response = $next($request);
 
-        // Determine if the ETag should include user-specific data.
-        $includeUser = $scope === 'user';
+        // Check if the response is cacheable.
+        if (!$this->isCacheableResponse($response)) {
+            return $response; // Skip ETag for non-cacheable responses.
+        }
 
         // Generate ETag for the response.
-        $etag = EtagManager::getEtag($request, $response, $includeUser);
+        $etag = EtagManager::getEtag($request, $response);
         if ($etag) {
             // Set the ETag header.
             $response->setEtag($etag);
@@ -43,9 +44,6 @@ class HandleEtag
             }
         }
 
-        // Restore original method and return the response.
-        $request->setMethod($originalMethod);
-
         return $response;
     }
 
@@ -55,5 +53,18 @@ class HandleEtag
     private function stripWeakTags(string $etag): string
     {
         return str_replace('W/', '', $etag);
+    }
+
+    /**
+     * Determine if a response is cacheable.
+     */
+    private function isCacheableResponse(Response $response): bool
+    {
+        $cacheableStatusCodes = [200, 203, 204, 206, 304];
+        $cacheControl = $response->headers->get('Cache-Control', '');
+
+        // Verify if the status code is cacheable and does not contain "no-store".
+        return in_array($response->getStatusCode(), $cacheableStatusCodes)
+            && !str_contains($cacheControl, 'no-store');
     }
 }

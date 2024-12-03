@@ -23,26 +23,22 @@ class EtagManager
     }
 
     /**
-     * Get ETag value for this request and response.
+     * Get the ETag value for this request and response.
      */
-    public static function getEtag(Request $request, Response $response, bool $includeUser = false): string
+    public static function getEtag(Request $request, Response $response): string
     {
         $etag = static::$etagGenerateCallback
-            ? call_user_func(static::$etagGenerateCallback, $request, $response, $includeUser)
-            : static::defaultGetEtag($response, $includeUser);
+            ? call_user_func(static::$etagGenerateCallback, $request, $response)
+            : static::defaultGetEtag($response);
 
         return (string) Str::of($etag)->start('"')->finish('"');
     }
 
     /**
-     * Generate an ETag, optionally including user-specific data.
+     * Generate a default ETag, including user-specific data by default.
      */
-    private static function defaultGetEtag(Response $response, bool $includeUser = false): string
+    private static function defaultGetEtag(Response $response): string
     {
-        if ($includeUser) {
-            return md5(auth()->id() . $response->getContent());
-        }
-
-        return md5($response->getContent());
+        return md5(auth()->id() . $response->getContent());
     }
 }
