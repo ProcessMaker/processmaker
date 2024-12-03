@@ -8,6 +8,18 @@ use ProcessMaker\Managers\ScreenCompiledManager;
 
 class ScreenCacheFactory
 {
+    private static ?ScreenCacheInterface $testInstance = null;
+
+    /**
+     * Set a test instance for the factory
+     *
+     * @param ScreenCacheInterface|null $instance
+     */
+    public static function setTestInstance(?ScreenCacheInterface $instance): void
+    {
+        self::$testInstance = $instance;
+    }
+
     /**
      * Create a screen cache handler based on configuration
      *
@@ -15,6 +27,10 @@ class ScreenCacheFactory
      */
     public static function create(): ScreenCacheInterface
     {
+        if (self::$testInstance !== null) {
+            return self::$testInstance;
+        }
+
         $manager = Config::get('screens.cache.manager', 'legacy');
 
         if ($manager === 'new') {
