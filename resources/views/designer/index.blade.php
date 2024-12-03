@@ -16,6 +16,9 @@
 @section('content')
 
 <div id="new-designer" class="p-3 page-content mb-0 bg-white">
+    {{-- @if (hasPackage('package-variable-finder')) --}}
+        <var-finder-modal ref="varFinder"></var-finder-modal>
+    {{-- @endif --}}
     <welcome-designer></welcome-designer>
     <div class="card card-body border-0">
         <div class="row">
@@ -56,6 +59,11 @@
 @endsection
 
 @section('js')
+
+{{-- @if (hasPackage('package-variable-finder')) --}}
+<script src="{{ mix('js/variable-finder/var-finder.js') }}"></script>
+{{-- @endif --}}
+
 <script>
     window.Processmaker.user = @json($currentUser);
 </script>
