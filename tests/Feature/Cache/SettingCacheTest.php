@@ -64,12 +64,13 @@ class SettingCacheTest extends TestCase
 
     public function testGetSettingByKeyNotCached(): void
     {
+        $key = 'password-policies.uppercase';
+        \SettingCache::delete($key);
+
         $this->upgrade();
         $this->trackQueries();
 
-        $key = 'password-policies.uppercase';
-
-        $setting = Setting::byKey($key);
+        $setting = Setting::byKey($key, true);
 
         $this->assertEquals(1, self::getQueryCount());
         $this->assertEquals($key, $setting->key);
@@ -84,12 +85,13 @@ class SettingCacheTest extends TestCase
 
     public function testGetSettingByKeyCachedAfterUpdate(): void
     {
+        $key = 'password-policies.special';
+        \SettingCache::delete($key);
+
         $this->upgrade();
         $this->trackQueries();
 
-        $key = 'password-policies.special';
-
-        $setting = Setting::byKey($key);
+        $setting = Setting::byKey($key, true);
 
         $this->assertEquals(1, self::getQueryCount());
         $this->assertEquals($key, $setting->key);
@@ -110,10 +112,11 @@ class SettingCacheTest extends TestCase
 
     public function testGetSettingByNotExistingKey()
     {
+        $this->withoutExceptionHandling();
         $key = 'non-existing-key';
 
         $this->expectException(\InvalidArgumentException::class);
-        $setting = Setting::byKey($key);
+        $setting = Setting::byKey($key, true);
 
         $this->assertNull($setting);
     }

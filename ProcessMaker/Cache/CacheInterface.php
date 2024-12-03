@@ -8,11 +8,11 @@ interface CacheInterface
      * Fetches a value from the cache.
      *
      * @param string $key     The unique key of this item in the cache.
-     * @param mixed  $default Default value to return if the key does not exist.
+     * @param callable $callback The callback that will return the value to store in the cache.
      *
      * @return mixed The value of the item from the cache, or $default in case of cache miss.
      */
-    public function get(string $key, mixed $default = null): mixed;
+    public function get(string $key, callable $callback = null): mixed;
 
     /**
      * Persists data in the cache, uniquely referenced by a key with an optional expiration TTL time.

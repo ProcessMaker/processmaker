@@ -32,19 +32,29 @@ class SettingCacheManager implements CacheInterface
      * Get a value from the settings cache.
      *
      * @param string $key
-     * @param mixed $default
+     * @param callable|null $callback
      *
      * @return mixed
      */
-    public function get(string $key, mixed $default = null): mixed
+    public function get(string $key, callable $callback = null): mixed
     {
-        try {
-            return $this->cacheManager->get($key, $default);
-        } catch (Exception $e) {
-            Log::error('Cache error: ' . $e->getMessage());
+        $value = $this->cacheManager->get($key);
+
+        if ($value) {
+            return $value;
         }
 
-        return null;
+        if ($callback === null) {
+            return null;
+        }
+
+        $value = $callback();
+
+        if ($value === null) {
+            throw new \InvalidArgumentException('The key does not exist.');
+        }
+
+        return $value;
     }
 
     /**

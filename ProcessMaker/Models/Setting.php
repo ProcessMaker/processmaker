@@ -142,13 +142,26 @@ class Setting extends ProcessMakerModel implements HasMedia
      * Get setting by key
      *
      * @param  string  $key
+     * @param  bool  $withCallback
      *
      * @return \ProcessMaker\Models\Setting|null
      * @throws \Exception
      */
-    public static function byKey(string $key)
+    public static function byKey(string $key, bool $withCallback = false)
     {
-        return (new self)->where('key', $key)->first();
+        $callback = null;
+
+        if ($withCallback) {
+            $callback = fn() => (new self)->where('key', $key)->first();
+        }
+
+        $setting = \SettingCache::get($key, $callback);
+
+        if (!is_null($setting)) {
+            \SettingCache::set($key, $setting);
+        }
+
+        return $setting;
     }
 
     /**
