@@ -2,101 +2,117 @@
 
 namespace Tests\Feature\Cache;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
+use ProcessMaker\Models\Setting;
+use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
 class SettingCacheTest extends TestCase
 {
-    public function testGet()
+    use RequestHelper;
+    use RefreshDatabase;
+
+    private function upgrade()
     {
-        $key = 'test_key';
-        $default = 'default_value';
-        $expected = 'cached_value';
-
-        \SettingCache::shouldReceive('get')
-            ->with($key, $default)
-            ->andReturn($expected);
-
-        $result = \SettingCache::get($key, $default);
-
-        $this->assertEquals($expected, $result);
+        $this->artisan('migrate', [
+            '--path' => 'upgrades/2023_11_30_185738_add_password_policies_settings.php',
+        ])->run();
     }
 
-    public function testSet()
+    public static function trackQueries(): void
     {
-        $key = 'test_key';
-        $value = 'test_value';
-        $ttl = 60;
-
-        \SettingCache::shouldReceive('set')
-            ->with($key, $value, $ttl)
-            ->andReturn(true);
-
-        $result = \SettingCache::set($key, $value, $ttl);
-
-        $this->assertTrue($result);
+        DB::enableQueryLog();
     }
 
-    public function testDelete()
+    public static function flushQueryLog(): void
     {
-        $key = 'test_key';
-
-        \SettingCache::shouldReceive('delete')
-            ->with($key)
-            ->andReturn(true);
-
-        $result = \SettingCache::delete($key);
-
-        $this->assertTrue($result);
+        DB::flushQueryLog();
     }
 
-    public function testClear()
+    public static function getQueriesExecuted(): array
     {
-        \SettingCache::shouldReceive('clear')
-            ->andReturn(true);
-
-        $result = \SettingCache::clear();
-
-        $this->assertTrue($result);
+        return DB::getQueryLog();
     }
 
-    public function testHas()
+    public static function getQueryCount(): int
     {
-        $key = 'test_key';
-
-        \SettingCache::shouldReceive('has')
-            ->with($key)
-            ->andReturn(true);
-
-        $result = \SettingCache::has($key);
-
-        $this->assertTrue($result);
+        return count(self::getQueriesExecuted());
     }
 
-    public function testMissing()
+    public function testGetSettingByKeyCached(): void
     {
-        $key = 'test_key';
+        $this->upgrade();
 
-        \SettingCache::shouldReceive('missing')
-            ->with($key)
-            ->andReturn(false);
+        $key = 'password-policies.users_can_change';
 
-        $result = \SettingCache::missing($key);
+        $setting = Setting::where('key', $key)->first();
+        \SettingCache::set($key, $setting);
 
-        $this->assertFalse($result);
+        $this->trackQueries();
+
+        $setting = Setting::byKey($key);
+
+        $this->assertEquals(0, self::getQueryCount());
+        $this->assertEquals($key, $setting->key);
     }
 
-    public function testCall()
+    public function testGetSettingByKeyNotCached(): void
     {
-        $method = 'add';
-        $arguments = ['arg1', 'arg2'];
-        $expected = 'cached_value';
+        $key = 'password-policies.uppercase';
 
-        \SettingCache::shouldReceive($method)
-            ->with(...$arguments)
-            ->andReturn($expected);
+        $this->upgrade();
+        $this->trackQueries();
 
-        $result = \SettingCache::__call($method, $arguments);
+        $setting = Setting::byKey($key);
 
-        $this->assertEquals($expected, $result);
+        $this->assertEquals(1, self::getQueryCount());
+        $this->assertEquals($key, $setting->key);
+
+        $this->flushQueryLog();
+
+        $setting = Setting::byKey($key);
+        $this->assertEquals(0, self::getQueryCount());
+        $this->assertNotNull($setting);
+        $this->assertEquals($key, $setting->key);
+    }
+
+    public function testGetSettingByKeyCachedAfterUpdate(): void
+    {
+        $key = 'password-policies.special';
+
+        $this->upgrade();
+        $this->trackQueries();
+
+        $setting = Setting::byKey($key);
+
+        $this->assertEquals(1, self::getQueryCount());
+        $this->assertEquals($key, $setting->key);
+        $this->assertEquals($setting->config, 1);
+
+        $data = array_merge($setting->toArray(), ['config' => false]);
+
+        $response = $this->apiCall('PUT', route('api.settings.update', ['setting' => $setting->id]), $data);
+        $response->assertStatus(204);
+
+        $this->flushQueryLog();
+
+        $setting = Setting::byKey($key);
+        $this->assertEquals(0, self::getQueryCount());
+        $this->assertEquals($key, $setting->key);
+        $this->assertEquals($setting->config, 0);
+    }
+
+    public function testGetSettingByNotExistingKey()
+    {
+        $this->withoutExceptionHandling();
+        $key = 'non-existing-key';
+
+        $callback = fn() => Setting::where('key', $key)->first();
+
+        $this->expectException(\InvalidArgumentException::class);
+        $setting = \SettingCache::getOrCache($key, $callback);
+
+        $this->assertNull($setting);
     }
 }

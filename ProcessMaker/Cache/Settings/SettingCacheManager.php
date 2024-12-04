@@ -2,9 +2,7 @@
 
 namespace ProcessMaker\Cache\Settings;
 
-use Exception;
 use Illuminate\Cache\CacheManager;
-use Illuminate\Support\Facades\Log;
 use ProcessMaker\Cache\CacheInterface;
 
 class SettingCacheManager implements CacheInterface
@@ -38,13 +36,40 @@ class SettingCacheManager implements CacheInterface
      */
     public function get(string $key, mixed $default = null): mixed
     {
-        try {
-            return $this->cacheManager->get($key, $default);
-        } catch (Exception $e) {
-            Log::error('Cache error: ' . $e->getMessage());
+        return $this->cacheManager->get($key, $default);
+    }
+
+    /**
+     * Get a value from the settings cache, or store the value from the callback if the key exists.
+     *
+     * @param string $key
+     * @param callable $callback
+     *
+     * @return mixed
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function getOrCache(string $key, callable $callback): mixed
+    {
+        $value = $this->get($key);
+
+        if ($value !== null) {
+            return $value;
         }
 
-        return null;
+        try {
+            $value = $callback();
+
+            if ($value === null) {
+                throw new \InvalidArgumentException('The key does not exist.');
+            }
+        } catch (\Exception $e) {
+            throw new \InvalidArgumentException('The key does not exist.');
+        }
+
+        $this->set($key, $value);
+
+        return $value;
     }
 
     /**

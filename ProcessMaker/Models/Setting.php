@@ -148,7 +148,18 @@ class Setting extends ProcessMakerModel implements HasMedia
      */
     public static function byKey(string $key)
     {
-        return (new self)->where('key', $key)->first();
+        $setting = \SettingCache::get($key);
+
+        if ($setting === null) {
+            $setting = (new self)->where('key', $key)->first();
+
+            // Store the setting in the cache if it exists
+            if ($setting !== null) {
+                \SettingCache::set($key, $setting);
+            }
+        }
+
+        return $setting;
     }
 
     /**
