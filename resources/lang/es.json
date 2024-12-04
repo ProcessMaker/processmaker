@@ -2431,5 +2431,15 @@
   "Create a bundle to easily share assets and settings between ProcessMaker instances.": "Crear un paquete para compartir fácilmente activos y configuraciones entre instancias de ProcessMaker.",
   "In addition to the process manager, these users and groups will have permission to reassign any task in this process, regardless of the \"Allow Reassignment\" task setting.": "Además del gestor de procesos, estos usuarios y grupos tendrán permiso para reasignar cualquier tarea en este proceso, independientemente de la configuración de tarea \"Allow Reassignment\".",
   "Reassignment Permission": "Permiso de reasignación",
-  "This task can not be reassigned": "Esta tarea no se puede reasignar"
+  "This task can not be reassigned": "Esta tarea no se puede reasignar",
+  "Start New Case": "Iniciar Nuevo Caso",
+  "No Case to Start": "No Case to Start",
+  "No Cases to Show": "No hay casos para mostrar",
+  "Drafts": "Borradores",
+  "An error ocurred, please check the PI process file and try again.": "Se produjo un error, por favor revise el archivo de proceso PI y vuelva a intentarlo.",
+  "New": "Nuevo",
+  "New Genie": "Nuevo Genie",
+  "View All Genies": "Ver todos los Genies",
+  "View All Collections": "Ver Todas las Colecciones",
+  "Collapse sidebar": "Colapsar barra lateral"
 }
