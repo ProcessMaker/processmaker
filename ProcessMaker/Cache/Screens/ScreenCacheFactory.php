@@ -3,6 +3,8 @@
 namespace ProcessMaker\Cache\Screens;
 
 use Illuminate\Support\Facades\Config;
+use ProcessMaker\Cache\Monitoring\CacheMetricsDecorator;
+use ProcessMaker\Cache\Monitoring\RedisMetricsManager;
 use ProcessMaker\Cache\Screens\ScreenCacheManager;
 use ProcessMaker\Managers\ScreenCompiledManager;
 
@@ -31,15 +33,18 @@ class ScreenCacheFactory
             return self::$testInstance;
         }
 
+        // Create the appropriate cache implementation
         $manager = Config::get('screens.cache.manager', 'legacy');
+        $cache = $manager === 'new'
+            ? app(ScreenCacheManager::class)
+            : new LegacyScreenCacheAdapter(app()->make(ScreenCompiledManager::class));
 
-        if ($manager === 'new') {
-            return app(ScreenCacheManager::class);
+        // If already wrapped with metrics decorator, return as is
+        if ($cache instanceof CacheMetricsDecorator) {
+            return $cache;
         }
 
-        // Get the concrete ScreenCompiledManager instance from the container
-        $compiledManager = app()->make(ScreenCompiledManager::class);
-
-        return new LegacyScreenCacheAdapter($compiledManager);
+        // Wrap with metrics decorator if not already wrapped
+        return new CacheMetricsDecorator($cache, app()->make(RedisMetricsManager::class));
     }
 }

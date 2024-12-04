@@ -3,17 +3,28 @@
 namespace ProcessMaker\Cache\Monitoring;
 
 use ProcessMaker\Cache\CacheInterface;
+use ProcessMaker\Cache\Monitoring\CacheMetricsInterface;
+use ProcessMaker\Cache\Screens\ScreenCacheInterface;
 
-class CacheMetricsDecorator implements CacheInterface
+class CacheMetricsDecorator implements CacheInterface, ScreenCacheInterface
 {
-    protected CacheInterface $cache;
+    protected CacheInterface|ScreenCacheInterface $cache;
 
     protected CacheMetricsInterface $metrics;
 
-    public function __construct(CacheInterface $cache, CacheMetricsInterface $metrics)
+    public function __construct(CacheInterface|ScreenCacheInterface $cache, CacheMetricsInterface $metrics)
     {
         $this->cache = $cache;
         $this->metrics = $metrics;
+    }
+
+    public function createKey(int $processId, int $processVersionId, string $language, int $screenId, int $screenVersionId): string
+    {
+        if ($this->cache instanceof ScreenCacheInterface) {
+            return $this->cache->createKey($processId, $processVersionId, $language, $screenId, $screenVersionId);
+        }
+
+        throw new \RuntimeException('Underlying cache implementation does not support createKey method');
     }
 
     public function get(string $key, mixed $default = null): mixed
