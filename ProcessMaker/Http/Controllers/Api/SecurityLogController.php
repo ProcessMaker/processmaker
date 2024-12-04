@@ -81,9 +81,16 @@ class SecurityLogController extends Controller
             $query->pmql($pmql);
         }
 
+        // Get total
+        $totalCount = $query->count();
+
+        // Always paginate using query object instead "ApiCollection" class
+        $query->paginate($request->input('per_page', 10));
+
+        // Get records
         $response = $query->get();
 
-        return new ApiCollection($response);
+        return new ApiCollection($response, $totalCount);
     }
 
     /**
