@@ -41,6 +41,14 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('processmaker:sync-screen-templates --queue')
                  ->daily();
+
+        $schedule->command('cache:metrics --format=json > storage/logs/cache-metrics.json')
+                 ->hourly()
+                 ->onOneServer();
+
+        $schedule->command('cache:metrics-summary')
+                 ->dailyAt('23:55')
+                 ->onOneServer();
     }
 
     /**
