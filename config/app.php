@@ -188,7 +188,6 @@ return [
         ProcessMaker\Providers\OauthMailServiceProvider::class,
         ProcessMaker\Providers\OpenAiServiceProvider::class,
         ProcessMaker\Providers\LicenseServiceProvider::class,
-        ProcessMaker\Providers\CacheServiceProvider::class,
     ])->toArray(),
 
     'aliases' => Facade::defaultAliases()->merge([
