@@ -6,18 +6,39 @@ use ProcessMaker\Cache\CacheInterface;
 use ProcessMaker\Cache\Monitoring\CacheMetricsInterface;
 use ProcessMaker\Cache\Screens\ScreenCacheInterface;
 
+/**
+ * Decorator class that adds metrics tracking about cache operations
+ * including hits, misses, write sizes, and timing information.
+ */
 class CacheMetricsDecorator implements CacheInterface, ScreenCacheInterface
 {
     protected CacheInterface|ScreenCacheInterface $cache;
 
     protected CacheMetricsInterface $metrics;
 
+    /**
+     * Create a new cache metrics decorator instance
+     *
+     * @param CacheInterface|ScreenCacheInterface $cache The cache implementation to decorate
+     * @param CacheMetricsInterface $metrics The metrics implementation to use
+     */
     public function __construct(CacheInterface|ScreenCacheInterface $cache, CacheMetricsInterface $metrics)
     {
         $this->cache = $cache;
         $this->metrics = $metrics;
     }
 
+    /**
+     * Create a cache key for screen data
+     *
+     * @param int $processId Process ID
+     * @param int $processVersionId Process version ID
+     * @param string $language Language code
+     * @param int $screenId Screen ID
+     * @param int $screenVersionId Screen version ID
+     * @return string Generated cache key
+     * @throws \RuntimeException If underlying cache doesn't support createKey
+     */
     public function createKey(int $processId, int $processVersionId, string $language, int $screenId, int $screenVersionId): string
     {
         if ($this->cache instanceof ScreenCacheInterface) {
@@ -27,6 +48,15 @@ class CacheMetricsDecorator implements CacheInterface, ScreenCacheInterface
         throw new \RuntimeException('Underlying cache implementation does not support createKey method');
     }
 
+    /**
+     * Get a value from the cache
+     *
+     * Records timing and hit/miss metrics for the get operation
+     *
+     * @param string $key Cache key
+     * @param mixed $default Default value if key not found
+     * @return mixed Cached value or default
+     */
     public function get(string $key, mixed $default = null): mixed
     {
         $startTime = microtime(true);
@@ -43,6 +73,16 @@ class CacheMetricsDecorator implements CacheInterface, ScreenCacheInterface
         return $value;
     }
 
+    /**
+     * Store a value in the cache
+     *
+     * Records metrics about the size of stored data
+     *
+     * @param string $key Cache key
+     * @param mixed $value Value to cache
+     * @param null|int|\DateInterval $ttl Optional TTL
+     * @return bool True if successful
+     */
     public function set(string $key, mixed $value, null|int|\DateInterval $ttl = null): bool
     {
         $result = $this->cache->set($key, $value, $ttl);
@@ -56,26 +96,55 @@ class CacheMetricsDecorator implements CacheInterface, ScreenCacheInterface
         return $result;
     }
 
+    /**
+     * Delete a value from the cache
+     *
+     * @param string $key Cache key
+     * @return bool True if successful
+     */
     public function delete(string $key): bool
     {
         return $this->cache->delete($key);
     }
 
+    /**
+     * Clear all values from the cache
+     *
+     * @return bool True if successful
+     */
     public function clear(): bool
     {
         return $this->cache->clear();
     }
 
+    /**
+     * Check if a key exists in the cache
+     *
+     * @param string $key Cache key
+     * @return bool True if key exists
+     */
     public function has(string $key): bool
     {
         return $this->cache->has($key);
     }
 
+    /**
+     * Check if a key is missing from the cache
+     *
+     * @param string $key Cache key
+     * @return bool True if key is missing
+     */
     public function missing(string $key): bool
     {
         return $this->cache->missing($key);
     }
 
+    /**
+     * Calculate the approximate size in bytes of a value
+     *
+     * @param mixed $value Value to calculate size for
+     * @return int Size in bytes
+     */
     protected function calculateSize(mixed $value): int
     {
         if (is_string($value)) {
