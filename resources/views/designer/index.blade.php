@@ -56,6 +56,7 @@
 @endsection
 
 @section('js')
+
 <script>
     window.Processmaker.user = @json($currentUser);
 </script>
