@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Facade;
 /**
  * Class ScreenCacheFacade
  *
- * @mixin \ProcessMaker\Cache\Settings\SettingCacheManager
+ * @mixin \ProcessMaker\Cache\Settings\ScreenCacheManager
  */
 class ScreenCacheFacade extends Facade
 {
