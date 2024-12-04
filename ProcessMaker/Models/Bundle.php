@@ -45,6 +45,11 @@ class Bundle extends ProcessMakerModel implements HasMedia
         return $this->hasMany(BundleAsset::class);
     }
 
+    public function settings()
+    {
+        return $this->hasMany(BundleSetting::class);
+    }
+
     public function devLink()
     {
         return $this->belongsTo(DevLink::class, 'dev_link_id');
@@ -125,7 +130,21 @@ class Bundle extends ProcessMakerModel implements HasMedia
             'asset_id' => $asset->id,
         ]);
     }
-    
+
+    public function addSettings($setting, $config)
+    {
+        $exists = $this->settings()->where('setting', $setting)->exists();
+        if ($exists) {
+            throw ValidationException::withMessages(['*' => 'Setting already exists in bundle']);
+        }
+
+        BundleSetting::create([
+            'bundle_id' => $this->id,
+            'setting' => $setting,
+            'config' => $config,
+        ]);
+    }
+
     public function addAssetToBundles(ProcessMakerModel $asset)
     {
         $message = null;
@@ -134,6 +153,7 @@ class Bundle extends ProcessMakerModel implements HasMedia
         } catch (ValidationException $ve) {
             $message = $ve->getMessage();
         }
+
         return $message;
     }
 

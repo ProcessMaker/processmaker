@@ -4,19 +4,23 @@
       {{ $t(title) }}
     </div>
     <div class="card-grid">
-      <div v-for="config in configurations" :key="config.type" class="card">
+      <div v-for="config in configurations || []" :key="config.type" class="card">
         <div class="config-info">
           <div class="config-label">{{ $t(config.name) }}</div>
-          <div class="config-status">{{ config.status }}</div>
+          <div class="config-status">{{ status(config) }}</div>
         </div>
         <div class="config-action">
           <button class="config-action-button">
             <i class="fp-bpmn-data-connector"></i>
           </button>
           <b-form-checkbox
-            v-model="config.enabled"
+            :checked="!!isInSettings(config)"
             switch
-            @change="$emit('config-change', { key: config.type, value: $event })"
+            @change="$emit('config-change', { 
+              key: config.type, 
+              value: $event,
+              settingId: isInSettings(config)?.id
+            })"
           />
         </div>
       </div>
@@ -25,11 +29,19 @@
 </template>
 
 <script setup>
+import { getCurrentInstance } from 'vue';
 
+const vue = getCurrentInstance().proxy;
 const props = defineProps({
   configurations: {
     type: Array,
-    required: true
+    required: true,
+    default: () => []
+  },
+  values: {
+    type: Array,
+    required: true,
+    default: () => []
   },
   title: {
     type: String,
@@ -38,6 +50,18 @@ const props = defineProps({
 });
 
 defineEmits(['config-change']);
+
+const isInSettings = (type) => {
+  return (props.values || []).find(value => value.setting === type.type);
+};
+
+const status = (type) => {
+  const settingValue = (props.values || []).find(value => value.setting === type.type);
+
+  if (!settingValue) return vue.$t('Not shared');
+  if (settingValue.config === null) return vue.$t('All');
+  return vue.$t('Shared');
+};
 </script>
 
 <style lang="scss" scoped>

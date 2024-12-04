@@ -1,12 +1,14 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, getCurrentInstance } from 'vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 import types from './assetTypes';
 import moment from 'moment';
 
+const vue = getCurrentInstance().proxy;
 const router = useRouter();
 const route = useRoute();
 const loading = ref(false);
+const bundle = ref({});
 const bundleId = route.params.id;
 
 const typeConfig = types.find((type) => type.type === route.params.type);
@@ -15,8 +17,21 @@ const items = ref([]);
 const loadAssets = async () => {
   loading.value = true;
   const response = await window.ProcessMaker.apiClient.get(`/api/1.0/devlink/local-bundles/${bundleId}`);
+  bundle.value = response.data;
   items.value = response.data.assets.filter(asset => asset.type.toUpperCase() === route.params.type.toUpperCase());
   loading.value = false;
+};
+
+const remove = async (asset) => {
+  const confirm = await vue.$bvModal.msgBoxConfirm(vue.$t('Are you sure you want to remote this asset from the bundle?'), {
+    okTitle: vue.$t('Ok'),
+    cancelTitle: vue.$t('Cancel'),
+  });
+  if (!confirm) {
+    return;
+  }
+  await window.ProcessMaker.apiClient.delete(`/api/1.0/devlink/local-bundles/assets/${asset.id}`);
+  await loadAssets();
 };
 
 const dateFormatter = (value) => {
@@ -28,6 +43,11 @@ onMounted(() => {
   loadAssets();
 });
 
+const goToAssets = () => {
+  const url = typeConfig?.listingUrl || '#';
+  window.location.href = url;
+};
+
 const fields = [
   {
     key: "id",
@@ -36,6 +56,10 @@ const fields = [
   {
     key: typeConfig?.nameField || "name",
     label: "Name",
+  },
+  {
+    key: "owner_name",
+    label: "Owner",
   },
   {
     key: "updated_at",
@@ -59,30 +83,47 @@ const fields = [
     <div class="asset-listing-header">
       {{ typeConfig?.name }}
     </div>
-    <div class="card asset-listing-card">
-      <div v-if="!typeConfig">
+    <div>
+      <div class="asset-listing-card" v-if="!typeConfig">
         No assets found
       </div>
-      <b-table
-        v-else
-        :items="items"
-        :fields="fields"
-        class="asset-listing-table"
-      >
-        <template #cell(name)="data">
-          <a :href="data.item.url" target="_blank">{{ data.item.name }}</a>
-        </template>
-        <template #cell(menu)="data">
-          <div class="btn-menu-container">
+      <div v-else>
+        <div class="top-options row">
+          <div class="col-9 col-md-10" />
+          <div class="col-3 col-md-2">
             <button
-              class="btn install-asset-btn"
-              @click.prevent="removeAsset(data.item)"
+              v-if="bundle.remote_id === null"
+              class="btn btn-primary go-to-assets-btn"
+              @click="goToAssets()"
             >
-              <i class="fp-remove-outlined"></i>
+              <i class="fp-link-icon go-to-assets-btn-icon" />
+              {{ $t('Go to Assets') }}
             </button>
           </div>
-        </template>
-      </b-table>
+        </div>
+        <div class="card asset-listing-card">
+          <b-table
+            :items="items"
+            :fields="fields"
+            class="asset-listing-table"
+          >
+            <template #cell(name)="data">
+              <a :href="data.item.url">{{ data.item.name }}</a>
+            </template>
+            <template #cell(menu)="data">
+              <div class="btn-menu-container">
+                <button
+                  v-if="bundle.remote_id === null"
+                  class="btn install-asset-btn"
+                  @click.prevent="remove(data.item)"
+                >
+                  <i class="fp-remove-outlined" />
+                </button>
+              </div>
+            </template>
+          </b-table>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -103,6 +144,15 @@ const fields = [
 .asset-listing-header {
   font-size: 20px;
   font-weight: 500;
+  margin-top: 24px;
   margin-left: 24px;
+}
+.go-to-assets-btn {
+  text-transform: none;
+  font-size: 14px;
+  font-weight: 500;
+}
+.go-to-assets-btn-icon {
+  margin-right: 8px;
 }
 </style>
