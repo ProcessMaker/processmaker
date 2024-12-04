@@ -11,6 +11,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
+use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 
 class ProcessVariableController extends Controller
 {
@@ -21,7 +22,7 @@ class ProcessVariableController extends Controller
      *     @OA\Property(property="id", type="integer", example=1),
      *     @OA\Property(property="process_id", type="integer", example=1),
      *     @OA\Property(property="uuid", type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000"),
-     *     @OA\Property(property="data_type", type="string", enum={"string", "number", "boolean", "array"}, example="string"),
+     *     @OA\Property(property="field", type="string", enum={"string", "number", "boolean", "array"}, example="string"),
      *     @OA\Property(property="label", type="string", example="Variable 1 for Process 1"),
      *     @OA\Property(property="name", type="string", example="var_1_1"),
      *     @OA\Property(
@@ -95,22 +96,31 @@ class ProcessVariableController extends Controller
      *     )
      * )
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request)
     {
         // Validate request
         $validated = $request->validate([
             'processIds' => 'required|string',
             'page' => 'sometimes|integer|min:1',
             'per_page' => 'sometimes|integer|min:1|max:100',
+            'savedSearchId' => 'sometimes|string',
         ]);
 
         // Parse process IDs
         $processIds = array_map('intval', explode(',', $validated['processIds']));
         $perPage = $validated['per_page'] ?? 20;
         $page = $validated['page'] ?? 1;
+        $excludeSavedSearch = $validated['savedSearchId'] ?? 0;
 
         // Generate mock data
         $mockData = $this->generateMockData($processIds);
+        if ($excludeSavedSearch) {
+            $savedSearch = SavedSearch::find($excludeSavedSearch);
+            $columns = $savedSearch->current_columns;
+            $mockData = $mockData->filter(function ($variable) use ($columns) {
+                return !$columns->pluck('field')->contains($variable['field']);
+            });
+        }
 
         // Create paginator
         $paginator = new LengthAwarePaginator(
@@ -122,7 +132,7 @@ class ProcessVariableController extends Controller
         );
 
         return response()->json([
-            'data' => $paginator->items(),
+            'data' => array_values($paginator->items()),
             'meta' => [
                 'current_page' => $paginator->currentPage(),
                 'from' => $paginator->firstItem(),
@@ -147,7 +157,7 @@ class ProcessVariableController extends Controller
         $cacheKey = 'process_variables_' . implode('_', $processIds);
 
         // Try to get variables from cache first
-        $variables = Cache::remember($cacheKey, now()->addHours(24), function () use ($processIds) {
+        $variables = Cache::remember($cacheKey, now()->addSeconds(5), function () use ($processIds) {
             $variables = collect();
 
             foreach ($processIds as $processId) {
@@ -157,15 +167,16 @@ class ProcessVariableController extends Controller
                         'id' => $variables->count() + 1,
                         'process_id' => $processId,
                         'uuid' => (string) Str::uuid(),
-                        'data_type' => $this->getRandomDataType(),
+                        'format' => $this->getRandomDataType(),
                         'label' => "Variable {$i} for Process {$processId}",
-                        'name' => "var_{$processId}_{$i}",
+                        'field' => "data.var_{$processId}_{$i}",
                         'asset' => [
                             'id' => "asset_{$processId}_{$i}",
                             'type' => $this->getRandomAssetType(),
                             'name' => "Asset {$i} for Process {$processId}",
                             'uuid' => (string) Str::uuid(),
                         ],
+                        'default' => null,
                         'created_at' => now()->toIso8601String(),
                         'updated_at' => now()->toIso8601String(),
                     ]);
