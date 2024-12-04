@@ -11,7 +11,7 @@ class BundleAsset extends ProcessMakerModel
 
     protected $guarded = ['id'];
 
-    protected $appends = ['name', 'url', 'type'];
+    protected $appends = ['name', 'url', 'type', 'owner_name', 'categories'];
 
     protected static function boot()
     {
@@ -85,5 +85,23 @@ class BundleAsset extends ProcessMakerModel
             default:
                 return null;
         }
+    }
+
+    public function getOwnerNameAttribute()
+    {
+        if ($this->asset && method_exists($this->asset, 'user')) {
+            return $this->asset->user->firstname . ' ' . $this->asset->user->lastname;
+        }
+
+        return null;
+    }
+
+    public function getCategoriesAttribute()
+    {
+        if ($this->asset && method_exists($this->asset, 'categories')) {
+            return $this->asset->categories->pluck('name')->toArray();
+        }
+
+        return [];
     }
 }

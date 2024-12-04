@@ -82,11 +82,15 @@
 
     <BundleConfigurations
       :configurations="platformConfigurations"
+      :values="bundle.settings"
+      @config-change="handleConfigChange"
       title="Platform Configurations"
     />
 
     <BundleConfigurations
       :configurations="settings"
+      :values="bundle.settings"
+      @config-change="handleConfigChange"
       title="Settings"
     />
 
@@ -174,6 +178,23 @@ const executeIncrease = () => {
     .then((result) => {
       confirmPublishNewVersion.value.hide();
     });
+};
+
+const handleConfigChange = (event) => {
+  if (event.value) {
+    ProcessMaker.apiClient.post(`devlink/local-bundles/${bundle.value.id}/add-settings`, {
+      setting: event.key,
+      config: null,
+    })
+      .then(() => {
+        loadAssets();
+      });
+  } else {
+    ProcessMaker.apiClient.delete(`devlink/local-bundles/settings/${event.settingId}`)
+      .then(() => {
+        loadAssets();
+      });
+  }
 };
 
 onMounted(async () => {
