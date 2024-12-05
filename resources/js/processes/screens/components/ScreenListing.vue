@@ -66,7 +66,7 @@
                 </template>
                 <template v-if="header.field === 'actions'">
                   <ellipsis-menu
-                    :actions="screenActions"
+                    :actions="screenActionsWithAddToBundle"
                     :permission="permission"
                     :data="row"
                     :divider="true"
@@ -145,6 +145,7 @@
       footerClass="border-0"
       modal-size="lg"
     />
+    <add-to-bundle asset-type="ProcessMaker\Models\Screen" />
   </div>
 </template>
 
@@ -157,13 +158,14 @@ import CreateTemplateModal from "../../../components/templates/CreateTemplateMod
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 import PaginationTable from "../../../components/shared/PaginationTable.vue";
 import { ellipsisSortClick } from "../../../components/shared/UtilsTable";
+import AddToBundle from "../../../components/shared/AddToBundle.vue";
 
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import AddToProjectModal from "../../../components/shared/AddToProjectModal.vue";
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  components: { EllipsisMenu, AddToProjectModal, CreateTemplateModal, PaginationTable },
+  components: { EllipsisMenu, AddToProjectModal, CreateTemplateModal, PaginationTable, AddToBundle },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ellipsisMenuMixin, screenNavigationMixin],
   props: ["filter", "id", "permission", "currentUserId", "types"],
   data() {
@@ -259,6 +261,17 @@ export default {
       ]
     };
   },
+  computed: {
+    screenActionsWithAddToBundle() {
+      return this.screenActions.toSpliced(3, 0, {
+        value: "add-to-bundle",
+        content: "Add to Bundle",
+        icon: "fas fa-folder-plus",
+        permission: "admin",
+        emit_on_root: 'add-to-bundle',
+      });
+    }
+  },
   created () {
     ProcessMaker.EventBus.$on("api-data-process", () => {
       this.fetch();
@@ -338,7 +351,6 @@ export default {
 
   },
 
-  computed: {}
 };
 </script>
 
