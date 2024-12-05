@@ -25,14 +25,15 @@ class SettingCacheTest extends TestCase
             'is_administrator' => true,
         ]);
 
-        putenv('CACHE_SETTING_DRIVER=cache_settings');
+        config()->set('cache.default', 'cache_settings');
     }
 
     protected function tearDown(): void
     {
         \SettingCache::clear();
 
-        putenv('CACHE_SETTING_DRIVER');
+        config()->set('cache.default', 'array');
+
         parent::tearDown();
     }
 
@@ -205,6 +206,16 @@ class SettingCacheTest extends TestCase
         \SettingCache::clearBy($pattern);
     }
 
+    public function testTryClearByPatternWithNonRedisDriver()
+    {
+        config()->set('cache.default', 'array');
+
+        $this->expectException(SettingCacheException::class);
+        $this->expectExceptionMessage('The cache driver must be Redis.');
+
+        \SettingCache::clearBy('pattern');
+    }
+
     public function testClearAllSettings()
     {
         \SettingCache::set('password-policies.users_can_change', 1);
@@ -226,16 +237,24 @@ class SettingCacheTest extends TestCase
     {
         \SettingCache::set('password-policies.users_can_change', 1);
         \SettingCache::set('password-policies.numbers', 2);
+
+        config()->set('cache.default', 'array');
         Cache::put('password-policies.uppercase', 3);
 
+        config()->set('cache.default', 'cache_settings');
         $this->assertEquals(1, \SettingCache::get('password-policies.users_can_change'));
         $this->assertEquals(2, \SettingCache::get('password-policies.numbers'));
+
+        config()->set('cache.default', 'array');
         $this->assertEquals(3, Cache::get('password-policies.uppercase'));
 
+        config()->set('cache.default', 'cache_settings');
         \SettingCache::clear();
 
         $this->assertNull(\SettingCache::get('password-policies.users_can_change'));
         $this->assertNull(\SettingCache::get('password-policies.numbers'));
+
+        config()->set('cache.default', 'array');
         $this->assertEquals(3, Cache::get('password-policies.uppercase'));
     }
 }

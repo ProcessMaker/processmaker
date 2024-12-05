@@ -3,19 +3,35 @@
 namespace ProcessMaker\Cache\Settings;
 
 use Illuminate\Cache\CacheManager;
-use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Support\Facades\Redis;
 use ProcessMaker\Cache\CacheInterface;
 
 class SettingCacheManager implements CacheInterface
 {
-    protected Repository $cacheManager;
+    const DEFAULT_CACHE_DRIVER = 'cache_settings';
+
+    protected CacheManager $cacheManager;
 
     public function __construct(CacheManager $cacheManager)
     {
-        $driver = env('CACHE_SETTING_DRIVER') ?? env('CACHE_DRIVER', 'redis');
+        $driver = $this->determineCacheDriver();
 
-        $this->cacheManager = $cacheManager->store($driver);
+        $this->cacheManager = $cacheManager;
+        $this->cacheManager->store($driver);
+    }
+
+    /**
+     * Determine the cache driver to use.
+     *
+     * @return string
+     */
+    private function determineCacheDriver(): string
+    {
+        $defaultCache = config('cache.default');
+        if (in_array($defaultCache, ['redis', 'cache_settings'])) {
+            return self::DEFAULT_CACHE_DRIVER;
+        }
+        return $defaultCache;
     }
 
     /**
@@ -109,7 +125,7 @@ class SettingCacheManager implements CacheInterface
      */
     public function clear(): bool
     {
-        return $this->cacheManager->flush();
+        return $this->cacheManager->clear();
     }
 
     /**
@@ -122,11 +138,17 @@ class SettingCacheManager implements CacheInterface
      */
     public function clearBy(string $pattern): void
     {
+        $defaultDriver = $this->cacheManager->getDefaultDriver();
+
+        if ($defaultDriver !== 'cache_settings') {
+            throw new SettingCacheException('The cache driver must be Redis.');
+        }
+
         try {
             // get the connection name from the cache manager
             $connection = $this->cacheManager->connection()->getName();
             // Get all keys
-            $keys = Redis::connection($connection)->keys('*');
+            $keys = Redis::connection($connection)->keys($this->cacheManager->getPrefix() . '*');
             // Filter keys by pattern
             $matchedKeys = array_filter($keys, fn($key) => preg_match('/' . $pattern . '/', $key));
 
