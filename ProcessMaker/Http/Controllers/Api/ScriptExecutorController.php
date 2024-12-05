@@ -59,7 +59,15 @@ class ScriptExecutorController extends Controller
     {
         $this->checkAuth($request);
 
-        return new ApiCollection(ScriptExecutor::nonSystem()->get());
+        $query = ScriptExecutor::nonSystem();
+
+        if ($request->has('order_by')) {
+            $order_by = $request->input('order_by');
+            $order_direction = $request->input('order_direction', 'ASC');
+            $query->orderBy($order_by, $order_direction);
+        }
+
+        return new ApiCollection($query->get());
     }
 
     /**
