@@ -311,6 +311,11 @@ trait TaskControllerIndexMethods
             return $query;
         }
 
+        if ($this->isManagerOfProcess($user)) {
+            $this->applyProcessManager($query, $user);
+            return $query;
+        }
+
         if ($user->can('view-all_requests')) {
             return $query;
         }
@@ -333,5 +338,18 @@ trait TaskControllerIndexMethods
             $query->whereIn('process_request_tokens.process_id', array_column($ids, 'id'))
                 ->where('process_request_tokens.status', 'ACTIVE');
         });
+    }
+
+    private function isManagerOfProcess($user)
+    {
+        $record = Process::select('id', 'properties->manager_id')
+            ->whereNotNull('properties->manager_id')
+            ->where('properties->manager_id', '=', $user->id)
+            ->where('status', 'ACTIVE')
+            ->first();
+        if ($record) {
+            return true;
+        }
+        return false;
     }
 }
