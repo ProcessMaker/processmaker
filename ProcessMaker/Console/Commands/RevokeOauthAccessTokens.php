@@ -14,7 +14,7 @@ class RevokeOauthAccessTokens extends Command
      *
      * @var string
      */
-    protected $signature = 'processmaker:revoke-oauth-access-tokens {--name=} {--after=} {--client_id=}';
+    protected $signature = 'processmaker:revoke-oauth-access-tokens {--name=} {--after=} {--client_id=} {--no-interaction|n}';
 
     /**
      * The console command description.
@@ -33,9 +33,15 @@ class RevokeOauthAccessTokens extends Command
         $name = $this->option('name');
         $after = $this->option('after');
         $clientId = $this->option('client_id');
+        $noInteraction = $this->option('no-interaction');
 
         if (!$name && !$after && !$clientId) {
             $this->error('At least one of --name, --after, or --client_id must be specified.');
+            return;
+        }
+
+        if (!$noInteraction && !$this->confirm('Are you sure you want to revoke this certificate?')) {
+            $this->info('Certificate revocation cancelled.');
             return;
         }
 
