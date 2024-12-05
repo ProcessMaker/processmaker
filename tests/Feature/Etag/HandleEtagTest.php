@@ -75,7 +75,7 @@ class HandleEtagTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user);
 
-        Route::middleware('etag:user')->any(self::TEST_ROUTE, function () {
+        Route::middleware('etag')->any(self::TEST_ROUTE, function () {
             return response($this->response, 200);
         });
 
