@@ -64,6 +64,7 @@ use ProcessMaker\Events\UserUpdated;
 use ProcessMaker\Listeners\HandleActivityAssignedInterstitialRedirect;
 use ProcessMaker\Listeners\HandleActivityCompletedRedirect;
 use ProcessMaker\Listeners\HandleEndEventRedirect;
+use ProcessMaker\Listeners\InvalidateScreenCacheOnTranslationChange;
 use ProcessMaker\Listeners\SecurityLogger;
 use ProcessMaker\Listeners\SessionControlSettingsUpdated;
 
@@ -105,6 +106,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         ActivityAssigned::class => [
             HandleActivityAssignedInterstitialRedirect::class,
+        ],
+        TranslationChanged::class => [
+            InvalidateScreenCacheOnTranslationChange::class,
         ],
     ];
 

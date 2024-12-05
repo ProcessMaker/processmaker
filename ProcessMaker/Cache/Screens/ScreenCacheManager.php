@@ -112,4 +112,26 @@ class ScreenCacheManager implements CacheInterface, ScreenCacheInterface
     {
         return !$this->has($key);
     }
+
+    /**
+     * Invalidate cache for a specific screen
+     *
+     * @param int $processId
+     * @param int $processVersionId
+     * @param string $language
+     * @param int $screenId
+     * @param int $screenVersionId
+     * @return bool
+     */
+    public function invalidate(
+        int $processId,
+        int $processVersionId,
+        string $language,
+        int $screenId,
+        int $screenVersionId
+    ): bool {
+        $key = $this->createKey($processId, $processVersionId, $language, $screenId, $screenVersionId);
+
+        return $this->cacheManager->forget($key);
+    }
 }

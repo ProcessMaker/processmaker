@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use ProcessMaker\Contracts\ScreenInterface;
+use ProcessMaker\Events\TranslationChanged;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasScreenFields;
 
@@ -32,6 +33,23 @@ class ScreenVersion extends ProcessMakerModel implements ScreenInterface
         'watchers' => 'array',
         'translations' => 'array',
     ];
+
+    /**
+     * Boot the model and its events
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        // Add observer for translations changes
+        static::updating(function ($screenVersion) {
+            if ($screenVersion->isDirty('translations')) {
+                $changes = $screenVersion->translations;
+                $locale = app()->getLocale();
+                event(new TranslationChanged($locale, $changes, $screenVersion->screen_id));
+            }
+        });
+    }
 
     /**
      * Set multiple|single categories to the screen

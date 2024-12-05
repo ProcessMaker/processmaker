@@ -21,6 +21,50 @@ interface ScreenCacheInterface
 
     /**
      * Check if screen exists in cache
+     *
+     * @param string $key Screen cache key
+     * @return bool
      */
     public function has(string $key): bool;
+
+    /**
+     * Delete a screen from cache
+     *
+     * @param string $key Screen cache key
+     * @return bool
+     */
+    public function delete(string $key): bool;
+
+    /**
+     * Clear all screen caches
+     *
+     * @return bool
+     */
+    public function clear(): bool;
+
+    /**
+     * Check if screen is missing from cache
+     *
+     * @param string $key Screen cache key
+     * @return bool
+     */
+    public function missing(string $key): bool;
+
+    /**
+     * Invalidate cache for a specific screen
+     *
+     * @param int $processId
+     * @param int $processVersionId
+     * @param string $language
+     * @param int $screenId
+     * @param int $screenVersionId
+     * @return bool
+     */
+    public function invalidate(
+        int $processId,
+        int $processVersionId,
+        string $language,
+        int $screenId,
+        int $screenVersionId
+    ): bool;
 }
