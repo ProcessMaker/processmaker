@@ -22,7 +22,38 @@ mix.webpackConfig({
     symlinks: false,
     alias: {
       "vue-monaco": path.resolve(__dirname, "resources/js/vue-monaco-amd.js"),
-      "styles": path.resolve(__dirname, "resources/sass"),
+      styles: path.resolve(__dirname, "resources/sass"),
+    },
+  },
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        vueVendor: {
+          test: /[\\/]node_modules[\\/](vue|vue-router|axios|lodash)[\\/]/,
+          name: "js/vue-vendor",
+          chunks: "all",
+        },
+        bootstrapVendor: {
+          test: /[\\/]node_modules[\\/](bootstrap|jquery|bootstrap-vue|popper.js)[\\/]/,
+          name: "js/bootstrap-vendor",
+          chunks: "all",
+        },
+        fortawesomeVendor: {
+          test: /[\\/]node_modules[\\/](@fortawesome\/fontawesome-free|@fortawesome\/fontawesome-svg-core|@fortawesome\/free-brands-svg-icons|@fortawesome\/free-solid-svg-icons|@fortawesome\/vue-fontawesome)[\\/]/,
+          name: "js/fortawesome-vendor",
+          chunks: "all",
+        },
+        modelerVendor: {
+          test: /[\\/]node_modules[\\/](jointjs|bpmn-moddle|luxon)[\\/]/,
+          name: "js/modeler-vendor",
+          chunks: "all",
+        },
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: "js/vendor",
+          chunks: "all",
+        },
+      },
     },
   },
 });
@@ -52,7 +83,7 @@ mix
     "@fortawesome/free-brands-svg-icons",
     "@fortawesome/free-solid-svg-icons",
     "@fortawesome/vue-fontawesome",
-  ])
+  ], "public/js")
   .copy("resources/img/*", "public/img")
   .copy("resources/img/launchpad-images/*", "public/img/launchpad-images")
   .copy("resources/img/launchpad-images/icons/*", "public/img/launchpad-images/icons")
@@ -133,18 +164,18 @@ mix
   .js("resources/js/tasks/show.js", "public/js/tasks/show.js")
 
   .js("resources/js/notifications/index.js", "public/js/notifications/index.js")
-  .js('resources/js/inbox-rules/index.js', 'public/js/inbox-rules')
-  .js('resources/js/inbox-rules/show.js', 'public/js/inbox-rules')
+  .js("resources/js/inbox-rules/index.js", "public/js/inbox-rules")
+  .js("resources/js/inbox-rules/show.js", "public/js/inbox-rules")
   .js("resources/js/admin/devlink/index.js", "public/js/admin/devlink")
 
   // Note, that this should go last for the extract to properly put the manifest and vendor in the right location
   // See: https://github.com/JeffreyWay/laravel-mix/issues/1118
   .js("resources/js/app.js", "public/js");
-  // .polyfill({
-  //   enabled: true,
-  //   useBuiltIns: false,
-  //   targets: "> 0.25%, not dead"
-  // });
+// .polyfill({
+//   enabled: true,
+//   useBuiltIns: false,
+//   targets: "> 0.25%, not dead"
+// });
 
 // Monaco AMD modules. Copy only the files we need to make the build faster.
 const monacoSource = "node_modules/monaco-editor/min/vs/";
