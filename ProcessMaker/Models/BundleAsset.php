@@ -13,6 +13,8 @@ class BundleAsset extends ProcessMakerModel
 
     protected $appends = ['name', 'url', 'type', 'owner_name', 'categories'];
 
+    const DATA_SOURCE_CLASS = 'ProcessMaker\Packages\Connectors\DataSources\Models\DataSource';
+
     protected static function boot()
     {
         parent::boot();
@@ -53,7 +55,7 @@ class BundleAsset extends ProcessMakerModel
             $this->asset_type === Screen::class ||
             $this->asset_type === Script::class
         ) {
-            return $this->title;
+            return $this->asset->title;
         }
 
         return $this->asset->name;
@@ -68,6 +70,8 @@ class BundleAsset extends ProcessMakerModel
                 return "/designer/scripts/{$this->asset_id}/builder";
             case Process::class:
                 return "/modeler/{$this->asset_id}";
+            case self::DATA_SOURCE_CLASS:
+                return "/designer/data-sources/{$this->asset_id}/edit";
             default:
                 return null;
         }
@@ -82,6 +86,8 @@ class BundleAsset extends ProcessMakerModel
                 return 'Script';
             case Process::class:
                 return 'Process';
+            case self::DATA_SOURCE_CLASS:
+                return 'data_source';
             default:
                 return null;
         }

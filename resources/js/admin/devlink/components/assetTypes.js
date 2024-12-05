@@ -9,7 +9,7 @@ export default [
     nameField: 'name',
   },
   {
-    type: 'screens',
+    type: 'screen',
     name: 'Screens',
     url: 'api.screens.index',
     listingUrl: '/designer/screens',
@@ -18,7 +18,7 @@ export default [
     nameField: 'title',
   },
   {
-    type: 'scripts',
+    type: 'script',
     name: 'Scripts',
     url: 'api.scripts.index',
     listingUrl: '/designer/scripts',
@@ -27,7 +27,7 @@ export default [
     nameField: 'title',
   },
   {
-    type: 'data_sources',
+    type: 'data_source',
     name: 'Data Connectors',
     url: 'api.data-sources.index',
     listingUrl: '/designer/data-sources',
