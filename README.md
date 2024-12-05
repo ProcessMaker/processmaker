@@ -439,11 +439,334 @@ npm run dev-font
 ```
 
 
-# Message broker driver, possible values: rabbitmq, kafka, this is optional, if not exists or is empty, the Nayra will be work as normally with local execution
-MESSAGE_BROKER_DRIVER=rabbitmq
+# Install Prometheus and Grafana with Docker
+
+This guide explains how to install and run **Prometheus** and **Grafana** using Docker. Both tools complement each other: Prometheus collects and monitors metrics, while Grafana visualizes them with interactive dashboards.
+
+## Install Docker
+Ensure Docker is installed on your system. Verify the installation:
+```bash
+docker --version
+```
+If not installed, follow the [official Docker documentation](https://docs.docker.com/get-docker/).
+
+## Prometheus Installation
+
+### 1. Pull the Prometheus Docker Image
+Download the official Prometheus image from Docker Hub:
+```bash
+docker pull prom/prometheus
+```
+
+### 2. Create a Prometheus Configuration File
+Prometheus requires a configuration file (`prometheus.yml`) to define the metrics it will collect. Example:
+```yaml
+# prometheus.yml
+global:
+  scrape_interval: 15s  # Metrics collection interval
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]  # Monitor Prometheus itself
+```
+
+### 3. Run Prometheus with Docker
+Use the following command to start Prometheus with the configuration file:
+```bash
+docker run -d \  
+    --name prometheus \  
+    -p 9090:9090 \  
+    -v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml \  
+    prom/prometheus
+```
+- `-d`: Run the container in detached mode.
+- `--name`: Name of the container.
+- `-p 9090:9090`: Map port 9090 of the container to port 9090 of your machine.
+- `-v`: Mount the `prometheus.yml` file into the container.
+
+### 4. Optional: Persistent Data
+To retain Prometheus data after stopping the container, use a Docker volume:
+```bash
+docker run -d \  
+    --name prometheus \  
+    -p 9090:9090 \  
+    -v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml \  
+    -v prometheus_data:/prometheus \  
+    prom/prometheus
+```
+This creates a volume named `prometheus_data` to store data.
+
+### 5. Access Prometheus
+Open your browser and visit:
+```
+http://localhost:9090
+```
+From here, you can explore collected metrics and configure custom queries.
+
+### 6. Container Management
+- View container logs:
+  ```bash
+  docker logs prometheus
+  ```
+- Stop the container:
+  ```bash
+  docker stop prometheus
+  ```
+- Remove the container:
+  ```bash
+  docker rm prometheus
+  ```
+
+## Grafana Installation
+
+### 1. Pull the Grafana Docker Image
+Download the official Grafana image from Docker Hub:
+```bash
+docker pull grafana/grafana
+```
+
+### 2. Run Grafana
+Run Grafana in a container:
+```bash
+docker run -d \  
+    --name grafana \  
+    -p 3000:3000 \  
+    grafana/grafana
+```
+- `-d`: Run the container in detached mode.
+- `--name`: Assign a name to the container.
+- `-p 3000:3000`: Map port 3000 of the container to port 3000 of your machine.
+
+### 3. Persistent Data for Grafana
+To avoid losing configurations or data after restarting the container, mount a volume:
+```bash
+docker run -d \  
+    --name grafana \  
+    -p 3000:3000 \  
+    -v grafana_data:/var/lib/grafana \  
+    grafana/grafana
+```
+This creates a volume named `grafana_data` to store Grafana data.
+
+### 4. Access Grafana
+Open your browser and navigate to:
+```
+http://localhost:3000
+```
+Default credentials:
+- **Username**: `admin`
+- **Password**: `admin`
+
+You will be prompted to change the password on the first login.
+
+### 5. Integrate Grafana with Prometheus
+To connect Grafana with Prometheus:
+1. Open **Settings** in Grafana.
+2. Select **Data Sources**.
+3. Click **Add data source**.
+4. Choose **Prometheus** as the data source.
+5. Set the Prometheus Service URL (e.g., `http://localhost:9090`).
+6. If Prometheus and Grafana run on the same machine:
+   - Use `http://host.docker.internal:9090` (for Docker Desktop).
+   - Use `http://<your-machine-IP>:9090`.
+7. If they share the same network (e.g., Docker Compose):
+   - Use the container name as the host: `http://prometheus:9090`.
+8. Click **Save & Test** to verify the connection.
+
+### 6. Container Management
+- View container logs:
+  ```bash
+  docker logs grafana
+  ```
+- Restart the container:
+  ```bash
+  docker restart grafana
+  ```
+- Stop the container:
+  ```bash
+  docker stop grafana
+  ```
+- Remove the container:
+  ```bash
+  docker rm grafana
+  ```
+
+### 7. Install Optional Plugins
+To install plugins in Grafana, use environment variables when starting the container:
+```bash
+docker run -d   --name grafana   -p 3000:3000   -v grafana_data:/var/lib/grafana   -e "GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-clock-panel"   grafana/grafana
+```
 
 
-#### License
+# Using **PromPHP/prometheus_client_php** in Laravel with a **Facade**
+
+To use **PromPHP/prometheus_client_php** in Laravel with a **Facade**, follow these steps. Laravel's **Facades** are ideal for simplifying access to services, such as metrics in this case.
+
+### **1. Install the Library**
+
+First, install the library as before:
+
+```bash
+composer require promphp/prometheus_client_php
+```
+
+### **2. Create the Metrics Service**
+
+Create a dedicated service to manage the metrics. You can reuse the base `MetricsService` code with slight modifications to make it compatible with the Facade.
+
+Create the file `MetricsService.php` in `ProcessMaker/Services`:
+
+```php
+<?php
+
+namespace ProcessMaker\Services;
+
+use Prometheus\CollectorRegistry;
+use Prometheus\RenderTextFormat;
+use Prometheus\Storage\Redis;
+
+class MetricsService
+{
+    private $registry;
+    ...
+}
+```
+
+### **3. Register the Service as a Provider**
+
+Create a provider to register `MetricsService` in the Laravel service container.
+
+Run the following command to create a new provider:
+
+```bash
+php artisan make:provider MetricsServiceProvider
+```
+
+In the `ProcessMaker/Providers/MetricsServiceProvider.php` file:
+
+```php
+<?php
+
+namespace ProcessMaker\Providers;
+
+use ProcessMaker\Services\MetricsService;
+use Illuminate\Support\ServiceProvider;
+
+class MetricsServiceProvider extends ServiceProvider
+{
+    ...
+}
+```
+
+Register the provider in the `config/app.php` file:
+
+```php
+'providers' => [
+    ...
+    App\Providers\MetricsServiceProvider::class,
+],
+```
+
+### **4. Create the Facade**
+
+Create a Facade to access the service.
+
+Create a file in `ProcessMaker/Facades/Metrics.php`.
+
+```php
+<?php
+
+namespace ProcessMaker\Facades;
+
+use Illuminate\Support\Facades\Facade;
+use ProcessMaker\Services\MetricsService;
+
+class Metrics extends Facade
+{
+    ...
+}
+```
+
+### **5. Expose Metrics via a Route**
+
+Create a route to expose the metrics to Prometheus.
+
+In `routes/web.php`:
+
+```php
+use ProcessMaker\Facades\Metrics;
+
+Route::get('/metrics', function () {
+    return response(Metrics::renderMetrics(), 200, [
+        'Content-Type' => 'text/plain; version=0.0.4',
+    ]);
+});
+```
+
+### **6. Use the Facade in Your Application**
+
+Now you can use the `Metrics` Facade anywhere in your application to manage metrics.
+
+#### **Example: Incrementing a Counter**
+
+In a controller:
+
+```php
+namespace App\Http\Controllers;
+
+use ProcessMaker\Facades\Metrics;
+
+class ExampleController extends Controller
+{
+    public function index()
+    {
+        Metrics::registerCounter('requests_total', 'Total number of requests', ['method']);
+        Metrics::incrementCounter('requests_total', ['GET']);
+
+        return response()->json(['message' => 'Hello, world!']);
+    }
+}
+```
+
+#### **Example: Registering and Using a Histogram**
+
+```php
+Metrics::registerHistogram(
+    'request_duration_seconds',
+    'Request duration time',
+    ['method'],
+    [0.1, 0.5, 1, 5]
+);
+$histogram = Metrics::incrementHistogram('request_duration_seconds', ['GET'], microtime(true) - LARAVEL_START);
+```
+
+### **7. Configure Prometheus**
+
+As before, add the `/metrics` endpoint from your Laravel application to the `prometheus.yml` file:
+
+```yaml
+scrape_configs:
+  - job_name: 'laravel_app'
+    static_configs:
+      - targets: ['host.docker.internal:8000']  # Change "host.docker.internal" to your host and port
+```
+
+Restart Prometheus:
+
+```bash
+docker restart prometheus
+```
+
+### **8. Configure Grafana**
+
+1. Add Prometheus as a data source.
+2. Create a new dashboard with the metrics you defined (`requests_total`, `request_duration_seconds`, etc.).
+
+With **Prometheus** and **Grafana** running, you're now all set to elegantly manage metrics in your Laravel project using a Facade and create custom dashboards to visualize and monitor your systems effectively.
+
+
+# License
 
 Distributed under the [AGPL Version 3](https://www.gnu.org/licenses/agpl-3.0.en.html)
 

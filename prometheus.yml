@@ -1,0 +1,8 @@
+# prometheus.yml
+global:
+  scrape_interval: 15s  # Intervalo para recopilar métricas
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]  # Monitorear Prometheus en sí mismo
