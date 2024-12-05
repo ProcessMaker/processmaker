@@ -3,15 +3,19 @@
 namespace ProcessMaker\Cache\Settings;
 
 use Illuminate\Cache\CacheManager;
+use Illuminate\Contracts\Cache\Repository;
+use Illuminate\Support\Facades\Redis;
 use ProcessMaker\Cache\CacheInterface;
 
 class SettingCacheManager implements CacheInterface
 {
-    protected CacheManager $cacheManager;
+    protected Repository $cacheManager;
 
     public function __construct(CacheManager $cacheManager)
     {
-        $this->cacheManager = $cacheManager;
+        $driver = env('CACHE_SETTING_DRIVER') ?? env('CACHE_DRIVER', 'redis');
+
+        $this->cacheManager = $cacheManager->store($driver);
     }
 
     /**
@@ -106,6 +110,34 @@ class SettingCacheManager implements CacheInterface
     public function clear(): bool
     {
         return $this->cacheManager->flush();
+    }
+
+    /**
+     * Remove items from the settings cache by a given pattern.
+     *
+     * @param string $pattern
+     *
+     * @throws \Exception
+     * @return void
+     */
+    public function clearBy(string $pattern): void
+    {
+        try {
+            // get the connection name from the cache manager
+            $connection = $this->cacheManager->connection()->getName();
+            // Get all keys
+            $keys = Redis::connection($connection)->keys('*');
+            // Filter keys by pattern
+            $matchedKeys = array_filter($keys, fn($key) => preg_match('/' . $pattern . '/', $key));
+
+            if (!empty($matchedKeys)) {
+                Redis::connection($connection)->del($matchedKeys);
+            }
+        } catch (\Exception $e) {
+            \Log::error('SettingCacheException' . $e->getMessage());
+
+            throw new SettingCacheException('Failed to delete keys.');
+        }
     }
 
     /**
