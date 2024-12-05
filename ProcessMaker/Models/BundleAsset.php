@@ -15,6 +15,12 @@ class BundleAsset extends ProcessMakerModel
 
     const DATA_SOURCE_CLASS = 'ProcessMaker\Packages\Connectors\DataSources\Models\DataSource';
 
+    const COLLECTION_CLASS = 'ProcessMaker\Plugins\Collections\Models\Collection';
+
+    const DECISION_TABLE_CLASS = 'ProcessMaker\Package\PackageDecisionEngine\Models\DecisionTable';
+
+    const FLOW_GENIE_CLASS = 'ProcessMaker\Package\PackageAi\Models\FlowGenie';
+
     protected static function boot()
     {
         parent::boot();
@@ -72,6 +78,12 @@ class BundleAsset extends ProcessMakerModel
                 return "/modeler/{$this->asset_id}";
             case self::DATA_SOURCE_CLASS:
                 return "/designer/data-sources/{$this->asset_id}/edit";
+            case self::COLLECTION_CLASS:
+                return "/collections/{$this->asset_id}/edit";
+            case self::DECISION_TABLE_CLASS:
+                return "/designer/decision-tables/table-builder/{$this->asset_id}/edit";
+            case self::FLOW_GENIE_CLASS:
+                return "/designer/flow-genies/{$this->asset_id}/edit";
             default:
                 return null;
         }
@@ -88,6 +100,12 @@ class BundleAsset extends ProcessMakerModel
                 return 'Process';
             case self::DATA_SOURCE_CLASS:
                 return 'data_source';
+            case self::COLLECTION_CLASS:
+                return 'collection';
+            case self::DECISION_TABLE_CLASS:
+                return 'decision_table';
+            case self::FLOW_GENIE_CLASS:
+                return 'flow_genie';
             default:
                 return null;
         }
@@ -104,6 +122,10 @@ class BundleAsset extends ProcessMakerModel
 
     public function getCategoriesAttribute()
     {
+        if ($this->asset_type === self::COLLECTION_CLASS) {
+            return [];
+        }
+
         if ($this->asset && method_exists($this->asset, 'categories')) {
             return $this->asset->categories->pluck('name')->toArray();
         }
