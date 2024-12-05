@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Assets\ScreensInScreen;
 use ProcessMaker\Contracts\ScreenInterface;
+use ProcessMaker\Events\TranslationChanged;
 use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasCategories;
@@ -115,6 +116,15 @@ class Screen extends ProcessMakerModel implements ScreenInterface
 
         static::updating($clearCacheCallback);
         static::deleting($clearCacheCallback);
+
+        // Add observer for translations changes
+        static::updating(function ($screen) {
+            if ($screen->isDirty('translations')) {
+                $changes = $screen->translations;
+                $locale = app()->getLocale();
+                event(new TranslationChanged($locale, $changes, $screen->id));
+            }
+        });
     }
 
     /**
