@@ -36,7 +36,7 @@ export default [
     nameField: 'name',
   },
   {
-    type: 'collections',
+    type: 'collection',
     name: 'Collections',
     url: 'saved_searches.collections.index',
     listingUrl: '/collections',
@@ -45,7 +45,7 @@ export default [
     nameField: 'name',
   },
   {
-    type: 'decision_tables',
+    type: 'decision_table',
     name: 'Decision Tables',
     url: 'api.decision-tables.index',
     listingUrl: '/designer/decision-tables',
@@ -54,7 +54,7 @@ export default [
     nameField: 'title',
   },
   {
-    type: 'flow-genies',
+    type: 'flow_genie',
     name: 'FlowGenies',
     url: 'flow_genie.index',
     listingUrl: '/designer/flow-genies',

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, getCurrentInstance, computed } from 'vue';
+import { ref, onMounted, getCurrentInstance } from 'vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 import types from './assetTypes';
 import moment from 'moment';
@@ -57,7 +57,7 @@ const fields = [
     key: "name",
     label: "Name",
   },
-  ...(typeConfig?.type !== 'script' && typeConfig?.type !== 'screen' ? [{
+  ...(typeConfig?.type === "process" ? [{
     key: "owner_name",
     label: "Owner",
   }] : []),
