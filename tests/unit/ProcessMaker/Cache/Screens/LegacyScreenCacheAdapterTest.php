@@ -112,6 +112,78 @@ class LegacyScreenCacheAdapterTest extends TestCase
         $this->assertFalse($result);
     }
 
+    /** @test */
+    public function testInvalidateSuccess()
+    {
+        // Test parameters
+        $screenId = 5;
+        $language = 'es';
+
+        // Setup expectations
+        $this->compiledManager->shouldReceive('deleteScreenCompiledContent')
+            ->once()
+            ->with($screenId, $language)
+            ->andReturn(true);
+
+        // Execute and verify
+        $result = $this->adapter->invalidate($screenId, $language);
+        $this->assertTrue($result);
+    }
+
+    /** @test */
+    public function testInvalidateFailure()
+    {
+        // Test parameters
+        $screenId = 5;
+        $language = 'es';
+
+        // Setup expectations for failure
+        $this->compiledManager->shouldReceive('deleteScreenCompiledContent')
+            ->once()
+            ->with($screenId, $language)
+            ->andReturn(false);
+
+        // Execute and verify
+        $result = $this->adapter->invalidate($screenId, $language);
+        $this->assertFalse($result);
+    }
+
+    /** @test */
+    public function testInvalidateWithSpecialLanguageCode()
+    {
+        // Test parameters with special language code
+        $screenId = 5;
+        $language = 'zh-CN';
+
+        // Setup expectations
+        $this->compiledManager->shouldReceive('deleteScreenCompiledContent')
+            ->once()
+            ->with($screenId, $language)
+            ->andReturn(true);
+
+        // Execute and verify
+        $result = $this->adapter->invalidate($screenId, $language);
+        $this->assertTrue($result);
+    }
+
+    /** @test */
+    public function testInvalidateWithEmptyResults()
+    {
+        // Test parameters
+        $screenId = 999; // Non-existent screen ID
+        $language = 'es';
+
+        // Setup expectations for no files found
+        $this->compiledManager->shouldReceive('deleteScreenCompiledContent')
+            ->once()
+            ->with($screenId, $language)
+            ->andReturn(false);
+
+        // Execute and verify
+        $result = $this->adapter->invalidate($screenId, $language);
+        $this->assertFalse($result);
+    }
+
     protected function tearDown(): void
     {
         Mockery::close();

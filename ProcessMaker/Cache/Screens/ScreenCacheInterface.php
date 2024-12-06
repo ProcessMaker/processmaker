@@ -53,18 +53,11 @@ interface ScreenCacheInterface
     /**
      * Invalidate cache for a specific screen
      *
-     * @param int $processId
-     * @param int $processVersionId
-     * @param string $language
      * @param int $screenId
-     * @param int $screenVersionId
      * @return bool
      */
     public function invalidate(
-        int $processId,
-        int $processVersionId,
-        string $language,
         int $screenId,
-        int $screenVersionId
+        string $language,
     ): bool;
 }

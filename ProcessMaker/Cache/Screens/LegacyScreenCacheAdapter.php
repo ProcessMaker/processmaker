@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Cache\Screens;
 
+use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Managers\ScreenCompiledManager;
 
 class LegacyScreenCacheAdapter implements ScreenCacheInterface
@@ -53,5 +54,41 @@ class LegacyScreenCacheAdapter implements ScreenCacheInterface
     public function has(string $key): bool
     {
         return $this->compiledManager->getCompiledContent($key) !== null;
+    }
+
+    /**
+     * Delete a screen from cache
+     */
+    public function delete(string $key): bool
+    {
+        return $this->compiledManager->deleteCompiledContent($key);
+    }
+
+    /**
+     * Clear all screen caches
+     */
+    public function clear(): bool
+    {
+        return $this->compiledManager->clearCompiledContent();
+    }
+
+    /**
+     * Check if screen is missing from cache
+     */
+    public function missing(string $key): bool
+    {
+        return !$this->has($key);
+    }
+
+    /**
+     * Invalidate all cache entries for a specific screen
+     *
+     * @param int $screenId Screen ID
+     * @return bool
+     */
+    public function invalidate(int $screenId, string $language): bool
+    {
+        // Get all files from storage that match the pattern for this screen ID
+        return $this->compiledManager->deleteScreenCompiledContent($screenId, $language);
     }
 }

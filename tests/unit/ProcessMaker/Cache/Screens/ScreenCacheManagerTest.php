@@ -62,13 +62,13 @@ class ScreenCacheManagerTest extends TestCase
         // Set up expectations
         $this->cacheManager->shouldReceive('put')
             ->once()
-            ->with($key, serialize($value), 86400)
+            ->with($key, $value, 86400)
             ->andReturn(true);
 
         $this->cacheManager->shouldReceive('get')
             ->once()
-            ->with($key)
-            ->andReturn(serialize($value));
+            ->with($key, null)
+            ->andReturn($value);
 
         // Execute and verify
         $this->screenCache->set($key, $value);
@@ -82,19 +82,18 @@ class ScreenCacheManagerTest extends TestCase
     {
         $key = 'test_screen';
         $value = ['content' => 'test', 'title' => 'Original Title'];
-        $serializedValue = serialize($value);
 
         // Set up expectations for initial store
         $this->cacheManager->shouldReceive('put')
             ->once()
-            ->with($key, $serializedValue, 86400)
+            ->with($key, $value, 86400)
             ->andReturn(true);
 
         // Set up expectations for retrieval
         $this->cacheManager->shouldReceive('get')
             ->once()
-            ->with($key)
-            ->andReturn($serializedValue);
+            ->with($key, null)
+            ->andReturn($value);
 
         // Store and retrieve with translation
         $this->screenCache->set($key, $value);
@@ -122,23 +121,23 @@ class ScreenCacheManagerTest extends TestCase
         // Set up expectations for nested screen
         $this->cacheManager->shouldReceive('get')
             ->once()
-            ->with($nestedKey)
-            ->andReturn(serialize($nestedContent));
+            ->with($nestedKey, null)
+            ->andReturn($nestedContent);
 
         $this->cacheManager->shouldReceive('put')
             ->once()
-            ->with($key, serialize($parentContent), 86400)
+            ->with($key, $parentContent, 86400)
             ->andReturn(true);
 
         $this->cacheManager->shouldReceive('get')
             ->once()
-            ->with($key)
-            ->andReturn(serialize($parentContent));
+            ->with($key, null)
+            ->andReturn($parentContent);
 
         // Store and retrieve parent screen
         $this->screenCache->set($key, $parentContent);
         $result = $this->screenCache->get($key);
-        $this->screenCache->get($nestedKey);
+        $this->screenCache->get($nestedKey); // Add this line to call get() with nestedKey
 
         // Verify parent and nested content
         $this->assertEquals($parentContent, $result);
@@ -150,7 +149,6 @@ class ScreenCacheManagerTest extends TestCase
     {
         $key = 'test_stats';
         $value = ['data' => 'test'];
-        $serializedValue = serialize($value);
 
         // Initialize Redis counters
         Redis::set('screen_cache:stats:hits', 0);
@@ -159,9 +157,8 @@ class ScreenCacheManagerTest extends TestCase
 
         // Test cache hit
         $this->cacheManager->shouldReceive('get')
-            ->once()
-            ->with($key)
-            ->andReturn($serializedValue);
+            ->with($key, null)
+            ->andReturn($value);
 
         $this->screenCache->get($key);
         Redis::incr('screen_cache:stats:hits');
@@ -169,8 +166,7 @@ class ScreenCacheManagerTest extends TestCase
 
         // Test cache miss
         $this->cacheManager->shouldReceive('get')
-            ->once()
-            ->with('missing_key')
+            ->with('missing_key', null)
             ->andReturnNull();
 
         $this->screenCache->get('missing_key');
@@ -179,12 +175,11 @@ class ScreenCacheManagerTest extends TestCase
 
         // Test cache size tracking
         $this->cacheManager->shouldReceive('put')
-            ->once()
-            ->with($key, $serializedValue, 86400)
+            ->with($key, $value, 86400)
             ->andReturn(true);
 
         $this->screenCache->set($key, $value);
-        Redis::incrBy('screen_cache:stats:size', strlen($serializedValue));
+        Redis::incrBy('screen_cache:stats:size', strlen(serialize($value)));
         $this->assertGreaterThan(0, Redis::get('screen_cache:stats:size'));
     }
 
@@ -269,6 +264,50 @@ class ScreenCacheManagerTest extends TestCase
             ->andReturn(false);
 
         $this->assertTrue($this->screenCache->missing($key));
+    }
+
+    /** @test */
+    public function testInvalidateSuccess()
+    {
+        // Test parameters
+        $processId = 1;
+        $processVersionId = 2;
+        $language = 'en';
+        $screenId = 3;
+        $screenVersionId = 4;
+        $expectedKey = "pid_{$processId}_{$processVersionId}_{$language}_sid_{$screenId}_{$screenVersionId}";
+
+        // Set up expectations for forget
+        $this->cacheManager->shouldReceive('forget')
+            ->once()
+            ->with($expectedKey)
+            ->andReturn(true);
+
+        // Execute and verify
+        $result = $this->screenCache->invalidate($processId, $processVersionId, $language, $screenId, $screenVersionId);
+        $this->assertTrue($result);
+    }
+
+    /** @test */
+    public function testInvalidateFailure()
+    {
+        // Test parameters
+        $processId = 1;
+        $processVersionId = 2;
+        $language = 'en';
+        $screenId = 3;
+        $screenVersionId = 4;
+        $expectedKey = "pid_{$processId}_{$processVersionId}_{$language}_sid_{$screenId}_{$screenVersionId}";
+
+        // Set up expectations for forget to fail
+        $this->cacheManager->shouldReceive('forget')
+            ->once()
+            ->with($expectedKey)
+            ->andReturn(false);
+
+        // Execute and verify
+        $result = $this->screenCache->invalidate($processId, $processVersionId, $language, $screenId, $screenVersionId);
+        $this->assertFalse($result);
     }
 
     protected function tearDown(): void

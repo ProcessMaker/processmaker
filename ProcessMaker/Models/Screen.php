@@ -116,15 +116,6 @@ class Screen extends ProcessMakerModel implements ScreenInterface
 
         static::updating($clearCacheCallback);
         static::deleting($clearCacheCallback);
-
-        // Add observer for translations changes
-        static::updating(function ($screen) {
-            if ($screen->isDirty('translations')) {
-                $changes = $screen->translations;
-                $locale = app()->getLocale();
-                event(new TranslationChanged($locale, $changes, $screen->id));
-            }
-        });
     }
 
     /**

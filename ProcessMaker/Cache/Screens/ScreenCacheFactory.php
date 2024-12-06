@@ -47,4 +47,14 @@ class ScreenCacheFactory
         // Wrap with metrics decorator if not already wrapped
         return new CacheMetricsDecorator($cache, app()->make(RedisMetricsManager::class));
     }
+
+    /**
+     * Get the current screen cache instance
+     *
+     * @return ScreenCacheInterface
+     */
+    public static function getScreenCache(): ScreenCacheInterface
+    {
+        return self::create();
+    }
 }

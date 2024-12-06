@@ -331,4 +331,120 @@ class ScreenCompiledManagerTest extends TestCase
         // Attempt to store compiled content, expecting an exception
         $manager->storeCompiledContent($screenKey, $compiledContent);
     }
+
+    /**
+     * Test deleting compiled content for a specific screen ID and language
+     *
+     * @test
+     */
+    public function it_deletes_screen_compiled_content()
+    {
+        // Arrange
+        $manager = new ScreenCompiledManager();
+        $screenId = '5';
+        $language = 'es';
+        $compiledContent = ['key' => 'value'];
+
+        // Create test files that should be deleted
+        $filesToDelete = [
+            "pid_19_63_{$language}_sid_{$screenId}_7",
+            "pid_20_64_{$language}_sid_{$screenId}_8",
+        ];
+
+        // Create test files that should not be deleted
+        $filesToKeep = [
+            "pid_19_63_en_sid_{$screenId}_7", // Different language
+            "pid_19_63_{$language}_sid_6_7",   // Different screen ID
+            'pid_19_63_fr_sid_6_7',           // Different language and screen ID
+        ];
+
+        // Store all test files
+        foreach ($filesToDelete as $key) {
+            $manager->storeCompiledContent($key, $compiledContent);
+        }
+        foreach ($filesToKeep as $key) {
+            $manager->storeCompiledContent($key, $compiledContent);
+        }
+
+        // Act
+        $result = $manager->deleteScreenCompiledContent($screenId, $language);
+
+        // Assert
+        $this->assertTrue($result);
+
+        // Verify files that should be deleted are gone
+        foreach ($filesToDelete as $key) {
+            $filename = 'screen_' . $key . '.bin';
+            Storage::disk($this->storageDisk)->assertMissing($this->storagePath . $filename);
+        }
+
+        // Verify files that should be kept still exist
+        foreach ($filesToKeep as $key) {
+            $filename = 'screen_' . $key . '.bin';
+            Storage::disk($this->storageDisk)->assertExists($this->storagePath . $filename);
+        }
+    }
+
+    /**
+     * Test deleting compiled content when no matching files exist
+     *
+     * @test
+     */
+    public function it_returns_false_when_no_files_match_delete_pattern()
+    {
+        // Arrange
+        $manager = new ScreenCompiledManager();
+        $screenId = '5';
+        $language = 'es';
+        $compiledContent = ['key' => 'value'];
+
+        // Create test files that should not be deleted
+        $filesToKeep = [
+            'pid_19_63_en_sid_6_7',
+            'pid_19_63_fr_sid_6_7',
+        ];
+
+        // Store test files
+        foreach ($filesToKeep as $key) {
+            $manager->storeCompiledContent($key, $compiledContent);
+        }
+
+        // Act
+        $result = $manager->deleteScreenCompiledContent($screenId, $language);
+
+        // Assert
+        $this->assertFalse($result);
+
+        // Verify all files still exist
+        foreach ($filesToKeep as $key) {
+            $filename = 'screen_' . $key . '.bin';
+            Storage::disk($this->storageDisk)->assertExists($this->storagePath . $filename);
+        }
+    }
+
+    /**
+     * Test deleting compiled content with special characters in language code
+     *
+     * @test
+     */
+    public function it_handles_special_characters_in_language_code()
+    {
+        // Arrange
+        $manager = new ScreenCompiledManager();
+        $screenId = '5';
+        $language = 'zh-CN'; // Language code with special character
+        $compiledContent = ['key' => 'value'];
+
+        // Create test file with special character in language code
+        $key = "pid_19_63_{$language}_sid_{$screenId}_7";
+        $manager->storeCompiledContent($key, $compiledContent);
+
+        // Act
+        $result = $manager->deleteScreenCompiledContent($screenId, $language);
+
+        // Assert
+        $this->assertTrue($result);
+        $filename = 'screen_' . $key . '.bin';
+        Storage::disk($this->storageDisk)->assertMissing($this->storagePath . $filename);
+    }
 }

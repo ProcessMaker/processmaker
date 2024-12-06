@@ -102,6 +102,148 @@ class ScreenCacheFactoryTest extends TestCase
         $this->assertInstanceOf(RedisMetricsManager::class, $metricsProperty->getValue($cache));
     }
 
+    /**
+     * Test invalidate with new cache manager
+     *
+     * @test
+     */
+    public function testInvalidateWithNewCacheManager()
+    {
+        Config::set('screens.cache.manager', 'new');
+
+        // Create a mock for ScreenCacheManager
+        $mockManager = $this->createMock(ScreenCacheManager::class);
+        $mockManager->expects($this->once())
+            ->method('invalidate')
+            ->with(5, 'es')
+            ->willReturn(true);
+
+        $this->app->instance(ScreenCacheManager::class, $mockManager);
+
+        $cache = ScreenCacheFactory::create();
+        $result = $cache->invalidate(5, 'es');
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Test invalidate with legacy cache adapter
+     *
+     * @test
+     */
+    public function testInvalidateWithLegacyCache()
+    {
+        Config::set('screens.cache.manager', 'legacy');
+
+        // Create mock for ScreenCompiledManager
+        $mockCompiledManager = $this->createMock(ScreenCompiledManager::class);
+        $mockCompiledManager->expects($this->once())
+            ->method('deleteScreenCompiledContent')
+            ->with('5', 'es')
+            ->willReturn(true);
+
+        $this->app->instance(ScreenCompiledManager::class, $mockCompiledManager);
+
+        $cache = ScreenCacheFactory::create();
+        $result = $cache->invalidate(5, 'es');
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Test getScreenCache method returns same instance as create
+     *
+     * @test
+     */
+    public function testGetScreenCacheReturnsSameInstanceAsCreate()
+    {
+        // Get instances using both methods
+        $instance1 = ScreenCacheFactory::create();
+        $instance2 = ScreenCacheFactory::getScreenCache();
+
+        // Verify they are the same type and have same metrics wrapper
+        $this->assertInstanceOf(CacheMetricsDecorator::class, $instance1);
+        $this->assertInstanceOf(CacheMetricsDecorator::class, $instance2);
+
+        // Get underlying cache implementations
+        $reflection = new \ReflectionClass(CacheMetricsDecorator::class);
+        $property = $reflection->getProperty('cache');
+        $property->setAccessible(true);
+
+        $cache1 = $property->getValue($instance1);
+        $cache2 = $property->getValue($instance2);
+
+        // Verify underlying implementations are of same type
+        $this->assertEquals(get_class($cache1), get_class($cache2));
+    }
+
+    /**
+     * Test factory respects test instance
+     *
+     * @test
+     */
+    public function testFactoryRespectsTestInstance()
+    {
+        // Create and set a test instance
+        $testInstance = $this->createMock(ScreenCacheInterface::class);
+        ScreenCacheFactory::setTestInstance($testInstance);
+
+        // Both create and getScreenCache should return test instance
+        $this->assertSame($testInstance, ScreenCacheFactory::create());
+        $this->assertSame($testInstance, ScreenCacheFactory::getScreenCache());
+
+        // Clear test instance
+        ScreenCacheFactory::setTestInstance(null);
+    }
+
+    /**
+     * Test metrics decoration is applied correctly
+     *
+     * @test
+     */
+    public function testMetricsDecorationIsAppliedCorrectly()
+    {
+        // Test with both cache types
+        $cacheTypes = ['new', 'legacy'];
+
+        foreach ($cacheTypes as $type) {
+            Config::set('screens.cache.manager', $type);
+
+            $cache = ScreenCacheFactory::create();
+
+            // Verify outer wrapper is metrics decorator
+            $this->assertInstanceOf(CacheMetricsDecorator::class, $cache);
+
+            // Get and verify metrics instance
+            $reflection = new \ReflectionClass(CacheMetricsDecorator::class);
+            $metricsProperty = $reflection->getProperty('metrics');
+            $metricsProperty->setAccessible(true);
+
+            $metrics = $metricsProperty->getValue($cache);
+            $this->assertInstanceOf(RedisMetricsManager::class, $metrics);
+        }
+    }
+
+    /**
+     * Test factory with invalid configuration
+     *
+     * @test
+     */
+    public function testFactoryWithInvalidConfiguration()
+    {
+        Config::set('screens.cache.manager', 'invalid');
+
+        // Should default to legacy cache
+        $cache = ScreenCacheFactory::create();
+
+        $reflection = new \ReflectionClass(CacheMetricsDecorator::class);
+        $property = $reflection->getProperty('cache');
+        $property->setAccessible(true);
+
+        $underlyingCache = $property->getValue($cache);
+        $this->assertInstanceOf(LegacyScreenCacheAdapter::class, $underlyingCache);
+    }
+
     protected function tearDown(): void
     {
         ScreenCacheFactory::setTestInstance(null);

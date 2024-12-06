@@ -6,6 +6,7 @@ use Mockery;
 use ProcessMaker\Cache\CacheInterface;
 use ProcessMaker\Cache\Monitoring\CacheMetricsDecorator;
 use ProcessMaker\Cache\Monitoring\CacheMetricsInterface;
+use ProcessMaker\Cache\Screens\ScreenCacheInterface;
 use Tests\TestCase;
 
 class CacheMetricsDecoratorTest extends TestCase
@@ -24,8 +25,8 @@ class CacheMetricsDecoratorTest extends TestCase
     {
         parent::setUp();
 
-        // Create mocks
-        $this->cache = Mockery::mock(CacheInterface::class);
+        // Create mocks that implement both interfaces
+        $this->cache = Mockery::mock(CacheInterface::class . ', ' . ScreenCacheInterface::class);
         $this->metrics = Mockery::mock(CacheMetricsInterface::class);
 
         // Create decorator with mocks
@@ -215,6 +216,80 @@ class CacheMetricsDecoratorTest extends TestCase
         $method->setAccessible(true);
 
         return $method->invoke($this->decorator, $value);
+    }
+
+    public function testCreateKey()
+    {
+        // Setup expectations
+        $this->cache->shouldReceive('createKey')
+            ->once()
+            ->with(1, 2, 'en', 3, 4)
+            ->andReturn('screen_1_2_en_3_4');
+
+        // Execute and verify
+        $key = $this->decorator->createKey(1, 2, 'en', 3, 4);
+        $this->assertEquals('screen_1_2_en_3_4', $key);
+    }
+
+    public function testCreateKeyWithNonScreenCache()
+    {
+        // Create a mock that only implements CacheInterface
+        $cache = Mockery::mock(CacheInterface::class);
+        $metrics = Mockery::mock(CacheMetricsInterface::class);
+        $decorator = new CacheMetricsDecorator($cache, $metrics);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Underlying cache implementation does not support createKey method');
+
+        $decorator->createKey(1, 2, 'en', 3, 4);
+    }
+
+    public function testInvalidateSuccess()
+    {
+        // Test parameters
+        $screenId = 5;
+        $language = 'es';
+
+        // Setup expectations for invalidate
+        $this->cache->shouldReceive('invalidate')
+            ->once()
+            ->with($screenId, $language)
+            ->andReturn(true);
+
+        // Execute and verify
+        $result = $this->decorator->invalidate($screenId, $language);
+        $this->assertTrue($result);
+    }
+
+    public function testInvalidateFailure()
+    {
+        // Test parameters
+        $screenId = 5;
+        $language = 'es';
+
+        // Setup expectations for invalidate to fail
+        $this->cache->shouldReceive('invalidate')
+            ->once()
+            ->with($screenId, $language)
+            ->andReturn(false);
+
+        // Execute and verify
+        $result = $this->decorator->invalidate($screenId, $language);
+        $this->assertFalse($result);
+    }
+
+    public function testInvalidateWithNonScreenCache()
+    {
+        // Create a mock that only implements CacheInterface
+        $cache = Mockery::mock(CacheInterface::class);
+        $metrics = Mockery::mock(CacheMetricsInterface::class);
+        $decorator = new CacheMetricsDecorator($cache, $metrics);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Underlying cache implementation does not support invalidate method');
+
+        // Execute with any parameters since it should throw before using them
+        $decorator->invalidate(5, 'es');
     }
 
     protected function tearDown(): void

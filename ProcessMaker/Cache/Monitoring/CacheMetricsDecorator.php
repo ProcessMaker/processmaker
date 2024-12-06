@@ -140,6 +140,22 @@ class CacheMetricsDecorator implements CacheInterface, ScreenCacheInterface
     }
 
     /**
+     * Invalidate cache for a specific screen
+     *
+     * @param int $screenId Screen ID
+     * @return bool
+     * @throws \RuntimeException If underlying cache doesn't support invalidate
+     */
+    public function invalidate(int $screenId, string $language): bool
+    {
+        if ($this->cache instanceof ScreenCacheInterface) {
+            return $this->cache->invalidate($screenId, $language);
+        }
+
+        throw new \RuntimeException('Underlying cache implementation does not support invalidate method');
+    }
+
+    /**
      * Calculate the approximate size in bytes of a value
      *
      * @param mixed $value Value to calculate size for
