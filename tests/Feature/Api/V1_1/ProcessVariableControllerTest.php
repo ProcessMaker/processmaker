@@ -2,14 +2,25 @@
 
 namespace Tests\Feature\Api\V1_1;
 
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\User;
 use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use ProcessMaker\Package\VariableFinder\Models\ProcessVariable;
+use Illuminate\Support\Str;
+use ProcessMaker\Http\Controllers\Api\V1_1\ProcessVariableController;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Package\VariableFinder\Models\AssetVariable;
+use ProcessMaker\Package\VariableFinder\Models\VarFinderVariable;
 
 class ProcessVariableControllerTest extends TestCase
 {
     use RequestHelper;
+
+    private bool $isVariablesFinderEnabled;
 
     /**
      * Set up test environment by creating a test user and authenticating as them
@@ -20,6 +31,19 @@ class ProcessVariableControllerTest extends TestCase
     {
         $this->user = User::factory()->create();
         $this->actingAs($this->user);
+
+        // Check if the VariableFinder package is enabled
+        $this->isVariablesFinderEnabled = !class_exists(ProcessVariable::class) || !Schema::hasTable('process_variables');
+
+        // Create the processes variables
+        if (!$this->isVariablesFinderEnabled) {
+            // Mock the ProcessVariableController to use mock data instead of VariableFinder package
+            ProcessVariableController::mock();
+            $this->mockVariableFinder([1, 2, 3], null);
+            $this->mockVariableFinder([1, 2], null);
+        } else {
+            $this->loadVariableFinderData([1, 2, 3]);
+        }
     }
 
     /**
@@ -37,16 +61,10 @@ class ProcessVariableControllerTest extends TestCase
                     '*' => [
                         'id',
                         'process_id',
-                        'uuid',
                         'format',
                         'label',
                         'field',
-                        'asset' => [
-                            'id',
-                            'type',
-                            'name',
-                            'uuid',
-                        ],
+                        'default',
                         'created_at',
                         'updated_at',
                     ]
@@ -69,6 +87,94 @@ class ProcessVariableControllerTest extends TestCase
 
         // Since we're generating 10 variables per process (3 processes = 30 total)
         $this->assertEquals(30, $responseData['meta']['total']);
+    }
+
+    private function mockVariableFinder(array $processIds, $excludeSavedSearch)
+    {
+        // Create a cache key based on process IDs
+        $cacheKey = 'process_variables_' . implode('_', $processIds);
+        if ($excludeSavedSearch) {
+            $cacheKey .= '_exclude_saved_search_' . $excludeSavedSearch;
+        }
+
+        // Try to get variables from cache first
+        $variables = Cache::remember($cacheKey, now()->addSeconds(60), function () use ($processIds) {
+            $variables = collect();
+
+            foreach ($processIds as $processId) {
+                // Generate 10 variables per process
+                for ($i = 1; $i <= 10; $i++) {
+                    $variables->push([
+                        'id' => $variables->count() + 1,
+                        'process_id' => $processId,
+                        'format' => $this->getRandomDataType(),
+                        'label' => "Variable {$i} for Process {$processId}",
+                        'field' => "data.var_{$processId}_{$i}",
+                        'default' => null,
+                        'created_at' => now()->toIso8601String(),
+                        'updated_at' => now()->toIso8601String(),
+                    ]);
+                }
+            }
+
+            return $variables;
+        });
+
+        return $variables;
+    }
+
+    private function getRandomDataType(): string
+    {
+        return collect(['string', 'int', 'boolean', 'array'])->random();
+    }
+
+    private function getRandomAssetType(): string
+    {
+        return collect(['sensor', 'actuator', 'controller', 'device'])->random();
+    }
+
+    private function loadVariableFinderData(array $processIds)
+    {
+        foreach ($processIds as $processId) {
+            $process = Process::factory()->create([
+                'id' => $processId,
+            ]);
+            // 1. Create the AssetVariable record
+            $asset = [
+                'type' => $this->getRandomAssetType(),
+                'uuid' => (string) Str::uuid(),
+            ];
+            $assetVariable = AssetVariable::create([
+                'uuid' => $asset['uuid'],
+                'asset_id' => 1,       // Scren id=1
+                'asset_type' => Screen::class,
+            ]);
+
+            // 2. Create the ProcessVariable record linking to the AssetVariable
+            ProcessVariable::create([
+                'uuid' => (string) Str::uuid(),
+                'process_id' => $processId,
+                'asset_variable_id' => $assetVariable->id,
+            ]);
+
+            // Generate 10 variables per process
+            for ($i = 1; $i <= 10; $i++) {
+
+                // Generate data similarly to mockVariableFinder
+                $format = $this->getRandomDataType();
+                $label = "Variable {$i} for Process {$processId}";
+                $field = "data.var_{$processId}_{$i}";
+
+                // 3. Create the VarFinderVariable record linked to the same AssetVariable
+                VarFinderVariable::create([
+                    'uuid' => (string) Str::uuid(),
+                    'asset_variable_id' => $assetVariable->id,
+                    'data_type' => $format,
+                    'label' => $label,
+                    'field' => $field,
+                ]);
+            }
+        }
     }
 
     /**
@@ -159,6 +265,9 @@ class ProcessVariableControllerTest extends TestCase
         ]);
 
         // Make request with savedSearchId
+        if (!$this->isVariablesFinderEnabled) {
+            $this->mockVariableFinder([1], $savedSearch->id);
+        }
         $response = $this->apiCall('GET', '/api/1.1/processes/variables?processIds=1&savedSearchId=' . $savedSearch->id);
 
         $responseData = $response->json();
