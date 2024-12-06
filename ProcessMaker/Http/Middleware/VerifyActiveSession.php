@@ -26,7 +26,7 @@ class VerifyActiveSession
                 return response()->json(['error' => 'Unauthorized'], 401);
             }
             else {
-                $lastActivity = $activeSession['updated_at'];
+                $lastActivity = $activeSession ? $activeSession['updated_at'] : now();
                 // refresh the cache key lifetime
                 if (now()->diffInMinutes($lastActivity) > config('session.lifetime') / 2) {
                     Cache::put(
