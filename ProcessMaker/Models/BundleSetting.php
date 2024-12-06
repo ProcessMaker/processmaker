@@ -23,4 +23,12 @@ class BundleSetting extends ProcessMakerModel
     {
         return $this->belongsTo(Bundle::class);
     }
+
+    public function export()
+    {
+        return [
+            'setting' => $this->setting,
+            'config' => $this->config,
+        ];
+    }
 }

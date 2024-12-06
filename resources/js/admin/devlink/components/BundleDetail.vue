@@ -1,8 +1,7 @@
 <template>
   <div class="main-content">
     <div class="tw-flex tw-items-center tw-justify-center" v-if="loading">
-      <div class="spinner-border text-primary" role="status">
-      </div>
+      <div class="spinner-border text-primary" role="status" />
       <span class="visually-hidden">Loading...</span>
     </div>
     <!-- Header -->

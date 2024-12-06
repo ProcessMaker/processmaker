@@ -77,6 +77,13 @@ class Bundle extends ProcessMakerModel implements HasMedia
         return $exports;
     }
 
+    public function exportSettings()
+    {
+        return $this->settings()->get()->map(function ($setting) {
+            return $setting->export();
+        });
+    }
+
     public function syncAssets($assets)
     {
         $assetKeys = [];
@@ -135,14 +142,16 @@ class Bundle extends ProcessMakerModel implements HasMedia
     {
         $exists = $this->settings()->where('setting', $setting)->exists();
         if ($exists) {
-            throw ValidationException::withMessages(['*' => 'Setting already exists in bundle']);
+            $this->settings()->where('setting', $setting)->update([
+                'config' => $config,
+            ]);
+        } else {
+            BundleSetting::create([
+                'bundle_id' => $this->id,
+                'setting' => $setting,
+                'config' => $config,
+            ]);
         }
-
-        BundleSetting::create([
-            'bundle_id' => $this->id,
-            'setting' => $setting,
-            'config' => $config,
-        ]);
     }
 
     public function addAssetToBundles(ProcessMakerModel $asset)
@@ -201,6 +210,19 @@ class Bundle extends ProcessMakerModel implements HasMedia
                 $media->delete();
             }
             $count++;
+        }
+    }
+
+    public function installSettings($settings)
+    {
+        $newSettingsKeys = collect($settings)->pluck('setting')->toArray();
+
+        $this->settings()
+            ->whereNotIn('setting', $newSettingsKeys)
+            ->delete();
+
+        foreach ($settings as $setting) {
+            $this->addSettings($setting['setting'], $setting['config']);
         }
     }
 
