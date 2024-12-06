@@ -5,6 +5,7 @@ namespace ProcessMaker\Cache\Screens;
 use Illuminate\Cache\CacheManager;
 use ProcessMaker\Cache\CacheInterface;
 use ProcessMaker\Managers\ScreenCompiledManager;
+use ProcessMaker\Models\Screen;
 
 class ScreenCacheManager implements CacheInterface, ScreenCacheInterface
 {
@@ -138,5 +139,26 @@ class ScreenCacheManager implements CacheInterface, ScreenCacheInterface
     public function missing(string $key): bool
     {
         return !$this->has($key);
+    }
+
+    /**
+     * Invalidate all cache entries for a specific screen
+     * @param int $screenId Screen ID
+     * @param string $language Language code
+     * @return bool
+     */
+    public function invalidate(int $screenId, string $language): bool
+    {
+        // Get all keys from cache that match the pattern for this screen ID
+        // TODO Improve this to avoid scanning the entire cache
+        $pattern = "*_{$language}_sid_{$screenId}_*";
+        $keys = $this->cacheManager->get($pattern);
+
+        // Delete all matching keys
+        foreach ($keys as $key) {
+            $this->cacheManager->forget($key);
+        }
+
+        return true;
     }
 }

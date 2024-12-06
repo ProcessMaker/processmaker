@@ -31,6 +31,7 @@ class SettingCacheManager implements CacheInterface
         if (in_array($defaultCache, ['redis', 'cache_settings'])) {
             return self::DEFAULT_CACHE_DRIVER;
         }
+
         return $defaultCache;
     }
 
@@ -150,7 +151,7 @@ class SettingCacheManager implements CacheInterface
             // Get all keys
             $keys = Redis::connection($connection)->keys($this->cacheManager->getPrefix() . '*');
             // Filter keys by pattern
-            $matchedKeys = array_filter($keys, fn($key) => preg_match('/' . $pattern . '/', $key));
+            $matchedKeys = array_filter($keys, fn ($key) => preg_match('/' . $pattern . '/', $key));
 
             if (!empty($matchedKeys)) {
                 Redis::connection($connection)->del($matchedKeys);

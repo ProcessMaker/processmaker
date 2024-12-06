@@ -140,6 +140,22 @@ class CacheMetricsDecorator implements CacheInterface, ScreenCacheInterface
     }
 
     /**
+     * Invalidate cache for a specific screen
+     *
+     * @param int $screenId Screen ID
+     * @return bool
+     * @throws \RuntimeException If underlying cache doesn't support invalidate
+     */
+    public function invalidate(int $screenId, string $language): bool
+    {
+        if ($this->cache instanceof ScreenCacheInterface) {
+            return $this->cache->invalidate($screenId, $language);
+        }
+
+        throw new \RuntimeException('Underlying cache implementation does not support invalidate method');
+    }
+
+    /**
      * Calculate the approximate size in bytes of a value
      *
      * @param mixed $value Value to calculate size for
@@ -168,5 +184,24 @@ class CacheMetricsDecorator implements CacheInterface, ScreenCacheInterface
         }
 
         return 0; // for null or other types
+    }
+
+    /**
+     * Get a value from the cache or store it if it doesn't exist.
+     *
+     * @param string $key
+     * @param callable $callback
+     * @return mixed
+     */
+    public function getOrCache(string $key, callable $callback): mixed
+    {
+        if ($this->cache->has($key)) {
+            return $this->cache->get($key);
+        }
+
+        $value = $callback();
+        $this->cache->set($key, $value);
+
+        return $value;
     }
 }

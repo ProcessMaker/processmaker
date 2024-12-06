@@ -17,7 +17,6 @@ class CacheServiceProvider extends ServiceProvider
     public function register(): void
     {
         // Register the metrics manager
-        $this->app->singleton(RedisMetricsManager::class);
         $this->app->bind(CacheMetricsInterface::class, RedisMetricsManager::class);
 
         // Register screen cache with metrics
@@ -29,7 +28,7 @@ class CacheServiceProvider extends ServiceProvider
 
             return new CacheMetricsDecorator(
                 $cache,
-                $app->make(RedisMetricsManager::class)
+                $app->make(CacheMetricsInterface::class)
             );
         });
 
@@ -39,7 +38,7 @@ class CacheServiceProvider extends ServiceProvider
 
             return new CacheMetricsDecorator(
                 $cache,
-                $app->make(RedisMetricsManager::class)
+                $app->make(CacheMetricsInterface::class)
             );
         });
 
@@ -51,7 +50,7 @@ class CacheServiceProvider extends ServiceProvider
 
             return new CacheMetricsDecorator(
                 $cache,
-                $app->make(RedisMetricsManager::class)
+                $app->make(CacheMetricsInterface::class)
             );
         });
 

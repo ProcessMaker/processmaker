@@ -132,7 +132,7 @@ class SettingCacheTest extends TestCase
         $this->withoutExceptionHandling();
         $key = 'non-existing-key';
 
-        $callback = fn() => Setting::where('key', $key)->first();
+        $callback = fn () => Setting::where('key', $key)->first();
 
         $this->expectException(\InvalidArgumentException::class);
         $setting = \SettingCache::getOrCache($key, $callback);
@@ -187,7 +187,7 @@ class SettingCacheTest extends TestCase
         $pattern = 'test_pattern';
         $keys = [
             'settings:test_pattern:1',
-            'settings:test_pattern:2'
+            'settings:test_pattern:2',
         ];
         \SettingCache::set('test_pattern:1', 1);
         \SettingCache::set('test_pattern:2', 2);
