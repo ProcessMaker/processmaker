@@ -7,7 +7,7 @@ use Illuminate\Queue\SerializesModels;
 
 class TranslationChanged
 {
-    use Dispatchable, SerializesModels;
+    use Dispatchable;
 
     public string $locale;
 
