@@ -2,7 +2,7 @@ import { BNavbar } from "bootstrap-vue";
 import { Multiselect } from "@processmaker/vue-multiselect";
 import moment from "moment-timezone";
 import { sanitizeUrl } from "@braintree/sanitize-url";
-import VueHtml2Canvas from "vue-html2canvas";
+// import VueHtml2Canvas from "vue-html2canvas";
 import Sidebaricon from "./components/Sidebaricon";
 import SelectStatus from "./components/SelectStatus";
 import SelectUser from "./components/SelectUser";
@@ -25,7 +25,7 @@ import "bootstrap";
 
 const { Vue } = window;
 
-Vue.use(VueHtml2Canvas);
+// Vue.use(VueHtml2Canvas);
 
 if (window.ProcessMaker && window.ProcessMaker.user) {
   moment.tz.setDefault(window.ProcessMaker.user.timezone);

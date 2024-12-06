@@ -145,7 +145,7 @@
 
 @section('js')
   @if (hasPackage('package-files'))
-    <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
+    <script src="{{ Vite::asset('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
   @endif
 
   <script>

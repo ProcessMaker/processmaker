@@ -102,7 +102,7 @@
 <script>
 import { BasicSearch } from "SharedComponents";
 import datatableMixin from "../../../components/common/mixins/datatable";
-import isPMQL from "../../../modules/isPMQL";
+import "../../../modules/isPMQL";
 import PmqlInput from "../../../components/shared/PmqlInput.vue";
 import SecurityLogsModal from "./SecurityLogsModal.vue";
 

@@ -23,7 +23,7 @@
     <meta name="timezone" content="{{ Auth::user()->timezone ?: config('app.timezone') }}">
     @yield('meta')
     @endif
-    <meta name="timeout-worker" content="{{ mix('js/timeout.js') }}">
+    <meta name="timeout-worker" content="{{ Vite::asset('resources/js/timeout.js') }}">
     <meta name="timeout-length" content="{{ Session::has('rememberme') && Session::get('rememberme') ? "Number.MAX_SAFE_INTEGER" : config('session.lifetime') }}">
     <meta name="timeout-warn-seconds" content="{{ config('session.expire_warning') }}">
     @if(Session::has('_alert'))
@@ -37,10 +37,9 @@
     @endif
     <title>@yield('title',__('Welcome')) - {{ __('ProcessMaker') }}</title>
     <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
-    @vite('resources/css/app.css')
-    @vite('resources/css/sidebar.css')
-    @vite('resources/css/tailwind.css')
-    <link href="/css/bpmn-symbols/css/bpmn.css" rel="stylesheet">
+    @vite('resources/sass/app.scss')
+    @vite('resources/sass/sidebar/sidebar.scss')
+    @vite('resources/sass/tailwind.css')
     @yield('css')
     <script type="text/javascript">
     @if(Auth::user())
@@ -127,14 +126,18 @@
 @if(config('broadcasting.default') == 'redis')
 <script src="{{config('broadcasting.connections.redis.host')}}/socket.io/socket.io.js"></script>
 @endif
-@vite('resources/js/manifest.js')
-@vite('resources/js/vendor.js')
-@vite('resources/js/app.js')
+
+<!-- temporary until we refactor global use of "_" -->
+<script src="/vendor/lodash.min.js"></script>
+
 <script>
+  window.ProcessMaker = window.ProcessMaker || {};
+  window.ProcessMaker.user = {};
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
 </script>
+
+@vite('resources/js/app.js')
 @vite('resources/js/app-layout.js')
-@include('shared.monaco')
 @foreach(GlobalScripts::getScripts() as $script)
   <script src="{{$script}}"></script>
 @endforeach

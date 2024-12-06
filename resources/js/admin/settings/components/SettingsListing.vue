@@ -193,7 +193,7 @@
 
 <script>
 import { BasicSearch } from "SharedComponents";
-import isPMQL from "../../../modules/isPMQL";
+import  "../../../modules/isPMQL";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import PmqlInput from "../../../components/shared/PmqlInput.vue";
 import SettingBoolean from './SettingBoolean.vue';

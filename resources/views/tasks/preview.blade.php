@@ -20,7 +20,7 @@
     <meta name="timezone" content="{{ Auth::user()->timezone ?: config('app.timezone') }}">
     <meta name="request-id" content="{{ $task->processRequest->id }}">
     @endif
-    <meta name="timeout-worker" content="{{ mix('js/timeout.js') }}">
+    <meta name="timeout-worker" content="{{ Vite::asset('resources/js/timeout.js') }}">
     <meta name="timeout-length" content="{{ Session::has('rememberme') && Session::get('rememberme') ? "Number.MAX_SAFE_INTEGER" : config('session.lifetime') }}">
     <meta name="timeout-warn-seconds" content="{{ config('session.expire_warning') }}">
     @if(Session::has('_alert'))
@@ -36,7 +36,7 @@
     <title>{{__('Edit Task')}}</title>
 
     <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
-    @vite('resources/css/app.css')
+    @vite('resources/sass/app.scss')
     <link href="/css/bpmn-symbols/css/bpmn.css" rel="stylesheet">
     @yield('css')
     <script type="text/javascript">

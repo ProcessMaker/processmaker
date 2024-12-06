@@ -222,6 +222,7 @@ import NotificationCard from "./notification-card.vue";
 import NotificationItem from "./notification-item.vue";
 import notificationsMixin from "../notifications-mixin";
 
+import Vue from "vue";
 Vue.use(PopoverPlugin);
 export default {
   components: { NotificationItem, NotificationCard },

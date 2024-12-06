@@ -143,7 +143,7 @@ const handleFilterChange = () => {
   border-radius: 8px;
 }
 
-@import "styles/components/table";
+@import "~styles/components/table";
 
 .asset-listing-card {
   border-radius: 8px;

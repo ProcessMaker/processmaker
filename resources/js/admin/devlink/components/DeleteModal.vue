@@ -62,7 +62,7 @@ export default {
 
 </script>
 <style lang="scss" scoped>
-@import "styles/components/modal";
+@import "~styles/components/modal";
 ::v-deep .modal-header .delete-icon {
   width: 48px;
   height: 48px;

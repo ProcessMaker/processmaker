@@ -1,15 +1,42 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue2';
+import ViteYaml from '@modyfi/vite-plugin-yaml';
+
+import path from 'path';
 
 export default defineConfig({
+    build: {
+        minify: false, // temporarily disable minification for debugging
+        // commonjsOptions: { transformMixedEsModules: true }
+    },
+    css: {
+        preprocessorOptions: {
+            scss: {
+                // quietDeps: true,
+                api: 'modern-compiler',
+            }
+        }
+    },
+    resolve: {
+        preserveSymlinks: true,
+        extensions: ['.js', '.vue', '.json', '.scss'],
+        alias: {
+            'vue': 'vue/dist/vue.runtime.esm.js',
+            'SharedComponents': path.resolve('./resources/js/components/shared'),
+            '~styles': path.resolve('./resources/sass'),
+        },
+    },
     plugins: [
+        ViteYaml(),
         laravel({
             input: [
-                'resources/sass/admin/queues.scss',
+                // 'resources/sass/admin/queues.scss',
                 'resources/sass/app.scss',
                 'resources/sass/collapseDetails.scss',
                 'resources/sass/sidebar/sidebar.scss',
+                'resources/sass/tailwind.css',
+                'resources/js/timeout.js',
                 'resources/js/admin/auth-clients/index.js',
                 'resources/js/admin/auth/passwords/change.js',
                 'resources/js/admin/cssOverride/edit.js',
@@ -17,7 +44,7 @@ export default defineConfig({
                 'resources/js/admin/groups/edit.js',
                 'resources/js/admin/groups/index.js',
                 'resources/js/admin/profile/edit.js',
-                'resources/js/admin/queues/index.js',
+                // 'resources/js/admin/queues/index.js',
                 'resources/js/admin/script-executors/index.js',
                 'resources/js/admin/settings/index.js',
                 'resources/js/admin/settings/ldaplogs.js',
@@ -69,6 +96,7 @@ export default defineConfig({
                 'resources/js/templates/configure.js',
                 'resources/js/templates/import/index.js',
                 'resources/js/templates/index.js',
+                'resources/js/translations/index.js',
                 'resources/jscomposition/cases/casesDetail/edit.js',
                 'resources/jscomposition/cases/casesMain/main.js',
             ],
@@ -76,10 +104,7 @@ export default defineConfig({
         }),
         vue({
             template: {
-                transformAssetUrls: {
-                    base: null,
-                    includeAbsolute: false,
-                },
+                transformAssetUrls: false,
             },
         }),
     ],

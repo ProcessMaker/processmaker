@@ -133,7 +133,7 @@
   
   @if (hasPackage('package-files'))
   <!-- TODO: Replace with script injector like we do for modeler and screen builder -->
-  <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
+  <script src="{{ Vite::asset('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
   @endif
 
   @vite('resources/js/composition/cases/casesDetail/edit.js')

@@ -8,7 +8,7 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta name="i18n-mdate" content='{!! json_encode(ProcessMaker\i18nHelper::mdates()) !!}'>
   <title>{{ __('Login') }} - {{ __('ProcessMaker') }}</title>
-  @vite('resources/css/app.css')
+  @vite('resources/sass/app.scss')
   <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
   @if (hasPackage('package-accessibility'))
     @include('package-accessibility::userway')
@@ -141,9 +141,6 @@
     this.classList.toggle('fa-eye-slash');
 });
 </script>
-@vite('resources/builds/login/js/manifest.js')
-@vite('resources/builds/login/js/vendor.js')
-@vite('resources/builds/login/js/app-login.js')
 @foreach(GlobalScripts::getScripts() as $script)
   @if (strpos($script, '/vendor/processmaker/packages/package-dynamic-ui/js/global.js') !== 0)
     <script src="{{$script}}"></script>
