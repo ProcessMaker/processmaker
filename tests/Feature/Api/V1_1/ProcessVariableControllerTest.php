@@ -33,7 +33,7 @@ class ProcessVariableControllerTest extends TestCase
         $this->actingAs($this->user);
 
         // Check if the VariableFinder package is enabled
-        $this->isVariablesFinderEnabled = !class_exists(ProcessVariable::class) || !Schema::hasTable('process_variables');
+        $this->isVariablesFinderEnabled = class_exists(ProcessVariable::class) && Schema::hasTable('process_variables');
 
         // Create the processes variables
         if (!$this->isVariablesFinderEnabled) {
