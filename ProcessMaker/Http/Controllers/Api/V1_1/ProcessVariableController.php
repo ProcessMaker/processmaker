@@ -5,16 +5,20 @@ declare(strict_types=1);
 namespace ProcessMaker\Http\Controllers\Api\V1_1;
 
 use ProcessMaker\Http\Controllers\Controller;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
+use ProcessMaker\Package\VariableFinder\Models\ProcessVariable;
 
 class ProcessVariableController extends Controller
 {
+
+    const CACHE_TTL = 60;
+    private static bool $mockData = false;
+
     /**
      * @OA\Schema(
      *     schema="Variable",
@@ -113,23 +117,11 @@ class ProcessVariableController extends Controller
         $excludeSavedSearch = $validated['savedSearchId'] ?? 0;
 
         // Generate mock data
-        $mockData = $this->generateMockData($processIds);
-        if ($excludeSavedSearch) {
-            $savedSearch = SavedSearch::find($excludeSavedSearch);
-            $columns = $savedSearch->current_columns;
-            $mockData = $mockData->filter(function ($variable) use ($columns) {
-                return !$columns->pluck('field')->contains($variable['field']);
-            });
+        if (static::$mockData) {
+            $paginator = $this->getProcessesVariablesFromMock($processIds, $excludeSavedSearch, $page, $perPage, $request);
+        } else {
+            $paginator = $this->getProcessesVariables($processIds, $excludeSavedSearch, $page, $perPage, $request);
         }
-
-        // Create paginator
-        $paginator = new LengthAwarePaginator(
-            $mockData->forPage($page, $perPage),
-            $mockData->count(),
-            $perPage,
-            $page,
-            ['path' => $request->url()]
-        );
 
         return response()->json([
             'data' => array_values($paginator->items()),
@@ -151,51 +143,108 @@ class ProcessVariableController extends Controller
         ]);
     }
 
-    private function generateMockData(array $processIds): Collection
+    /**
+     * Retrieve process variables from a mock source.
+     *
+     * @param array $processIds An array of process IDs to retrieve variables for.
+     * @param bool $excludeSavedSearch Flag to determine whether to exclude saved searches.
+     * @param int $page The page number for pagination.
+     * @param int $perPage The number of items per page for pagination.
+     * @param \Illuminate\Http\Request $request The HTTP request instance.
+     *
+     * @return array The list of process variables.
+     */
+    private function getProcessesVariablesFromMock(array $processIds, $excludeSavedSearch, $page, $perPage, $request)
     {
-        // Create a cache key based on process IDs
         $cacheKey = 'process_variables_' . implode('_', $processIds);
+        if ($excludeSavedSearch) {
+            $cacheKey .= '_exclude_saved_search_' . $excludeSavedSearch;
+        }
 
-        // Try to get variables from cache first
-        $variables = Cache::remember($cacheKey, now()->addSeconds(5), function () use ($processIds) {
-            $variables = collect();
-
-            foreach ($processIds as $processId) {
-                // Generate 10 variables per process
-                for ($i = 1; $i <= 10; $i++) {
-                    $variables->push([
-                        'id' => $variables->count() + 1,
-                        'process_id' => $processId,
-                        'uuid' => (string) Str::uuid(),
-                        'format' => $this->getRandomDataType(),
-                        'label' => "Variable {$i} for Process {$processId}",
-                        'field' => "data.var_{$processId}_{$i}",
-                        'asset' => [
-                            'id' => "asset_{$processId}_{$i}",
-                            'type' => $this->getRandomAssetType(),
-                            'name' => "Asset {$i} for Process {$processId}",
-                            'uuid' => (string) Str::uuid(),
-                        ],
-                        'default' => null,
-                        'created_at' => now()->toIso8601String(),
-                        'updated_at' => now()->toIso8601String(),
-                    ]);
-                }
+        $mockData = Cache::remember($cacheKey, now()->addSeconds(self::CACHE_TTL), function () use ($excludeSavedSearch) {
+            if (!$excludeSavedSearch) {
+                return collect();
             }
 
-            return $variables;
+            $savedSearch = SavedSearch::find($excludeSavedSearch);
+            return collect(array_values($savedSearch->data_columns->toArray()));
         });
 
-        return $variables;
+        if ($excludeSavedSearch) {
+            $savedSearch = SavedSearch::find($excludeSavedSearch);
+            $columns = $savedSearch->current_columns;
+            $mockData = $mockData->filter(function ($variable) use ($columns) {
+                return !$columns->pluck('field')->contains($variable['field']);
+            });
+        }
+
+        // Create paginator
+        return new LengthAwarePaginator(
+            $mockData->forPage($page, $perPage),
+            $mockData->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url()]
+        );
     }
 
-    private function getRandomDataType(): string
+    /**
+     * Retrieve process variables for the given process IDs.
+     *
+     * @param array $processIds Array of process IDs to retrieve variables for.
+     * @param bool $excludeSavedSearch Flag to exclude saved searches.
+     * @param int $page The page number for pagination.
+     * @param int $perPage The number of items per page for pagination.
+     * @param \Illuminate\Http\Request $request The HTTP request instance.
+     * @return \Illuminate\Http\JsonResponse JSON response containing the process variables.
+     */
+    public function getProcessesVariables(array $processIds, $excludeSavedSearch, $page, $perPage, $request)
     {
-        return collect(['string', 'number', 'boolean', 'array'])->random();
+        // If the classes or tables do not exist, fallback to a saved search approach.
+        if (!class_exists(ProcessVariable::class) || !Schema::hasTable('process_variables')) {
+            return $this->getProcessesVariablesFromSavedSearch($processIds);
+        }
+
+        // Determine which columns to exclude based on the saved search
+        $activeColumns = [];
+        if ($excludeSavedSearch) {
+            $savedSearch = SavedSearch::find($excludeSavedSearch);
+            if ($savedSearch && $savedSearch->current_columns) {
+                $activeColumns = $savedSearch->current_columns->pluck('field')->toArray();
+            }
+        }
+
+        // Build a single query that joins process_variables, asset_variables, and var_finder_variables
+        // and applies filtering for excluded fields.
+        $query = DB::table('var_finder_variables AS vfv')
+            ->join('asset_variables AS av', 'vfv.asset_variable_id', '=', 'av.id')
+            ->join('process_variables AS pv', 'av.id', '=', 'pv.asset_variable_id')
+            ->whereIn('pv.process_id', $processIds);
+
+        if (!empty($activeColumns)) {
+            $query->whereNotIn('vfv.field', $activeColumns);
+        }
+
+        // Paginate the query result directly
+        return $query->select(
+            'vfv.id',
+            'pv.process_id',
+            'vfv.data_type AS format',
+            'vfv.label',
+            'vfv.field',
+            DB::raw('NULL AS `default`'),
+            'vfv.created_at',
+            'vfv.updated_at',
+        )->paginate($perPage, ['*'], 'page', $page);
     }
 
-    private function getRandomAssetType(): string
+    /**
+     * Change ProcessVariableController to use mock data
+     *
+     * @return void
+     */
+    public static function mock()
     {
-        return collect(['sensor', 'actuator', 'controller', 'device'])->random();
+        static::$mockData = true;
     }
 }
