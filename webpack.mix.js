@@ -25,37 +25,6 @@ mix.webpackConfig({
       styles: path.resolve(__dirname, "resources/sass"),
     },
   },
-  optimization: {
-    splitChunks: {
-      cacheGroups: {
-        vueVendor: {
-          test: /[\\/]node_modules[\\/](vue|vue-router|axios|lodash)[\\/]/,
-          name: "js/vue-vendor",
-          chunks: "all",
-        },
-        bootstrapVendor: {
-          test: /[\\/]node_modules[\\/](bootstrap|jquery|bootstrap-vue|popper.js)[\\/]/,
-          name: "js/bootstrap-vendor",
-          chunks: "all",
-        },
-        fortawesomeVendor: {
-          test: /[\\/]node_modules[\\/](@fortawesome\/fontawesome-free|@fortawesome\/fontawesome-svg-core|@fortawesome\/free-brands-svg-icons|@fortawesome\/free-solid-svg-icons|@fortawesome\/vue-fontawesome)[\\/]/,
-          name: "js/fortawesome-vendor",
-          chunks: "all",
-        },
-        modelerVendor: {
-          test: /[\\/]node_modules[\\/](jointjs|bpmn-moddle|luxon)[\\/]/,
-          name: "js/modeler-vendor",
-          chunks: "all",
-        },
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name: "js/vendor",
-          chunks: "all",
-        },
-      },
-    },
-  },
 });
 
 mix.options({
@@ -83,7 +52,7 @@ mix
     "@fortawesome/free-brands-svg-icons",
     "@fortawesome/free-solid-svg-icons",
     "@fortawesome/vue-fontawesome",
-  ], "public/js")
+  ])
   .copy("resources/img/*", "public/img")
   .copy("resources/img/launchpad-images/*", "public/img/launchpad-images")
   .copy("resources/img/launchpad-images/icons/*", "public/img/launchpad-images/icons")
