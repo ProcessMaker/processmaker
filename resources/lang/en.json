@@ -1,4 +1,4 @@
-{  
+{
   " pending": " pending",
   ":count tasks were not reassigned because the task settings prevent them from being reassigned": ":count tasks were not reassigned because the task settings prevent them from being reassigned",
   ":user has completed the task :task_name": ":user has completed the task :task_name",
