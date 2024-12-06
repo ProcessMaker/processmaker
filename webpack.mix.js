@@ -36,23 +36,29 @@ mix.options({
 
 mix
   .extract([
-    "vue",
-    "vue-router",
     "jquery",
     "bootstrap-vue",
-    "axios",
     "popper.js",
-    "lodash",
     "bootstrap",
-    "jointjs",
-    "luxon",
-    "bpmn-moddle",
+  ], "public/js/bootstrap-vendor.js")
+  .extract([
     "@fortawesome/fontawesome-free",
     "@fortawesome/fontawesome-svg-core",
     "@fortawesome/free-brands-svg-icons",
     "@fortawesome/free-solid-svg-icons",
     "@fortawesome/vue-fontawesome",
-  ])
+  ], "public/js/fortawesome-vendor.js")
+  .extract([
+    "jointjs",
+    "luxon",
+    "bpmn-moddle",
+  ], "public/js/modeler-vendor.js")
+  .extract([
+    "vue",
+    "vue-router",
+    "axios",
+    "lodash",
+  ], "public/js/vue-vendor.js")
   .copy("resources/img/*", "public/img")
   .copy("resources/img/launchpad-images/*", "public/img/launchpad-images")
   .copy("resources/img/launchpad-images/icons/*", "public/img/launchpad-images/icons")
