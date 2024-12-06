@@ -56,6 +56,33 @@ class ScreenCacheManager implements CacheInterface, ScreenCacheInterface
     }
 
     /**
+     * Get a screen from cache, or store the value from the callback if the key exists
+     *
+     * @param string $key Screen cache key
+     * @param callable $callback Callback to generate screen content
+     * @param null|int|\DateInterval $ttl Time to live
+     * @return mixed
+     */
+    public function getOrCache(string $key, callable $callback, null|int|\DateInterval $ttl = null): mixed
+    {
+        $value = $this->get($key);
+
+        if ($value !== null) {
+            return $value;
+        }
+
+        $value = $callback();
+
+        if ($value === null) {
+            return $value;
+        }
+
+        $this->set($key, $value, $ttl);
+
+        return $value;
+    }
+
+    /**
      * Store a screen in memory cache
      *
      * @param string $key Screen cache key
