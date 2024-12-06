@@ -595,116 +595,34 @@ To connect Grafana with Prometheus:
 ### 7. Install Optional Plugins
 To install plugins in Grafana, use environment variables when starting the container:
 ```bash
-docker run -d   --name grafana   -p 3000:3000   -v grafana_data:/var/lib/grafana   -e "GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-clock-panel"   grafana/grafana
+docker run -d \  
+    --name grafana \  
+    -p 3000:3000 \  
+    -v grafana_data:/var/lib/grafana \  
+    -e "GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-clock-panel" \  
+    grafana/grafana
 ```
 
+## Examples of Using Grafana in ProcessMaker
 
-# Using **PromPHP/prometheus_client_php** in Laravel with a **Facade**
+### **Configure Prometheus With Your Application**
 
-To use **PromPHP/prometheus_client_php** in Laravel with a **Facade**, follow these steps. Laravel's **Facades** are ideal for simplifying access to services, such as metrics in this case.
+Add the `/metrics` endpoint from your Laravel application to the `metrics/prometheus.yml` file, make the following change:
 
-### **1. Install the Library**
+```yaml
+scrape_configs:
+  - job_name: 'laravel_app'
+    static_configs:
+      - targets: ['https://processmaker.net:8000']  # host and port of application
+```
 
-First, install the library as before:
+Restart Prometheus:
 
 ```bash
-composer require promphp/prometheus_client_php
+docker restart prometheus
 ```
 
-### **2. Create the Metrics Service**
-
-Create a dedicated service to manage the metrics. You can reuse the base `MetricsService` code with slight modifications to make it compatible with the Facade.
-
-Create the file `MetricsService.php` in `ProcessMaker/Services`:
-
-```php
-<?php
-
-namespace ProcessMaker\Services;
-
-use Prometheus\CollectorRegistry;
-use Prometheus\RenderTextFormat;
-use Prometheus\Storage\Redis;
-
-class MetricsService
-{
-    private $registry;
-    ...
-}
-```
-
-### **3. Register the Service as a Provider**
-
-Create a provider to register `MetricsService` in the Laravel service container.
-
-Run the following command to create a new provider:
-
-```bash
-php artisan make:provider MetricsServiceProvider
-```
-
-In the `ProcessMaker/Providers/MetricsServiceProvider.php` file:
-
-```php
-<?php
-
-namespace ProcessMaker\Providers;
-
-use ProcessMaker\Services\MetricsService;
-use Illuminate\Support\ServiceProvider;
-
-class MetricsServiceProvider extends ServiceProvider
-{
-    ...
-}
-```
-
-Register the provider in the `config/app.php` file:
-
-```php
-'providers' => [
-    ...
-    App\Providers\MetricsServiceProvider::class,
-],
-```
-
-### **4. Create the Facade**
-
-Create a Facade to access the service.
-
-Create a file in `ProcessMaker/Facades/Metrics.php`.
-
-```php
-<?php
-
-namespace ProcessMaker\Facades;
-
-use Illuminate\Support\Facades\Facade;
-use ProcessMaker\Services\MetricsService;
-
-class Metrics extends Facade
-{
-    ...
-}
-```
-
-### **5. Expose Metrics via a Route**
-
-Create a route to expose the metrics to Prometheus.
-
-In `routes/web.php`:
-
-```php
-use ProcessMaker\Facades\Metrics;
-
-Route::get('/metrics', function () {
-    return response(Metrics::renderMetrics(), 200, [
-        'Content-Type' => 'text/plain; version=0.0.4',
-    ]);
-});
-```
-
-### **6. Use the Facade in Your Application**
+### **Use the Facade in Your Application**
 
 Now you can use the `Metrics` Facade anywhere in your application to manage metrics.
 
@@ -740,30 +658,6 @@ Metrics::registerHistogram(
 );
 $histogram = Metrics::incrementHistogram('request_duration_seconds', ['GET'], microtime(true) - LARAVEL_START);
 ```
-
-### **7. Configure Prometheus**
-
-As before, add the `/metrics` endpoint from your Laravel application to the `prometheus.yml` file:
-
-```yaml
-scrape_configs:
-  - job_name: 'laravel_app'
-    static_configs:
-      - targets: ['host.docker.internal:8000']  # Change "host.docker.internal" to your host and port
-```
-
-Restart Prometheus:
-
-```bash
-docker restart prometheus
-```
-
-### **8. Configure Grafana**
-
-1. Add Prometheus as a data source.
-2. Create a new dashboard with the metrics you defined (`requests_total`, `request_duration_seconds`, etc.).
-
-With **Prometheus** and **Grafana** running, you're now all set to elegantly manage metrics in your Laravel project using a Facade and create custom dashboards to visualize and monitor your systems effectively.
 
 
 # License
