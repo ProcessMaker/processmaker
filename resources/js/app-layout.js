@@ -25,16 +25,12 @@ import { FileUpload, FileDownload } from "./processes/screen-builder/components"
 import RequiredCheckbox from "./processes/screen-builder/components/inspector/RequiredCheckbox";
 import WelcomeModal from "./Mobile/WelcomeModal";
 import Menu from "./components/Menu.vue";
-import Vue from "vue";
 /** ****
  * Global adjustment parameters for moment.js.
  */
 import __ from "./modules/lang";
 
-import "bootstrap"r
-
-// const { Vue } = window;
-window.Vue = Vue;
+const { Vue } = window;
 // Vue.use(VueHtml2Canvas);
 
 
