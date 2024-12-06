@@ -403,6 +403,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         Route::delete('devlink/local-bundles/assets/{bundle_asset}', [DevLinkController::class, 'deleteBundleAsset'])->name('devlink.delete-bundle-asset');
         Route::delete('devlink/local-bundles/settings/{bundle_setting}', [DevLinkController::class, 'deleteBundleSetting'])->name('devlink.delete-bundle-setting');
         Route::get('devlink/export-local-bundle/{bundle}', [DevLinkController::class, 'exportLocalBundle'])->name('devlink.export-local-bundle');
+        Route::get('devlink/export-local-bundle/{bundle}/settings', [DevLinkController::class, 'exportLocalBundleSettings'])->name('devlink.export-local-bundle-settings');
         Route::get('devlink/export-local-asset', [DevLinkController::class, 'exportLocalAsset'])->name('devlink.export-local-asset');
 
         Route::post('devlink/{devLink}/remote-bundles/{remoteBundleId}/install', [DevLinkController::class, 'installRemoteBundle'])->name('devlink.install-remote-bundle');
