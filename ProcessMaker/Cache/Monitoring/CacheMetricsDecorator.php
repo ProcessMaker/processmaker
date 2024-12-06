@@ -185,4 +185,23 @@ class CacheMetricsDecorator implements CacheInterface, ScreenCacheInterface
 
         return 0; // for null or other types
     }
+
+    /**
+     * Get a value from the cache or store it if it doesn't exist.
+     *
+     * @param string $key
+     * @param callable $callback
+     * @return mixed
+     */
+    public function getOrCache(string $key, callable $callback): mixed
+    {
+        if ($this->cache->has($key)) {
+            return $this->cache->get($key);
+        }
+
+        $value = $callback();
+        $this->cache->set($key, $value);
+
+        return $value;
+    }
 }
