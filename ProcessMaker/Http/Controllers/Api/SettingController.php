@@ -252,6 +252,9 @@ class SettingController extends Controller
         // Register the Event
         SettingsUpdated::dispatch($setting, $setting->getChanges(), $original);
 
+        // Store the setting in the cache
+        \SettingCache::set($setting->key, $setting->refresh());
+
         return response([], 204);
     }
 

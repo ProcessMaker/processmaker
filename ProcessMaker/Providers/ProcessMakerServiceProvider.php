@@ -168,7 +168,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton('setting.cache', function ($app) {
-            if ($app['config']->get('cache.default')) {
+            if ($app['config']->get('cache.stores.cache_settings')) {
                 return new SettingCacheManager($app->make('cache'));
             } else {
                 throw new RuntimeException('Cache configuration is missing.');

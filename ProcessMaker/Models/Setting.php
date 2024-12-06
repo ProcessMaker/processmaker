@@ -143,12 +143,23 @@ class Setting extends ProcessMakerModel implements HasMedia
      *
      * @param  string  $key
      *
-     * @return \ProcessMaker\Models\Setting|null
+     * @return Setting|null
      * @throws \Exception
      */
     public static function byKey(string $key)
     {
-        return (new self)->where('key', $key)->first();
+        $setting = \SettingCache::get($key);
+
+        if ($setting === null) {
+            $setting = (new self)->where('key', $key)->first();
+
+            // Store the setting in the cache if it exists
+            if ($setting !== null) {
+                \SettingCache::set($key, $setting);
+            }
+        }
+
+        return $setting;
     }
 
     /**
@@ -382,7 +393,7 @@ class Setting extends ProcessMakerModel implements HasMedia
      */
     public static function groupsByMenu($menuId)
     {
-        $query = Setting::query()
+        $query = self::query()
             ->select('group')
             ->groupBy('group')
             ->where('group_id', $menuId)
@@ -409,7 +420,7 @@ class Setting extends ProcessMakerModel implements HasMedia
      */
     public static function updateSettingsGroup($settingsGroup, $id)
     {
-        Setting::where('group', $settingsGroup)->whereNull('group_id')->chunk(
+        self::where('group', $settingsGroup)->whereNull('group_id')->chunk(
             50,
             function ($settings) use ($id) {
                 foreach ($settings as $setting) {
@@ -429,7 +440,7 @@ class Setting extends ProcessMakerModel implements HasMedia
      */
     public static function updateAllSettingsGroupId()
     {
-        Setting::whereNull('group_id')->chunk(100, function ($settings) {
+        self::whereNull('group_id')->chunk(100, function ($settings) {
             $defaultId = SettingsMenus::EMAIL_MENU_GROUP;
             foreach ($settings as $setting) {
                 // Define the value of 'menu_group' based on 'group'
