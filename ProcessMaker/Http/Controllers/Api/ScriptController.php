@@ -222,6 +222,10 @@ class ScriptController extends Controller
      *                 type="array",
      *                 @OA\Items (type="object"),
      *             ),
+     *             @OA\Property(
+     *                 property="sync",
+     *                 type="boolean",
+     *             ),
      *           ),
      *         ),
      *

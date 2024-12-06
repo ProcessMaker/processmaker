@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a44f48139128874da7a749282b5f45e8",
+    "content-hash": "e2a1e8c8a231f9f6f1d47918f77f9694",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -6433,6 +6433,92 @@
                 }
             ],
             "time": "2023-06-07T16:17:31+00:00"
+        },
+        {
+            "name": "openai-php/laravel",
+            "version": "v0.5.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/openai-php/laravel.git",
+                "reference": "7ae57d09b28e50e99fc0a92bcdcbdac52d2091c5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/openai-php/laravel/zipball/7ae57d09b28e50e99fc0a92bcdcbdac52d2091c5",
+                "reference": "7ae57d09b28e50e99fc0a92bcdcbdac52d2091c5",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.5.1",
+                "laravel/framework": "^9.46.0|^10.9.0",
+                "openai-php/client": "^0.5.3",
+                "php": "^8.1.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.10",
+                "pestphp/pest": "^2.6.0",
+                "pestphp/pest-plugin-arch": "^2.1.2",
+                "pestphp/pest-plugin-mock": "^2.0.0",
+                "phpstan/phpstan": "^1.10.14",
+                "symfony/var-dumper": "^6.2.10"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "OpenAI\\Laravel\\ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "OpenAI\\Laravel\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nuno Maduro",
+                    "email": "enunomaduro@gmail.com"
+                }
+            ],
+            "description": "OpenAI PHP for Laravel is a supercharged PHP API client that allows you to interact with the Open AI API",
+            "keywords": [
+                "GPT-3",
+                "api",
+                "client",
+                "codex",
+                "dall-e",
+                "language",
+                "laravel",
+                "natural",
+                "openai",
+                "php",
+                "processing",
+                "sdk"
+            ],
+            "support": {
+                "issues": "https://github.com/openai-php/laravel/issues",
+                "source": "https://github.com/openai-php/laravel/tree/v0.5.3"
+            },
+            "funding": [
+                {
+                    "url": "https://www.paypal.com/paypalme/enunomaduro",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/nunomaduro",
+                    "type": "github"
+                },
+                {
+                    "url": "https://www.patreon.com/nunomaduro",
+                    "type": "patreon"
+                }
+            ],
+            "time": "2023-06-07T16:12:13+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",

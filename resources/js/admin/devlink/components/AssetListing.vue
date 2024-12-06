@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, getCurrentInstance } from 'vue';
+import { ref, watch, onMounted, getCurrentInstance } from 'vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 import debounce from 'lodash/debounce';
 import InstanceTabs from './InstanceTabs.vue';
@@ -15,10 +15,24 @@ const vue = getCurrentInstance().proxy;
 const typeConfig = types.find((type) => type.type === route.params.type);
 
 const items = ref([]);
+const meta = ref({});
 const filter = ref("");
 const showInstallModal = ref(false);
+const page = ref(1);
+const perPage = ref(15);
+
+watch(page, () => {
+  load();
+});
+
+watch(perPage, () => {
+  load();
+});
 
 const dateFormatter = (value) => {
+  if (!value) {
+    return '';
+  }
   return moment(value).format(ProcessMaker.user.datetime_format);
 }
 
@@ -75,10 +89,17 @@ const load = () => {
   if (!typeConfig) {
     return;
   }
+  const queryParams = {
+    url: typeConfig.url,
+    filter: filter.value,
+    per_page: perPage.value,
+    page: page.value
+  };
   ProcessMaker.apiClient
-    .get(`devlink/${route.params.id}/remote-assets-listing?url=${typeConfig.url}&filter=${filter.value}`)
+    .get(`devlink/${route.params.id}/remote-assets-listing`, { params: queryParams })
     .then((result) => {
       items.value = result.data.data;
+      meta.value = result.data.meta;
     });
 };
 
@@ -125,6 +146,12 @@ const handleFilterChange = () => {
       </div>
     </div>
     </template></instance-tabs>
+    <pagination-table
+        :meta="meta"
+        data-cy="process-pagination"
+        @page-change="page = $event"
+        @per-page-change="perPage = $event"
+      />
     <b-modal id="install-progress" size="lg" v-model="showInstallModal" :title="$t('Installation Progress')" hide-footer>
       <install-progress />
     </b-modal>
@@ -147,7 +174,7 @@ const handleFilterChange = () => {
 
 .asset-listing-card {
   border-radius: 8px;
-  min-height: calc(-355px + 100vh);
+  min-height: calc(-495px + 100vh);
 }
 .install-asset-btn {
   border-radius: 8px;

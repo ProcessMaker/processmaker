@@ -337,6 +337,7 @@
                             @if ($canCancel == true && $request->status === 'ACTIVE')
                               <li class="list-group-item">
                                 <button type="button" class="btn btn-outline-custom btn-block" @click="onCancel"
+                                  data-test="cancel-request"
                                   aria-haspopup="dialog">
                                   {{ __('Cancel Request') }}
                                 </button>

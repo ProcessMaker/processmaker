@@ -6,6 +6,7 @@ use Illuminate\Http\Testing\File;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
@@ -421,6 +422,49 @@ class RequestTest extends TestCase
 
         // Get the URL
         $response = $this->webCall('GET', '/requests/' . $requestCanceled->id);
+        $response->assertStatus(200);
+        // Check the correct view is called
+        $response->assertViewIs('requests.show');
+        // Check custom detail screen is displayed instead default summary
+        $response->assertSee('TEST WITH CUSTOM REQUEST DETAIL SCREEN');
+    }
+
+    /**
+     * Test show custom screen in the summary tab when the status is Completed
+     * With custom screen "Summary Screen"
+     * @return void
+     */
+    public function testRequestCompletedWithCustomScreenSummaryTab()
+    {
+        $screen = Screen::factory()->create([
+            'type' => 'DISPLAY',
+            'config' => $this->screen,
+        ]);
+
+        $user = User::factory()->create();
+
+        $process = Process::factory()->create([
+            'bpmn' => str_replace('SCREEN-SUMMARY-ID', $screen->id, file_get_contents(__DIR__ . '/../Fixtures/process_summary_screen_is_showed_when_the_request_is_completed.bpmn')),
+            'user_id' => $user->id,
+        ]);
+        $requestCompleted = ProcessRequest::factory()->create([
+            'name' => $process->name,
+            'process_id' => $process->id,
+            'data' => ['form_input_1' => 'TEST DATA'],
+            'status' => 'COMPLETED',
+            'user_id' => $user->id,
+        ]);
+        // Create the participation
+        ProcessRequestToken::factory()->create([
+            'process_request_id' => $requestCompleted->id,
+            'user_id' => $user->id,
+            'element_id' => 'node_12',
+            'element_type' => 'end_event',
+            'status' => 'CLOSED',
+        ]);
+
+        // Get the URL
+        $response = $this->webCall('GET', '/requests/' . $requestCompleted->id);
         $response->assertStatus(200);
         // Check the correct view is called
         $response->assertViewIs('requests.show');

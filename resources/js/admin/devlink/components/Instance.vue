@@ -173,6 +173,7 @@ const executeUpdate = (updateType) => {
   padding-bottom: 16px;
 
   .search-input {
+    padding-left: 30px;
     background: url(/img/search-icon.svg) no-repeat left;
     background-position: 7px 8px;
     background-size: 15px;

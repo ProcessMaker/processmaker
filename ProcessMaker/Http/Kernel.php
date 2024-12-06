@@ -41,6 +41,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             Middleware\GenerateMenus::class,
             \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class,
+            \ProcessMaker\Http\Middleware\IgnoreMapFiles::class,
         ],
         'api' => [
             // API Middleware is defined with routeMiddleware below.

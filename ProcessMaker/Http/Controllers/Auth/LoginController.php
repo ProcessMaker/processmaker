@@ -261,6 +261,9 @@ class LoginController extends Controller
             // Notify to listeners (package-auth, security logger)
             $eventResult = event(new Logout(Auth::user()));
 
+            // Perform the logout operation
+            $this->logout($request);
+
             // Remove the Laravel cookie
             Cookie::queue(Cookie::forget(Passport::cookie()));
 
