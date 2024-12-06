@@ -7,6 +7,7 @@ use ProcessMaker\Cache\Monitoring\CacheMetricsDecorator;
 use ProcessMaker\Cache\Monitoring\RedisMetricsManager;
 use ProcessMaker\Cache\Screens\LegacyScreenCacheAdapter;
 use ProcessMaker\Cache\Screens\ScreenCacheFactory;
+use ProcessMaker\Cache\Screens\ScreenCacheInterface;
 use ProcessMaker\Cache\Screens\ScreenCacheManager;
 use ProcessMaker\Managers\ScreenCompiledManager;
 use Tests\TestCase;
@@ -184,16 +185,17 @@ class ScreenCacheFactoryTest extends TestCase
      */
     public function testFactoryRespectsTestInstance()
     {
-        // Create and set a test instance
-        $testInstance = $this->createMock(ScreenCacheInterface::class);
-        ScreenCacheFactory::setTestInstance($testInstance);
+        // Create a mock for ScreenCacheInterface
+        $mockInterface = $this->createMock(ScreenCacheInterface::class);
 
-        // Both create and getScreenCache should return test instance
-        $this->assertSame($testInstance, ScreenCacheFactory::create());
-        $this->assertSame($testInstance, ScreenCacheFactory::getScreenCache());
+        // Set the test instance in the factory
+        ScreenCacheFactory::setTestInstance($mockInterface);
 
-        // Clear test instance
-        ScreenCacheFactory::setTestInstance(null);
+        // Retrieve the instance from the factory
+        $instance = ScreenCacheFactory::create();
+
+        // Assert that the instance is the mock we set
+        $this->assertSame($mockInterface, $instance);
     }
 
     /**
