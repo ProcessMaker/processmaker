@@ -55,6 +55,7 @@ use ProcessMaker\Events\TemplatePublished;
 use ProcessMaker\Events\TemplateUpdated;
 use ProcessMaker\Events\TokenCreated;
 use ProcessMaker\Events\TokenDeleted;
+use ProcessMaker\Events\TranslationChanged;
 use ProcessMaker\Events\UnauthorizedAccessAttempt;
 use ProcessMaker\Events\UserCreated;
 use ProcessMaker\Events\UserDeleted;
