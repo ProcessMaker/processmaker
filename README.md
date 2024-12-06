@@ -607,7 +607,7 @@ docker run -d \
 
 ### **Configure Prometheus With Your Application**
 
-Add the `/metrics` endpoint from your Laravel application to the `metrics/prometheus.yml` file, make the following change:
+Add the `/metrics` endpoint from your ProcessMaker application to the `metrics/prometheus.yml` file, make the following change:
 
 ```yaml
 scrape_configs:
