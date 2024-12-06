@@ -65,5 +65,18 @@ class SettingObserver
                 $setting->config = $return;
                 break;
         }
+
+        \SettingCache::invalidate($setting->key);
+    }
+
+    /**
+     * Handle the setting "deleted" event.
+     *
+     * @param  \ProcessMaker\Models\Setting  $setting
+     * @return void
+     */
+    public function deleted(Setting $setting): void
+    {
+        \SettingCache::invalidate($setting->key);
     }
 }

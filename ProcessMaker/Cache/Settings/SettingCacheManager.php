@@ -3,6 +3,7 @@
 namespace ProcessMaker\Cache\Settings;
 
 use Illuminate\Cache\CacheManager;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use ProcessMaker\Cache\CacheInterface;
 
@@ -156,7 +157,7 @@ class SettingCacheManager implements CacheInterface
                 Redis::connection($connection)->del($matchedKeys);
             }
         } catch (\Exception $e) {
-            \Log::error('SettingCacheException' . $e->getMessage());
+            Log::error('SettingCacheException' . $e->getMessage());
 
             throw new SettingCacheException('Failed to delete keys.');
         }
@@ -184,5 +185,23 @@ class SettingCacheManager implements CacheInterface
     public function missing(string $key): bool
     {
         return !$this->has($key);
+    }
+
+    /**
+     * Invalidate a value in the settings cache.
+     *
+     * @param string $key
+     *
+     * @return void
+     */
+    public function invalidate(string $key): void
+    {
+        try {
+            $this->cacheManager->forget($key);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            throw new SettingCacheException('Failed to invalidate cache KEY:' . $key);
+        }
     }
 }

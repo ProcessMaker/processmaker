@@ -257,4 +257,65 @@ class SettingCacheTest extends TestCase
         config()->set('cache.default', 'array');
         $this->assertEquals(3, Cache::get('password-policies.uppercase'));
     }
+
+    public function testInvalidateOnSaved()
+    {
+        $setting  = Setting::factory()->create([
+            'key' => 'password-policies.users_can_change',
+            'config' => 1,
+            'format' => 'boolean',
+        ]);
+
+        \SettingCache::set($setting->key, $setting);
+        $settingCache = \SettingCache::get($setting->key);
+
+        $this->assertEquals(1, $settingCache->config);
+
+        $setting->update(['config' => 0]);
+        $settingCache = \SettingCache::get($setting->key);
+        $this->assertNull($settingCache);
+    }
+
+    public function testInvalidateOnDeleted()
+    {
+        $setting  = Setting::factory()->create([
+            'key' => 'password-policies.users_can_change',
+            'config' => 1,
+            'format' => 'boolean',
+        ]);
+
+        \SettingCache::set($setting->key, $setting);
+        $settingCache = \SettingCache::get($setting->key);
+
+        $this->assertEquals(1, $settingCache->config);
+
+        $setting->delete();
+        $settingCache = \SettingCache::get($setting->key);
+        $this->assertNull($settingCache);
+    }
+
+    public function testInvalidateWithException()
+    {
+        $setting  = Setting::factory()->create([
+            'key' => 'password-policies.numbers',
+            'config' => 1,
+            'format' => 'boolean',
+        ]);
+
+        \SettingCache::set($setting->key, $setting);
+        $settingCache = \SettingCache::get($setting->key);
+
+        $this->assertEquals(1, $settingCache->config);
+
+        \SettingCache::shouldReceive('invalidate')
+            ->with($setting->key)
+            ->andThrow(new SettingCacheException('Failed to invalidate cache KEY:' . $setting->key))
+            ->once();
+        $this->expectException(SettingCacheException::class);
+        $this->expectExceptionMessage('Failed to invalidate cache KEY:' . $setting->key);
+
+        \SettingCache::shouldReceive('clear')->once()->andReturn(true);
+
+        $setting->delete();
+    }
 }
