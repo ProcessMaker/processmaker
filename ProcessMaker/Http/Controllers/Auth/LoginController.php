@@ -214,7 +214,6 @@ class LoginController extends Controller
             }
         }
 
-        Cache::put('user_'.$user->id.'_active_session', true);
 
         return $this->login($request, $user);
     }
@@ -251,7 +250,11 @@ class LoginController extends Controller
             $userId = Auth::user()->id;
             Cache::forget("user_{$userId}_permissions");
             Cache::forget("user_{$userId}_project_assets");
-            Cache::put('user_'.$userId.'_active_session', false, now()->addHour());
+            Cache::put(
+                'user_' . $userId . '_active_session',
+                ['active' => false, 'updated_at' => now()],
+                now()->addMinutes(config('session.lifetime'))
+            );
 
             // Clear the user session
             $this->forgetUserSession();

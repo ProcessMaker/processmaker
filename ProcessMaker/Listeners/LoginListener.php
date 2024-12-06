@@ -3,10 +3,10 @@
 namespace ProcessMaker\Listeners;
 
 use Illuminate\Auth\Events\Login;
+use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Models\InboxRuleLog;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\InboxRulesNotification;
-
 class LoginListener
 {
     /**
@@ -32,5 +32,11 @@ class LoginListener
 
         $user->setAttribute('loggedin_at', now());
         $user->save();
+
+        Cache::put(
+            'user_' . $user->id . '_active_session',
+            ['active' => true, 'updated_at' => now()],
+            now()->addMinutes(config('session.lifetime'))
+        );
     }
 }

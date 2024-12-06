@@ -18,13 +18,23 @@ class VerifyActiveSession
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $cookie = $request->cookie('laravel_token');
-
-        if ($cookie) {
+        if (!$request->hasHeader('Authorization')) {
             $user = \Auth::user();
-            $isActive = Cache::get('user_'.$user->id.'_active_session', true);
+            $activeSession = Cache::get('user_' . $user->id . '_active_session');
+            $isActive = $activeSession ? $activeSession['active'] : true;
             if (!$isActive) {
                 return response()->json(['error' => 'Unauthorized'], 401);
+            }
+            else {
+                $lastActivity = $activeSession['updated_at'];
+                // refresh the cache key lifetime
+                if (now()->diffInMinutes($lastActivity) > config('session.lifetime') / 2) {
+                    Cache::put(
+                        'user_' . $user->id . '_active_session',
+                        ['active' => true, 'updated_at' => now()],
+                        now()->addMinutes(config('session.lifetime'))
+                    );
+                }
             }
         }
 
