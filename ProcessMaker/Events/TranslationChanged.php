@@ -22,9 +22,9 @@ class TranslationChanged
      * @param array $changes Key-value pairs of changed translations
      * @param string|null $screenId Optional screen ID if change is specific to a screen
      */
-    public function __construct(string $locale, array $changes, ?string $screenId = null)
+    public function __construct(int $screenId, string $language, array $changes)
     {
-        $this->locale = $locale;
+        $this->language = $language;
         $this->changes = $changes;
         $this->screenId = $screenId;
     }

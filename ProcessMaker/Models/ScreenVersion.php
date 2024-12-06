@@ -40,15 +40,6 @@ class ScreenVersion extends ProcessMakerModel implements ScreenInterface
     public static function boot()
     {
         parent::boot();
-
-        // Add observer for translations changes
-        static::updating(function ($screenVersion) {
-            if ($screenVersion->isDirty('translations')) {
-                $changes = $screenVersion->translations;
-                $locale = app()->getLocale();
-                event(new TranslationChanged($locale, $changes, $screenVersion->screen_id));
-            }
-        });
     }
 
     /**
