@@ -18,10 +18,11 @@ class VerifyActiveSession
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->hasHeader('Authorization')) {
+        // if the authorization is via token in cookie 
+        if (!$request->hasHeader('Authorization') && $request->hasCookie('laravel_token')) {
             $user = \Auth::user();
-            $cacheKey = 'user_' . $user->id . '_active_session_' . $request->cookie('device_id');
 
+            $cacheKey = 'user_' . $user->id . '_active_session_' . $request->cookie('device_id');
             $activeSession = Cache::get($cacheKey);
             $isActive = $activeSession ? $activeSession['active'] : false;
             if (!$isActive) {
