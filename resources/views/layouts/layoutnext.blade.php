@@ -92,7 +92,7 @@
     @endif
 </head>
 <body>
-<a class="skip-navigation alert alert-info" role="link" href="#main" tabindex="1">{{ __('Skip to Content') }}</a>
+<a class="skip-navigation alert alert-info" role="link" href="#main" tabindex="1">@{{ __('Skip to Content') }}</a>
 <div class="d-flex w-100 mw-100 h-100 mh-100" id="app-container">
   @if (shouldShow('leftSideBar'))
   <div id="sidebar" class="d-print-none {{sidebar_class()}}" :class="{expanded: expanded}">
@@ -119,42 +119,37 @@
 </div>
 <div id="api-error" class="error-content">
   <div>
-    <h1>{{__('Sorry! API failed to load')}}</h1>
-    <p>{{__('Something went wrong. Try refreshing the application')}}</p>
+    <h1>@{{__('Sorry! API failed to load')}}</h1>
+    <p>@{{__('Something went wrong. Try refreshing the application')}}</p>
   </div>
 </div>
 <!-- Scripts -->
 @if(config('broadcasting.default') == 'redis')
 <script src="{{config('broadcasting.connections.redis.host')}}/socket.io/socket.io.js"></script>
 @endif
-<script src="{{ mix('js/manifest.js') }}"></script>
-<script src="{{ mix('js/vue-vendor.js') }}"></script>
-<script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
-<script src="{{ mix('js/modeler-vendor.js') }}"></script>
-<script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
-<script src="{{ mix('js/app.js') }}"></script>
-<script>
+{{-- <script>
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
-</script>
-<script src="{{ mix('js/app-layout.js') }}"></script>
-@include('shared.monaco')
-@foreach(GlobalScripts::getScripts() as $script)
-  <script src="{{$script}}"></script>
-@endforeach
-@isset($addons)
-@foreach ($addons as $addon)
-  @if (!empty($addon['script_mix']))
-    <script type="text/javascript" src="{{ mix($addon['script_mix'][0], $addon['script_mix'][1]) }}"></script>
-  @endif
-  @if (!empty($addon['script_mix_module']))
-    <script type="module" src="{{ mix($addon['script_mix_module'][0], $addon['script_mix_module'][1]) }}"></script>
-  @endif
-@endforeach
-@endisset
-@if (hasPackage('package-accessibility'))
-  @include('package-accessibility::userway')
-@endif
+</script> --}}
     <!--javascript!-->
     @yield('js')
+
+
+
+
+  {{-- @isset($addons)
+    @foreach ($addons as $addon)
+      @if (!empty($addon['script_mix']))
+        <script type="text/javascript" src="{{ mix($addon['script_mix'][0], $addon['script_mix'][1]) }}"></script>
+      @endif
+      @if (!empty($addon['script_mix_module']))
+        <script type="module" src="{{ mix($addon['script_mix_module'][0], $addon['script_mix_module'][1]) }}"></script>
+      @endif
+    @endforeach
+  @endisset
+
+  @if (hasPackage('package-accessibility'))
+    @include('package-accessibility::userway')
+  @endif --}}
+
 </body>
 </html>
