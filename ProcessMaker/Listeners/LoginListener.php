@@ -32,11 +32,5 @@ class LoginListener
 
         $user->setAttribute('loggedin_at', now());
         $user->save();
-
-        Cache::put(
-            'user_' . $user->id . '_active_session',
-            ['active' => true, 'updated_at' => now()],
-            now()->addMinutes(config('session.lifetime'))
-        );
     }
 }
