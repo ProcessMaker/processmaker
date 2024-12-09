@@ -1,13 +1,20 @@
 import newRequestModal from "../../components/requests/requestModal.vue";
 import requestModal from "../../components/requests/modal.vue";
+import requestModalMobile from "../../components/requests/modalMobile.vue";
+import WelcomeModal from "../../Mobile/WelcomeModal.vue";
 import notifications from "../../notifications/components/notifications.vue";
-import sessionModal from "../../components/Session.vue";
+import sessionModalComponent from "../../components/Session.vue";
 import ConfirmationModal from "../../components/Confirm.vue";
 import MessageModal from "../../components/Message.vue";
 import NavbarProfile from "../../components/NavbarProfile.vue";
 import Menu from "../../components/Menu.vue";
+import { getGlobalVariable, getGlobalPMVariable, setGlobalPMVariable } from "../globalVariables";
 
-window.Vue.component("LanguageSelectorButton", (resolve) => {
+const Vue = getGlobalVariable("Vue");
+const $ = getGlobalVariable("$");
+const events = getGlobalPMVariable("events");
+
+Vue.component("LanguageSelectorButton", (resolve) => {
   if (window.ProcessMaker.languageSelectorButtonComponent) {
     resolve(window.ProcessMaker.languageSelectorButtonComponent);
   } else {
@@ -15,27 +22,16 @@ window.Vue.component("LanguageSelectorButton", (resolve) => {
   }
 });
 
-// Verify if is mobile
+// Variables
 const browser = navigator.userAgent;
 const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(browser);
-window.ProcessMaker.mobileApp = false;
-if (isMobileDevice) {
-  window.ProcessMaker.mobileApp = true;
-}
 
-// Verify is in mobile mode
-const isMobileNavbar = window.ProcessMaker.events.$cookies.get("isMobile");
-
-// Default alert functionality
-window.ProcessMaker.alert = function (text, variant) {
-  if (typeof text === "string") {
-    window.alert(text);
-  }
-};
+const mobileApp = !!isMobileDevice;
+const isMobileNavbar = events.$cookies.get("isMobile"); // Verify is in mobile mode
 
 // Set our own specific alert function at the ProcessMaker global object that could
 // potentially be overwritten by some custom theme support
-window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScreen = false, showLoader = false, msgLink = "", msgTitle = "") {
+const alert = function (msg, variant, showValue = 5, stayNextScreen = false, showLoader = false, msgLink = "", msgTitle = "") {
   if (showValue === 0) {
     // Just show it indefinitely, no countdown
     showValue = true;
@@ -56,14 +52,56 @@ window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScree
   });
 };
 
+// Setup our login modal
+const sessionModal = function (title, message, time, warnSeconds) {
+  ProcessMaker.navbar.sessionTitle = title || __("Session Warning");
+  ProcessMaker.navbar.sessionMessage = message || __("Your session is about to expire.");
+  ProcessMaker.navbar.sessionTime = time;
+  ProcessMaker.navbar.sessionWarnSeconds = warnSeconds;
+  ProcessMaker.navbar.sessionShow = true;
+};
+
+const closeSessionModal = function () {
+  ProcessMaker.navbar.sessionShow = false;
+};
+
+// Set out own specific confirm modal.
+const confirmModal = function (
+  title,
+  message,
+  variant,
+  callback,
+  size = "md",
+  dataTestClose = "confirm-btn-close",
+  dataTestOk = "confirm-btn-ok",
+) {
+  ProcessMaker.navbar.confirmTitle = title || __("Confirm");
+  ProcessMaker.navbar.confirmMessage = message || __("Are you sure you want to delete?");
+  ProcessMaker.navbar.confirmVariant = variant;
+  ProcessMaker.navbar.confirmCallback = callback;
+  ProcessMaker.navbar.confirmShow = true;
+  ProcessMaker.navbar.confirmSize = size;
+  ProcessMaker.navbar.confirmDataTestClose = dataTestClose;
+  ProcessMaker.navbar.confirmDataTestOk = dataTestOk;
+};
+
+// Set out own specific message modal.
+const messageModal = function (title, message, variant, callback) {
+  ProcessMaker.navbar.messageTitle = title || __("Message");
+  ProcessMaker.navbar.messageMessage = message || __("");
+  ProcessMaker.navbar.messageVariant = variant;
+  ProcessMaker.navbar.messageCallback = callback;
+  ProcessMaker.navbar.messageShow = true;
+};
+
 // Assign our navbar component to our global ProcessMaker object
-window.ProcessMaker.navbar = new Vue({
+const navbar = new Vue({
   el: "#navbar",
   components: {
     TopMenu: Menu,
     requestModal,
     notifications,
-    sessionModal,
+    sessionModal: sessionModalComponent,
     ConfirmationModal,
     MessageModal,
     NavbarProfile,
@@ -122,7 +160,7 @@ window.ProcessMaker.navbar = new Vue({
           );
         }
         const findSB = setInterval(() => {
-          this.screenBuilder = window.ProcessMaker.ScreenBuilder;
+          this.screenBuilder = window.ProcessMaker.ScreenBuilder; // window.ProcessMaker.ScreenBuilder is not defined in the global scope
           if (this.screenBuilder) {
             clearInterval(findSB);
           }
@@ -178,9 +216,19 @@ window.ProcessMaker.navbar = new Vue({
   },
 });
 
+setGlobalPMVariable("mobileApp", mobileApp);
+setGlobalPMVariable("alert", alert);
+setGlobalPMVariable("sessionModal", sessionModal);
+setGlobalPMVariable("closeSessionModal", closeSessionModal);
+setGlobalPMVariable("confirmModal", confirmModal);
+setGlobalPMVariable("messageModal", messageModal);
+setGlobalPMVariable("navbar", navbar);
+// Breadcrumbs are now part of the navbar component. Alias it here.
+setGlobalPMVariable("breadcrumbs", navbar);
+
 // Assign our navbar component to our global ProcessMaker object
 if (isMobileNavbar === "true") {
-  window.ProcessMaker.navbarMobile = new Vue({
+  const navbarMobile = new Vue({
     el: "#navbarMobile",
     components: {
       requestModalMobile,
@@ -206,7 +254,6 @@ if (isMobileNavbar === "true") {
       },
     },
   });
-}
 
-// Breadcrumbs are now part of the navbar component. Alias it here.
-window.ProcessMaker.breadcrumbs = window.ProcessMaker.navbar;
+  setGlobalPMVariable("navbarMobile", navbarMobile);
+}

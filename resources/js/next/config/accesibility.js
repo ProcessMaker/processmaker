@@ -1,3 +1,6 @@
 import AccessibilityMixin from "./components/common/mixins/accessibility";
+import { getGlobalVariable } from "../globalVariables";
 
-window.Vue.mixin(AccessibilityMixin);
+const Vue = getGlobalVariable("Vue");
+
+Vue.mixin(AccessibilityMixin);

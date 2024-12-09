@@ -1,3 +1,6 @@
 import VueCookies from "vue-cookies";
+import { getGlobalVariable } from "../globalVariables";
 
-window.Vue.use(VueCookies);
+const Vue = getGlobalVariable("Vue");
+
+Vue.use(VueCookies);

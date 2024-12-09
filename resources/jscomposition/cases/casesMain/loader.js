@@ -34,7 +34,6 @@ import("../../../js/next/config/user");
 import("../../../js/next/config/session");
 import("../../../js/next/config/momentConfig");
 import("../../../js/next/config/notifications");
-import("../../../js/next/config/modals");
 import("../../../js/next/config/openAI");
 
 // Screen builder

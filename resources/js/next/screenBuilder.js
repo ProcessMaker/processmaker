@@ -1,7 +1,14 @@
-const addScriptsToDOM = async function(scripts) {
+import {
+  getGlobalVariable, setGlobalVariable, getGlobalPMVariable, setGlobalPMVariable,
+} from "../globalVariables";
+
+const Vue = getGlobalVariable("Vue");
+const apiClient = getGlobalPMVariable("apiClient");
+
+const addScriptsToDOM = async function (scripts) {
   for (const script of scripts) {
     await new Promise((resolve, reject) => {
-      const scriptElement = document.createElement('script');
+      const scriptElement = document.createElement("script");
       scriptElement.src = script;
       scriptElement.async = false;
       scriptElement.onload = resolve;
@@ -11,38 +18,30 @@ const addScriptsToDOM = async function(scripts) {
   }
 };
 
-window.Vue.component('VueFormRenderer', function (resolve, reject) {
-  console.log("VUE FORM RENDERER")
+Vue.component("VueFormRenderer", (resolve, reject) => {
   import("@processmaker/screen-builder/dist/vue-form-builder.css");
+  if (screenBuilderScripts) {
+    addScriptsToDOM(screenBuilderScripts).then(() => {
+      import("@processmaker/screen-builder").then((ScreenBuilder) => {
+        Vue.use(ScreenBuilder.default);
 
-  if(screenBuilderScripts){
-    console.log("SCREEN BUILDER SCRIPTS 7777", screenBuilderScripts)
-    addScriptsToDOM(screenBuilderScripts).then(()=>{
-      import("@processmaker/screen-builder").then((ScreenBuilder)=>{
-        window.Vue.use(ScreenBuilder.default);
-        window.ScreenBuilder = ScreenBuilder;
-  
         const { initializeScreenCache } = ScreenBuilder;
         // Configuration Global object used by ScreenBuilder
         // @link https://processmaker.atlassian.net/browse/FOUR-6833 Cache configuration
         const screenCacheEnabled = document.head.querySelector("meta[name=\"screen-cache-enabled\"]")?.content ?? "false";
         const screenCacheTimeout = document.head.querySelector("meta[name=\"screen-cache-timeout\"]")?.content ?? "5000";
-        window.ProcessMaker.screen = {
+        const screen = {
           cacheEnabled: screenCacheEnabled === "true",
           cacheTimeout: Number(screenCacheTimeout),
         };
         // Initialize screen-builder cache
-        initializeScreenCache(window.ProcessMaker.apiClient, window.ProcessMaker.screen);
-        console.log("VUE FORM RESOLVE")
+        initializeScreenCache(apiClient, screen);
+
+        setGlobalVariable("ScreenBuilder", ScreenBuilder);
+        setGlobalPMVariable("screen", screen);
+
         resolve(ScreenBuilder.VueFormRenderer);
       }).catch(reject);
-    })
+    });
   }
 });
-
-
-
-
-
-
-

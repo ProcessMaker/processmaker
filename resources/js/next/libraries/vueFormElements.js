@@ -1,3 +1,5 @@
+import { setGlobalVariable } from "../globalVariables";
+
 import("@processmaker/vue-form-elements").then((vueforms) => {
-  window.VueFormElements = vueforms;
+  setGlobalVariable("VueFormElements", vueforms);
 });

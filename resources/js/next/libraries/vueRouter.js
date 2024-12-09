@@ -1,11 +1,12 @@
 import Router from "vue-router";
 
-window.VueRouter = Router;
+import { setGlobalVariable, getGlobalVariable, setGlobalPMVariable } from "../globalVariables";
 
-// if (!document.head.querySelector("meta[name=\"is-horizon\"]")) {
-window.Vue.use(Router);
-// }
+const Vue = getGlobalVariable("Vue");
 
-window.ProcessMaker.Router = new Router({
+setGlobalVariable("VueRouter", Router);
+setGlobalPMVariable("Router", new Router({
   mode: "history",
-});
+}));
+
+Vue.use(Router);

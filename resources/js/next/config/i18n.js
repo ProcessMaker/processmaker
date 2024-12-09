@@ -3,17 +3,27 @@ import Backend from "i18next-chained-backend";
 import LocalStorageBackend from "i18next-localstorage-backend";
 import XHR from "i18next-xhr-backend";
 import VueI18Next from "@panter/vue-i18next";
+import { setGlobalPMVariable, getGlobalVariable } from "../globalVariables";
 
-window.Vue.use(VueI18Next);
-window.Vue.mixin({ i18n: new VueI18Next(i18next) });
+const Vue = getGlobalVariable("Vue");
 
+const isProd = document.head.querySelector("meta[name=\"is-prod\"]")?.content === "true";
 let translationsLoaded = false;
+
 const mdates = JSON.parse(
   document.head.querySelector("meta[name=\"i18n-mdate\"]")?.content,
 );
 
-window.ProcessMaker.i18n = i18next;
-window.ProcessMaker.i18nPromise = i18next.use(Backend).init({
+const missingTranslations = new Set();
+const missingTranslation = function (value) {
+  if (missingTranslations.has(value)) { return; }
+  missingTranslations.add(value);
+  if (!isProd) {
+    console.warn("Missing Translation:", value);
+  }
+};
+
+const i18nPromise = i18next.use(Backend).init({
   lng: document.documentElement.lang,
   fallbackLng: "en", // default language when no translations
   returnEmptyString: false, // When a translation is an empty string, return the default language, not empty
@@ -22,7 +32,7 @@ window.ProcessMaker.i18nPromise = i18next.use(Backend).init({
   parseMissingKeyHandler(value) {
     if (!translationsLoaded) { return value; }
     // Report that a translation is missing
-    window.ProcessMaker.missingTranslation(value);
+    missingTranslation(value);
     // Fallback to showing the english version
     return value;
   },
@@ -38,4 +48,12 @@ window.ProcessMaker.i18nPromise = i18next.use(Backend).init({
   },
 });
 
-window.ProcessMaker.i18nPromise.then(() => { translationsLoaded = true; });
+i18nPromise.then(() => { translationsLoaded = true; });
+
+Vue.use(VueI18Next);
+Vue.mixin({ i18n: new VueI18Next(i18next) });
+
+setGlobalPMVariable("i18n", i18next);
+setGlobalPMVariable("i18nPromise", i18nPromise);
+setGlobalPMVariable("missingTranslations", missingTranslations);
+setGlobalPMVariable("missingTranslation", missingTranslation);

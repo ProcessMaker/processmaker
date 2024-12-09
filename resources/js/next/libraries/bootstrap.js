@@ -1,4 +1,6 @@
+import * as bootstrap from "bootstrap";
+import { setGlobalVariable } from "../globalVariables";
+
 import("bootstrap-vue/dist/bootstrap-vue.css");
-import("bootstrap").then((bootstrap) => {
-  window.bootstrap = bootstrap;
-});
+
+setGlobalVariable("bootstrap", bootstrap);

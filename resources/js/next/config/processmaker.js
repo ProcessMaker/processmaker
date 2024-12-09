@@ -1,27 +1,8 @@
-
-/**
- * Create a axios instance which any vue component can bring in to call
- * REST api endpoints through oauth authentication
- *
- */
-window.ProcessMaker.apiClient = require("axios");
-
-window.ProcessMaker.apiClient.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
-
-/**
- * Next we will register the CSRF Token as a common header with Axios so that
- * all outgoing HTTP requests automatically have it attached. This is just
- * a simple convenience so we don't have to attach every token manually.
- */
+import axios from "axios";
+import { setGlobalPMVariable, getGlobalPMVariable } from "../globalVariables";
 
 const token = document.head.querySelector("meta[name=\"csrf-token\"]");
-
-
-if (token) {
-  window.ProcessMaker.apiClient.defaults.headers.common["X-CSRF-TOKEN"] = token.content;
-} else {
-  console.error("CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token");
-}
+const EventBus = getGlobalPMVariable("EventBus");
 
 // Setup api versions
 const apiVersionConfig = [
@@ -29,8 +10,21 @@ const apiVersionConfig = [
   { version: "1.1", baseURL: "/api/1.1/" },
 ];
 
-window.ProcessMaker.apiClient.defaults.baseURL = apiVersionConfig[0].baseURL;
-window.ProcessMaker.apiClient.interceptors.request.use((config) => {
+// Set the default API timeout
+let apiTimeout = 5000;
+
+/**
+ * Create a axios instance which any vue component can bring in to call
+ * REST api endpoints through oauth authentication
+ */
+
+const apiClient = axios;
+
+apiClient.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
+
+apiClient.defaults.baseURL = apiVersionConfig[0].baseURL;
+
+apiClient.interceptors.request.use((config) => {
   if (typeof config.url !== "string" || !config.url) {
     throw new Error("Invalid URL in the request configuration");
   }
@@ -48,37 +42,27 @@ window.ProcessMaker.apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// Set the default API timeout
-let apiTimeout = 5000;
-if (window.Processmaker && window.Processmaker.apiTimeout !== undefined) {
-  apiTimeout = window.Processmaker.apiTimeout;
-}
-window.ProcessMaker.apiClient.defaults.timeout = apiTimeout;
-
-
-
 // flags print forms
-window.ProcessMaker.apiClient.requestCount = 0;
-window.ProcessMaker.apiClient.requestCountFlag = false;
-
-window.ProcessMaker.apiClient.interceptors.request.use((request) => {
+apiClient.requestCount = 0;
+apiClient.requestCountFlag = false;
+apiClient.interceptors.request.use((request) => {
   // flags print forms
-  if (window.ProcessMaker.apiClient.requestCountFlag) {
-    window.ProcessMaker.apiClient.requestCount++;
+  if (apiClient.requestCountFlag) {
+    apiClient.requestCount += 1;
   }
 
-  window.ProcessMaker.EventBus.$emit("api-client-loading", request);
+  EventBus.$emit("api-client-loading", request);
   return request;
 });
 
-window.ProcessMaker.apiClient.interceptors.response.use((response) => {
+apiClient.interceptors.response.use((response) => {
   // TODO: this could be used to show a default "created/upated/deleted resource" alert
   // response.config.method (PUT, POST, DELETE)
   // response.config.url (extract resource name)
-  window.ProcessMaker.EventBus.$emit("api-client-done", response);
-  // flags print forms
-  if (window.ProcessMaker.apiClient.requestCountFlag && window.ProcessMaker.apiClient.requestCount > 0) {
-    window.ProcessMaker.apiClient.requestCount--;
+  EventBus.$emit("api-client-done", response);
+
+  if (apiClient.requestCountFlag && apiClient.requestCount > 0) {
+    apiClient.requestCount -= 1;
   }
   return response;
 }, (error) => {
@@ -90,7 +74,7 @@ window.ProcessMaker.apiClient.interceptors.response.use((response) => {
   if (error.code && error.code === "ERR_CANCELED") {
     return Promise.reject(error);
   }
-  window.ProcessMaker.EventBus.$emit("api-client-error", error);
+  EventBus.$emit("api-client-error", error);
   if (error.response && error.response.status && error.response.status === 401) {
     // stop 401 error consuming endpoints with data-sources
     const { url } = error.config;
@@ -102,7 +86,7 @@ window.ProcessMaker.apiClient.interceptors.response.use((response) => {
     window.location = "/login";
   } else {
     if (_.has(error, "config.url") && !error.config.url.match("/debug")) {
-      window.ProcessMaker.apiClient.post("/debug", {
+      apiClient.post("/debug", {
         name: "Javascript ProcessMaker.apiClient Error",
         message: JSON.stringify({
           message: error.message,
@@ -115,6 +99,25 @@ window.ProcessMaker.apiClient.interceptors.response.use((response) => {
   }
 });
 
+/**
+ * Next we will register the CSRF Token as a common header with Axios so that
+ * all outgoing HTTP requests automatically have it attached. This is just
+ * a simple convenience so we don't have to attach every token manually.
+ */
+
+if (token) {
+  apiClient.defaults.headers.common["X-CSRF-TOKEN"] = token.content;
+} else {
+  console.error("CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token");
+}
+
+if (window.Processmaker && window.Processmaker.apiTimeout !== undefined) {
+  apiTimeout = window.Processmaker.apiTimeout;
+}
+
+apiClient.defaults.timeout = apiTimeout;
+
+setGlobalPMVariable("apiClient", apiClient);
 
 // Display any uncaught promise rejections from axios in the Process Maker alert box
 window.addEventListener("unhandledrejection", (event) => {

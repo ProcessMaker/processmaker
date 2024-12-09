@@ -1,5 +1,9 @@
 import MonacoEditor from "vue-monaco";
 
-window.VueMonaco = require("vue-monaco");
+import { getGlobalVariable, setGlobalVariable } from "../globalVariables";
 
-window.Vue.component("monaco-editor", MonacoEditor);
+const Vue = getGlobalVariable("Vue");
+
+Vue.component("MonacoEditor", MonacoEditor);
+
+setGlobalVariable("VueMonaco", MonacoEditor);

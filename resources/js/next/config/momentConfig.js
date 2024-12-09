@@ -1,11 +1,15 @@
-import moment from "moment-timezone";
+import { getGlobalPMVariable, getGlobalVariable } from "../globalVariables";
 
-if (window.ProcessMaker && window.ProcessMaker.user) {
-  moment.tz.setDefault(window.ProcessMaker.user.timezone);
-  moment.defaultFormat = window.ProcessMaker.user.datetime_format;
-  moment.defaultFormatUtc = window.ProcessMaker.user.datetime_format;
+const moment = getGlobalVariable("moment");
+const user = getGlobalPMVariable("user");
+
+if (user) {
+  moment.tz.setDefault(user.timezone);
+  moment.defaultFormat = user.datetime_format;
+  moment.defaultFormatUtc = user.datetime_format;
 }
+
 if (document.documentElement.lang) {
   moment.locale(document.documentElement.lang);
-  window.ProcessMaker.user.lang = document.documentElement.lang;
+  user.lang = document.documentElement.lang;
 }

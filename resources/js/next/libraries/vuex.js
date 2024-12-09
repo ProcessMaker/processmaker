@@ -1,5 +1,8 @@
 import Vuex from "vuex";
 import GlobalStore from "../../globalStore";
+import { getGlobalVariable } from "../globalVariables";
 
-window.Vue.use(Vuex);
-window.Vue.use(GlobalStore);
+const Vue = getGlobalVariable("Vue");
+
+Vue.use(Vuex);
+Vue.use(GlobalStore);

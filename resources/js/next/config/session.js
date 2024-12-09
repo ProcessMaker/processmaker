@@ -1,17 +1,35 @@
-if (window.ProcessMaker.user) {
+import { getGlobalPMVariable, setGlobalPMVariable, getGlobalVariable } from "../globalVariables";
+
+const Vue = getGlobalVariable("Vue");
+const Echo = getGlobalVariable("Echo");
+const pushNotification = getGlobalVariable("pushNotification");
+const closeSessionModal = getGlobalVariable("closeSessionModal");
+const alert = getGlobalVariable("alert");
+
+const timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]")?.content;
+const user = getGlobalPMVariable("user");
+const sessionModal = getGlobalPMVariable("sessionModal");
+
+const isSameDevice = (e) => {
+  const localDeviceId = Vue.$cookies.get(e.device_variable);
+  const remoteDeviceId = e.device_id;
+  return localDeviceId && localDeviceId === remoteDeviceId;
+};
+
+if (user) {
   // Session timeout
-  const timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]")?.content;
-  window.ProcessMaker.AccountTimeoutLength = parseInt(eval(document.head.querySelector("meta[name=\"timeout-length\"]")?.content));
-  window.ProcessMaker.AccountTimeoutWarnSeconds = parseInt(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]")?.content);
-  window.ProcessMaker.AccountTimeoutEnabled = document.head.querySelector("meta[name=\"timeout-enabled\"]") ? parseInt(document.head.querySelector("meta[name=\"timeout-enabled\"]")?.content) : 1;
-  window.ProcessMaker.AccountTimeoutWorker = new Worker(timeoutScript);
-  window.ProcessMaker.AccountTimeoutWorker.addEventListener("message", (e) => {
+  const AccountTimeoutLength = parseInt(eval(document.head.querySelector("meta[name=\"timeout-length\"]")?.content));
+  const AccountTimeoutWarnSeconds = parseInt(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]")?.content);
+  const AccountTimeoutEnabled = document.head.querySelector("meta[name=\"timeout-enabled\"]") ? parseInt(document.head.querySelector("meta[name=\"timeout-enabled\"]")?.content) : 1;
+  const AccountTimeoutWorker = new Worker(timeoutScript);
+
+  AccountTimeoutWorker.addEventListener("message", (e) => {
     if (e.data.method === "countdown") {
-      window.ProcessMaker.sessionModal(
+      sessionModal(
         "Session Warning",
         "<p>Your user session is expiring. If your session expires, all of your unsaved data will be lost.</p><p>Would you like to stay connected?</p>",
         e.data.data.time,
-        window.ProcessMaker.AccountTimeoutWarnSeconds,
+        AccountTimeoutWarnSeconds,
       );
     }
     if (e.data.method === "timedOut") {
@@ -20,38 +38,37 @@ if (window.ProcessMaker.user) {
   });
 
   // in some cases it's necessary to start manually
-  window.ProcessMaker.AccountTimeoutWorker.postMessage({
+  AccountTimeoutWorker.postMessage({
     method: "start",
     data: {
-      timeout: window.ProcessMaker.AccountTimeoutLength,
-      warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds,
-      enabled: window.ProcessMaker.AccountTimeoutEnabled,
+      timeout: AccountTimeoutLength,
+      warnSeconds: AccountTimeoutWarnSeconds,
+      enabled: AccountTimeoutEnabled,
     },
   });
 
-  const isSameDevice = (e) => {
-    const localDeviceId = Vue.$cookies.get(e.device_variable);
-    const remoteDeviceId = e.device_id;
-    return localDeviceId && localDeviceId === remoteDeviceId;
-  };
+  setGlobalPMVariable("AccountTimeoutWarnSeconds", AccountTimeoutLength);
+  setGlobalPMVariable("AccountTimeoutWarnSeconds", AccountTimeoutWarnSeconds);
+  setGlobalPMVariable("AccountTimeoutEnabled", AccountTimeoutEnabled);
+  setGlobalPMVariable("AccountTimeoutWorker", AccountTimeoutWorker);
 
-  window.Echo.private(`ProcessMaker.Models.User.${window.ProcessMaker.user.id}`)
+  Echo.private(`ProcessMaker.Models.User.${user.id}`)
     .notification((token) => {
-      ProcessMaker.pushNotification(token);
+      pushNotification(token);
     })
     .listen(".SessionStarted", (e) => {
       const lifetime = parseInt(eval(e.lifetime));
       if (isSameDevice(e)) {
-        window.ProcessMaker.AccountTimeoutWorker.postMessage({
+        AccountTimeoutWorker.postMessage({
           method: "start",
           data: {
             timeout: lifetime,
-            warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds,
-            enabled: window.ProcessMaker.AccountTimeoutEnabled,
+            warnSeconds: AccountTimeoutWarnSeconds,
+            enabled: AccountTimeoutEnabled,
           },
         });
-        if (window.ProcessMaker.closeSessionModal) {
-          window.ProcessMaker.closeSessionModal();
+        if (closeSessionModal) {
+          closeSessionModal();
         }
       }
     })
@@ -71,9 +88,9 @@ if (window.ProcessMaker.user) {
       if (e.success) {
         const { link } = e;
         const { message } = e;
-        window.ProcessMaker.alert(message, "success", 0, false, false, link);
+        alert(message, "success", 0, false, false, link);
       } else {
-        window.ProcessMaker.alert(e.message, "warning");
+        alert(e.message, "warning");
       }
     });
 }

@@ -1,3 +1,5 @@
+import { setGlobalPMVariable } from "../globalVariables";
+
 import datetime_format from "../../data/datetime_formats.json";
 
 const userID = document.head.querySelector("meta[name=\"user-id\"]");
@@ -7,14 +9,12 @@ const formatDate = document.head.querySelector("meta[name=\"datetime-format\"]")
 const timezone = document.head.querySelector("meta[name=\"timezone\"]");
 const appUrl = document.head.querySelector("meta[name=\"app-url\"]");
 
-if (appUrl) {
-  window.ProcessMaker.app = {
-    url: appUrl.content,
-  };
-}
+setGlobalPMVariable("app", appUrl ? {
+  url: appUrl.content,
+} : null);
 
 if (userID) {
-  window.ProcessMaker.user = {
+  const user = {
     id: userID.content,
     datetime_format: formatDate?.content,
     calendar_format: formatDate?.content,
@@ -22,10 +22,13 @@ if (userID) {
     fullName: userFullName?.content,
     avatar: userAvatar?.content,
   };
+
   datetime_format.forEach((value) => {
     if (formatDate.content === value.format) {
-      window.ProcessMaker.user.datetime_format = value.momentFormat;
-      window.ProcessMaker.user.calendar_format = value.calendarFormat;
+      user.datetime_format = value.momentFormat;
+      user.calendar_format = value.calendarFormat;
     }
   });
+
+  setGlobalPMVariable("user", user);
 }
