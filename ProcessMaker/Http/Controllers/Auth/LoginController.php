@@ -214,12 +214,6 @@ class LoginController extends Controller
             }
         }
 
-        Cache::put(
-            'user_' . $user->id . '_active_session_' . $request->cookie('device_id'),
-            ['active' => true, 'updated_at' => now()],
-            now()->addMinutes(config('session.lifetime'))
-        );
-
         return $this->login($request, $user);
     }
 

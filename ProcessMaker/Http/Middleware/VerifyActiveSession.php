@@ -20,8 +20,10 @@ class VerifyActiveSession
     {
         if (!$request->hasHeader('Authorization')) {
             $user = \Auth::user();
-            $activeSession = Cache::get('user_' . $user->id . '_active_session_' . $request->cookie('device_id'));
-            $isActive = $activeSession ? $activeSession['active'] : true;
+            $cacheKey = 'user_' . $user->id . '_active_session_' . $request->cookie('device_id');
+
+            $activeSession = Cache::get($cacheKey);
+            $isActive = $activeSession ? $activeSession['active'] : false;
             if (!$isActive) {
                 return response()->json(['error' => 'Unauthorized'], 401);
             }
@@ -30,7 +32,7 @@ class VerifyActiveSession
                 // refresh the cache entry's lifetime
                 if (now()->diffInMinutes($lastActivity) > config('session.lifetime') / 2) {
                     Cache::put(
-                        'user_' . $user->id . '_active_session_' . $request->cookie('device_id'),
+                        $cacheKey,
                         ['active' => true, 'updated_at' => now()],
                         now()->addMinutes(config('session.lifetime'))
                     );
