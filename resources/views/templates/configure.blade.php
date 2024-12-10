@@ -96,7 +96,7 @@
             screenTypes: @json($screenTypes),
         }
     </script>
-    <script src="{{mix('js/templates/configure.js')}}"></script>
+    @vite('resources/js/templates/configure.js')
 @endsection
 
 @section('css')

@@ -6,6 +6,13 @@
 
 @import '../../public/css/precompiled/bootstrap/bootstrap.scss';
 
+// For npm-font-open-sans
+$FontPathOpenSans: "../../public/css/precompiled/npm-font-open-sans/fonts";
+// For fontawesome-free
+$fa-font-path: "../../public/css/precompiled/fontawesome-free/webfonts";
+// For pm-font
+$pm-font-path: "../fonts/pm-font";
+
 //// Font Awesome
 @import '../../public/css/precompiled/fontawesome-free/scss/brands.scss';
 @import '../../public/css/precompiled/fontawesome-free/scss/regular.scss';

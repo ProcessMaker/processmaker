@@ -310,8 +310,8 @@ const confirmPublishNewVersionText = computed(() => {
   }
 }
 
-@import "styles/components/table";
-@import "styles/components/modal";
+@import "~styles/components/table";
+@import "~styles/components/modal";
 ::v-deep .delete-modal-style .modal-header .delete-icon {
   width: 48px;
   height: 48px;

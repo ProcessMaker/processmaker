@@ -54,6 +54,7 @@ import { TooltipPlugin } from "bootstrap-vue";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 
 const uniqIdsMixin = createUniqIdsMixin();
+import Vue from "vue";
 Vue.use(TooltipPlugin);
 
 export default {

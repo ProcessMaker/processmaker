@@ -8,7 +8,7 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta name="i18n-mdate" content='{!! json_encode(ProcessMaker\i18nHelper::mdates()) !!}'>
   <title>{{ __('Login') }} - {{ __('ProcessMaker') }}</title>
-  <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+  @vite('resources/sass/app.scss')
   <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
   @if (hasPackage('package-accessibility'))
     @include('package-accessibility::userway')
@@ -141,9 +141,6 @@
     this.classList.toggle('fa-eye-slash');
 });
 </script>
-<script src="{{ mix('builds/login/js/manifest.js') }}"></script>
-<script src="{{ mix('builds/login/js/vendor.js') }}"></script>
-<script src="{{ mix('builds/login/js/app-login.js') }}"></script>
 @foreach(GlobalScripts::getScripts() as $script)
   @if (strpos($script, '/vendor/processmaker/packages/package-dynamic-ui/js/global.js') !== 0)
     <script src="{{$script}}"></script>
@@ -152,7 +149,7 @@
 <script>
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
 </script>
-<script src="{{ mix('js/translations/index.js') }}"></script>
+@vite('resources/js/translations/index.js')
 <style>
   .row {
     display: flex;

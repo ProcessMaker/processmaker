@@ -1,4 +1,4 @@
-import { get } from "lodash";
+import { get, set } from "lodash";
 
 export default (status, ignoreSavedFilter = false, requester = null) => {
   let advancedFilter = get(window, 'ProcessMaker.advanced_filter.filters', []);
@@ -34,6 +34,5 @@ export default (status, ignoreSavedFilter = false, requester = null) => {
     });
   }
 
-  window.ProcessMaker.advanced_filter.filters = advancedFilter;
-
+  set(window, 'ProcessMaker.advanced_filter.filters', advancedFilter);
 }

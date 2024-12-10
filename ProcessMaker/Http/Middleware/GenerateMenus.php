@@ -120,10 +120,9 @@ class GenerateMenus
                     'icon' => 'fa-code',
                 ]);
 
-                $devlinkIcon = base64_encode(file_get_contents(base_path('resources/img/devlink.svg')));
                 $submenu->add(__('DevLink'), [
                     'route' => 'devlink.index',
-                    'file' => "data:image/svg+xml;base64,{$devlinkIcon}",
+                    'file' => '/img/devlink.svg',
                 ]);
             }
         });

@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import ErrorHandlingMixin from './ErrorHandlingMixin';
+import ErrorHandlingMixin from './ErrorHandlingMixin.vue';
 
 export default {
   mixins: [ErrorHandlingMixin],

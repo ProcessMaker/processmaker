@@ -46,7 +46,7 @@
 
 <script>
 import _, { debounce } from "lodash";
-import Suggestions from "./Suggestions";
+import Suggestions from "./Suggestions.vue";
 
 export default {
   props: ["promptSessionId", "defaultPrompt", "autofocus"],

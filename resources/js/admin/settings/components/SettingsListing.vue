@@ -193,22 +193,22 @@
 
 <script>
 import { BasicSearch } from "SharedComponents";
-import isPMQL from "../../../modules/isPMQL";
+import  "../../../modules/isPMQL";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
-import PmqlInput from "../../../components/shared/PmqlInput";
-import SettingBoolean from './SettingBoolean';
-import SettingCheckboxes from './SettingCheckboxes';
-import SettingChoice from './SettingChoice';
-import SettingSelect from './SettingSelect';
-import SettingFile from './SettingFile';
-import SettingObject from './SettingObject';
-import SettingScreen from './SettingScreen';
-import SettingText from './SettingText';
-import SettingTextArea from './SettingTextArea';
-import SettingsImport from './SettingsImport';
-import SettingsExport from './SettingsExport';
-import SettingsRange from './SettingsRange';
-import SettingDriverAuthorization from './SettingDriverAuthorization';
+import PmqlInput from "../../../components/shared/PmqlInput.vue";
+import SettingBoolean from './SettingBoolean.vue';
+import SettingCheckboxes from './SettingCheckboxes.vue';
+import SettingChoice from './SettingChoice.vue';
+import SettingSelect from './SettingSelect.vue';
+import SettingFile from './SettingFile.vue';
+import SettingObject from './SettingObject.vue';
+import SettingScreen from './SettingScreen.vue';
+import SettingText from './SettingText.vue';
+import SettingTextArea from './SettingTextArea.vue';
+import SettingsImport from './SettingsImport.vue';
+import SettingsExport from './SettingsExport.vue';
+import SettingsRange from './SettingsRange.vue';
+import SettingDriverAuthorization from './SettingDriverAuthorization.vue';
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import SettingsEmpty from "./SettingsEmpty.vue";
 

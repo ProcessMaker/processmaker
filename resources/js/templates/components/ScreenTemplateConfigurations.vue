@@ -84,7 +84,7 @@
 <script>
 import FormErrorsMixin from "../../components/shared/FormErrorsMixin.js";
 import CategorySelect from "../../components/shared/CategorySelect.vue";
-import MultiThumbnailFileUploader from '../../components/shared/MultiThumbnailFileUploader';
+import MultiThumbnailFileUploader from '../../components/shared/MultiThumbnailFileUploader.vue';
 import ScreenTypeDropdown from "../../processes/screens/components/ScreenTypeDropdown.vue";
 
 export default {

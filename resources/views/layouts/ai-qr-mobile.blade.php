@@ -21,7 +21,7 @@
     <meta name="timezone" content="{{ Auth::user()->timezone ?: config('app.timezone') }}">
     @yield('meta')
     @endif
-    <meta name="timeout-worker" content="{{ mix('js/timeout.js') }}">
+    <meta name="timeout-worker" content="{{ Vite::asset('resources/js/timeout.js') }}">
     <meta
       name="timeout-length"
       content="{{
@@ -42,8 +42,8 @@
     <title>@yield('title',__('Welcome')) - {{ __('ProcessMaker') }}</title>
 
     <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
-    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
-    <link href="{{ mix('css/sidebar.css') }}" rel="stylesheet">
+    @vite('resources/sass/app.scss')
+    @vite('resources/sass/sidebar/sidebar.scss')
     <link href="/css/bpmn-symbols/css/bpmn.css" rel="stylesheet">
     @yield('css')
     <script type="text/javascript">
@@ -120,9 +120,9 @@
 @if(config('broadcasting.default') == 'redis')
 <script src="{{config('broadcasting.connections.redis.host')}}/socket.io/socket.io.js"></script>
 @endif
-<script src="{{ mix('js/manifest.js') }}"></script>
-<script src="{{ mix('js/vendor.js') }}"></script>
-<script src="{{ mix('js/app.js') }}"></script>
+@vite('resources/js/manifest.js')
+@vite('resources/js/vendor.js')
+@vite('resources/js/app.js')
 <script>
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
 </script>

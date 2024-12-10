@@ -97,7 +97,7 @@ const fields = [
 </template>
 
 <style lang="scss" scoped>
-@import 'styles/components/table';
+@import '~styles/components/table';
 .shared-assets-card {
     border-radius: 8px;
     min-height: calc(-355px + 100vh);

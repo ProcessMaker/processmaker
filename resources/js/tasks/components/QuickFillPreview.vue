@@ -72,7 +72,7 @@
                     @click="buttonThisData(screenFilteredTaskData)"
                   >
                     <img
-                      src="../../../img/smartinbox-images/Stroke.svg"
+                      src="/images/Stroke.svg"
                       class="img-styles"
                       :alt="$t('No Image')"
                     />{{ $t("Use This Task Data") }}

@@ -4,11 +4,14 @@ import axios from "axios";
 import moment from "moment";
 import App from "Horizon/components/App";
 import router from "./router";
+import Popper from "popper.js";
+import Loader from "Horizon/components/Status/Loader";
 
-window.$ = window.jQuery = require("jquery");
+// window.$ = window.jQuery = require("jquery");
 window.Popper = require("popper.js").default;
+window.Popper = Popper;
 
-require("bootstrap");
+import "bootstrap";
 
 $("body").tooltip({
   selector: "[data-toggle=tooltip]",
@@ -40,7 +43,8 @@ Vue.prototype.$http.interceptors.response.use((response, req) => {
 
 window.Bus = new Vue({ name: "Bus" });
 
-Vue.component("Loader", require("Horizon/components/Status/Loader.vue"));
+// Vue.component("Loader", require("Horizon/components/Status/Loader.vue"));
+Vue.component("Loader", Loader);
 
 Vue.config.errorHandler = function (err, vm, info) {
   console.error(err);

@@ -16,7 +16,7 @@
     <meta name="timezone" content="{{ Auth::user()->timezone ?: config('app.timezone') }}">
     @yield('meta')
   @endif
-  <meta name="timeout-worker" content="{{ mix('js/timeout.js') }}">
+  <meta name="timeout-worker" content="{{ Vite::asset('resources/js/timeout.js') }}">
   <meta name="timeout-length"
     content="{{ Session::has('rememberme') && Session::get('rememberme') ? 'Number.MAX_SAFE_INTEGER' : config('session.lifetime') }}">
   <meta name="timeout-warn-seconds" content="{{ config('session.expire_warning') }}">
@@ -33,7 +33,7 @@
   <title>@yield('title', __('Welcome')) - {{ __('ProcessMaker') }}</title>
 
   <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
-  <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+  @vite('resources/sass/app.scss')
   <link href="/css/bpmn-symbols/css/bpmn.css" rel="stylesheet">
   @yield('css')
     <script type="text/javascript">
@@ -105,13 +105,13 @@
   @if (config('broadcasting.default') == 'redis')
     <script src="{{ config('broadcasting.connections.redis.host') }}/socket.io/socket.io.js"></script>
   @endif
-  <script src="{{ mix('js/manifest.js') }}"></script>
-  <script src="{{ mix('js/vendor.js') }}"></script>
-  <script src="{{ mix('js/app.js') }}"></script>
+  @vite('resources/js/manifest.js')
+  @vite('resources/js/vendor.js')
+  @vite('resources/js/app.js')
   <script>
     window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
   </script>
-  <script src="{{ mix('js/process-map-layout.js') }}"></script>
+  @vite('resources/js/process-map-layout.js')
 
   @foreach (GlobalScripts::getScripts() as $script)
     <script src="{{ $script }}"></script>

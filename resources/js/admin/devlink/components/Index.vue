@@ -262,8 +262,8 @@ tr:hover {
   }
 }
 
-@import "styles/components/table";
-@import "styles/components/modal";
+@import "~styles/components/table";
+@import "~styles/components/modal";
 
 .linked-instances-card {
   border-radius: 8px;

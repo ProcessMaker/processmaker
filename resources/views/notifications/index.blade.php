@@ -47,5 +47,5 @@
 @endsection
 
 @section('js')
-<script src="{{mix('js/notifications/index.js')}}"></script>
+@vite('resources/js/notifications/index.js')
 @endsection

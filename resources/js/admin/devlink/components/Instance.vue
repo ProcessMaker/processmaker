@@ -181,7 +181,7 @@ const executeUpdate = (updateType) => {
   }
 }
 
-@import "styles/components/table";
+@import "~styles/components/table";
 
 .instance-card {
   border-radius: 8px;

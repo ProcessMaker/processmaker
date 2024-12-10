@@ -5,6 +5,7 @@ namespace ProcessMaker\Managers;
 class ModelerManager
 {
     private $javascriptRegistry;
+
     private $javascriptParamsRegistry;
 
     /**
@@ -15,7 +16,7 @@ class ModelerManager
     {
         $this->javascriptRegistry = [];
         // Include our default javascript for our core controls
-        $this->addScript(mix('js/processes/modeler/initialLoad.js'));
+        $this->addScript(Vite::asset('js/processes/modeler/initialLoad.js'));
     }
 
     /**
@@ -48,6 +49,7 @@ class ModelerManager
     {
         return $this->javascriptRegistry;
     }
+
     /**
      * Retrieve the JavaScript parameters registry.
      *

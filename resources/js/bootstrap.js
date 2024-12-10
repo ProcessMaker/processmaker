@@ -16,8 +16,8 @@ import XHR from "i18next-xhr-backend";
 import VueI18Next from "@panter/vue-i18next";
 import { install as VuetableInstall } from "vuetable-2";
 import MonacoEditor from "vue-monaco";
-import Vue from "vue";
-import * as vue from "vue";
+// import Vue from "vue";
+// import * as vue from "vue";
 import VueCookies from "vue-cookies";
 import GlobalStore from "./globalStore";
 import Pagination from "./components/common/Pagination";
@@ -36,37 +36,47 @@ import PMDropdownSuggest from './components/PMDropdownSuggest';
 import "@processmaker/screen-builder/dist/vue-form-builder.css";
 
 window.__ = translator;
-window._ = require("lodash");
-window.Popper = require("popper.js").default;
+import _ from "lodash";
+window._ = _;
+import Popper from "popper.js";
+window.Popper = Popper;
 
 /**
  * Give node plugins access to our custom screen builder components
  */
-window.ProcessmakerComponents = require("./processes/screen-builder/components");
+import * as ProcessmakerComponents from "./processes/screen-builder/components";
+window.ProcessmakerComponents = ProcessmakerComponents;
 
 /**
  * Give node plugins access to additional components
  */
-window.SharedComponents = require("./components/shared");
+import * as SharedComponents from "./components/shared";
+window.SharedComponents = SharedComponents;
 
-window.ProcessesComponents = require("./processes/components");
-window.ScreensComponents = require("./processes/screens/components");
-window.ScriptsComponents = require("./processes/scripts/components");
-window.ProcessesCatalogueComponents = require("./processes-catalogue/components/utils");
+import * as ProcessesComponents from "./processes/components";
+window.ProcessesComponents = ProcessesComponents;
+import * as ScreensComponents from "./processes/screens/components";
+window.ScreensComponents = ScreensComponents;
+import * as ScriptsComponents from "./processes/scripts/components";
+window.ScriptsComponents = ScriptsComponents;
+import * as ProcessesCatalogueComponents from "./processes-catalogue/components/utils";
+window.ProcessesCatalogueComponents = ProcessesCatalogueComponents;
 
 window.PMDropdownSuggest = PMDropdownSuggest;
 
 /**
  * Exporting Modeler inspector components
  */
-window.ModelerInspector = require("./processes/modeler/components/inspector");
+import * as ModelerInspector from "./processes/modeler/components/inspector";
+window.ModelerInspector = ModelerInspector;
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
  * for JavaScript based Bootstrap features such as modals and tabs. This
  * code may be modified to fit the specific needs of your application.
  */
 
-window.$ = window.jQuery = require("jquery");
+import jQuery from "jquery";
+window.$ = jQuery;
 
 /**
  * Vue is a modern JavaScript library for building interactive web interfaces
@@ -74,8 +84,9 @@ window.$ = window.jQuery = require("jquery");
  * and simple, leaving you to focus on building your next great project.
  */
 
-window.Vue = Vue;
-window.vue = vue;
+import Vue from "vue";
+// window.Vue = Vue;
+// window.vue = vue;
 window.bootstrap = bootstrap;
 window.Vue.use(BootstrapVue);
 window.Vue.use(BootstrapVueIcons);
@@ -86,11 +97,13 @@ window.Vue.use(VueCookies);
 if (!document.head.querySelector("meta[name=\"is-horizon\"]")) {
   window.Vue.use(Router);
 }
-window.VueMonaco = require("vue-monaco");
+import VueMonaco from "vue-monaco";
+window.VueMonaco = VueMonaco;
 
-window.ScreenBuilder = require("@processmaker/screen-builder");
-window.VueFormElements = require("@processmaker/vue-form-elements");
-window.Modeler = require("@processmaker/modeler");
+import VueFormElements from "@processmaker/vue-form-elements";
+window.VueFormElements = VueFormElements;
+import Modeler from "@processmaker/modeler";
+window.Modeler = Modeler;
 
 window.VueRouter = Router;
 
@@ -115,7 +128,10 @@ const mdates = JSON.parse(
 Vue.mixin({ i18n: new VueI18Next(i18next) });
 Vue.mixin(AccessibilityMixin);
 
+window.ProcessMaker = window.ProcessMaker || {};
 window.ProcessMaker = {
+  ...window.ProcessMaker,
+
   i18n: i18next,
 
   /**
@@ -227,7 +243,8 @@ window.ProcessMaker.i18nPromise.then(() => { translationsLoaded = true; });
  * REST api endpoints through oauth authentication
  *
  */
-window.ProcessMaker.apiClient = require("axios");
+import axios from "axios";
+window.ProcessMaker.apiClient = axios;
 
 window.ProcessMaker.apiClient.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
@@ -312,6 +329,7 @@ if (appUrl) {
 
 if (userID) {
   window.ProcessMaker.user = {
+    ...window.ProcessMaker.user,
     id: userID.content,
     datetime_format: formatDate?.content,
     calendar_format: formatDate?.content,
@@ -327,11 +345,12 @@ if (userID) {
   });
 }
 
+import Pusher from "pusher-js";
 if (window.Processmaker && window.Processmaker.broadcasting) {
   const config = window.Processmaker.broadcasting;
 
   if (config.broadcaster == "pusher") {
-    window.Pusher = require("pusher-js");
+    window.Pusher = Pusher;
     window.Pusher.logToConsole = config.debug;
   }
 

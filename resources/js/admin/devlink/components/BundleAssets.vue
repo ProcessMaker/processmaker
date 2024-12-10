@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, getCurrentInstance, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router/composables';
-import BundleModal, { show as showBundleModal, hide as hideBundleModal } from './BundleModal.vue';
+import BundleModal from './BundleModal.vue';
 import Header from './Header.vue';
 import UpdateBundle from './UpdateBundle.vue';
 import VersionCheck from './VersionCheck.vue';
@@ -207,7 +207,7 @@ const remove = async (asset) => {
 }
 </style>
 <style lang="scss" scoped>
-@import "styles/components/table";
+@import "~styles/components/table";
 h3 {
   font-size: 1.4em;
 }

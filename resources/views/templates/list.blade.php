@@ -55,7 +55,7 @@
 </div>
 
 @section('js')
-    <script src="{{mix('js/templates/index.js')}}"></script>
+    @vite('resources/js/templates/index.js')
 @append
 @section('css')
 <style>

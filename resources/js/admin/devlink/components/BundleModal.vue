@@ -68,5 +68,5 @@
   };
   </script>
 <style lang="scss" scoped>
-  @import "styles/components/modal";
+  @import "~styles/components/modal";
 </style>
