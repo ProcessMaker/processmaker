@@ -4,12 +4,13 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Jobs\DevLinkInstall;
-use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\BundleAsset;
+use ProcessMaker\Models\BundleSetting;
 use ProcessMaker\Models\DevLink;
 use ProcessMaker\Models\Setting;
 
@@ -119,7 +120,7 @@ class DevLinkController extends Controller
 
     public function showBundle(Bundle $bundle)
     {
-        return $bundle->load('assets');
+        return $bundle->load('assets')->load('settings');
     }
 
     public function remoteBundles(Request $request, DevLink $devLink)
@@ -131,6 +132,7 @@ class DevLinkController extends Controller
     {
         $bundle = new Bundle();
         $bundle->name = $request->input('name');
+        $bundle->description = $request->input('description');
         $bundle->published = (bool) $request->input('published', false);
         $bundle->version = 1;
         $bundle->saveOrFail();
@@ -143,6 +145,7 @@ class DevLinkController extends Controller
         $bundle->validateEditable();
 
         $bundle->name = $request->input('name');
+        $bundle->description = $request->input('description');
         $bundle->published = (bool) $request->input('published', false);
         $bundle->saveOrFail();
 
@@ -200,6 +203,11 @@ class DevLinkController extends Controller
         return ['payloads' => $bundle->export()];
     }
 
+    public function exportLocalBundleSettings(Bundle $bundle)
+    {
+        return ['settings' => $bundle->exportSettings()];
+    }
+
     public function exportLocalAsset(Request $request)
     {
         $asset = $request->input('class')::findOrFail($request->input('id'));
@@ -212,7 +220,12 @@ class DevLinkController extends Controller
         $asset = $request->input('type')::findOrFail($request->input('id'));
         $bundle->addAsset($asset);
     }
-    
+
+    public function addSettings(Request $request, Bundle $bundle)
+    {
+        $bundle->addSettings($request->input('setting'), $request->input('config'));
+    }
+
     public function addAssetToBundles(Request $request)
     {
         $bundles = $request->input('bundles');
@@ -289,5 +302,12 @@ class DevLinkController extends Controller
         $bundleAsset->delete();
 
         return response()->json(['message' => 'Bundle asset association deleted.'], 200);
+    }
+
+    public function deleteBundleSetting(BundleSetting $bundleSetting)
+    {
+        $bundleSetting->delete();
+
+        return response()->json(['message' => 'Bundle setting deleted.'], 200);
     }
 }

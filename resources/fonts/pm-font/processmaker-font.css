@@ -1,11 +1,11 @@
 @font-face {
   font-family: "processmaker-font";
-  src: url('processmaker-font.eot?t=1730322668195'); /* IE9*/
-  src: url('processmaker-font.eot?t=1730322668195#iefix') format('embedded-opentype'), /* IE6-IE8 */
-  url("processmaker-font.woff2?t=1730322668195") format("woff2"),
-  url("processmaker-font.woff?t=1730322668195") format("woff"),
-  url('processmaker-font.ttf?t=1730322668195') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
-  url('processmaker-font.svg?t=1730322668195#processmaker-font') format('svg'); /* iOS 4.1- */
+  src: url('processmaker-font.eot?t=1733168374693'); /* IE9*/
+  src: url('processmaker-font.eot?t=1733168374693#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url("processmaker-font.woff2?t=1733168374693") format("woff2"),
+  url("processmaker-font.woff?t=1733168374693") format("woff"),
+  url('processmaker-font.ttf?t=1733168374693') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+  url('processmaker-font.svg?t=1733168374693#processmaker-font') format('svg'); /* iOS 4.1- */
 }
 
 [class^="fp-"], [class*=" fp-"] {
@@ -37,24 +37,28 @@
 .fp-cloud-download-outline:before { content: "\ea13"; }
 .fp-copy:before { content: "\ea14"; }
 .fp-desktop:before { content: "\ea15"; }
-.fp-eye:before { content: "\ea16"; }
-.fp-fields-icon:before { content: "\ea17"; }
-.fp-flowgenie-outline:before { content: "\ea18"; }
-.fp-folder-outline:before { content: "\ea19"; }
-.fp-fullscreen:before { content: "\ea1a"; }
-.fp-github:before { content: "\ea1b"; }
-.fp-layout-icon:before { content: "\ea1c"; }
-.fp-map:before { content: "\ea1d"; }
-.fp-mobile:before { content: "\ea1e"; }
-.fp-pdf:before { content: "\ea1f"; }
-.fp-play-outline:before { content: "\ea20"; }
-.fp-plus:before { content: "\ea21"; }
-.fp-screen-outline:before { content: "\ea22"; }
-.fp-script-outline:before { content: "\ea23"; }
-.fp-slack-notification:before { content: "\ea24"; }
-.fp-slack:before { content: "\ea25"; }
-.fp-slideshow:before { content: "\ea26"; }
-.fp-table:before { content: "\ea27"; }
-.fp-trash:before { content: "\ea28"; }
-.fp-unlink:before { content: "\ea29"; }
+.fp-edit-outline:before { content: "\ea16"; }
+.fp-eye:before { content: "\ea17"; }
+.fp-fields-icon:before { content: "\ea18"; }
+.fp-flowgenie-outline:before { content: "\ea19"; }
+.fp-folder-outline:before { content: "\ea1a"; }
+.fp-fullscreen:before { content: "\ea1b"; }
+.fp-github:before { content: "\ea1c"; }
+.fp-layout-icon:before { content: "\ea1d"; }
+.fp-link-icon:before { content: "\ea1e"; }
+.fp-map:before { content: "\ea1f"; }
+.fp-mobile:before { content: "\ea20"; }
+.fp-pdf:before { content: "\ea21"; }
+.fp-play-outline:before { content: "\ea22"; }
+.fp-plus-thin:before { content: "\ea23"; }
+.fp-plus:before { content: "\ea24"; }
+.fp-remove-outlined:before { content: "\ea25"; }
+.fp-screen-outline:before { content: "\ea26"; }
+.fp-script-outline:before { content: "\ea27"; }
+.fp-slack-notification:before { content: "\ea28"; }
+.fp-slack:before { content: "\ea29"; }
+.fp-slideshow:before { content: "\ea2a"; }
+.fp-table:before { content: "\ea2b"; }
+.fp-trash:before { content: "\ea2c"; }
+.fp-unlink:before { content: "\ea2d"; }
 

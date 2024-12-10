@@ -45,6 +45,11 @@ class Bundle extends ProcessMakerModel implements HasMedia
         return $this->hasMany(BundleAsset::class);
     }
 
+    public function settings()
+    {
+        return $this->hasMany(BundleSetting::class);
+    }
+
     public function devLink()
     {
         return $this->belongsTo(DevLink::class, 'dev_link_id');
@@ -70,6 +75,13 @@ class Bundle extends ProcessMakerModel implements HasMedia
         }
 
         return $exports;
+    }
+
+    public function exportSettings()
+    {
+        return $this->settings()->get()->map(function ($setting) {
+            return $setting->export();
+        });
     }
 
     public function syncAssets($assets)
@@ -125,7 +137,23 @@ class Bundle extends ProcessMakerModel implements HasMedia
             'asset_id' => $asset->id,
         ]);
     }
-    
+
+    public function addSettings($setting, $config)
+    {
+        $exists = $this->settings()->where('setting', $setting)->exists();
+        if ($exists) {
+            $this->settings()->where('setting', $setting)->update([
+                'config' => $config,
+            ]);
+        } else {
+            BundleSetting::create([
+                'bundle_id' => $this->id,
+                'setting' => $setting,
+                'config' => $config,
+            ]);
+        }
+    }
+
     public function addAssetToBundles(ProcessMakerModel $asset)
     {
         $message = null;
@@ -134,6 +162,7 @@ class Bundle extends ProcessMakerModel implements HasMedia
         } catch (ValidationException $ve) {
             $message = $ve->getMessage();
         }
+
         return $message;
     }
 
@@ -181,6 +210,19 @@ class Bundle extends ProcessMakerModel implements HasMedia
                 $media->delete();
             }
             $count++;
+        }
+    }
+
+    public function installSettings($settings)
+    {
+        $newSettingsKeys = collect($settings)->pluck('setting')->toArray();
+
+        $this->settings()
+            ->whereNotIn('setting', $newSettingsKeys)
+            ->delete();
+
+        foreach ($settings as $setting) {
+            $this->addSettings($setting['setting'], $setting['config']);
         }
     }
 
