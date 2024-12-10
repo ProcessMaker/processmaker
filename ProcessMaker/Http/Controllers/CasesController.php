@@ -10,9 +10,11 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Package\PackageComments\PackageServiceProvider;
 use ProcessMaker\ProcessTranslations\ScreenTranslation;
+use ProcessMaker\Traits\ProcessMapTrait;
 
 class CasesController extends Controller
 {
+    use ProcessMapTrait;
     /**
      * Get the list of requests.
      *
@@ -76,6 +78,45 @@ class CasesController extends Controller
         // Get the summary screen tranlations
         $this->summaryScreenTranslation($request);
 
+        // Load the process map
+        $processRequest = ProcessRequest::find($request->id);
+
+        $bpmn = $request->process->bpmn;
+        $filteredCompletedNodes = [];
+        $requestInProgressNodes = [];
+        $requestIdleNodes = [];
+
+        if ($processRequest) {
+            $requestCompletedNodes = $processRequest->tokens()
+                ->whereIn('status', ['CLOSED', 'COMPLETED', 'TRIGGERED'])
+                ->pluck('element_id');
+            $requestInProgressNodes = $processRequest->tokens()
+                ->whereIn('status', ['ACTIVE', 'INCOMING'])
+                ->pluck('element_id');
+            // Remove any node that is 'ACTIVE' from the completed list.
+            $filteredCompletedNodes = $requestCompletedNodes->diff($requestInProgressNodes)->values();
+
+            // Obtain In-Progress nodes that were completed before
+            $matchingNodes = $requestInProgressNodes->intersect($requestCompletedNodes);
+
+            // Get idle nodes.
+            $xml = $this->loadAndPrepareXML($bpmn);
+            $nodeIds = $this->getNodeIds($xml);
+            $requestIdleNodes = $nodeIds->diff($filteredCompletedNodes)->diff($requestInProgressNodes)->values();
+
+            // Add completed sequence flow to the list of completed nodes.
+            $sequenceFlowNodes = $this->getCompletedSequenceFlow($xml, $filteredCompletedNodes->implode(' '), $requestInProgressNodes->implode(' '), $matchingNodes->implode(' '));
+            $filteredCompletedNodes = $filteredCompletedNodes->merge($sequenceFlowNodes);
+        }
+       
+
+        $inflightData = [
+            'bpmn' => $bpmn,
+            'requestCompletedNodes' => $filteredCompletedNodes,
+            'requestInProgressNodes' => $requestInProgressNodes,
+            'requestIdleNodes' => $requestIdleNodes,
+            'requestId' => $request->process->id,
+        ];
         // Return the view
         return view('cases.edit', compact(
             'request',
@@ -85,7 +126,9 @@ class CasesController extends Controller
             'canViewComments',
             'canPrintScreens',
             'isProcessManager',
-            'manager'
+            'manager',
+            'bpmn',
+            'inflightData',
         ));
     }
 
