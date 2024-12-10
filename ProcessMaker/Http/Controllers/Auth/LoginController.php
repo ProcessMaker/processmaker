@@ -249,6 +249,11 @@ class LoginController extends Controller
             $userId = Auth::user()->id;
             Cache::forget("user_{$userId}_permissions");
             Cache::forget("user_{$userId}_project_assets");
+            Cache::put(
+                'user_' . $userId . '_active_session_' . $request->cookie('device_id'),
+                ['active' => false, 'updated_at' => now()],
+                now()->addMinutes(config('session.lifetime'))
+            );
 
             // Clear the user session
             $this->forgetUserSession();
