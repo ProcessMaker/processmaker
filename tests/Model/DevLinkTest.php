@@ -79,6 +79,12 @@ class DevLinkTest extends TestCase
             'http://remote-instance.test/api/1.0/devlink/export-local-bundle/123' => Http::response([
                 'payloads' => $exports,
             ]),
+            'http://remote-instance.test/api/1.0/devlink/export-local-bundle/123/settings' => Http::response([
+                'settings' => [[
+                    'setting' => 'users',
+                    'config' => null,
+                ]],
+            ]),
         ]);
 
         $devLink = DevLink::factory()->create([
@@ -210,6 +216,12 @@ class DevLinkTest extends TestCase
                 ->push([
                     'payloads' => $exportsNewScreenName,
                 ], 200),
+            'http://remote-instance.test/api/1.0/devlink/export-local-bundle/123/settings' => Http::response([
+                'settings' => [[
+                    'setting' => 'users',
+                    'config' => null,
+                ]],
+            ]),
         ]);
 
         $devLink->installRemoteBundle(123, 'update');
