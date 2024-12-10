@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 class ServerTimingMiddleware
@@ -16,6 +17,12 @@ class ServerTimingMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         $start = microtime(true);
+        $queryTime = 0;
+
+        // Listen to query events and accumulate query execution time
+        DB::listen(function ($query) use (&$queryTime) {
+            $queryTime += $query->time; // Query time in milliseconds
+        });
 
         // Process the request
         $response = $next($request);
@@ -25,6 +32,10 @@ class ServerTimingMiddleware
 
         // Add Server-Timing header
         $response->headers->set('Server-Timing', "controller;dur={$duration}");
+         $response->headers->set('Server-Timing', [
+            "controller;dur={$duration}",
+            "db;dur={$queryTime}"
+        ]);
 
         return $response;
     }
