@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use ProcessMaker\Providers\ProcessMakerServiceProvider;
 use Symfony\Component\HttpFoundation\Response;
 
 class ServerTimingMiddleware
@@ -36,11 +37,15 @@ class ServerTimingMiddleware
         $controllerTime = (microtime(true) - $startController) * 1000; // Convert to ms
         $endpointTime = (microtime(true) - $startEndpoint) * 1000; // Convert to ms
 
-        // Add Server-Timing header
+        // Fetch service provider boot time
+        $serviceProviderTime = ProcessMakerServiceProvider::getBootTime() ?? 0;
+
+        // Add Server-Timing headers
         $response->headers->set('Server-Timing', [
+            "providers;dur={$serviceProviderTime}",
             "endpoint;dur={$endpointTime}",
             "controller;dur={$controllerTime}",
-            "db;dur={$queryTime}"
+            "db;dur={$queryTime}",
         ]);
 
         return $response;

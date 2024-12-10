@@ -35,6 +35,11 @@ use ProcessMaker\PolicyExtension;
  */
 class ProcessMakerServiceProvider extends ServiceProvider
 {
+    // Track the start time for service providers boot
+    private static $bootStart;
+    // Track the boot time for service providers
+    private static $bootTime;
+
     public function boot(): void
     {
         $this->app->singleton(Menu::class, function ($app) {
@@ -52,10 +57,16 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->setupFactories();
 
         parent::boot();
+
+        // Hook after service providers boot
+        self::$bootTime = (microtime(true) - self::$bootStart) * 1000; // Convert to milliseconds
     }
 
     public function register(): void
     {
+        // Track the start time for service providers boot
+        self::$bootStart = microtime(true);
+
         // Dusk, if env is appropriate
         // TODO Remove Dusk references and remove from composer dependencies
         if (!$this->app->environment('production')) {
@@ -357,5 +368,15 @@ class ProcessMakerServiceProvider extends ServiceProvider
         if (config('app.force_https')) {
             URL::forceScheme('https');
         }
+    }
+
+    /**
+     * Get the boot time for service providers.
+     *
+     * @return float|null
+     */
+    public static function getBootTime(): ?float
+    {
+        return self::$bootTime;
     }
 }
