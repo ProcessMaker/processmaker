@@ -16,7 +16,9 @@ class ServerTimingMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $start = microtime(true);
+        // Start time for the entire request
+        $startEndpoint = microtime(true);
+        // Track total query execution time
         $queryTime = 0;
 
         // Listen to query events and accumulate query execution time
@@ -24,16 +26,20 @@ class ServerTimingMiddleware
             $queryTime += $query->time; // Query time in milliseconds
         });
 
+        // Start time for controller execution
+        $startController = microtime(true);
+
         // Process the request
         $response = $next($request);
 
-        // Calculate elapsed time
-        $duration = (microtime(true) - $start) * 1000; // Convert to milliseconds
+        // Calculate execution times
+        $controllerTime = (microtime(true) - $startController) * 1000; // Convert to ms
+        $endpointTime = (microtime(true) - $startEndpoint) * 1000; // Convert to ms
 
         // Add Server-Timing header
-        $response->headers->set('Server-Timing', "controller;dur={$duration}");
-         $response->headers->set('Server-Timing', [
-            "controller;dur={$duration}",
+        $response->headers->set('Server-Timing', [
+            "endpoint;dur={$endpointTime}",
+            "controller;dur={$controllerTime}",
             "db;dur={$queryTime}"
         ]);
 
