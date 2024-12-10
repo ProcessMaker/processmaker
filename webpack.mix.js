@@ -146,6 +146,9 @@ mix
   // Note, that this should go last for the extract to properly put the manifest and vendor in the right location
   // See: https://github.com/JeffreyWay/laravel-mix/issues/1118
   .js("resources/jscomposition/cases/casesMain/loader.js", "public/js/composition/cases/casesMain")
+  .js("resources/jscomposition/cases/casesDetail/loader.js", "public/js/composition/cases/casesDetail")
+  .js("resources/js/tasks/loaderMain.js", "public/js/tasks")
+  .js("resources/js/tasks/loaderShow.js", "public/js/tasks")
   .js("resources/js/app.js", "public/js");
 // .polyfill({
 //   enabled: true,

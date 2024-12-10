@@ -139,7 +139,7 @@ const navbar = new Vue({
       sessionWarnSeconds: "",
       taskTitle: "",
       isMobile: false,
-      isMobileDevice: window.ProcessMaker.mobileApp,
+      isMobileDevice: mobileApp,
     };
   },
   watch: {

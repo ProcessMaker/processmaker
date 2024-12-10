@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnext')
 
 @section('title')
     {{__($title)}}
@@ -170,14 +170,30 @@
 @endsection
 
 @section('js')
-    <script>
-      window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
-      window.ProcessMaker.advanced_filter = @json($userFilter);
-      window.Processmaker.defaultColumns = @json($defaultColumns);
+  <script src="{{ mix('js/manifest.js') }}"></script>
+  <script src="{{ mix('js/vue-vendor.js') }}"></script>
+  <script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
+  <script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
+  <script src="{{ mix('js/tasks/loaderMain.js')}}"></script>
+  <script>
+    window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
+    window.ProcessMaker.advanced_filter = @json($userFilter);
+    window.Processmaker.defaultColumns = @json($defaultColumns);
 
-      window.sessionStorage.setItem('elementDestinationURL', window.location.href);
-    </script>
-    <script src="{{mix('js/tasks/index.js')}}"></script>
+    window.sessionStorage.setItem('elementDestinationURL', window.location.href);
+    window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+  </script>
+
+  @if (hasPackage('package-files'))
+  <!-- TODO: Replace with script injector like we do for modeler and screen builder -->
+  <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
+  @endif
+
+  <script src="{{mix('js/tasks/index.js')}}"></script>
+
+  @foreach(GlobalScripts::getScripts() as $script)
+    <script src="{{$script}}"></script>
+  @endforeach
 @endsection
 
 @section('css')

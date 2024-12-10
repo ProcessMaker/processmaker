@@ -1,4 +1,4 @@
-@extends('layouts.layout',['content_margin' => '', 'overflow-auto' => ''])
+@extends('layouts.layoutnext',['content_margin' => '', 'overflow-auto' => ''])
 
 @section('title')
   {{ __('Case Detail') }}
@@ -51,21 +51,21 @@
                         data-test="cancel-case-button"
                       >
                         <i class="fas fa-ban"></i>
-                        <span>{{ __('Cancel Case') }}</span>
+                        <span>@{{ $t('Cancel Case') }}</span>
                       </button>
                     </li>
                   @endif
                   <div :class="classStatusCard" data-test="case-status">
-                    <span style="margin:0; padding:0; line-height:1">@{{ __(statusLabel) }}</span>
+                    <span style="margin:0; padding:0; line-height:1">@{{ $t(statusLabel) }}</span>
                   </div>
                   <li class="tw-px-4 tw-py-3 tw-border-b tw-border-gray-300" data-test="case-since-date">
-                    <p class="section-title">@{{ __(labelDate) }}:</p>
+                    <p class="section-title">@{{ $t(labelDate) }}:</p>
                     <i class="far fa-calendar-alt"></i>
                     <small>@{{ moment(statusDate).format() }}</small>
                   </li>
                   @if ($request->user_id)
                     <li class="tw-px-4 tw-py-3 tw-border-b tw-border-gray-300" data-test="case-startedby">
-                      <p class="section-title">{{ __('STARTED BY') }}:</p>
+                      <p class="section-title">@{{ $t('STARTED BY') }}:</p>
                       <avatar-image
                         v-if="userRequested"
                         size="32"
@@ -73,11 +73,11 @@
                         :input-data="requestBy"
                         display-name="true"
                       ></avatar-image>
-                      <span v-if="!userRequested">{{ __('Web Entry') }}</span>
+                      <span v-if="!userRequested">@{{ $t('Web Entry') }}</span>
                     </li>
                   @endif
                   <li class="tw-px-4 tw-py-3 tw-border-b tw-border-gray-300" data-test="case-launchpad">
-                    <p class="section-title">{{ __('LAUNCHPAD') }}</p>
+                    <p class="section-title">@{{ $t('LAUNCHPAD') }}</p>
                     <p class="launchpad-link">
                       <a href="{{route('process.browser.index', [$request->process_id])}}">
                         {{ $request->name }}
@@ -86,7 +86,7 @@
                   </li>
                   @if ($request->participants->count())
                     <li class="tw-px-4 tw-py-3 tw-border-b tw-border-gray-300" data-test="case-participants">
-                      <p class="section-title">{{ __('PARTICIPANTS') }}:</p>
+                      <p class="section-title">@{{ $t('PARTICIPANTS') }}:</p>
                       <avatar-image
                         size="32"
                         class="d-inline-flex pull-left align-items-center"
@@ -98,7 +98,7 @@
                   @endif
                 </ul>
               </template>
-              <template #comments v-if="panCommentInVueOptionsComponents" data-test="case-comments-tab">
+              <template #comments data-test="case-comments-tab">
                 <comment-container
                   class="tw-grow tw-overflow-hidden"
                   :commentable_id="request.id"
@@ -118,6 +118,11 @@
 @endsection
 
 @section('js')
+  <script src="{{ mix('js/manifest.js') }}"></script>
+  <script src="{{ mix('js/vue-vendor.js') }}"></script>
+  <script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
+  <script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
+  <script src="{{mix('js/composition/cases/casesDetail/loader.js')}}"></script>
   <script>
     const data = @json($request->getRequestData());
     const requestId = @json($request->getKey());
@@ -129,6 +134,9 @@
     const canViewComments = @json($canViewComments);
     const comentable_type = @json(get_class($request));
     const requestCount = @json($requestCount);
+    const screenBuilderScripts = @json($manager->getScripts());
+    
+    window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
   </script>
   
   @if (hasPackage('package-files'))
@@ -136,11 +144,11 @@
   <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
   @endif
 
-  <script src="{{mix('js/composition/cases/casesDetail/edit.js')}}"></script>
-
-  @foreach($manager->getScripts() as $script)
+  @foreach(GlobalScripts::getScripts() as $script)
     <script src="{{$script}}"></script>
   @endforeach
+
+  <script src="{{mix('js/composition/cases/casesDetail/edit.js')}}"></script>
 @endsection
 
 @section('css')

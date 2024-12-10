@@ -127,29 +127,22 @@
 @if(config('broadcasting.default') == 'redis')
 <script src="{{config('broadcasting.connections.redis.host')}}/socket.io/socket.io.js"></script>
 @endif
-{{-- <script>
-  window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
-</script> --}}
-    <!--javascript!-->
-    @yield('js')
 
+@yield('js')
+  
+@isset($addons)
+  @foreach ($addons as $addon)
+    @if (!empty($addon['script_mix']))
+      <script type="text/javascript" src="{{ mix($addon['script_mix'][0], $addon['script_mix'][1]) }}"></script>
+    @endif
+    @if (!empty($addon['script_mix_module']))
+      <script type="module" src="{{ mix($addon['script_mix_module'][0], $addon['script_mix_module'][1]) }}"></script>
+    @endif
+  @endforeach
+@endisset
 
-
-
-  {{-- @isset($addons)
-    @foreach ($addons as $addon)
-      @if (!empty($addon['script_mix']))
-        <script type="text/javascript" src="{{ mix($addon['script_mix'][0], $addon['script_mix'][1]) }}"></script>
-      @endif
-      @if (!empty($addon['script_mix_module']))
-        <script type="module" src="{{ mix($addon['script_mix_module'][0], $addon['script_mix_module'][1]) }}"></script>
-      @endif
-    @endforeach
-  @endisset
-
-  @if (hasPackage('package-accessibility'))
-    @include('package-accessibility::userway')
-  @endif --}}
-
+@if (hasPackage('package-accessibility'))
+  @include('package-accessibility::userway')
+@endif
 </body>
 </html>

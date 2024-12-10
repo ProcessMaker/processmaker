@@ -1,6 +1,6 @@
 import {
   getGlobalVariable, setGlobalVariable, getGlobalPMVariable, setGlobalPMVariable,
-} from "../globalVariables";
+} from "./globalVariables";
 
 const Vue = getGlobalVariable("Vue");
 const apiClient = getGlobalPMVariable("apiClient");
@@ -18,30 +18,35 @@ const addScriptsToDOM = async function (scripts) {
   }
 };
 
-Vue.component("VueFormRenderer", (resolve, reject) => {
-  import("@processmaker/screen-builder/dist/vue-form-builder.css");
-  if (screenBuilderScripts) {
-    addScriptsToDOM(screenBuilderScripts).then(() => {
-      import("@processmaker/screen-builder").then((ScreenBuilder) => {
-        Vue.use(ScreenBuilder.default);
+const componentsScreenBuilder = ["VueFormRenderer", "Task"];
 
-        const { initializeScreenCache } = ScreenBuilder;
-        // Configuration Global object used by ScreenBuilder
-        // @link https://processmaker.atlassian.net/browse/FOUR-6833 Cache configuration
-        const screenCacheEnabled = document.head.querySelector("meta[name=\"screen-cache-enabled\"]")?.content ?? "false";
-        const screenCacheTimeout = document.head.querySelector("meta[name=\"screen-cache-timeout\"]")?.content ?? "5000";
-        const screen = {
-          cacheEnabled: screenCacheEnabled === "true",
-          cacheTimeout: Number(screenCacheTimeout),
-        };
-        // Initialize screen-builder cache
-        initializeScreenCache(apiClient, screen);
+componentsScreenBuilder.forEach((component) => {
+  Vue.component(component, (resolve, reject) => {
+    import("@processmaker/screen-builder/dist/vue-form-builder.css");
+    if (screenBuilderScripts) {
+      addScriptsToDOM(screenBuilderScripts).then(() => {
+        import("@processmaker/screen-builder").then((ScreenBuilder) => {
+          console.log("ScreenBuilder DESPUES", ScreenBuilder);
+          Vue.use(ScreenBuilder.default);
 
-        setGlobalVariable("ScreenBuilder", ScreenBuilder);
-        setGlobalPMVariable("screen", screen);
+          const { initializeScreenCache } = ScreenBuilder;
+          // Configuration Global object used by ScreenBuilder
+          // @link https://processmaker.atlassian.net/browse/FOUR-6833 Cache configuration
+          const screenCacheEnabled = document.head.querySelector("meta[name=\"screen-cache-enabled\"]")?.content ?? "false";
+          const screenCacheTimeout = document.head.querySelector("meta[name=\"screen-cache-timeout\"]")?.content ?? "5000";
+          const screen = {
+            cacheEnabled: screenCacheEnabled === "true",
+            cacheTimeout: Number(screenCacheTimeout),
+          };
 
-        resolve(ScreenBuilder.VueFormRenderer);
-      }).catch(reject);
-    });
-  }
+          setGlobalVariable("ScreenBuilder", ScreenBuilder);
+          setGlobalPMVariable("screen", screen);
+          // Initialize screen-builder cache
+          initializeScreenCache(apiClient, screen);// TODO: Its a bad practice to use the apiClient here
+
+          resolve(ScreenBuilder[component]);
+        }).catch(reject);
+      });
+    }
+  });
 });

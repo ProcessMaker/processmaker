@@ -128,8 +128,7 @@
 <script src="{{ mix('js/vue-vendor.js') }}"></script>
 <script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
 <script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
-<script src="{{ mix('js/modeler-vendor.js') }}"></script>
-<script src="{{ mix('js/app.js') }}"></script>
+<script src="{{ mix('js/tasks/loaderShow.js')}}"></script>
 <script>
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
 </script>
@@ -155,11 +154,9 @@
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
     const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
     const screenFields = @json($screenFields);
+    const screenBuilderScripts = @json($manager->getScripts());
 
   </script>
-    @foreach($manager->getScripts() as $script)
-        <script src="{{$script}}"></script>
-    @endforeach
     <script src="{{mix('js/tasks/show.js')}}"></script>
     <script>
       const store = new Vuex.Store();

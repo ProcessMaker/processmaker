@@ -15,13 +15,15 @@ window.Vue.prototype.moment = moment;
 window.Vue.use(BootstrapVue);
 window.Vue.use(BootstrapVueIcons);
 
-import("../../../js/next/libraries/broadcast");
 import("../../../js/next/libraries/vuex");
+import("../../../js/next/libraries/broadcast");
 import("../../../js/next/libraries/bootstrap");
 import("../../../js/next/libraries/jquery");
 import("../../../js/next/libraries/vueRouter");
 import("../../../js/next/libraries/vueCookies");
+// Load components
 import("../../../js/next/libraries/vueFormElements");
+import("../../../js/next/libraries/sharedComponents");
 
 window.ProcessMaker = {
   EventBus: new Vue(),
@@ -37,7 +39,7 @@ import("../../../js/next/config/momentConfig");
 import("../../../js/next/config/openAI");
 
 // Screen builder
-// import("../../../js/nextDependencies/screenBuilder");
+import("../../../js/next/screenBuilder");
 
 // Load libraries dependencies first
 import("../../../js/next/layout/sidebar");
