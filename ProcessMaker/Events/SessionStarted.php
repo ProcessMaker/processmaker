@@ -3,6 +3,7 @@
 namespace ProcessMaker\Events;
 
 use Illuminate\Broadcasting\Channel;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -59,6 +60,13 @@ class SessionStarted implements ShouldBroadcastNow
         $lifetime = Session::has('rememberme') && Session::get('rememberme')
                         ? 'Number.MAX_SAFE_INTEGER'
                         : config('session.lifetime');
+
+                              // Initialize the session activity control
+        Cache::put(
+            'user_' . $this->user->id . '_active_session_' . RequestDevice::getId(),
+            ['active' => true, 'updated_at' => now()],
+            now()->addMinutes(config('session.lifetime'))
+        );
 
         return [
             'lifetime' => $lifetime,

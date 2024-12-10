@@ -81,6 +81,7 @@ class Kernel extends HttpKernel
         'session_block' => \ProcessMaker\Http\Middleware\SessionControlBlock::class,
         'session_kill' => \ProcessMaker\Http\Middleware\SessionControlKill::class,
         'no-cache' => \ProcessMaker\Http\Middleware\NoCache::class,
+        'verify_active_session' => Middleware\VerifyActiveSession::class,
     ];
 
     /**
