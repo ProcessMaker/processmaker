@@ -211,7 +211,7 @@ class UserController extends Controller
             $task = ProcessRequestToken::findOrFail($request->input('assignable_for_task_id'));
             if ($task->getAssignmentRule() === 'user_group') {
                 // Limit the list of users to those that can be assigned to the task.
-                //$include_ids = $task->process->getAssignableUsers($task->element_id); This will be enabled in a future iteration.
+                $include_ids = [];
             }
         }
 
