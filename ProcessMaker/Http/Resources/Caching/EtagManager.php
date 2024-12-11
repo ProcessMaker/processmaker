@@ -53,10 +53,12 @@ class EtagManager
         // If the source is 'etag_version', use a cached version key as the source of truth.
         $lastUpdated = collect($tables)->map(function ($table) use ($source) {
             if ($source === 'etag_version') {
-                // This is not currently implemented but serves as a placeholder for future flexibility.
-                // The idea is to use a cached version key (e.g., "etag_version_table_name") as the source of truth.
-                // This would allow us to version the ETag dynamically and invalidate it using model observers or other mechanisms.
-                // If implemented, observers can increment this version key whenever the corresponding table is updated.
+                /**
+                 * This is not currently implemented but serves as a placeholder for future flexibility.
+                 * The idea is to use a cached version key (e.g., "etag_version_table_name") as the source of truth.
+                 * This would allow us to version the ETag dynamically and invalidate it using model observers or other mechanisms.
+                 * If implemented, observers can increment this version key whenever the corresponding table is updated.
+                 */
                 return Cache::get("etag_version_{$table}", 0);
             }
 
