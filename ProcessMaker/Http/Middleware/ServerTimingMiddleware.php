@@ -40,13 +40,23 @@ class ServerTimingMiddleware
         // Fetch service provider boot time
         $serviceProviderTime = ProcessMakerServiceProvider::getBootTime() ?? 0;
 
-        // Add Server-Timing headers
-        $response->headers->set('Server-Timing', [
+        $serverTiming = [
             "providers;dur={$serviceProviderTime}",
             "endpoint;dur={$endpointTime}",
             "controller;dur={$controllerTime}",
             "db;dur={$queryTime}",
-        ]);
+        ];
+
+        $packageTimes = ProcessMakerServiceProvider::getPackageBootTiming();
+
+        foreach ($packageTimes as $package => $timing) {
+            $time = ($timing['end'] - $timing['start']) * 1000;
+
+            $serverTiming[] = "{$package};dur={$time}";
+        }
+
+        // Add Server-Timing headers
+        $response->headers->set('Server-Timing', $serverTiming);
 
         return $response;
     }

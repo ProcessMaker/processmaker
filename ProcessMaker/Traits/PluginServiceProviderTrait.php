@@ -11,6 +11,7 @@ use ProcessMaker\Events\ScriptBuilderStarting;
 use ProcessMaker\Managers\IndexManager;
 use ProcessMaker\Managers\LoginManager;
 use ProcessMaker\Managers\PackageManager;
+use ProcessMaker\Providers\ProcessMakerServiceProvider;
 
 /**
  * Add functionality to control a PM plug-in
@@ -20,6 +21,32 @@ trait PluginServiceProviderTrait
     private $modelerScripts = [];
 
     private $scriptBuilderScripts = [];
+
+    private static $bootStart = null;
+
+    private static $bootTime;
+
+    public function __construct($app)
+    {
+        parent::__construct($app);
+
+        $this->booting(function () {
+            self::$bootStart = microtime(true);
+
+            $package = defined('static::name') ? static::name : $this::class;
+
+            ProcessMakerServiceProvider::setPackageBootStart($package, self::$bootStart);
+        });
+
+        $this->booted(function () {
+            self::$bootTime = microtime(true);
+
+            $package = defined('static::name') ? static::name : $this::class;
+
+            ProcessMakerServiceProvider::setPackageBootedTime($package, self::$bootTime);
+        });
+
+    }
 
     /**
      * Boot the PM plug-in.

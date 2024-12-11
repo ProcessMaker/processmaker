@@ -39,9 +39,14 @@ class ProcessMakerServiceProvider extends ServiceProvider
     private static $bootStart;
     // Track the boot time for service providers
     private static $bootTime;
+    // Track the boot time for each package
+    private static $packageBootTiming = [];
 
     public function boot(): void
     {
+        // Track the start time for service providers boot
+        self::$bootStart = microtime(true);
+
         $this->app->singleton(Menu::class, function ($app) {
             return new MenuManager();
         });
@@ -64,9 +69,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
     public function register(): void
     {
-        // Track the start time for service providers boot
-        self::$bootStart = microtime(true);
-
         // Dusk, if env is appropriate
         // TODO Remove Dusk references and remove from composer dependencies
         if (!$this->app->environment('production')) {
@@ -378,5 +380,42 @@ class ProcessMakerServiceProvider extends ServiceProvider
     public static function getBootTime(): ?float
     {
         return self::$bootTime;
+    }
+
+    /**
+     * Set the boot time for service providers.
+     *
+     * @param float $time
+     */
+    public static function setPackageBootStart(string $package, $time): void
+    {
+        $package = ucfirst(\Str::camel(str_replace(['ProcessMaker\Packages\\', '\\'], '', $package)));
+
+        self::$packageBootTiming[$package] = [
+            'start' => $time,
+            'end' => null,
+        ];
+    }
+
+    /**
+     * Set the boot time for service providers.
+     *
+     * @param float $time
+     */
+    public static function setPackageBootedTime(string $package, $time): void
+    {
+        $package = ucfirst(\Str::camel(str_replace(['ProcessMaker\Packages\\', '\\'], '', $package)));
+
+        self::$packageBootTiming[$package]['end'] = $time;
+    }
+
+    /**
+     * Get the boot time for service providers.
+     *
+     * @return array
+     */
+    public static function getPackageBootTiming(): array
+    {
+        return self::$packageBootTiming;
     }
 }
