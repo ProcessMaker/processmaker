@@ -15,7 +15,10 @@ class HomeController extends Controller
             // Redirect to home dynamic only if the package was enable
             if (hasPackage('package-dynamic-ui')) {
                 $user = Auth::user();
+
+                // Check if there is at least one custom dashboard per user
                 $customDashboardExists = \ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::where('type', 'DASHBOARD')
+                    ->where('assignable_id', $user->id)
                     ->count() > 0;
 
                 if ($customDashboardExists) {
@@ -26,7 +29,7 @@ class HomeController extends Controller
             }
 
             // Redirect to the default view
-            return redirect('/requests');
+            return redirect('/tasks');
         }
     }
 
