@@ -20,6 +20,7 @@
       </template>
     </FilterableTable>
     <Pagination
+      :key="dataPagination.page"
       :class="{
         ' tw-opacity-50':showPlaceholder
       }"
@@ -125,12 +126,14 @@ const onPerPage = async (perPage) => {
 
 const onChangeSearch = async (val) => {
   search.value = val;
+  dataPagination.value.page = 1; // Reset page to 1
 
   await hookGetData();
 };
 
 const onChangeFilter = async (filtersData) => {
   filters.value = filtersData;
+  dataPagination.value.page = 1; // Reset page to 1
 
   badgesData.value = formatFilterBadges(filtersData, columnsConfig.value);
 
@@ -140,6 +143,7 @@ const onChangeFilter = async (filtersData) => {
 const onRemoveBadge = async (badge, index) => {
   badgesData.value.splice(index, 1);
   filters.value.splice(index, 1);
+  dataPagination.value.page = 1; // Reset page to 1
 
   // Remove filter from table
   table.value.removeFilter(index);

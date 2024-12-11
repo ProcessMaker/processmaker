@@ -1,5 +1,5 @@
 <template>
-  <div class="tw-flex tw-justify-center">
+  <div class="tw-flex tw-justify-left">
     <span
       :class="`tw-inline-flex tw-items-center tw-text-xs tw-border-1 tw-rounded-lg
         tw-bg-${color}-100 tw-px-2 tw-py-1 tw-text-${color}-500`">

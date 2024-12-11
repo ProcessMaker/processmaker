@@ -35,9 +35,12 @@
                          :outRef="$refs"
                          :outName="'listMobile'+index">
           </filter-mobile>
-          <mobile-tasks :ref="'listMobile'+index"
-                        :filter="item.filter"
-                        :process="process">
+          <mobile-tasks
+            :ref="'listMobile'+index"
+            :filter="item.filter"
+            :process="process"
+            :advanced-filter="item.advanced_filter"
+          >
           </mobile-tasks>
         </template>
       </b-tab>

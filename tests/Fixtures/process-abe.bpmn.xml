@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd" xmlns:tns="http://sourceforge.net/bpmn/definitions/_1530553328908" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bpmn.io/schema/bpmn" exporter="ProcessMaker Modeler" exporterVersion="1.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <bpmn:process id="ProcessId" name="ProcessName" isExecutable="true">
+    <bpmn:startEvent id="node_1" name="Start Event" pm:allowInterstitial="true" pm:interstitialScreenRef="1" pm:config="{&#34;web_entry&#34;:null}">
+      <bpmn:outgoing>node_18</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="node_2" name="Form Task 01" pm:screenRef="5" pm:allowInterstitial="false" pm:assignment="requester" pm:assignmentLock="false" pm:allowReassignment="false" pm:config="{&#34;web_entry&#34;:null,&#34;email_notifications&#34;:{&#34;notifications&#34;:[]}}" pm:elementDestination="{&#34;type&#34;:&#34;taskSource&#34;,&#34;value&#34;:null}">
+      <bpmn:incoming>node_18</bpmn:incoming>
+      <bpmn:outgoing>node_57</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="node_17" name="End Event" pm:elementDestination="{&#34;type&#34;:&#34;summaryScreen&#34;,&#34;value&#34;:null}">
+      <bpmn:incoming>node_66</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_18" name="" sourceRef="node_1" targetRef="node_2" />
+    <bpmn:callActivity id="node_45" name="ABE 01" calledElement="ProcessId-3" pm:config="{&#34;email&#34;:&#34;john@processmaker.com&#34;,&#34;subject&#34;:&#34;ABE test&#34;,&#34;keyName&#34;:&#34;res&#34;,&#34;options&#34;:[],&#34;screenRef&#34;:&#34;&#34;,&#34;body&#34;:&#34;Hello world&#34;,&#34;type&#34;:&#34;&#34;,&#34;bodyType&#34;:&#34;text&#34;,&#34;emailServer&#34;:&#34;&#34;,&#34;startEvent&#34;:&#34;subprocess_start&#34;,&#34;selectedLanguage&#34;:&#34;en&#34;,&#34;langVariable&#34;:null,&#34;template&#34;:&#34;welcome&#34;}">
+      <bpmn:incoming>node_57</bpmn:incoming>
+      <bpmn:outgoing>node_66</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="node_57" sourceRef="node_2" targetRef="node_45" />
+    <bpmn:sequenceFlow id="node_66" sourceRef="node_45" targetRef="node_17" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagramId">
+    <bpmndi:BPMNPlane id="BPMNPlaneId" bpmnElement="ProcessId">
+      <bpmndi:BPMNShape id="node_1_di" bpmnElement="node_1">
+        <dc:Bounds x="190" y="271.5" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_2_di" bpmnElement="node_2">
+        <dc:Bounds x="283.33333333333337" y="251.5" width="116" height="76" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_17_di" bpmnElement="node_17">
+        <dc:Bounds x="630.0000000000001" y="271.5" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_18_di" bpmnElement="node_18">
+        <di:waypoint x="208" y="289.5" />
+        <di:waypoint x="341.33" y="289.5" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_45_di" bpmnElement="node_45">
+        <dc:Bounds x="456.66666666666674" y="251.5" width="116" height="76" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_57_di" bpmnElement="node_57">
+        <di:waypoint x="341.33" y="289.5" />
+        <di:waypoint x="514.67" y="289.5" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_66_di" bpmnElement="node_66">
+        <di:waypoint x="514.67" y="289.5" />
+        <di:waypoint x="648" y="289.5" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

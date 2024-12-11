@@ -10,6 +10,7 @@ export const formatCounters = (data) => {
       color: "amber",
       icon: "far fa-user",
       url: "/cases",
+      id: "card-button-my-cases",
     },
     {
       header: t("In progress"),
@@ -17,6 +18,7 @@ export const formatCounters = (data) => {
       color: "green",
       icon: "fas fa-list",
       url: "/cases/in_progress",
+      id: "card-button-in-progress",
     },
     {
       header: t("Completed"),
@@ -24,25 +26,28 @@ export const formatCounters = (data) => {
       color: "blue",
       icon: "far fa-check-circle",
       url: "/cases/completed",
+      id: "card-button-completed",
     },
   ];
 
-  if (data.totalAllCases) {
+  if (data.totalAllCases !== null) {
     counters.push({
       header: t("All cases"),
       body: data.totalAllCases.toString(),
       color: "purple",
       icon: "far fa-clipboard",
       url: "/cases/all",
+      id: "card-button-all",
     });
   }
 
-  if (data.totalMyRequest) {
+  if (data.totalMyRequest !== null) {
     counters.push({
       header: t("My requests"),
       body: data.totalMyRequest.toString(),
       color: "gray",
       icon: "fas fa-play",
+      id: "card-button-requests",
       url: () => {
         window.location.href = "/requests";
       },

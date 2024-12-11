@@ -4,6 +4,7 @@
       <InputLeading
         v-model="model"
         placeholder="Search here"
+        data-test="search-cases-list"
         @change="onChange"
         @keypress="onKeypress"
       />
