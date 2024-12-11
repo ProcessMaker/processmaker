@@ -33,6 +33,7 @@ class UserConfiguration extends ProcessMakerModel
     protected $fillable = [
         'user_id',
         'ui_configuration',
+        'ui_filters',
     ];
 
     public static function rules(): array
