@@ -241,8 +241,6 @@ class MetricsService
 
     /**
      * Renders the metrics in the Prometheus text format.
-     * Example:
-     * $metricsService->renderMetrics();
      *
      * @return string The rendered metrics.
      */
