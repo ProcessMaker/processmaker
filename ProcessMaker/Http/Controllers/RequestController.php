@@ -28,6 +28,7 @@ use ProcessMaker\Package\PackageComments\PackageServiceProvider;
 use ProcessMaker\ProcessTranslations\ScreenTranslation;
 use ProcessMaker\RetryProcessRequest;
 use ProcessMaker\Traits\HasControllerAddons;
+use ProcessMaker\Traits\ProcessMapTrait;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -35,6 +36,7 @@ class RequestController extends Controller
 {
     use SearchAutocompleteTrait;
     use HasControllerAddons;
+    use ProcessMapTrait;
 
     /**
      * Get the list of requests.
@@ -182,6 +184,45 @@ class RequestController extends Controller
         }
         $this->summaryScreenTranslation($request);
 
+        //Load the process map
+        $processRequest = ProcessRequest::find($request->id);
+        $bpmn = $request->process->bpmn;
+        $filteredCompletedNodes = [];
+        $requestInProgressNodes = [];
+        $requestIdleNodes = [];
+
+        if ($processRequest) {
+            $requestCompletedNodes = $processRequest->tokens()
+                ->whereIn('status', ['CLOSED', 'COMPLETED', 'TRIGGERED'])
+                ->pluck('element_id');
+            $requestInProgressNodes = $processRequest->tokens()
+                ->whereIn('status', ['ACTIVE', 'INCOMING'])
+                ->pluck('element_id');
+            // Remove any node that is 'ACTIVE' from the completed list.
+            $filteredCompletedNodes = $requestCompletedNodes->diff($requestInProgressNodes)->values();
+
+            // Obtain In-Progress nodes that were completed before
+            $matchingNodes = $requestInProgressNodes->intersect($requestCompletedNodes);
+
+            // Get idle nodes.
+            $xml = $this->loadAndPrepareXML($bpmn);
+            $nodeIds = $this->getNodeIds($xml);
+            $requestIdleNodes = $nodeIds->diff($filteredCompletedNodes)->diff($requestInProgressNodes)->values();
+
+            // Add completed sequence flow to the list of completed nodes.
+            $sequenceFlowNodes = $this->getCompletedSequenceFlow($xml, $filteredCompletedNodes->implode(' '), $requestInProgressNodes->implode(' '), $matchingNodes->implode(' '));
+            $filteredCompletedNodes = $filteredCompletedNodes->merge($sequenceFlowNodes);
+        }
+       
+
+        $inflightData = [
+            'bpmn' => $bpmn,
+            'requestCompletedNodes' => $filteredCompletedNodes,
+            'requestInProgressNodes' => $requestInProgressNodes,
+            'requestIdleNodes' => $requestIdleNodes,
+            'requestId' => $request->process->id,
+        ];
+
         if (isset($_SERVER['HTTP_USER_AGENT']) && MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])) {
             return view('requests.showMobile', compact(
                 'request',
@@ -217,6 +258,8 @@ class RequestController extends Controller
             'eligibleRollbackTask',
             'errorTask',
             'userConfiguration',
+            'bpmn',
+            'inflightData',
         ));
     }
 
