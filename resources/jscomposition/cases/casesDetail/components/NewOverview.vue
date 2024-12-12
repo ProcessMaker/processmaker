@@ -129,7 +129,6 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  console.log("unmounted");
   ProcessMaker.$modeler = null;
   modelerRef.value?.$destroy();
   modelerRef.value = null;
