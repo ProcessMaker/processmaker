@@ -10,6 +10,7 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Support\Facades;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
@@ -41,6 +42,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
     private static $bootTime;
     // Track the boot time for each package
     private static $packageBootTiming = [];
+    // Track the query time for each request
+    private static $queryTime = 0;
 
     public function boot(): void
     {
@@ -69,6 +72,11 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
     public function register(): void
     {
+        // Listen to query events and accumulate query execution time
+        DB::listen(function ($query) {
+            self::$queryTime += $query->time;
+        });
+
         // Dusk, if env is appropriate
         // TODO Remove Dusk references and remove from composer dependencies
         if (!$this->app->environment('production')) {
@@ -380,6 +388,16 @@ class ProcessMakerServiceProvider extends ServiceProvider
     public static function getBootTime(): ?float
     {
         return self::$bootTime;
+    }
+
+    /**
+     * Get the query time for the request.
+     *
+     * @return float
+     */
+    public static function getQueryTime(): float
+    {
+        return self::$queryTime;
     }
 
     /**

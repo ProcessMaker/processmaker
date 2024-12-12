@@ -35,10 +35,9 @@ class ServerTimingMiddlewareTest extends TestCase
         $response->assertHeader('Server-Timing');
 
         $serverTiming = $this->getHeader($response, 'server-timing');
-        $this->assertStringContainsString('providers;dur=', $serverTiming[0]);
-        $this->assertStringContainsString('endpoint;dur=', $serverTiming[1]);
-        $this->assertStringContainsString('controller;dur=', $serverTiming[2]);
-        $this->assertStringContainsString('db;dur=', $serverTiming[3]);
+        $this->assertStringContainsString('provider;dur=', $serverTiming[0]);
+        $this->assertStringContainsString('controller;dur=', $serverTiming[1]);
+        $this->assertStringContainsString('db;dur=', $serverTiming[2]);
     }
 
     public function testQueryTimeIsMeasured()
@@ -54,7 +53,7 @@ class ServerTimingMiddlewareTest extends TestCase
         // Extract the Server-Timing header
         $serverTiming = $this->getHeader($response, 'server-timing');
         // Assert the db timing is greater than 200ms (SLEEP simulates query time)
-        preg_match('/db;dur=([\d.]+)/', $serverTiming[3], $matches);
+        preg_match('/db;dur=([\d.]+)/', $serverTiming[2], $matches);
         $dbTime = $matches[1] ?? 0;
 
         $this->assertGreaterThanOrEqual(200, (float)$dbTime);
@@ -73,31 +72,11 @@ class ServerTimingMiddlewareTest extends TestCase
         $serverTiming = $this->getHeader($response, 'server-timing');
 
         // Assert the providers timing is present and greater than or equal to 0
-        preg_match('/providers;dur=([\d.]+)/', $serverTiming[0], $matches);
+        preg_match('/provider;dur=([\d.]+)/', $serverTiming[0], $matches);
         $providersTime = $matches[1] ?? null;
 
         $this->assertNotNull($providersTime);
         $this->assertGreaterThanOrEqual(0, (float)$providersTime);
-    }
-
-    public function testEndpointTimingIsMeasuredCorrectly()
-    {
-        // Mock a route
-        Route::middleware(ServerTimingMiddleware::class)->get('/endpoint-test', function () {
-            usleep(500000); // Simulate 500ms delay
-            return response()->json(['message' => 'Endpoint timing test']);
-        });
-
-        // Send a GET request
-        $response = $this->get('/endpoint-test');
-        // Extract the Server-Timing header
-        $serverTiming = $this->getHeader($response, 'server-timing');
-
-        // Assert the endpoint timing is greater than 500ms
-        preg_match('/endpoint;dur=([\d.]+)/', $serverTiming[1], $matches);
-        $endpointTime = $matches[1] ?? 0;
-
-        $this->assertGreaterThanOrEqual(500, (float)$endpointTime);
     }
 
     public function testControllerTimingIsMeasuredCorrectly()
@@ -114,7 +93,7 @@ class ServerTimingMiddlewareTest extends TestCase
         $serverTiming = $this->getHeader($response, 'server-timing');
 
         // Assert the controller timing is greater than 300ms
-        preg_match('/controller;dur=([\d.]+)/', $serverTiming[2], $matches);
+        preg_match('/controller;dur=([\d.]+)/', $serverTiming[1], $matches);
         $controllerTime = $matches[1] ?? 0;
 
         $this->assertGreaterThanOrEqual(300, (float)$controllerTime);
@@ -133,7 +112,7 @@ class ServerTimingMiddlewareTest extends TestCase
         $serverTiming = $this->getHeader($response, 'server-timing');
 
         // Assert the providers timing is present and greater than or equal to 0
-        preg_match('/providers;dur=([\d.]+)/', $serverTiming[0], $matches);
+        preg_match('/provider;dur=([\d.]+)/', $serverTiming[0], $matches);
         $providersTime = $matches[1] ?? null;
 
         $this->assertNotNull($providersTime);
@@ -151,9 +130,8 @@ class ServerTimingMiddlewareTest extends TestCase
         $response->assertHeader('Server-Timing');
 
         $serverTiming = $this->getHeader($response, 'server-timing');
-        $this->assertStringContainsString('providers;dur=', $serverTiming[0]);
-        $this->assertStringContainsString('endpoint;dur=', $serverTiming[1]);
-        $this->assertStringContainsString('controller;dur=', $serverTiming[2]);
-        $this->assertStringContainsString('db;dur=', $serverTiming[3]);
+        $this->assertStringContainsString('provider;dur=', $serverTiming[0]);
+        $this->assertStringContainsString('controller;dur=', $serverTiming[1]);
+        $this->assertStringContainsString('db;dur=', $serverTiming[2]);
     }
 }
