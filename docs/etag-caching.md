@@ -100,6 +100,25 @@ In this example:
 - Middleware generates the ETag based on the last update of the `processes` table.
 - If the client has the corresponding ETag, the server responds with `304 Not Modified` and does not execute the controller logic.
 
+## Logs
+
+This middleware detects **highly dynamic endpoints** by tracking the history of ETags generated for each endpoint. It helps identify endpoints where ETags are consistently different, indicating dynamic responses that may require further optimization.
+
+1. Tracks the last **N ETags** (default: 10) for each endpoint using Laravel's cache.
+2. Logs endpoints as "highly dynamic" if all tracked ETags are unique.
+3. Efficient caching and memory usage to minimize performance overhead.
+
+### Example Logs
+
+When an endpoint is identified as highly dynamic, the following log is generated:
+
+```
+ETag Dynamic endpoint detected:
+{
+  "url": "https://example.com/api/resource",
+}
+```
+
 ## Testing
 
 ### Unit Tests

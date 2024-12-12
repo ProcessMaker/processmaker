@@ -4,12 +4,18 @@ namespace ProcessMaker\Http\Middleware\Etag;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Http\Resources\Caching\EtagManager;
 use Symfony\Component\HttpFoundation\Response;
 
 class HandleEtag
 {
     public string $middleware = 'etag';
+
+    private const ETAG_HISTORY_LIMIT = 10; // Limit of ETags to track per endpoint.
+
+    private const CACHE_EXPIRATION_MINUTES = 30; // Cache expiration time in minutes.
 
     /**
      * Handle an incoming request.
@@ -47,6 +53,9 @@ class HandleEtag
                 }
             }
         }
+
+        // Detect if the ETag changes frequently for dynamic responses.
+        $this->logEtagChanges($request, $etag);
 
         return $response;
     }
@@ -112,5 +121,43 @@ class HandleEtag
     private function stripWeakTags(string $etag): string
     {
         return str_replace('W/', '', $etag);
+    }
+
+    /**
+     * Log ETag changes to detect highly dynamic responses.
+     */
+    private function logEtagChanges(Request $request, ?string $etag): void
+    {
+        if (!$etag) {
+            return;
+        }
+
+        // Retrieve the history of ETags for this endpoint.
+        $url = $request->fullUrl();
+        $cacheKey = 'etag_history:' . md5($url);
+        $etagHistory = Cache::get($cacheKey, []);
+
+        // If the ETag is already in the history, it is not considered dynamic.
+        if (in_array($etag, $etagHistory, true)) {
+            return;
+        }
+
+        // Add the new ETag to the history.
+        $etagHistory[] = $etag;
+
+        // Keep the history limited to the last n ETags.
+        if (count($etagHistory) > self::ETAG_HISTORY_LIMIT) {
+            array_shift($etagHistory); // Remove the oldest ETag.
+        }
+
+        // Save the updated history in the cache, valid for 30 minutes.
+        Cache::put($cacheKey, $etagHistory, now()->addMinutes(self::CACHE_EXPIRATION_MINUTES));
+
+        // If the history is full and all ETags are unique, log this as a highly dynamic endpoint.
+        if (count(array_unique($etagHistory)) === self::ETAG_HISTORY_LIMIT) {
+            Log::info('ETag Dynamic endpoint detected', [
+                'url' => $url,
+            ]);
+        }
     }
 }
