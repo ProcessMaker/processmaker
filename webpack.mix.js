@@ -16,7 +16,7 @@ require("laravel-mix-polyfill");
 
 mix.webpackConfig({
   plugins: [],
-  externals: ["monaco-editor", "SharedComponents", "ModelerInspector"],
+  externals: ["SharedComponents", "ModelerInspector"],
   resolve: {
     extensions: [".*", ".js", ".ts", ".mjs", ".vue", ".json"],
     symlinks: false,
@@ -149,6 +149,8 @@ mix
   .js("resources/jscomposition/cases/casesDetail/loader.js", "public/js/composition/cases/casesDetail")
   .js("resources/js/tasks/loaderMain.js", "public/js/tasks")
   .js("resources/js/tasks/loaderShow.js", "public/js/tasks")
+  .js("resources/js/tasks/loaderEdit.js", "public/js/tasks")
+
   .js("resources/js/app.js", "public/js");
 // .polyfill({
 //   enabled: true,

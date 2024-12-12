@@ -12,5 +12,6 @@ if (window.Processmaker && window.Processmaker.broadcasting) {
     setGlobalVariable("Pusher", Pusher);
   }
 
-  setGlobalVariable("Echo", new Echo(config));
+  window.Echo = new Echo(config);
+  console.log("ECHOOOOOOOOOO ---- last");
 }

@@ -1,5 +1,8 @@
 import { setGlobalVariable } from "../globalVariables";
+import * as SharedComponents from "../../components/shared";
 
-import("../../components/shared").then((SharedComponents) => {
-  setGlobalVariable("SharedComponents", SharedComponents);
-});
+setGlobalVariable("SharedComponents", SharedComponents);
+
+// import("../../components/shared").then((SharedComponents) => {
+//   setGlobalVariable("SharedComponents", SharedComponents);
+// });

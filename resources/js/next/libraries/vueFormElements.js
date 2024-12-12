@@ -1,5 +1,12 @@
-import { setGlobalVariable } from "../globalVariables";
+import VueFormElements from "@processmaker/vue-form-elements";
+import { setGlobalVariable, getGlobalVariable } from "../globalVariables";
 
-import("@processmaker/vue-form-elements").then((vueforms) => {
-  setGlobalVariable("VueFormElements", vueforms);
-});
+const Vue = getGlobalVariable("Vue");
+
+Vue.use(VueFormElements);
+
+setGlobalVariable("VueFormElements", VueFormElements);
+
+// import("@processmaker/vue-form-elements").then((vueforms) => {
+//   setGlobalVariable("VueFormElements", vueforms);
+// });

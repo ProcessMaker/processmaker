@@ -18,10 +18,11 @@ const addScriptsToDOM = async function (scripts) {
   }
 };
 
-const componentsScreenBuilder = ["VueFormRenderer", "Task"];
+const componentsScreenBuilder = ["VueFormRenderer", "Task", "TaskView"];
 
 componentsScreenBuilder.forEach((component) => {
   Vue.component(component, (resolve, reject) => {
+    console.log("LOADER SCREEN BUILDER -------------------------");
     import("@processmaker/screen-builder/dist/vue-form-builder.css");
     if (screenBuilderScripts) {
       addScriptsToDOM(screenBuilderScripts).then(() => {
