@@ -164,7 +164,8 @@ export default {
         },
         {
           color: "#556271",
-          image_icon: require("../../../img/flowGenieIcon.svg"),
+          // todo: fix this
+          image_icon: '',
           asset_name: "FlowGenie",
           asset_name_all: "View All Genies",
           asset_name_new: "New Genie",

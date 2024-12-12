@@ -6,6 +6,8 @@
 import Vuetable from "vuetable-2/src/components/Vuetable";
 import Pagination from "../../../components/common/Pagination";
 import FilterTableBodyMixin from "../../shared/FilterTableBodyMixin";
+import _ from "lodash";
+
 export default {
   mixins:[FilterTableBodyMixin],
   props: {

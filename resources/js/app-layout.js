@@ -1,3 +1,8 @@
+import './bootstrap';
+
+
+
+
 import { BNavbar } from "bootstrap-vue";
 import { Multiselect } from "@processmaker/vue-multiselect";
 import moment from "moment-timezone";
@@ -25,11 +30,11 @@ import { FileUpload, FileDownload } from "./processes/screen-builder/components"
 import RequiredCheckbox from "./processes/screen-builder/components/inspector/RequiredCheckbox";
 import WelcomeModal from "./Mobile/WelcomeModal";
 import Menu from "./components/Menu.vue";
-/** ****
- * Global adjustment parameters for moment.js.
- */
 import __ from "./modules/lang";
 
+// export default function() {
+ 
+console.log("Loading app-layout.js");
 const { Vue } = window;
 // Vue.use(VueHtml2Canvas);
 
@@ -381,6 +386,7 @@ window.addEventListener("unhandledrejection", (event) => {
   }
 });
 
+console.log("Initializing sidebar");
 new Vue({
   el: "#sidebar",
   components: {
@@ -395,3 +401,5 @@ new Vue({
     this.expanded === false;
   },
 });
+
+// }

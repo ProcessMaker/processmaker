@@ -16,7 +16,7 @@
 <script>
     const currentUser = @json($currentUser);
   </script>
-@vite('resources/js/composition/cases/casesMain/main.js')
+@vite('resources/jscomposition/cases/casesMain/main.js')
 @endsection
 
 @section('css')

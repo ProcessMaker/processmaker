@@ -2,13 +2,13 @@ import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue2';
 import ViteYaml from '@modyfi/vite-plugin-yaml';
+// import createExternal from 'vite-plugin-external';
 
 import path from 'path';
 
 export default defineConfig({
     build: {
         minify: false, // temporarily disable minification for debugging
-        // commonjsOptions: { transformMixedEsModules: true }
     },
     css: {
         preprocessorOptions: {
@@ -22,7 +22,6 @@ export default defineConfig({
         preserveSymlinks: true,
         extensions: ['.js', '.vue', '.json', '.scss'],
         alias: {
-            'vue': 'vue/dist/vue.runtime.esm.js',
             'SharedComponents': path.resolve('./resources/js/components/shared'),
             '~styles': path.resolve('./resources/sass'),
         },
@@ -36,7 +35,6 @@ export default defineConfig({
                 'resources/sass/collapseDetails.scss',
                 'resources/sass/sidebar/sidebar.scss',
                 'resources/sass/tailwind.css',
-                'resources/js/timeout.js',
                 'resources/js/admin/auth-clients/index.js',
                 'resources/js/admin/auth/passwords/change.js',
                 'resources/js/admin/cssOverride/edit.js',

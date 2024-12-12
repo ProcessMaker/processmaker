@@ -23,7 +23,7 @@
     <meta name="timezone" content="{{ Auth::user()->timezone ?: config('app.timezone') }}">
     @yield('meta')
     @endif
-    <meta name="timeout-worker" content="{{ Vite::asset('resources/js/timeout.js') }}">
+    <meta name="timeout-worker" content="js/timeout.js">
     <meta name="timeout-length" content="{{ Session::has('rememberme') && Session::get('rememberme') ? "Number.MAX_SAFE_INTEGER" : config('session.lifetime') }}">
     <meta name="timeout-warn-seconds" content="{{ config('session.expire_warning') }}">
     @if(Session::has('_alert'))
@@ -127,17 +127,11 @@
 <script src="{{config('broadcasting.connections.redis.host')}}/socket.io/socket.io.js"></script>
 @endif
 
-<!-- temporary until we refactor global use of "_" -->
-<script src="/vendor/lodash.min.js"></script>
-
-<script>
-  window.ProcessMaker = window.ProcessMaker || {};
-  window.ProcessMaker.user = {};
+<script type="module">
+  import "{{ Vite::asset('resources/js/app.js') }}";
+  import "{{ Vite::asset('resources/js/app-layout.js') }}";
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
 </script>
-
-@vite('resources/js/app.js')
-@vite('resources/js/app-layout.js')
 @foreach(GlobalScripts::getScripts() as $script)
   <script src="{{$script}}"></script>
 @endforeach
