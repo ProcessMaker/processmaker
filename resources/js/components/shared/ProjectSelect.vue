@@ -50,6 +50,7 @@
 
 <script>
 import "@processmaker/vue-multiselect/dist/vue-multiselect.min.css";
+import _ from "lodash";
 
 export default {
   props: ["value", "errors", "label", "helper", "params", "apiGet", "apiList", "projectId"],

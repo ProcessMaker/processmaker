@@ -122,7 +122,7 @@
 @endsection
 
 @section('js')
-<script>
+<script type="module">
     //Data needed for default search
     window.Processmaker.user = @json($currentUser);
     window.Processmaker.status = '{{ $type }}';

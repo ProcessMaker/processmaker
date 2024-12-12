@@ -35,31 +35,42 @@ import PaginationTable from "./components/shared/PaginationTable.vue";
 import PMDropdownSuggest from './components/PMDropdownSuggest';
 import "@processmaker/screen-builder/dist/vue-form-builder.css";
 
-window.__ = translator;
-import _ from "lodash";
-window._ = _;
+// import _ from "lodash";
 import Popper from "popper.js";
+import * as ProcessmakerComponents from "./processes/screen-builder/components";
+// import * as SharedComponents from "./components/shared";
+import * as ProcessesComponents from "./processes/components";
+import * as ScreensComponents from "./processes/screens/components";
+import * as ScriptsComponents from "./processes/scripts/components";
+import * as ProcessesCatalogueComponents from "./processes-catalogue/components/utils";
+import * as ModelerInspector from "./processes/modeler/components/inspector";
+import jQuery from "jquery";
+import Vue from "vue";
+import VueMonaco from "vue-monaco";
+import VueFormElements from "@processmaker/vue-form-elements";
+import Modeler from "@processmaker/modeler";
+import axios from "axios";
+import Pusher from "pusher-js";
+
+console.log('bootstrap.js');
+window.__ = translator;
+window._ = _;
 window.Popper = Popper;
+window.Vue = Vue;
 
 /**
  * Give node plugins access to our custom screen builder components
  */
-import * as ProcessmakerComponents from "./processes/screen-builder/components";
 window.ProcessmakerComponents = ProcessmakerComponents;
 
 /**
  * Give node plugins access to additional components
  */
-import * as SharedComponents from "./components/shared";
-window.SharedComponents = SharedComponents;
+// window.SharedComponents = SharedComponents;
 
-import * as ProcessesComponents from "./processes/components";
 window.ProcessesComponents = ProcessesComponents;
-import * as ScreensComponents from "./processes/screens/components";
 window.ScreensComponents = ScreensComponents;
-import * as ScriptsComponents from "./processes/scripts/components";
 window.ScriptsComponents = ScriptsComponents;
-import * as ProcessesCatalogueComponents from "./processes-catalogue/components/utils";
 window.ProcessesCatalogueComponents = ProcessesCatalogueComponents;
 
 window.PMDropdownSuggest = PMDropdownSuggest;
@@ -67,7 +78,6 @@ window.PMDropdownSuggest = PMDropdownSuggest;
 /**
  * Exporting Modeler inspector components
  */
-import * as ModelerInspector from "./processes/modeler/components/inspector";
 window.ModelerInspector = ModelerInspector;
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -75,7 +85,6 @@ window.ModelerInspector = ModelerInspector;
  * code may be modified to fit the specific needs of your application.
  */
 
-import jQuery from "jquery";
 window.$ = jQuery;
 
 /**
@@ -98,12 +107,9 @@ window.Vue.use(VueCookies);
 if (!document.head.querySelector("meta[name=\"is-horizon\"]")) {
   window.Vue.use(Router);
 }
-import VueMonaco from "vue-monaco";
 window.VueMonaco = VueMonaco;
 
-import VueFormElements from "@processmaker/vue-form-elements";
 window.VueFormElements = VueFormElements;
-import Modeler from "@processmaker/modeler";
 window.Modeler = Modeler;
 
 window.VueRouter = Router;
@@ -129,10 +135,8 @@ const mdates = JSON.parse(
 Vue.mixin({ i18n: new VueI18Next(i18next) });
 Vue.mixin(AccessibilityMixin);
 
-window.ProcessMaker = window.ProcessMaker || {};
+console.log("Start loading bootstrap.js");
 window.ProcessMaker = {
-  ...window.ProcessMaker,
-
   i18n: i18next,
 
   /**
@@ -244,7 +248,6 @@ window.ProcessMaker.i18nPromise.then(() => { translationsLoaded = true; });
  * REST api endpoints through oauth authentication
  *
  */
-import axios from "axios";
 window.ProcessMaker.apiClient = axios;
 
 window.ProcessMaker.apiClient.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
@@ -346,7 +349,6 @@ if (userID) {
   });
 }
 
-import Pusher from "pusher-js";
 if (window.Processmaker && window.Processmaker.broadcasting) {
   const config = window.Processmaker.broadcasting;
 
@@ -482,3 +484,5 @@ Vue.use({
 
 // Send an event when the global Vue and ProcessMaker instance is available
 window.dispatchEvent(new Event("app-bootstrapped"));
+
+console.log("Done with bootstrap.js");
