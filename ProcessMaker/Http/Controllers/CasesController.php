@@ -10,9 +10,11 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Package\PackageComments\PackageServiceProvider;
 use ProcessMaker\ProcessTranslations\ScreenTranslation;
+use ProcessMaker\Traits\ProcessMapTrait;
 
 class CasesController extends Controller
 {
+    use ProcessMapTrait;
     /**
      * Get the list of requests.
      *
@@ -76,6 +78,9 @@ class CasesController extends Controller
         // Get the summary screen tranlations
         $this->summaryScreenTranslation($request);
 
+        // Load the process map
+        $inflightData = $this->loadProcessMap($request);
+        $bpmn = $inflightData['bpmn'];
         // Return the view
         return view('cases.edit', compact(
             'request',
@@ -85,7 +90,9 @@ class CasesController extends Controller
             'canViewComments',
             'canPrintScreens',
             'isProcessManager',
-            'manager'
+            'manager',
+            'bpmn',
+            'inflightData',
         ));
     }
 
