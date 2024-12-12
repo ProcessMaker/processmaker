@@ -28,8 +28,8 @@ export default {
   },
   data() {
     return {
-      treeViewIcon: require("../../../img/tree_view.svg"),
-      codeViewIcon: require("../../../img/code.svg"),
+      treeViewIcon: "img/tree_view.svg",
+      codeViewIcon: "img/code.svg",
     };
   },
   methods: {

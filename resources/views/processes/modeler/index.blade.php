@@ -41,7 +41,7 @@ a {
 
 @section('js')
   @vite('resources/js/leave-warning.js')
-  <script>
+  <script type="module">
   const breadcrumbData = [
     {
       'text':'{{__('Designer')}}',
@@ -109,7 +109,7 @@ a {
   });
   </script>
     @foreach($manager->getScriptWithParams() as $params)
-      <script
+      <script type="module"
       @foreach ($params as $key => $value)
         @if (is_bool($value))
           {{ $key }}

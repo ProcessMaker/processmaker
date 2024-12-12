@@ -369,7 +369,7 @@
 </div>
 @endsection
 @section('js')
-  <script>
+  <script type="module">
     window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
       if (screen.watchers_config) {
         screen.watchers_config.api.execute = @json(route('api.scripts.execute', ['script_id' => 'script_id', 'script_key' => 'script_key']));
@@ -390,11 +390,11 @@
       '{{ route('requests.show', ['request' => $task->process_request_id]) }}'
     );
 
-    const task = @json($task);
-    let draftTask = task.draft;
-    const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
-    const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
-    const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
+    window.task = @json($task);
+    window.draftTask = task.draft;
+    window.userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
+    window.userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
+    window.userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
     var screenFields = @json($screenFields);
     window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
 
@@ -402,10 +402,10 @@
     window.Processmaker.user = @json($currentUser);
   </script>
     @foreach($manager->getScripts() as $script)
-        <script src="{{$script}}"></script>
+        <script type="module" src="{{$script}}"></script>
     @endforeach
     @vite('resources/js/tasks/show.js')
-    <script>
+    <script type="module">
       const store = new Vuex.Store();
       const main = new Vue({
         mixins:addons,
@@ -886,7 +886,7 @@
 @endsection
 
 @section('css')
-@vite('resources/css/collapseDetails.css')
+{{-- @vite('resources/css/collapseDetails.css') --}}
 <style>
   .menu-tab-content {
     margin-left: -16px;

@@ -136,7 +136,7 @@
   <script src="{{ Vite::asset('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
   @endif
 
-  @vite('resources/js/composition/cases/casesDetail/edit.js')
+  @vite('resources/jscomposition/cases/casesDetail/edit.js')
 
   @foreach($manager->getScripts() as $script)
     <script src="{{$script}}"></script>

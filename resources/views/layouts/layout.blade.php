@@ -128,19 +128,28 @@
 @endif
 
 <!-- temporary until we refactor global use of "_" -->
-<script src="/vendor/lodash.min.js"></script>
+{{-- <script src="/vendor/lodash.min.js"></script> --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js" integrity="sha512-WFN04846sdKMIP5LKNphMaWzU7YpMyCU245etK3g/2ARYbPK9Ub18eG+ljU96qKRCWh+quCY7yefSmlkQw1ANQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-<script>
+<script type="module">
   window.ProcessMaker = window.ProcessMaker || {};
   window.ProcessMaker.user = {};
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
 </script>
 
-@vite('resources/js/app.js')
-@vite('resources/js/app-layout.js')
+
+@vite(['resources/js/app.js', 'resources/js/app-layout.js'])
+{{-- @vite('resources/js/app-layout.js') --}}
+{{-- <script type="module">
+  Vite::content('resources/js/monaco.js');
+</script> --}}
+
+
+@include('shared.monaco')
 @foreach(GlobalScripts::getScripts() as $script)
-  <script src="{{$script}}"></script>
+  <script type="module" src="{{$script}}"></script>
 @endforeach
+
 @isset($addons)
 @foreach ($addons as $addon)
   @if (!empty($addon['script_mix']))

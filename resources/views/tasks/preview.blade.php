@@ -39,7 +39,7 @@
     @vite('resources/sass/app.scss')
     <link href="/css/bpmn-symbols/css/bpmn.css" rel="stylesheet">
     @yield('css')
-    <script type="text/javascript">
+    <script type="module">
     @if(Auth::user())
       window.Processmaker = {
         csrfToken: "{{csrf_token()}}",
@@ -121,17 +121,16 @@
     </div>
 </body>
 <!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js" integrity="sha512-WFN04846sdKMIP5LKNphMaWzU7YpMyCU245etK3g/2ARYbPK9Ub18eG+ljU96qKRCWh+quCY7yefSmlkQw1ANQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 @if(config('broadcasting.default') == 'redis')
 <script src="{{config('broadcasting.connections.redis.host')}}/socket.io/socket.io.js"></script>
 @endif
-@vite('resources/js/manifest.js')
-@vite('resources/js/vendor.js')
-@vite('resources/js/app.js')
-<script>
+@vite(['resources/js/app.js'])
+<script type="module">
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
 </script>
-@vite('resources/js/app-layout.js')
-  <script>
+@vite(['resources/js/app-layout.js'])
+  <script type="module">
     window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
       if (screen.watchers_config) {
         screen.watchers_config.api.execute = @json(route('api.scripts.execute', ['script_id' => 'script_id', 'script_key' => 'script_key']));
@@ -147,18 +146,19 @@
       postScriptEndpoint: '/scripts/execute/{id}?task_id={{ $task->id }}',
     };
 
-    const task = @json($task);
-    const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
-    const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
-    const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
-    const screenFields = @json($screenFields);
+    window.task = @json($task);
+    window.userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
+      console.log('USER HAS', userHasAccessToTask);
+    window.userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
+    window.userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
+    window.screenFields = @json($screenFields);
 
   </script>
     @foreach($manager->getScripts() as $script)
-        <script src="{{$script}}"></script>
+        <script type="module" src="{{$script}}"></script>
     @endforeach
-    @vite('resources/js/tasks/show.js')
-    <script>
+    @vite(['resources/js/tasks/show.js'])
+    <script type="module">
       const store = new Vuex.Store();
       const main = new Vue({
         mixins:addons,

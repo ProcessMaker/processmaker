@@ -1,5 +1,6 @@
 <script src="/vendor/monaco-editor/min/vs/loader.js"></script>
 <script>
+console.log("MONACO");
     window.MonacoEnvironment = {
         baseUrl: '/',
     };

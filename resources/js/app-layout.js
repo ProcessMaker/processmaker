@@ -30,9 +30,10 @@ import Menu from "./components/Menu.vue";
  */
 import __ from "./modules/lang";
 
-const { Vue } = window;
-// Vue.use(VueHtml2Canvas);
+// const { Vue } = window;
+// window.Vue.use(VueHtml2Canvas);
 
+console.log('app-layout.js change');
 
 if (window.ProcessMaker && window.ProcessMaker.user) {
   moment.tz.setDefault(window.ProcessMaker.user.timezone);
@@ -43,29 +44,29 @@ if (document.documentElement.lang) {
   moment.locale(document.documentElement.lang);
   window.ProcessMaker.user.lang = document.documentElement.lang;
 }
-Vue.prototype.moment = moment;
+window.Vue.prototype.moment = moment;
 // initializing global instance of a moment object
 window.moment = moment;
 /** ***** */
 
-Vue.prototype.$sanitize = sanitizeUrl;
+window.Vue.prototype.$sanitize = sanitizeUrl;
 
-Vue.component("Multiselect", Multiselect);
-Vue.component("Sidebaricon", Sidebaricon);
-Vue.component("SelectStatus", SelectStatus);
-Vue.component("SelectUser", SelectUser);
-Vue.component("SelectUserGroup", SelectUserGroup);
-Vue.component("CategorySelect", CategorySelect);
-Vue.component("ProjectSelect", ProjectSelect);
-Vue.component("SelectFromApi", SelectFromApi);
-Vue.component("FileUpload", FileUpload);
-Vue.component("FileDownload", FileDownload);
-Vue.component("RequiredCheckbox", RequiredCheckbox);
-Vue.component("Breadcrumbs", Breadcrumbs);
-Vue.component("TimelineItem", TimelineItem);
-Vue.component("Required", Required);
-Vue.component("Welcome", WelcomeModal);
-Vue.component("LanguageSelectorButton", (resolve) => {
+window.Vue.component("Multiselect", Multiselect);
+window.Vue.component("Sidebaricon", Sidebaricon);
+window.Vue.component("SelectStatus", SelectStatus);
+window.Vue.component("SelectUser", SelectUser);
+window.Vue.component("SelectUserGroup", SelectUserGroup);
+window.Vue.component("CategorySelect", CategorySelect);
+window.Vue.component("ProjectSelect", ProjectSelect);
+window.Vue.component("SelectFromApi", SelectFromApi);
+window.Vue.component("FileUpload", FileUpload);
+window.Vue.component("FileDownload", FileDownload);
+window.Vue.component("RequiredCheckbox", RequiredCheckbox);
+window.Vue.component("Breadcrumbs", Breadcrumbs);
+window.Vue.component("TimelineItem", TimelineItem);
+window.Vue.component("Required", Required);
+window.Vue.component("Welcome", WelcomeModal);
+window.Vue.component("LanguageSelectorButton", (resolve) => {
   if (window.ProcessMaker.languageSelectorButtonComponent) {
     resolve(window.ProcessMaker.languageSelectorButtonComponent);
   } else {
@@ -148,7 +149,7 @@ window.ProcessMaker.navbar = new Vue({
     },
   },
   mounted() {
-    Vue.nextTick() // This is needed to override the default alert method.
+    window.Vue.nextTick() // This is needed to override the default alert method.
       .then(() => {
         this.onResize();
         window.addEventListener("resize", this.onResize, { passive: true });

@@ -22,7 +22,7 @@ export default defineConfig({
         preserveSymlinks: true,
         extensions: ['.js', '.vue', '.json', '.scss'],
         alias: {
-            'vue': 'vue/dist/vue.runtime.esm.js',
+            'vue': 'vue/dist/vue.esm.js',
             'SharedComponents': path.resolve('./resources/js/components/shared'),
             '~styles': path.resolve('./resources/sass'),
         },
@@ -50,8 +50,6 @@ export default defineConfig({
                 'resources/js/admin/settings/ldaplogs.js',
                 'resources/js/admin/users/edit.js',
                 'resources/js/admin/users/index.js',
-                'resources/js/app-layout.js',
-                'resources/js/app.js',
                 'resources/js/inbox-rules/index.js',
                 'resources/js/inbox-rules/show.js',
                 'resources/js/leave-warning.js',
@@ -99,6 +97,8 @@ export default defineConfig({
                 'resources/js/translations/index.js',
                 'resources/jscomposition/cases/casesDetail/edit.js',
                 'resources/jscomposition/cases/casesMain/main.js',
+                'resources/js/app-layout.js',
+                'resources/js/app.js'
             ],
             refresh: true,
         }),

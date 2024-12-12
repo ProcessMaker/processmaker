@@ -170,7 +170,7 @@
 @endsection
 
 @section('js')
-    <script>
+    <script type="module">
       window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
       window.ProcessMaker.advanced_filter = @json($userFilter);
       window.Processmaker.defaultColumns = @json($defaultColumns);
