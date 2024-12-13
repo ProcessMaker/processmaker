@@ -11,6 +11,7 @@ use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Support\Facades;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
@@ -403,10 +404,17 @@ class ProcessMakerServiceProvider extends ServiceProvider
     /**
      * Set the boot time for service providers.
      *
+     * @param string $package
      * @param float $time
      */
-    public static function setPackageBootStart(string $package, $time): void
+    public static function setPackageBootStart(string $package, float $time): void
     {
+        if ($time < 0) {
+            Log::info("Server Timing: Invalid boot time for package: {$package}, time: {$time}");
+
+            $time = 0;
+        }
+
         self::$packageBootTiming[$package] = [
             'start' => $time,
             'end' => null,
@@ -416,10 +424,17 @@ class ProcessMakerServiceProvider extends ServiceProvider
     /**
      * Set the boot time for service providers.
      *
+     *
      * @param float $time
      */
     public static function setPackageBootedTime(string $package, $time): void
     {
+        if (!isset(self::$packageBootTiming[$package]) || $time < 0) {
+            Log::info("Server Timing: Invalid booted time for package: {$package}, time: {$time}");
+
+            return;
+        }
+
         self::$packageBootTiming[$package]['end'] = $time;
     }
 

@@ -51,7 +51,7 @@ trait PluginServiceProviderTrait
      *
      * @return string
      */
-    protected function getPackageName()
+    protected function getPackageName(): string
     {
         if (defined('static::name')) {
             return ucfirst(\Str::camel(static::name));
