@@ -340,16 +340,15 @@ trait TaskControllerIndexMethods
         });
     }
 
+    /**
+     * Check if the user is the manager of the process
+     *
+     * @param User $user
+     *
+     * @return bool
+     */
     private function isManagerOfProcess($user)
     {
-        $record = Process::select('id', 'properties->manager_id')
-            ->whereNotNull('properties->manager_id')
-            ->where('properties->manager_id', '=', $user->id)
-            ->where('status', 'ACTIVE')
-            ->first();
-        if ($record) {
-            return true;
-        }
-        return false;
+        return Process::isManagerOfSomeProcess($user);
     }
 }

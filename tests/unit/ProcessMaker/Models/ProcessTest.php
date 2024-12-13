@@ -30,4 +30,20 @@ class ProcessTest extends TestCase
 
         $this->assertEquals([$groupAUser->id, $groupBUser->id], $users);
     }
+
+    /**
+     * @testdox Test that isManagerOfSomeProcess returns true for a manager of a process.
+     */
+    public function testIsManagerOfSomeProcess()
+    {
+        $user = User::factory()->create();
+        $process = Process::factory()->create([
+            'properties' => ['manager_id' => $user->id],
+            'status' => 'ACTIVE'
+        ]);
+        $this->assertTrue(Process::isManagerOfSomeProcess($user));
+
+        $user2 = User::factory()->create();
+        $this->assertFalse(Process::isManagerOfSomeProcess($user2));
+    }
 }
