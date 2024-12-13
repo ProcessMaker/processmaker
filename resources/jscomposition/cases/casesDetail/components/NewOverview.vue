@@ -3,6 +3,7 @@
     class="tw-w-full tw-h-full tw-overflow-hidden tw-relative"
     data-test="body-container"
   >
+    <MapLegend />
     <ProcessMapTooltip
       v-show="showTooltip"
       ref="tooltipRef"
@@ -41,6 +42,7 @@ import {
 } from "vue";
 import { Modeler } from "@processmaker/modeler";
 import ProcessMapTooltip from "../../../../js/processes/modeler/components/ProcessMapTooltip.vue";
+import MapLegend from "./MapLegend.vue";
 import { getInflightData } from "../variables";
 
 const keyModeler = ref(Math.random());
