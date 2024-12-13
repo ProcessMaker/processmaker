@@ -134,4 +134,22 @@ class ServerTimingMiddlewareTest extends TestCase
         $this->assertStringContainsString('controller;dur=', $serverTiming[1]);
         $this->assertStringContainsString('db;dur=', $serverTiming[2]);
     }
+
+    public function testServerTimingIfIsDisabled()
+    {
+        config(['app.server_timing.enabled' => false]);
+
+        Route::middleware(ServerTimingMiddleware::class)->get('/test', function () {
+            // Simulate a query
+            DB::select('SELECT SLEEP(1)');
+
+            return response()->json(['message' => 'Test endpoint']);
+        });
+
+        // Send a GET request
+        $response = $this->get('/test');
+        $response->assertStatus(200);
+        // Assert the response has not the Server-Timing header
+        $response->assertHeaderMissing('Server-Timing');
+    }
 }

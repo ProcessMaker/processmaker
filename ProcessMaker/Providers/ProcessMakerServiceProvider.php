@@ -73,10 +73,12 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
     public function register(): void
     {
-        // Listen to query events and accumulate query execution time
-        DB::listen(function ($query) {
-            self::$queryTime += $query->time;
-        });
+        if (config('app.server_timing.enabled')) {
+            // Listen to query events and accumulate query execution time
+            DB::listen(function ($query) {
+                self::$queryTime += $query->time;
+            });
+        }
 
         // Dusk, if env is appropriate
         // TODO Remove Dusk references and remove from composer dependencies
