@@ -41,7 +41,10 @@ class ServerTimingMiddleware
         foreach ($packageTimes as $package => $timing) {
             $time = ($timing['end'] - $timing['start']) * 1000;
 
-            $serverTiming[] = "{$package};dur={$time}";
+            // Only include packages that took more than 5ms
+            if ($time > 5) {
+                $serverTiming[] = "{$package};dur={$time}";
+            }
         }
 
         // Add Server-Timing headers

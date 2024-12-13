@@ -407,8 +407,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
      */
     public static function setPackageBootStart(string $package, $time): void
     {
-        $package = ucfirst(\Str::camel(str_replace(['ProcessMaker\Packages\\', '\\'], '', $package)));
-
         self::$packageBootTiming[$package] = [
             'start' => $time,
             'end' => null,
@@ -422,8 +420,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
      */
     public static function setPackageBootedTime(string $package, $time): void
     {
-        $package = ucfirst(\Str::camel(str_replace(['ProcessMaker\Packages\\', '\\'], '', $package)));
-
         self::$packageBootTiming[$package]['end'] = $time;
     }
 
