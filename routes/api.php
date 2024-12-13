@@ -71,6 +71,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // User Configuration
     Route::get('users/configuration', [UserConfigurationController::class, 'index'])->name('users.configuration.index');
     Route::put('users/configuration', [UserConfigurationController::class, 'store'])->name('users.configuration.store');
+    Route::put('users/filters', [UserConfigurationController::class, 'storeFilters'])->name('users.filters.store');
 
     // Groups//Permissions policy
     Route::get('groups', [GroupController::class, 'index'])->name('groups.index'); // Permissions handled in the controller
