@@ -4,12 +4,18 @@ namespace ProcessMaker\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use ProcessMaker\Providers\ProcessMakerServiceProvider;
 use Symfony\Component\HttpFoundation\Response;
 
 class ServerTimingMiddleware
 {
+    // Minimum time in ms to include a package in the Server-Timing header
+    private static $minPackageTime;
+
+    public function __construct()
+    {
+        self::$minPackageTime = config('app.server_timing.min_package_time');
+    }
     /**
      * Handle an incoming request.
      *
@@ -41,7 +47,10 @@ class ServerTimingMiddleware
         foreach ($packageTimes as $package => $timing) {
             $time = ($timing['end'] - $timing['start']) * 1000;
 
-            $serverTiming[] = "{$package};dur={$time}";
+            // Only include packages that took more than MIN_PACKAGE_TIME ms
+            if ($time > self::$minPackageTime) {
+                $serverTiming[] = "{$package};dur={$time}";
+            }
         }
 
         // Add Server-Timing headers

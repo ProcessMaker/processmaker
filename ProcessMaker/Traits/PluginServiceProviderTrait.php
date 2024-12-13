@@ -30,22 +30,34 @@ trait PluginServiceProviderTrait
     {
         parent::__construct($app);
 
-        $this->booting(function () {
-            self::$bootStart = microtime(true);
+        $package = $this->getPackageName();
 
-            $package = defined('static::name') ? static::name : $this::class;
+        $this->booting(function () use ($package) {
+            self::$bootStart = microtime(true);
 
             ProcessMakerServiceProvider::setPackageBootStart($package, self::$bootStart);
         });
 
-        $this->booted(function () {
+        $this->booted(function () use ($package) {
             self::$bootTime = microtime(true);
-
-            $package = defined('static::name') ? static::name : $this::class;
 
             ProcessMakerServiceProvider::setPackageBootedTime($package, self::$bootTime);
         });
 
+    }
+
+    /**
+     * Get the package name for the Server Timing header
+     *
+     * @return string
+     */
+    protected function getPackageName(): string
+    {
+        if (defined('static::name')) {
+            return ucfirst(\Str::camel(static::name));
+        }
+
+        return substr(static::class, strrpos(static::class, '\\') + 1);
     }
 
     /**
