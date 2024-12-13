@@ -3,8 +3,7 @@
 namespace ProcessMaker\Tests\Feature\Etag;
 
 use Illuminate\Support\Facades\Route;
-use ProcessMaker\Http\Middleware\Etag\HandleEtag;
-use ProcessMaker\Http\Resources\Caching\EtagManager;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 
@@ -19,7 +18,7 @@ class HandleEtagTest extends TestCase
         parent::setUp();
 
         // Define a route that uses the HandleEtag middleware.
-        Route::middleware(HandleEtag::class)->any(self::TEST_ROUTE, function () {
+        Route::middleware('etag')->any(self::TEST_ROUTE, function () {
             return response($this->response, 200);
         });
     }
@@ -83,5 +82,33 @@ class HandleEtagTest extends TestCase
 
         $expectedEtag = '"' . md5($user->id . $this->response) . '"';
         $response->assertHeader('ETag', $expectedEtag);
+    }
+
+    public function testReturns304NotModifiedWhenEtagMatchesTables()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        Process::factory()->create([
+            'updated_at' => now()->yesterday(),
+        ]);
+
+        Route::middleware('etag')->any(self::TEST_ROUTE, function () {
+            return response($this->response, 200);
+        })->defaults('etag_tables', 'processes');
+
+        // Initial request to get the ETAg.
+        $response = $this->get(self::TEST_ROUTE);
+        $etag = $response->headers->get('ETag');
+        $this->assertNotNull($etag, 'ETag should be set in the initial response');
+
+        // Perform a second request sending the `If-None-Match`.
+        $responseWithMatchingEtag = $this->withHeaders(['If-None-Match' => $etag])
+            ->get(self::TEST_ROUTE);
+
+        // Verify response is 304 Not Modified.
+        $responseWithMatchingEtag->assertStatus(304);
+        $this->assertEmpty($responseWithMatchingEtag->getContent(), 'Response content is not empty for 304 Not Modified');
+        $this->assertEquals($etag, $responseWithMatchingEtag->headers->get('ETag'), 'ETag does not match the client-provided If-None-Match');
     }
 }
