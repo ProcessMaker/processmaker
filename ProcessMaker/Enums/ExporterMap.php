@@ -13,6 +13,7 @@ enum ExporterMap
         'process_templates' => [\ProcessMaker\Models\ProcessTemplates::class, \ProcessMaker\ImportExport\Exporters\TemplateExporter::class],
         'data_source' => [\ProcessMaker\Packages\Connectors\DataSources\Models\DataSource::class, \ProcessMaker\Packages\Connectors\DataSources\ImportExport\DataSourceExporter::class],
         'decision_table' => [\ProcessMaker\Package\PackageDecisionEngine\Models\DecisionTable::class, \ProcessMaker\Package\PackageDecisionEngine\ImportExport\DecisionTableExporter::class],
+        'collection' => [\ProcessMaker\Plugins\Collections\Models\Collection::class, \ProcessMaker\Plugins\Collections\ImportExport\CollectionExporter::class],
         'flow_genie' => [
             \ProcessMaker\Package\PackageAi\Models\FlowGenie::class,
             \ProcessMaker\Package\PackageAi\ImportExport\FlowGenieExporter::class,

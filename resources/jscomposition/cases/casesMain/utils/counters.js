@@ -30,7 +30,7 @@ export const formatCounters = (data) => {
     },
   ];
 
-  if (data.totalAllCases) {
+  if (data.totalAllCases !== null) {
     counters.push({
       header: t("All cases"),
       body: data.totalAllCases.toString(),
@@ -41,7 +41,7 @@ export const formatCounters = (data) => {
     });
   }
 
-  if (data.totalMyRequest) {
+  if (data.totalMyRequest !== null) {
     counters.push({
       header: t("My requests"),
       body: data.totalMyRequest.toString(),
