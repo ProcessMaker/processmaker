@@ -30,6 +30,21 @@ trait PluginServiceProviderTrait
     {
         parent::__construct($app);
 
+        $this->bootServerTiming();
+    }
+
+    /**
+     * The `bootServerTiming` function sets up timing measurements for the booting and booted events of the packages
+     *
+     * @return void If the condition `config('app.server_timing.enabled')` is false, nothing is being returned as the
+     * function will exit early.
+     */
+    protected function bootServerTiming(): void
+    {
+        if (!config('app.server_timing.enabled')) {
+            return;
+        }
+
         $package = $this->getPackageName();
 
         $this->booting(function () use ($package) {
@@ -43,7 +58,6 @@ trait PluginServiceProviderTrait
 
             ProcessMakerServiceProvider::setPackageBootedTime($package, self::$bootTime);
         });
-
     }
 
     /**

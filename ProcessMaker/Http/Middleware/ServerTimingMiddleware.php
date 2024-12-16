@@ -23,6 +23,10 @@ class ServerTimingMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (!config('app.server_timing.enabled')) {
+            return $next($request);
+        }
+
         // Start time for controller execution
         $startController = microtime(true);
 
