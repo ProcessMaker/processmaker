@@ -14,16 +14,9 @@ class MetricsService
     /**
      * The CollectorRegistry instance used by the MetricsService.
      *
-     * @var \Prometheus\CollectorRegistry
+     * @var CollectorRegistry
      */
     private $collectionRegistry;
-
-    /**
-     * The namespace used by the MetricsService.
-     *
-     * @var string
-     */
-    private $namespace = 'app';
 
     /**
      * Initializes the MetricsService with a CollectorRegistry using the provided storage adapter.
@@ -52,26 +45,6 @@ class MetricsService
     }
 
     /**
-     * Returns the namespace used by the MetricsService.
-     *
-     * @return string The namespace used by the MetricsService.
-     */
-    public function getNamespace(): string
-    {
-        return $this->namespace;
-    }
-
-    /**
-     * Sets the namespace used by the MetricsService.
-     *
-     * @param string $namespace The namespace to set.
-     */
-    public function setNamespace(string $namespace): void
-    {
-        $this->namespace = $namespace;
-    }
-
-    /**
      * Sets the CollectorRegistry used by the MetricsService.
      * Example:
      * $metricsService->setRegistry(new CollectorRegistry(new Redis([
@@ -79,7 +52,7 @@ class MetricsService
      *     'port' => config('database.redis.default.port'),
      * ])));
      *
-     * @param \Prometheus\CollectorRegistry $collectionRegistry The CollectorRegistry to set.
+     * @param CollectorRegistry $collectionRegistry The CollectorRegistry to set.
      */
     public function setRegistry(CollectorRegistry $collectionRegistry): void
     {
@@ -89,7 +62,7 @@ class MetricsService
     /**
      * Returns the CollectorRegistry used by the MetricsService.
      *
-     * @return \Prometheus\CollectorRegistry The CollectorRegistry used by the MetricsService.
+     * @return CollectorRegistry The CollectorRegistry used by the MetricsService.
      */
     public function getMetrics(): CollectorRegistry
     {
@@ -112,6 +85,7 @@ class MetricsService
                 return $metric;
             }
         }
+
         return null;
     }
 
@@ -124,13 +98,14 @@ class MetricsService
      * @param string $help The help text of the counter.
      * @param array $labels The labels of the counter.
      * @return \Prometheus\Counter The registered counter.
-     * @throws \RuntimeException If a metric with the same name already exists.
+     * @throws RuntimeException If a metric with the same name already exists.
      */
     public function registerCounter(string $name, string $help, array $labels = []): \Prometheus\Counter
     {
         if ($this->getMetricByName($name) !== null) {
             throw new RuntimeException("A metric with this name already exists. '{$name}'.");
         }
+
         return $this->collectionRegistry->registerCounter($this->namespace, $name, $help, $labels);
     }
 
@@ -187,7 +162,7 @@ class MetricsService
      *
      * @param string $name The name of the counter.
      * @param array $labelValues The values of the labels for the counter.
-     * @throws \RuntimeException If the counter could not be incremented.
+     * @throws RuntimeException If the counter could not be incremented.
      */
     public function incrementCounter(string $name, array $labelValues = []): void
     {
@@ -248,17 +223,7 @@ class MetricsService
     {
         $renderer = new RenderTextFormat();
         $metrics = $this->collectionRegistry->getMetricFamilySamples();
-        return $renderer->render($metrics);
-    }
 
-    /**
-     * Helper to register a default set of metrics for common Laravel use cases.
-     */
-    public function registerDefaultMetrics(): void
-    {
-        $this->registerCounter('http_requests_total', 'Total HTTP requests', ['method', 'endpoint', 'status']);
-        $this->registerHistogram('http_request_duration_seconds', 'HTTP request duration in seconds', ['method', 'endpoint'], [0.1, 0.5, 1, 5, 10]);
-        $this->registerGauge('active_jobs', 'Number of active jobs in the queue', ['queue']);
-        $this->registerCounter('job_failures_total', 'Total number of failed jobs', ['queue']);
+        return $renderer->render($metrics);
     }
 }
