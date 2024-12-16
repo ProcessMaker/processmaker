@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -256,13 +255,6 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             $user = Auth::user();
             $model->updated_by = $user?->id;
             self::clearAndRebuildUserProjectAssetsCache();
-        });
-
-        static::saved(function ($model) {
-            $userIds = Cache::get("cache_is_manager_of_some_process_ids", []);
-            foreach ($userIds as $userId) {
-                Cache::forget("cache_is_manager_of_some_process_{$userId}");
-            }
         });
     }
 
@@ -1873,37 +1865,5 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                 ->orderByDesc('id') // using ID because created_at is not indexed
                 ->limit(1)
         );
-    }
-
-    /**
-     * Check if the user is the manager of the process.
-     * The result is stored in cache to avoid repeated queries.
-     * It is necessary to store the user ID to prevent inconsistency if any process has changed.
-     *
-     * @param User $user
-     *
-     * @return bool
-     */
-    public static function isManagerOfSomeProcess($user)
-    {
-        $cacheKey = "cache_is_manager_of_some_process_ids";
-        $userIds = Cache::get($cacheKey, []);
-        if (!in_array($user->id, $userIds)) {
-            $userIds[] = $user->id;
-            Cache::put($cacheKey, $userIds, 3600);
-        }
-
-        $result = Cache::rememberForever("cache_is_manager_of_some_process_{$user->id}", function () use ($user) {
-            $record = Process::select('id', 'properties->manager_id')
-            ->whereNotNull('properties->manager_id')
-            ->where('properties->manager_id', '=', $user->id)
-                ->where('status', 'ACTIVE')
-                ->first();
-            if ($record) {
-                return true;
-            }
-            return false;
-        });
-        return $result;
     }
 }

@@ -326,6 +326,10 @@ export default {
     noResultsMessage: {
       type: String,
       default: "tasks",
+    },
+    processesIManage: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

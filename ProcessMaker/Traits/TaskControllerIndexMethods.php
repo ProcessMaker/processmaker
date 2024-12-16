@@ -311,11 +311,6 @@ trait TaskControllerIndexMethods
             return $query;
         }
 
-        if ($this->isManagerOfProcess($user)) {
-            $this->applyProcessManager($query, $user);
-            return $query;
-        }
-
         if ($user->can('view-all_requests')) {
             return $query;
         }
@@ -338,17 +333,5 @@ trait TaskControllerIndexMethods
             $query->whereIn('process_request_tokens.process_id', array_column($ids, 'id'))
                 ->where('process_request_tokens.status', 'ACTIVE');
         });
-    }
-
-    /**
-     * Check if the user is the manager of the process
-     *
-     * @param User $user
-     *
-     * @return bool
-     */
-    private function isManagerOfProcess($user)
-    {
-        return Process::isManagerOfSomeProcess($user);
     }
 }
