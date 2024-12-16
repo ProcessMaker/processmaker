@@ -58,7 +58,7 @@ class TaskController extends Controller
 
         $taskDraftsEnabled = TaskDraft::draftsEnabled();
 
-        $userConfiguration = (new UserConfigurationController())->index()['ui_configuration'];
+        $userConfiguration = (new UserConfigurationController())->index()['ui_configuration'] ?? [];
 
         return view('tasks.index', compact('title', 'userFilter', 'defaultColumns', 'taskDraftsEnabled', 'userConfiguration'));
     }
