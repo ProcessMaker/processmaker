@@ -90,7 +90,7 @@ class UserConfigurationTest extends TestCase
 
         // Validate the header status code
         $response->assertStatus(422);
-        $this->assertEquals('The Ui configuration field is required. (and 4 more errors)', $response->json()['message']);
+        $this->assertEquals('The Ui configuration field is required. (and 5 more errors)', $response->json()['message']);
 
         // An incomplete ui_configuration
         $values = [
@@ -101,6 +101,9 @@ class UserConfigurationTest extends TestCase
                 'isMenuCollapse' => false,
             ],
             'tasks' => [
+                'isMenuCollapse' => false,
+            ],
+            'tasks_inbox' => [
                 'isMenuCollapse' => false,
             ],
         ];
