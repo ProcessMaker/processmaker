@@ -20,6 +20,7 @@ const addScriptsToDOM = async function (scripts) {
 
 const componentsScreenBuilder = ["VueFormRenderer", "Task", "TaskView"];
 
+console.log("JONAS", componentsScreenBuilder);
 componentsScreenBuilder.forEach((component) => {
   Vue.component(component, (resolve, reject) => {
     console.log("LOADER SCREEN BUILDER -------------------------");

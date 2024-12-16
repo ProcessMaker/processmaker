@@ -255,9 +255,6 @@ import DefaultTab from "../../processes-catalogue/components/DefaultTab.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
-Vue.component("AvatarImage", AvatarImage);
-Vue.component("TasksPreview", TasksPreview);
-
 export default {
   components: {
     EllipsisMenu,
@@ -269,6 +266,8 @@ export default {
     TaskListRowButtons,
     Recommendations,
     DefaultTab,
+    AvatarImage,
+    TasksPreview,
   },
   mixins: [
     datatableMixin,

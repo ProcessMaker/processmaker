@@ -13,5 +13,4 @@ if (window.Processmaker && window.Processmaker.broadcasting) {
   }
 
   window.Echo = new Echo(config);
-  console.log("ECHOOOOOOOOOO ---- last");
 }

@@ -23,3 +23,38 @@ export const setGlobalPMVariables = (variables) => {
 };
 
 export const getGlobalPMVariable = (key) => window.ProcessMaker[key];
+
+export const addUses = (Vue, uses) => {
+  if (typeof uses === "object") {
+    Object.values(uses).forEach((use) => {
+      if (use) {
+        Vue.use(use);
+      }
+    });
+  }
+};
+
+export const addMixin = (Vue, mixins) => {
+  if (typeof mixins === "object") {
+    Object.values(mixins).forEach((mixin) => {
+      if (mixin) {
+        Vue.mixin(mixin);
+      }
+    });
+  }
+};
+
+export const loadModulesSequentially = async (modules) => {
+  const loadedModules = [];
+
+  for (const modulePath of modules) {
+    try {
+      const module = await modulePath;
+      loadedModules.push(module);
+    } catch (error) {
+      console.error(`Error module: ${modulePath}`, error);
+    }
+  }
+
+  return loadedModules;
+};

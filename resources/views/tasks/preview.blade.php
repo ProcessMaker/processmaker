@@ -128,12 +128,12 @@
 <script src="{{ mix('js/vue-vendor.js') }}"></script>
 <script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
 <script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
-<script src="{{ mix('js/tasks/loaderShow.js')}}"></script>
+<script type="module" src="{{ mix('js/tasks/loaderShow.js')}}"></script>
 <script>
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
 </script>
 <script src="{{ mix('js/app-layout.js') }}"></script>
-  <script>
+  <script type="module">
     window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
       if (screen.watchers_config) {
         screen.watchers_config.api.execute = @json(route('api.scripts.execute', ['script_id' => 'script_id', 'script_key' => 'script_key']));
@@ -158,7 +158,7 @@
 
   </script>
     <script src="{{mix('js/tasks/show.js')}}"></script>
-    <script>
+    <script type="module">
       const store = new Vuex.Store();
       const main = new Vue({
         mixins:addons,
@@ -501,7 +501,6 @@
       window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name)
     
     </script>
-
 
     <style>
         .inline-input {

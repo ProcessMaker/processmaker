@@ -3,9 +3,12 @@ import * as vue from "vue";
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 import moment from "moment-timezone";
 
-// import { Multiselect } from "@processmaker/vue-multiselect";
+import { Multiselect } from "@processmaker/vue-multiselect";
 import debounce from "lodash/debounce";
 import Mustache from "mustache";
+// import Task from "@processmaker/screen-builder";
+import { loadModulesSequentially } from "../next/globalVariables";
+
 import AvatarImage from "../components/AvatarImage.vue";
 import SelectUserGroup from "../components/SelectUserGroup.vue";
 import PmqlInput from "../components/shared/PmqlInput.vue";
@@ -23,7 +26,6 @@ import Timeline from "../components/Timeline.vue";
 import TimelineItem from "../components/TimelineItem.vue";
 import QuickFillPreview from "./components/QuickFillPreview.vue";
 import TasksList from "./components/TasksList.vue";
-
 
 import TaskSavePanel from "./components/TaskSavePanel.vue";
 import autosaveMixins from "../modules/autosave/autosaveMixin";
@@ -43,37 +45,45 @@ window.Vue.use(BootstrapVueIcons);
 window.debounce = debounce;
 window.Mustache = Mustache;
 
-import("../next/libraries/vuex");
-import("../next/libraries/bootstrap");
-import("../next/libraries/jquery");
-import("../next/libraries/vueRouter");
-import("../next/libraries/vueCookies");
-
 window.ProcessMaker = {
   EventBus: new Vue(),
   events: new Vue(),
+  packages: window.packages,
 };
 
-import("../next/libraries/broadcast");
-import("../next/config/processmaker");
-import("../next/config/notifications");
-import("../next/config/i18n");
-import("../next/config/user");
-import("../next/config/session");
-import("../next/config/momentConfig");
-import("../next/config/openAI");
+loadModulesSequentially([
+  import("../next/libraries/vuex"),
+  import("../next/libraries/bootstrap"),
+  import("../next/libraries/jquery"),
+  import("../next/libraries/vueCookies"),
+  import("../next/config/i18n"),
+  import("../next/libraries/vueRouter"),
+  import("../next/libraries/broadcast"),
+  import("../next/config/processmaker"),
+  import("../next/config/notifications"),
+  import("../next/config/user"),
+  import("../next/config/session"),
+  import("../next/config/momentConfig"),
+  import("../next/config/openAI"),
+  // Load components
+  import("../next/libraries/vueFormElements"), // Necessary for many packages for the screen builder
+  // import("../next/libraries/sharedComponents");
 
-// Load components
-import("../next/libraries/vueFormElements"); // Necessary for many packages for the screen builder
-// import("../next/libraries/sharedComponents");
+  // Screen builder
+  import("../next/screenBuilder"),
+  import("../next/monaco"),
 
-// Screen builder
-import("../next/screenBuilder");
-import("../next/monaco");
-
-// Load libraries dependencies first
-import("../next/layout/sidebar");
-import("../next/layout/navbar");
+  // Load libraries dependencies first
+  import("../next/layout/sidebar"),
+  import("../next/layout/navbar"),
+  import("./edit"),
+])
+  .then((modules) => {
+    console.log(modules);
+  })
+  .catch((error) => {
+    console.error("Error al cargar los módulos:", error);
+  });
 
 Vue.component("SelectUserGroup", SelectUserGroup);
 Vue.component("PmqlInput", PmqlInput);
@@ -94,6 +104,7 @@ Vue.component("TimelineItem", TimelineItem);
 Vue.component("QuickFillPreview", QuickFillPreview);
 Vue.component("TasksList", TasksList);
 Vue.component("TaskSavePanel", TaskSavePanel);
+// Vue.use(Task);
 Vue.component("TaskSaveNotification", TaskSaveNotification);
 Vue.component("ReassignMobileModal", ReassignMobileModal);
 Vue.mixin(autosaveMixins);
