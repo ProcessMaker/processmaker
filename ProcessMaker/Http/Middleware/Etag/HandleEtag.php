@@ -13,15 +13,15 @@ class HandleEtag
 {
     public string $middleware = 'etag';
 
-    private const ETAG_HISTORY_LIMIT = 10; // Limit of ETags to track per endpoint.
-
-    private const CACHE_EXPIRATION_MINUTES = 30; // Cache expiration time in minutes.
-
     /**
      * Handle an incoming request.
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (!config('etag.enabled')) {
+            return $next($request);
+        }
+
         // Process only GET and HEAD methods.
         if (!$request->isMethod('GET') && !$request->isMethod('HEAD')) {
             return $next($request);
@@ -128,6 +128,10 @@ class HandleEtag
      */
     private function logEtagChanges(Request $request, ?string $etag): void
     {
+        if (!config('etag.enabled') || !config('etag.log_dynamic_endpoints')) {
+            return;
+        }
+
         if (!$etag) {
             return;
         }
@@ -146,15 +150,17 @@ class HandleEtag
         $etagHistory[] = $etag;
 
         // Keep the history limited to the last n ETags.
-        if (count($etagHistory) > self::ETAG_HISTORY_LIMIT) {
+        $etagHistoryLimit = config('etag.history_limit', 10);
+        if (count($etagHistory) > $etagHistoryLimit) {
             array_shift($etagHistory); // Remove the oldest ETag.
         }
 
         // Save the updated history in the cache, valid for 30 minutes.
-        Cache::put($cacheKey, $etagHistory, now()->addMinutes(self::CACHE_EXPIRATION_MINUTES));
+        $cacheExpirationMinute = config('etag.history_cache_expiration');
+        Cache::put($cacheKey, $etagHistory, now()->addMinutes($cacheExpirationMinute));
 
         // If the history is full and all ETags are unique, log this as a highly dynamic endpoint.
-        if (count(array_unique($etagHistory)) === self::ETAG_HISTORY_LIMIT) {
+        if (count(array_unique($etagHistory)) === $etagHistoryLimit) {
             Log::info('ETag Dynamic endpoint detected', [
                 'url' => $url,
             ]);

@@ -100,6 +100,16 @@ In this example:
 - Middleware generates the ETag based on the last update of the `processes` table.
 - If the client has the corresponding ETag, the server responds with `304 Not Modified` and does not execute the controller logic.
 
+## Config file
+
+The ETag functionality is managed through the `config/etag.php` file, which centralizes all related settings. This configuration file allows you to enable or disable ETag logging and caching, as well as customize key parameters such as history limits and cache expiration times.
+
+### Key Options
+- **`enabled`**: Determines whether the ETag functionality is active. If set to `false`, all ETag-related processing is skipped.
+- **`log_dynamic_endpoints`**: Controls whether dynamic endpoints are logged. When disabled, no cache processing occurs.
+- **`history_limit`**: Specifies the maximum number of ETags to track per endpoint.
+- **`cache_expiration`**: Sets the duration (in minutes) for which the ETag history is cached.
+
 ## Logs
 
 This middleware detects **highly dynamic endpoints** by tracking the history of ETags generated for each endpoint. It helps identify endpoints where ETags are consistently different, indicating dynamic responses that may require further optimization.
@@ -154,9 +164,7 @@ This implementation leverages ETags to optimize `GET` requests in the API, reduc
 1. **ETag Versioning with Cache**:
    - Store ETag versions in cache to avoid database queries.
    - Enable manual invalidation via model events.
-2. **Configuration File**:
-   - Add a `config/etag.php` for global middleware control.
-3. **Metrics Collection**:
+2. **Metrics Collection**:
    - Monitor request duration, `304` response percentage and bandwidth savings.
 
 This solution is well-suited for global optimizations and specific dynamic routes.
