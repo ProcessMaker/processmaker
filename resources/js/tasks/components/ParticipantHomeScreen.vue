@@ -1,9 +1,13 @@
 <template>
     <div class="process-catalog-main" id="tasks" :class="{ 'menu-open' : showMenu }">
       <div class="menu">
-        <span class="pl-3 menu-title" style="background-color: #E6F3FF; padding: 5px 15px; border-radius: 10px;">
+        <button 
+          class="pl-3 menu-title" 
+          style="background-color: #E6F3FF; padding: 5px 15px; border-radius: 10px; border: none; cursor: pointer;"
+          @click="getAllTasks"
+        >
           {{ $t('Inbox') }}
-        </span>
+        </button>
         <p>New Menu Processes Here</p>
       </div>
       
@@ -199,7 +203,8 @@
       return {
         showMenu: false,
         urlConfiguration: "users/configuration",
-        localUserConfiguration: {}
+        localUserConfiguration: {},
+        allInbox: false
       }
     },
     mounted() {
@@ -210,6 +215,14 @@
         }
       });
     },
+    methods: {
+      getAllTasks() {
+        this.allInbox = true;
+        if (this.$refs.taskList) {
+          this.$refs.taskList.fetch();
+        }
+      }
+    }
   }
   </script>
   
