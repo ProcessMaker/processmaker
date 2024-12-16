@@ -2,12 +2,18 @@ import Vue from "vue";
 import TasksList from "./components/TasksList";
 import TasksListCounter from "./components/TasksListCounter.vue";
 import setDefaultAdvancedFilterStatus from "../common/setDefaultAdvancedFilterStatus";
+import ParticipantHomeScreen from './components/ParticipantHomeScreen.vue';
 
 Vue.component("TasksList", TasksList);
+Vue.component('participant-home-screen', ParticipantHomeScreen);
 
 new Vue({
   el: "#tasks",
   data: {
+    showOldTaskScreen: false,
+    userConfiguration: window.ProcessMaker.userConfiguration,
+    urlConfiguration: "users/configuration",
+    showMenu: true,
     columns: window.Processmaker.defaultColumns || null,
     filter: "",
     pmql: "",
@@ -62,7 +68,9 @@ new Vue({
     
     if (!window.location.search.includes("filter_user_recommendation")) {
       this.$nextTick(() => {
-        this.$refs.taskList.fetch();
+        if (this.$refs.taskList) {
+          this.$refs.taskList.fetch();
+        }
       });
     }
   },

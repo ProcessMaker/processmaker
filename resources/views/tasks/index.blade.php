@@ -14,8 +14,11 @@
         __($title) => null,
     ]])
 @endsection
+
 @section('content')
-  <div class="px-3 page-content mb-0" id="tasks">
+<div id="tasks">
+<div v-if="showOldTaskScreen" class="process-catalog-main" id="tasks" :class="{ 'menu-open' : showMenu }">
+  <div class="px-3 page-content mb-0">
     <div class="row">
       <div class="col" align="right">
           <b-alert v-if="inOverdueMessage.length>0" class="align-middle" show variant="danger" v-cloak
@@ -160,13 +163,33 @@
                 :show-recommendations="true"
               ></tasks-list>
             </div>
-
           </div>
         </div>
-
       </div>
     </div>
   </div>
+</div>
+<div v-else>
+  <participant-home-screen
+        :task-drafts-enabled="{{ json_encode($taskDraftsEnabled) }}"
+        :user-filter="{{ json_encode($userFilter) }}"
+        :default-columns="{{ json_encode($defaultColumns ?? []) }}"
+        :user-configuration="{{ $userConfiguration ?? [] }}"
+        :user-permissions="{{ json_encode([
+            'hasPermissionsForUsersGroups' => Auth::user()->hasPermissionsFor('users', 'groups'),
+            'isAdministrator' => Auth::user()->is_administrator,
+            'canEditScreens' => Auth::user()->hasPermission('edit-screens')
+        ]) }}"
+        :savedsearch-defaults-edit-route="{{ json_encode(route(
+            'package.savedsearch.defaults.edit',
+            [
+                'type'=>'task',
+                'key'=>'tasks',
+            ]
+        )) }}"
+    ></participant-home-screen>
+</div>
+</div>
 @endsection
 
 @section('js')
@@ -174,7 +197,7 @@
       window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
       window.ProcessMaker.advanced_filter = @json($userFilter);
       window.Processmaker.defaultColumns = @json($defaultColumns);
-
+      window.ProcessMaker.userConfiguration = @json($userConfiguration ?? []);
       window.sessionStorage.setItem('elementDestinationURL', window.location.href);
     </script>
     <script src="{{mix('js/tasks/index.js')}}"></script>
@@ -256,6 +279,200 @@
     <style scoped>
       .popover{
         max-width: 450px;
+      }
+    </style>
+    <style scoped lang="scss">
+      /* @import '~styles/variables'; */
+
+      @media (max-width: 639px) {
+        .breadcrum-main {
+          display: none;
+        }
+      }
+
+      .process-catalog-main {
+        display: flex;
+
+        @media (max-width: 639px) {
+            display: block;
+        }
+      }
+
+      .menu {
+        left: -100%;
+        height: calc(100vh - 145px);
+        overflow: hidden;
+        margin-top: 15px;
+        transition: all 0.3s;
+        flex: 0 0 0px;
+        background-color: #F7F9FB;
+
+        .menu-catalog {
+          background-color: #F7F9FB;
+          flex: 1;
+          width: 315px;
+          height: 95%;
+          overflow-y: scroll;
+        }
+
+        @media (max-width: 639px) {
+          position: absolute;
+          z-index: 4;
+          display: flex;
+          margin-top: 0;
+          width: 85%;
+          transition: left 0.3s;
+        }
+      }
+
+      .menu-mask {
+        display: none;
+        position: absolute;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0);
+        z-index: 3;
+        transition: background-color 0.3s;
+        
+        @media (max-width: 639px) {
+          display: block;
+        }
+      }
+
+      .menu-mask.menu-open {
+        @media (max-width: 639px) {
+          left: 0;
+          background-color: rgba(0, 0, 0, 0.5);
+          display: block;
+        }
+      }
+
+      .menu-open .menu {
+        left: 0;
+        flex: 0 0 250px;
+        @media (max-width: 639px) {
+          left: 0%;
+        }
+      }
+
+      .mobile-slide-close {
+        display: none;
+        padding-left: 10px;
+        padding-top: 10px;
+        @media (max-width: 639px) {
+          display: block;
+        }
+      }
+
+      .slide-control {
+        border-left: 1px solid #DEE0E1;
+        margin-left: 10px;
+        width: 29px;
+        
+        @media (max-width: 639px) {
+          display: none;
+        }
+
+        a {
+          position: relative;
+          left: -11px;
+          top: 40px;
+          z-index: 5;
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 20px;
+          height: 60px;
+          background-color: #ffffff;
+          border-radius: 10px;
+          border: 1px solid #DEE0E1;
+          color: #6A7888;
+        }
+      }
+
+      .menu-open .slide-control {
+        border-left: 1px solid #DEE0E1;
+
+        a {
+          left: -11px;
+          display: none;
+        }
+        
+      }
+
+      .slide-control:hover{
+        border-left: 1px solid rgba(72, 145, 255, 0.40);
+        box-shadow: -1px 0 0 rgba(72, 145, 255, 0.5);
+      }
+      .menu-open .slide-control:hover {
+        border-left: 1px solid rgba(72, 145, 255, 0.40);
+        box-shadow: -1px 0 0 rgba(72, 145, 255, 0.5);
+        a {
+          display: flex;
+        }
+      }
+      .slide-control a:hover {
+        background-color: #EAEEF2;
+      }
+
+      .mobile-menu-control {
+        display: none;
+        color: #6A7887;
+        font-size: 1.3em;
+        margin-top: 10px;
+        margin-left: 1em;
+        margin-right: 1em;
+        align-items: center;
+
+        .menu-button {
+          flex-grow: 1;
+          i {
+            margin-right: 3px;
+          }
+        }
+
+        .bookmark-button {
+          display: flex;
+          padding: 10px;
+          margin-right: 10px;
+          font-size: 1.1em;
+        }
+
+        .search-button {
+          display: flex;
+          padding: 10px;
+          font-size: 1.1em;
+        }
+
+        @media (max-width: 639px) {
+          display: flex;
+        }
+      }
+
+      .menu-title {
+        color: #556271;
+        font-size: 22px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 46.08px;
+        letter-spacing: -0.44px;
+        display: block;
+        width: 92%;
+        margin-left: 15px;
+
+        @media (max-width: 639px) {
+          display: none;
+        }
+      }
+      .processes-info {
+        width: 100%;
+        margin-right: 0px;
+        overflow-x: hidden;
+        @media (max-width: 639px) {
+          padding-left: 0;
+        }
       }
     </style>
 @endsection

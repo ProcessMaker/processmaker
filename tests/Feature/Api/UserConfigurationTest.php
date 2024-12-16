@@ -55,6 +55,9 @@ class UserConfigurationTest extends TestCase
             'tasks' => [
                 'isMenuCollapse' => false,
             ],
+            'tasks_inbox' => [
+                'isMenuCollapse' => false,
+            ],
         ];
 
         $response = $this->apiCall('PUT', self::API_TEST_URL, ['ui_configuration' => $values]);
@@ -74,6 +77,7 @@ class UserConfigurationTest extends TestCase
         $this->assertEquals($uiConfig->cases->isMenuCollapse, $values['cases']['isMenuCollapse']);
         $this->assertEquals($uiConfig->requests->isMenuCollapse, $values['requests']['isMenuCollapse']);
         $this->assertEquals($uiConfig->tasks->isMenuCollapse, $values['tasks']['isMenuCollapse']);
+        $this->assertEquals($uiConfig->tasks_inbox->isMenuCollapse, $values['tasks_inbox']['isMenuCollapse']);
     }
 
     /**
