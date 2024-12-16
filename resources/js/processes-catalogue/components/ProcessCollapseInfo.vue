@@ -1,5 +1,5 @@
 <template>
-  <div id="processCollapseInfo">
+  <div id="processCollapseInfo" v-if="!isArchived">
     <div id="processData">
       <process-header-start
         :process="process"
@@ -96,6 +96,9 @@ export default {
   computed: {
     createdFromWizardTemplate() {
       return !!this.process?.properties?.wizardTemplateUuid;
+    },
+    isArchived() {
+      return this.process?.status === 'ARCHIVED';
     },
     wizardTemplateUuid() {
       return this.process?.properties?.wizardTemplateUuid;
