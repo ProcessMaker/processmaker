@@ -484,6 +484,7 @@
         display: block;
         width: 92%;
         margin-left: 15px;
+        text-align: left;
 
         @media (max-width: 639px) {
           display: none;
