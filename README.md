@@ -454,7 +454,7 @@ Make sure the ports 9090 and 3000 on the host are not already in use.
 
 Edit `prometheus.yml` and update the target hostname with your local processmaker instance. You might also need to change the scheme if you are using https.
 
-Run `docker compose up`
+Run `docker compose up -d`
 
 Check that prometheus can connect to your local instance at http://localhost:9090/targets
 
@@ -465,6 +465,39 @@ When you are finished, run `docker compose down`. To delete all data, run `docke
 ### **Use the Facade in Your Application**
 
 Now you can use the `Metrics` Facade anywhere in your application to manage metrics.
+
+### **1. Counter**
+A **Counter** only **increases** over time or resets to zero. It is used for cumulative events.
+
+- Total number of HTTP requests:  
+  ```php
+  $counter = Metrics::counter('http_requests_total', 'Total HTTP requests', ['method', 'status']);
+  $counter->inc(['GET', '200']);
+  $counter->incBy(2, ['GET', '200']);
+  ```
+- Number of system errors (e.g., HTTP 5xx).
+
+### **2. Gauge**
+A **Gauge** can **increase or decrease**. It is used for values that fluctuate over time.
+
+- Current number of active jobs in a queue:  
+  ```php
+  $gauge = Metrics::gauge('active_jobs', 'Number of active jobs', ['queue']);
+  $gauge->set(10, ['queue1']);
+  ```
+- Memory or CPU usage.
+
+### **3. Histogram**
+A **Histogram** measures **value distributions** by organizing them into buckets. It is ideal for latency or size measurements.
+
+- Duration of HTTP requests:  
+  ```php
+  $histogram = Metrics::histogram('http_request_duration_seconds', 'HTTP request duration', ['method'], [0.1, 0.5, 1, 5, 10]);
+  $histogram->observe(0.3, ['GET']);
+  ```
+- File sizes or request durations.
+
+Each type serves a specific role depending on the data being monitored.
 
 #### **Example: Incrementing a Counter**
 
@@ -479,10 +512,9 @@ class ExampleController extends Controller
 {
     public function index()
     {
-        // Register a counter for the total number of requests
-        Metrics::registerCounter('requests_total', 'Total number of requests', ['method']);
-        // Increment the counter for the current request
-        Metrics::incrementCounter('requests_total', ['GET']);
+        //use metrics counter
+        $counter = Metrics::counter('http_requests_total', 'Total HTTP requests', ['method', 'status']);
+        $counter->inc(['GET', '200']); // Incrementa el contador para GET y estado 200.
 
         return response()->json(['message' => 'Hello, world!']);
     }
@@ -492,19 +524,6 @@ class ExampleController extends Controller
 To make things even easier, you can run `Metrics::counter('cases')->inc();` or `Metrics::gauge('active_tasks')->set($activeTasks)` anywhere in the code.
 
 You can provide an optional description, for example `Metrics::gauge('active_tasks', 'Total Active Tasks')->...`
-
-#### **Example: Registering and Using a Histogram**
-
-```php
-Metrics::registerHistogram(
-    'request_duration_seconds',
-    'Request duration time',
-    ['method'],
-    [0.1, 0.5, 1, 5]
-);
-$histogram = Metrics::incrementHistogram('request_duration_seconds', ['GET'], microtime(true) - LARAVEL_START);
-```
-
 
 # License
 
