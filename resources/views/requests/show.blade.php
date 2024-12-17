@@ -237,9 +237,6 @@
                   aria-labelledby="overview-tab">
                   <div class="card card-height" style="border-top: none !important;">
                     <div class="card-body">
-                      <h4>
-                        {{ __(':name In-Flight Map', ['name' => $request->process->name]) }}
-                      </h4>
                       <new-overview />
                     </div>
                   </div>
