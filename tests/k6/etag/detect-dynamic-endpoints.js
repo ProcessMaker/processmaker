@@ -1,13 +1,13 @@
 import http from 'k6/http';
+import { config, headers } from './config.js';
 
 export let options = {
   vus: 1,
   iterations: 5, // n iterations per URL.
 };
 
-const token = 'fake-jwt';
 const endpoints = [
-  'https://processmaker.test/api/1.0/requests?page=1&per_page=15&include=process%2Cparticipants%2CactiveTasks%2Cdata&pmql=%28requester%20%3D%20%22admin%22%29&filter=&order_by=id&order_direction=DESC&advanced_filter=%5B%7B%22subject%22%3A%7B%22type%22%3A%22Status%22%7D%2C%22operator%22%3A%22%3D%22%2C%22value%22%3A%22In%20Progress%22%7D%5D'
+  config.endpoints.startProcesses,
 ];
 
 // Object to track ETag history for each endpoint.
@@ -17,10 +17,6 @@ const etagHistory = {};
 const ETAG_HISTORY_LIMIT = 5;
 
 export default function () {
-  const headers = {
-    Authorization: `Bearer ${token}`,
-  };
-
   endpoints.forEach((url) => {
     const res1 = http.get(url, { headers });
     const etag = res1.headers['Etag'];

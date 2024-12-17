@@ -1,6 +1,7 @@
 import http from 'k6/http';
 import { check, sleep, group } from 'k6';
 import { Trend } from 'k6/metrics';
+import { config, headers } from './config.js';
 
 // Custom metrics to track request durations.
 let duration200 = new Trend('duration_200');
@@ -15,10 +16,7 @@ export let options = {
 };
 
 export default function () {
-  const baseUrl = 'https://processmaker.test/api/1.0/start_processes?page=1&per_page=15&filter=&order_by=category.name%2Cname&order_direction=asc%2Casc&include=events%2Ccategories&without_event_definitions=true';
-  const token = 'fake-jwt'; // Replace with your actual token
-  const headers = { Authorization: `Bearer ${token}` };
-
+  const baseUrl = config.endpoints.startProcesses;
   group('ETag Performance', () => {
     // Add the duration of the 200 response to the custom metric.
     let res = http.get(baseUrl, { headers });
@@ -42,7 +40,7 @@ export default function () {
         'status is 304': (r) => r.status === 304,
       });
     }
-    
+
     sleep(1);
   });
 }
