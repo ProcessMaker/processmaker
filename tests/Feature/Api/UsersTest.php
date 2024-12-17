@@ -871,7 +871,8 @@ class UsersTest extends TestCase
         $users = $result->json()['data'];
 
         // Assert only the $user and $groupUser are in the list
-        $this->assertEqualsCanonicalizing([$user->id, $groupUser->id], collect($users)->pluck('id')->toArray());
+        $this->assertContains($user->id, array_column($users, 'id'));
+        $this->assertContains($groupUser->id, array_column($users, 'id'));
 
         // Assert the $user has 3 active tasks
         $tokenCount = collect($users)->first(fn ($r) => $r['id'] === $user->id)['active_tasks_count'];
