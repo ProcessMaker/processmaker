@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use ProcessMaker\Cache\CacheManagerBase;
+use ProcessMaker\Cache\CacheManagerException;
 use Tests\TestCase;
 
 class CacheManagerBaseTest extends TestCase
@@ -75,7 +76,7 @@ class CacheManagerBaseTest extends TestCase
 
         $this->cacheManagerBase = $this->getMockForAbstractClass(CacheManagerBase::class);
 
-        $this->expectException(Exception::class);
+        $this->expectException(CacheManagerException::class);
         $this->expectExceptionMessage('`getKeysByPattern` method only supports Redis connections.');
 
         $this->cacheManagerBase->getKeysByPattern('pattern');
@@ -97,7 +98,7 @@ class CacheManagerBaseTest extends TestCase
             ->andThrow(new Exception('Redis error'));
 
         Log::shouldReceive('info')
-            ->with('CacheABC' . 'Redis error')
+            ->with('CacheManagerBase: ' . 'Redis error')
             ->once();
 
         $result = $this->cacheManagerBase->getKeysByPattern($pattern);

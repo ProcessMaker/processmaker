@@ -32,6 +32,7 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
     private function setCacheDriver(CacheManager $cacheManager): void
     {
         $defaultCache = config('cache.default');
+        dump('$defaultCache => ' . $defaultCache);
         $isAvailableConnection = in_array($defaultCache, self::AVAILABLE_CONNECTIONS);
 
         if ($isAvailableConnection) {
@@ -150,6 +151,7 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      */
     public function clearBy(string $pattern): void
     {
+        dump('connection' . $this->connection);
         if ($this->connection !== 'cache_settings') {
             throw new SettingCacheException('The cache driver must be Redis.');
         }

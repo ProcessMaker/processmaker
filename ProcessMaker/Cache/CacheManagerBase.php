@@ -45,7 +45,7 @@ abstract class CacheManagerBase
     public function getKeysByPattern(string $pattern): array
     {
         if (!in_array($this->connection, self::AVAILABLE_CONNECTIONS)) {
-            throw new Exception('`getKeysByPattern` method only supports Redis connections.');
+            throw new CacheManagerException('`getKeysByPattern` method only supports Redis connections.');
         }
 
         try {
@@ -54,7 +54,7 @@ abstract class CacheManagerBase
             // Filter keys by pattern
             return array_filter($keys, fn ($key) => preg_match('/' . $pattern . '/', $key));
         } catch (Exception $e) {
-            Log::info('CacheABC' . $e->getMessage());
+            Log::info('CacheManagerBase: ' . $e->getMessage());
         }
 
         return [];

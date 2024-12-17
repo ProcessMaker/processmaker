@@ -215,7 +215,7 @@ class SettingCacheTest extends TestCase
     {
         config()->set('cache.default', 'array');
 
-        $this->expectException(\Exception::class);
+        $this->expectException(SettingCacheException::class);
         $this->expectExceptionMessage('The cache driver must be Redis.');
 
         \SettingCache::clearBy('pattern');
