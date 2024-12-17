@@ -6,7 +6,7 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
-abstract class CacheABC
+abstract class CacheManagerBase
 {
     /**
      * The cache connection.

@@ -6,10 +6,10 @@ use Illuminate\Cache\CacheManager;
 use Illuminate\Cache\Repository;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
-use ProcessMaker\Cache\CacheABC;
 use ProcessMaker\Cache\CacheInterface;
+use ProcessMaker\Cache\CacheManagerBase;
 
-class SettingCacheManager extends CacheABC implements CacheInterface
+class SettingCacheManager extends CacheManagerBase implements CacheInterface
 {
     const DEFAULT_CACHE_DRIVER = 'cache_settings';
 

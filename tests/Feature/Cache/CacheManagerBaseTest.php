@@ -5,12 +5,12 @@ namespace Tests\Feature\Cache;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
-use ProcessMaker\Cache\CacheABC;
+use ProcessMaker\Cache\CacheManagerBase;
 use Tests\TestCase;
 
-class CacheABCTest extends TestCase
+class CacheManagerBaseTest extends TestCase
 {
-    protected $cacheABC;
+    protected $cacheManagerBase;
 
     protected function setUp(): void
     {
@@ -28,7 +28,7 @@ class CacheABCTest extends TestCase
 
     public function testGetKeysByPatternWithValidConnectionAndMatchingKeys()
     {
-        $this->cacheABC = $this->getMockForAbstractClass(CacheABC::class);
+        $this->cacheManagerBase = $this->getMockForAbstractClass(CacheManagerBase::class);
 
         $pattern = 'test-pattern';
         $prefix = config('cache.prefix');
@@ -42,7 +42,7 @@ class CacheABCTest extends TestCase
             ->with($prefix . '*')
             ->andReturn($keys);
 
-        $result = $this->cacheABC->getKeysByPattern($pattern);
+        $result = $this->cacheManagerBase->getKeysByPattern($pattern);
 
         $this->assertCount(2, $result);
         $this->assertEquals($keys, $result);
@@ -50,7 +50,7 @@ class CacheABCTest extends TestCase
 
     public function testGetKeysByPatternWithValidConnectionAndNoMatchingKeys()
     {
-        $this->cacheABC = $this->getMockForAbstractClass(CacheABC::class);
+        $this->cacheManagerBase = $this->getMockForAbstractClass(CacheManagerBase::class);
 
         $pattern = 'non-matching-pattern';
         $prefix = config('cache.prefix');
@@ -64,7 +64,7 @@ class CacheABCTest extends TestCase
             ->with($prefix . '*')
             ->andReturn($keys);
 
-        $result = $this->cacheABC->getKeysByPattern($pattern);
+        $result = $this->cacheManagerBase->getKeysByPattern($pattern);
 
         $this->assertCount(0, $result);
     }
@@ -73,17 +73,17 @@ class CacheABCTest extends TestCase
     {
         config()->set('cache.default', 'array');
 
-        $this->cacheABC = $this->getMockForAbstractClass(CacheABC::class);
+        $this->cacheManagerBase = $this->getMockForAbstractClass(CacheManagerBase::class);
 
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('`getKeysByPattern` method only supports Redis connections.');
 
-        $this->cacheABC->getKeysByPattern('pattern');
+        $this->cacheManagerBase->getKeysByPattern('pattern');
     }
 
     public function testGetKeysByPatternWithExceptionDuringKeyRetrieval()
     {
-        $this->cacheABC = $this->getMockForAbstractClass(CacheABC::class);
+        $this->cacheManagerBase = $this->getMockForAbstractClass(CacheManagerBase::class);
 
         $pattern = 'test-pattern';
         $prefix = config('cache.prefix');
@@ -100,7 +100,7 @@ class CacheABCTest extends TestCase
             ->with('CacheABC' . 'Redis error')
             ->once();
 
-        $result = $this->cacheABC->getKeysByPattern($pattern);
+        $result = $this->cacheManagerBase->getKeysByPattern($pattern);
 
         $this->assertCount(0, $result);
     }
