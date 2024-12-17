@@ -44,7 +44,7 @@
             <button 
               type="button"
               class="btn btn-primary"
-              @click="claimTask">@{{$t('Claim Task')}}
+              @click="claimTask">@{$t('Claim Task')}}
             </button>
             @{{$t('This task is unassigned, click Claim Task to assign yourself.')}}
           </div>
@@ -66,7 +66,7 @@
                     aria-controls="tab-form"
                     aria-selected="true"
                     class="nav-link active">
-                    {{__('Form')}}
+                    @{{$t('Form')}}
                   </a>
                 </li>
                 <li class="nav-item">
@@ -79,7 +79,7 @@
                     aria-selected="false"
                     @click="resizeMonaco"
                     class="nav-link">
-                    {{__('Data')}}
+                    @{{$t('Data')}}
                   </a>
                 </li>
               </ul>
@@ -116,7 +116,33 @@
               </div>
               @can('editData', $task->processRequest)
               <div v-if="task.process_request.status === 'ACTIVE'" id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="card card-body border-top-0 tab-pane p-3">
-                @include('tasks.editdata')
+                <!-- data edit -->
+                  <monaco-editor
+                      v-show="!showTree"
+                      ref="monaco"
+                      data-cy="editorViewFrame"
+                      :options="monacoLargeOptions"
+                      v-model="jsonData"
+                      language="json"
+                      style="border:1px solid gray; min-height:700px;"
+                  ></monaco-editor>
+
+                  <tree-view v-if="showTree" v-model="jsonData" style="border:1px; solid gray; min-height:700px;"></tree-view>
+
+                  <div class="d-flex justify-content-between mt-3">
+                      <data-tree-toggle v-model="showTree"></data-tree-toggle>
+                      <span>
+                          @isset($dataActionsAddons)
+                              @foreach ($dataActionsAddons as $dataActionsAddon)
+                                  {!! $dataActionsAddon['content'] ?? '' !!}
+                              @endforeach
+                          @endisset
+                          <button type="button" class="btn btn-secondary" @click="updateRequestData()">
+                              {{__('Save')}}
+                          </button>
+                      </span>
+                  </div>
+
               </div>
               @endcan
             </div>
@@ -141,7 +167,7 @@
                 aria-controls="details"
                 aria-selected="true"
                 @click="switchTabInfo('details')">
-                {{ __('Details') }}
+                @{{ $t('Details') }}
               </button>
             </li>
             <li class="nav-item" role="presentation">
@@ -155,7 +181,7 @@
                 aria-controls="comments"
                 aria-selected="false"
                 @click="switchTabInfo('comments')">
-                {{ __('Comments') }}
+                @{{ $t('Comments') }}
               </button>
             </li>
           </ul>
@@ -187,7 +213,7 @@
                               type="button"
                               class="btn btn-block button-actions"
                               @click="createRule">
-                              <i class="fas fa-plus"></i> {{ __('Create Rule') }}
+                              <i class="fas fa-plus"></i> @{{ $t('Create Rule') }}
                             </button>
                           </div>
                           <div class="col-6">
@@ -202,8 +228,8 @@
                                           ? '/img/priority.svg'
                                           : '/img/priority-header.svg'
                                       "
-                                alt="No Image">
-                              {{ __('Priority') }}
+                                :alt="$t('No Image')">
+                              @{{ $t('Priority') }}
                             </button>
                           </div>
                         </div>
@@ -217,7 +243,7 @@
                                 @click="showQuickFill">
                                 <img
                                   src="../../img/smartinbox-images/fill.svg"
-                                  :alt="'No Image'" /> {{__('Quick Fill')}}
+                                  :alt="$t('No Image')" /> @{{$t('Quick Fill')}}
                               </button>
                             </template>
                           </div>
@@ -241,19 +267,19 @@
                           class="btn btn-block button-actions"
                           @click="eraseDraft()"
                           v-if="taskDraftsEnabled">
-                          <img src="/img/smartinbox-images/eraser.svg" :alt="'No Image'">
-                          {{ __('Clear Draft') }}
+                          <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
+                          @{{ $t('Clear Draft') }}
                         </button>
                       </li>
                       <div :class="statusCard">
-                        <span style="margin:0; padding:0; line-height:1">@{{ task.advanceStatus }}</span>
+                        <span style="margin:0; padding:0; line-height:1">@{{$t(task.advanceStatus)}}</span>
                       </div>
                       <li v-if="dateDueAt && showDueAtDates" class="list-group-item">
-                        <p class="section-title">@{{ dueLabel }} @{{ moment(dateDueAt).fromNow() }}</p>
+                        <p class="section-title">@{{$t(dueLabel)}} @{{ moment(dateDueAt).fromNow() }}</p>
                         @{{ moment(dateDueAt).format() }}
                       </li>
                       <li v-if="!showDueAtDates" class="list-group-item">
-                        <p class="section-title">@{{ dueLabel }} @{{ moment().to(moment(completedAt)) }}</p>
+                        <p class="section-title">@{{$t(dueLabel)}} @{{ moment().to(moment(completedAt)) }}</p>
                         @{{ moment(completedAt).format() }}
                       </li>
                       <li class="list-group-item" v-if="taskDraftsEnabled">
@@ -264,7 +290,7 @@
                           :error="errorAutosave" />
                       </li>
                       <li v-if="task.is_self_service === 0" class="list-group-item">
-                        <p class="section-title"> {{__('Assigned To')}}:</p>
+                        <p class="section-title">@{{$t('Assigned To')}}:</p>
                         <avatar-image
                           v-if="task.user"
                           size="32"
@@ -277,20 +303,20 @@
                         @endisset
                       </li>
                       <li class="list-group-item">
-                        <p class="section-title"> {{__('Assigned') }} @{{ moment(createdAt).fromNow() }}</p>
+                        <p class="section-title"> @{{$t('Assigned') }} @{{ moment(createdAt).fromNow() }}</p>
                         @{{ moment(createdAt).format() }}
                       </li>
                       <li class="list-group-item">
-                        <p class="section-title"> {{__('Case')}}</p>
+                        <p class="section-title">@{{$t('Case')}}</p>
                         @{{ caseTitle }}
                         <p class="launchpad-link">
                           <a href="{{route('process.browser.index', [$task->process->id])}}">
-                            {{ __('Open Process Launchpad') }}
+                            @{{ $t('Open Process Launchpad') }}
                           </a>
                         </p>
                       </li>
                       <li class="list-group-item">
-                        <p class="section-title">{{__('Request')}}</p>
+                        <p class="section-title">@{{$t('Request')}}</p>
                         <a href="{{route('requests.show', [$task->process_request_id, 'skipInterstitial' => '1'])}}"
                           data-test="request-link"
                         >
@@ -298,13 +324,13 @@
                         </a>
                       </li>
                       <li class="list-group-item">
-                        <p class="section-title">{{__('Requested By')}}:</p>
+                        <p class="section-title">@{{$t('Requested By')}}:</p>
                         <avatar-image
                           v-if="task.requestor"
                           size="32"
                           class="d-inline-flex pull-left align-items-center"
                           :input-data="task.requestor"></avatar-image>
-                        <p v-if="!task.requestor">{{__('Web Entry')}}</p>
+                        <p v-if="!task.requestor">@{{$t('Web Entry')}}</p>
                       </li>
                     </ul>
                   </div>
@@ -334,7 +360,7 @@
           <b-modal
             v-model="showReassignment"
             size="md"
-            centered title="Reassign to"
+            centered title="{{'Reassign to'}}"
             header-close-content="&times;"
             v-cloak
             @hide="cancelReassign">
@@ -343,7 +369,7 @@
               <p-m-dropdown-suggest v-model="selectedUser"
                 :options="reassignUsers"
                 @pmds-input="onReassignInput"
-                :placeholder="'Type here to search'">
+                :placeholder="$t('Type here to search')">
                 <template v-slot:pre-text="{ option }">
                   <b-badge variant="secondary"
                     class="mr-2 custom-badges pl-2 pr-2 rounded-lg">
@@ -354,10 +380,10 @@
             </div>
             <div slot="modal-footer">
               <button type="button" class="btn btn-outline-secondary" @click="cancelReassign">
-                {{__('Cancel')}}
+                @{{$t('Cancel')}}
               </button>
               <button type="button" class="btn btn-secondary" @click="reassignUser(true)" :disabled="disabled">
-                {{__('Reassign')}}
+                @{{$t('Reassign')}}
               </button>
             </div>
           </b-modal>
@@ -369,16 +395,17 @@
 </div>
 @endsection
 @section('js')
-  <script src="{{ mix('js/manifest.js') }}"></script>
-  <script src="{{ mix('js/vue-vendor.js') }}"></script>
-  <script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
-  <script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
-  <script type="module">
-    window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
-    window.screenBuilderScripts = @json($manager->getScripts());
-  </script>
-  <script type="module" src="{{ mix('js/tasks/loaderEdit.js')}}"></script>
-  <script type="module">
+<script src="{{ mix('js/manifest.js') }}"></script>
+<script src="{{ mix('js/vue-vendor.js') }}"></script>
+<script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
+<script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
+<script >
+  window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+  const screenBuilderScripts = @json($manager->getScripts());
+</script>
+<script src="{{ mix('js/tasks/loaderEdit.js')}}"></script>
+@include('shared.monaco')
+  <script>
     window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
       if (screen.watchers_config) {
         screen.watchers_config.api.execute = @json(route('api.scripts.execute', ['script_id' => 'script_id', 'script_key' => 'script_key']));
@@ -399,26 +426,26 @@
       '{{ route('requests.show', ['request' => $task->process_request_id]) }}'
     );
 
-    window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
+    const task = @json($task);
+    let draftTask = task.draft;
+    const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
+    const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
+    const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
+    const userConfiguration = @json($userConfiguration);
 
-    //window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name);
     window.Processmaker.user = @json($currentUser);
-
-    window.task = @json($task);
-    window.draftTask = task.draft;
-    window.userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
-    window.userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
-    window.userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
-    window.screenFields = @json($screenFields);
-    window.userConfiguration = @json($userConfiguration);
-    </script>
-
   </script>
-  @foreach(GlobalScripts::getScripts() as $script)
-    <script type="module" src="{{$script}}"></script>
-  @endforeach
+    
 
-  @include('shared.monaco')
+
+    @foreach(GlobalScripts::getScripts() as $script)
+      <script src="{{$script}}"></script>
+    @endforeach
+
+    <script src="{{mix('js/tasks/edit.js')}}"></script>
+
+
+
 @endsection
 
 @section('css')

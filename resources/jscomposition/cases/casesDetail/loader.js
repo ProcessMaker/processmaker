@@ -2,10 +2,7 @@ import Vue from "vue";
 import * as vue from "vue";
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 import moment from "moment-timezone";
-
-import AvatarImage from "../../../js/components/AvatarImage.vue";
-import TimelineItem from "../../../js/components/TimelineItem.vue";
-import SelectUserGroup from "../../../js/components/SelectUserGroup.vue";
+import { loadModulesSequentially } from "../../../js/next/globalVariables";
 
 window.Vue = Vue;
 window.vue = vue;
@@ -22,20 +19,24 @@ import("../../../js/next/libraries/jquery");
 import("../../../js/next/libraries/vueRouter");
 import("../../../js/next/libraries/vueCookies");
 // Load components
-import("../../../js/next/libraries/vueFormElements");
-import("../../../js/next/libraries/sharedComponents");
+import("../../../js/next/components/index");
 
 window.ProcessMaker = {
   EventBus: new Vue(),
   events: new Vue(),
 };
 
-import("../../../js/next/config/processmaker");
+loadModulesSequentially([
+  import("../../../js/next/config/processmaker"),
+  import("../../../js/next/config/i18n"), // $t is important when the blade related is huge
+]);
+
+// import("../../../js/next/config/processmaker");
 import("../../../js/next/config/notifications");
-import("../../../js/next/config/i18n");
+// import("../../../js/next/config/i18n");
 import("../../../js/next/config/user");
 import("../../../js/next/config/session");
-import("../../../js/next/config/momentConfig");
+// import("../../../js/next/config/momentConfig");
 import("../../../js/next/config/openAI");
 
 // Screen builder
@@ -44,7 +45,3 @@ import("../../../js/next/screenBuilder");
 // Load libraries dependencies first
 import("../../../js/next/layout/sidebar");
 import("../../../js/next/layout/navbar");
-
-Vue.component("AvatarImage", AvatarImage);
-Vue.component("TimelineItem", TimelineItem);
-Vue.component("SelectUserGroup", SelectUserGroup);

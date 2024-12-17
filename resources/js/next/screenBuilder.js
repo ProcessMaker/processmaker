@@ -20,15 +20,12 @@ const addScriptsToDOM = async function (scripts) {
 
 const componentsScreenBuilder = ["VueFormRenderer", "Task", "TaskView"];
 
-console.log("JONAS", componentsScreenBuilder);
 componentsScreenBuilder.forEach((component) => {
   Vue.component(component, (resolve, reject) => {
-    console.log("LOADER SCREEN BUILDER -------------------------");
     import("@processmaker/screen-builder/dist/vue-form-builder.css");
     if (screenBuilderScripts) {
       addScriptsToDOM(screenBuilderScripts).then(() => {
         import("@processmaker/screen-builder").then((ScreenBuilder) => {
-          console.log("ScreenBuilder DESPUES", ScreenBuilder);
           Vue.use(ScreenBuilder.default);
 
           const { initializeScreenCache } = ScreenBuilder;

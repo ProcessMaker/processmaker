@@ -25,7 +25,6 @@ const removeNotifications = (messageIds = [], urls = []) => apiClient.put("/read
 
 const unreadNotifications = (messageIds = [], urls = []) => apiClient.put("/unread_notifications", { message_ids: messageIds, routes: urls });
 
-console.log("$notifications");
 const $notifications = {
   icons: {},
 };

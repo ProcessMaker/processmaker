@@ -183,12 +183,6 @@
     window.sessionStorage.setItem('elementDestinationURL', window.location.href);
     window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
   </script>
-
-  @if (hasPackage('package-files'))
-  <!-- TODO: Replace with script injector like we do for modeler and screen builder -->
-  <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
-  @endif
-
   <script src="{{mix('js/tasks/index.js')}}"></script>
 
   @foreach(GlobalScripts::getScripts() as $script)
@@ -197,81 +191,81 @@
 @endsection
 
 @section('css')
-    <style>
-        .has-search .form-control {
-            padding-left: 2.375rem;
-        }
+  <style>
+    .has-search .form-control {
+      padding-left: 2.375rem;
+    }
 
-        .has-search .form-control-feedback {
-            position: absolute;
-            z-index: 2;
-            display: block;
-            width: 2.375rem;
-            height: 2.375rem;
-            line-height: 2.375rem;
-            text-align: center;
-            pointer-events: none;
-            color: #aaa;
-        }
+    .has-search .form-control-feedback {
+      position: absolute;
+      z-index: 2;
+      display: block;
+      width: 2.375rem;
+      height: 2.375rem;
+      line-height: 2.375rem;
+      text-align: center;
+      pointer-events: none;
+      color: #aaa;
+    }
 
-        .card-border {
-            border-radius: 4px !important;
-        }
+    .card-border {
+      border-radius: 4px !important;
+    }
 
-        .card-size-header {
-            width: 90px;
-        }
+    .card-size-header {
+      width: 90px;
+    }
 
-        .option__image {
-            width: 27px;
-            height: 27px;
-            border-radius: 50%;
-        }
+    .option__image {
+      width: 27px;
+      height: 27px;
+      border-radius: 50%;
+    }
 
-        .initials {
-            display: inline-block;
-            text-align: center;
-            font-size: 12px;
-            max-width: 25px;
-            max-height: 25px;
-            min-width: 25px;
-            min-height: 25px;
-            border-radius: 50%;
-        }
-        .task-nav {
-            border-bottom: 0 !important;
-        }
-        .task-nav-link.active {
-            color: #1572C2 !important;
-            font-weight: 700;
-            font-size: 15px;
-        }
-        .task-nav-link {
-            color: #556271;
-            font-weight: 400;
-            font-size: 15px;
-            border-top-left-radius: 5px !important;
-            border-top-right-radius: 5px !important;
-        }
-        .task-list-body {
-            border-radius: 5px;
-        }
-        .task-inbox-rules {
-          width: max-content;
-        }
-        .task-inbox-rules-content {
-          display: flex;
-          justify-content: space-between;
-          padding: 15px;
-        }
-        .task-inbox-rules-content-text {
-          width: 310px;
-          padding-left: 10px;
-        }
-    </style>
-    <style scoped>
-      .popover{
-        max-width: 450px;
-      }
-    </style>
+    .initials {
+      display: inline-block;
+      text-align: center;
+      font-size: 12px;
+      max-width: 25px;
+      max-height: 25px;
+      min-width: 25px;
+      min-height: 25px;
+      border-radius: 50%;
+    }
+    .task-nav {
+      border-bottom: 0 !important;
+    }
+    .task-nav-link.active {
+      color: #1572C2 !important;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .task-nav-link {
+      color: #556271;
+      font-weight: 400;
+      font-size: 15px;
+      border-top-left-radius: 5px !important;
+      border-top-right-radius: 5px !important;
+    }
+    .task-list-body {
+        border-radius: 5px;
+    }
+    .task-inbox-rules {
+      width: max-content;
+    }
+    .task-inbox-rules-content {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px;
+    }
+    .task-inbox-rules-content-text {
+      width: 310px;
+      padding-left: 10px;
+    }
+  </style>
+  <style scoped>
+    .popover{
+      max-width: 450px;
+    }
+  </style>
 @endsection

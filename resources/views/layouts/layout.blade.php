@@ -137,7 +137,6 @@
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
 </script>
 <script src="{{ mix('js/app-layout.js') }}"></script>
-@include('shared.monaco')
 @foreach(GlobalScripts::getScripts() as $script)
   <script src="{{$script}}"></script>
 @endforeach

@@ -1,13 +1,22 @@
+import TaskSaveNotification from "./components/TaskSaveNotification.vue";
+import TaskSavePanel from "./components/TaskSavePanel.vue";
+import autosaveMixins from "../modules/autosave/autosaveMixin";
+import draftFileUploadMixin from "../modules/autosave/draftFileUploadMixin";
+import reassignMixin from "../common/reassignMixin";
 
-//const store = new Vuex.Store(); 
+Vue.mixin(autosaveMixins);
+Vue.mixin(draftFileUploadMixin);
+Vue.mixin(reassignMixin);
 
-console.log("task EDIT", Vue);
 const main = new Vue({
-  mixins:addons,
-  //store: store,
   el: "#task",
+  components: {
+    TaskSaveNotification,
+    TaskSavePanel,
+  },
+  mixins: addons,
   data: {
-    //Edit data
+    // Edit data
     fieldsToUpdate: [],
     jsonData: "",
     monacoLargeOptions: {
@@ -46,8 +55,63 @@ const main = new Vue({
     caseTitle: "",
     showMenu: true,
     userConfiguration,
-    urlConfiguration:'users/configuration',
+    urlConfiguration: "users/configuration",
     showTabs: true,
+  },
+  computed: {
+    taskDefinitionConfig() {
+      const config = {};
+      if (this.task.definition && this.task.definition.config) {
+        return JSON.parse(this.task.definition.config);
+      }
+      return {};
+    },
+    taskHasComments() {
+      return "comment-editor" in Vue.options.components;
+    },
+    dueLabel() {
+      const dueLabels = {
+        open: "Due",
+        completed: "Completed",
+        overdue: "Due",
+      };
+      return dueLabels[this.task.advanceStatus] || "";
+    },
+    isSelfService() {
+      return this.task.process_request.status === "ACTIVE" && this.task.is_self_service;
+    },
+    dateDueAt() {
+      return this.task.due_at;
+    },
+    createdAt() {
+      return this.task.created_at;
+    },
+    completedAt() {
+      return this.task.completed_at;
+    },
+    showDueAtDates() {
+      return this.task.status !== "CLOSED";
+    },
+    disabled() {
+      return !this.selectedUser;
+    },
+    styleDataMonaco() {
+      const height = window.innerHeight * 0.55;
+      return `height: ${height}px; border:1px solid gray;`;
+    },
+    panCommentInVueOptionsComponents() {
+      return "pan-comment" in Vue.options.components;
+    },
+    statusCard() {
+      const header = {
+        OVERDUE: "overdue-style",
+        OPEN: "open-style",
+        COMPLETED: "open-style",
+        TRIGGERED: "open-style",
+      };
+      const status = (this.task.advanceStatus || "").toUpperCase();
+      return `card-header text-status ${header[status]}`;
+    },
   },
   watch: {
     task: {
@@ -63,79 +127,39 @@ const main = new Vue({
           this.lastAutosaveNav = moment(this.draftTask.updated_at).format("MMM DD, YYYY / HH:mm");
         } else {
           this.lastAutosave = "-";
-          this.lastAutosaveNav = "-"
+          this.lastAutosaveNav = "-";
         }
-      }
+      },
     },
     formData: {
       deep: true,
       handler(formData) {
         if (this.userHasInteracted) {
-          if (this.formDataWatcherActive)
-          {
+          if (this.formDataWatcherActive) {
             this.handleAutosave();
             this.userHasInteracted = false;
           } else {
             this.formDataWatcherActive = true;
           }
         }
-      }
-    }
+      },
+    },
   },
-  computed: {
-    taskDefinitionConfig () {
-      let config = {};
-      if (this.task.definition && this.task.definition.config) {
-        return JSON.parse(this.task.definition.config);
-      }
-      return {};
-    },
-    taskHasComments() {
-      return 'comment-editor' in Vue.options.components;
-    },
-    dueLabel() {
-      const dueLabels = {
-        'open': 'Due',
-        'completed': 'Completed',
-        'overdue': 'Due',
-      };
-      return dueLabels[this.task.advanceStatus] || '';
-    },
-    isSelfService() {
-      return this.task.process_request.status === 'ACTIVE' && this.task.is_self_service;
-    },
-    dateDueAt () {
-      return this.task.due_at;
-    },
-    createdAt () {
-      return this.task.created_at;
-    },
-    completedAt () {
-      return this.task.completed_at;
-    },
-    showDueAtDates () {
-      return this.task.status !== "CLOSED";
-    },
-    disabled () {
-      return this.selectedUser ? false : true;
-    },
-    styleDataMonaco () {
-      let height = window.innerHeight * 0.55;
-      return "height: " + height + "px; border:1px solid gray;";
-    },
-    panCommentInVueOptionsComponents() {
-      return 'pan-comment' in Vue.options.components;
-    },
-    statusCard() {
-      const header = {
-        "OVERDUE": "overdue-style",
-        "OPEN": "open-style",
-        "COMPLETED": "open-style",
-        "TRIGGERED": "open-style",
-      };
-      const status = (this.task.advanceStatus || '').toUpperCase();
-      return "card-header text-status " + header[status];
-    },
+  mounted() {
+    this.caseTitleField(this.task);
+    this.prepareData();
+    window.ProcessMaker.isSelfService = this.isSelfService;
+    this.isPriority = task.is_priority;
+    // listen for keydown on element with id interactionListener
+    const interactionListener = document.getElementById("interactionListener");
+    interactionListener.addEventListener("mousedown", (event) => {
+      this.sendUserHasInteracted();
+    });
+    interactionListener.addEventListener("keydown", (event) => {
+      this.sendUserHasInteracted();
+    });
+    this.defineUserConfiguration();
+    this.setAllowReassignment();
   },
   methods: {
     defineUserConfiguration() {
@@ -150,27 +174,27 @@ const main = new Vue({
     updateUserConfiguration() {
       this.userConfiguration.tasks.isMenuCollapse = this.showMenu;
       ProcessMaker.apiClient
-      .put(
-        this.urlConfiguration, 
-        {
-          ui_configuration: this.userConfiguration,
-        }
-      )
-      .catch((error) => {
-        console.error("Error", error);
-      });
+        .put(
+          this.urlConfiguration,
+          {
+            ui_configuration: this.userConfiguration,
+          },
+        )
+        .catch((error) => {
+          console.error("Error", error);
+        });
     },
     createRule() {
       const processId = this.task.process_id || this.task.process_request?.process_id;
-      window.location.href = '/tasks/rules/new?' +
-      `task_id=${this.task.id}&` +
-      `element_id=${this.task.element_id}&` +
-      `process_id=${processId}`;
+      window.location.href = "/tasks/rules/new?"
+      + `task_id=${this.task.id}&`
+      + `element_id=${this.task.element_id}&`
+      + `process_id=${processId}`;
     },
     completed(processRequestId, endEventDestination = null) {
       // avoid redirection if using a customized renderer
-      if (this.task.component && this.task.component === 'AdvancedScreenFrame') {
-        return;
+      if (this.task.component && this.task.component === "AdvancedScreenFrame") {
+
       }
     },
     error(processRequestId) {
@@ -181,38 +205,38 @@ const main = new Vue({
     },
     closed(taskId, elementDestination = null) {
       // avoid redirection if using a customized renderer
-      if (this.task.component && this.task.component === 'AdvancedScreenFrame') {
+      if (this.task.component && this.task.component === "AdvancedScreenFrame") {
         return;
       }
       this.redirect("/tasks");
     },
     claimTask() {
       ProcessMaker.apiClient
-        .put("tasks/" + this.task.id, {
+        .put(`tasks/${this.task.id}`, {
           user_id: window.ProcessMaker.user.id,
           is_self_service: 0,
         })
-        .then(response => {
+        .then((response) => {
           // Save the current URL to redirect after the task is claimed
-          sessionStorage.setItem('sessionUrlSelfService', document.referrer);
+          sessionStorage.setItem("sessionUrlSelfService", document.referrer);
 
           window.location.reload();
         });
     },
     // Data editor
-    updateRequestData () {
+    updateRequestData() {
       const data = JSON.parse(this.jsonData);
       ProcessMaker.apiClient
-        .put("requests/" + this.task.process_request_id, {
-          data: data,
+        .put(`requests/${this.task.process_request_id}`, {
+          data,
           task_element_id: this.task.element_id,
         })
-        .then(response => {
+        .then((response) => {
           this.fieldsToUpdate.splice(0);
-          ProcessMaker.alert(this.$t('The request data was saved.'), "success");
+          ProcessMaker.alert(this.$t("The request data was saved."), "success");
         });
     },
-    saveJsonData () {
+    saveJsonData() {
       try {
         const value = JSON.parse(this.jsonData);
         this.updateRequestData();
@@ -220,19 +244,19 @@ const main = new Vue({
         // Invalid data
       }
     },
-    editJsonData () {
+    editJsonData() {
       this.jsonData = JSON.stringify(this.task.request_data, null, 4);
     },
     // Reassign methods
-    show () {
+    show() {
       this.selectedUser = null;
       this.showReassignment = true;
       this.getReassignUsers();
     },
-    showQuickFill () {
+    showQuickFill() {
       this.redirect(`/tasks/${this.task.id}/edit/quickfill`);
     },
-    cancelReassign () {
+    cancelReassign() {
       this.selectedUser = null;
       this.showReassignment = false;
     },
@@ -243,60 +267,62 @@ const main = new Vue({
       this.redirectInProcess = true;
       window.location.href = to;
     },
-    assignedUserAvatar (user) {
+    assignedUserAvatar(user) {
       return [{
         src: user.avatar,
-        name: user.fullname
+        name: user.fullname,
       }];
     },
-    resizeMonaco () {
+    resizeMonaco() {
       this.showTree = false;
-      let editor = this.$refs.monaco.getMonaco();
-      editor.layout({height: window.innerHeight * 0.65});
+      const editor = this.$refs.monaco.getMonaco();
+      editor.layout({ height: window.innerHeight * 0.65 });
     },
     prepareData() {
-        this.updateRequestData = debounce(this.updateRequestData, 1000);
-        this.editJsonData();
+      this.updateRequestData = debounce(this.updateRequestData, 1000);
+      this.editJsonData();
     },
     updateTask(val) {
-      this.$set(this, 'task', val);
+      this.$set(this, "task", val);
     },
     processCollectionData(task) {
       const results = [];
       // Verify if object "screen" exists
       if (task.screen) {
-          // Verify if "config" array exists and it has at least one element
-          if (Array.isArray(task.screen.config) && task.screen.config.length > 0) {
-              // Iteration on "config" array
-              for (let configItem of task.screen.config) {
-                  // Verify if "items" array exists
-                  if (Array.isArray(configItem.items)) {
-                      // Iteration over each "items" element
-                      for (let item of configItem.items) {
-                          // Verify if component "FormCollectionRecordControl" is inside the screen
-                          if (item.component === "FormCollectionRecordControl") {
-                              // Access to FormCollectionRecordControl "config" object
-                              const config = item.config;
+        // Verify if "config" array exists and it has at least one element
+        if (Array.isArray(task.screen.config) && task.screen.config.length > 0) {
+          // Iteration on "config" array
+          for (const configItem of task.screen.config) {
+            // Verify if "items" array exists
+            if (Array.isArray(configItem.items)) {
+              // Iteration over each "items" element
+              for (const item of configItem.items) {
+                // Verify if component "FormCollectionRecordControl" is inside the screen
+                if (item.component === "FormCollectionRecordControl") {
+                  // Access to FormCollectionRecordControl "config" object
+                  const { config } = item;
 
-                              // Saving values into variables
-                              const collectionFields = config.collection.data[0];
-                              const submitCollectionChecked = config.collectionmode.submitCollectionCheck;
-                              let recordId = "";
-                              const record = config.record;
+                  // Saving values into variables
+                  const collectionFields = config.collection.data[0];
+                  const submitCollectionChecked = config.collectionmode.submitCollectionCheck;
+                  let recordId = "";
+                  const { record } = config;
 
-                              if (this.isMustache(record)) {
-                                recordId = Mustache.render(record, this.formData);
-                              } else {
-                                recordId = parseInt(record, 10);
-                              }
-                              const collectionId = config.collection.collectionId;
-                              // Save the values into the results array
-                              results.push({ submitCollectionChecked, recordId, collectionId, collectionFields });
-                          }
-                      }
+                  if (this.isMustache(record)) {
+                    recordId = Mustache.render(record, this.formData);
+                  } else {
+                    recordId = parseInt(record, 10);
                   }
+                  const { collectionId } = config.collection;
+                  // Save the values into the results array
+                  results.push({
+                    submitCollectionChecked, recordId, collectionId, collectionFields,
+                  });
+                }
               }
+            }
           }
+        }
       }
       return results.length > 0 ? results : null;
     },
@@ -305,7 +331,7 @@ const main = new Vue({
     },
     submit(task) {
       if (this.isSelfService) {
-        ProcessMaker.alert(this.$t('Claim the Task to continue.'), 'warning');
+        ProcessMaker.alert(this.$t("Claim the Task to continue."), "warning");
       } else {
         if (this.submitting) {
           return;
@@ -313,64 +339,63 @@ const main = new Vue({
 
         // If screen has CollectionControl components saves collection data (if submit check is true)
         const resultCollectionComponent = this.processCollectionData(this.task);
-        let messageCollection = this.$t('Collection data was updated');
+        const messageCollection = this.$t("Collection data was updated");
 
         if (resultCollectionComponent && resultCollectionComponent.length > 0) {
-          resultCollectionComponent.forEach(result => {
+          resultCollectionComponent.forEach((result) => {
             if (result.submitCollectionChecked) {
-              let collectionKeys = Object.keys(result.collectionFields);
-              let matchingKeys = _.intersection(Object.keys(this.formData), collectionKeys);
-              let collectionsData = _.pick(this.formData, matchingKeys);
-              
+              const collectionKeys = Object.keys(result.collectionFields);
+              const matchingKeys = _.intersection(Object.keys(this.formData), collectionKeys);
+              const collectionsData = _.pick(this.formData, matchingKeys);
+
               ProcessMaker.apiClient
-                .put("collections/" + result.collectionId + "/records/" + result.recordId, {
+                .put(`collections/${result.collectionId}/records/${result.recordId}`, {
                   data: collectionsData,
-                  uploads: []
+                  uploads: [],
                 })
                 .then(() => {
-                  window.ProcessMaker.alert(messageCollection, 'success', 5, true);
+                  window.ProcessMaker.alert(messageCollection, "success", 5, true);
                 });
             }
           });
         }
 
-        let message = this.$t('Task Completed Successfully');
+        const message = this.$t("Task Completed Successfully");
         const taskId = task.id;
         this.submitting = true;
         ProcessMaker.apiClient
-        .put("tasks/" + taskId, {status:"COMPLETED", data: this.formData})
-        .then(() => {
-          window.ProcessMaker.alert(message, 'success', 5, true);
-        })
-        .catch(error => {
+          .put(`tasks/${taskId}`, { status: "COMPLETED", data: this.formData })
+          .then(() => {
+            window.ProcessMaker.alert(message, "success", 5, true);
+          })
+          .catch((error) => {
           // If there are errors, the user will be redirected to the request page
           // to view error details. This is done in loadTask in Task.vue
-          if (error.response?.status && error.response?.status === 422) {
+            if (error.response?.status && error.response?.status === 422) {
             // Validation error
-            if (error.response.data.errors) {
-              Object.entries(error.response.data.errors).forEach(([key, value]) => {
-                window.ProcessMaker.alert(`${key}: ${value[0]}`, 'danger', 0);
-              });
-            } else if (error.response.data.message) {
-              window.ProcessMaker.alert(error.response.data.message, 'danger', 0);
+              if (error.response.data.errors) {
+                Object.entries(error.response.data.errors).forEach(([key, value]) => {
+                  window.ProcessMaker.alert(`${key}: ${value[0]}`, "danger", 0);
+                });
+              } else if (error.response.data.message) {
+                window.ProcessMaker.alert(error.response.data.message, "danger", 0);
+              }
+              this.$refs.task.loadNextAssignedTask();
             }
-            this.$refs.task.loadNextAssignedTask();
-          }
-        }).finally(() => {
-          this.submitting = false;
-        })
+          }).finally(() => {
+            this.submitting = false;
+          });
       }
-
     },
     taskUpdated(task) {
       this.task = task;
     },
     updateScreenFields(taskId) {
       return ProcessMaker.apiClient
-      .get(`tasks/${taskId}/screen_fields`)
-      .then((response)=> {
-        screenFields = response.data;
-      });
+        .get(`tasks/${taskId}/screen_fields`)
+        .then((response) => {
+          screenFields = response.data;
+        });
     },
     autosaveApiCall() {
       if (!this.taskDraftsEnabled) {
@@ -385,36 +410,33 @@ const main = new Vue({
         });
 
         return ProcessMaker.apiClient
-        .put("drafts/" + this.task.id, draftData)
-        .then((response) => {
-          this.task.draft = _.merge(
-            {},
-            this.task.draft,
-            response.data
-          );
-          this.draftTask = structuredClone(response.data);
-        })
-        .catch(() => {
-          this.errorAutosave = true;
-        })
-        .finally(() => {
-          this.options.is_loading = false;
-        });
+          .put(`drafts/${this.task.id}`, draftData)
+          .then((response) => {
+            this.task.draft = _.merge(
+              {},
+              this.task.draft,
+              response.data,
+            );
+            this.draftTask = structuredClone(response.data);
+          })
+          .catch(() => {
+            this.errorAutosave = true;
+          })
+          .finally(() => {
+            this.options.is_loading = false;
+          });
       };
       if (screenFields.length === 0) {
         return this.updateScreenFields(this.task.id)
-        .then(() => {
-          return saveDraft();
-        });
-      } else {
-        return saveDraft();
+          .then(() => saveDraft());
       }
+      return saveDraft();
     },
     eraseDraft() {
       this.formDataWatcherActive = false;
       ProcessMaker.apiClient
-        .delete("drafts/" + this.task.id)
-        .then(response => {
+        .delete(`drafts/${this.task.id}`)
+        .then((response) => {
           this.resetRequestFiles(response);
           this.task.draft = null;
           const taskComponent = this.$refs.task;
@@ -423,10 +445,10 @@ const main = new Vue({
     },
     addPriority() {
       ProcessMaker.apiClient
-      .put(`tasks/${this.task.id}/setPriority`, { is_priority: !this.isPriority })
-      .then((response) => {
-        this.isPriority = !this.isPriority;
-      });
+        .put(`tasks/${this.task.id}/setPriority`, { is_priority: !this.isPriority })
+        .then((response) => {
+          this.isPriority = !this.isPriority;
+        });
     },
     sendUserHasInteracted() {
       if (!this.userHasInteracted) {
@@ -460,20 +482,4 @@ const main = new Vue({
       return response;
     },
   },
-  mounted() {
-    this.caseTitleField(this.task);
-    this.prepareData();
-    window.ProcessMaker.isSelfService = this.isSelfService;
-    this.isPriority = task.is_priority;
-    // listen for keydown on element with id interactionListener
-    const interactionListener = document.getElementById('interactionListener');
-    interactionListener.addEventListener('mousedown', (event) => {
-      this.sendUserHasInteracted();
-    });
-    interactionListener.addEventListener('keydown', (event) => {
-      this.sendUserHasInteracted();
-    });
-    this.defineUserConfiguration();
-    this.setAllowReassignment();
-  }
 });

@@ -1,7 +1,8 @@
-import { setGlobalPMVariable } from "../globalVariables";
+import { setGlobalPMVariable, getGlobalVariable } from "../globalVariables";
 
 import datetime_format from "../../data/datetime_formats.json";
 
+const moment = getGlobalVariable("moment");
 const userID = document.head.querySelector("meta[name=\"user-id\"]");
 const userFullName = document.head.querySelector("meta[name=\"user-full-name\"]");
 const userAvatar = document.head.querySelector("meta[name=\"user-avatar\"]");
@@ -29,6 +30,17 @@ if (userID) {
       user.calendar_format = value.calendarFormat;
     }
   });
+
+  if (user) {
+    moment.tz.setDefault(user.timezone);
+    moment.defaultFormat = user.datetime_format;
+    moment.defaultFormatUtc = user.datetime_format;
+  }
+
+  if (document.documentElement.lang) {
+    moment.locale(document.documentElement.lang);
+    user.lang = document.documentElement.lang;
+  }
 
   setGlobalPMVariable("user", user);
 }
