@@ -148,8 +148,9 @@ mix
   .js("resources/jscomposition/cases/casesMain/loader.js", "public/js/composition/cases/casesMain")
   .js("resources/jscomposition/cases/casesDetail/loader.js", "public/js/composition/cases/casesDetail")
   .js("resources/js/tasks/loaderMain.js", "public/js/tasks")
-  .js("resources/js/tasks/loaderShow.js", "public/js/tasks")
+  .js("resources/js/tasks/loaderPreview.js", "public/js/tasks")
   .js("resources/js/tasks/loaderEdit.js", "public/js/tasks")
+  .js("resources/js/tasks/edit.js", "public/js/tasks/edit.js")
 
   .js("resources/js/app.js", "public/js");
 // .polyfill({
