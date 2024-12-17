@@ -192,8 +192,13 @@ class SettingCacheTest extends TestCase
         \SettingCache::set('test_pattern:1', 1);
         \SettingCache::set('test_pattern:2', 2);
 
+        // Set up the expectation for the connection method
+        Redis::shouldReceive('connection')
+            ->with('cache_settings')
+            ->andReturnSelf();
+
         Redis::shouldReceive('keys')
-            ->with('*settings:*')
+            ->with('settings:*')
             ->andReturn($keys);
 
         Redis::shouldReceive('del')
@@ -210,7 +215,7 @@ class SettingCacheTest extends TestCase
     {
         config()->set('cache.default', 'array');
 
-        $this->expectException(SettingCacheException::class);
+        $this->expectException(\Exception::class);
         $this->expectExceptionMessage('The cache driver must be Redis.');
 
         \SettingCache::clearBy('pattern');

@@ -3,37 +3,47 @@
 namespace ProcessMaker\Cache\Settings;
 
 use Illuminate\Cache\CacheManager;
+use Illuminate\Cache\Repository;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
+use ProcessMaker\Cache\CacheABC;
 use ProcessMaker\Cache\CacheInterface;
 
-class SettingCacheManager implements CacheInterface
+class SettingCacheManager extends CacheABC implements CacheInterface
 {
     const DEFAULT_CACHE_DRIVER = 'cache_settings';
 
-    protected CacheManager $cacheManager;
+    protected Repository $cacheManager;
 
     public function __construct(CacheManager $cacheManager)
     {
-        $driver = $this->determineCacheDriver();
+        parent::__construct();
 
-        $this->cacheManager = $cacheManager;
-        $this->cacheManager->store($driver);
+        $this->setCacheDriver($cacheManager);
     }
 
     /**
-     * Determine the cache driver to use.
+     * Determine and set the cache driver to use.
      *
-     * @return string
+     * @param CacheManager $cacheManager
+     *
+     * @return void
      */
-    private function determineCacheDriver(): string
+    private function setCacheDriver(CacheManager $cacheManager): void
     {
         $defaultCache = config('cache.default');
-        if (in_array($defaultCache, ['redis', 'cache_settings'])) {
-            return self::DEFAULT_CACHE_DRIVER;
+        $isAvailableConnection = in_array($defaultCache, self::AVAILABLE_CONNECTIONS);
+
+        if ($isAvailableConnection) {
+            $defaultCache = self::DEFAULT_CACHE_DRIVER;
         }
 
-        return $defaultCache;
+        $this->cacheManager = $cacheManager->store($defaultCache);
+
+        if ($isAvailableConnection) {
+            $this->connection = $this->cacheManager->connection()->getName();
+            $this->prefix = $this->cacheManager->getPrefix();
+        }
     }
 
     /**
@@ -140,22 +150,16 @@ class SettingCacheManager implements CacheInterface
      */
     public function clearBy(string $pattern): void
     {
-        $defaultDriver = $this->cacheManager->getDefaultDriver();
-
-        if ($defaultDriver !== 'cache_settings') {
+        if ($this->connection !== 'cache_settings') {
             throw new SettingCacheException('The cache driver must be Redis.');
         }
 
         try {
-            // get the connection name from the cache manager
-            $connection = $this->cacheManager->connection()->getName();
-            // Get all keys
-            $keys = Redis::connection($connection)->keys($this->cacheManager->getPrefix() . '*');
             // Filter keys by pattern
-            $matchedKeys = array_filter($keys, fn ($key) => preg_match('/' . $pattern . '/', $key));
+            $matchedKeys = $this->getKeysByPattern($pattern);
 
             if (!empty($matchedKeys)) {
-                Redis::connection($connection)->del($matchedKeys);
+                Redis::connection($this->connection)->del($matchedKeys);
             }
         } catch (\Exception $e) {
             Log::error('SettingCacheException' . $e->getMessage());
