@@ -91,7 +91,6 @@ export default {
      * @param {Object} { nodeId, isDisabled }
      */
     handleInterstitial({ nodeId, show }) {
-      console.log("handleInterstitial", nodeId, show);
       if (nodeId !== this.node.id) {
         return;
       }
