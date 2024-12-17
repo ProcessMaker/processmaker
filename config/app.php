@@ -105,6 +105,10 @@ return [
     // Allows our script executors to ignore invalid SSL. This should only be set to false for development.
     'api_ssl_verify' => env('API_SSL_VERIFY', 'true'),
 
+    // Allows ignore invalid SSL. This should only be set to false for development.
+    'curl_ssl_verifypeer' => env('CURL_SSL_VERIFYPEER', true),
+    'curl_ssl_verifyhost' => env('CURL_SSL_VERIFYHOST', 2),
+
     // Unique name on multi-tenant installations. Just use the DB name for now
     'instance' => env('DB_DATABASE'),
 
@@ -246,7 +250,7 @@ return [
     // Process Request security log rate limit: 1 per day (86400 seconds)
     'process_request_errors_rate_limit' => env('PROCESS_REQUEST_ERRORS_RATE_LIMIT', 1),
     'process_request_errors_rate_limit_duration' => env('PROCESS_REQUEST_ERRORS_RATE_LIMIT_DURATION', 86400),
-    
+
     'default_colors' => [
         'primary' => '#2773F3',
         'secondary' => '#728092',
