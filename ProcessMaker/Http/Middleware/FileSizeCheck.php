@@ -4,7 +4,6 @@ namespace ProcessMaker\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class FileSizeCheck
 {
@@ -17,15 +16,31 @@ class FileSizeCheck
      */
     public function handle(Request $request, Closure $next)
     {
-        // Get upload_max_filesize from php.ini
-        $maxFileSize = ini_get('upload_max_filesize');
-        $convertedMaxFileSize = $this->convertToBytes();
-        $totalSize = $request->get('totalSize');
+        // dd($request);
 
-        if ($totalSize > $convertedMaxFileSize) {
-            return response()->json([
-                'message' => 'The file is too large. Maximum allowed size is ' . $maxFileSize,
-            ], 422);
+        if ($request->hasFile('file')) {
+            // dd('here');
+            // dd('hit middleware');
+            // Get upload_max_filesize from php.ini
+            $maxFileSize = ini_get('upload_max_filesize');
+
+            // Convert Max File Size to bytes
+            $convertedMaxFileSize = $this->convertToBytes($maxFileSize);
+
+            // Get the uploaded file
+            $uploadedFile = $request->file('file');
+
+            // If the request has a total size value, get the pre-chunked total size. Else, get the file size.
+            $totalSize = $request->get('totalSize') ? $request->get('totalSize') : $uploadedFile->getSize();
+
+            // If the file size is larger than the upload_max_filesize, throw an error
+            if ($totalSize > $convertedMaxFileSize) {
+                return response()->json([
+                    'message' => 'The file is too large. Maximum allowed size is ' . $maxFileSize,
+                ], 422);
+            }
+
+            return $next($request);
         }
     }
 
