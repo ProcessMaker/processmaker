@@ -55,6 +55,9 @@ class UserConfigurationTest extends TestCase
             'tasks' => [
                 'isMenuCollapse' => false,
             ],
+            'tasks_inbox' => [
+                'isMenuCollapse' => false,
+            ],
         ];
 
         $response = $this->apiCall('PUT', self::API_TEST_URL, ['ui_configuration' => $values]);
@@ -74,6 +77,7 @@ class UserConfigurationTest extends TestCase
         $this->assertEquals($uiConfig->cases->isMenuCollapse, $values['cases']['isMenuCollapse']);
         $this->assertEquals($uiConfig->requests->isMenuCollapse, $values['requests']['isMenuCollapse']);
         $this->assertEquals($uiConfig->tasks->isMenuCollapse, $values['tasks']['isMenuCollapse']);
+        $this->assertEquals($uiConfig->tasks_inbox->isMenuCollapse, $values['tasks_inbox']['isMenuCollapse']);
     }
 
     /**
@@ -86,7 +90,7 @@ class UserConfigurationTest extends TestCase
 
         // Validate the header status code
         $response->assertStatus(422);
-        $this->assertEquals('The Ui configuration field is required. (and 4 more errors)', $response->json()['message']);
+        $this->assertEquals('The Ui configuration field is required. (and 5 more errors)', $response->json()['message']);
 
         // An incomplete ui_configuration
         $values = [
@@ -97,6 +101,9 @@ class UserConfigurationTest extends TestCase
                 'isMenuCollapse' => false,
             ],
             'tasks' => [
+                'isMenuCollapse' => false,
+            ],
+            'tasks_inbox' => [
                 'isMenuCollapse' => false,
             ],
         ];

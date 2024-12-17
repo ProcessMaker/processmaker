@@ -58,7 +58,9 @@ class TaskController extends Controller
 
         $taskDraftsEnabled = TaskDraft::draftsEnabled();
 
-        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns', 'taskDraftsEnabled'));
+        $userConfiguration = (new UserConfigurationController())->index()['ui_configuration'] ?? [];
+
+        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns', 'taskDraftsEnabled', 'userConfiguration'));
     }
 
     public function edit(ProcessRequestToken $task, string $preview = '')
