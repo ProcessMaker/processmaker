@@ -70,7 +70,7 @@ class FileSizeCheck
     /**
      * Recursively validate files
      *
-     * @param array|\Illuminate\Http\UploadedFile $files
+     * @param Request $request
      * @param int $maxSize
      * @param string $maxSizeDisplay
      * @throws ValidationException
