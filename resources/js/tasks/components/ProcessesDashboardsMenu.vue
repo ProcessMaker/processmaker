@@ -1,18 +1,30 @@
 <template>
     <div class="inbox-process-menu">
         <div class="menu-options">
-            <button 
-                class="menu-btn" 
-                @click="openProcessDashboard('process1')"
-            >
-                <i class="fas fa-check"></i> Proceso 1 
-            </button>
-            <button 
-                class="menu-btn" 
-                @click="openProcessDashboard('dashboard1')"
-            >
-                <i class="fas fa-check"></i> Dashboard 1 
-            </button>
+            <div>
+                <button 
+                    class="menu-btn" 
+                    @click="openProcessDashboard('process1')"
+                >
+                    <i class="fas fa-check"></i> Proceso 1 
+                </button>
+            </div>
+            <div>
+                <button 
+                    class="menu-btn" 
+                    @click="openProcessDashboard('process2')"
+                >
+                    <i class="fas fa-check"></i> Proceso 2 
+                </button>
+            </div>
+            <div>
+                <button 
+                    class="menu-btn" 
+                    @click="openProcessDashboard('dashboard1')"
+                >
+                    <i class="fas fa-check"></i> Dashboard 1 
+                </button>
+            </div>
         </div>
     </div>
 </template>
@@ -36,10 +48,16 @@ export default {
         openProcessDashboard(item) {
             if (item === 'process1') {
                 const router = this.$router || this.$root.$router;
-                router.push({
-                    path: '/',
-                    query: { parametro: '1' }
-                });
+                if (router.currentRoute.query.parametro !== '1') {
+                    router.push({
+                        path: '/',
+                        query: { parametro: '1' }
+                    }).catch(err => {
+                        if (err.name !== 'NavigationDuplicated') {
+                            throw err;
+                        }
+                    });
+                }
             }
             this.$emit('processDashboardSelected', item);
         },
