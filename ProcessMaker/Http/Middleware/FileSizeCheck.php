@@ -73,7 +73,7 @@ class FileSizeCheck
      * @param array|\Illuminate\Http\UploadedFile $files
      * @param int $maxSize
      * @param string $maxSizeDisplay
-     * @throws Exception
+     * @throws ValidationException
      */
     private function validateFiles($request, $maxSize, $maxSizeDisplay)
     {
