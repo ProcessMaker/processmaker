@@ -3,9 +3,15 @@
         <div class="menu-options">
             <button 
                 class="menu-btn" 
-                @click="openParticipantProcess('complete')"
+                @click="openProcessDashboard('process1')"
             >
                 <i class="fas fa-check"></i> Proceso 1 
+            </button>
+            <button 
+                class="menu-btn" 
+                @click="openProcessDashboard('dashboard1')"
+            >
+                <i class="fas fa-check"></i> Dashboard 1 
             </button>
         </div>
     </div>
@@ -27,19 +33,19 @@ export default {
     },
 
     methods: {
-        openParticipantProcess(item) {
-            this.$emit('processParticipantSelected', item);
+        openProcessDashboard(item) {
+            if (item === 'process1') {
+                const router = this.$router || this.$root.$router;
+                router.push({
+                    path: '/',
+                    query: { parametro: '1' }
+                });
+            }
+            this.$emit('processDashboardSelected', item);
         },
-        processTask(action) {
-            this.$emit('process-task', {
-                taskId: this.selectedTask.id,
-                action: action
-            });
-        }
     }
 }
 </script>
-
 <style scoped>
 .inbox-process-menu {
     padding: 1rem;
@@ -76,3 +82,4 @@ export default {
     border-radius: 4px;
 }
 </style>
+

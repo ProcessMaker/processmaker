@@ -15,7 +15,9 @@
       >
         {{ $t("Inbox") }}
       </span>
-      <ProcessesDashboardsMenu />
+      <ProcessesDashboardsMenu
+        @processDashboardSelected="processDashboardSelected"
+      />
     </div>
 
     <div class="slide-control">
@@ -28,184 +30,192 @@
     </div>
 
     <div ref="processInfo" class="home-screen-inbox">
-      <div class="px-3 page-content mb-0">
-        <div class="row">
-          <div class="col" align="right">
-            <b-alert
-              v-if="inOverdueMessage.length > 0"
-              class="align-middle"
-              show
-              variant="danger"
-              v-cloak
-              style="text-align: center"
-              data-cy="tasks-alert"
-            >
-              {{ inOverdueMessage }}
-            </b-alert>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-sm-12">
-            <ul class="nav nav-tabs task-nav" id="requestTab" role="tablist">
-              <li class="nav-item">
-                <a
-                  class="nav-link task-nav-link"
-                  id="inbox-tab"
-                  :data-toggle="isDataLoading ? '' : 'tab'"
-                  href="#"
-                  role="tab"
-                  aria-controls="inbox"
-                  @click.prevent="!isDataLoading ? switchTab('inbox') : null"
-                  aria-selected="true"
-                  :class="{ active: tab === 'inbox' }"
-                >
-                  {{ $t("Inbox") }}
-                </a>
-              </li>
-              <li class="nav-item">
-                <a
-                  class="nav-link task-nav-link"
-                  id="priority-tab"
-                  :data-toggle="isDataLoading ? '' : 'tab'"
-                  href="#"
-                  role="tab"
-                  aria-controls="inbox"
-                  @click.prevent="!isDataLoading ? switchTab('priority') : null"
-                  aria-selected="true"
-                  :class="{ active: tab === 'priority' }"
-                >
-                  {{ $t("Priority") }}
-                </a>
-              </li>
-              <li class="nav-item">
-                <a
-                  class="nav-link task-nav-link"
-                  id="drafts-tab"
-                  :data-toggle="isDataLoading ? '' : 'tab'"
-                  href="#"
-                  role="tab"
-                  aria-controls="inbox"
-                  @click.prevent="!isDataLoading ? switchTab('draft') : null"
-                  aria-selected="true"
-                  :class="{ active: tab === 'draft' }"
-                  v-if="taskDraftsEnabled"
-                >
-                  {{ $t("Drafts") }}
-                </a>
-              </li>
-            </ul>
-
-            <div class="tab-content" id="task-tabContent">
-              <div
-                class="tab-pane fade show active"
-                id="inbox"
-                role="tabpanel"
-                aria-labelledby="inbox-tab"
+      <router-view v-show="selectedProcess === 'process1'"></router-view>
+      <div v-show="selectedProcess === 'inbox'">
+        <div class="px-3 page-content mb-0">
+          <div class="row">
+            <div class="col" align="right">
+              <b-alert
+                v-if="inOverdueMessage.length > 0"
+                class="align-middle"
+                show
+                variant="danger"
+                v-cloak
+                style="text-align: center"
+                data-cy="tasks-alert"
               >
-                <div class="card card-body task-list-body">
-                  <div id="search-bar" class="search advanced-search mb-2">
-                    <div class="d-flex">
-                      <div class="flex-grow-1">
-                        <pmql-input
-                          ref="pmql_input"
-                          search-type="tasks"
-                          :value="pmql"
-                          :url-pmql="urlPmql"
-                          :filters-value="pmql"
-                          :ai-enabled="false"
-                          :show-filters="true"
-                          :aria-label="$t('Advanced Search (PMQL)')"
-                          :param-status="status"
-                          :permission="
-                            userPermissions.hasPermissionsForUsersGroups
-                          "
-                          @submit="onNLQConversion"
-                          @filterspmqlchange="onFiltersPmqlChange"
-                        >
-                          <template v-slot:left-buttons>
-                            <div class="d-flex">
-                              <div
-                                class="d-flex mr-1"
-                                v-for="addition in additions"
-                              >
-                                <component
-                                  class="d-flex"
-                                  :is="addition"
-                                  :permission="
-                                    userPermissions.hasPermissionsForUsersGroups
-                                  "
-                                ></component>
-                              </div>
-                            </div>
-                          </template>
+                {{ inOverdueMessage }}
+              </b-alert>
+            </div>
+          </div>
 
-                          <template v-slot:right-buttons>
-                            <b-button
-                              id="idPopoverInboxRules"
-                              class="ml-md-1 task-inbox-rules"
-                              variant="primary"
-                              @click="onInboxRules"
-                            >
-                              {{ $t("Inbox Rules") }}
-                            </b-button>
-                            <b-popover
-                              target="idPopoverInboxRules"
-                              triggers="hover focus"
-                              placement="bottomleft"
-                            >
-                              <div class="task-inbox-rules-content">
-                                <div>
-                                  <img
-                                    src="/img/inbox-rule-suggest.svg"
-                                    :alt="$t('Inbox Rules')"
-                                  />
-                                </div>
-                                <span
-                                  class="task-inbox-rules-content-text"
-                                  v-html="
-                                    $t(
-                                      'Inbox Rules act as your personal task manager. You tell them what to look for, and they <strong>take care of things automatically.</strong>'
-                                    )
-                                  "
+          <div class="row">
+            <div class="col-sm-12">
+              <ul class="nav nav-tabs task-nav" id="requestTab" role="tablist">
+                <li class="nav-item">
+                  <a
+                    class="nav-link task-nav-link"
+                    id="inbox-tab"
+                    :data-toggle="isDataLoading ? '' : 'tab'"
+                    href="#"
+                    role="tab"
+                    aria-controls="inbox"
+                    @click.prevent="!isDataLoading ? switchTab('inbox') : null"
+                    aria-selected="true"
+                    :class="{ active: tab === 'inbox' }"
+                  >
+                    {{ $t("Inbox") }}
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a
+                    class="nav-link task-nav-link"
+                    id="priority-tab"
+                    :data-toggle="isDataLoading ? '' : 'tab'"
+                    href="#"
+                    role="tab"
+                    aria-controls="inbox"
+                    @click.prevent="
+                      !isDataLoading ? switchTab('priority') : null
+                    "
+                    aria-selected="true"
+                    :class="{ active: tab === 'priority' }"
+                  >
+                    {{ $t("Priority") }}
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a
+                    class="nav-link task-nav-link"
+                    id="drafts-tab"
+                    :data-toggle="isDataLoading ? '' : 'tab'"
+                    href="#"
+                    role="tab"
+                    aria-controls="inbox"
+                    @click.prevent="!isDataLoading ? switchTab('draft') : null"
+                    aria-selected="true"
+                    :class="{ active: tab === 'draft' }"
+                    v-if="taskDraftsEnabled"
+                  >
+                    {{ $t("Drafts") }}
+                  </a>
+                </li>
+              </ul>
+
+              <div class="tab-content" id="task-tabContent">
+                <div
+                  class="tab-pane fade show active"
+                  id="inbox"
+                  role="tabpanel"
+                  aria-labelledby="inbox-tab"
+                >
+                  <div class="card card-body task-list-body">
+                    <div id="search-bar" class="search advanced-search mb-2">
+                      <div class="d-flex">
+                        <div class="flex-grow-1">
+                          <pmql-input
+                            ref="pmql_input"
+                            search-type="tasks"
+                            :value="pmql"
+                            :url-pmql="urlPmql"
+                            :filters-value="pmql"
+                            :ai-enabled="false"
+                            :show-filters="true"
+                            :aria-label="$t('Advanced Search (PMQL)')"
+                            :param-status="status"
+                            :permission="
+                              userPermissions.hasPermissionsForUsersGroups
+                            "
+                            @submit="onNLQConversion"
+                            @filterspmqlchange="onFiltersPmqlChange"
+                          >
+                            <template v-slot:left-buttons>
+                              <div class="d-flex">
+                                <div
+                                  class="d-flex mr-1"
+                                  v-for="addition in additions"
                                 >
-                                </span>
+                                  <component
+                                    class="d-flex"
+                                    :is="addition"
+                                    :permission="
+                                      userPermissions.hasPermissionsForUsersGroups
+                                    "
+                                  ></component>
+                                </div>
                               </div>
-                            </b-popover>
-                            <b-button
-                              v-if="
-                                userPermissions.isAdministrator ||
-                                userPermissions.canEditScreens
-                              "
-                              class="ml-md-2"
-                              :href="savedsearchDefaultsEditRoute"
-                            >
-                              <i class="fas fw fa-cog"></i>
-                            </b-button>
-                          </template>
-                        </pmql-input>
+                            </template>
+
+                            <template v-slot:right-buttons>
+                              <b-button
+                                id="idPopoverInboxRules"
+                                class="ml-md-1 task-inbox-rules"
+                                variant="primary"
+                                @click="onInboxRules"
+                              >
+                                {{ $t("Inbox Rules") }}
+                              </b-button>
+                              <b-popover
+                                target="idPopoverInboxRules"
+                                triggers="hover focus"
+                                placement="bottomleft"
+                              >
+                                <div class="task-inbox-rules-content">
+                                  <div>
+                                    <img
+                                      src="/img/inbox-rule-suggest.svg"
+                                      :alt="$t('Inbox Rules')"
+                                    />
+                                  </div>
+                                  <span
+                                    class="task-inbox-rules-content-text"
+                                    v-html="
+                                      $t(
+                                        'Inbox Rules act as your personal task manager. You tell them what to look for, and they <strong>take care of things automatically.</strong>'
+                                      )
+                                    "
+                                  >
+                                  </span>
+                                </div>
+                              </b-popover>
+                              <b-button
+                                v-if="
+                                  userPermissions.isAdministrator ||
+                                  userPermissions.canEditScreens
+                                "
+                                class="ml-md-2"
+                                :href="savedsearchDefaultsEditRoute"
+                              >
+                                <i class="fas fw fa-cog"></i>
+                              </b-button>
+                            </template>
+                          </pmql-input>
+                        </div>
                       </div>
                     </div>
+                    <tasks-list
+                      ref="taskList"
+                      :filter="filter"
+                      :pmql="fullPmql"
+                      :columns="columns"
+                      :disable-tooltip="false"
+                      :disable-quick-fill-tooltip="false"
+                      :fetch-on-created="false"
+                      @in-overdue="setInOverdueMessage"
+                      @data-loading="dataLoading"
+                      @tab-count="handleTabCount"
+                      @on-fetch-task="onFetchTask"
+                      :show-recommendations="true"
+                    ></tasks-list>
                   </div>
-                  <tasks-list
-                    ref="taskList"
-                    :filter="filter"
-                    :pmql="fullPmql"
-                    :columns="columns"
-                    :disable-tooltip="false"
-                    :disable-quick-fill-tooltip="false"
-                    :fetch-on-created="false"
-                    @in-overdue="setInOverdueMessage"
-                    @data-loading="dataLoading"
-                    @tab-count="handleTabCount"
-                    @on-fetch-task="onFetchTask"
-                    :show-recommendations="true"
-                  ></tasks-list>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+      <div v-show="selectedProcess === 'dashboard1'">
+        <p>router-view Dashboard 1</p>
       </div>
     </div>
   </div>
@@ -216,6 +226,7 @@ import ListMixin from "./ListMixin";
 import TasksMixin from "../mixins/TasksMixin";
 import TasksList from "./TasksList.vue";
 import ProcessesDashboardsMenu from "./ProcessesDashboardsMenu.vue";
+import router from "../router";
 
 export default {
   name: "ParticipantHomeScreen",
@@ -224,6 +235,7 @@ export default {
     TasksList,
     ProcessesDashboardsMenu,
   },
+  router,
   props: {
     taskDraftsEnabled: {
       type: Boolean,
@@ -255,6 +267,7 @@ export default {
       showMenu: false,
       urlConfiguration: "users/configuration",
       localUserConfiguration: {},
+      selectedProcess: "inbox",
     };
   },
   mounted() {
@@ -264,6 +277,11 @@ export default {
         this.$refs.taskList.fetch();
       }
     });
+  },
+  methods: {
+    processDashboardSelected(item) {
+      this.selectedProcess = item;
+    },
   },
 };
 </script>
