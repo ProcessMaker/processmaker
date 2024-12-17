@@ -18,7 +18,7 @@ const addScriptsToDOM = async function (scripts) {
   }
 };
 
-const componentsScreenBuilder = ["VueFormRenderer", "Task", "TaskView"];
+const componentsScreenBuilder = ["VueFormRenderer", "Task"];
 
 componentsScreenBuilder.forEach((component) => {
   Vue.component(component, (resolve, reject) => {

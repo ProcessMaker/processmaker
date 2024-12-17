@@ -45,9 +45,9 @@
       v-else
       @click="expanded = !expanded"
       role="button"
-      :aria-label="$t('Expand sidebar')"
+      aria-label="Expand sidebar"
       class="nav-item filter-bar justify-content-between py-2 sidebar-expansion"
-      v-b-tooltip.hover.right="{ title: $t('Expand sidebar'), animation: false, boundary: 'viewport', delay: { show: 0, hide: 0 } }"
+      v-b-tooltip.hover.right="{ title: 'Expand sidebar', animation: false, boundary: 'viewport', delay: { show: 0, hide: 0 } }"
     >
       <div class="nav-link">
         <i class="fas fa-angle-double-right nav-icon"></i>

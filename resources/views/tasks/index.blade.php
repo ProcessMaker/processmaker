@@ -174,6 +174,9 @@
   <script src="{{ mix('js/vue-vendor.js') }}"></script>
   <script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
   <script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
+  <script >
+    window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+  </script>
   <script src="{{ mix('js/tasks/loaderMain.js')}}"></script>
   <script>
     window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
@@ -181,7 +184,6 @@
     window.Processmaker.defaultColumns = @json($defaultColumns);
 
     window.sessionStorage.setItem('elementDestinationURL', window.location.href);
-    window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
   </script>
   <script src="{{mix('js/tasks/index.js')}}"></script>
 

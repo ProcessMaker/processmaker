@@ -122,8 +122,7 @@
   <script src="{{ mix('js/vue-vendor.js') }}"></script>
   <script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
   <script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
-  <script src="{{mix('js/composition/cases/casesDetail/loader.js')}}"></script>
-  <script>
+    <script>
     const data = @json($request->getRequestData());
     const requestId = @json($request->getKey());
     const request = @json($request->getRequestAsArray());
@@ -135,10 +134,9 @@
     const comentable_type = @json(get_class($request));
     const requestCount = @json($requestCount);
     const screenBuilderScripts = @json($manager->getScripts());
-    
-    window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+    window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
   </script>
-  
+  <script src="{{mix('js/composition/cases/casesDetail/loader.js')}}"></script>
   @if (hasPackage('package-files'))
   <!-- TODO: Replace with script injector like we do for modeler and screen builder -->
   <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>

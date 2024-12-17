@@ -24,7 +24,7 @@ window.ProcessMaker = {
 
 import("../next/components/index");
 import("../next/libraries/vueFormElements");
-import("../next/libraries/sharedComponents");
+// import("../next/libraries/sharedComponents");
 
 import("../next/libraries/vuex");
 import("../next/libraries/bootstrap");

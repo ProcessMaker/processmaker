@@ -17,12 +17,15 @@
 <script src="{{ mix('js/vue-vendor.js') }}"></script>
 <script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
 <script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
-<script src="{{mix('js/composition/cases/casesMain/loader.js')}}"></script>
 <script>
   const currentUser = @json($currentUser);
   const screenBuilderScripts = @json($manager->getScripts());
-  window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+  window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
 </script>
+<script src="{{mix('js/composition/cases/casesMain/loader.js')}}"></script>
+@foreach(GlobalScripts::getScripts() as $script)
+  <script src="{{$script}}"></script>
+@endforeach
 <script type="module" src="{{mix('js/composition/cases/casesMain/main.js')}}"></script>
 @endsection
 

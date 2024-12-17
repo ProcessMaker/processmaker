@@ -83,7 +83,6 @@
     @endif
 </head>
 <body>
-JONAS
   <div id="sidebar" style="display: 'none'"></div>
   <div id="navbar" style="display: 'none'"></div>
     <div v-cloak id="task" class="container-fluid px-3">

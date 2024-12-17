@@ -1,8 +1,8 @@
-import TasksList from "./components/TasksList";
+import TasksList from "./components/TasksList.vue";
 import TasksListCounter from "./components/TasksListCounter.vue";
 import setDefaultAdvancedFilterStatus from "../common/setDefaultAdvancedFilterStatus";
 
-// Vue.component("TasksList", TasksList);
+Vue.component("TasksList", TasksList);
 
 const main = new Vue({
   el: "#tasks",

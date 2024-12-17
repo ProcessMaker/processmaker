@@ -24,6 +24,7 @@ import("../next/components/index");
 window.ProcessMaker = {
   EventBus: new Vue(),
   events: new Vue(),
+  packages: window.packages,
 };
 
 // loadModulesSequentially([

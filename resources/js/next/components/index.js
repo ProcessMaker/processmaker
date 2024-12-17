@@ -81,6 +81,23 @@ const pmComponents = {
   SliderWithInput: () => import("../../components/shared/SliderWithInput.vue"),
   // Common components folder
   DataTreeToggle: () => import("../../components/common/data-tree-toggle.vue"),
+  // Tasks components folder
+  MobileTasks: () => import("../../tasks/components/MobileTasks.vue"),
+  NavbarTaskMobile: () => import("../../tasks/components/NavbarTaskMobile.vue"),
+  QuickFillPreview: () => import("../../tasks/components/QuickFillPreview.vue"),
+  ReassignMobileModal: () => import("../../tasks/components/ReassignMobileModal.vue"),
+  SplitpaneContainer: () => import("../../tasks/components/SplitpaneContainer.vue"),
+  TaskDetailsMobile: () => import("../../tasks/components/TaskDetailsMobile.vue"),
+  TaskListRowButtons: () => import("../../tasks/components/TaskListRowButtons.vue"),
+  TaskLoading: () => import("../../tasks/components/TaskLoading.vue"),
+  TaskSaveNotification: () => import("../../tasks/components/TaskSaveNotification.vue"),
+  TaskSavePanel: () => import("../../tasks/components/TaskSavePanel.vue"),
+  TasksHome: () => import("../../tasks/components/TasksHome.vue"),
+  TasksList: () => import("../../tasks/components/TasksList.vue"),
+  TasksListCounter: () => import("../../tasks/components/TasksListCounter.vue"),
+  TasksPreview: () => import("../../tasks/components/TasksPreview.vue"),
+  TaskTooltip: () => import("../../tasks/components/TaskTooltip.vue"),
+  TaskView: () => import("../../tasks/components/TaskView.vue"),
 };
 
 Object.entries(pmComponents).forEach(([key, component]) => {
