@@ -15,7 +15,7 @@
       >
         {{ $t("Inbox") }}
       </span>
-      <p>New Menu Processes Here</p>
+      <ProcessesDashboardsMenu />
     </div>
 
     <div class="slide-control">
@@ -27,7 +27,7 @@
       </a>
     </div>
 
-    <div ref="processInfo" class="processes-info">
+    <div ref="processInfo" class="home-screen-inbox">
       <div class="px-3 page-content mb-0">
         <div class="row">
           <div class="col" align="right">
@@ -215,12 +215,14 @@
 import ListMixin from "./ListMixin";
 import TasksMixin from "../mixins/TasksMixin";
 import TasksList from "./TasksList.vue";
+import ProcessesDashboardsMenu from "./ProcessesDashboardsMenu.vue";
 
 export default {
   name: "ParticipantHomeScreen",
   mixins: [TasksMixin, ListMixin],
   components: {
     TasksList,
+    ProcessesDashboardsMenu,
   },
   props: {
     taskDraftsEnabled: {
@@ -517,12 +519,13 @@ export default {
   display: block;
   width: 92%;
   margin-left: 15px;
+  text-align: left;
 
   @media (max-width: 639px) {
     display: none;
   }
 }
-.processes-info {
+.home-screen-inbox {
   width: 100%;
   margin-right: 0px;
   overflow-x: hidden;
