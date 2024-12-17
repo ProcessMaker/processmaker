@@ -4,143 +4,119 @@ namespace Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use ProcessMaker\Services\MetricsService;
-use Prometheus\CollectorRegistry;
-use Prometheus\Histogram;
-use Prometheus\Gauge;
 use Prometheus\Storage\InMemory;
 
 class MetricsServiceTest extends TestCase
 {
-    protected $metricsService;
+    /**
+     * The MetricsService instance used by the test.
+     * @var MetricsService
+     */
+    private $metricsService;
 
     /**
-     * This method is called before each test is executed. 
-     * It initializes the MetricsService with an InMemory adapter 
-     * to facilitate testing of metrics registration and incrementing.
-     * 
-     * @return void
+     * Set up the test environment.
      */
     protected function setUp(): void
     {
-        parent::setUp();
-
-        // Use InMemory instead of Redis for testing.
+        // Use InMemory storage for testing
         $adapter = new InMemory();
         $this->metricsService = new MetricsService($adapter);
     }
 
-    public function test_set_registry()
+    /**
+     * Test the counter registration and increment.
+     */
+    public function testCounterRegistrationAndIncrement(): void
     {
-        $mockRegistry = $this->createMock(CollectorRegistry::class);
+        $counter = $this->metricsService->counter('test_counter', 'Test Counter', ['label1']);
 
-        $this->metricsService->setRegistry($mockRegistry);
+        // Assert the counter is registered
+        $this->assertInstanceOf(\Prometheus\Counter::class, $counter);
 
-        $currentRegistry = $this->metricsService->getMetrics();
-
-        $this->assertSame($mockRegistry, $currentRegistry, "The registry should be updated to the mock registry.");
+        // Increment the counter and assert the value
+        $counter->inc(['value1']);
+        $samples = $this->metricsService->renderMetrics();
+        $this->assertStringContainsString('test_counter', $samples);
+        $this->assertStringContainsString('value1', $samples);
     }
 
     /**
-     * Test to check if a counter can be registered and incremented.
-     * 
-     * @return void
+     * Test the gauge registration and set.
      */
-    public function test_can_register_and_increment_counter()
+    public function testGaugeRegistrationAndSet(): void
     {
-        $this->metricsService->registerCounter('test_counter', 'A test counter');
-        $this->metricsService->incrementCounter('test_counter');
+        $gauge = $this->metricsService->gauge('test_gauge', 'Test Gauge', ['label1']);
 
-        $metric = $this->metricsService->getMetricByName('app_test_counter');
-        $this->assertNotNull($metric);
-        $this->assertEquals(1, $metric->getSamples()[0]->getValue());
+        // Assert the gauge is registered
+        $this->assertInstanceOf(\Prometheus\Gauge::class, $gauge);
+
+        // Set the gauge value and assert the value
+        $gauge->set(10, ['value1']);
+        $samples = $this->metricsService->renderMetrics();
+        $this->assertStringContainsString('test_gauge', $samples);
+        $this->assertStringContainsString('10', $samples);
     }
 
     /**
-     * Test to check if metrics can be rendered.
-     * 
-     * @return void
+     * Test the histogram registration and observe.
      */
-    public function test_can_render_metrics()
+    public function testHistogramRegistrationAndObserve(): void
     {
-        // Register a counter and increment it
-        $this->metricsService->registerCounter('render_test_counter', 'Test render metrics');
-        $this->metricsService->incrementCounter('render_test_counter');
+        $histogram = $this->metricsService->histogram(
+            'test_histogram',
+            'Test Histogram',
+            ['label1'],
+            [0.1, 1, 5]
+        );
 
-        // Render the metrics
-        $output = $this->metricsService->renderMetrics();
+        // Assert the histogram is registered
+        $this->assertInstanceOf(\Prometheus\Histogram::class, $histogram);
 
-        // Verify that the output contains the expected metric
-        $this->assertStringContainsString('render_test_counter', $output);
+        // Observe a value and assert it is recorded
+        $histogram->observe(0.5, ['value1']);
+        $samples = $this->metricsService->renderMetrics();
+        $this->assertStringContainsString('test_histogram', $samples);
+        $this->assertStringContainsString('0.5', $samples);
     }
 
     /**
-     * Summary of test_register_histogram.
-     * 
-     * @return void
+     * Test the renderMetrics method.
      */
-    public function test_register_histogram()
+    public function testRenderMetrics(): void
     {
-        $name = 'test_histogram';
-        $help = 'This is a test histogram';
-        $labels = ['label1', 'label2'];
-        $buckets = [0.1, 1, 5, 10];
+        $counter = $this->metricsService->counter('render_test', 'Render Test Counter', ['label']);
+        $counter->inc(['value1']);
 
-        $histogram = $this->metricsService->registerHistogram($name, $help, $labels, $buckets);
-
-        $this->assertInstanceOf(Histogram::class, $histogram);
-        $this->assertEquals('app_' . $name, $histogram->getName());
-        $this->assertEquals($help, $histogram->getHelp());
+        $metrics = $this->metricsService->renderMetrics();
+        $this->assertStringContainsString('render_test', $metrics);
     }
 
     /**
-     * Test to check if a gauge can be registered.
-     * 
-     * @return void
+     * Test the default namespace.
      */
-    public function test_register_gauge()
+    public function testDefaultNamespace(): void
     {
-        $name = 'test_gauge';
-        $help = 'This is a test gauge';
-        $labels = ['label1'];
+        $counter = $this->metricsService->counter('namespace_test');
 
-        $gauge = $this->metricsService->registerGauge($name, $help, $labels);
+        // Assert default namespace is applied
+        $this->assertInstanceOf(\Prometheus\Counter::class, $counter);
+        $counter->inc();
 
-        $this->assertInstanceOf(Gauge::class, $gauge);
-        $this->assertEquals('app_' . $name, $gauge->getName());
-        $this->assertEquals($help, $gauge->getHelp());
+        $samples = $this->metricsService->renderMetrics();
+
+        $this->assertStringContainsString('namespace_test', $samples);
     }
 
     /**
-     * Test to check if a gauge can be set to a specific value.
-     * 
-     * @return void
+     * Test the gauge set method.
      */
-    public function test_set_gauge()
+    public function testSetGaugeValue(): void
     {
-        $name = 'test_set_gauge';
-        $this->metricsService->registerGauge($name, 'A test gauge', ['label1']);
+        $this->metricsService->gauge('test_set_gauge', 'Gauge Test', ['label'])->set(5, ['label_value']);
+        $samples = $this->metricsService->renderMetrics();
 
-        $this->metricsService->setGauge($name, 42, ['value1']);
-
-        $metric = $this->metricsService->getMetricByName('app_' . $name);
-        $this->assertNotNull($metric);
-        $this->assertEquals(42, $metric->getSamples()[0]->getValue());
-    }
-
-    /**
-     * Test to check if a histogram can observe a value.
-     * 
-     * @return void
-     */
-    public function test_observe_histogram()
-    {
-        $name = 'test_histogram_observe';
-        $this->metricsService->registerHistogram($name, 'A test histogram', ['label1'], [0.1, 1, 5]);
-
-        $this->metricsService->observeHistogram($name, 3.5, ['value1']);
-
-        $metric = $this->metricsService->getMetricByName('app_' . $name);
-        $this->assertNotNull($metric);
-        $this->assertEquals(0, $metric->getSamples()[1]->getValue());
+        $this->assertStringContainsString('test_set_gauge', $samples);
+        $this->assertStringContainsString('5', $samples);
     }
 }

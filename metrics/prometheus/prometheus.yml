@@ -1,13 +1,10 @@
-# Global configuration settings for Prometheus
 global:
   scrape_interval: 15s
   scrape_timeout: 10s
   evaluation_interval: 15s
 
-# Scrape configurations
 scrape_configs:
-  # For Prometheus
-  - job_name: prometheus
+  - job_name: processmaker
     honor_timestamps: true
     scrape_interval: 15s
     scrape_timeout: 10s
@@ -15,6 +12,5 @@ scrape_configs:
     scheme: http
     static_configs:
       - targets:
-          # Replace this with your local processmaker instance
+          # Replace this with your local processmaker instance (add port if needed)
           - processmaker-b.test
-
