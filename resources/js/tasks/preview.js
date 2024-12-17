@@ -18,16 +18,16 @@ const main = new Vue({
     usersList: [],
     filter: "",
     showReassignment: false,
-    task: window.task,
-    userHasAccessToTask: window.userHasAccessToTask,
+    task,
+    userHasAccessToTask,
     statusCard: "card-header text-capitalize text-white bg-success",
     selectedUser: [],
     hasErrors: false,
     redirectInProcess: false,
     formData: {},
     submitting: false,
-    userIsAdmin: window.userIsAdmin,
-    userIsProcessManager: window.userIsProcessManager,
+    userIsAdmin,
+    userIsProcessManager,
     is_loading: false,
     autoSaveDelay: 5000,
     userHasInteracted: false,
@@ -162,7 +162,7 @@ const main = new Vue({
     },
     filterScreenFields(taskData) {
       const filteredData = {};
-      window.screenFields.forEach((field) => {
+      screenFields.forEach((field) => {
         _.set(filteredData, field, _.get(taskData, field, null));
       });
       return filteredData;

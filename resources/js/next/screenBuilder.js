@@ -3,7 +3,6 @@ import {
 } from "./globalVariables";
 
 const Vue = getGlobalVariable("Vue");
-const apiClient = getGlobalPMVariable("apiClient");
 
 const addScriptsToDOM = async function (scripts) {
   for (const script of scripts) {
@@ -26,6 +25,7 @@ componentsScreenBuilder.forEach((component) => {
     if (screenBuilderScripts) {
       addScriptsToDOM(screenBuilderScripts).then(() => {
         import("@processmaker/screen-builder").then((ScreenBuilder) => {
+          const apiClient = getGlobalPMVariable("apiClient");
           Vue.use(ScreenBuilder.default);
 
           const { initializeScreenCache } = ScreenBuilder;

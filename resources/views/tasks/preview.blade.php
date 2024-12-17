@@ -128,17 +128,17 @@
 <script src="{{ mix('js/vue-vendor.js') }}"></script>
 <script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
 <script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
-<script type="module">
+<script>
   window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
-  window.screenBuilderScripts = @json($manager->getScripts());
-  window.task = @json($task);
-  window.userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
-  window.userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
-  window.userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
-  window.screenFields = @json($screenFields);
+  const screenBuilderScripts = @json($manager->getScripts());
+  const task = @json($task);
+  const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
+  const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
+  const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
+  const screenFields = @json($screenFields);
 </script>
-<script type="module" src="{{ mix('js/tasks/loaderPreview.js')}}"></script>
-<script type="module">
+<script src="{{ mix('js/tasks/loaderPreview.js')}}"></script>
+<script>
   window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
     if (screen.watchers_config) {
       screen.watchers_config.api.execute = @json(route('api.scripts.execute', ['script_id' => 'script_id', 'script_key' => 'script_key']));
@@ -154,6 +154,8 @@
     postScriptEndpoint: '/scripts/execute/{id}?task_id={{ $task->id }}',
   };
 </script>
+
+<script src="{{mix('js/tasks/preview.js')}}"></script>
 
 <style>
   .inline-input {

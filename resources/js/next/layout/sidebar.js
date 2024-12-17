@@ -8,14 +8,6 @@ const Vue = getGlobalVariable("Vue");
 // Vue.use(VueHtml2Canvas);
 Vue.prototype.$sanitize = sanitizeUrl;
 
-Vue.component("LanguageSelectorButton", (resolve) => {
-  if (window.ProcessMaker.languageSelectorButtonComponent) {
-    resolve(window.ProcessMaker.languageSelectorButtonComponent);
-  } else {
-    window.ProcessMaker.languageSelectorButtonComponentResolve = resolve;
-  }
-});
-
 new Vue({
   el: "#sidebar",
   components: {

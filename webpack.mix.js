@@ -151,6 +151,7 @@ mix
   .js("resources/js/tasks/loaderPreview.js", "public/js/tasks")
   .js("resources/js/tasks/loaderEdit.js", "public/js/tasks")
   .js("resources/js/tasks/edit.js", "public/js/tasks/edit.js")
+  .js("resources/js/tasks/preview.js", "public/js/tasks/preview.js")
 
   .js("resources/js/app.js", "public/js");
 // .polyfill({
