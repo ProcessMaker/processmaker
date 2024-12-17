@@ -3,30 +3,40 @@
 namespace ProcessMaker\Http\Middleware;
 
 use Closure;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class FileSizeCheck
 {
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param  Request  $request
+     * @param  Closure  $next
      * @return mixed
      */
     public function handle(Request $request, Closure $next)
     {
-        // Get upload_max_filesize from php.ini
-        $maxFileSize = ini_get('upload_max_filesize');
-        $convertedMaxFileSize = $this->convertToBytes();
-        $totalSize = $request->get('totalSize');
+        if ($request->allFiles()) {
+            $maxFileSize = ini_get('upload_max_filesize');
+            $convertedMaxFileSize = $this->convertToBytes($maxFileSize);
 
-        if ($totalSize > $convertedMaxFileSize) {
-            return response()->json([
-                'message' => 'The file is too large. Maximum allowed size is ' . $maxFileSize,
-            ], 422);
+            try {
+                $this->validateFiles($request, $convertedMaxFileSize, $maxFileSize);
+            } catch (ValidationException $e) {
+                return response()->json([
+                    'message' => $e->errors()['file'][0],
+                ])->setStatusCode(422);
+            } catch (Exception $e) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                ])->setStatusCode(422);
+            }
         }
+
+        return $next($request);
     }
 
     /**
@@ -55,5 +65,41 @@ class FileSizeCheck
         }
 
         return $value;
+    }
+
+    /**
+     * Recursively validate files
+     *
+     * @param array|\Illuminate\Http\UploadedFile $files
+     * @param int $maxSize
+     * @param string $maxSizeDisplay
+     * @throws Exception
+     */
+    private function validateFiles($request, $maxSize, $maxSizeDisplay)
+    {
+        $files = $request->allFiles();
+        $totalSize = (int) $request->get('totalSize', 0);
+
+        // Check total size first if it exists
+        if ($totalSize > 0 && $totalSize > $maxSize) {
+            throw ValidationException::withMessages([
+                'file' => ['The file is too large. Maximum allowed size is ' . $maxSizeDisplay],
+            ]);
+        }
+
+        // If no total size, check individual files
+        foreach ($files as $file) {
+            if (!$file->isValid()) {
+                throw ValidationException::withMessages([
+                    'file' => ['The file upload was not successful.'],
+                ]);
+            }
+
+            if ($totalSize == 0 && $file->getSize() > $maxSize) {
+                throw ValidationException::withMessages([
+                    'file' => ['The file is too large. Maximum allowed size is ' . $maxSizeDisplay],
+                ]);
+            }
+        }
     }
 }
