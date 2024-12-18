@@ -44,9 +44,9 @@
             <button 
               type="button"
               class="btn btn-primary"
-              @click="claimTask">@{$t('Claim Task')}}
+              @click="claimTask">{{__('Claim Task')}}
             </button>
-            @{{$t('This task is unassigned, click Claim Task to assign yourself.')}}
+            {{__('This task is unassigned, click Claim Task to assign yourself.')}}
           </div>
           <div
             id="interactionListener"
@@ -66,7 +66,7 @@
                     aria-controls="tab-form"
                     aria-selected="true"
                     class="nav-link active">
-                    @{{$t('Form')}}
+                    {{__('Form')}}
                   </a>
                 </li>
                 <li class="nav-item">
@@ -79,7 +79,7 @@
                     aria-selected="false"
                     @click="resizeMonaco"
                     class="nav-link">
-                    @{{$t('Data')}}
+                    {{__('Data')}}
                   </a>
                 </li>
               </ul>
@@ -142,7 +142,6 @@
                           </button>
                       </span>
                   </div>
-
               </div>
               @endcan
             </div>
@@ -167,7 +166,7 @@
                 aria-controls="details"
                 aria-selected="true"
                 @click="switchTabInfo('details')">
-                @{{ $t('Details') }}
+                {{ __('Details') }}
               </button>
             </li>
             <li class="nav-item" role="presentation">
@@ -181,7 +180,7 @@
                 aria-controls="comments"
                 aria-selected="false"
                 @click="switchTabInfo('comments')">
-                @{{ $t('Comments') }}
+                {{ __('Comments') }}
               </button>
             </li>
           </ul>
@@ -213,7 +212,7 @@
                               type="button"
                               class="btn btn-block button-actions"
                               @click="createRule">
-                              <i class="fas fa-plus"></i> @{{ $t('Create Rule') }}
+                              <i class="fas fa-plus"></i> {{ __('Create Rule') }}
                             </button>
                           </div>
                           <div class="col-6">
@@ -229,7 +228,7 @@
                                           : '/img/priority-header.svg'
                                       "
                                 :alt="$t('No Image')">
-                              @{{ $t('Priority') }}
+                              {{ __('Priority') }}
                             </button>
                           </div>
                         </div>
@@ -243,7 +242,7 @@
                                 @click="showQuickFill">
                                 <img
                                   src="../../img/smartinbox-images/fill.svg"
-                                  :alt="$t('No Image')" /> @{{$t('Quick Fill')}}
+                                  :alt="$t('No Image')" /> {{__('Quick Fill')}}
                               </button>
                             </template>
                           </div>
@@ -254,7 +253,7 @@
                                 type="button"
                                 class="btn btn-block button-actions"
                                 @click="show">
-                                <i class="fas fa-user-friends"></i> @{{$t('Reassign')}}
+                                <i class="fas fa-user-friends"></i> {{__('Reassign')}}
                               </button>
                             </template>
                           </div>
@@ -268,7 +267,7 @@
                           @click="eraseDraft()"
                           v-if="taskDraftsEnabled">
                           <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
-                          @{{ $t('Clear Draft') }}
+                          {{ __('Clear Draft') }}
                         </button>
                       </li>
                       <div :class="statusCard">
@@ -290,7 +289,7 @@
                           :error="errorAutosave" />
                       </li>
                       <li v-if="task.is_self_service === 0" class="list-group-item">
-                        <p class="section-title">@{{$t('Assigned To')}}:</p>
+                        <p class="section-title">{{__('Assigned To')}}:</p>
                         <avatar-image
                           v-if="task.user"
                           size="32"
@@ -307,16 +306,16 @@
                         @{{ moment(createdAt).format() }}
                       </li>
                       <li class="list-group-item">
-                        <p class="section-title">@{{$t('Case')}}</p>
+                        <p class="section-title">{{__('Case')}}</p>
                         @{{ caseTitle }}
                         <p class="launchpad-link">
                           <a href="{{route('process.browser.index', [$task->process->id])}}">
-                            @{{ $t('Open Process Launchpad') }}
+                            {{ __('Open Process Launchpad') }}
                           </a>
                         </p>
                       </li>
                       <li class="list-group-item">
-                        <p class="section-title">@{{$t('Request')}}</p>
+                        <p class="section-title">{{__('Request')}}</p>
                         <a href="{{route('requests.show', [$task->process_request_id, 'skipInterstitial' => '1'])}}"
                           data-test="request-link"
                         >
@@ -324,13 +323,13 @@
                         </a>
                       </li>
                       <li class="list-group-item">
-                        <p class="section-title">@{{$t('Requested By')}}:</p>
+                        <p class="section-title">{{__('Requested By')}}:</p>
                         <avatar-image
                           v-if="task.requestor"
                           size="32"
                           class="d-inline-flex pull-left align-items-center"
                           :input-data="task.requestor"></avatar-image>
-                        <p v-if="!task.requestor">@{{$t('Web Entry')}}</p>
+                        <p v-if="!task.requestor">{{__('Web Entry')}}</p>
                       </li>
                     </ul>
                   </div>
@@ -380,10 +379,10 @@
             </div>
             <div slot="modal-footer">
               <button type="button" class="btn btn-outline-secondary" @click="cancelReassign">
-                @{{$t('Cancel')}}
+                {{__('Cancel')}}
               </button>
               <button type="button" class="btn btn-secondary" @click="reassignUser(true)" :disabled="disabled">
-                @{{$t('Reassign')}}
+                {{__('Reassign')}}
               </button>
             </div>
           </b-modal>
@@ -437,15 +436,11 @@
   </script>
     
 
+  @foreach(GlobalScripts::getScripts() as $script)
+    <script src="{{$script}}"></script>
+  @endforeach
 
-    @foreach(GlobalScripts::getScripts() as $script)
-      <script src="{{$script}}"></script>
-    @endforeach
-
-    <script src="{{mix('js/tasks/edit.js')}}"></script>
-
-
-
+  <script src="{{mix('js/tasks/edit.js')}}"></script>
 @endsection
 
 @section('css')

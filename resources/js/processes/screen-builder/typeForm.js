@@ -1,12 +1,12 @@
-const { FormBuilderControls, globalProperties } = window.ScreenBuilder;
-const initialControls = FormBuilderControls;
-// The submit button has by default the 'submit' value
-const submitButton = initialControls.find((x) => x.control.label === "Submit");
-if (submitButton) {
-  submitButton.control.config.fieldValue = "submit";
-}
-
 ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
+  const { FormBuilderControls, globalProperties } = window.ScreenBuilder;
+  const initialControls = FormBuilderControls;
+  // The submit button has by default the 'submit' value
+  const submitButton = initialControls.find((x) => x.control.label === "Submit");
+  if (submitButton) {
+    submitButton.control.config.fieldValue = "submit";
+  }
+
   initialControls.forEach((config) => {
     config.control.inspector.push(...globalProperties[0].inspector);
 
