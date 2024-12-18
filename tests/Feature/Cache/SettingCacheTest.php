@@ -142,10 +142,6 @@ class SettingCacheTest extends TestCase
 
     public function testClearByPattern()
     {
-        config()->set('cache.default', 'cache_settings');
-
-        dump('default cache ->> ' . config('cache.default'));
-
         \SettingCache::set('password-policies.users_can_change', 1);
         \SettingCache::set('password-policies.numbers', 2);
         \SettingCache::set('password-policies.uppercase', 3);
