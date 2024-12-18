@@ -31,10 +31,10 @@ class MetricsFacadeTest extends TestCase
     public function test_facade_can_register_and_increment_counter()
     {
         // Register a counter using the Facade
-        Metrics::registerCounter('facade_counter', 'Test counter via facade');
+        $counter = Metrics::counter('facade_counter', 'Test counter via facade');
 
         // Increment the counter
-        Metrics::incrementCounter('facade_counter');
+        $counter->inc();
 
         // Verify that the metric was registered and incremented
         $this->assertTrue(true); // In this point we assume that there are no errors
@@ -46,8 +46,8 @@ class MetricsFacadeTest extends TestCase
     public function test_facade_can_render_metrics()
     {
         // Register and increment a counter
-        Metrics::registerCounter('facade_render_test', 'Render test via facade');
-        Metrics::incrementCounter('facade_render_test');
+        $counter = Metrics::counter('facade_render_test', 'Render test via facade');
+        $counter->inc();
 
         // Render the metrics
         $output = Metrics::renderMetrics();
