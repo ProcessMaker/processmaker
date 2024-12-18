@@ -17,10 +17,8 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
 
     public function __construct(CacheManager $cacheManager)
     {
-        parent::__construct();
-
-        // $this->setCacheDriver($cacheManager);
-        $driver = $this->setCacheDriver();
+        $this->setCacheDriver($cacheManager);
+        /* $driver = $this->setCacheDriver();
 
         $this->cacheManager = $cacheManager->store($driver);
 
@@ -30,23 +28,37 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
             $this->connection = $driver;
         }
 
-        $this->prefix = $this->cacheManager->getPrefix();
+        $this->prefix = $this->cacheManager->getPrefix(); */
     }
 
-    /**
-     * Determine and set the cache driver to use.
-     *
-     * @param CacheManager $cacheManager
-     *
-     * @return string
-     */
-    private function setCacheDriver(): string
+
+    /* private function setCacheDriver(): string
     {
         $defaultCache = config('cache.default');
         if (in_array($defaultCache, ['redis', 'cache_settings'])) {
             return self::DEFAULT_CACHE_DRIVER;
         }
         return $defaultCache;
+    } */
+
+    private function setCacheDriver(CacheManager $cacheManager): void
+    {
+        $defaultCache = config('cache.default');
+        $isAvailableConnection = in_array($defaultCache, self::AVAILABLE_CONNECTIONS);
+
+        if ($isAvailableConnection) {
+            $defaultCache = self::DEFAULT_CACHE_DRIVER;
+        }
+
+        $this->cacheManager = $cacheManager->store($defaultCache);
+
+        if ($isAvailableConnection) {
+            $this->connection = $this->cacheManager->connection()->getName();
+        } else {
+            $this->connection = $defaultCache;
+        }
+
+        $this->prefix = $this->cacheManager->getPrefix();
     }
 
     /**
@@ -154,6 +166,7 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
     public function clearBy(string $pattern): void
     {
         dump('connection -> ' . $this->connection);
+
         if ($this->connection !== 'cache_settings') {
             throw new SettingCacheException('The cache driver must be Redis.');
         }
