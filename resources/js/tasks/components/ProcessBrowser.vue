@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h2>Proceso Browser</h2>
+        <h2>Process Browser</h2>
         <p v-if="processId">Process ID: {{ processId }}</p>
         <p v-else>No selected Process</p>
     </div>

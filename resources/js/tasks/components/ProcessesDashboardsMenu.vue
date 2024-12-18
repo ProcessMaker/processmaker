@@ -58,7 +58,7 @@ export default {
             const query = { [type]: id.toString() };
             
             router.push({
-                name: type === 'process' ? 'proceso-browser' : 'dashboard',
+                name: type === 'process' ? 'process-browser' : 'dashboard',
                 query: query
             }).catch(err => {
                 if (err.name !== 'NavigationDuplicated') {

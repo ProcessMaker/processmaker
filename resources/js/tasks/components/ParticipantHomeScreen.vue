@@ -280,7 +280,7 @@ export default {
       this.selectedProcess = type;
       if (type === 'process') {
         this.$router.push({
-          name: 'proceso-browser',
+          name: 'process-browser',
           query: { process: id }
         });
       } else if (type === 'dashboard') {

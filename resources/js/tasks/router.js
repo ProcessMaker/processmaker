@@ -1,6 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import ProcesoBrowser from "./components/ProcesoBrowser.vue";
+import ProcessBrowser from "./components/ProcessBrowser.vue";
 import DashboardViewer from "./components/DashboardViewer.vue";
 
 Vue.use(VueRouter);
@@ -11,8 +11,8 @@ const router = new VueRouter({
   routes: [
     {
       path: "",
-      name: "proceso-browser",
-      component: ProcesoBrowser,
+      name: "process-browser",
+      component: ProcessBrowser,
       props: route => ({
         processId: route.query.process || null
       })
