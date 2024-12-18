@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use ProcessMaker\Services\MetricsService;
 use Prometheus\Storage\InMemory;
+use Illuminate\Support\Facades\App;
 use Tests\TestCase;
 
 class MetricsServiceTest extends TestCase
@@ -19,9 +20,12 @@ class MetricsServiceTest extends TestCase
      */
     protected function setUp(): void
     {
+        parent::setUp();
+
         // Use InMemory storage for testing
         $adapter = new InMemory();
         $this->metricsService = new MetricsService($adapter);
+        App::instance(MetricsService::class, $this->metricsService); // Replace the service in the container
     }
 
     /**
