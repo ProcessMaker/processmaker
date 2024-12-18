@@ -13,4 +13,4 @@ scrape_configs:
     static_configs:
       - targets:
           # Replace this with your local processmaker instance (add port if needed)
-          - processmaker-b.test
+          - processmaker.test
