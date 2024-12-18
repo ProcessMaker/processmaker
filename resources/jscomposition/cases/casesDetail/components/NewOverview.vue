@@ -3,6 +3,9 @@
     class="tw-w-full tw-h-full tw-overflow-hidden tw-relative"
     data-test="body-container"
   >
+    <h4 class="tw-fixed tw-z-10">
+      {{ processTitle }}
+    </h4>
     <MapLegend />
     <ProcessMapTooltip
       v-show="showTooltip"
@@ -43,8 +46,10 @@ import {
 import { Modeler } from "@processmaker/modeler";
 import ProcessMapTooltip from "../../../../js/processes/modeler/components/ProcessMapTooltip.vue";
 import MapLegend from "./MapLegend.vue";
-import { getInflightData } from "../variables";
+import { getInflightData, getProcessName } from "../variables";
 
+const translate = ProcessMaker.i18n;
+const processTitle = ref(`${getProcessName()} ${translate.t("In-Flight Map")}`);
 const keyModeler = ref(Math.random());
 const modelerRef = ref("");
 const tooltipRef = ref(null);
