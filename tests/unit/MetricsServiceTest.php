@@ -2,9 +2,9 @@
 
 namespace Tests\Unit;
 
-use PHPUnit\Framework\TestCase;
 use ProcessMaker\Services\MetricsService;
 use Prometheus\Storage\InMemory;
+use Tests\TestCase;
 
 class MetricsServiceTest extends TestCase
 {
