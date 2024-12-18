@@ -4,6 +4,8 @@ namespace ProcessMaker\Http\Middleware\Etag;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Http\Resources\Caching\EtagManager;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -16,6 +18,10 @@ class HandleEtag
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (!config('etag.enabled')) {
+            return $next($request);
+        }
+
         // Process only GET and HEAD methods.
         if (!$request->isMethod('GET') && !$request->isMethod('HEAD')) {
             return $next($request);
@@ -47,6 +53,9 @@ class HandleEtag
                 }
             }
         }
+
+        // Detect if the ETag changes frequently for dynamic responses.
+        $this->logEtagChanges($request, $etag);
 
         return $response;
     }
@@ -112,5 +121,49 @@ class HandleEtag
     private function stripWeakTags(string $etag): string
     {
         return str_replace('W/', '', $etag);
+    }
+
+    /**
+     * Log ETag changes to detect highly dynamic responses.
+     */
+    private function logEtagChanges(Request $request, ?string $etag): void
+    {
+        if (!config('etag.enabled') || !config('etag.log_dynamic_endpoints')) {
+            return;
+        }
+
+        if (!$etag) {
+            return;
+        }
+
+        // Retrieve the history of ETags for this endpoint.
+        $url = $request->fullUrl();
+        $cacheKey = 'etag_history:' . md5($url);
+        $etagHistory = Cache::get($cacheKey, []);
+
+        // If the ETag is already in the history, it is not considered dynamic.
+        if (in_array($etag, $etagHistory, true)) {
+            return;
+        }
+
+        // Add the new ETag to the history.
+        $etagHistory[] = $etag;
+
+        // Keep the history limited to the last n ETags.
+        $etagHistoryLimit = config('etag.history_limit', 10);
+        if (count($etagHistory) > $etagHistoryLimit) {
+            array_shift($etagHistory); // Remove the oldest ETag.
+        }
+
+        // Save the updated history in the cache, valid for 30 minutes.
+        $cacheExpirationMinute = config('etag.history_cache_expiration');
+        Cache::put($cacheKey, $etagHistory, now()->addMinutes($cacheExpirationMinute));
+
+        // If the history is full and all ETags are unique, log this as a highly dynamic endpoint.
+        if (count(array_unique($etagHistory)) === $etagHistoryLimit) {
+            Log::info('ETag Dynamic endpoint detected', [
+                'url' => $url,
+            ]);
+        }
     }
 }
