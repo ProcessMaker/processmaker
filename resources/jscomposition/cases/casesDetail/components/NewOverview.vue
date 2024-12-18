@@ -50,7 +50,6 @@ import { getInflightData, getProcessName } from "../variables";
 
 const translate = ProcessMaker.i18n;
 const processTitle = ref(`${getProcessName()} ${translate.t("In-Flight Map")}`);
-// processTitle.value = `${getProcessName()} ${translate.t("In-Flight Map")}`;
 const keyModeler = ref(Math.random());
 const modelerRef = ref("");
 const tooltipRef = ref(null);

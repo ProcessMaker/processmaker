@@ -92,7 +92,6 @@ class CasesController extends Controller
         // Get all PM-Blocks
         $modelerController = new ModelerController();
         $pmBlockList = $modelerController->getPmBlockList();
-        // dd($pmBlockList);
 
         // Return the view
         return view('cases.edit', compact(
