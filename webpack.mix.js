@@ -16,7 +16,7 @@ require("laravel-mix-polyfill");
 
 mix.webpackConfig({
   plugins: [],
-  externals: ["monaco-editor", "SharedComponents", "ModelerInspector"],
+  externals: ["SharedComponents", "ModelerInspector"],
   resolve: {
     extensions: [".*", ".js", ".ts", ".mjs", ".vue", ".json"],
     symlinks: false,
@@ -145,6 +145,14 @@ mix
 
   // Note, that this should go last for the extract to properly put the manifest and vendor in the right location
   // See: https://github.com/JeffreyWay/laravel-mix/issues/1118
+  .js("resources/jscomposition/cases/casesMain/loader.js", "public/js/composition/cases/casesMain")
+  .js("resources/jscomposition/cases/casesDetail/loader.js", "public/js/composition/cases/casesDetail")
+  .js("resources/js/tasks/loaderMain.js", "public/js/tasks")
+  .js("resources/js/tasks/loaderPreview.js", "public/js/tasks")
+  .js("resources/js/tasks/loaderEdit.js", "public/js/tasks")
+  .js("resources/js/tasks/edit.js", "public/js/tasks/edit.js")
+  .js("resources/js/tasks/preview.js", "public/js/tasks/preview.js")
+
   .js("resources/js/app.js", "public/js");
 // .polyfill({
 //   enabled: true,
