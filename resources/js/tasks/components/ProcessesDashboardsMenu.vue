@@ -5,12 +5,22 @@
         <h4>Processes</h4>
         <div class="buttons-list">
           <button
-            v-for="process in processes"
+            v-for="process in processesList"
             :key="process.id"
             class="menu-btn"
             @click="openProcessDashboard(process.id, 'process')"
           >
-            <i class="fas fa-check"></i> {{ process.name }}
+            <img
+              class="icon-process small-icon"
+              :src="getIconProcess(process)"
+              :alt="$t(labelIcon)"
+            >
+            <span
+              :id="`title-${process.id}`"
+              class="title-process"
+            >
+              {{ process.name }}
+            </span>
           </button>
         </div>
       </div>
@@ -40,23 +50,29 @@ export default {
   data() {
     return {
       selectedProcess: null,
-      processes: [
-        { id: 1, name: "Process 1" },
-        { id: 2, name: "Process 2" },
-        { id: 3, name: "Process 3" },
-        { id: 4, name: "Process 4" },
-        { id: 5, name: "Process 5" },
-        { id: 6, name: "Process 6" },
-        { id: 7, name: "Process 7" },
-        { id: 8, name: "Process 8" },
-        { id: 9, name: "Process 9" },
-      ],
+      pmql: `user_id=${window.ProcessMaker.user.id}`,
+      processesList: [],
+      labelIcon: "Default Icon",
+      // processesList: [
+      //   { id: 1, name: "Process 1" },
+      //   { id: 2, name: "Process 2" },
+      //   { id: 3, name: "Process 3" },
+      //   { id: 4, name: "Process 4" },
+      //   { id: 5, name: "Process 5" },
+      //   { id: 6, name: "Process 6" },
+      //   { id: 7, name: "Process 7" },
+      //   { id: 8, name: "Process 8" },
+      //   { id: 9, name: "Process 9" },
+      // ],
       dashboards: [
         { id: 1, name: "Dashboard 1" },
         { id: 2, name: "Dashboard 2" },
         { id: 3, name: "Dashboard 3" },
       ],
     };
+  },
+  mounted() {
+    this.loadProcesses();
   },
   methods: {
     openProcessDashboard(id, type) {
@@ -75,6 +91,82 @@ export default {
         });
 
       this.$emit("processDashboardSelected", { id, type });
+    },
+    loadProcesses(callback, message) {
+      if(message === 'bookmark') {
+        this.processesList = [];
+        //this.page = 1;
+      }
+      //this.loading = true;
+      const url = this.buildURL();
+      console.log("url PDM", url);
+      ProcessMaker.apiClient
+        .get(url)
+        .then((response) => {
+          this.processesList = this.processesList.concat(response.data.data);
+          console.log("this.processesList PDM", this.processesList);
+        });
+    },
+    /**
+     * Build URL for Process Cards
+     */
+    buildURL() {
+      // if (this.categoryId === 'all_processes') {
+      //   return "process_bookmarks/processes?"
+      //     + `&page=${this.currentPage}`
+      //     + `&per_page=${this.perPage}`
+      //     + `&pmql=${encodeURIComponent(this.pmql)}`
+      //     + "&bookmark=true"
+      //     + "&launchpad=true"
+      //     + "&cat_status=ACTIVE"
+      //     + "&order_by=name&order_direction=asc";
+      // }
+      // if (this.categoryId === 'bookmarks') {
+      //   return `process_bookmarks?page=${this.currentPage}`
+      //     + `&per_page=${this.perPage}`
+      //     + `&pmql=${encodeURIComponent(this.pmql)}`
+      //     + "&bookmark=true"
+      //     + "&launchpad=true"
+      //     + "&order_by=name&order_direction=asc";
+      // }
+      // if (this.categoryId === 'all_templates') {
+      //   return `templates/process?page=${this.currentPage}`
+      //     + `&per_page=${this.perPage}`
+      //     + `&filter=${encodeURIComponent(this.filter)}`
+      //     + `&order_by=name`
+      //     + `&order_direction=asc`
+      //     + `&include=user,categories,category`;
+      // }
+      // return `process_bookmarks/processes?page=${this.currentPage}`
+      //     + `&per_page=${this.perPage}`
+      //     + `&category=${this.categoryId}`
+      //     + `&pmql=${encodeURIComponent(this.pmql)}`
+      //     + "&bookmark=true"
+      //     + "&launchpad=true"
+      //     + "&order_by=name&order_direction=asc";
+      // return `process_bookmarks/processes?page=1`
+      //     + `&per_page=10`
+      //     + `&category=all_processes`
+      //     + `&pmql=${encodeURIComponent(this.pmql)}`
+      //     + "&bookmark=true"
+      //     + "&launchpad=true"
+      //     + "&order_by=name&order_direction=asc";
+      return `process_bookmarks/processes?page=1`
+        + `&per_page=100`
+        + `&pmql=${encodeURIComponent(this.pmql)}`
+        + "&bookmark=true"
+        + "&launchpad=true"
+        + "&order_by=name&order_direction=asc"
+        + `&include=user,categories,category`;
+    },
+    getIconProcess(process) {
+      let icon = "Default Icon";
+      const unparseProperties = process?.launchpad?.properties || null;
+      if (unparseProperties !== null) {
+        icon = JSON.parse(unparseProperties)?.icon || "Default Icon";
+      }
+
+      return `/img/launchpad-images/icons/${icon}.svg`;
     },
   },
 };
