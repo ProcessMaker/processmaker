@@ -147,13 +147,13 @@ class CacheMetricsDecorator implements CacheInterface
      * @return bool
      * @throws \RuntimeException If underlying cache doesn't support invalidate
      */
-    public function invalidate(int $screenId, string $language): bool
+    public function invalidate($params): void
     {
-        if ($this->cache instanceof CacheInterface) {
-            return $this->cache->invalidate($screenId, $language);
+        if (!$this->cache instanceof CacheInterface) {
+            throw new \RuntimeException('Underlying cache implementation does not support invalidate method');
         }
 
-        throw new \RuntimeException('Underlying cache implementation does not support invalidate method');
+        $this->cache->invalidate($params);
     }
 
     /**

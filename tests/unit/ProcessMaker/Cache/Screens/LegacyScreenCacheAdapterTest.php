@@ -147,8 +147,8 @@ class LegacyScreenCacheAdapterTest extends TestCase
             ->andReturn(true);
 
         // Execute and verify
-        $result = $this->adapter->invalidate($screenId, $language);
-        $this->assertTrue($result);
+        $result = $this->adapter->invalidate(['screen_id' => $screenId, 'language' => $language]);
+        $this->assertNull($result);
     }
 
     /** @test */
@@ -165,8 +165,8 @@ class LegacyScreenCacheAdapterTest extends TestCase
             ->andReturn(false);
 
         // Execute and verify
-        $result = $this->adapter->invalidate($screenId, $language);
-        $this->assertFalse($result);
+        $result = $this->adapter->invalidate(['screen_id' => $screenId, 'language' => $language]);
+        $this->assertNull($result);
     }
 
     /** @test */
@@ -183,8 +183,8 @@ class LegacyScreenCacheAdapterTest extends TestCase
             ->andReturn(true);
 
         // Execute and verify
-        $result = $this->adapter->invalidate($screenId, $language);
-        $this->assertTrue($result);
+        $result = $this->adapter->invalidate(['screen_id' => $screenId, 'language' => $language]);
+        $this->assertNull($result);
     }
 
     /** @test */
@@ -201,8 +201,8 @@ class LegacyScreenCacheAdapterTest extends TestCase
             ->andReturn(false);
 
         // Execute and verify
-        $result = $this->adapter->invalidate($screenId, $language);
-        $this->assertFalse($result);
+        $result = $this->adapter->invalidate(['screen_id' => $screenId, 'language' => $language]);
+        $this->assertNull($result);
     }
 
     protected function tearDown(): void

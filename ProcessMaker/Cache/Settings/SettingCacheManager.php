@@ -218,9 +218,11 @@ class SettingCacheManager implements CacheInterface
      *
      * @return void
      */
-    public function invalidate(string $key): void
+    public function invalidate($params): void
     {
         try {
+            //extract the params from the array
+            $key = $params['key'];
             $this->cacheManager->forget($key);
         } catch (\Exception $e) {
             Log::error($e->getMessage());

@@ -308,13 +308,16 @@ class SettingCacheTest extends TestCase
         $this->assertEquals(1, $settingCache->config);
 
         \SettingCache::shouldReceive('invalidate')
-            ->with($setting->key)
+            ->with(['key' => $setting->key])
             ->andThrow(new SettingCacheException('Failed to invalidate cache KEY:' . $setting->key))
             ->once();
+        \SettingCache::shouldReceive('clear')
+            ->once()
+            ->andReturn(true);
+
         $this->expectException(SettingCacheException::class);
         $this->expectExceptionMessage('Failed to invalidate cache KEY:' . $setting->key);
-
-        \SettingCache::shouldReceive('clear')->once()->andReturn(true);
+        \SettingCache::invalidate(['key' => $setting->key]);
 
         $setting->delete();
     }

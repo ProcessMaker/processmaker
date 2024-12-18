@@ -117,8 +117,7 @@ class ScreenCacheFactoryTest extends TestCase
         $mockManager = $this->createMock(ScreenCacheManager::class);
         $mockManager->expects($this->once())
             ->method('invalidate')
-            ->with(5, 'es')
-            ->willReturn(true);
+            ->with(['screen_id' => 5, 'language' => 'es']);
 
         $this->app->instance(ScreenCacheManager::class, $mockManager);
 
@@ -126,9 +125,10 @@ class ScreenCacheFactoryTest extends TestCase
             app('cache'),
             app(RedisMetricsManager::class)
         );
-        $result = $cache->invalidate(5, 'es');
 
-        $this->assertTrue($result);
+        $cache->invalidate(['screen_id' => 5, 'language' => 'es']);
+
+        // No assertion needed since we verified the method was called with expects()
     }
 
     /**
@@ -144,15 +144,15 @@ class ScreenCacheFactoryTest extends TestCase
         $mockCompiledManager = $this->createMock(ScreenCompiledManager::class);
         $mockCompiledManager->expects($this->once())
             ->method('deleteScreenCompiledContent')
-            ->with('5', 'es')
+            ->with(5, 'es')
             ->willReturn(true);
 
         $this->app->instance(ScreenCompiledManager::class, $mockCompiledManager);
 
         $cache = ScreenCacheFactory::create(app('cache'), app(RedisMetricsManager::class));
-        $result = $cache->invalidate(5, 'es');
+        $result = $cache->invalidate(['screen_id' => 5, 'language' => 'es']);
 
-        $this->assertTrue($result);
+        $this->assertNull($result);
     }
 
     /**

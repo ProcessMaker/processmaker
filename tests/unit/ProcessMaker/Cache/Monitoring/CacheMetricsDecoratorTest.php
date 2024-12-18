@@ -279,35 +279,33 @@ class CacheMetricsDecoratorTest extends TestCase
     public function testInvalidateSuccess()
     {
         // Test parameters
-        $screenId = 5;
-        $language = 'es';
+        $params = ['screen_id' => 5, 'language' => 'es'];
 
         // Setup expectations for invalidate
         $this->cache->shouldReceive('invalidate')
             ->once()
-            ->with($screenId, $language)
+            ->with($params)
             ->andReturn(true);
 
         // Execute and verify
-        $result = $this->decorator->invalidate($screenId, $language);
-        $this->assertTrue($result);
+        $result = $this->decorator->invalidate($params);
+        $this->assertNull($result);
     }
 
     public function testInvalidateFailure()
     {
         // Test parameters
-        $screenId = 5;
-        $language = 'es';
+        $params = ['screen_id' => 5, 'language' => 'es'];
 
         // Setup expectations for invalidate to fail
         $this->cache->shouldReceive('invalidate')
             ->once()
-            ->with($screenId, $language)
-            ->andReturn(false);
+            ->with($params)
+            ->andReturnNull();
 
         // Execute and verify
-        $result = $this->decorator->invalidate($screenId, $language);
-        $this->assertFalse($result);
+        $result = $this->decorator->invalidate($params);
+        $this->assertNull($result);
     }
 
     public function testInvalidateWithNonScreenCache()
@@ -317,11 +315,12 @@ class CacheMetricsDecoratorTest extends TestCase
         $metrics = Mockery::mock(CacheMetricsInterface::class);
         $decorator = new CacheMetricsDecorator($cache, $metrics);
 
-        $this->expectException(\BadMethodCallException::class);
+        $this->expectException(Mockery\Exception\BadMethodCallException::class);
         $this->expectExceptionMessage('Method Mockery_2_ProcessMaker_Cache_CacheInterface::invalidate() does not exist on this mock object');
 
-        // Execute with any parameters since it should throw before using them
-        $decorator->invalidate(5, 'es');
+        // Execute with test parameters
+        $decorator->invalidate(['screen_id' => 5, 'language' => 'es']);
+        $this->assertNull($result);
     }
 
     protected function tearDown(): void

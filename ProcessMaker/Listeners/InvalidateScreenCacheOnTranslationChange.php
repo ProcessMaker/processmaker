@@ -16,7 +16,11 @@ class InvalidateScreenCacheOnTranslationChange
     {
         try {
             if ($event->screenId) {
-                $this->invalidateScreen($event->screenId, $event->language);
+                $params = [
+                    'screen_id' => $event->screenId,
+                    'language' => $event->language,
+                ];
+                ScreenCacheFactory::getScreenCache()->invalidate($params);
             }
         } catch (\Exception $e) {
             Log::error('Failed to invalidate screen cache', [

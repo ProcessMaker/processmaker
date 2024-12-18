@@ -150,10 +150,13 @@ class ScreenCacheManager implements CacheInterface
      * @param string $language Language code
      * @return bool
      */
-    public function invalidate(int $screenId, string $language): bool
+    public function invalidate($params): void
     {
         // Get all keys from cache that match the pattern for this screen ID
         // TODO Improve this to avoid scanning the entire cache
+        //extract the params from the array
+        $screenId = $params['screen_id'];
+        $language = $params['language'];
         $pattern = "*_{$language}_sid_{$screenId}_*";
         $keys = $this->cacheManager->get($pattern);
 
@@ -161,7 +164,5 @@ class ScreenCacheManager implements CacheInterface
         foreach ($keys as $key) {
             $this->cacheManager->forget($key);
         }
-
-        return true;
     }
 }

@@ -295,8 +295,8 @@ class ScreenCacheManagerTest extends TestCase
             ->andReturn(true);
 
         // Execute and verify
-        $result = $this->screenCache->invalidate($screenId, $language);
-        $this->assertTrue($result);
+        $result = $this->screenCache->invalidate(['screen_id' => $screenId, 'language' => $language]);
+        $this->assertNull($result);
     }
 
     /** @test */
@@ -318,8 +318,8 @@ class ScreenCacheManagerTest extends TestCase
             ->andReturn(false); // Make forget operation fail
 
         // Execute and verify
-        $result = $this->screenCache->invalidate($screenId, $language);
-        $this->assertTrue($result);
+        $result = $this->screenCache->invalidate(['screen_id' => $screenId, 'language' => $language]);
+        $this->assertNull($result);
     }
 
     protected function tearDown(): void

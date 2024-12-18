@@ -123,9 +123,11 @@ class LegacyScreenCacheAdapter implements CacheInterface
      * @param int $screenId Screen ID
      * @return bool
      */
-    public function invalidate(int $screenId, string $language): bool
+    public function invalidate($params): void
     {
         // Get all files from storage that match the pattern for this screen ID
-        return $this->compiledManager->deleteScreenCompiledContent($screenId, $language);
+        $screenId = $params['screen_id'];
+        $language = $params['language'];
+        $this->compiledManager->deleteScreenCompiledContent($screenId, $language);
     }
 }
