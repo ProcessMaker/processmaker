@@ -141,6 +141,8 @@
     const requestCount = @json($requestCount);
     const inflightData = @json($inflightData);
 
+    window.ProcessMaker.PMBlockList = @json($pmBlockList);
+
     window.ProcessMaker.modeler = {
       xml: @json($bpmn),
       configurables: [],
@@ -170,6 +172,11 @@
 
   @foreach($manager->getScripts() as $script)
     <script src="{{$script}}"></script>
+  @endforeach
+  @foreach($managerModeler->getScripts() as $script)
+    @if (!str_contains($script, 'slideshow'))
+      <script src="{{ $script }}"></script>
+    @endif
   @endforeach
 @endsection
 

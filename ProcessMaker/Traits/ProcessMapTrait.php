@@ -147,7 +147,7 @@ trait ProcessMapTrait
             'requestCompletedNodes' => $filteredCompletedNodes,
             'requestInProgressNodes' => $requestInProgressNodes,
             'requestIdleNodes' => $requestIdleNodes,
-            'requestId' => $request->process->id,
+            'requestId' => $request->id,
         ];
     }
 }
