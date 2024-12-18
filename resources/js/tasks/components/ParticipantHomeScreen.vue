@@ -30,8 +30,7 @@
     </div>
 
     <div ref="processInfo" class="home-screen-inbox">
-      <router-view v-show="selectedProcess === 'process1'"></router-view>
-      <div v-show="selectedProcess === 'inbox'">
+      <div v-if="selectedProcess === 'inbox'">
         <div class="px-3 page-content mb-0">
           <div class="row">
             <div class="col" align="right">
@@ -214,9 +213,7 @@
           </div>
         </div>
       </div>
-      <div v-show="selectedProcess === 'dashboard1'">
-        <p>router-view Dashboard 1</p>
-      </div>
+      <router-view v-else></router-view>
     </div>
   </div>
 </template>
@@ -279,8 +276,19 @@ export default {
     });
   },
   methods: {
-    processDashboardSelected(item) {
-      this.selectedProcess = item;
+    processDashboardSelected(id, type) {
+      this.selectedProcess = type;
+      if (type === 'process') {
+        this.$router.push({
+          name: 'proceso-browser',
+          query: { process: id }
+        });
+      } else if (type === 'dashboard') {
+        this.$router.push({
+          name: 'dashboard',
+          query: { dashboard: id }
+        });
+      }
     },
   },
 };

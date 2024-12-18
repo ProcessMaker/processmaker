@@ -1,8 +1,8 @@
 <template>
     <div>
         <h2>Proceso Browser</h2>
-        <p v-if="procesoId">ID del proceso: {{ procesoId }}</p>
-        <p v-else>No hay proceso seleccionado</p>
+        <p v-if="processId">Process ID: {{ processId }}</p>
+        <p v-else>No selected Process</p>
     </div>
 </template>
 
@@ -10,7 +10,7 @@
 export default {
     name: 'ProcesoBrowser',
     props: {
-        procesoId: {
+        processId: {
             type: [String, null],
             default: null
         }

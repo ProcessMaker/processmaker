@@ -57,16 +57,15 @@ export default {
             const router = this.$router || this.$root.$router;
             const query = { [type]: id.toString() };
             
-            if (router.currentRoute.query[type] !== id.toString()) {
-                router.push({
-                    path: '/tasks',
-                    query: query
-                }).catch(err => {
-                    if (err.name !== 'NavigationDuplicated') {
-                        throw err;
-                    }
-                });
-            }
+            router.push({
+                name: type === 'process' ? 'proceso-browser' : 'dashboard',
+                query: query
+            }).catch(err => {
+                if (err.name !== 'NavigationDuplicated') {
+                    throw err;
+                }
+            });
+            
             this.$emit('processDashboardSelected', { id, type });
         }
     }
