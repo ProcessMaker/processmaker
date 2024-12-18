@@ -90,7 +90,7 @@
                       :filters-value="pmql"
                       :ai-enabled="false"
                       :show-filters="true"
-                      :aria-label="$t('Advanced Search (PMQL)')"
+                      aria-label="{{__('Advanced Search (PMQL)')}}"
                       :param-status="status"
                       :permission="{{ Auth::user()->hasPermissionsFor('users', 'groups') }}"
                       @submit="onNLQConversion"

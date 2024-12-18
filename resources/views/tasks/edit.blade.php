@@ -227,7 +227,7 @@
                                           ? '/img/priority.svg'
                                           : '/img/priority-header.svg'
                                       "
-                                :alt="$t('No Image')">
+                                alt="'No Image'">
                               {{ __('Priority') }}
                             </button>
                           </div>
@@ -242,7 +242,7 @@
                                 @click="showQuickFill">
                                 <img
                                   src="../../img/smartinbox-images/fill.svg"
-                                  :alt="$t('No Image')" /> {{__('Quick Fill')}}
+                                  alt="{{__('No Image')}}" /> {{__('Quick Fill')}}
                               </button>
                             </template>
                           </div>
@@ -266,7 +266,7 @@
                           class="btn btn-block button-actions"
                           @click="eraseDraft()"
                           v-if="taskDraftsEnabled">
-                          <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
+                          <img src="/img/smartinbox-images/eraser.svg" alt="{{__('No Image')}}">
                           {{ __('Clear Draft') }}
                         </button>
                       </li>
@@ -302,7 +302,7 @@
                         @endisset
                       </li>
                       <li class="list-group-item">
-                        <p class="section-title"> @{{$t('Assigned') }} @{{ moment(createdAt).fromNow() }}</p>
+                        <p class="section-title"> {{__('Assigned') }} @{{ moment(createdAt).fromNow() }}</p>
                         @{{ moment(createdAt).format() }}
                       </li>
                       <li class="list-group-item">
@@ -368,7 +368,7 @@
               <p-m-dropdown-suggest v-model="selectedUser"
                 :options="reassignUsers"
                 @pmds-input="onReassignInput"
-                :placeholder="$t('Type here to search')">
+                placeholder="{{__('Type here to search')}}">
                 <template v-slot:pre-text="{ option }">
                   <b-badge variant="secondary"
                     class="mr-2 custom-badges pl-2 pr-2 rounded-lg">
@@ -394,6 +394,7 @@
 </div>
 @endsection
 @section('js')
+@include('shared.monaco')
 <script src="{{ mix('js/manifest.js') }}"></script>
 <script src="{{ mix('js/vue-vendor.js') }}"></script>
 <script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
@@ -403,7 +404,6 @@
   const screenBuilderScripts = @json($manager->getScripts());
 </script>
 <script src="{{ mix('js/tasks/loaderEdit.js')}}"></script>
-@include('shared.monaco')
   <script>
     window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
       if (screen.watchers_config) {
@@ -434,7 +434,6 @@
 
     window.Processmaker.user = @json($currentUser);
   </script>
-    
 
   @foreach(GlobalScripts::getScripts() as $script)
     <script src="{{$script}}"></script>

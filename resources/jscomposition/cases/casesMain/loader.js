@@ -2,6 +2,27 @@ import Vue from "vue";
 import * as vue from "vue";
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 import moment from "moment-timezone";
+import {
+  setUses, setGlobalVariables, setGlobalPMVariables,
+} from "../../../js/next/globalVariables";
+
+import vuex from "../../../js/next/libraries/vuex";
+import lodash from "../../../js/next/libraries/lodash";
+import bootstrap from "../../../js/next/libraries/bootstrap";
+import jquery from "../../../js/next/libraries/jquery";
+import vueRouter from "../../../js/next/libraries/vueRouter";
+import vueCookies from "../../../js/next/libraries/vueCookies";
+
+import processmaker from "../../../js/next/config/processmaker";
+import broadcast from "../../../js/next/libraries/broadcast";
+import i18n from "../../../js/next/config/i18n";
+import notifications from "../../../js/next/config/notifications";
+import user from "../../../js/next/config/user";
+import session from "../../../js/next/config/session";
+import openAI from "../../../js/next/config/openAI";
+
+// Load syncronously shared components in window, for some packages
+import sharedComponents from "../../../js/next/libraries/sharedComponents";
 
 window.Vue = Vue;
 window.vue = vue;
@@ -11,29 +32,53 @@ window.Vue.prototype.moment = moment;
 window.Vue.use(BootstrapVue);
 window.Vue.use(BootstrapVueIcons);
 
-// Libraries modules loaded asynchronously
-import("../../../js/next/libraries/broadcast");
-import("../../../js/next/libraries/vuex");
-import("../../../js/next/libraries/bootstrap");
-import("../../../js/next/libraries/jquery");
-import("../../../js/next/libraries/vueRouter");
-import("../../../js/next/libraries/vueCookies");
-import("../../../js/next/components/index");
-
-// Global variables ProcessMaker
 window.ProcessMaker = {
   EventBus: new Vue(),
   events: new Vue(),
   packages: window.packages,
 };
 
-// Modules loaded synchronously
-import("../../../js/next/config/processmaker");
-import("../../../js/next/config/i18n");
-import("../../../js/next/config/notifications");
-import("../../../js/next/config/user");
-import("../../../js/next/config/session");
-import("../../../js/next/config/openAI");
+// Vuex
+setUses(Vue, vuex.use);
+
+// Bootstrap
+setGlobalVariables(bootstrap.global);
+
+// Jquery
+setGlobalVariables(jquery.global);
+
+// VueRouter
+setGlobalVariables(vueRouter.global);
+setGlobalPMVariables(vueRouter.pm);
+setUses(Vue, vueRouter.use);
+
+// VueCookies
+setUses(Vue, vueCookies.use);
+
+import("../../../js/next/components/index");
+
+const processmakerConfig = processmaker(window.ProcessMaker);
+setGlobalPMVariables(processmakerConfig.pm);
+
+const broadcastConfig = broadcast(window.ProcessMaker);
+setGlobalVariables(broadcastConfig.global);
+
+const i18nConfig = i18n(window.ProcessMaker);
+setUses(Vue, i18nConfig.use);
+Vue.mixin({ i18n: new i18nConfig.use.VueI18Next(i18nConfig.pm.i18n) });
+setGlobalPMVariables(i18nConfig.pm);
+
+const notificationsConfig = notifications(window.ProcessMaker);
+setGlobalPMVariables(notificationsConfig.pm);
+
+const userConfig = user({ global: window });
+setGlobalPMVariables(userConfig.pm);
+
+const sessionConfig = session({ global: window, processmaker: window.ProcessMaker });
+setGlobalPMVariables(sessionConfig.pm);
+
+const openAIConfig = openAI();
+setGlobalPMVariables(openAIConfig.pm);
 
 // Layout modules
 import("../../../js/next/layout/sidebar");

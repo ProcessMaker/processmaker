@@ -23,10 +23,14 @@
   window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
 </script>
 <script src="{{mix('js/composition/cases/casesMain/loader.js')}}"></script>
+
+<script>
+console.log("despues del loader");
+</script>
 @foreach(GlobalScripts::getScripts() as $script)
   <script src="{{$script}}"></script>
 @endforeach
-<script type="module" src="{{mix('js/composition/cases/casesMain/main.js')}}"></script>
+<script src="{{mix('js/composition/cases/casesMain/main.js')}}"></script>
 @endsection
 
 @section('css')

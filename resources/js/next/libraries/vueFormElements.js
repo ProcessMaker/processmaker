@@ -1,8 +1,5 @@
 import VueFormElements from "@processmaker/vue-form-elements";
-import { setGlobalVariable, getGlobalVariable } from "../globalVariables";
 
-const Vue = getGlobalVariable("Vue");
+window.VueFormElements = VueFormElements;
 
-Vue.use(VueFormElements);
-
-setGlobalVariable("VueFormElements", VueFormElements);
+export default {};

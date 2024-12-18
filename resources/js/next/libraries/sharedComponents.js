@@ -1,8 +1,5 @@
-import { setGlobalVariable } from "../globalVariables";
 import * as SharedComponents from "../../components/shared";
 
-setGlobalVariable("SharedComponents", SharedComponents);
+window.SharedComponents = SharedComponents;
 
-// import("../../components/shared").then((SharedComponents) => {
-//   setGlobalVariable("SharedComponents", SharedComponents);
-// });
+export default {};

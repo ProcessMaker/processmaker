@@ -4,6 +4,14 @@ export const setGlobalVariable = (key, value) => {
   window[key] = value;
 };
 
+export const setGlobalVariables = (variables) => {
+  if (typeof variables === "object") {
+    Object.entries(variables).forEach(([key, value]) => {
+      window[key] = value;
+    });
+  }
+};
+
 export const getGlobalVariable = (key) => window[key];
 
 export const setGlobalPMVariable = (key, value) => {
@@ -24,7 +32,7 @@ export const setGlobalPMVariables = (variables) => {
 
 export const getGlobalPMVariable = (key) => window.ProcessMaker[key];
 
-export const addUses = (Vue, uses) => {
+export const setUses = (Vue, uses) => {
   if (typeof uses === "object") {
     Object.values(uses).forEach((use) => {
       if (use) {
@@ -34,7 +42,7 @@ export const addUses = (Vue, uses) => {
   }
 };
 
-export const addMixin = (Vue, mixins) => {
+export const setMixins = (Vue, mixins) => {
   if (typeof mixins === "object") {
     Object.values(mixins).forEach((mixin) => {
       if (mixin) {

@@ -1,16 +1,27 @@
 import Echo from "laravel-echo";
-import { setGlobalVariable, setGlobalPMVariable } from "../globalVariables";
 
-// Verify if the broadcasting is enabled
-if (window.Processmaker && window.Processmaker.broadcasting) {
-  const config = window.Processmaker.broadcasting;
+export default (globalInput) => {
+  // Verify if the broadcasting is enabled
+  if (Processmaker && Processmaker.broadcasting) {
+    const config = Processmaker.broadcasting;
+    let Pusher;
 
-  if (config.broadcaster === "pusher") {
-    const Pusher = require("pusher-js");
-    Pusher.logToConsole = config.debug;
+    if (config.broadcaster === "pusher") {
+      Pusher = require("pusher-js");
+      Pusher.logToConsole = config.debug;
 
-    setGlobalVariable("Pusher", Pusher);
+      setGlobalVariable("Pusher", Pusher);
+    }
+
+    return {
+      global: {
+        Echo: new Echo(config),
+        Pusher,
+      },
+    };
   }
 
-  window.Echo = new Echo(config);
-}
+  return {
+    global: {},
+  };
+};

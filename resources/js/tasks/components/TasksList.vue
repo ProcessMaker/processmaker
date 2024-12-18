@@ -236,6 +236,7 @@
 </template>
 
 <script>
+import Vue from "vue";
 import moment from "moment";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import { cloneDeep, get } from "lodash";
@@ -243,6 +244,8 @@ import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 import AvatarImage from "../../components/AvatarImage";
+import isPMQL from "../../modules/isPMQL";
+import { FilterTable } from "../../components/shared";
 import TasksPreview from "./TasksPreview.vue";
 import ListMixin from "./ListMixin";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
@@ -257,6 +260,8 @@ import Recommendations from "../../components/Recommendations.vue";
 import DefaultTab from "../../processes-catalogue/components/DefaultTab.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
+Vue.component("AvatarImage", AvatarImage);
+Vue.component("TasksPreview", TasksPreview);
 
 export default {
   components: {
@@ -271,6 +276,7 @@ export default {
     DefaultTab,
     AvatarImage,
     TasksPreview,
+    FilterTable,
   },
   mixins: [
     datatableMixin,

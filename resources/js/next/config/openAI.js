@@ -1,9 +1,21 @@
-import { setGlobalPMVariable } from "../globalVariables";
+// import { setGlobalPMVariable } from "../globalVariables";
 
-const openAi = document.head.querySelector("meta[name=\"open-ai-nlq-to-pmql\"]");
+export default () => {
+  const openAi = document.head.querySelector("meta[name=\"open-ai-nlq-to-pmql\"]");
 
-setGlobalPMVariable("openAi", openAi ? {
-  enabled: openAi.content,
-} : {
-  enabled: false,
-});
+  // setGlobalPMVariable("openAi", openAi ? {
+  //   enabled: openAi.content,
+  // } : {
+  //   enabled: false,
+  // });
+
+  return {
+    pm: {
+      openAi: openAi ? {
+        enabled: openAi.content,
+      } : {
+        enabled: false,
+      },
+    },
+  };
+};
