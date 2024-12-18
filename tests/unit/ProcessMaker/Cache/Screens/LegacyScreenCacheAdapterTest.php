@@ -29,9 +29,30 @@ class LegacyScreenCacheAdapterTest extends TestCase
             ->with('1', '2', 'en', '3', '4')
             ->andReturn('pid_1_2_en_sid_3_4');
 
-        $key = $this->adapter->createKey(1, 2, 'en', 3, 4);
+        $key = $this->adapter->createKey([
+            'process_id' => 1,
+            'process_version_id' => 2,
+            'language' => 'en',
+            'screen_id' => 3,
+            'screen_version_id' => 4,
+        ]);
 
         $this->assertEquals('pid_1_2_en_sid_3_4', $key);
+    }
+
+    /** @test */
+    public function it_throws_exception_when_missing_required_parameters()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Missing required parameters for screen cache key');
+
+        $this->adapter->createKey([
+            'process_id' => 1,
+            // Missing process_version_id
+            'language' => 'en',
+            'screen_id' => 3,
+            'screen_version_id' => 4,
+        ]);
     }
 
     /** @test */

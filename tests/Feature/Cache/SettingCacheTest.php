@@ -69,9 +69,9 @@ class SettingCacheTest extends TestCase
         $this->upgrade();
 
         $key = 'password-policies.users_can_change';
-
+        $cacheKey = 'setting_password-policies.users_can_change';
         $setting = Setting::where('key', $key)->first();
-        \SettingCache::set($key, $setting);
+        \SettingCache::set($cacheKey, $setting);
 
         $this->trackQueries();
 
@@ -260,7 +260,7 @@ class SettingCacheTest extends TestCase
 
     public function testInvalidateOnSaved()
     {
-        $setting  = Setting::factory()->create([
+        $setting = Setting::factory()->create([
             'key' => 'password-policies.users_can_change',
             'config' => 1,
             'format' => 'boolean',
@@ -278,7 +278,7 @@ class SettingCacheTest extends TestCase
 
     public function testInvalidateOnDeleted()
     {
-        $setting  = Setting::factory()->create([
+        $setting = Setting::factory()->create([
             'key' => 'password-policies.users_can_change',
             'config' => 1,
             'format' => 'boolean',
@@ -296,7 +296,7 @@ class SettingCacheTest extends TestCase
 
     public function testInvalidateWithException()
     {
-        $setting  = Setting::factory()->create([
+        $setting = Setting::factory()->create([
             'key' => 'password-policies.numbers',
             'config' => 1,
             'format' => 'boolean',

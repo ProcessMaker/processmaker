@@ -7,7 +7,7 @@ use ProcessMaker\Cache\CacheInterface;
 use ProcessMaker\Managers\ScreenCompiledManager;
 use ProcessMaker\Models\Screen;
 
-class ScreenCacheManager implements CacheInterface, ScreenCacheInterface
+class ScreenCacheManager implements CacheInterface
 {
     protected CacheManager $cacheManager;
 
@@ -24,19 +24,22 @@ class ScreenCacheManager implements CacheInterface, ScreenCacheInterface
         $this->screenCompiler = $screenCompiler;
     }
 
-    /**
-     * Create a cache key for a screen
-     *
-     * @param int $processId Process ID
-     * @param int $processVersionId Process version ID
-     * @param string $language Language code
-     * @param int $screenId Screen ID
-     * @param int $screenVersionId Screen version ID
-     * @return string Cache key
-     */
-    public function createKey(int $processId, int $processVersionId, string $language, int $screenId, int $screenVersionId): string
+    public function createKey(array $params): string
     {
-        return "pid_{$processId}_{$processVersionId}_{$language}_sid_{$screenId}_{$screenVersionId}";
+        // Validate required parameters
+        if (!isset($params['process_id'], $params['process_version_id'], $params['language'],
+            $params['screen_id'], $params['screen_version_id'])) {
+            throw new \InvalidArgumentException('Missing required parameters for screen cache key');
+        }
+
+        return sprintf(
+            'screen_pid_%d_%d_%s_sid_%d_%d',
+            $params['process_id'],
+            $params['process_version_id'],
+            $params['language'],
+            $params['screen_id'],
+            $params['screen_version_id']
+        );
     }
 
     /**

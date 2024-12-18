@@ -2,12 +2,13 @@
 
 namespace Tests\Unit\ProcessMaker\Cache\Screens;
 
+use Illuminate\Cache\CacheManager;
 use Illuminate\Support\Facades\Config;
+use ProcessMaker\Cache\CacheInterface;
 use ProcessMaker\Cache\Monitoring\CacheMetricsDecorator;
 use ProcessMaker\Cache\Monitoring\RedisMetricsManager;
 use ProcessMaker\Cache\Screens\LegacyScreenCacheAdapter;
 use ProcessMaker\Cache\Screens\ScreenCacheFactory;
-use ProcessMaker\Cache\Screens\ScreenCacheInterface;
 use ProcessMaker\Cache\Screens\ScreenCacheManager;
 use ProcessMaker\Managers\ScreenCompiledManager;
 use Tests\TestCase;
@@ -32,7 +33,7 @@ class ScreenCacheFactoryTest extends TestCase
         $mockManager = $this->createMock(ScreenCacheManager::class);
         $this->app->instance(ScreenCacheManager::class, $mockManager);
 
-        $cache = ScreenCacheFactory::create();
+        $cache = ScreenCacheFactory::create(app('cache'), app(RedisMetricsManager::class));
 
         // Should be wrapped with metrics decorator
         $this->assertInstanceOf(CacheMetricsDecorator::class, $cache);
@@ -51,7 +52,7 @@ class ScreenCacheFactoryTest extends TestCase
     {
         Config::set('screens.cache.manager', 'legacy');
 
-        $cache = ScreenCacheFactory::create();
+        $cache = ScreenCacheFactory::create(app('cache'), app(RedisMetricsManager::class));
 
         // Should be wrapped with metrics decorator
         $this->assertInstanceOf(CacheMetricsDecorator::class, $cache);
@@ -75,12 +76,12 @@ class ScreenCacheFactoryTest extends TestCase
         $mockManager = $this->createMock(ScreenCacheManager::class);
         $this->app->instance(ScreenCacheManager::class, $mockManager);
 
-        $newCache = ScreenCacheFactory::create();
+        $newCache = ScreenCacheFactory::create(app('cache'), app(RedisMetricsManager::class));
         $this->verifyMetricsDecorator($newCache, ScreenCacheManager::class);
 
         // Test with legacy adapter
         Config::set('screens.cache.manager', 'legacy');
-        $legacyCache = ScreenCacheFactory::create();
+        $legacyCache = ScreenCacheFactory::create(app('cache'), app(RedisMetricsManager::class));
         $this->verifyMetricsDecorator($legacyCache, LegacyScreenCacheAdapter::class);
     }
 
@@ -121,7 +122,10 @@ class ScreenCacheFactoryTest extends TestCase
 
         $this->app->instance(ScreenCacheManager::class, $mockManager);
 
-        $cache = ScreenCacheFactory::create();
+        $cache = ScreenCacheFactory::create(
+            app('cache'),
+            app(RedisMetricsManager::class)
+        );
         $result = $cache->invalidate(5, 'es');
 
         $this->assertTrue($result);
@@ -145,7 +149,7 @@ class ScreenCacheFactoryTest extends TestCase
 
         $this->app->instance(ScreenCompiledManager::class, $mockCompiledManager);
 
-        $cache = ScreenCacheFactory::create();
+        $cache = ScreenCacheFactory::create(app('cache'), app(RedisMetricsManager::class));
         $result = $cache->invalidate(5, 'es');
 
         $this->assertTrue($result);
@@ -159,7 +163,7 @@ class ScreenCacheFactoryTest extends TestCase
     public function testGetScreenCacheReturnsSameInstanceAsCreate()
     {
         // Get instances using both methods
-        $instance1 = ScreenCacheFactory::create();
+        $instance1 = ScreenCacheFactory::create(app('cache'), app(RedisMetricsManager::class));
         $instance2 = ScreenCacheFactory::getScreenCache();
 
         // Verify they are the same type and have same metrics wrapper
@@ -186,13 +190,13 @@ class ScreenCacheFactoryTest extends TestCase
     public function testFactoryRespectsTestInstance()
     {
         // Create a mock for ScreenCacheInterface
-        $mockInterface = $this->createMock(ScreenCacheInterface::class);
+        $mockInterface = $this->createMock(CacheInterface::class);
 
         // Set the test instance in the factory
         ScreenCacheFactory::setTestInstance($mockInterface);
 
         // Retrieve the instance from the factory
-        $instance = ScreenCacheFactory::create();
+        $instance = ScreenCacheFactory::create(app('cache'), app(RedisMetricsManager::class));
 
         // Assert that the instance is the mock we set
         $this->assertSame($mockInterface, $instance);
@@ -211,7 +215,7 @@ class ScreenCacheFactoryTest extends TestCase
         foreach ($cacheTypes as $type) {
             Config::set('screens.cache.manager', $type);
 
-            $cache = ScreenCacheFactory::create();
+            $cache = ScreenCacheFactory::create(app('cache'), app(RedisMetricsManager::class));
 
             // Verify outer wrapper is metrics decorator
             $this->assertInstanceOf(CacheMetricsDecorator::class, $cache);
@@ -236,7 +240,7 @@ class ScreenCacheFactoryTest extends TestCase
         Config::set('screens.cache.manager', 'invalid');
 
         // Should default to legacy cache
-        $cache = ScreenCacheFactory::create();
+        $cache = ScreenCacheFactory::create(app('cache'), app(RedisMetricsManager::class));
 
         $reflection = new \ReflectionClass(CacheMetricsDecorator::class);
         $property = $reflection->getProperty('cache');

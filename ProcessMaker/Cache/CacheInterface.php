@@ -72,4 +72,12 @@ interface CacheInterface
      * @return bool True if the item is missing from the cache, false otherwise.
      */
     public function missing(string $key): bool;
+
+    /**
+     * Creates a cache key based on provided parameters
+     *
+     * @param array $params Key parameters
+     * @return string Generated cache key
+     */
+    public function createKey(array $params): string;
 }

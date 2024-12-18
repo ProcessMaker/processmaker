@@ -125,7 +125,7 @@ class Bundle extends ProcessMakerModel implements HasMedia
             'asset_id' => $asset->id,
         ]);
     }
-    
+
     public function addAssetToBundles(ProcessMakerModel $asset)
     {
         $message = null;
@@ -134,6 +134,7 @@ class Bundle extends ProcessMakerModel implements HasMedia
         } catch (ValidationException $ve) {
             $message = $ve->getMessage();
         }
+
         return $message;
     }
 

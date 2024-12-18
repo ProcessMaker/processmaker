@@ -22,6 +22,29 @@ class SettingCacheManager implements CacheInterface
     }
 
     /**
+     * Create a cache key for a screen
+     *
+     * @param int $processId Process ID
+     * @param int $processVersionId Process Version ID
+     * @param string $language Language code
+     * @param int $screenId Screen ID
+     * @param int $screenVersionId Screen Version ID
+     * @return string The generated cache key
+     */
+    public function createKey(array $params): string
+    {
+        // Validate required parameters
+        if (!isset($params['key'])) {
+            throw new \InvalidArgumentException('Missing required parameters for settings cache key');
+        }
+
+        return sprintf(
+            'setting_%s',
+            $params['key']
+        );
+    }
+
+    /**
      * Determine the cache driver to use.
      *
      * @return string

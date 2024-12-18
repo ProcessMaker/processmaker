@@ -36,6 +36,11 @@ class CacheMetricsDecoratorTest extends TestCase
     public function testGetWithHit()
     {
         // Setup expectations for cache hit
+        $this->cache->shouldReceive('has')
+            ->once()
+            ->with($this->testKey)
+            ->andReturn(true);
+
         $this->cache->shouldReceive('get')
             ->once()
             ->with($this->testKey, null)
@@ -57,6 +62,11 @@ class CacheMetricsDecoratorTest extends TestCase
         $default = 'default_value';
 
         // Setup expectations for cache miss
+        $this->cache->shouldReceive('has')
+            ->once()
+            ->with($this->testKey)
+            ->andReturn(false);
+
         $this->cache->shouldReceive('get')
             ->once()
             ->with($this->testKey, $default)
@@ -223,11 +233,23 @@ class CacheMetricsDecoratorTest extends TestCase
         // Setup expectations
         $this->cache->shouldReceive('createKey')
             ->once()
-            ->with(1, 2, 'en', 3, 4)
+            ->with([
+                'process_id' => 1,
+                'process_version_id' => 2,
+                'language' => 'en',
+                'screen_id' => 3,
+                'screen_version_id' => 4,
+            ])
             ->andReturn('screen_1_2_en_3_4');
 
         // Execute and verify
-        $key = $this->decorator->createKey(1, 2, 'en', 3, 4);
+        $key = $this->decorator->createKey([
+            'process_id' => 1,
+            'process_version_id' => 2,
+            'language' => 'en',
+            'screen_id' => 3,
+            'screen_version_id' => 4,
+        ]);
         $this->assertEquals('screen_1_2_en_3_4', $key);
     }
 
@@ -235,13 +257,23 @@ class CacheMetricsDecoratorTest extends TestCase
     {
         // Create a mock that only implements CacheInterface
         $cache = Mockery::mock(CacheInterface::class);
+        $cache->shouldReceive('createKey')
+            ->once()
+            ->andThrow(new \BadMethodCallException('Method Mockery_0_ProcessMaker_Cache_CacheInterface::createKey() does not exist on this mock object'));
+
         $metrics = Mockery::mock(CacheMetricsInterface::class);
         $decorator = new CacheMetricsDecorator($cache, $metrics);
 
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Underlying cache implementation does not support createKey method');
+        $this->expectException(\BadMethodCallException::class);
+        $this->expectExceptionMessage('Method Mockery_0_ProcessMaker_Cache_CacheInterface::createKey() does not exist on this mock object');
 
-        $decorator->createKey(1, 2, 'en', 3, 4);
+        $decorator->createKey([
+            'process_id' => 1,
+            'process_version_id' => 2,
+            'language' => 'en',
+            'screen_id' => 3,
+            'screen_version_id' => 4,
+        ]);
     }
 
     public function testInvalidateSuccess()
@@ -285,8 +317,8 @@ class CacheMetricsDecoratorTest extends TestCase
         $metrics = Mockery::mock(CacheMetricsInterface::class);
         $decorator = new CacheMetricsDecorator($cache, $metrics);
 
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Underlying cache implementation does not support invalidate method');
+        $this->expectException(\BadMethodCallException::class);
+        $this->expectExceptionMessage('Method Mockery_2_ProcessMaker_Cache_CacheInterface::invalidate() does not exist on this mock object');
 
         // Execute with any parameters since it should throw before using them
         $decorator->invalidate(5, 'es');
