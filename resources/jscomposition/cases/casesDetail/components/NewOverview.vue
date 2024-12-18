@@ -49,7 +49,6 @@ import MapLegend from "./MapLegend.vue";
 import { getInflightData, getProcessName } from "../variables";
 
 const translate = ProcessMaker.i18n;
-const processName = ref(getProcessName());
 const processTitle = ref(`${getProcessName()} ${translate.t("In-Flight Map")}`);
 // processTitle.value = `${getProcessName()} ${translate.t("In-Flight Map")}`;
 const keyModeler = ref(Math.random());
