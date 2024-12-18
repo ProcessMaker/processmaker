@@ -3,7 +3,6 @@
 namespace ProcessMaker\Services;
 
 use Exception;
-use Illuminate\Support\Facades\Config;
 use Prometheus\Counter;
 use Prometheus\Gauge;
 use Prometheus\Histogram;
