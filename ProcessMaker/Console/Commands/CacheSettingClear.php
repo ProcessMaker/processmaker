@@ -26,5 +26,7 @@ class CacheSettingClear extends Command
     public function handle()
     {
         \SettingCache::clear();
+
+        $this->info('Settings cache cleared.');
     }
 }

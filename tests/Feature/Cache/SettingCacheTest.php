@@ -243,24 +243,19 @@ class SettingCacheTest extends TestCase
         \SettingCache::set('password-policies.users_can_change', 1);
         \SettingCache::set('password-policies.numbers', 2);
 
-        config()->set('cache.default', 'array');
-        Cache::put('password-policies.uppercase', 3);
+        Cache::store('file')->put('password-policies.uppercase', 3);
 
-        config()->set('cache.default', 'cache_settings');
         $this->assertEquals(1, \SettingCache::get('password-policies.users_can_change'));
         $this->assertEquals(2, \SettingCache::get('password-policies.numbers'));
 
-        config()->set('cache.default', 'array');
-        $this->assertEquals(3, Cache::get('password-policies.uppercase'));
+        $this->assertEquals(3, Cache::store('file')->get('password-policies.uppercase'));
 
-        config()->set('cache.default', 'cache_settings');
         \SettingCache::clear();
 
         $this->assertNull(\SettingCache::get('password-policies.users_can_change'));
         $this->assertNull(\SettingCache::get('password-policies.numbers'));
 
-        config()->set('cache.default', 'array');
-        $this->assertEquals(3, Cache::get('password-policies.uppercase'));
+        $this->assertEquals(3, Cache::store('file')->get('password-policies.uppercase'));
     }
 
     public function testInvalidateOnSaved()

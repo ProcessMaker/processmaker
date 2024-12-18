@@ -158,7 +158,7 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
 
         try {
             // Filter keys by pattern
-            $matchedKeys = $this->getKeysByPattern($pattern);
+            $matchedKeys = $this->getKeysByPattern($pattern, $defaultDriver, $this->manager->getPrefix());
 
             if (!empty($matchedKeys)) {
                 Redis::connection($defaultDriver)->del($matchedKeys);
