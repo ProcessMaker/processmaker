@@ -19,7 +19,18 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
     {
         parent::__construct();
 
-        $this->setCacheDriver($cacheManager);
+        // $this->setCacheDriver($cacheManager);
+        $driver = $this->setCacheDriver();
+
+        $this->cacheManager = $cacheManager->store($driver);
+
+        if (in_array($driver, ['redis', 'cache_settings'])) {
+            $this->connection = $this->cacheManager->connection()->getName();
+        } else {
+            $this->connection = $driver;
+        }
+
+        $this->prefix = $this->cacheManager->getPrefix();
     }
 
     /**
@@ -27,24 +38,15 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      *
      * @param CacheManager $cacheManager
      *
-     * @return void
+     * @return string
      */
-    private function setCacheDriver(CacheManager $cacheManager): void
+    private function setCacheDriver(): string
     {
         $defaultCache = config('cache.default');
-        dump('$defaultCache => ' . $defaultCache);
-        $isAvailableConnection = in_array($defaultCache, self::AVAILABLE_CONNECTIONS);
-
-        if ($isAvailableConnection) {
-            $defaultCache = self::DEFAULT_CACHE_DRIVER;
+        if (in_array($defaultCache, ['redis', 'cache_settings'])) {
+            return self::DEFAULT_CACHE_DRIVER;
         }
-
-        $this->cacheManager = $cacheManager->store($defaultCache);
-
-        if ($isAvailableConnection) {
-            $this->connection = $this->cacheManager->connection()->getName();
-            $this->prefix = $this->cacheManager->getPrefix();
-        }
+        return $defaultCache;
     }
 
     /**
@@ -151,7 +153,7 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      */
     public function clearBy(string $pattern): void
     {
-        dump('connection' . $this->connection);
+        dump('connection -> ' . $this->connection);
         if ($this->connection !== 'cache_settings') {
             throw new SettingCacheException('The cache driver must be Redis.');
         }
