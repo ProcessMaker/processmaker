@@ -1,13 +1,10 @@
-# Global configuration settings for Prometheus
 global:
   scrape_interval: 15s
   scrape_timeout: 10s
   evaluation_interval: 15s
 
-# Scrape configurations
 scrape_configs:
-  # For Prometheus
-  - job_name: prometheus
+  - job_name: processmaker
     honor_timestamps: true
     scrape_interval: 15s
     scrape_timeout: 10s
@@ -15,26 +12,5 @@ scrape_configs:
     scheme: http
     static_configs:
       - targets:
-          - localhost:9090
-          
-  # For ProcessMaker https://127.0.0.5:8092/metrics
-  - job_name: processmaker
-    honor_timestamps: true
-    scrape_interval: 15s
-    scrape_timeout: 10s
-    metrics_path: /metrics
-    scheme: https
-    tls_config:
-      insecure_skip_verify: true # Ignore the certificate validation (for development only, remove for production).
-    static_configs:
-      - targets:
-          - 127.0.0.5:8092 # Replace with the address of your application.
-
-# Alerting configuration for Prometheus. 
-#alerting:
-#  alertmanagers:
-#    - static_configs:
-#        - targets: []
-#      scheme: http
-#      timeout: 10s
-#      api_version: v1
+          # Replace this with your local processmaker instance (add port if needed)
+          - processmaker.test

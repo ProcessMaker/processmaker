@@ -439,79 +439,65 @@ npm run dev-font
 ```
 
 
-# Install Prometheus and Grafana with Docker
+# Prometheus and Grafana
 
 This guide explains how to install and run **Prometheus** and **Grafana** using Docker. Both tools complement each other: Prometheus collects and monitors metrics, while Grafana visualizes them with interactive dashboards.
 
-## Compose sample
+## Local Development with docker compose
 ### Prometheus & Grafana
 Go to the metrics directory
 ```text
 cd metrics
 ```
-Project structure:
-```
-.
-├── compose.yaml
-├── grafana
-│   └── datasource.yml
-├── prometheus
-│   └── prometheus.yml
-```
 
-[_compose.yaml_](compose.yaml)
-```
-services:
-  prometheus:
-    image: prom/prometheus
-    ...
-    ports:
-      - 9090:9090
-  grafana:
-    image: grafana/grafana
-    ...
-    ports:
-      - 3000:3000
-```
-The compose file defines a stack with two services `prometheus` and `grafana`.
-When deploying the stack, docker compose maps port the default ports for each service to the equivalent ports on the host in order to inspect easier the web interface of each service.
 Make sure the ports 9090 and 3000 on the host are not already in use.
 
-## Deploy with docker compose
+Edit `prometheus.yml` and update the target hostname with your local processmaker instance. You might also need to change the scheme if you are using https.
 
-```
-$ docker compose up -d
-Creating network "prometheus-grafana_default" with the default driver
-Creating volume "prometheus-grafana_prom_data" with default driver
-...
-Creating grafana    ... done
-Creating prometheus ... done
-Attaching to prometheus, grafana
+Run `docker compose up -d`
 
-```
+Check that prometheus can connect to your local instance at http://localhost:9090/targets
 
-## Expected result
+Go to Grafana at http://localhost:3000/
 
-Listing containers must show two containers running and the port mapping as below:
-```
-$ docker ps
-CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
-dbdec637814f        prom/prometheus     "/bin/prometheus --c…"   8 minutes ago       Up 8 minutes        0.0.0.0:9090->9090/tcp   prometheus
-79f667cb7dc2        grafana/grafana     "/run.sh"                8 minutes ago       Up 8 minutes        0.0.0.0:3000->3000/tcp   grafana
-```
-
-Navigate to `http://localhost:3000` in your web browser and use the login credentials specified in the compose file to access Grafana. It is already configured with prometheus as the default datasource.
-
-Navigate to `http://localhost:9090` in your web browser to access directly the web interface of prometheus.
-
-Stop and remove the containers. Use `-v` to remove the volumes if looking to erase all data.
-```
-$ docker compose down -v
-```
+When you are finished, run `docker compose down`. To delete all data, run `docker compose down -v`
 
 ### **Use the Facade in Your Application**
 
 Now you can use the `Metrics` Facade anywhere in your application to manage metrics.
+
+### **1. Counter**
+A **Counter** only **increases** over time or resets to zero. It is used for cumulative events.
+
+- Total number of HTTP requests:  
+  ```php
+  $counter = Metrics::counter('http_requests_total', 'Total HTTP requests', ['method', 'status']);
+  $counter->inc(['GET', '200']);
+  $counter->incBy(2, ['GET', '200']);
+  ```
+- Number of system errors (e.g., HTTP 5xx).
+
+### **2. Gauge**
+A **Gauge** can **increase or decrease**. It is used for values that fluctuate over time.
+
+- Current number of active jobs in a queue:  
+  ```php
+  $gauge = Metrics::gauge('active_jobs', 'Number of active jobs', ['queue']);
+  $gauge->set(10, ['queue1']);
+  ```
+- Memory or CPU usage.
+
+### **3. Histogram**
+A **Histogram** measures **value distributions** by organizing them into buckets. It is ideal for latency or size measurements.
+
+- Duration of HTTP requests:  
+  ```php
+  $histogram = Metrics::histogram('http_request_duration_seconds', 'HTTP request duration', ['method'], [0.1, 0.5, 1, 5, 10]);
+  $histogram->observe(0.3, ['GET']);
+  ```
+- File sizes or request durations.
+
+Each type serves a specific role depending on the data being monitored.
 
 #### **Example: Incrementing a Counter**
 
@@ -526,28 +512,18 @@ class ExampleController extends Controller
 {
     public function index()
     {
-        // Register a counter for the total number of requests
-        Metrics::registerCounter('requests_total', 'Total number of requests', ['method']);
-        // Increment the counter for the current request
-        Metrics::incrementCounter('requests_total', ['GET']);
+        //use metrics counter
+        $counter = Metrics::counter('http_requests_total', 'Total HTTP requests', ['method', 'status']);
+        $counter->inc(['GET', '200']); // Incrementa el contador para GET y estado 200.
 
         return response()->json(['message' => 'Hello, world!']);
     }
 }
 ```
 
-#### **Example: Registering and Using a Histogram**
+To make things even easier, you can run `Metrics::counter('cases')->inc();` or `Metrics::gauge('active_tasks')->set($activeTasks)` anywhere in the code.
 
-```php
-Metrics::registerHistogram(
-    'request_duration_seconds',
-    'Request duration time',
-    ['method'],
-    [0.1, 0.5, 1, 5]
-);
-$histogram = Metrics::incrementHistogram('request_duration_seconds', ['GET'], microtime(true) - LARAVEL_START);
-```
-
+You can provide an optional description, for example `Metrics::gauge('active_tasks', 'Total Active Tasks')->...`
 
 # License
 
