@@ -10,7 +10,7 @@ const router = new VueRouter({
   base: "/tasks",
   routes: [
     {
-      path: "/:processId?",
+      path: "/process/:processId",
       name: "process-browser",
       component: ProcessBrowser,
       props: route => ({
@@ -19,11 +19,11 @@ const router = new VueRouter({
       })
     },
     {
-      path: "",
+      path: "/dashboard/:dashboardId",
       name: "dashboard",
       component: DashboardViewer,
       props: route => ({
-        dashboardId: route.query.dashboard || null
+        dashboardId: route.params.dashboardId || null
       })
     }
   ]

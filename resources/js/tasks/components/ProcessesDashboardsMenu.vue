@@ -40,6 +40,7 @@ export default {
   data() {
     return {
       selectedProcess: null,
+      // This section will be modified with dynamic data in future tickets
       processes: [
         { id: 1, name: "Process 1" },
         { id: 2, name: "Process 2" },
@@ -59,25 +60,7 @@ export default {
     };
   },
   methods: {
-  //   openProcessDashboard(id, type) {
-  //     const router = this.$router || this.$root.$router;
-  //     const query = { [type]: id.toString() };
-
-  //     router
-  //       .push({
-  //         name: type === "process" ? "process-browser" : "dashboard",
-  //         query: query,
-  //       })
-  //       .catch((err) => {
-  //         if (err.name !== "NavigationDuplicated") {
-  //           throw err;
-  //         }
-  //       });
-
-  //     this.$emit("processDashboardSelected", { id, type });
-  //   },
-  // },
-  openProcessDashboard(id, type) {
+    openProcessDashboard(id, type) {
       const router = this.$router || this.$root.$router;
       
       if (type === 'process') {
@@ -95,7 +78,7 @@ export default {
         router
           .push({
             name: "dashboard",
-            query: { dashboard: id.toString() }
+            params: { dashboardId: id.toString() }
           })
           .catch((err) => {
             if (err.name !== "NavigationDuplicated") {
