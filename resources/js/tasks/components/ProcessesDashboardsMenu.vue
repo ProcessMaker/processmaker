@@ -52,17 +52,6 @@ export default {
       pmql: `user_id=${window.ProcessMaker.user.id}`,
       processesList: [],
       labelIcon: "Default Icon",
-      // processesList: [
-      //   { id: 1, name: "Process 1" },
-      //   { id: 2, name: "Process 2" },
-      //   { id: 3, name: "Process 3" },
-      //   { id: 4, name: "Process 4" },
-      //   { id: 5, name: "Process 5" },
-      //   { id: 6, name: "Process 6" },
-      //   { id: 7, name: "Process 7" },
-      //   { id: 8, name: "Process 8" },
-      //   { id: 9, name: "Process 9" },
-      // ],
       dashboards: [
         { id: 1, name: "Dashboard 1" },
         { id: 2, name: "Dashboard 2" },
@@ -89,11 +78,10 @@ export default {
             }
           });
       } else {
-        // Para dashboards mantener la lógica actual
         router
           .push({
             name: "dashboard",
-            query: { dashboard: id.toString() }
+            params: { dashboardId: id.toString() }
           })
           .catch((err) => {
             if (err.name !== "NavigationDuplicated") {
@@ -123,46 +111,6 @@ export default {
      * Build URL for Process Cards
      */
     buildURL() {
-      // if (this.categoryId === 'all_processes') {
-      //   return "process_bookmarks/processes?"
-      //     + `&page=${this.currentPage}`
-      //     + `&per_page=${this.perPage}`
-      //     + `&pmql=${encodeURIComponent(this.pmql)}`
-      //     + "&bookmark=true"
-      //     + "&launchpad=true"
-      //     + "&cat_status=ACTIVE"
-      //     + "&order_by=name&order_direction=asc";
-      // }
-      // if (this.categoryId === 'bookmarks') {
-      //   return `process_bookmarks?page=${this.currentPage}`
-      //     + `&per_page=${this.perPage}`
-      //     + `&pmql=${encodeURIComponent(this.pmql)}`
-      //     + "&bookmark=true"
-      //     + "&launchpad=true"
-      //     + "&order_by=name&order_direction=asc";
-      // }
-      // if (this.categoryId === 'all_templates') {
-      //   return `templates/process?page=${this.currentPage}`
-      //     + `&per_page=${this.perPage}`
-      //     + `&filter=${encodeURIComponent(this.filter)}`
-      //     + `&order_by=name`
-      //     + `&order_direction=asc`
-      //     + `&include=user,categories,category`;
-      // }
-      // return `process_bookmarks/processes?page=${this.currentPage}`
-      //     + `&per_page=${this.perPage}`
-      //     + `&category=${this.categoryId}`
-      //     + `&pmql=${encodeURIComponent(this.pmql)}`
-      //     + "&bookmark=true"
-      //     + "&launchpad=true"
-      //     + "&order_by=name&order_direction=asc";
-      // return `process_bookmarks/processes?page=1`
-      //     + `&per_page=10`
-      //     + `&category=all_processes`
-      //     + `&pmql=${encodeURIComponent(this.pmql)}`
-      //     + "&bookmark=true"
-      //     + "&launchpad=true"
-      //     + "&order_by=name&order_direction=asc";
       return `process_bookmarks/processes?page=1`
         + `&per_page=100`
         + `&pmql=${encodeURIComponent(this.pmql)}`
