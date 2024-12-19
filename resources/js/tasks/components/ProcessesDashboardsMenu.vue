@@ -2,7 +2,6 @@
   <div class="inbox-process-menu">
     <div class="menu-sections">
       <div class="process-section">
-        <h4>Processes</h4>
         <div class="buttons-list">
           <button
             v-for="process in processesList"
@@ -188,19 +187,25 @@ export default {
 .buttons-list {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
   height: 250px;
   overflow-y: auto;
 }
 
 .menu-btn {
-  padding: 0.5rem 1rem;
   border: none;
   border-radius: 4px;
-  background-color: #f0f0f0;
+  background-color: transparent;
   cursor: pointer;
   text-align: left;
   width: 100%;
+  display: flex;
+  align-items: center;
+  height: 45px;
+}
+
+.menu-btn:hover,
+.menu-btn:active {
+  background-color: #E4EDF3;
 }
 
 .divider {
@@ -210,10 +215,6 @@ export default {
 
 h4 {
   margin-bottom: 0.5rem;
-}
-
-.menu-btn:hover {
-  background-color: #e0e0e0;
 }
 
 .menu-btn:disabled {
@@ -226,5 +227,19 @@ h4 {
   padding: 0.5rem;
   background-color: #f8f8f8;
   border-radius: 4px;
+}
+
+.icon-process {
+  transform: scale(0.5);
+  flex-shrink: 0;
+}
+
+.title-process {
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  max-width: 200px;
 }
 </style>
