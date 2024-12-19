@@ -130,4 +130,12 @@ class LegacyScreenCacheAdapter implements CacheInterface
         $language = $params['language'];
         $this->compiledManager->deleteScreenCompiledContent($screenId, $language);
     }
+
+    /**
+     * Clear all compiled screen assets
+     */
+    public function clearCompiledAssets(): void
+    {
+        $this->compiledManager->clearCompiledAssets();
+    }
 }

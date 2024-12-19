@@ -205,4 +205,18 @@ class CacheMetricsDecorator implements CacheInterface
 
         return $value;
     }
+
+    /**
+     * Clear compiled assets from cache and record metrics
+     *
+     * This method clears compiled assets from the cache and records the operation
+     * as a write with size 0 since we are removing content rather than adding it.
+     * The execution time is measured but not currently used.
+     */
+    public function clearCompiledAssets(): void
+    {
+        $startTime = microtime(true);
+        $this->cache->clearCompiledAssets();
+        $timeTaken = microtime(true) - $startTime;
+    }
 }
