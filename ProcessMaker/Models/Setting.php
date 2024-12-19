@@ -160,10 +160,8 @@ class Setting extends ProcessMakerModel implements HasMedia
             $setting = $settingCache->get($settingKey);
         } else {
             $setting = (new self)->where('key', $key)->first();
-            Log::info('setting', [$key, $setting]);
             $settingCache->set($settingKey, $setting);
         }
-        Log::info('setting', [$key, $setting]);
 
         return $setting;
     }
