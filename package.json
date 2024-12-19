@@ -20,7 +20,7 @@
         "lint": "eslint --fix --ignore-path .eslintignore resources/",
         "font": "node ./devhub/pm-font/svgtofont.js && cp -f ./devhub/pm-font/dist/*.* ./resources/fonts/pm-font",
         "dev-font": "node ./devhub/pm-font/svgtofont.js && http-server ./devhub/pm-font/dist -p 7771 && cp -f ./devhub/pm-font/dist/*.* ./resources/fonts/pm-font ",
-        "stats": "STATS=1 npx mix"
+        "stats": "STATS=1 NODE_OPTIONS=\"--max-old-space-size=8000\" mix"
     },
     "devDependencies": {
         "@babel/eslint-parser": "^7.15.8",
