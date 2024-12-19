@@ -58,6 +58,7 @@ setUses(Vue, vueCookies.use);
 
 import("../../../js/next/components/index");
 import("../../../js/next/screenBuilder");
+import("../../../js/next/modeler");
 
 const processmakerConfig = processmaker(window.ProcessMaker);
 setGlobalPMVariables(processmakerConfig.pm);

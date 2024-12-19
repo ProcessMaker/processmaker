@@ -1,6 +1,10 @@
-window.Modeler = require("@processmaker/modeler");
+import { setGlobalPMVariables } from "./globalVariables";
 
-window.ProcessMaker.nodeTypes = [];
-window.ProcessMaker.nodeTypes.get = function (id) {
+const nodeTypes = [];
+nodeTypes.get = function (id) {
   return this.find((node) => node.id === id);
 };
+
+setGlobalPMVariables({
+  nodeTypes,
+});

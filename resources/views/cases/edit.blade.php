@@ -122,7 +122,7 @@
   <script src="{{ mix('js/vue-vendor.js') }}"></script>
   <script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
   <script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
-  <script src="{{ mix('js/processes/modeler/initialLoad.js') }}"></script>
+  <script src="{{ mix('js/modeler-vendor.js') }}"></script>
   <script>
     const data = @json($request->getRequestData());
     const requestId = @json($request->getKey());
@@ -136,17 +136,10 @@
     const requestCount = @json($requestCount);
     const screenBuilderScripts = @json($manager->getScripts());
     const inflightData = @json($inflightData);
-
-    window.ProcessMaker.PMBlockList = @json($pmBlockList);
     window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
-
-    window.Processmaker = {
-      csrfToken: "{{csrf_token()}}",
-      userId: "{{\Auth::user()->id}}",
-      messages: [],
-      apiTimeout: {{config('app.api_timeout')}}
-    };
-
+  </script>
+  <script src="{{mix('js/composition/cases/casesDetail/loader.js')}}"></script>
+  <script>
     window.ProcessMaker.modeler = {
       xml: @json($bpmn),
       configurables: [],
@@ -165,8 +158,10 @@
     window.PM4ConfigOverrides = {
       requestFiles: @json($request->requestFiles())
     };
+
+    window.ProcessMaker.PMBlockList = @json($pmBlockList);
   </script>
-  <script src="{{mix('js/composition/cases/casesDetail/loader.js')}}"></script>
+
   @if (hasPackage('package-files'))
   <!-- TODO: Replace with script injector like we do for modeler and screen builder -->
   <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
@@ -177,7 +172,7 @@
   @endforeach
 
   <script src="{{mix('js/composition/cases/casesDetail/edit.js')}}"></script>
-  
+
   @foreach($managerModeler->getScripts() as $script)
     @if (!str_contains($script, 'slideshow'))
       <script src="{{ $script }}"></script>

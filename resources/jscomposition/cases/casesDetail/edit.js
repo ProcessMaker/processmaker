@@ -9,6 +9,8 @@ import {
 } from "./api";
 import { useStore, getRequest, getRequestId } from "./variables";
 
+console.log("casesDetail/edit2.js");
+
 Vue.globalStore.registerModule("core:cases", cases);
 
 const caseDetail = new Vue({
