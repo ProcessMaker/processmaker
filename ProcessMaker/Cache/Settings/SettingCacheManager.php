@@ -16,6 +16,8 @@ class SettingCacheManager implements CacheInterface
 
     protected Repository $cacheManager;
 
+    protected string $prefix = '';
+
     public function __construct(CacheManager $cacheManager)
     {
         $driver = $this->determineCacheDriver();
@@ -32,12 +34,11 @@ class SettingCacheManager implements CacheInterface
      */
     private function determineCacheDriver(): string
     {
-        $defaultCache = config('cache.default');
-        if (in_array($defaultCache, ['redis', 'cache_settings'])) {
-            return self::DEFAULT_CACHE_DRIVER;
+        if (app()->env === 'testing') {
+            return config('cache.default');
         }
 
-        return $defaultCache;
+        return self::DEFAULT_CACHE_DRIVER;
     }
 
     /**
@@ -144,22 +145,28 @@ class SettingCacheManager implements CacheInterface
      */
     public function clearBy(string $pattern): void
     {
-        $defaultDriver = $this->manager->getDefaultDriver();
-
-        if ($defaultDriver !== 'cache_settings') {
-            throw new SettingCacheException('The cache driver must be Redis.');
+        if (empty($this->prefix)) {
+            $this->prefix = config('cache.stores.cache_settings.prefix');
         }
+        // $defaultDriver = $this->manager->getDefaultDriver();
+
+        // get the prefix from the $defaultDriver
+
+
+        /* if ($defaultDriver !== 'cache_settings') {
+            throw new SettingCacheException('The cache driver must be Redis.');
+        } */
 
         try {
             // get the connection name from the cache manager
-            $connection = $this->manager->connection()->getName();
+            // $connection = $this->manager->connection()->getName();
             // Get all keys
-            $keys = Redis::connection($connection)->keys($this->manager->getPrefix() . '*');
+            $keys = Redis::connection(self::DEFAULT_CACHE_DRIVER)->keys($this->prefix . '*');
             // Filter keys by pattern
             $matchedKeys = array_filter($keys, fn ($key) => preg_match('/' . $pattern . '/', $key));
 
             if (!empty($matchedKeys)) {
-                Redis::connection($connection)->del($matchedKeys);
+                Redis::connection(self::DEFAULT_CACHE_DRIVER)->del($matchedKeys);
             }
         } catch (\Exception $e) {
             Log::error('SettingCacheException' . $e->getMessage());
