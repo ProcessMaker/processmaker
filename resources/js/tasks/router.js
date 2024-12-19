@@ -10,11 +10,12 @@ const router = new VueRouter({
   base: "/tasks",
   routes: [
     {
-      path: "",
+      path: "/:processId?",
       name: "process-browser",
       component: ProcessBrowser,
       props: route => ({
-        processId: route.query.process || null
+        processId: parseInt(route.params.processId) || null,
+        process: null
       })
     },
     {
