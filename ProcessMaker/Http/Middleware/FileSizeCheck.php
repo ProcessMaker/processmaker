@@ -112,10 +112,6 @@ class FileSizeCheck
 
         // If no total size, check individual files
         foreach ($files as $file) {
-            if ($this->isTemporaryTestFile($file)) {
-                continue; // Skip validation for test temp files.
-            }
-
             if (!$file->isValid()) {
                 throw ValidationException::withMessages([
                     'file' => ['The file upload was not successful.'],
@@ -128,25 +124,5 @@ class FileSizeCheck
                 ]);
             }
         }
-    }
-
-    /**
-     * Check if the file is a temporary test file.
-     *
-     * @param mixed $file
-     */
-    private function isTemporaryTestFile($file): bool
-    {
-        if (!app()->environment('testing')) {
-            return false;
-        }
-
-        // Skip files located in "/private/var/folders/" and not of type Illuminate\Http\Testing\File
-        if ($file instanceof \Illuminate\Http\UploadedFile) {
-            return strpos($file->getRealPath(), '/private/var/folders/') === 0;
-        }
-
-        // Do not skip files of type Illuminate\Http\Testing\File
-        return false;
     }
 }
