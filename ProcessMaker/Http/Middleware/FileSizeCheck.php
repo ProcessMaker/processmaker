@@ -20,7 +20,7 @@ class FileSizeCheck
     public function handle(Request $request, Closure $next)
     {
         if ($request->allFiles()) {
-            $maxFileSize = ini_get('upload_max_filesize');
+            $maxFileSize = $this->getMaxFileSize();
             $convertedMaxFileSize = $this->convertToBytes($maxFileSize);
 
             try {
@@ -50,6 +50,16 @@ class FileSizeCheck
         if ($response instanceof Response) {
             $response->headers->set('X-FileSize-Checked', 'true');
         }
+    }
+
+    /**
+     * Get the maximum file size allowed
+     *
+     * @return string
+     */
+    protected function getMaxFileSize()
+    {
+        return ini_get('upload_max_filesize');
     }
 
     /**

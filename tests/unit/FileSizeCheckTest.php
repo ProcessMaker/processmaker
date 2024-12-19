@@ -55,13 +55,25 @@ class FileSizeCheckTest extends TestCase
 
     public function testLargeFileRejected()
     {
-        ini_set('upload_max_filesize', '2M'); // 2 MB.
+        // Arrange.
+        $middlewareMock = $this->getMockBuilder(FileSizeCheck::class)
+            ->onlyMethods(['getMaxFileSize'])
+            ->getMock();
+        $middlewareMock->expects($this->once())
+            ->method('getMaxFileSize')
+            ->willReturn('2M'); // Force a 2 MB limit.
+        $this->app->instance(FileSizeCheck::class, $middlewareMock);
 
-        $file = UploadedFile::fake()->create('test.pdf', 4000); // 4 MB.
+        $mockFile = $this->createMock(UploadedFile::class);
+        $mockFile->method('getSize')->willReturn(4 * 1024 * 1024); // 4 MB.
+        $mockFile->method('isValid')->willReturn(true);
+
+        // Act.
         $response = $this->postJson(self::TEST_ROUTE, [
-            'file' => $file,
+            'file' => $mockFile,
         ]);
 
+        // Assert.
         $response->assertStatus(422);
         $response->assertJson([
             'message' => 'The file is too large. Maximum allowed size is 2M',
@@ -92,11 +104,19 @@ class FileSizeCheckTest extends TestCase
 
     public function testTotalSizeExceedsLimit()
     {
-        ini_set('upload_max_filesize', '2M'); // 2 MB.
-
         $file1 = UploadedFile::fake()->create('file1.pdf', 1000); // 1 MB.
         $file2 = UploadedFile::fake()->create('file2.pdf', 1500); // 1.5 MB.
         $totalSize = $file1->getSize() + $file2->getSize();
+
+        $middlewareMock = $this->getMockBuilder(FileSizeCheck::class)
+            ->onlyMethods(['getMaxFileSize'])
+            ->getMock();
+
+        $middlewareMock->expects($this->once())
+            ->method('getMaxFileSize')
+            ->willReturn('2M');
+
+        $this->app->instance(FileSizeCheck::class, $middlewareMock);
 
         $response = $this->postJson(self::TEST_ROUTE, [
             'file1' => $file1,
