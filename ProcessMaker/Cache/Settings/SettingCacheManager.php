@@ -3,6 +3,7 @@
 namespace ProcessMaker\Cache\Settings;
 
 use Illuminate\Cache\CacheManager;
+use Illuminate\Cache\Repository;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use ProcessMaker\Cache\CacheInterface;
@@ -11,15 +12,17 @@ class SettingCacheManager implements CacheInterface
 {
     const DEFAULT_CACHE_DRIVER = 'cache_settings';
 
-    protected CacheManager $cacheManager;
+    protected CacheManager $manager;
+
+    protected Repository $cacheManager;
 
     public function __construct(CacheManager $cacheManager)
     {
         $driver = $this->determineCacheDriver();
 
-        $this->cacheManager = $cacheManager;
+        $this->manager = $cacheManager;
 
-        $this->cacheManager->store($driver);
+        $this->cacheManager = $this->manager->store($driver);
     }
 
     /**
@@ -141,7 +144,7 @@ class SettingCacheManager implements CacheInterface
      */
     public function clearBy(string $pattern): void
     {
-        $defaultDriver = $this->cacheManager->getDefaultDriver();
+        $defaultDriver = $this->manager->getDefaultDriver();
 
         if ($defaultDriver !== 'cache_settings') {
             throw new SettingCacheException('The cache driver must be Redis.');
@@ -149,9 +152,9 @@ class SettingCacheManager implements CacheInterface
 
         try {
             // get the connection name from the cache manager
-            $connection = $this->cacheManager->connection()->getName();
+            $connection = $this->manager->connection()->getName();
             // Get all keys
-            $keys = Redis::connection($connection)->keys($this->cacheManager->getPrefix() . '*');
+            $keys = Redis::connection($connection)->keys($this->manager->getPrefix() . '*');
             // Filter keys by pattern
             $matchedKeys = array_filter($keys, fn ($key) => preg_match('/' . $pattern . '/', $key));
 
