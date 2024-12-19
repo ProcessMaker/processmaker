@@ -5,10 +5,15 @@ namespace Tests\Unit\Middleware;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Route;
 use ProcessMaker\Http\Middleware\FileSizeCheck;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\User;
+use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
 class FileSizeCheckTest extends TestCase
 {
+    use RequestHelper;
+
     private string $response = 'OK';
 
     private const TEST_ROUTE = '/upload';
@@ -20,6 +25,11 @@ class FileSizeCheckTest extends TestCase
         Route::middleware(FileSizeCheck::class)->any(self::TEST_ROUTE, function () {
             return response()->json(['message' => $this->response], 200);
         });
+
+        $this->user = User::factory()->create([
+            'password' => bcrypt('password'),
+            'is_administrator' => true,
+        ]);
     }
 
     public function testNoFilesPassesThrough()
@@ -115,5 +125,54 @@ class FileSizeCheckTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJson(['message' => $this->response]);
+    }
+
+    /**
+     * Test if the middleware is applied to API routes.
+     */
+    public function testFileSizeCheckMiddlewareIsAppliedToApiRoutes()
+    {
+        $processRequest = ProcessRequest::factory()->create();
+        $response = $this->apiCall(
+            'POST',
+            route('api.requests.files.store', [$processRequest->id]),
+            ['file' => UploadedFile::fake()->create('test.pdf', 500)]
+        );
+
+        // Verify that the header added by the middleware is present.
+        $response->assertOk();
+        $response->assertHeader('X-FileSize-Checked', 'true');
+    }
+
+    /**
+     * Test if the middleware is applied to Web routes.
+     */
+    public function testFileSizeCheckMiddlewareIsAppliedToWebRoutes()
+    {
+        $response = $this->webCall('GET', route('processes.index'));
+
+        $response->assertOk();
+        $response->assertHeader('X-FileSize-Checked', 'true');
+    }
+
+    /**
+     * Test if the middleware is applied to package routes.
+     */
+    public function testFileSizeCheckMiddlewareIsAppliedToPackageRoutes()
+    {
+        $hasPackage = \hasPackage('package-files');
+        if (!$hasPackage) {
+            $this->markTestSkipped('The package is not installed.');
+        }
+
+        \ProcessMaker\Package\Files\AddPublicFilesProcess::call();
+        $response = $this->apiCall(
+            'POST',
+            route('api.file-manager.store'),
+            ['file' => UploadedFile::fake()->create('test.pdf', 500)]
+        );
+
+        $response->assertOk();
+        $response->assertHeader('X-FileSize-Checked', 'true');
     }
 }

@@ -36,7 +36,10 @@ class FileSizeCheck
             }
         }
 
-        return $next($request);
+        $response = $next($request);
+
+        // Add header to indicate that file size has been checked.
+        return $response->header('X-FileSize-Checked', 'true');
     }
 
     /**

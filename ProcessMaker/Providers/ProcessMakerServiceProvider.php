@@ -10,7 +10,6 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Support\Facades;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
@@ -20,7 +19,6 @@ use ProcessMaker\Console\Migration\ExtendedMigrateCommand;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Helpers\PmHash;
-use ProcessMaker\Http\Middleware\FileSizeCheck;
 use ProcessMaker\ImportExport\Extension;
 use ProcessMaker\ImportExport\SignalHelper;
 use ProcessMaker\Jobs\SmartInbox;
@@ -54,9 +52,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->setupFactories();
 
         parent::boot();
-
-        Route::pushMiddlewareToGroup('api', FileSizeCheck::class);
-        Route::pushMiddlewareToGroup('web', FileSizeCheck::class);
     }
 
     public function register(): void
