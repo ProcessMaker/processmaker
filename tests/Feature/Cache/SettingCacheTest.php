@@ -142,44 +142,44 @@ class SettingCacheTest extends TestCase
 
     public function testClearByPattern()
     {
-        \SettingCache::set('password-policies.users_can_change', 1);
-        \SettingCache::set('password-policies.numbers', 2);
-        \SettingCache::set('password-policies.uppercase', 3);
+        Cache::store('cache_settings')->put('password-policies.users_can_change', 1);
+        Cache::store('cache_settings')->put('password-policies.numbers', 2);
+        Cache::store('cache_settings')->put('password-policies.uppercase', 3);
         Cache::put('session-control.ip_restriction', 0);
 
-        $this->assertEquals(1, \SettingCache::get('password-policies.users_can_change'));
-        $this->assertEquals(2, \SettingCache::get('password-policies.numbers'));
-        $this->assertEquals(3, \SettingCache::get('password-policies.uppercase'));
+        $this->assertEquals(1, Cache::store('cache_settings')->get('password-policies.users_can_change'));
+        $this->assertEquals(2, Cache::store('cache_settings')->get('password-policies.numbers'));
+        $this->assertEquals(3, Cache::store('cache_settings')->get('password-policies.uppercase'));
 
         $pattern = 'password-policies';
 
         \SettingCache::clearBy($pattern);
 
-        $this->assertNull(\SettingCache::get('password-policies.users_can_change'));
-        $this->assertNull(\SettingCache::get('password-policies.numbers'));
-        $this->assertNull(\SettingCache::get('password-policies.uppercase'));
+        $this->assertNull(Cache::store('cache_settings')->get('password-policies.users_can_change'));
+        $this->assertNull(Cache::store('cache_settings')->get('password-policies.numbers'));
+        $this->assertNull(Cache::store('cache_settings')->get('password-policies.uppercase'));
     }
 
     public function testClearByPatternRemainUnmatched()
     {
-        \SettingCache::set('session-control.ip_restriction', 0);
-        \SettingCache::set('password-policies.users_can_change', 1);
-        \SettingCache::set('password-policies.numbers', 2);
-        \SettingCache::set('password-policies.uppercase', 3);
+        Cache::store('cache_settings')->put('session-control.ip_restriction', 0);
+        Cache::store('cache_settings')->put('password-policies.users_can_change', 1);
+        Cache::store('cache_settings')->put('password-policies.numbers', 2);
+        Cache::store('cache_settings')->put('password-policies.uppercase', 3);
 
-        $this->assertEquals(0, \SettingCache::get('session-control.ip_restriction'));
-        $this->assertEquals(1, \SettingCache::get('password-policies.users_can_change'));
-        $this->assertEquals(2, \SettingCache::get('password-policies.numbers'));
-        $this->assertEquals(3, \SettingCache::get('password-policies.uppercase'));
+        $this->assertEquals(0, Cache::store('cache_settings')->get('session-control.ip_restriction'));
+        $this->assertEquals(1, Cache::store('cache_settings')->get('password-policies.users_can_change'));
+        $this->assertEquals(2, Cache::store('cache_settings')->get('password-policies.numbers'));
+        $this->assertEquals(3, Cache::store('cache_settings')->get('password-policies.uppercase'));
 
         $pattern = 'password-policies';
 
         \SettingCache::clearBy($pattern);
 
-        $this->assertEquals(0, \SettingCache::get('session-control.ip_restriction'));
-        $this->assertNull(\SettingCache::get('password-policies.users_can_change'));
-        $this->assertNull(\SettingCache::get('password-policies.numbers'));
-        $this->assertNull(\SettingCache::get('password-policies.uppercase'));
+        $this->assertEquals(0, Cache::store('cache_settings')->get('session-control.ip_restriction'));
+        $this->assertNull(Cache::store('cache_settings')->get('password-policies.users_can_change'));
+        $this->assertNull(Cache::store('cache_settings')->get('password-policies.numbers'));
+        $this->assertNull(Cache::store('cache_settings')->get('password-policies.uppercase'));
     }
 
     public function testClearByPatternWithFailedDeletion()
@@ -192,8 +192,13 @@ class SettingCacheTest extends TestCase
         \SettingCache::set('test_pattern:1', 1);
         \SettingCache::set('test_pattern:2', 2);
 
+        // Set up the expectation for the connection method
+        Redis::shouldReceive('connection')
+            ->with('cache_settings')
+            ->andReturnSelf();
+
         Redis::shouldReceive('keys')
-            ->with('*settings:*')
+            ->with('settings:*')
             ->andReturn($keys);
 
         Redis::shouldReceive('del')
@@ -238,24 +243,19 @@ class SettingCacheTest extends TestCase
         \SettingCache::set('password-policies.users_can_change', 1);
         \SettingCache::set('password-policies.numbers', 2);
 
-        config()->set('cache.default', 'array');
-        Cache::put('password-policies.uppercase', 3);
+        Cache::store('file')->put('password-policies.uppercase', 3);
 
-        config()->set('cache.default', 'cache_settings');
         $this->assertEquals(1, \SettingCache::get('password-policies.users_can_change'));
         $this->assertEquals(2, \SettingCache::get('password-policies.numbers'));
 
-        config()->set('cache.default', 'array');
-        $this->assertEquals(3, Cache::get('password-policies.uppercase'));
+        $this->assertEquals(3, Cache::store('file')->get('password-policies.uppercase'));
 
-        config()->set('cache.default', 'cache_settings');
         \SettingCache::clear();
 
         $this->assertNull(\SettingCache::get('password-policies.users_can_change'));
         $this->assertNull(\SettingCache::get('password-policies.numbers'));
 
-        config()->set('cache.default', 'array');
-        $this->assertEquals(3, Cache::get('password-policies.uppercase'));
+        $this->assertEquals(3, Cache::store('file')->get('password-policies.uppercase'));
     }
 
     public function testInvalidateOnSaved()
