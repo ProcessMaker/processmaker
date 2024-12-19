@@ -18,6 +18,7 @@ class SettingCacheManager implements CacheInterface
         $driver = $this->determineCacheDriver();
 
         $this->cacheManager = $cacheManager;
+
         $this->cacheManager->store($driver);
     }
 
