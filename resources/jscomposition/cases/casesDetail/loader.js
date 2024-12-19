@@ -24,6 +24,7 @@ import openAI from "../../../js/next/config/openAI";
 // Load syncronously shared components in window, for some packages
 import sharedComponents from "../../../js/next/libraries/sharedComponents";
 import vueFormElements from "../../../js/next/libraries/vueFormElements";
+import modeler from "../../../js/next/modeler";
 
 window.Vue = Vue;
 window.vue = vue;
@@ -58,7 +59,13 @@ setUses(Vue, vueCookies.use);
 
 import("../../../js/next/components/index");
 import("../../../js/next/screenBuilder");
-import("../../../js/next/modeler");
+
+console.log("modelerConfig INIT");
+
+const modelerConfig = modeler;
+console.log("modelerConfig", modelerConfig);
+setGlobalPMVariables(modelerConfig.pm);
+setGlobalVariables(modelerConfig.global);
 
 const processmakerConfig = processmaker(window.ProcessMaker);
 setGlobalPMVariables(processmakerConfig.pm);

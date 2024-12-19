@@ -139,6 +139,7 @@
     window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
   </script>
   <script src="{{mix('js/composition/cases/casesDetail/loader.js')}}"></script>
+
   <script>
     window.ProcessMaker.modeler = {
       xml: @json($bpmn),
@@ -171,6 +172,8 @@
     <script src="{{$script}}"></script>
   @endforeach
 
+  <script src="{{ mix('js/processes/modeler/initialLoad.js') }}"></script>
+
   <script src="{{mix('js/composition/cases/casesDetail/edit.js')}}"></script>
 
   @foreach($managerModeler->getScripts() as $script)
@@ -178,6 +181,7 @@
       <script src="{{ $script }}"></script>
     @endif
   @endforeach
+
 @endsection
 
 @section('css')
