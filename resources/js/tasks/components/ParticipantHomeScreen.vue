@@ -213,7 +213,7 @@
           </div>
         </div>
       </div>
-      <router-view v-else></router-view>
+      <router-view v-else :key="$route.fullPath"></router-view>
     </div>
   </div>
 </template>

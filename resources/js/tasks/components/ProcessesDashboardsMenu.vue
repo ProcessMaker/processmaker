@@ -76,18 +76,31 @@ export default {
   methods: {
     openProcessDashboard(id, type) {
       const router = this.$router || this.$root.$router;
-      const query = { [type]: id.toString() };
-
-      router
-        .push({
-          name: type === "process" ? "process-browser" : "dashboard",
-          query: query,
-        })
-        .catch((err) => {
-          if (err.name !== "NavigationDuplicated") {
-            throw err;
-          }
-        });
+      
+      if (type === 'process') {
+        router
+          .push({
+            name: "process-browser",
+            params: { processId: id.toString() }
+          })
+          .catch((err) => {
+            if (err.name !== "NavigationDuplicated") {
+              throw err;
+            }
+          });
+      } else {
+        // Para dashboards mantener la lógica actual
+        router
+          .push({
+            name: "dashboard",
+            query: { dashboard: id.toString() }
+          })
+          .catch((err) => {
+            if (err.name !== "NavigationDuplicated") {
+              throw err;
+            }
+          });
+      }
 
       this.$emit("processDashboardSelected", { id, type });
     },
