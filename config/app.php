@@ -188,6 +188,7 @@ return [
         ProcessMaker\Providers\OauthMailServiceProvider::class,
         ProcessMaker\Providers\OpenAiServiceProvider::class,
         ProcessMaker\Providers\LicenseServiceProvider::class,
+        ProcessMaker\Providers\MetricsServiceProvider::class,
     ])->toArray(),
 
     'aliases' => Facade::defaultAliases()->merge([
@@ -267,4 +268,6 @@ return [
         'vault_token' => env('ENCRYPTED_DATA_VAULT_TOKEN', ''),
         'vault_transit_key' => env('ENCRYPTED_DATA_VAULT_TRANSIT_KEY', ''),
     ],
+
+    'prometheus_namespace' => env('PROMETHEUS_NAMESPACE', 'processmaker'),
 ];
