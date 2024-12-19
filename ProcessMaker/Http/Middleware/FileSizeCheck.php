@@ -42,7 +42,7 @@ class FileSizeCheck
     /**
      * Handle tasks after the response is sent.
      */
-    public function terminate(Request $request, Response $response): void
+    public function terminate(Request $request, $response): void
     {
         // Suppress unused parameter warning.
         unset($request);
