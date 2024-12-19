@@ -235,32 +235,9 @@
                 </div>
                 <div v-if="activeTab === 'overview'" class="tab-pane fade p-0" id="overview" role="tabpanel"
                   aria-labelledby="overview-tab">
-                  <div class="card" style="border-top: none !important;">
+                  <div class="card card-height" style="border-top: none !important;">
                     <div class="card-body">
-                      <h4>
-                        {{ __(':name In-Flight Map', ['name' => $request->process->name]) }}
-                      </h4>
-                      <div v-if="isObjectLoading" class="d-flex justify-content-center">
-                        <div class="spinner-border text-primary" role="status"></div>
-                      </div>
-                      <div :class="{ 'hidden': isObjectLoading }">
-                        <object ref="processMap" class="card"
-                          data="{{ route('modeler.inflight', [
-                            'process' => $request->process->id,
-                            'request' => $request->id
-                          ]) }}"
-                          width="100%"
-                          :height="isObjectLoading ? 'auto' : '640px'"
-                          frameborder="0"
-                          type="text/html"
-                          style="border-radius: 4px;"
-                          @load="onLoadedObject">
-                          <!-- Accessible Alternative Content -->
-                          <p>
-                            {{ __('Content not available. Check settings or try a different device.') }}
-                          </p>
-                        </object>
-                      </div>
+                      <new-overview />
                     </div>
                   </div>
                 </div>
@@ -484,7 +461,16 @@
   @foreach ($manager->getScripts() as $script)
     <script src="{{ $script }}"></script>
   @endforeach
-
+  <script src="{{ mix('js/processes/modeler/initialLoad.js') }}"></script>
+  <script>
+    window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+    window.Processmaker = {
+      csrfToken: "{{csrf_token()}}",
+      userId: "{{\Auth::user()->id}}",
+      messages: [],
+      apiTimeout: {{config('app.api_timeout')}}
+    };
+  </script>
   @if (hasPackage('package-files'))
     <!-- TODO: Replace with script injector like we do for modeler and screen builder -->
     <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
@@ -529,7 +515,7 @@
           packages: [],
           processId: @json($request->process->id),
           canViewComments: @json($canViewComments),
-          isObjectLoading: false,
+          isObjectLoading: true,
           showTree: false,
           showInfo: true,
           showMenu: true,
@@ -900,6 +886,23 @@
       },
     });
   </script>
+  <script>
+    const inflightData = @json($inflightData);
+    window.ProcessMaker.modeler = {
+      xml: @json($bpmn),
+      configurables: [],
+      requestCompletedNodes: inflightData.requestCompletedNodes,
+      requestInProgressNodes: inflightData.requestInProgressNodes,
+      requestIdleNodes: inflightData.requestIdleNodes,
+      requestId: inflightData.requestId,
+    }
+  
+    window.ProcessMaker.EventBus.$on('modeler-start', async ({
+      loadXML
+    }) => {
+      loadXML(window.ProcessMaker.modeler.xml);
+    });
+  </script>
 @endsection
 
 @section('css')
@@ -961,6 +964,12 @@
   }
   .menu-tab-content {
     margin-left: -16px;
+  }
+  .main-paper {
+    position: static !important;
+  }
+  .card-height {
+    height: 50vh;
   }
 </style>
 @endsection

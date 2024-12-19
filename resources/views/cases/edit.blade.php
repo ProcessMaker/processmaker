@@ -122,7 +122,8 @@
   <script src="{{ mix('js/vue-vendor.js') }}"></script>
   <script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
   <script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
-    <script>
+  <script src="{{ mix('js/processes/modeler/initialLoad.js') }}"></script>
+  <script>
     const data = @json($request->getRequestData());
     const requestId = @json($request->getKey());
     const request = @json($request->getRequestAsArray());
@@ -134,7 +135,36 @@
     const comentable_type = @json(get_class($request));
     const requestCount = @json($requestCount);
     const screenBuilderScripts = @json($manager->getScripts());
+    const inflightData = @json($inflightData);
+
+    window.ProcessMaker.PMBlockList = @json($pmBlockList);
     window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+
+    window.Processmaker = {
+      csrfToken: "{{csrf_token()}}",
+      userId: "{{\Auth::user()->id}}",
+      messages: [],
+      apiTimeout: {{config('app.api_timeout')}}
+    };
+
+    window.ProcessMaker.modeler = {
+      xml: @json($bpmn),
+      configurables: [],
+      requestCompletedNodes: inflightData.requestCompletedNodes,
+      requestInProgressNodes: inflightData.requestInProgressNodes,
+      requestIdleNodes: inflightData.requestIdleNodes,
+      requestId: inflightData.requestId,
+    }
+
+    window.ProcessMaker.EventBus.$on('modeler-start', ({
+      loadXML
+    }) => {
+      loadXML(window.ProcessMaker.modeler.xml);
+    });
+
+    window.PM4ConfigOverrides = {
+      requestFiles: @json($request->requestFiles())
+    };
   </script>
   <script src="{{mix('js/composition/cases/casesDetail/loader.js')}}"></script>
   @if (hasPackage('package-files'))
@@ -147,6 +177,12 @@
   @endforeach
 
   <script src="{{mix('js/composition/cases/casesDetail/edit.js')}}"></script>
+  
+  @foreach($managerModeler->getScripts() as $script)
+    @if (!str_contains($script, 'slideshow'))
+      <script src="{{ $script }}"></script>
+    @endif
+  @endforeach
 @endsection
 
 @section('css')
