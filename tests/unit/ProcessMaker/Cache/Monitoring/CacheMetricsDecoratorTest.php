@@ -310,17 +310,20 @@ class CacheMetricsDecoratorTest extends TestCase
 
     public function testInvalidateWithNonScreenCache()
     {
-        // Create a mock that only implements CacheInterface
+        // Create a mock that implements CacheInterface
         $cache = Mockery::mock(CacheInterface::class);
+        $cache->shouldReceive('invalidate')
+            ->once()
+            ->andThrow(new \BadMethodCallException('Call to undefined method Mock_CacheInterface_27913466::invalidate()'));
+
         $metrics = Mockery::mock(CacheMetricsInterface::class);
         $decorator = new CacheMetricsDecorator($cache, $metrics);
 
-        $this->expectException(Mockery\Exception\BadMethodCallException::class);
-        $this->expectExceptionMessage('Method Mockery_2_ProcessMaker_Cache_CacheInterface::invalidate() does not exist on this mock object');
+        $this->expectException(\BadMethodCallException::class);
+        $this->expectExceptionMessage('Call to undefined method Mock_CacheInterface_27913466::invalidate()');
 
         // Execute with test parameters
         $decorator->invalidate(['screen_id' => 5, 'language' => 'es']);
-        $this->assertNull($result);
     }
 
     protected function tearDown(): void
