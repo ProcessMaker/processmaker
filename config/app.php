@@ -167,7 +167,6 @@ return [
          */
         Laravel\Passport\PassportServiceProvider::class,
         Laravel\Scout\ScoutServiceProvider::class,
-        Collective\Html\HtmlServiceProvider::class,
         TeamTNT\Scout\TNTSearchScoutServiceProvider::class,
         Jenssegers\Agent\AgentServiceProvider::class,
 
@@ -194,9 +193,7 @@ return [
         'Agent' => Jenssegers\Agent\Facades\Agent::class,
         'Docker' => ProcessMaker\Facades\Docker::class,
         'ElasticScoutDriver\Factories\SearchRequestFactory' => ProcessMaker\Factories\SearchRequestFactory::class,
-        'Form' => Collective\Html\FormFacade::class,
         'GlobalScripts' => ProcessMaker\Facades\GlobalScripts::class,
-        'Html' => Collective\Html\HtmlFacade::class,
         'Menu' => Lavary\Menu\Facade::class,
         'Redis' => Illuminate\Support\Facades\Redis::class,
         'RequestDevice' => ProcessMaker\Facades\RequestDevice::class,

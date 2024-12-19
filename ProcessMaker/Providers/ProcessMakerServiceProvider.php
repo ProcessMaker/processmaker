@@ -271,7 +271,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         // we are using custom passport migrations
-        Passport::ignoreMigrations();
+        //Passport::ignoreMigrations();
     }
 
     private function setupFactories(): void
