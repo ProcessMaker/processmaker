@@ -18,6 +18,9 @@ trait ProcessMapTrait
         $xml = simplexml_load_string($bpmn);
         $namespaces = $xml->getNamespaces(true);
 
+        // Register the BPMN namespace explicitly
+        $xml->registerXPathNamespace('bpmn', 'http://www.omg.org/spec/BPMN/20100524/MODEL');
+
         foreach ($namespaces as $prefix => $ns) {
             $xml->registerXPathNamespace($prefix, $ns);
         }
