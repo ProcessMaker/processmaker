@@ -40,16 +40,47 @@ class TaskControllerTest extends TestCase
             __DIR__ . '/Fixtures/nested_screen_process.json'
         );
         ImportProcess::dispatchSync($content);
+        $process = Process::where('name', 'nested screen test')->first();
         $request = ProcessRequest::factory()->create([
-            'process_id' => Process::where('name', 'nested screen test')->first()->id,
+            'process_id' => $process->id,
         ]);
+        $processVersion = $process->getPublishedVersion([]);
         $task = ProcessRequestToken::factory()->create([
             'element_type' => 'task',
             'element_name' => 'Task 1',
             'element_id' => 'node_2',
-            'process_id' => Process::where('name', 'nested screen test')->first()->id,
+            'process_id' => $process->id,
             'process_request_id' => $request->id,
         ]);
+        $screenVersion = $task->getScreenVersion();
+        $this->assertNotNull($screenVersion, 'Screen version not found');
+
+        // Set up test user
+        Auth::setUser($this->user);
+
+        // Create cache manager mock
+        $screenCache = $this->getMockBuilder(ScreenCacheManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        // Set up ScreenCacheFactory to return our mock
+        ScreenCacheFactory::setTestInstance($screenCache);
+
+        // Set up expected cache key parameters
+        $expectedParams = [
+            'process_id' => (int) $process->id,
+            'process_version_id' => (int) $processVersion->id,
+            'language' => $this->user->language,
+            'screen_id' => (int) $screenVersion->screen_id,
+            'screen_version_id' => (int) $screenVersion->id,
+        ];
+
+        // Mock createKey method with array parameter
+        $screenCache->expects($this->once())
+            ->method('createKey')
+            ->with($expectedParams)
+            ->willReturn("pid_{$process->id}_{$processVersion->id}_{$this->user->language}_sid_{$screenVersion->screen_id}_{$screenVersion->id}");
+
         $response = $this->apiCall('GET', route('api.1.1.tasks.show.screen', $task->id) . '?include=screen,nested');
         $this->assertNotNull($response->json());
         $this->assertIsArray($response->json());
@@ -94,29 +125,26 @@ class TaskControllerTest extends TestCase
         ScreenCacheFactory::setTestInstance($screenCache);
 
         // Set up expected cache key parameters
-        $processId = $process->id;
-        $processVersionId = $processVersion->id;
-        $language = $this->user->language;
-        $screenId = $screenVersion->screen_id;
-        $screenVersionId = $screenVersion->id;
-        $screenKey = "pid_{$processId}_{$processVersionId}_{$language}_sid_{$screenId}_{$screenVersionId}";
+        $expectedParams = [
+            'process_id' => (int) $process->id,
+            'process_version_id' => (int) $processVersion->id,
+            'language' => $this->user->language,
+            'screen_id' => (int) $screenVersion->screen_id,
+            'screen_version_id' => (int) $screenVersion->id,
+        ];
+
+        $screenKey = "pid_{$process->id}_{$processVersion->id}_{$this->user->language}_sid_{$screenVersion->screen_id}_{$screenVersion->id}";
 
         // Mock createKey method
         $screenCache->expects($this->once())
             ->method('createKey')
-            ->with(
-                $processId,
-                $processVersionId,
-                $language,
-                $screenId,
-                $screenVersionId
-            )
+            ->with($expectedParams)
             ->willReturn($screenKey);
 
         // Mock cached content
         $cachedContent = [
-            'id' => $screenId,
-            'screen_version_id' => $screenVersionId,
+            'id' => $screenVersion->screen_id,
+            'screen_version_id' => $screenVersion->id,
             'config' => ['some' => 'config'],
             'watchers' => [],
             'computed' => [],
