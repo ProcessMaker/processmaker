@@ -40,10 +40,6 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
         $cacheDriver = $isAvailableConnection ? self::DEFAULT_CACHE_DRIVER : $defaultCache;
         // Store the cache driver
         $this->cacheManager = $this->manager->store($cacheDriver);
-        // Store the cache connection
-        $this->connection = $isAvailableConnection ? $this->manager->getDefaultDriver() : $defaultCache;
-        // Store the cache prefix
-        $this->prefix = $this->cacheManager->getPrefix();
     }
 
     /**
@@ -157,16 +153,15 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
         }
 
         try {
+            $prefix = $this->manager->getPrefix();
             // Filter keys by pattern
-            $matchedKeys = $this->getKeysByPattern($pattern, $defaultDriver, $this->manager->getPrefix());
+            $matchedKeys = $this->getKeysByPattern($pattern, $defaultDriver, $prefix);
 
             if (!empty($matchedKeys)) {
                 Redis::connection($defaultDriver)->del($matchedKeys);
             }
         } catch (\Exception $e) {
             Log::error('SettingCacheException' . $e->getMessage());
-
-            dump('exception => ' . $e->getMessage());
 
             throw new SettingCacheException('Failed to delete keys.');
         }

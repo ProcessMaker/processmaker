@@ -9,31 +9,11 @@ use Illuminate\Support\Facades\Redis;
 abstract class CacheManagerBase
 {
     /**
-     * The cache connection.
-     *
-     * @var string
-     */
-    protected string $connection;
-
-    /**
-     * The cache prefix.
-     *
-     * @var string
-     */
-    protected string $prefix;
-
-    /**
      * The available cache connections.
      *
      * @var array
      */
     protected const AVAILABLE_CONNECTIONS = ['redis', 'cache_settings'];
-
-    public function __construct()
-    {
-        $this->connection = config('cache.default');
-        $this->prefix = config('cache.prefix');
-    }
 
     /**
      * Retrieve an array of cache keys that match a specific pattern.
@@ -45,28 +25,24 @@ abstract class CacheManagerBase
      */
     public function getKeysByPattern(string $pattern, string $connection = null, string $prefix = null): array
     {
-        if ($connection) {
-            $this->connection = $connection;
+        if (!$connection) {
+            $connection = config('cache.default');
         }
 
-        if ($prefix) {
-            $this->prefix = $prefix;
+        if (!$prefix) {
+            $prefix = config('cache.prefix');
         }
 
-        if (!in_array($this->connection, self::AVAILABLE_CONNECTIONS)) {
+        if (!in_array($connection, self::AVAILABLE_CONNECTIONS)) {
             throw new CacheManagerException('`getKeysByPattern` method only supports Redis connections.');
         }
 
-        dump('getKeysByPattern prefix => ' . $this->connection . ' - ' . $this->prefix);
-
         try {
             // Get all keys
-            $keys = Redis::connection($this->connection)->keys($this->prefix . '*');
-            dump('getKeysByPattern keys => ' . json_encode($keys));
+            $keys = Redis::connection($connection)->keys($prefix . '*');
             // Filter keys by pattern
             return array_filter($keys, fn ($key) => preg_match('/' . $pattern . '/', $key));
         } catch (Exception $e) {
-            dump('getKeysByPattern => ' . $e->getMessage());
             Log::info('CacheManagerBase: ' . $e->getMessage());
         }
 
