@@ -236,10 +236,15 @@ class RedisMetricsManager implements CacheMetricsInterface
             $totalHitTime += $this->getHitAvgTime($key);
             $totalMissTime += $this->getMissAvgTime($key);
 
+            // Total represents the total number of cache access attempts (hits + misses)
+            // We need this sum to calculate hit_ratio and miss_ratio percentages
+            // Example: If hits=8 and misses=2, total=10, so hit_ratio=8/10=0.8 (80%) and miss_ratio=2/10=0.2 (20%)
+            $total = $hits + $misses;
             $metrics[$key] = [
                 'hits' => $hits,
                 'misses' => $misses,
-                'hit_ratio' => $hits + $misses > 0 ? $hits / ($hits + $misses) : 0,
+                'hit_ratio' => $total > 0 ? $hits / $total : 0,
+                'miss_ratio' => $total > 0 ? $misses / $total : 0,
                 'avg_hit_time' => $this->getHitAvgTime($key),
                 'avg_miss_time' => $this->getMissAvgTime($key),
                 'memory_usage' => $memory,

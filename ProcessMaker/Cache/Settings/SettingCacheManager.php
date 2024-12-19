@@ -20,7 +20,6 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
     public function __construct(CacheManager $cacheManager)
     {
         $this->manager = $cacheManager;
-
         $this->setCacheDriver();
     }
 
@@ -40,6 +39,29 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
         $cacheDriver = $isAvailableConnection ? self::DEFAULT_CACHE_DRIVER : $defaultCache;
         // Store the cache driver
         $this->cacheManager = $this->manager->store($cacheDriver);
+    }
+
+    /**
+     * Create a cache key for a screen
+     *
+     * @param int $processId Process ID
+     * @param int $processVersionId Process Version ID
+     * @param string $language Language code
+     * @param int $screenId Screen ID
+     * @param int $screenVersionId Screen Version ID
+     * @return string The generated cache key
+     */
+    public function createKey(array $params): string
+    {
+        // Validate required parameters
+        if (!isset($params['key'])) {
+            throw new \InvalidArgumentException('Missing required parameters for settings cache key');
+        }
+
+        return sprintf(
+            'setting_%s',
+            $params['key']
+        );
     }
 
     /**
@@ -198,9 +220,11 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      *
      * @return void
      */
-    public function invalidate(string $key): void
+    public function invalidate($params): void
     {
         try {
+            //extract the params from the array
+            $key = $params['key'];
             $this->cacheManager->forget($key);
         } catch (\Exception $e) {
             Log::error($e->getMessage());

@@ -115,16 +115,16 @@ class TaskController extends Controller
         $screenVersion = $task->getScreenVersion();
 
         // Get the appropriate cache handler based on configuration
-        $screenCache = ScreenCacheFactory::create();
 
+        $screenCache = ScreenCacheFactory::getScreenCache();
         // Create cache key
-        $key = $screenCache->createKey(
-            (int) $processId,
-            (int) $processVersionId,
-            $language,
-            (int) $screenVersion->screen_id,
-            (int) $screenVersion->id
-        );
+        $key = $screenCache->createKey([
+            'process_id' => (int) $processId,
+            'process_version_id' => (int) $processVersionId,
+            'language' => $language,
+            'screen_id' => (int) $screenVersion->screen_id,
+            'screen_version_id' => (int) $screenVersion->id,
+        ]);
 
         // Try to get the screen from cache
         $translatedScreen = $screenCache->get($key);

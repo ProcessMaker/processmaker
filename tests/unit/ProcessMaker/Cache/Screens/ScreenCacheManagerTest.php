@@ -46,8 +46,15 @@ class ScreenCacheManagerTest extends TestCase
         $languages = ['en', 'es', 'fr', 'de'];
 
         foreach ($languages as $lang) {
-            $key = $this->screenCache->createKey(1, 2, $lang, 3, 4);
-            $expectedKey = "pid_1_2_{$lang}_sid_3_4";
+            $params = [
+                'process_id' => 1,
+                'process_version_id' => 2,
+                'language' => $lang,
+                'screen_id' => 3,
+                'screen_version_id' => 4,
+            ];
+            $key = $this->screenCache->createKey($params);
+            $expectedKey = "screen_pid_1_2_{$lang}_sid_3_4";
 
             $this->assertEquals($expectedKey, $key);
         }
@@ -288,8 +295,8 @@ class ScreenCacheManagerTest extends TestCase
             ->andReturn(true);
 
         // Execute and verify
-        $result = $this->screenCache->invalidate($screenId, $language);
-        $this->assertTrue($result);
+        $result = $this->screenCache->invalidate(['screen_id' => $screenId, 'language' => $language]);
+        $this->assertNull($result);
     }
 
     /** @test */
@@ -311,8 +318,8 @@ class ScreenCacheManagerTest extends TestCase
             ->andReturn(false); // Make forget operation fail
 
         // Execute and verify
-        $result = $this->screenCache->invalidate($screenId, $language);
-        $this->assertTrue($result);
+        $result = $this->screenCache->invalidate(['screen_id' => $screenId, 'language' => $language]);
+        $this->assertNull($result);
     }
 
     protected function tearDown(): void

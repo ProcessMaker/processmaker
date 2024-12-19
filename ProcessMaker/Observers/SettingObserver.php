@@ -4,6 +4,7 @@ namespace ProcessMaker\Observers;
 
 use Exception;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Cache\Settings\SettingCacheFactory;
 use ProcessMaker\Models\Setting;
 
 class SettingObserver
@@ -11,7 +12,7 @@ class SettingObserver
     /**
      * Handle the setting "created" event.
      *
-     * @param  \ProcessMaker\Models\Setting  $setting
+     * @param  Setting  $setting
      * @return void
      */
     public function saving(Setting $setting)
@@ -39,7 +40,7 @@ class SettingObserver
                     try {
                         $return = json_decode($config);
                         $return = json_encode($return);
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         $return = $config;
                     }
                 } else {
@@ -55,7 +56,7 @@ class SettingObserver
                     try {
                         $return = json_decode($config, true);
                         $return = json_encode($return);
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         $return = $config;
                     }
                 } else {
@@ -66,17 +67,20 @@ class SettingObserver
                 break;
         }
 
-        \SettingCache::invalidate($setting->key);
+        $settingCache = SettingCacheFactory::getSettingsCache();
+        $settingCache->invalidate(['key' => $setting->key]);
     }
 
     /**
      * Handle the setting "deleted" event.
      *
-     * @param  \ProcessMaker\Models\Setting  $setting
+     * @param  Setting  $setting
      * @return void
      */
     public function deleted(Setting $setting): void
     {
-        \SettingCache::invalidate($setting->key);
+        $settingCache = SettingCacheFactory::getSettingsCache();
+        //invalidate the setting cache
+        $settingCache->invalidate(['key' => $setting->key]);
     }
 }

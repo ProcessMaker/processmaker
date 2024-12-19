@@ -2,59 +2,37 @@
 
 namespace ProcessMaker\Cache\Screens;
 
-use Illuminate\Support\Facades\Config;
-use ProcessMaker\Cache\Monitoring\CacheMetricsDecorator;
-use ProcessMaker\Cache\Monitoring\RedisMetricsManager;
+use Illuminate\Cache\CacheManager;
+use ProcessMaker\Cache\AbstractCacheFactory;
+use ProcessMaker\Cache\CacheInterface;
+use ProcessMaker\Cache\Screens\LegacyScreenCacheAdapter;
 use ProcessMaker\Cache\Screens\ScreenCacheManager;
 use ProcessMaker\Managers\ScreenCompiledManager;
 
-class ScreenCacheFactory
+class ScreenCacheFactory extends AbstractCacheFactory
 {
-    private static ?ScreenCacheInterface $testInstance = null;
-
     /**
-     * Set a test instance for the factory
+     * Create the specific screen cache instance
      *
-     * @param ScreenCacheInterface|null $instance
+     * @param CacheManager $cacheManager
+     * @return CacheInterface
      */
-    public static function setTestInstance(?ScreenCacheInterface $instance): void
+    protected static function createInstance(CacheManager $cacheManager): CacheInterface
     {
-        self::$testInstance = $instance;
-    }
+        $manager = config('screens.cache.manager', 'legacy');
 
-    /**
-     * Create a screen cache handler based on configuration
-     *
-     * @return ScreenCacheInterface
-     */
-    public static function create(): ScreenCacheInterface
-    {
-        if (self::$testInstance !== null) {
-            return self::$testInstance;
-        }
-
-        // Create the appropriate cache implementation
-        $manager = Config::get('screens.cache.manager', 'legacy');
-        $cache = $manager === 'new'
+        return $manager === 'new'
             ? app(ScreenCacheManager::class)
             : new LegacyScreenCacheAdapter(app()->make(ScreenCompiledManager::class));
-
-        // If already wrapped with metrics decorator, return as is
-        if ($cache instanceof CacheMetricsDecorator) {
-            return $cache;
-        }
-
-        // Wrap with metrics decorator if not already wrapped
-        return new CacheMetricsDecorator($cache, app()->make(RedisMetricsManager::class));
     }
 
     /**
      * Get the current screen cache instance
      *
-     * @return ScreenCacheInterface
+     * @return CacheInterface
      */
-    public static function getScreenCache(): ScreenCacheInterface
+    public static function getScreenCache(): CacheInterface
     {
-        return self::create();
+        return static::getInstance();
     }
 }

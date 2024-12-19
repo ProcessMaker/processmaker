@@ -8,8 +8,6 @@ use Illuminate\Support\Facades\Facade;
  * Class SettingCacheFacade
  *
  * @mixin \ProcessMaker\Cache\Settings\SettingCacheManager
- *
- * @package ProcessMaker\Cache
  */
 class SettingCacheFacade extends Facade
 {

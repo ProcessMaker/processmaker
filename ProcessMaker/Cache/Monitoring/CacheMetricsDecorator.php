@@ -4,15 +4,14 @@ namespace ProcessMaker\Cache\Monitoring;
 
 use ProcessMaker\Cache\CacheInterface;
 use ProcessMaker\Cache\Monitoring\CacheMetricsInterface;
-use ProcessMaker\Cache\Screens\ScreenCacheInterface;
 
 /**
  * Decorator class that adds metrics tracking about cache operations
  * including hits, misses, write sizes, and timing information.
  */
-class CacheMetricsDecorator implements CacheInterface, ScreenCacheInterface
+class CacheMetricsDecorator implements CacheInterface
 {
-    protected CacheInterface|ScreenCacheInterface $cache;
+    protected CacheInterface $cache;
 
     protected CacheMetricsInterface $metrics;
 
@@ -22,27 +21,22 @@ class CacheMetricsDecorator implements CacheInterface, ScreenCacheInterface
      * @param CacheInterface|ScreenCacheInterface $cache The cache implementation to decorate
      * @param CacheMetricsInterface $metrics The metrics implementation to use
      */
-    public function __construct(CacheInterface|ScreenCacheInterface $cache, CacheMetricsInterface $metrics)
+    public function __construct(CacheInterface $cache, CacheMetricsInterface $metrics)
     {
         $this->cache = $cache;
         $this->metrics = $metrics;
     }
 
     /**
-     * Create a cache key for screen data
+     * Create a cache key based on provided parameters
      *
-     * @param int $processId Process ID
-     * @param int $processVersionId Process version ID
-     * @param string $language Language code
-     * @param int $screenId Screen ID
-     * @param int $screenVersionId Screen version ID
+     * @param array $params Key parameters
      * @return string Generated cache key
-     * @throws \RuntimeException If underlying cache doesn't support createKey
      */
-    public function createKey(int $processId, int $processVersionId, string $language, int $screenId, int $screenVersionId): string
+    public function createKey(array $params): string
     {
-        if ($this->cache instanceof ScreenCacheInterface) {
-            return $this->cache->createKey($processId, $processVersionId, $language, $screenId, $screenVersionId);
+        if ($this->cache instanceof CacheInterface) {
+            return $this->cache->createKey($params);
         }
 
         throw new \RuntimeException('Underlying cache implementation does not support createKey method');
@@ -60,14 +54,21 @@ class CacheMetricsDecorator implements CacheInterface, ScreenCacheInterface
     public function get(string $key, mixed $default = null): mixed
     {
         $startTime = microtime(true);
+
+        // First check if the key exists
+        $exists = $this->cache->has($key);
+
+        // Get the value
         $value = $this->cache->get($key, $default);
+
         $endTime = microtime(true);
         $duration = $endTime - $startTime;
 
-        if ($value === $default) {
-            $this->metrics->recordMiss($key, $duration);
-        } else {
+        // Record metrics based on key existence, not value comparison
+        if ($exists) {
             $this->metrics->recordHit($key, $duration);
+        } else {
+            $this->metrics->recordMiss($key, $duration);
         }
 
         return $value;
@@ -146,13 +147,13 @@ class CacheMetricsDecorator implements CacheInterface, ScreenCacheInterface
      * @return bool
      * @throws \RuntimeException If underlying cache doesn't support invalidate
      */
-    public function invalidate(int $screenId, string $language): bool
+    public function invalidate($params): void
     {
-        if ($this->cache instanceof ScreenCacheInterface) {
-            return $this->cache->invalidate($screenId, $language);
+        if (!$this->cache instanceof CacheInterface) {
+            throw new \RuntimeException('Underlying cache implementation does not support invalidate method');
         }
 
-        throw new \RuntimeException('Underlying cache implementation does not support invalidate method');
+        $this->cache->invalidate($params);
     }
 
     /**
@@ -203,5 +204,19 @@ class CacheMetricsDecorator implements CacheInterface, ScreenCacheInterface
         $this->cache->set($key, $value);
 
         return $value;
+    }
+
+    /**
+     * Clear compiled assets from cache and record metrics
+     *
+     * This method clears compiled assets from the cache and records the operation
+     * as a write with size 0 since we are removing content rather than adding it.
+     * The execution time is measured but not currently used.
+     */
+    public function clearCompiledAssets(): void
+    {
+        $startTime = microtime(true);
+        $this->cache->clearCompiledAssets();
+        $timeTaken = microtime(true) - $startTime;
     }
 }

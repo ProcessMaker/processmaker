@@ -40,6 +40,7 @@ abstract class CacheManagerBase
         try {
             // Get all keys
             $keys = Redis::connection($connection)->keys($prefix . '*');
+
             // Filter keys by pattern
             return array_filter($keys, fn ($key) => preg_match('/' . $pattern . '/', $key));
         } catch (Exception $e) {
