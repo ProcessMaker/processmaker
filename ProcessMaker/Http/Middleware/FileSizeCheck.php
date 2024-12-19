@@ -5,8 +5,8 @@ namespace ProcessMaker\Http\Middleware;
 use Closure;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Response;
 
 class FileSizeCheck
 {
@@ -36,10 +36,20 @@ class FileSizeCheck
             }
         }
 
-        $response = $next($request);
+        return $next($request);
+    }
 
-        // Add header to indicate that file size has been checked.
-        return $response->header('X-FileSize-Checked', 'true');
+    /**
+     * Handle tasks after the response is sent.
+     */
+    public function terminate(Request $request, Response $response): void
+    {
+        // Suppress unused parameter warning.
+        unset($request);
+
+        if ($response instanceof Response) {
+            $response->headers->set('X-FileSize-Checked', 'true');
+        }
     }
 
     /**
