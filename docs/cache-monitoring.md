@@ -8,7 +8,7 @@ The ProcessMaker Cache Monitoring System is a comprehensive solution for trackin
 ### Architecture
 1. **Core Components**:
    - `CacheMetricsInterface`: Defines the contract for metrics collection
-   - `RedisMetricsManager`: Implements metrics storage using Redis
+   - `PrometheusMetricsManager`: Implements metrics storage using Redis
    - `CacheMetricsDecorator`: Wraps cache implementations to collect metrics
 
 2. **Key Features**:

@@ -5,7 +5,7 @@ namespace ProcessMaker\Cache;
 use Illuminate\Cache\CacheManager;
 use ProcessMaker\Cache\Monitoring\CacheMetricsDecorator;
 use ProcessMaker\Cache\Monitoring\CacheMetricsInterface;
-use ProcessMaker\Cache\Monitoring\RedisMetricsManager;
+use ProcessMaker\Cache\Monitoring\PrometheusMetricsManager;
 
 abstract class AbstractCacheFactory implements CacheFactoryInterface
 {
@@ -48,7 +48,7 @@ abstract class AbstractCacheFactory implements CacheFactoryInterface
      */
     protected static function getInstance(): CacheInterface
     {
-        return static::create(app('cache'), app()->make(RedisMetricsManager::class));
+        return static::create(app('cache'), app()->make(PrometheusMetricsManager::class));
     }
 
     /**
