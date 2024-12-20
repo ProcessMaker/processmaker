@@ -11,8 +11,8 @@ services:
       - ./prometheus:/etc/prometheus
       - prom_data:/prometheus
     # This allows Docker to resolve your Herd domain
-    # extra_hosts:
-      # - "processmaker.test:host-gateway"  
+    extra_hosts:
+      - "processmaker.test:host-gateway"  
   grafana:
     image: grafana/grafana
     container_name: grafana
