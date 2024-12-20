@@ -39,6 +39,9 @@ window.ProcessMaker = {
   packages: window.packages,
 };
 
+import("../next/components/index");
+import("../next/screenBuilder");
+
 // Vuex
 setUses(Vue, vuex.use);
 
@@ -55,9 +58,6 @@ setUses(Vue, vueRouter.use);
 
 // VueCookies
 setUses(Vue, vueCookies.use);
-
-import("../next/components/index");
-import("../next/screenBuilder");
 
 const processmakerConfig = processmaker(window.ProcessMaker);
 setGlobalPMVariables(processmakerConfig.pm);

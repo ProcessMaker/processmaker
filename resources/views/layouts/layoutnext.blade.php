@@ -43,7 +43,6 @@
     <link href="/css/bpmn-symbols/css/bpmn.css" rel="stylesheet">
     @yield('css')
     <script type="text/javascript">
-    console.log("Processmaker");
     @if(Auth::user())
       window.Processmaker = {
         csrfToken: "{{csrf_token()}}",
