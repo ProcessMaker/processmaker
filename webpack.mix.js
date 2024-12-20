@@ -52,6 +52,7 @@ mix
     "jointjs",
     "luxon",
     "bpmn-moddle",
+    "@processmaker/modeler",
   ], "public/js/modeler-vendor.js")
   .extract([
     "vue",
@@ -147,6 +148,8 @@ mix
   // See: https://github.com/JeffreyWay/laravel-mix/issues/1118
   .js("resources/jscomposition/cases/casesMain/loader.js", "public/js/composition/cases/casesMain")
   .js("resources/jscomposition/cases/casesDetail/loader.js", "public/js/composition/cases/casesDetail")
+  .js("resources/js/initialLoad.js", "public/js")
+
   .js("resources/js/tasks/loaderMain.js", "public/js/tasks")
   .js("resources/js/tasks/loaderPreview.js", "public/js/tasks")
   .js("resources/js/tasks/loaderEdit.js", "public/js/tasks")
