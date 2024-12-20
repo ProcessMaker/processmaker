@@ -2,6 +2,7 @@ const mix = require("laravel-mix");
 const path = require("path");
 require("laravel-mix-polyfill");
 // const packageJson = require("./package.json");
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 /*
  |--------------------------------------------------------------------------
@@ -15,7 +16,11 @@ require("laravel-mix-polyfill");
 */
 
 mix.webpackConfig({
-  plugins: [],
+  plugins: [
+    new BundleAnalyzerPlugin({
+      analyzerMode: process.env.STATS ? "server" : "disabled",
+    }),
+  ],
   externals: ["SharedComponents", "ModelerInspector"],
   resolve: {
     extensions: [".*", ".js", ".ts", ".mjs", ".vue", ".json"],
