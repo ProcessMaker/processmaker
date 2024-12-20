@@ -10,8 +10,9 @@ services:
     volumes:
       - ./prometheus:/etc/prometheus
       - prom_data:/prometheus
-    extra_hosts:
-      - "processmaker.test:host-gateway"  # This allows Docker to resolve your Herd domain
+    # This allows Docker to resolve your Herd domain
+    # extra_hosts:
+      # - "processmaker.test:host-gateway"  
   grafana:
     image: grafana/grafana
     container_name: grafana
