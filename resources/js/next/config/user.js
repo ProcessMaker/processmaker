@@ -1,5 +1,3 @@
-// import { setGlobalPMVariable, getGlobalVariable } from "../globalVariables";
-
 import datetime_format from "../../data/datetime_formats.json";
 
 export default ({ global }) => {
@@ -14,10 +12,6 @@ export default ({ global }) => {
   const app = appUrl ? {
     url: appUrl.content,
   } : null;
-
-  // setGlobalPMVariable("app", appUrl ? {
-  //   url: appUrl.content,
-  // } : null);
 
   let user;
   if (userID) {
@@ -47,8 +41,6 @@ export default ({ global }) => {
       moment.locale(document.documentElement.lang);
       user.lang = document.documentElement.lang;
     }
-
-    // setGlobalPMVariable("user", user);
   }
 
   return {

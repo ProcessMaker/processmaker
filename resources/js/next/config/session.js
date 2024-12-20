@@ -3,16 +3,7 @@
 export default ({ global, processmaker }) => {
   const timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]")?.content;
 
-  // const Vue = getGlobalVariable("Vue");
-  // const Echo = getGlobalVariable("Echo");
-
   const { Vue, Echo } = global;
-
-  // const pushNotification = getGlobalPMVariable("pushNotification");
-  // const closeSessionModal = getGlobalPMVariable("closeSessionModal");
-  // const alert = getGlobalPMVariable("alert");
-  // const user = getGlobalPMVariable("user");
-  // const sessionModal = getGlobalPMVariable("sessionModal");
 
   const {
     pushNotification, closeSessionModal, alert, user, sessionModal,
@@ -54,11 +45,6 @@ export default ({ global, processmaker }) => {
         enabled: AccountTimeoutEnabled,
       },
     });
-
-    // setGlobalPMVariable("AccountTimeoutWarnSeconds", AccountTimeoutLength);
-    // setGlobalPMVariable("AccountTimeoutWarnSeconds", AccountTimeoutWarnSeconds);
-    // setGlobalPMVariable("AccountTimeoutEnabled", AccountTimeoutEnabled);
-    // setGlobalPMVariable("AccountTimeoutWorker", AccountTimeoutWorker);
 
     Echo.private(`ProcessMaker.Models.User.${user.id}`)
       .notification((token) => {

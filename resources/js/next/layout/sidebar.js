@@ -8,7 +8,7 @@ const Vue = getGlobalVariable("Vue");
 // Vue.use(VueHtml2Canvas);
 Vue.prototype.$sanitize = sanitizeUrl;
 
-new Vue({
+const sidebar = new Vue({
   el: "#sidebar",
   components: {
     Sidebaricon,
@@ -17,8 +17,5 @@ new Vue({
     return {
       expanded: false,
     };
-  },
-  created() {
-    this.expanded === false;
   },
 });

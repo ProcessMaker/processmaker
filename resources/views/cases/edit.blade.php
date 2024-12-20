@@ -139,6 +139,7 @@
     window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
   </script>
   <script src="{{mix('js/composition/cases/casesDetail/loader.js')}}"></script>
+  <script src="{{mix('js/initialLoad.js')}}"></script>
 
   <script>
     window.ProcessMaker.modeler = {
@@ -163,18 +164,9 @@
     window.ProcessMaker.PMBlockList = @json($pmBlockList);
   </script>
 
-  @if (hasPackage('package-files'))
-  <!-- TODO: Replace with script injector like we do for modeler and screen builder -->
-  <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
-  @endif
-
   @foreach(GlobalScripts::getScripts() as $script)
     <script src="{{$script}}"></script>
   @endforeach
-
-  <script src="{{ mix('js/processes/modeler/initialLoad.js') }}"></script>
-
-  <script src="{{mix('js/composition/cases/casesDetail/edit.js')}}"></script>
 
   @foreach($managerModeler->getScripts() as $script)
     @if (!str_contains($script, 'slideshow'))
@@ -182,6 +174,12 @@
     @endif
   @endforeach
 
+  @if (hasPackage('package-files'))
+  <!-- TODO: Replace with script injector like we do for modeler and screen builder -->
+  <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
+  @endif
+
+  <script src="{{mix('js/composition/cases/casesDetail/edit.js')}}"></script>
 @endsection
 
 @section('css')

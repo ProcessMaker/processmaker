@@ -48,14 +48,6 @@ export default (globalInput) => {
 
   i18nPromise.then(() => { translationsLoaded = true; });
 
-  // Vue.use(VueI18Next);
-  // Vue.mixin({ i18n: new VueI18Next(i18next) });
-
-  // setGlobalPMVariable("i18n", i18next);
-  // setGlobalPMVariable("i18nPromise", i18nPromise);
-  // setGlobalPMVariable("missingTranslations", missingTranslations);
-  // setGlobalPMVariable("missingTranslation", missingTranslation);
-
   return {
     pm: {
       i18n: i18next,
@@ -65,9 +57,6 @@ export default (globalInput) => {
     },
     use: {
       VueI18Next,
-    },
-    mixin: {
-      // VueI18Next: { i18n: new VueI18Next(i18next) },
     },
   };
 };

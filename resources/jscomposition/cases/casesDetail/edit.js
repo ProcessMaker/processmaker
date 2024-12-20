@@ -1,4 +1,3 @@
-import Vue from "vue";
 import CaseDetail from "./components/CaseDetail.vue";
 import Tabs from "./components/Tabs.vue";
 import Timeline from "../../../js/components/Timeline.vue";
@@ -8,8 +7,6 @@ import {
   updateUserConfiguration, getUserConfiguration, getCommentsData, updateRequest,
 } from "./api";
 import { useStore, getRequest, getRequestId } from "./variables";
-
-console.log("casesDetail/edit2.js");
 
 Vue.globalStore.registerModule("core:cases", cases);
 

@@ -1,5 +1,4 @@
 import axios from "axios";
-// import { setGlobalPMVariable, getGlobalPMVariable } from "../globalVariables";
 
 export default (globalInput) => {
   const token = document.head.querySelector("meta[name=\"csrf-token\"]");
@@ -117,8 +116,6 @@ export default (globalInput) => {
   }
 
   apiClient.defaults.timeout = apiTimeout;
-
-  // setGlobalPMVariable("apiClient", apiClient);
 
   // Display any uncaught promise rejections from axios in the Process Maker alert box
   window.addEventListener("unhandledrejection", (event) => {
