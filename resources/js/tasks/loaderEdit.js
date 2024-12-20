@@ -24,6 +24,7 @@ import openAI from "../next/config/openAI";
 // Load syncronously shared components in window, for some packages
 import sharedComponents from "../next/libraries/sharedComponents";
 import vueFormElements from "../next/libraries/vueFormElements";
+import screenBuilder from "../next/screenBuilder";
 
 window.Vue = Vue;
 window.vue = vue;
@@ -40,8 +41,10 @@ window.ProcessMaker = {
 };
 
 import("../next/components/index");
-import("../next/screenBuilder");
 import("../next/monaco");
+
+// Initialize screenBuilder
+screenBuilder({ global: window });
 
 // Vuex
 setUses(Vue, vuex.use);

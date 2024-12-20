@@ -25,6 +25,7 @@ import openAI from "../../../js/next/config/openAI";
 import sharedComponents from "../../../js/next/libraries/sharedComponents";
 import vueFormElements from "../../../js/next/libraries/vueFormElements";
 import modeler from "../../../js/next/modeler";
+import screenBuilder from "../../../js/next/screenBuilder";
 
 window.Vue = Vue;
 window.vue = vue;
@@ -58,7 +59,8 @@ setUses(Vue, vueRouter.use);
 setUses(Vue, vueCookies.use);
 
 import("../../../js/next/components/index");
-import("../../../js/next/screenBuilder");
+// Initialize screenBuilder
+screenBuilder({ global: window });
 
 const modelerConfig = modeler;
 setGlobalPMVariables(modelerConfig.pm);

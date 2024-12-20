@@ -40,7 +40,6 @@ window.ProcessMaker = {
 };
 
 import("../next/components/index");
-import("../next/screenBuilder");
 
 // Vuex
 setUses(Vue, vuex.use);
