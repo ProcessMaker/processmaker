@@ -2,6 +2,7 @@ import Vue from "vue";
 import * as vue from "vue";
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 import moment from "moment-timezone";
+import ScreenBuilder from "@processmaker/screen-builder";
 import {
   setUses, setGlobalVariables, setGlobalPMVariables,
 } from "../../../js/next/globalVariables";
@@ -25,11 +26,12 @@ import openAI from "../../../js/next/config/openAI";
 import sharedComponents from "../../../js/next/libraries/sharedComponents";
 import vueFormElements from "../../../js/next/libraries/vueFormElements";
 import modeler from "../../../js/next/modeler";
-import screenBuilder from "../../../js/next/screenBuilder";
+import screenBuilderNext from "../../../js/next/screenBuilder";
 
 window.Vue = Vue;
 window.vue = vue;
 window.moment = moment;
+window.ScreenBuilder = ScreenBuilder;
 
 window.Vue.prototype.moment = moment;
 window.Vue.use(BootstrapVue);
@@ -60,7 +62,7 @@ setUses(Vue, vueCookies.use);
 
 import("../../../js/next/components/index");
 // Initialize screenBuilder
-screenBuilder({ global: window });
+screenBuilderNext({ global: window });
 
 const modelerConfig = modeler;
 setGlobalPMVariables(modelerConfig.pm);
