@@ -112,7 +112,7 @@ class PrometheusMetricsManager implements CacheMetricsInterface
             'cache_type_memory_bytes',
             'Total memory usage by cache type',
             ['cache_type']
-        )->inc($size, ['cache_type' => $cacheType]);
+        )->set($size, ['cache_type' => $cacheType]); // Changed from inc() to set() and fixed label format
     }
 
     /**
@@ -134,10 +134,13 @@ class PrometheusMetricsManager implements CacheMetricsInterface
      */
     protected function getCacheType(string $key): string
     {
-        if (strpos($key, '/screens') === 0 || strpos($key, 'screen') === 0) {
+        // Check for screen cache key format: pid_X_Y_en_sid_A_B
+        if (preg_match('/^pid_\d+_\d+_[a-z]{2}_sid_\d+_\d+$/', $key)) {
             return 'screens';
         }
-        if (strpos($key, '/settings') === 0) {
+
+        // Check for setting cache key format: setting_something
+        if (str_starts_with($key, 'setting_')) {
             return 'settings';
         }
 
