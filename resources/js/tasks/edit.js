@@ -8,6 +8,8 @@ import reassignMixin from "../common/reassignMixin";
 Vue.mixin(autosaveMixins);
 Vue.mixin(draftFileUploadMixin);
 Vue.mixin(reassignMixin);
+Vue.component("DataTreeToggle", () => import("../components/common/data-tree-toggle.vue"));
+Vue.component("TreeView", () => import("../components/TreeView.vue"));
 
 const main = new Vue({
   el: "#task",

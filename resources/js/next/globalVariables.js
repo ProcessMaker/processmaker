@@ -52,6 +52,14 @@ export const setMixins = (Vue, mixins) => {
   }
 };
 
+export const setGlobalComponents = (Vue, components) => {
+  Object.entries(components).forEach(([key, component]) => {
+    if (component) {
+      Vue.component(key, component);
+    }
+  });
+};
+
 export const loadModulesSequentially = async (modules) => {
   const loadedModules = [];
 

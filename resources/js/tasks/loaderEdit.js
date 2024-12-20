@@ -3,7 +3,7 @@ import * as vue from "vue";
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 import moment from "moment-timezone";
 import {
-  setUses, setGlobalVariables, setGlobalPMVariables,
+  setUses, setGlobalVariables, setGlobalPMVariables, setGlobalComponents,
 } from "../next/globalVariables";
 
 import vuex from "../next/libraries/vuex";
@@ -25,6 +25,7 @@ import openAI from "../next/config/openAI";
 import sharedComponents from "../next/libraries/sharedComponents";
 import vueFormElements from "../next/libraries/vueFormElements";
 import screenBuilder from "../next/screenBuilder";
+import monaco from "../next/monaco";
 
 window.Vue = Vue;
 window.vue = vue;
@@ -41,10 +42,12 @@ window.ProcessMaker = {
 };
 
 import("../next/components/index");
-import("../next/monaco");
 
 // Initialize screenBuilder
 screenBuilder({ global: window });
+
+setGlobalVariables(monaco.global);
+setGlobalComponents(Vue, monaco.components);
 
 // Vuex
 setUses(Vue, vuex.use);
