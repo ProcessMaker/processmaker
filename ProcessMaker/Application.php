@@ -14,9 +14,6 @@ use ProcessMaker\Providers\SettingServiceProvider;
  */
 class Application extends IlluminateApplication
 {
-    // ProcessMaker Version
-    public const VERSION = '4.0.0';
-
     /**
      * Sets the timezone for the application and for php with the specified timezone.
      *
