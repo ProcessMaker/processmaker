@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.12.1-RC2",
+    "version": "4.12.1",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -51,6 +51,7 @@
         "processmaker/laravel-i18next": "dev-master",
         "processmaker/nayra": "1.12.0",
         "processmaker/pmql": "1.12.1",
+        "promphp/prometheus_client_php": "^2.12",
         "psr/http-message": "^1.1",
         "psr/log": "^2.0",
         "psr/simple-cache": "^2.0",
@@ -107,7 +108,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "ec41d574",
+            "build": "4c2786fd",
             "cicd-enabled": true,
             "custom": {
                 "package-ellucian-ethos": "1.17.0",
