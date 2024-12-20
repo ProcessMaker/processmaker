@@ -95,16 +95,13 @@ export default {
     loadProcesses(callback, message) {
       if(message === 'bookmark') {
         this.processesList = [];
-        //this.page = 1;
       }
-      //this.loading = true;
       const url = this.buildURL();
       console.log("url PDM", url);
       ProcessMaker.apiClient
         .get(url)
         .then((response) => {
           this.processesList = this.processesList.concat(response.data.data);
-          console.log("this.processesList PDM", this.processesList);
         });
     },
     /**
@@ -148,7 +145,7 @@ export default {
 .buttons-list {
   display: flex;
   flex-direction: column;
-  height: 250px;
+  height: 350px;
   overflow-y: auto;
 }
 

@@ -4,6 +4,7 @@
       v-show="hideLaunchpad"
       :process="process"
       :current-user-id="currentUserId"
+      :ellipsis-permission="ellipsisPermission"
       @goBackCategory="$emit('goBackCategory')"
     />
     <process-tab
@@ -44,7 +45,7 @@ export default {
     ProcessTab,
     ProcessesCarousel,
   },
-  props: ["process", "currentUserId", "currentUser"],
+  props: ["process", "currentUserId", "currentUser", "ellipsisPermission"],
   data() {
     return {
       listCategories: [],
@@ -70,7 +71,6 @@ export default {
     this.$root.$on("carouselImageSelected", (pos) => {
       this.firstImage = pos + 1;
     });
-
   },
   computed: {
   },

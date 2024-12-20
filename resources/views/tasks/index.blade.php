@@ -159,6 +159,11 @@
         window.ProcessMaker.userConfiguration = @json($userConfiguration ?? []);
         window.sessionStorage.setItem('elementDestinationURL', window.location.href);
     </script>
+    <script>
+        window.ProcessMaker.ellipsisPermission = {{
+          Js::from(\Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'projects', 'documentation'))
+        }};
+      </script>
     <script src="{{ mix('js/tasks/index.js') }}"></script>
 @endsection
 

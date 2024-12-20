@@ -3,6 +3,7 @@
     <div id="processData">
       <process-header-start
         :process="process"
+        :ellipsis-permission="ellipsisPermission"
         @goBack="goBack()"
         @onProcessNavigate="onProcessNavigate"
         v-if="!mobileApp"
@@ -92,7 +93,7 @@ export default {
     ProcessHeaderStart,
   },
   mixins: [ProcessesMixin, ellipsisMenuMixin, processNavigationMixin],
-  props: ["process", "currentUserId"],
+  props: ["process", "currentUserId", "ellipsisPermission"],
   computed: {
     createdFromWizardTemplate() {
       return !!this.process?.properties?.wizardTemplateUuid;

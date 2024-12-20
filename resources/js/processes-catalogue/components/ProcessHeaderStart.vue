@@ -28,7 +28,7 @@
               variant="none" 
               @navigate="ellipsisNavigate"
               :isDocumenterInstalled="$root.isDocumenterInstalled" 
-              :permission="$root.permission" />
+              :permission="$root.permission || ellipsisPermission" />
           </span>
           <buttons-start :process="process" :startEvent="singleStartEvent" :processEvents="processEvents" />
         </div>
@@ -62,6 +62,10 @@ export default {
     enableCollapse: {
       type: Boolean,
       default: true
+    },
+    ellipsisPermission: {
+      type: Array,
+      default: () => []
     }
   },
   data() {

@@ -16,7 +16,8 @@ const router = new VueRouter({
       component: Process,
       props: route => ({
         processId: parseInt(route.params.processId) || null,
-        process: null
+        process: null,
+        ellipsisPermission: window.ProcessMaker.ellipsisPermission
       })
     },
     {
