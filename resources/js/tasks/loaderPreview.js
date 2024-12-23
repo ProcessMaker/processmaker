@@ -59,7 +59,9 @@ setUses(Vue, vueCookies.use);
 
 // Initialize screenBuilder
 screenBuilder({ global: window });
+
 import("../next/components/index");
+import("../next/config/accesibility");
 
 const processmakerConfig = processmaker(window.ProcessMaker);
 setGlobalPMVariables(processmakerConfig.pm);

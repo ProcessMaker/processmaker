@@ -24,6 +24,7 @@ import openAI from "../next/config/openAI";
 // Load syncronously shared components in window, for some packages
 import sharedComponents from "../next/libraries/sharedComponents";
 import vueFormElements from "../next/libraries/vueFormElements";
+
 import screenBuilder from "../next/screenBuilder";
 import monaco from "../next/monaco";
 
@@ -42,6 +43,7 @@ window.ProcessMaker = {
 };
 
 import("../next/components/index");
+import("../next/config/accesibility");
 
 // Initialize screenBuilder
 screenBuilder({ global: window });
