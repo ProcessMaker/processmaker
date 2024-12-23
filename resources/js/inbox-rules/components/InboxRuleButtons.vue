@@ -3,7 +3,7 @@
     <b-button size="sm"
               variant="light"
               class="inbox-rule-buttons-border inbox-rule-buttons-font"
-              @click="$emit('reset-filters')">
+              @click="callResetFilters">
       <img src="/img/eraser-fill.svg" :alt="$t('Clear unsaved filters')"/>
       {{ $t('Clear unsaved filters') }}
     </b-button>
@@ -106,8 +106,12 @@
       });
     },
     methods: {
+      callResetFilters() {
+        this.$emit('reset-filters');
+      },
       onSelect(option) {
         this.selectedOption = option;
+        this.callResetFilters();
         this.$emit('saved-search-id-changed', option.value);
         this.showMenu(false);
       },

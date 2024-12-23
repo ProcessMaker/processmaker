@@ -241,8 +241,8 @@
 
                   if (this.savedSearchAdvancedFilter === null) {
                     const advancedFilter = response.data.advanced_filter ?? this.defaultSavedSearchFilters();
-                    this.savedSearchAdvancedFilter = this.addRequiredSavedSearchFilters(advancedFilter);
                     this.originalSavedSearchAdvancedFilter = _.cloneDeep(this.savedSearchAdvancedFilter);
+                    this.savedSearchAdvancedFilter = this.addRequiredSavedSearchFilters(advancedFilter);
                   }
 
                   this.ready = true;
