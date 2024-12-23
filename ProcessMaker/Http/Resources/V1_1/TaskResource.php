@@ -82,7 +82,6 @@ class TaskResource extends ApiResource
             'is_administrator',
             'expires_at',
             'loggedin_at',
-            'active_at',
             'created_at',
             'updated_at',
             'delegation_user_id',

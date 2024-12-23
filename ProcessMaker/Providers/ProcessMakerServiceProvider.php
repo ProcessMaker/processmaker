@@ -12,6 +12,7 @@ use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Support\Facades;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
@@ -22,6 +23,7 @@ use ProcessMaker\Console\Migration\ExtendedMigrateCommand;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Helpers\PmHash;
+use ProcessMaker\Http\Middleware\Etag\HandleEtag;
 use ProcessMaker\ImportExport\Extension;
 use ProcessMaker\ImportExport\SignalHelper;
 use ProcessMaker\Jobs\SmartInbox;
@@ -68,6 +70,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->setupFactories();
 
         parent::boot();
+
+        Route::pushMiddlewareToGroup('api', HandleEtag::class);
 
         // Hook after service providers boot
         self::$bootTime = (microtime(true) - self::$bootStart) * 1000; // Convert to milliseconds
