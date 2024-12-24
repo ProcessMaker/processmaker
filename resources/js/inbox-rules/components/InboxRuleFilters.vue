@@ -144,6 +144,9 @@
       resetFilters() {
         this.savedSearchAdvancedFilter = _.cloneDeep(this.originalSavedSearchAdvancedFilter);
       },
+      resetSavedSearch() {
+        this.loadSavedSearch();
+      },
       defaultTaskFilters() {
         return {
           order: {by: 'id', direction: 'desc'},
@@ -199,6 +202,7 @@
         } else {
           filter.filters = [this.userIdFilter()];
         }
+
         return filter;
       },
       userIdFilter() {
@@ -238,12 +242,15 @@
                     this.columns = _.cloneDeep(cols);
                     this.defaultColumns = _.cloneDeep(cols);
                   }
-
+                  
+                  const advancedFilter = response.data.advanced_filter ?? this.defaultSavedSearchFilters();
+                  const processedFilter = this.addRequiredSavedSearchFilters(advancedFilter);
+                  
                   if (this.savedSearchAdvancedFilter === null) {
-                    const advancedFilter = response.data.advanced_filter ?? this.defaultSavedSearchFilters();
-                    this.originalSavedSearchAdvancedFilter = _.cloneDeep(this.savedSearchAdvancedFilter);
-                    this.savedSearchAdvancedFilter = this.addRequiredSavedSearchFilters(advancedFilter);
+                    this.originalSavedSearchAdvancedFilter = _.cloneDeep(processedFilter);
                   }
+                  
+                  this.savedSearchAdvancedFilter = processedFilter;
 
                   this.ready = true;
                 });
