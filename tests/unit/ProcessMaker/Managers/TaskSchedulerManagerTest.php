@@ -15,7 +15,7 @@ class TaskSchedulerManagerTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::__construct();
+        parent::setUp();
         $this->manager = new TaskSchedulerManager;
     }
 
