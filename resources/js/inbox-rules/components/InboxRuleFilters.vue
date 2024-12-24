@@ -144,9 +144,6 @@
       resetFilters() {
         this.savedSearchAdvancedFilter = _.cloneDeep(this.originalSavedSearchAdvancedFilter);
       },
-      resetSavedSearch() {
-        this.loadSavedSearch();
-      },
       defaultTaskFilters() {
         return {
           order: {by: 'id', direction: 'desc'},
