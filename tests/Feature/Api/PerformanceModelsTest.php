@@ -5,6 +5,7 @@ namespace Tests\Feature\Api;
 use Illuminate\Database\Eloquent\Factory as EloquentFactory;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\ScriptExecutor;
 use ReflectionObject;
@@ -121,7 +122,9 @@ class PerformanceModelsTest extends TestCase
         $tables = [];
         foreach (config('database.connections') as $name => $config) {
             $connection = DB::connection($name);
-            $list = $connection->getDoctrineSchemaManager()->listTableNames();
+            $list = array_map(function ($item) {
+                return $item['name'];
+            }, Schema::getTables());
             foreach ($list as $table) {
                 if (!isset($tables[$table])) {
                     $tables[$table] = $connection->table($table)->count();
