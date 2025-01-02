@@ -4,6 +4,7 @@ namespace ProcessMaker\Traits;
 
 use Illuminate\Support\Arr;
 use Log;
+use ProcessMaker\Cache\Screens\ScreenCacheFactory;
 use ProcessMaker\Models\Column;
 use ProcessMaker\Models\Screen;
 
@@ -19,10 +20,7 @@ trait HasScreenFields
     {
         if (empty($this->parsedFields)) {
             try {
-                $this->parsedFields = collect([]);
-                if ($this->config) {
-                    $this->walkArray($this->config);
-                }
+                $this->loadScreenFields();
             } catch (\Throwable $e) {
                 Log::error("Error encountered while retrieving fields for screen #{$this->id}", [
                     'message' => $e->getMessage(),
@@ -37,6 +35,40 @@ trait HasScreenFields
         }
 
         return $this->parsedFields->unique('field');
+    }
+
+    /**
+     * Load the fields for the screen and cache them
+     *
+     * @return void 
+     */
+    private function loadScreenFields()
+    {
+        $screenCache = ScreenCacheFactory::getScreenCache();
+        // Create cache key
+        $screenId = $this instanceof Screen ? $this->id : $this->screen_id;
+        $screenVersionId = $this instanceof Screen ? 0 : $this->id;
+        $key = $screenCache->createKey([
+            'process_id' => 0,
+            'process_version_id' => 0,
+            'language' => 'all',
+            'screen_id' => (int) $screenId,
+            'screen_version_id' => (int) $screenVersionId,
+        ]) . '_fields';
+
+        // Try to get the screen fields from cache
+        $parsedFields = $screenCache->get($key);
+
+        if (!$parsedFields) {
+            $this->parsedFields = collect([]);
+            if ($this->config) {
+                $this->walkArray($this->config);
+            }
+
+            $screenCache->set($key, $this->parsedFields);
+        } else {
+            $this->parsedFields = $parsedFields;
+        }
     }
 
     public function parseNestedScreen($node)
