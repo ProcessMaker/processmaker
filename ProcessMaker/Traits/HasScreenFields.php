@@ -59,7 +59,7 @@ trait HasScreenFields
         // Try to get the screen fields from cache
         $parsedFields = $screenCache->get($key);
 
-        if (!$parsedFields) {
+        if (!$parsedFields || collect($parsedFields)->isEmpty()) {
             $this->parsedFields = collect([]);
             if ($this->config) {
                 $this->walkArray($this->config);
@@ -67,7 +67,7 @@ trait HasScreenFields
 
             $screenCache->set($key, $this->parsedFields);
         } else {
-            $this->parsedFields = $parsedFields;
+            $this->parsedFields = collect($parsedFields);
         }
     }
 
