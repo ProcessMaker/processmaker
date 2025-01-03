@@ -29,7 +29,7 @@ class ServerTimingMiddleware
 
         // Start time for controller execution
         $startController = microtime(true);
-        $bootTiming = ($startController - LARAVEL_START) * 1000; // Convert to ms
+        $bootTiming = ($startController - \LARAVEL_START) * 1000; // Convert to ms
 
         // Process the request
         $response = $next($request);
