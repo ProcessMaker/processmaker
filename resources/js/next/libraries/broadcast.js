@@ -9,8 +9,6 @@ export default (globalInput) => {
     if (config.broadcaster === "pusher") {
       Pusher = require("pusher-js");
       Pusher.logToConsole = config.debug;
-
-      setGlobalVariable("Pusher", Pusher);
     }
 
     return {
