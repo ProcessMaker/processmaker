@@ -142,7 +142,10 @@
 });
 </script>
 <script src="{{ mix('builds/login/js/manifest.js') }}"></script>
-<script src="{{ mix('builds/login/js/vendor.js') }}"></script>
+<script src="{{ mix('js/vue-vendor.js') }}"></script>
+<script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
+<script src="{{ mix('js/modeler-vendor.js') }}"></script>
+<script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
 <script src="{{ mix('builds/login/js/app-login.js') }}"></script>
 @foreach(GlobalScripts::getScripts() as $script)
   @if (strpos($script, '/vendor/processmaker/packages/package-dynamic-ui/js/global.js') !== 0)

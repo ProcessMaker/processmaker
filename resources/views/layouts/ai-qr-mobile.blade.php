@@ -121,7 +121,10 @@
 <script src="{{config('broadcasting.connections.redis.host')}}/socket.io/socket.io.js"></script>
 @endif
 <script src="{{ mix('js/manifest.js') }}"></script>
-<script src="{{ mix('js/vendor.js') }}"></script>
+<script src="{{ mix('js/vue-vendor.js') }}"></script>
+<script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
+<script src="{{ mix('js/modeler-vendor.js') }}"></script>
+<script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
 <script src="{{ mix('js/app.js') }}"></script>
 <script>
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
