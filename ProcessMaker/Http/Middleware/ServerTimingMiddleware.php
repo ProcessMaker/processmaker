@@ -46,6 +46,12 @@ class ServerTimingMiddleware
             "db;dur={$queryTime}",
         ];
 
+        $hasLaravelStart = defined('LARAVEL_START');
+        if ($hasLaravelStart) {
+            $bootTiming = ($startController - \LARAVEL_START) * 1000; // Convert to ms
+            array_unshift($serverTiming, "boot;dur={$bootTiming}");
+        }
+
         $packageTimes = ProcessMakerServiceProvider::getPackageBootTiming();
 
         foreach ($packageTimes as $package => $timing) {
