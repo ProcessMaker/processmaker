@@ -92,12 +92,9 @@ export default {
 
       this.$emit("processDashboardSelected", { id, type });
     },
-    loadProcesses(callback, message) {
-      if(message === 'bookmark') {
-        this.processesList = [];
-      }
+    loadProcesses() {
       const url = this.buildURL();
-      console.log("url PDM", url);
+
       ProcessMaker.apiClient
         .get(url)
         .then((response) => {
@@ -108,13 +105,12 @@ export default {
      * Build URL for Process Cards
      */
     buildURL() {
-      return `process_bookmarks/processes?page=1`
-        + `&per_page=100`
-        + `&pmql=${encodeURIComponent(this.pmql)}`
-        + "&bookmark=true"
-        + "&launchpad=true"
-        + "&order_by=name&order_direction=asc"
-        + `&include=user,categories,category`;
+      return `process_bookmarks/processes?
+        &pmql=${encodeURIComponent(this.pmql)}
+        &bookmark=true
+        &launchpad=true
+        &order_by=name&order_direction=asc
+        &include=user,categories,category`;
     },
     getIconProcess(process) {
       let icon = "Default Icon";
