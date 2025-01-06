@@ -4,7 +4,6 @@ namespace ProcessMaker\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use ProcessMaker\Cache\Monitoring\CacheMetricsInterface;
-use ProcessMaker\Cache\Monitoring\RedisMetricsManager;
 use ProcessMaker\Cache\Screens\LegacyScreenCacheAdapter;
 use ProcessMaker\Cache\Screens\ScreenCacheFactory;
 use ProcessMaker\Cache\Screens\ScreenCacheManager;
@@ -16,9 +15,6 @@ class CacheServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        // Register the metrics manager
-        $this->app->bind(CacheMetricsInterface::class, RedisMetricsManager::class);
-
         // Register screen cache with metrics
         $this->app->singleton(ScreenCacheManager::class, function ($app) {
             return ScreenCacheFactory::create(
