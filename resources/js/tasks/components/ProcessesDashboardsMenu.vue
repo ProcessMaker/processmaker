@@ -13,11 +13,8 @@
               class="icon-process small-icon"
               :src="getIconProcess(process)"
               :alt="$t(labelIcon)"
-            >
-            <span
-              :id="`title-${process.id}`"
-              class="title-process"
-            >
+            />
+            <span :id="`title-${process.id}`" class="title-process">
               {{ process.name }}
             </span>
           </button>
@@ -65,12 +62,12 @@ export default {
   methods: {
     openProcessDashboard(id, type) {
       const router = this.$router || this.$root.$router;
-      
-      if (type === 'process') {
+
+      if (type === "process") {
         router
           .push({
             name: "process-browser",
-            params: { processId: id.toString() }
+            params: { processId: id.toString() },
           })
           .catch((err) => {
             if (err.name !== "NavigationDuplicated") {
@@ -81,7 +78,7 @@ export default {
         router
           .push({
             name: "dashboard",
-            params: { dashboardId: id.toString() }
+            params: { dashboardId: id.toString() },
           })
           .catch((err) => {
             if (err.name !== "NavigationDuplicated") {
@@ -95,11 +92,9 @@ export default {
     loadProcesses() {
       const url = this.buildURL();
 
-      ProcessMaker.apiClient
-        .get(url)
-        .then((response) => {
-          this.processesList = this.processesList.concat(response.data.data);
-        });
+      ProcessMaker.apiClient.get(url).then((response) => {
+        this.processesList = this.processesList.concat(response.data.data);
+      });
     },
     /**
      * Build URL for Process Cards
@@ -159,7 +154,7 @@ export default {
 
 .menu-btn:hover,
 .menu-btn:active {
-  background-color: #E4EDF3;
+  background-color: #e4edf3;
 }
 
 .divider {
