@@ -613,6 +613,9 @@
                 task_element_id: this.task.element_id,
               })
               .then(response => {
+                return this.eraseDraft();
+              })
+              .then(response => {
                 this.fieldsToUpdate.splice(0);
                 ProcessMaker.alert(this.$t('The request data was saved.'), "success");
               });
@@ -817,7 +820,7 @@
           },
           eraseDraft() {
             this.formDataWatcherActive = false;
-            ProcessMaker.apiClient
+            return ProcessMaker.apiClient
               .delete("drafts/" + this.task.id)
               .then(response => {
                 this.resetRequestFiles(response);
