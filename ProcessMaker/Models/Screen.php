@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Assets\ScreensInScreen;
+use ProcessMaker\Contracts\PrometheusMetricInterface;
 use ProcessMaker\Contracts\ScreenInterface;
 use ProcessMaker\Events\TranslationChanged;
 use ProcessMaker\Traits\Exportable;
@@ -63,7 +64,7 @@ use ProcessMaker\Validation\CategoryRule;
  *   @OA\Property(property="url", type="string"),
  * )
  */
-class Screen extends ProcessMakerModel implements ScreenInterface
+class Screen extends ProcessMakerModel implements ScreenInterface, PrometheusMetricInterface
 {
     use SerializeToIso8601;
     use HideSystemResources;
@@ -282,5 +283,15 @@ class Screen extends ProcessMakerModel implements ScreenInterface
         });
 
         return $query;
+    }
+
+    /**
+     * Return the label to be used in grafana reports
+     *
+     * @return string 
+     */
+    public function getPrometheusMetricLabel(): string
+    {
+        return 'screen.' . $this->id;
     }
 }
