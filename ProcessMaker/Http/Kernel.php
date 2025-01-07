@@ -83,6 +83,7 @@ class Kernel extends HttpKernel
         'session_kill' => Middleware\SessionControlKill::class,
         'no-cache' => Middleware\NoCache::class,
         'admin' => Middleware\IsAdmin::class,
+        'verify_active_session' => Middleware\VerifyActiveSession::class,
     ];
 
     /**

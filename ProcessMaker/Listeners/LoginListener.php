@@ -3,10 +3,10 @@
 namespace ProcessMaker\Listeners;
 
 use Illuminate\Auth\Events\Login;
+use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Models\InboxRuleLog;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\InboxRulesNotification;
-
 class LoginListener
 {
     /**
