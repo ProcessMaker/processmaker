@@ -293,7 +293,7 @@ class User extends Authenticatable implements HasMedia
 
     public function groups()
     {
-        return $this->morphToMany('ProcessMaker\Models\Group', 'member', 'group_members');
+        return $this->morphToMany('ProcessMaker\Models\Group', 'member', 'group_members')->withTimestamps();
     }
 
     public function projectMembers()
