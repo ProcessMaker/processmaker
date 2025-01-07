@@ -40,6 +40,7 @@ window.ProcessMaker = {
 };
 
 import("../next/components/index");
+import("../next/config/accesibility");
 
 // Vuex
 setUses(Vue, vuex.use);

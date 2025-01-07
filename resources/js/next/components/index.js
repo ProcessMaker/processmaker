@@ -67,6 +67,7 @@ const pmComponents = {
   InputImageCarousel: () => import("../../components/shared/InputImageCarousel.vue"),
   LaunchpadSettingsModal: () => import("../../components/shared/LaunchpadSettingsModal.vue"),
   Modal: () => import("../../components/shared/Modal.vue"),
+  PmModal: () => import("../../components/shared/Modal.vue"),
   ModalSaveVersion: () => import("../../components/shared/ModalSaveVersion.vue"),
   MultiThumbnailFileUploader: () => import("../../components/shared/MultiThumbnailFileUploader.vue"),
   PaginationTable: () => import("../../components/shared/PaginationTable.vue"),
@@ -98,6 +99,8 @@ const pmComponents = {
   TasksPreview: () => import("../../tasks/components/TasksPreview.vue"),
   TaskTooltip: () => import("../../tasks/components/TaskTooltip.vue"),
   TaskView: () => import("../../tasks/components/TaskView.vue"),
+  // Modeler components folder
+  ModelerAssetQuickCreate: () => import("../../processes/modeler/components/inspector/ModelerAssetQuickCreate.vue"), // Decision engine
 };
 
 Object.entries(pmComponents).forEach(([key, component]) => {

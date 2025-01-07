@@ -8,7 +8,7 @@ import {
 } from "../../../js/next/globalVariables";
 
 import vuex from "../../../js/next/libraries/vuex";
-import lodash from "../../../js/next/libraries/lodash";
+// import lodash from "../../../js/next/libraries/lodash";
 import bootstrap from "../../../js/next/libraries/bootstrap";
 import jquery from "../../../js/next/libraries/jquery";
 import vueRouter from "../../../js/next/libraries/vueRouter";
@@ -25,6 +25,7 @@ import openAI from "../../../js/next/config/openAI";
 // Load syncronously shared components in window, for some packages
 import sharedComponents from "../../../js/next/libraries/sharedComponents";
 import vueFormElements from "../../../js/next/libraries/vueFormElements";
+import modelerInspector from "../../../js/next/libraries/modelerInspector";
 import modeler from "../../../js/next/modeler";
 import screenBuilderNext from "../../../js/next/screenBuilder";
 
@@ -60,7 +61,10 @@ setUses(Vue, vueRouter.use);
 // VueCookies
 setUses(Vue, vueCookies.use);
 
+// Initialize components asyncronously with Vue.component
 import("../../../js/next/components/index");
+import("../../../js/next/config/accesibility");
+
 // Initialize screenBuilder
 screenBuilderNext({ global: window });
 
@@ -90,6 +94,6 @@ setGlobalPMVariables(sessionConfig.pm);
 const openAIConfig = openAI();
 setGlobalPMVariables(openAIConfig.pm);
 
-// Layout modules
+// Layout modules asyncronously
 import("../../../js/next/layout/sidebar");
 import("../../../js/next/layout/navbar");

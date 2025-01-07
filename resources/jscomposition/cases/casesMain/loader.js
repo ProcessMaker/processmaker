@@ -56,6 +56,7 @@ setUses(Vue, vueRouter.use);
 setUses(Vue, vueCookies.use);
 
 import("../../../js/next/components/index");
+import("../../../js/next/config/accesibility");
 
 const processmakerConfig = processmaker(window.ProcessMaker);
 setGlobalPMVariables(processmakerConfig.pm);
