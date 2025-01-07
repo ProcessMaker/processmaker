@@ -26,7 +26,7 @@ class RedisMetricsManager implements CacheMetricsInterface
      * @param string $key Cache key
      * @param float $microtime Time taken in microseconds
      */
-    public function recordHit(string $key, $microtime): void
+    public function recordHit(string $key, $microtime, array $labels = []): void
     {
         $baseKey = self::METRICS_PREFIX . $key;
         Redis::pipeline(function ($pipe) use ($baseKey, $microtime) {
@@ -42,7 +42,7 @@ class RedisMetricsManager implements CacheMetricsInterface
      * @param string $key Cache key
      * @param float $microtime Time taken in microseconds
      */
-    public function recordMiss(string $key, $microtime): void
+    public function recordMiss(string $key, $microtime, array $labels = []): void
     {
         $baseKey = self::METRICS_PREFIX . $key;
         Redis::pipeline(function ($pipe) use ($baseKey, $microtime) {
@@ -58,7 +58,7 @@ class RedisMetricsManager implements CacheMetricsInterface
      * @param string $key Cache key
      * @param int $size Size in bytes
      */
-    public function recordWrite(string $key, int $size): void
+    public function recordWrite(string $key, int $size, array $labels = []): void
     {
         $baseKey = self::METRICS_PREFIX . $key;
         Redis::pipeline(function ($pipe) use ($baseKey, $size) {

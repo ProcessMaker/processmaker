@@ -4,6 +4,7 @@ namespace ProcessMaker\Cache\Monitoring;
 
 use ProcessMaker\Cache\CacheInterface;
 use ProcessMaker\Cache\Monitoring\CacheMetricsInterface;
+use ProcessMaker\Contracts\PrometheusMetricInterface;
 
 /**
  * Decorator class that adds metrics tracking about cache operations
@@ -64,11 +65,18 @@ class CacheMetricsDecorator implements CacheInterface
         $endTime = microtime(true);
         $duration = $endTime - $startTime;
 
+        // Get extra labels for metrics
+        $labels = [];
+        if ($value instanceof PrometheusMetricInterface) {
+            $labels['label'] = $value->getPrometheusMetricLabel();
+        } else {
+            $labels['label'] = $key;
+        }
         // Record metrics based on key existence, not value comparison
         if ($exists) {
-            $this->metrics->recordHit($key, $duration);
+            $this->metrics->recordHit($key, $duration, $labels);
         } else {
-            $this->metrics->recordMiss($key, $duration);
+            $this->metrics->recordMiss($key, $duration, $labels);
         }
 
         return $value;
@@ -88,10 +96,18 @@ class CacheMetricsDecorator implements CacheInterface
     {
         $result = $this->cache->set($key, $value, $ttl);
 
+        // Get extra labels for metrics
+        $labels = [];
+        if ($value instanceof PrometheusMetricInterface) {
+            $labels['label'] = $value->getPrometheusMetricLabel();
+        } else {
+            $labels['label'] = $key;
+        }
+
         if ($result) {
             // Calculate approximate size in bytes
             $size = $this->calculateSize($value);
-            $this->metrics->recordWrite($key, $size);
+            $this->metrics->recordWrite($key, $size, $labels);
         }
 
         return $result;
