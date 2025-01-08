@@ -5,13 +5,9 @@
     :class="{ 'menu-open': showMenu }"
   >
     <div class="menu">
-      <button 
-          class="pl-3 menu-title" 
-          style="background-color: #E6F3FF; padding: 5px 15px; border-radius: 10px; border: none; cursor: pointer;"
-          @click="getAllTasks"
-        >
-          {{ $t('Inbox') }}
-        </button>
+      <button class="pl-3 menu-title button-class" @click="getAllTasks">
+        {{ $t("Inbox") }}
+      </button>
       <ProcessesDashboardsMenu
         @processDashboardSelected="processDashboardSelected"
       />
@@ -44,6 +40,7 @@
               </b-alert>
             </div>
           </div>
+
           <div class="row">
             <div class="col-sm-12">
               <ul class="nav nav-tabs task-nav" id="requestTab" role="tablist">
@@ -96,6 +93,7 @@
                   </a>
                 </li>
               </ul>
+
               <div class="tab-content" id="task-tabContent">
                 <div
                   class="tab-pane fade show active"
@@ -139,6 +137,7 @@
                                 </div>
                               </div>
                             </template>
+
                             <template v-slot:right-buttons>
                               <b-button
                                 id="idPopoverInboxRules"
@@ -232,46 +231,17 @@ export default {
       type: Boolean,
       required: true,
     },
-    props: {
-      taskDraftsEnabled: {
-        type: Boolean,
-        required: true,
-      },
-      userFilter: {
-        type: Object,
-        required: true,
-      },
-      defaultColumns: {
-        type: Array,
-        required: true,
-      },
-      userConfiguration: {
-        type: Object,
-        default: () => ({}),
-      },
-      userPermissions: {
-        type: Object,
-        required: true,
-      },
-      savedsearchDefaultsEditRoute: {
-        type: String,
-        required: true,
-      },
+    userFilter: {
+      type: Object,
+      required: true,
     },
-    data() {
-      return {
-        showMenu: false,
-        urlConfiguration: "users/configuration",
-        localUserConfiguration: {},
-      };
+    defaultColumns: {
+      type: Array,
+      required: true,
     },
-    mounted() {
-      this.defineUserConfiguration();
-      this.$nextTick(() => {
-        if (this.$refs.taskList) {
-          this.$refs.taskList.fetch();
-        }
-      });
+    userConfiguration: {
+      type: Object,
+      default: () => ({}),
     },
     userPermissions: {
       type: Object,
@@ -303,7 +273,7 @@ export default {
       });
     },
     getAllTasks() {
-      this.selectedProcess = 'inbox';
+      this.selectedProcess = "inbox";
       this.allInbox = true;
       this.callingTaskList();
     },
@@ -404,154 +374,66 @@ export default {
   .breadcrum-main {
     display: none;
   }
+}
 
-  .has-search .form-control-feedback {
-    position: absolute;
-    z-index: 2;
+.process-catalog-main {
+  display: flex;
+
+  @media (max-width: 639px) {
     display: block;
-    width: 2.375rem;
-    height: 2.375rem;
-    line-height: 2.375rem;
-    text-align: center;
-    pointer-events: none;
-    color: #aaa;
   }
+}
 
-  .card-border {
-    border-radius: 4px !important;
-  }
+.menu {
+  left: -100%;
+  height: calc(100vh - 145px);
+  overflow: hidden;
+  margin-top: 15px;
+  transition: all 0.3s;
+  flex: 0 0 0px;
+  background-color: #f7f9fb;
 
-  .card-size-header {
-    width: 90px;
-  }
-
-  .option__image {
-    width: 27px;
-    height: 27px;
-    border-radius: 50%;
-  }
-
-  .initials {
-    display: inline-block;
-    text-align: center;
-    font-size: 12px;
-    max-width: 25px;
-    max-height: 25px;
-    min-width: 25px;
-    min-height: 25px;
-    border-radius: 50%;
-  }
-  .task-nav {
-    border-bottom: 0 !important;
-  }
-  .task-nav-link.active {
-    color: #1572c2 !important;
-    font-weight: 700;
-    font-size: 15px;
-  }
-  .task-nav-link {
-    color: #556271;
-    font-weight: 400;
-    font-size: 15px;
-    border-top-left-radius: 5px !important;
-    border-top-right-radius: 5px !important;
-  }
-  .task-list-body {
-    border-radius: 5px;
-  }
-  .task-inbox-rules {
-    width: max-content;
-  }
-  .task-inbox-rules-content {
-    display: flex;
-    justify-content: space-between;
-    padding: 15px;
-  }
-  .task-inbox-rules-content-text {
-    width: 310px;
-    padding-left: 10px;
-  }
-  .popover {
-    max-width: 450px;
-  }
-
-  @media (max-width: 639px) {
-    .breadcrum-main {
-      display: none;
-    }
-  }
-
-  .process-catalog-main {
-    display: flex;
-
-    @media (max-width: 639px) {
-      display: block;
-    }
-  }
-
-  .menu {
-    left: -100%;
-    height: calc(100vh - 145px);
-    overflow: hidden;
-    margin-top: 15px;
-    transition: all 0.3s;
-    flex: 0 0 0px;
+  .menu-catalog {
     background-color: #f7f9fb;
-
-    .menu-catalog {
-      background-color: #f7f9fb;
-      flex: 1;
-      width: 315px;
-      height: 95%;
-      overflow-y: scroll;
-    }
-
-    @media (max-width: 639px) {
-      position: absolute;
-      z-index: 4;
-      display: flex;
-      margin-top: 0;
-      width: 85%;
-      transition: left 0.3s;
-    }
+    flex: 1;
+    width: 315px;
+    height: 95%;
+    overflow-y: scroll;
   }
-}
-
-.menu-title {
-  color: #556271;
-  font-size: 22px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 46.08px;
-  letter-spacing: -0.44px;
-  display: block;
-  width: 92%;
-  margin-left: 15px;
-  text-align: left;
 
   @media (max-width: 639px) {
-    display: none;
     position: absolute;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0);
-    z-index: 3;
-    transition: background-color 0.3s;
+    z-index: 4;
+    display: flex;
+    margin-top: 0;
+    width: 85%;
+    transition: left 0.3s;
+  }
+}
 
-    @media (max-width: 639px) {
-      display: block;
-    }
-  }
-}
-.home-screen-inbox {
+.menu-mask {
+  display: none;
+  position: absolute;
+  left: -100%;
   width: 100%;
-  margin-right: 0px;
-  overflow-x: hidden;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0);
+  z-index: 3;
+  transition: background-color 0.3s;
+
   @media (max-width: 639px) {
-    padding-left: 0;
+    display: block;
   }
 }
+
+.menu-mask.menu-open {
+  @media (max-width: 639px) {
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: block;
+  }
+}
+
 .menu-open .menu {
   left: 0;
   flex: 0 0 250px;
@@ -664,17 +546,26 @@ export default {
   display: block;
   width: 92%;
   margin-left: 15px;
+  text-align: left;
 
   @media (max-width: 639px) {
     display: none;
   }
 }
-.processes-info {
+.home-screen-inbox {
   width: 100%;
   margin-right: 0px;
   overflow-x: hidden;
   @media (max-width: 639px) {
     padding-left: 0;
   }
+}
+
+.button-class {
+  background-color: #e6f3ff;
+  padding: 5px 15px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
 }
 </style>
