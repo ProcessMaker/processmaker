@@ -17,10 +17,8 @@ class MediaOrderColumnIndexTest extends TestCase
         $this->artisan('migrate');
 
         // Check if the index exists
-        $indexExists = Schema::getConnection()
-            ->getDoctrineSchemaManager()
-            ->listTableIndexes('media');
+        $indexExists = Schema::getIndexListing('media');
 
-        $this->assertArrayHasKey('media_order_column_index', $indexExists);
+        $this->assertContains('media_order_column_index', $indexExists);
     }
 }

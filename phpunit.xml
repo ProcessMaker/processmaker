@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false"
-         backupStaticAttributes="false"
          colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="false"
-         convertWarningsToExceptions="false"
          processIsolation="false"
          stopOnFailure="false"
          bootstrap="tests/bootstrap.php"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.5/phpunit.xsd"
 >
-    <testsuites>
+  <testsuites>
       <testsuite name="Features">
         <directory>tests/Feature</directory>
         <directory>tests/Managers</directory>
@@ -21,13 +17,6 @@
         <directory>tests/unit</directory>
       </testsuite>
   </testsuites>
-
-  <coverage includeUncoveredFiles="true" processUncoveredFiles="false">
-    <include>
-      <directory suffix=".php">./ProcessMaker</directory>
-    </include>
-  </coverage>
-
     <php>
       <env name="APP_DEBUG" value="true" />
       <env name="APP_ENV" value="testing" />
@@ -77,4 +66,9 @@
 
       <env name="ENCRYPTED_DATA_KEY" value="base64:3/FNiukohihPSwmkzIl1csZIT6W4LYtnJzLPkNPjZgs=" />
     </php>
+  <source>
+    <include>
+      <directory suffix=".php">./ProcessMaker</directory>
+    </include>
+  </source>
 </phpunit>

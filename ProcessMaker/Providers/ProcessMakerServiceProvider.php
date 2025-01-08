@@ -269,9 +269,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
         Horizon::auth(function ($request) {
             return Facades\Auth::user() instanceof Models\User;
         });
-
-        // we are using custom passport migrations
-        Passport::ignoreMigrations();
     }
 
     private function setupFactories(): void
