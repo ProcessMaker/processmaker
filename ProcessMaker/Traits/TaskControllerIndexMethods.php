@@ -22,8 +22,21 @@ trait TaskControllerIndexMethods
         $includes = $request->has('include') ? explode(',', $request->input('include')) : [];
         // Determine if the data should be included
         $includeData = in_array('data', $includes);
+        
+        $query = ProcessRequestToken::exclude(['data']);
 
-        $query = ProcessRequestToken::exclude(['data'])->with([
+        // If all_inbox is true and user has process requests, filter to only show the latest process
+        if ($request->has('all_inbox') && $request->input('all_inbox') === 'false') {
+            $latestProcessRequest = ProcessRequestToken::where('user_id', auth()->id())
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            if ($latestProcessRequest) {
+                $query->where('process_id', $latestProcessRequest->process_id);
+            }
+        }
+
+        $query = $query->with([
             'processRequest' => function ($q) use ($includeData) {
                 if (!$includeData) {
                     return $q->exclude(['data']);

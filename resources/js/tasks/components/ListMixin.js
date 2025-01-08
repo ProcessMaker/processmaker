@@ -94,6 +94,11 @@ const ListMixin = {
         if (this.additionalIncludes) {
           include.push(...this.additionalIncludes);
         }
+
+        let getAllTasksInbox = "&all_inbox=false";
+        if (this.$parent.allInbox) {
+          getAllTasksInbox = "&all_inbox=true";
+        } 
         // Load from our api client
         ProcessMaker.apiClient
           .get(
@@ -108,6 +113,7 @@ const ListMixin = {
               }${this.getSortParam()
               }&non_system=true` +
               `&processesIManage=${(this.processesIManage ? 'true' : 'false')}` +
+              getAllTasksInbox +
               advancedFilter +
               this.columnsQuery,
               {

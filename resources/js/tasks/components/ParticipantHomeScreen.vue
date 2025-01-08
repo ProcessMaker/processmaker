@@ -5,16 +5,9 @@
     :class="{ 'menu-open': showMenu }"
   >
     <div class="menu">
-      <span
-        class="pl-3 menu-title"
-        style="
-          background-color: #e6f3ff;
-          padding: 5px 15px;
-          border-radius: 10px;
-        "
-      >
+      <button class="pl-3 menu-title button-class" @click="getAllTasks">
         {{ $t("Inbox") }}
-      </span>
+      </button>
       <ProcessesDashboardsMenu
         @processDashboardSelected="processDashboardSelected"
       />
@@ -213,7 +206,7 @@
           </div>
         </div>
       </div>
-      <router-view v-else></router-view>
+      <router-view v-else :key="$route.fullPath"></router-view>
     </div>
   </div>
 </template>
@@ -269,24 +262,32 @@ export default {
   },
   mounted() {
     this.defineUserConfiguration();
-    this.$nextTick(() => {
-      if (this.$refs.taskList) {
-        this.$refs.taskList.fetch();
-      }
-    });
+    this.callingTaskList();
   },
   methods: {
+    callingTaskList() {
+      this.$nextTick(() => {
+        if (this.$refs.taskList) {
+          this.$refs.taskList.fetch();
+        }
+      });
+    },
+    getAllTasks() {
+      this.selectedProcess = "inbox";
+      this.allInbox = true;
+      this.callingTaskList();
+    },
     processDashboardSelected(id, type) {
       this.selectedProcess = type;
-      if (type === 'process') {
+      if (type === "process") {
         this.$router.push({
-          name: 'process-browser',
-          query: { process: id }
+          name: "process-browser",
+          query: { process: id },
         });
-      } else if (type === 'dashboard') {
+      } else if (type === "dashboard") {
         this.$router.push({
-          name: 'dashboard',
-          query: { dashboard: id }
+          name: "dashboard",
+          query: { dashboard: id },
         });
       }
     },
@@ -559,4 +560,13 @@ export default {
     padding-left: 0;
   }
 }
+
+.button-class {
+  background-color: #e6f3ff;
+  padding: 5px 15px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
 </style>
+  
