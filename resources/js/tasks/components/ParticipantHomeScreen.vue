@@ -370,6 +370,7 @@ export default {
   max-width: 450px;
 }
 
+
 @media (max-width: 639px) {
   .breadcrum-main {
     display: none;

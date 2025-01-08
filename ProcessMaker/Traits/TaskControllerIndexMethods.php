@@ -22,7 +22,7 @@ trait TaskControllerIndexMethods
         $includes = $request->has('include') ? explode(',', $request->input('include')) : [];
         // Determine if the data should be included
         $includeData = in_array('data', $includes);
-        
+
         $query = ProcessRequestToken::exclude(['data']);
 
         // If all_inbox is true and user has process requests, filter to only show the latest process

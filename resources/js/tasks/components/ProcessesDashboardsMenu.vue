@@ -1,38 +1,41 @@
 <template>
   <div class="inbox-process-menu">
     <div class="menu-sections">
-      <div class="process-section">
-        <div class="buttons-list">
-          <button
-            v-for="process in processesList"
-            :key="process.id"
-            class="menu-btn"
-            @click="openProcessDashboard(process.id, 'process')"
-          >
-            <img
-              class="icon-process small-icon"
-              :src="getIconProcess(process)"
-              :alt="$t(labelIcon)"
-            />
-            <span :id="`title-${process.id}`" class="title-process">
-              {{ process.name }}
-            </span>
-          </button>
-        </div>
+      <div class="divider-custom"></div>
+      <!-- <div class="process-section"> -->
+      <div class="buttons-list-process">
+        <button
+          v-for="process in processesList"
+          :key="process.id"
+          class="menu-btn"
+          @click="openProcessDashboard(process.id, 'process')"
+        >
+          <img
+            class="icon-process small-icon"
+            :src="getIconProcess(process)"
+            :alt="$t(labelIcon)"
+          />
+          <span :id="`title-${process.id}`" class="title-process">
+            {{ process.name }}
+          </span>
+        </button>
       </div>
+      <!-- </div> -->
 
-      <div class="divider"></div>
+      <div class="divider-custom"></div>
 
       <div class="dashboard-section">
-        <h4>Dashboards</h4>
-        <div class="buttons-list">
+        <div class="buttons-list-dashboard">
           <button
             v-for="dashboard in dashboards"
             :key="dashboard.id"
             class="menu-btn"
             @click="openProcessDashboard(dashboard.id, 'dashboard')"
           >
-            <i class="fas fa-check"></i> {{ dashboard.name }}
+            <i class="fa fa-tachometer-alt"></i>
+            <span :id="`dashboard-${dashboard.id}`" class="title-dashboard">
+              {{ dashboard.name }}
+            </span>
           </button>
         </div>
       </div>
@@ -123,7 +126,6 @@ export default {
 <style scoped>
 .inbox-process-menu {
   padding: 1rem;
-  border: 1px solid #eee;
   border-radius: 4px;
 }
 
@@ -133,7 +135,15 @@ export default {
   gap: 1rem;
 }
 
-.buttons-list {
+.buttons-list-process {
+  display: flex;
+  flex-direction: column;
+  height: 350px;
+  overflow-y: auto;
+}
+
+.buttons-list-dashboard {
+  padding-left: 15px;
   display: flex;
   flex-direction: column;
   height: 350px;
@@ -155,11 +165,6 @@ export default {
 .menu-btn:hover,
 .menu-btn:active {
   background-color: #e4edf3;
-}
-
-.divider {
-  border-top: 1px solid #eee;
-  margin: 1rem 0;
 }
 
 h4 {
@@ -190,5 +195,20 @@ h4 {
   text-overflow: ellipsis;
   display: inline-block;
   max-width: 200px;
+}
+
+.title-dashboard {
+  margin-left: 10px;
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  max-width: 200px;
+}
+
+.divider-custom {
+  border-top: 2px solid #6a3c3c;
+  margin: 0;
 }
 </style>
