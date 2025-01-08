@@ -73,7 +73,7 @@ trait ScriptDockerBindingFilesTrait
 
         $line = exec($cmd, $output, $returnCode);
         if ($returnCode) {
-            if ($returnCode == 137 || $returnCode == 9) {
+            if ($returnCode == 137 || $returnCode == 9 || $returnCode == 124) {
                 Log::error('Script timed out');
                 $this->removeTemporalFiles();
                 throw new ScriptTimeoutException(
