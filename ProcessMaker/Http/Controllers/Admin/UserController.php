@@ -69,7 +69,13 @@ class UserController extends Controller
         );
         $ssoUser = false;
         if (class_exists(SsoUser::class)) {
+            // Check if the user is an SSO user (including SAML)
             $ssoUser = SsoUser::where('user_id', $user->id)->exists();
+        }
+
+        // Check if the user is an LDAP user
+        if (isset($user->meta?->authenticationType) && $user->meta->authenticationType === 'ldap') {
+            $ssoUser = true;
         }
 
         // Get global and valid 2FA preferences for the user
