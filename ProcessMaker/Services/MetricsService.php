@@ -32,7 +32,7 @@ class MetricsService
      *
      * @param mixed $adapter The storage adapter to use (e.g., Redis).
      */
-    public function __construct($adapter = null)
+    public function __construct(private $adapter = null)
     {
         $this->namespace = config('app.prometheus_namespace', 'app');
         try {
@@ -47,6 +47,16 @@ class MetricsService
         } catch (Exception $e) {
             throw new RuntimeException('Error initializing the metrics adapter: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Get the collection registry.
+     *
+     * @return CollectorRegistry The collection registry instance.
+     */
+    public function getCollectionRegistry(): CollectorRegistry
+    {
+        return $this->collectionRegistry;
     }
 
     /**
