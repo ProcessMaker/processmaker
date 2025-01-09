@@ -5,7 +5,11 @@
     :class="{ 'menu-open': showMenu }"
   >
     <div class="menu">
-      <button class="pl-3 menu-title button-class" @click="getAllTasks">
+      <button 
+        class="pl-3 menu-title button-class" 
+        :class="{ 'button-transparent': selectedProcess !== 'inbox', 'menu-title-inbox': selectedProcess !== 'inbox' }"
+        @click="getAllTasks"
+      >
         {{ $t("Inbox") }}
       </button>
       <ProcessesDashboardsMenu
@@ -538,10 +542,26 @@ export default {
 }
 
 .menu-title {
-  color: #556271;
+  color: #1472c2;
   font-size: 22px;
   font-style: normal;
   font-weight: 600;
+  line-height: 46.08px;
+  letter-spacing: -0.44px;
+  display: block;
+  width: 92%;
+  margin-left: 15px;
+  text-align: left;
+
+  @media (max-width: 639px) {
+    display: none;
+  }
+}
+.menu-title-inbox {
+  color: #4f606d;
+  font-size: 22px;
+  font-style: normal;
+  font-weight: 500;
   line-height: 46.08px;
   letter-spacing: -0.44px;
   display: block;
@@ -568,5 +588,9 @@ export default {
   border-radius: 10px;
   border: none;
   cursor: pointer;
+}
+
+.button-transparent {
+  background-color: transparent;
 }
 </style>

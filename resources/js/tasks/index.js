@@ -10,7 +10,7 @@ Vue.component('participant-home-screen', ParticipantHomeScreen);
 new Vue({
   el: "#tasks",
   data: {
-    showOldTaskScreen: false,
+    showOldTaskScreen: window.ProcessMaker.showOldTaskScreen,
     userConfiguration: window.ProcessMaker.userConfiguration,
     urlConfiguration: "users/configuration",
     showMenu: true,

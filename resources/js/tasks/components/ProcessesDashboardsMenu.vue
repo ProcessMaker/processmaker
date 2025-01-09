@@ -2,7 +2,6 @@
   <div class="inbox-process-menu">
     <div class="menu-sections">
       <div class="divider-custom"></div>
-      <!-- <div class="process-section"> -->
       <div class="buttons-list-process">
         <button
           v-for="process in processesList"
@@ -20,7 +19,6 @@
           </span>
         </button>
       </div>
-      <!-- </div> -->
 
       <div class="divider-custom"></div>
 
@@ -32,7 +30,7 @@
             class="menu-btn"
             @click="openProcessDashboard(dashboard.id, 'dashboard')"
           >
-            <i class="fa fa-tachometer-alt"></i>
+            <i class="fp-tachometer-alt-average"></i>
             <span :id="`dashboard-${dashboard.id}`" class="title-dashboard">
               {{ dashboard.name }}
             </span>
@@ -91,6 +89,7 @@ export default {
       }
 
       this.$emit("processDashboardSelected", { id, type });
+      this.$emit("menuItemSelected");
     },
     loadProcesses() {
       const url = this.buildURL();
@@ -208,7 +207,7 @@ h4 {
 }
 
 .divider-custom {
-  border-top: 2px solid #6a3c3c;
+  border-top: 2px solid #dee2e6;
   margin: 0;
 }
 </style>

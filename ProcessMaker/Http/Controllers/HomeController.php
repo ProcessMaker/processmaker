@@ -29,7 +29,7 @@ class HomeController extends Controller
             }
 
             // Redirect to the default view
-            return redirect('/tasks');
+            return redirect('/inbox');
         }
     }
 
