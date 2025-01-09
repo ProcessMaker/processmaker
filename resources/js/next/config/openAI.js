@@ -1,15 +1,13 @@
-// import { setGlobalPMVariable } from "../globalVariables";
+import { setGlobalPMVariables } from "../globalVariables";
 
 export default () => {
   const openAi = document.head.querySelector("meta[name=\"open-ai-nlq-to-pmql\"]");
 
-  return {
-    pm: {
-      openAi: openAi ? {
-        enabled: openAi.content,
-      } : {
-        enabled: false,
-      },
+  setGlobalPMVariables({
+    openAi: openAi ? {
+      enabled: openAi.content,
+    } : {
+      enabled: false,
     },
-  };
+  });
 };

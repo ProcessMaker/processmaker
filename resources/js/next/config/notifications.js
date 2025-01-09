@@ -1,5 +1,7 @@
-export default (globalInput) => {
-  const { apiClient } = globalInput;
+import { setGlobalPMVariables, getGlobalPMVariable } from "../globalVariables";
+
+export default () => {
+  const apiClient = getGlobalPMVariable("apiClient");
 
   const notifications = [];
 
@@ -28,13 +30,11 @@ export default (globalInput) => {
     icons: {},
   };
 
-  return {
-    pm: {
-      notifications,
-      pushNotification,
-      removeNotifications,
-      unreadNotifications,
-      $notifications,
-    },
-  };
+  setGlobalPMVariables({
+    notifications,
+    pushNotification,
+    removeNotifications,
+    unreadNotifications,
+    $notifications,
+  });
 };

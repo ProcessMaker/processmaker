@@ -1,13 +1,16 @@
-// import { getGlobalPMVariable, setGlobalPMVariable, getGlobalVariable } from "../globalVariables";
+import { getGlobalPMVariable, setGlobalPMVariables, getGlobalVariable } from "../globalVariables";
 
-export default ({ global, processmaker }) => {
+export default () => {
   const timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]")?.content;
 
-  const { Vue, Echo } = global;
+  const Vue = getGlobalVariable("Vue");
+  const Echo = getGlobalVariable("Echo");
 
-  const {
-    pushNotification, closeSessionModal, alert, user, sessionModal,
-  } = processmaker;
+  const pushNotification = getGlobalPMVariable("pushNotification");
+  const closeSessionModal = getGlobalPMVariable("closeSessionModal");
+  const alert = getGlobalPMVariable("alert");
+  const user = getGlobalPMVariable("user");
+  const sessionModal = getGlobalPMVariable("sessionModal");
 
   const isSameDevice = (e) => {
     const localDeviceId = Vue.$cookies.get(e.device_variable);
@@ -88,17 +91,11 @@ export default ({ global, processmaker }) => {
         }
       });
 
-    return {
-      pm: {
-        AccountTimeoutLength,
-        AccountTimeoutWarnSeconds,
-        AccountTimeoutEnabled,
-        AccountTimeoutWorker,
-      },
-    };
+    setGlobalPMVariables({
+      AccountTimeoutLength,
+      AccountTimeoutWarnSeconds,
+      AccountTimeoutEnabled,
+      AccountTimeoutWorker,
+    });
   }
-
-  return {
-    pm: {},
-  };
 };

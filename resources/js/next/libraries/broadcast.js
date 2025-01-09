@@ -1,6 +1,7 @@
 import Echo from "laravel-echo";
+import { setGlobalVariables } from "../globalVariables";
 
-export default (globalInput) => {
+export default () => {
   // Verify if the broadcasting is enabled
   if (Processmaker && Processmaker.broadcasting) {
     const config = Processmaker.broadcasting;
@@ -11,15 +12,9 @@ export default (globalInput) => {
       Pusher.logToConsole = config.debug;
     }
 
-    return {
-      global: {
-        Echo: new Echo(config),
-        Pusher,
-      },
-    };
+    setGlobalVariables({
+      Echo: new Echo(config),
+      Pusher,
+    });
   }
-
-  return {
-    global: {},
-  };
 };
