@@ -7,6 +7,7 @@ use ProcessMaker\Cache\CacheInterface;
 use ProcessMaker\Cache\Monitoring\CacheMetricsDecorator;
 use ProcessMaker\Cache\Monitoring\CacheMetricsInterface;
 use ProcessMaker\Cache\Screens\ScreenCacheInterface;
+use ProcessMaker\Contracts\PrometheusMetricInterface;
 use Tests\TestCase;
 
 class CacheMetricsDecoratorTest extends TestCase
@@ -330,5 +331,65 @@ class CacheMetricsDecoratorTest extends TestCase
     {
         Mockery::close();
         parent::tearDown();
+    }
+
+    public function testGetWithPrometheusMetricLabel()
+    {
+        $mockMetric = Mockery::mock(PrometheusMetricInterface::class);
+        $mockMetric->shouldReceive('getPrometheusMetricLabel')
+            ->once()
+            ->andReturn('prometheus_label');
+
+        // Setup expectations for cache hit
+        $this->cache->shouldReceive('has')
+            ->once()
+            ->with($this->testKey)
+            ->andReturn(true);
+
+        $this->cache->shouldReceive('get')
+            ->once()
+            ->with($this->testKey, null)
+            ->andReturn($mockMetric);
+
+        $this->metrics->shouldReceive('recordHit')
+            ->once()
+            ->withArgs(function ($key, $time, $labels) {
+                return $key === $this->testKey && is_float($time) && $labels['label'] === 'prometheus_label';
+            });
+
+        // Execute and verify
+        $result = $this->decorator->get($this->testKey);
+        $this->assertEquals($mockMetric, $result);
+    }
+
+    public function testSetWithPrometheusMetricLabel()
+    {
+        $mockMetric = new MockMetric();
+    
+        $ttl = 3600;
+    
+        // Setup expectations
+        $this->cache->shouldReceive('set')
+            ->once()
+            ->with($this->testKey, $mockMetric, $ttl)
+            ->andReturn(true);
+    
+        $this->metrics->shouldReceive('recordWrite')
+            ->once()
+            ->withArgs(function ($key, $size, $labels) {
+                return $key === $this->testKey && is_int($size) && $size > 0 && $labels['label'] === 'prometheus_label';
+            });
+    
+        // Execute and verify
+        $result = $this->decorator->set($this->testKey, $mockMetric, $ttl);
+        $this->assertTrue($result);
+    }
+}
+
+class MockMetric implements PrometheusMetricInterface
+{
+    public function getPrometheusMetricLabel(): string
+    {
+        return 'prometheus_label';
     }
 }
