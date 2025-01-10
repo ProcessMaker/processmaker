@@ -125,7 +125,7 @@ class ModelerController extends Controller
         if (class_exists('ProcessMaker\Package\PackageABTesting\Models\Alternative')) {
             $process->load('alternativeInfo');
         }
-// dd(ProcessLaunchpad::getLaunchpad(true, $process->id));
+
         return [
             'process' => $process,
             'manager' => $manager,
