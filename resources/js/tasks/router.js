@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import ProcessBrowser from "./components/ProcessBrowser.vue";
 import DashboardViewer from "./components/DashboardViewer.vue";
+import Process from "../processes-catalogue/components/Process";
 
 Vue.use(VueRouter);
 
@@ -12,21 +13,22 @@ const router = new VueRouter({
     {
       path: "/process/:processId",
       name: "process-browser",
-      component: ProcessBrowser,
-      props: (route) => ({
+      component: Process,
+      props: route => ({
         processId: parseInt(route.params.processId) || null,
         process: null,
-      }),
+        ellipsisPermission: window.ProcessMaker.ellipsisPermission
+      })
     },
     {
       path: "/dashboard/:dashboardId",
       name: "dashboard",
       component: DashboardViewer,
-      props: (route) => ({
-        dashboardId: route.params.dashboardId || null,
-      }),
-    },
-  ],
+      props: route => ({
+        dashboardId: route.params.dashboardId || null
+      })
+    }
+  ]
 });
 
-export default router;
+export default router; 
