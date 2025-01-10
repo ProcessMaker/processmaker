@@ -142,6 +142,7 @@ class DevLink extends ProcessMakerModel
         $bundleExport = $this->client()->get(
             route('api.devlink.export-local-bundle', ['bundle' => $remoteBundleId], false)
         )->json();
+        dd($bundleExport);
 
         $bundleSettingsExport = $this->client()->get(
             route('api.devlink.export-local-bundle-settings', ['bundle' => $remoteBundleId], false)

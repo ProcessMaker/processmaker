@@ -244,7 +244,7 @@ class DevLinkController extends Controller
         foreach ($bundles as $id) {
             $bundle = Bundle::find($id);
             if ($bundle) {
-                $bundle->addSettingToBundles($request->input('setting'), $request->input('config'));
+                $bundle->addSettingToBundles($request->input('setting'), $request->input('config'), $request->input('type'));
             }
         }
     }

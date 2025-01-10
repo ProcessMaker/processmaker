@@ -170,14 +170,15 @@ class Bundle extends ProcessMakerModel implements HasMedia
         } else {
             // Create a new BundleSetting with the initial ID
             $config = ['id' => []];
-            if ($newId) {
+            if ($newId && $type !== 'settings') {
                 $config['id'][] = $newId;
             }
 
             if ($type) {
                 $settingsMenu = SettingsMenus::where('menu_group', $setting)->first();
                 if ($settingsMenu) {
-                    $config['id'] = $settingsMenu->id;
+                    $config['id'][] = $settingsMenu->id;
+                    $config['type'] = $type;
                 }
             }
 
@@ -201,11 +202,11 @@ class Bundle extends ProcessMakerModel implements HasMedia
         return $message;
     }
 
-    public function addSettingToBundles($setting, $newId)
+    public function addSettingToBundles($setting, $newId, $type = null)
     {
         $message = null;
         try {
-            $this->addSettings($setting, $newId);
+            $this->addSettings($setting, $newId, $type);
         } catch (ValidationException $ve) {
             $message = $ve->getMessage();
         }

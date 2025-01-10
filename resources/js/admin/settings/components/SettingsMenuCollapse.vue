@@ -58,9 +58,9 @@
       </div>
     </div>
     <add-to-bundle
-      v-if="selectedMenu"
       :asset-type="selectedMenu.menu_group"
       :setting="true"
+      setting-type="settings"
     />
   </div>
 </template>
@@ -84,7 +84,9 @@ export default {
       collapsedMenus: {},
       oldMenuGroups: [],
       changeEmailServers: false,
-      selectedMenu: null,
+      selectedMenu: {
+        menu_group: "User Settings",
+      },
       actions: [
         { value: "add-to-bundle", content: "Add to Bundle", icon: "fas fa-folder-plus" },
       ],
@@ -179,9 +181,14 @@ export default {
       this.selectItem(this.menuGroups[0].groups[0]);
     },
     onNavigate(action, data, index) {
-      this.selectedMenu = data;
-      console.log(this.selectedMenu);
-      this.$root.$emit('add-to-bundle', data);
+      switch (action.value) {
+        case "add-to-bundle":
+          this.selectedMenu = data;
+          this.$root.$emit('add-to-bundle', data);
+          break;
+        default:
+          break;
+      }
     },
   },
 };

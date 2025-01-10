@@ -10,6 +10,10 @@ const props = defineProps({
   setting: {
     type: Boolean,
     default: false
+  },
+  settingType: {
+    type: String,
+    default: null
   }
 });
 
@@ -34,6 +38,7 @@ const save = (event) => {
       window.ProcessMaker.apiClient.post(`devlink/local-bundles/${selected.value.id}/add-settings`, {
         setting: props.assetType,
         config: null,
+        type: props.settingType || null
       })
         .then(() => {
           window.ProcessMaker.alert(vue.$t('Setting added to bundle'), 'success');
@@ -60,7 +65,8 @@ const save = (event) => {
       const setting = {
         'setting': props.assetType,
         'config': assetId.value,
-        'bundles': bundles
+        'bundles': bundles,
+        'type': props.settingType || null
       };
       window.ProcessMaker.apiClient.post(`devlink/local-bundles/add-setting-to-bundles`, setting).then(() => {
         modal.value.hide();
