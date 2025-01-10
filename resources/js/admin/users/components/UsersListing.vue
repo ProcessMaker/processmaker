@@ -36,6 +36,10 @@
           />
         </template>
       </vuetable>
+      <add-to-bundle
+        asset-type="users"
+        :setting="true"
+      />
       <pagination
         :single="$t('User')"
         :plural="$t('Users')"
@@ -53,13 +57,14 @@
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import AvatarImage from "../../../components/AvatarImage";
+import AddToBundle from "../../../components/shared/AddToBundle.vue";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 Vue.component("avatar-image", AvatarImage);
 
 export default {
-  components: {EllipsisMenu},
+  components: {EllipsisMenu, AddToBundle},
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: ["filter", "permission"],
   data() {
@@ -77,6 +82,7 @@ export default {
       ],
       actions: [
         { value: "edit-item", content: "Edit User", link: true, href: '/admin/users/{{id}}/edit', icon: "fas fa-pen-square", permission:'edit-users', ariaDescribedBy: 'data.id'},
+        { value: "add-to-bundle", content: "Add to Bundle", icon: "fas fa-folder-plus", permission: "admin", emit_on_root: 'add-to-bundle'},
         { value: "delete-item", content: "Delete User", icon: "fas fa-trash-alt", permission: 'delete-users'},
       ],
       fields: [

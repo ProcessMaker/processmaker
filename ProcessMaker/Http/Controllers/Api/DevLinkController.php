@@ -223,7 +223,7 @@ class DevLinkController extends Controller
 
     public function addSettings(Request $request, Bundle $bundle)
     {
-        $bundle->addSettings($request->input('setting'), $request->input('config'));
+        $bundle->addSettings($request->input('setting'), $request->input('config'), $request->input('type'));
     }
 
     public function addAssetToBundles(Request $request)
@@ -234,6 +234,17 @@ class DevLinkController extends Controller
             if ($bundle) {
                 $asset = $request->input('type')::findOrFail($request->input('id'));
                 $bundle->addAssetToBundles($asset);
+            }
+        }
+    }
+
+    public function addSettingToBundles(Request $request)
+    {
+        $bundles = $request->input('bundles');
+        foreach ($bundles as $id) {
+            $bundle = Bundle::find($id);
+            if ($bundle) {
+                $bundle->addSettingToBundles($request->input('setting'), $request->input('config'));
             }
         }
     }

@@ -20,11 +20,18 @@
               aria-expanded="false"
               :aria-controls="`collapseOne${menu.id}`"
             >
+              <i :class="{ 'fas fa-caret-down': collapsedMenus[menu.id], 'fas fa-caret-up': !collapsedMenus[menu.id] }" />
               <span>
                 <i :class="`fas fa-${menu.ui.icon}`" />
                 {{ menu.menu_group }}
               </span>
-              <i :class="{ 'fas fa-caret-down': collapsedMenus[menu.id], 'fas fa-caret-up': !collapsedMenus[menu.id] }" />
+              <ellipsis-menu
+                @navigate="onNavigate"
+                :actions="actions"
+                :data="menu"
+                :custom-button="{icon: 'fas fa-ellipsis-v', content: ''}"
+                class="settings-ellipsis-menu"
+              />
             </div>
           </h5>
         </div>
@@ -50,11 +57,20 @@
         </div>
       </div>
     </div>
+    <add-to-bundle
+      v-if="selectedMenu"
+      :asset-type="selectedMenu.menu_group"
+      :setting="true"
+    />
   </div>
 </template>
 
 <script>
+import AddToBundle from "../../../components/shared/AddToBundle.vue";
+import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
+
 export default {
+  components: { AddToBundle, EllipsisMenu },
   props: [
     "selectGroup",
   ],
@@ -68,6 +84,10 @@ export default {
       collapsedMenus: {},
       oldMenuGroups: [],
       changeEmailServers: false,
+      selectedMenu: null,
+      actions: [
+        { value: "add-to-bundle", content: "Add to Bundle", icon: "fas fa-folder-plus" },
+      ],
     };
   },
   mounted() {
@@ -158,6 +178,11 @@ export default {
     selectFirstItem() {
       this.selectItem(this.menuGroups[0].groups[0]);
     },
+    onNavigate(action, data, index) {
+      this.selectedMenu = data;
+      console.log(this.selectedMenu);
+      this.$root.$emit('add-to-bundle', data);
+    },
   },
 };
 </script>
@@ -221,5 +246,12 @@ export default {
   background: #e5edf3;
   color: #1572c2;
   font-weight: 700;
+}
+</style>
+<style lang="scss" scoped>
+::v-deep .settings-ellipsis-menu .contracted-menu {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
 }
 </style>

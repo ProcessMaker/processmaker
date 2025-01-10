@@ -399,6 +399,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         Route::post('devlink/local-bundles/{bundle}/add-assets', [DevLinkController::class, 'addAsset'])->name('devlink.add-asset');
         Route::post('devlink/local-bundles/{bundle}/add-settings', [DevLinkController::class, 'addSettings'])->name('devlink.add-settings');
         Route::post('devlink/local-bundles/add-asset-to-bundles', [DevLinkController::class, 'addAssetToBundles'])->name('devlink.add-asset-to-bundles');
+        Route::post('devlink/local-bundles/add-setting-to-bundles', [DevLinkController::class, 'addSettingToBundles'])->name('devlink.add-setting-to-bundles');
         Route::delete('devlink/local-bundles/{bundle}', [DevLinkController::class, 'deleteBundle'])->name('devlink.delete-bundle');
         Route::delete('devlink/local-bundles/assets/{bundle_asset}', [DevLinkController::class, 'deleteBundleAsset'])->name('devlink.delete-bundle-asset');
         Route::delete('devlink/local-bundles/settings/{bundle_setting}', [DevLinkController::class, 'deleteBundleSetting'])->name('devlink.delete-bundle-setting');

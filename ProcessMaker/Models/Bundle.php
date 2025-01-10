@@ -9,6 +9,7 @@ use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Logger;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\ProcessMakerModel;
+use ProcessMaker\Models\SettingsMenus;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -138,18 +139,52 @@ class Bundle extends ProcessMakerModel implements HasMedia
         ]);
     }
 
-    public function addSettings($setting, $config)
+    public function addSettings($setting, $newId, $type = null)
     {
-        $exists = $this->settings()->where('setting', $setting)->exists();
-        if ($exists) {
-            $this->settings()->where('setting', $setting)->update([
-                'config' => $config,
+        $existingSetting = $this->settings()->where('setting', $setting)->first();
+
+        if ($existingSetting) {
+            // If the config is null, do not add the new ID
+            if (is_null($existingSetting->config)) {
+                return;
+            }
+
+            // Decode the existing JSON
+            $config = json_decode($existingSetting->config, true);
+
+            // Ensure 'id' is an array
+            if (!isset($config['id']) || !is_array($config['id'])) {
+                $config['id'] = [];
+            }
+
+            // Add the new ID
+            $config['id'][] = $newId;
+
+            // Remove duplicates
+            $config['id'] = array_unique($config['id']);
+
+            // Update the config
+            $existingSetting->update([
+                'config' => json_encode($config),
             ]);
         } else {
+            // Create a new BundleSetting with the initial ID
+            $config = ['id' => []];
+            if ($newId) {
+                $config['id'][] = $newId;
+            }
+
+            if ($type) {
+                $settingsMenu = SettingsMenus::where('menu_group', $setting)->first();
+                if ($settingsMenu) {
+                    $config['id'] = $settingsMenu->id;
+                }
+            }
+
             BundleSetting::create([
                 'bundle_id' => $this->id,
                 'setting' => $setting,
-                'config' => $config,
+                'config' => json_encode($config),
             ]);
         }
     }
@@ -159,6 +194,18 @@ class Bundle extends ProcessMakerModel implements HasMedia
         $message = null;
         try {
             $this->addAsset($asset);
+        } catch (ValidationException $ve) {
+            $message = $ve->getMessage();
+        }
+
+        return $message;
+    }
+
+    public function addSettingToBundles($setting, $newId)
+    {
+        $message = null;
+        try {
+            $this->addSettings($setting, $newId);
         } catch (ValidationException $ve) {
             $message = $ve->getMessage();
         }

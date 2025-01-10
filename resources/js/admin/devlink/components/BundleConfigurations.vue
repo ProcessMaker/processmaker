@@ -17,9 +17,10 @@
             :checked="!!isInSettings(config)"
             switch
             @change="$emit('config-change', { 
-              key: config.type, 
+              key: config.type,
               value: $event,
-              settingId: isInSettings(config)?.id
+              settingId: isInSettings(config)?.id,
+              type: props.type
             })"
           />
         </div>
@@ -46,6 +47,10 @@ const props = defineProps({
   title: {
     type: String,
     required: true
+  },
+  type: {
+    type: String,
+    required: false
   }
 });
 
