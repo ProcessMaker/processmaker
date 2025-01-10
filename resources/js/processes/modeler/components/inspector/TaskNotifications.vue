@@ -71,18 +71,22 @@
       this.requester = {
         assigned: false,
         completed: false,
+        due: false,
       };
       this.assignee = {
-        assigned: false,
+        assigned: true,
         completed: false,
+        due: true,
       };
       this.participants = {
         assigned: false,
         completed: false,
+        due: false,
       };
       this.manager = {
         assigned: false,
         completed: false,
+        due: false,
       };
     };
 
@@ -95,9 +99,9 @@
               requesterAssigned: false,
               requesterCompleted: false,
               requesterDue: false,
-              assigneeAssigned: false,
+              assigneeAssigned: true,
               assigneeCompleted: false,
-              assigneeDue: false,
+              assigneeDue: true,
               participantsAssigned: false,
               participantsCompleted: false,
               participantsDue: false,
@@ -149,18 +153,18 @@
         },
         methods: {
           loadNotifications() {
-            this.requesterAssigned = this.notifications.requester.assigned;
-            this.requesterCompleted = this.notifications.requester.completed;
-            this.requesterDue = this.notifications.requester.due;
-            this.assigneeAssigned = this.notifications.assignee.assigned;
-            this.assigneeCompleted = this.notifications.assignee.completed;
-            this.assigneeDue = this.notifications.assignee.due;
-            this.participantsAssigned = this.notifications.participants.assigned;
-            this.participantsCompleted = this.notifications.participants.completed;
-            this.participantsDue = this.notifications.participants.due;
-            this.managerAssigned = this.notifications.manager.assigned;
-            this.managerCompleted = this.notifications.manager.completed;
-            this.managerDue = this.notifications.manager.due;
+            this.requesterAssigned = this.notifications?.requester.assigned;
+            this.requesterCompleted = this.notifications?.requester.completed;
+            this.requesterDue = this.notifications?.requester.due;
+            this.assigneeAssigned = this.notifications?.assignee.assigned;
+            this.assigneeCompleted = this.notifications?.assignee.completed;
+            this.assigneeDue = this.notifications?.assignee.due;
+            this.participantsAssigned = this.notifications?.participants.assigned;
+            this.participantsCompleted = this.notifications?.participants.completed;
+            this.participantsDue = this.notifications?.participants.due;
+            this.managerAssigned = this.notifications?.manager.assigned;
+            this.managerCompleted = this.notifications?.manager.completed;
+            this.managerDue = this.notifications?.manager.due;
           }
         },
         computed: {
@@ -183,6 +187,8 @@
               } else {
                 this.node.notifications = this.process.task_notifications[this.nodeId];
               }
+            } else {
+              this.node.notifications = this.process.task_notifications[this.nodeId];
             }
             return this.node.notifications;
           }
