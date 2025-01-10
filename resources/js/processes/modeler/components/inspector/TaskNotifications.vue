@@ -153,7 +153,6 @@
         },
         methods: {
           loadNotifications() {
-            debugger;
             this.requesterAssigned = this.notifications?.requester.assigned;
             this.requesterCompleted = this.notifications?.requester.completed;
             this.requesterDue = this.notifications?.requester.due;
