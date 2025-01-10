@@ -134,7 +134,7 @@ class TokenRepository implements TokenRepositoryInterface
                     $dataManager = new DataManager();
                     $tokenData = $dataManager->getData($token);
                     $feel = new FeelExpressionEvaluator();
-                    $evaluatedUsers = $selfServiceUsers ? $feel->render($selfServiceUsers, $tokenData) ?? null: [];
+                    $evaluatedUsers = $selfServiceUsers ? $feel->render($selfServiceUsers, $tokenData) ?? null : [];
                     $evaluatedGroups = $selfServiceGroups ? $feel->render($selfServiceGroups, $tokenData) ?? null : [];
 
                     // If we have single values we put it inside an array
@@ -172,7 +172,10 @@ class TokenRepository implements TokenRepositoryInterface
         CaseUpdate::dispatchSync($request, $token);
 
         if (!is_null($user)) {
+            // Review if the task has enable the action by email
             $this->validateAndSendActionByEmail($activity, $token, $user->email);
+            // Review if the user has enable the email notification
+            $this->validateEmailUserNotification($token, $user);
         }
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
     }
@@ -183,7 +186,6 @@ class TokenRepository implements TokenRepositoryInterface
      * @param ActivityInterface $activity
      * @param TokenInterface $token
      * @param string $to
-     * @param array $data
      *
      * @return void
      */
@@ -216,6 +218,36 @@ class TokenRepository implements TokenRepositoryInterface
                     // Send Email
                     return (new TaskActionByEmail())->sendAbeEmail($configEmail, $to, $data);
                 }
+            }
+        } catch (\Exception $e) {
+            // Catch and log the error
+            Log::error('Failed to validate and send action by email', [
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Validate email configuration and send email
+     *
+     * @param User $user
+     *
+     * @return void
+     */
+    private function validateEmailUserNotification(TokenInterface $token, User $user)
+    {
+        try {
+            Log::Info('User isEmailTaskEnable: ' . $user->email_task_notification);
+            // If the email task notification is checked in user profile
+            if ($user->email_task_notification && !empty($user->email)) {
+                $taskName = $token->element_name ?? '';
+                $data['some_data'] = '';
+                $configEmail['emailServer'] = 0; // Use the default email server
+                $configEmail['subject'] = $user->firstname . ' assigned you in ' . $taskName;
+                $configEmail['screenEmailRef'] = 0; // Define here the screen to use
+
+                // Send Email
+                return (new TaskActionByEmail())->sendAbeEmail($configEmail, $user->email, $data);
             }
         } catch (\Exception $e) {
             // Catch and log the error

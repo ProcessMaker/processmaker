@@ -154,6 +154,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         'token_properties' => 'array',
         'is_priority' => 'boolean',
         'is_actionbyemail' => 'boolean',
+        'is_emailsent' => 'boolean',
     ];
 
     /**
