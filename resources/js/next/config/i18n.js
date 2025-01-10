@@ -3,8 +3,11 @@ import Backend from "i18next-chained-backend";
 import LocalStorageBackend from "i18next-localstorage-backend";
 import XHR from "i18next-xhr-backend";
 import VueI18Next from "@panter/vue-i18next";
+import { setGlobalPMVariables, setUses, getGlobalVariable } from "../globalVariables";
 
-export default (globalInput) => {
+export default () => {
+  const Vue = getGlobalVariable("Vue");
+
   const isProd = document.head.querySelector("meta[name=\"is-prod\"]")?.content === "true";
   let translationsLoaded = false;
 
@@ -48,15 +51,12 @@ export default (globalInput) => {
 
   i18nPromise.then(() => { translationsLoaded = true; });
 
-  return {
-    pm: {
-      i18n: i18next,
-      i18nPromise,
-      missingTranslations,
-      missingTranslation,
-    },
-    use: {
-      VueI18Next,
-    },
-  };
+  setUses(Vue, { VueI18Next });
+  Vue.mixin({ i18n: new VueI18Next(i18next) });
+  setGlobalPMVariables({
+    i18n: i18next,
+    i18nPromise,
+    missingTranslations,
+    missingTranslation,
+  });
 };

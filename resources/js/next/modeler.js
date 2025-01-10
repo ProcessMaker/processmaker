@@ -1,10 +1,12 @@
-const nodeTypes = [];
-nodeTypes.get = function (id) {
-  return this.find((node) => node.id === id);
-};
+import { setGlobalPMVariables } from "./globalVariables";
 
-export default {
-  pm: {
+export default () => {
+  const nodeTypes = [];
+  nodeTypes.get = function (id) {
+    return this.find((node) => node.id === id);
+  };
+
+  setGlobalPMVariables({
     nodeTypes,
-  },
+  });
 };

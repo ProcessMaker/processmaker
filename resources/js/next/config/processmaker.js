@@ -1,8 +1,9 @@
 import axios from "axios";
+import { setGlobalPMVariables, getGlobalPMVariable } from "../globalVariables";
 
-export default (globalInput) => {
+export default () => {
   const token = document.head.querySelector("meta[name=\"csrf-token\"]");
-  const { EventBus } = globalInput;
+  const EventBus = getGlobalPMVariable("EventBus");
 
   // Setup api versions
   const apiVersionConfig = [
@@ -134,9 +135,7 @@ export default (globalInput) => {
     }
   });
 
-  return {
-    pm: {
-      apiClient,
-    },
-  };
+  setGlobalPMVariables({
+    apiClient,
+  });
 };

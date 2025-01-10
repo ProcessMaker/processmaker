@@ -15,8 +15,8 @@ const addScriptsToDOM = async function (scripts) {
   }
 };
 
-export default ({ global }) => {
-  const { Vue } = global;
+export default () => {
+  const Vue = getGlobalVariable("Vue");
 
   const componentsScreenBuilder = ["VueFormRenderer", "Task"];
 

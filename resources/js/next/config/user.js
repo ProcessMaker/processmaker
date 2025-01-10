@@ -1,7 +1,8 @@
+import { getGlobalVariable, setGlobalPMVariables } from "../globalVariables";
 import datetime_format from "../../data/datetime_formats.json";
 
-export default ({ global }) => {
-  const { moment } = global;
+export default () => {
+  const moment = getGlobalVariable("moment");
   const userID = document.head.querySelector("meta[name=\"user-id\"]");
   const userFullName = document.head.querySelector("meta[name=\"user-full-name\"]");
   const userAvatar = document.head.querySelector("meta[name=\"user-avatar\"]");
@@ -43,10 +44,8 @@ export default ({ global }) => {
     }
   }
 
-  return {
-    pm: {
-      user,
-      app,
-    },
-  };
+  setGlobalPMVariables({
+    user,
+    app,
+  });
 };
