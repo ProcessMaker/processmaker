@@ -21,6 +21,7 @@ use ProcessMaker\Package\PackagePmBlocks\Http\Controllers\Api\PmBlockController;
 use ProcessMaker\PackageHelper;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\ProcessMapTrait;
+use ProcessMaker\Models\ProcessLaunchpad;
 
 class ModelerController extends Controller
 {
@@ -124,7 +125,7 @@ class ModelerController extends Controller
         if (class_exists('ProcessMaker\Package\PackageABTesting\Models\Alternative')) {
             $process->load('alternativeInfo');
         }
-
+// dd(ProcessLaunchpad::getLaunchpad(true, $process->id));
         return [
             'process' => $process,
             'manager' => $manager,
@@ -146,6 +147,7 @@ class ModelerController extends Controller
             'runAsUserDefault' => $runAsUserDefault,
             'alternative' => $alternative,
             'abPublish' => PackageHelper::isPackageInstalled('ProcessMaker\Package\PackageABTesting\PackageServiceProvider'),
+            'launchpad' => ProcessLaunchpad::getLaunchpad(true, $process->id),
         ];
     }
 
