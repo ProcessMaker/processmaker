@@ -263,11 +263,7 @@
         }
 
         .process-catalog-main {
-            display: flex;
-
-            @media (max-width: 639px) {
-                display: block;
-            }
+            display: block;
         }
 
         .menu {

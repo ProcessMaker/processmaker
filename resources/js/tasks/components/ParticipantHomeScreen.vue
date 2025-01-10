@@ -1,6 +1,6 @@
 <template>
   <div
-    class="process-catalog-main"
+    class="process-catalog-main-participant"
     id="tasks"
     :class="{ 'menu-open': showMenu }"
   >
@@ -381,7 +381,7 @@ export default {
   }
 }
 
-.process-catalog-main {
+.process-catalog-main-participant {
   display: flex;
 
   @media (max-width: 639px) {
