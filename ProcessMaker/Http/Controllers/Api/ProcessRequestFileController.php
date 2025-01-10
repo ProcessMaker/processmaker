@@ -277,6 +277,28 @@ class ProcessRequestFileController extends Controller
      */
     public function store(Request $laravel_request, FileReceiver $receiver, ProcessRequest $request)
     {
+        // Get filetype and total size
+        $filetype = $laravel_request->file->getClientMimeType(); 
+        $filesize = $laravel_request->input('totalSize');
+
+        // Define image mime types
+        $imageMimeTypes = [
+            'image/jpeg',
+            'image/jpg', 
+            'image/png',
+            'image/gif'
+        ];
+
+        // Get appropriate size limit based on file type (values based on env variables)
+        $sizeLimit = in_array($filetype, $imageMimeTypes) 
+            ? config('app.settings.img_max_filesize_limit')
+            : config('app.settings.doc_max_filesize_limit');
+
+        // Check if file exceeds size limit
+        if ($filesize > $sizeLimit) {
+            throw new \Exception('File size exceeds limit');
+        }
+
         //delete it and upload the new one
         if ($laravel_request->input('chunk')) {
             // Perform a chunk upload
