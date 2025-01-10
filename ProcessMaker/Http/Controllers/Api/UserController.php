@@ -895,7 +895,6 @@ class UserController extends Controller
      */
     public function storeFilterConfiguration(String $name, Request $request)
     {
-        $request->json()->all();
         $filter = SaveSession::setConfigFilter($name, $request->user(), $request->json()->all());
 
         return response(['data' => $filter], 200);
