@@ -228,33 +228,62 @@ class TokenRepository implements TokenRepositoryInterface
     }
 
     /**
-     * Validate email configuration and send email
+     * Validates the user's email notification settings and sends an email if enabled.
      *
-     * @param User $user
-     *
-     * @return void
+     * @param TokenInterface $token The token containing task information.
+     * @param User $user The user to whom the email notification will be sent.
+     * @return mixed|null Returns the result of the email sending operation or null if not sent.
      */
     private function validateEmailUserNotification(TokenInterface $token, User $user)
     {
         try {
             Log::Info('User isEmailTaskEnable: ' . $user->email_task_notification);
-            // If the email task notification is checked in user profile
-            if ($user->email_task_notification && !empty($user->email)) {
-                $taskName = $token->element_name ?? '';
-                $data['some_data'] = '';
-                $configEmail['emailServer'] = 0; // Use the default email server
-                $configEmail['subject'] = $user->firstname . ' assigned you in ' . $taskName;
-                $configEmail['screenEmailRef'] = 0; // Define here the screen to use
-
-                // Send Email
-                return (new TaskActionByEmail())->sendAbeEmail($configEmail, $user->email, $data);
+            // Return if email task notification is not enabled or email is empty
+            if (!$user->email_task_notification || empty($user->email)) {
+                return null;
             }
+            // Prepare data for the email
+            $data = $this->prepareEmailData($token, $user);
+
+            // Send Email
+            return (new TaskActionByEmail())->sendAbeEmail($data['configEmail'], $user->email, $data['emailData']);
         } catch (\Exception $e) {
             // Catch and log the error
-            Log::error('Failed to validate and send action by email', [
+            Log::error('Failed to validate and send email task notification', [
                 'error' => $e->getMessage(),
             ]);
         }
+    }
+
+    /**
+     * Prepares the email data and configuration for sending an email notification.
+     *
+     * @param TokenInterface $token The token containing task information.
+     * @param User $user The user for whom the email data is being prepared.
+     * @return array An associative array containing 'emailData' and 'configEmail'.
+     */
+    private function prepareEmailData(TokenInterface $token, User $user)
+    {
+        $taskName = $token->element_name ?? '';
+        // Prepare the email data
+        $emailData = [
+            'firstname' => $user->firstname ?? '',
+            'assigned_by' => '', // You may want to populate this if needed
+            'element_name' => $taskName,
+            'case_title' => '', // Populate this if needed
+            'due_date' => $token->due_at ?? '',
+        ];
+        // Prepare the email configuration
+        $configEmail = [
+            'emailServer' => 0, // Use the default email server
+            'subject' => "{$user->firstname} assigned you in {$taskName}",
+            'screenEmailRef' => 0, // Define here the screen to use
+        ];
+
+        return [
+            'emailData' => $emailData,
+            'configEmail' => $configEmail,
+        ];
     }
 
     /**
