@@ -8,13 +8,13 @@
         @onProcessNavigate="onProcessNavigate"
         v-if="!mobileApp"
       />
-      <process-header
+      <!-- <process-header
         :process="process"
         :hide-header-options="true"
         :icon-wizard-template="createdFromWizardTemplate"
         @goBack="goBack()"
-      />
-      <div
+      /> -->
+      <!-- <div
         id="collapseProcessInfo"
         class="collapse show custom-class"
       >
@@ -31,7 +31,7 @@
             </b-col>
           </b-row>
         </div>
-      </div>
+      </div> -->
     </div>
     
     <create-template-modal
