@@ -1,6 +1,5 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import ProcessBrowser from "./components/ProcessBrowser.vue";
 import DashboardViewer from "./components/DashboardViewer.vue";
 import Process from "../processes-catalogue/components/Process";
 
@@ -8,7 +7,7 @@ Vue.use(VueRouter);
 
 const router = new VueRouter({
   mode: "history",
-  base: "/tasks",
+  base: "/inbox",
   routes: [
     {
       path: "/process/:processId",
