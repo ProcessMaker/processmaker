@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "212a82f8b1ee14ea4a06a5373399e6ab",
+    "content-hash": "c6a0025a9524ac5206a4a6dbac2dd9a9",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -62,16 +62,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.336.10",
+            "version": "3.336.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "bb137145fdbcd4ca121446157d804b9653aff54c"
+                "reference": "a173ab3af8d9186d266e4937d8254597f36a9e15"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/bb137145fdbcd4ca121446157d804b9653aff54c",
-                "reference": "bb137145fdbcd4ca121446157d804b9653aff54c",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/a173ab3af8d9186d266e4937d8254597f36a9e15",
+                "reference": "a173ab3af8d9186d266e4937d8254597f36a9e15",
                 "shasum": ""
             },
             "require": {
@@ -154,9 +154,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.336.10"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.336.12"
             },
-            "time": "2025-01-07T19:05:48+00:00"
+            "time": "2025-01-09T19:04:34+00:00"
         },
         {
             "name": "babenkoivan/elastic-adapter",
@@ -5441,20 +5441,20 @@
         },
         {
             "name": "microsoft/microsoft-graph",
-            "version": "v2.22.0",
+            "version": "v2.23.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/microsoftgraph/msgraph-sdk-php.git",
-                "reference": "3bd2bd8476b45913c484382f66d862ea204290d9"
+                "reference": "052824c41af8a4affc7178ae1ba1e4ed37e92e10"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/microsoftgraph/msgraph-sdk-php/zipball/3bd2bd8476b45913c484382f66d862ea204290d9",
-                "reference": "3bd2bd8476b45913c484382f66d862ea204290d9",
+                "url": "https://api.github.com/repos/microsoftgraph/msgraph-sdk-php/zipball/052824c41af8a4affc7178ae1ba1e4ed37e92e10",
+                "reference": "052824c41af8a4affc7178ae1ba1e4ed37e92e10",
                 "shasum": ""
             },
             "require": {
-                "microsoft/microsoft-graph-core": "^2.1.1",
+                "microsoft/microsoft-graph-core": "^2.2.1",
                 "php": "^8.0 || ^7.4"
             },
             "require-dev": {
@@ -5482,22 +5482,22 @@
             "homepage": "https://developer.microsoft.com/en-us/graph",
             "support": {
                 "issues": "https://github.com/microsoftgraph/msgraph-sdk-php/issues",
-                "source": "https://github.com/microsoftgraph/msgraph-sdk-php/tree/v2.22.0"
+                "source": "https://github.com/microsoftgraph/msgraph-sdk-php/tree/v2.23.0"
             },
-            "time": "2025-01-02T10:33:11+00:00"
+            "time": "2025-01-08T14:47:50+00:00"
         },
         {
             "name": "microsoft/microsoft-graph-core",
-            "version": "v2.2.0",
+            "version": "v2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/microsoftgraph/msgraph-sdk-php-core.git",
-                "reference": "3c421b1d6913e6236deafad6d0aeebe32e1c729f"
+                "reference": "7662774bf351a6e6c55c9c7577d58c45f975b195"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/microsoftgraph/msgraph-sdk-php-core/zipball/3c421b1d6913e6236deafad6d0aeebe32e1c729f",
-                "reference": "3c421b1d6913e6236deafad6d0aeebe32e1c729f",
+                "url": "https://api.github.com/repos/microsoftgraph/msgraph-sdk-php-core/zipball/7662774bf351a6e6c55c9c7577d58c45f975b195",
+                "reference": "7662774bf351a6e6c55c9c7577d58c45f975b195",
                 "shasum": ""
             },
             "require": {
@@ -5536,9 +5536,9 @@
             "homepage": "https://developer.microsoft.com/en-us/graph",
             "support": {
                 "issues": "https://github.com/microsoftgraph/msgraph-sdk-php-core/issues",
-                "source": "https://github.com/microsoftgraph/msgraph-sdk-php-core/tree/v2.2.0"
+                "source": "https://github.com/microsoftgraph/msgraph-sdk-php-core/tree/v2.2.1"
             },
-            "time": "2024-06-24T15:18:39+00:00"
+            "time": "2025-01-08T14:11:32+00:00"
         },
         {
             "name": "mittwald/vault-php",
@@ -5933,12 +5933,12 @@
             "version": "3.8.4",
             "source": {
                 "type": "git",
-                "url": "https://github.com/briannesbitt/Carbon.git",
+                "url": "https://github.com/CarbonPHP/carbon.git",
                 "reference": "129700ed449b1f02d70272d2ac802357c8c30c58"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/129700ed449b1f02d70272d2ac802357c8c30c58",
+                "url": "https://api.github.com/repos/CarbonPHP/carbon/zipball/129700ed449b1f02d70272d2ac802357c8c30c58",
                 "reference": "129700ed449b1f02d70272d2ac802357c8c30c58",
                 "shasum": ""
             },
@@ -6473,16 +6473,16 @@
         },
         {
             "name": "open-telemetry/api",
-            "version": "1.1.2",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/opentelemetry-php/api.git",
-                "reference": "04c85a1e41a3d59fa9bdc801a5de1df6624b95ed"
+                "reference": "351a30baa79699de3de3a814c8ccc7b52ccdfb1d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opentelemetry-php/api/zipball/04c85a1e41a3d59fa9bdc801a5de1df6624b95ed",
-                "reference": "04c85a1e41a3d59fa9bdc801a5de1df6624b95ed",
+                "url": "https://api.github.com/repos/opentelemetry-php/api/zipball/351a30baa79699de3de3a814c8ccc7b52ccdfb1d",
+                "reference": "351a30baa79699de3de3a814c8ccc7b52ccdfb1d",
                 "shasum": ""
             },
             "require": {
@@ -6539,7 +6539,7 @@
                 "issues": "https://github.com/open-telemetry/opentelemetry-php/issues",
                 "source": "https://github.com/open-telemetry/opentelemetry-php"
             },
-            "time": "2024-11-16T04:32:30+00:00"
+            "time": "2025-01-08T23:50:34+00:00"
         },
         {
             "name": "open-telemetry/context",
@@ -6602,16 +6602,16 @@
         },
         {
             "name": "open-telemetry/sdk",
-            "version": "1.1.2",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/opentelemetry-php/sdk.git",
-                "reference": "fb0ff8d8279a3776bd604791e2531dd0cc147e8b"
+                "reference": "9a1c3b866239dbff291e5cc555bb7793eab08127"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opentelemetry-php/sdk/zipball/fb0ff8d8279a3776bd604791e2531dd0cc147e8b",
-                "reference": "fb0ff8d8279a3776bd604791e2531dd0cc147e8b",
+                "url": "https://api.github.com/repos/opentelemetry-php/sdk/zipball/9a1c3b866239dbff291e5cc555bb7793eab08127",
+                "reference": "9a1c3b866239dbff291e5cc555bb7793eab08127",
                 "shasum": ""
             },
             "require": {
@@ -6688,7 +6688,7 @@
                 "issues": "https://github.com/open-telemetry/opentelemetry-php/issues",
                 "source": "https://github.com/open-telemetry/opentelemetry-php"
             },
-            "time": "2024-10-18T21:01:35+00:00"
+            "time": "2025-01-08T23:50:34+00:00"
         },
         {
             "name": "open-telemetry/sem-conv",
@@ -13147,16 +13147,16 @@
         },
         {
             "name": "twilio/sdk",
-            "version": "8.3.9",
+            "version": "8.3.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twilio/twilio-php.git",
-                "reference": "b8a79247ad00daed6f823328a052293d498fac36"
+                "reference": "253c4ec575b65a1510c91cc4cc4c9d6bfe845619"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/b8a79247ad00daed6f823328a052293d498fac36",
-                "reference": "b8a79247ad00daed6f823328a052293d498fac36",
+                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/253c4ec575b65a1510c91cc4cc4c9d6bfe845619",
+                "reference": "253c4ec575b65a1510c91cc4cc4c9d6bfe845619",
                 "shasum": ""
             },
             "require": {
@@ -13194,9 +13194,9 @@
             ],
             "support": {
                 "issues": "https://github.com/twilio/twilio-php/issues",
-                "source": "https://github.com/twilio/twilio-php/tree/8.3.9"
+                "source": "https://github.com/twilio/twilio-php/tree/8.3.11"
             },
-            "time": "2024-12-05T10:18:30+00:00"
+            "time": "2025-01-10T08:56:17+00:00"
         },
         {
             "name": "typo3/class-alias-loader",
@@ -16623,7 +16623,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.2"
+        "php": "^8.3"
     },
     "platform-dev": {},
     "plugin-api-version": "2.6.0"
