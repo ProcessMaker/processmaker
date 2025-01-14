@@ -59,6 +59,13 @@ class ScriptExecutor extends ProcessMakerModel
         'title', 'description', 'language', 'config', 'is_system',
     ];
 
+    // Lua and R are deprecated. This scope can be removed
+    // when they are removed permanently.
+    public function scopeActive($query)
+    {
+        return $query->whereNotIn('language', Script::deprecatedLanguages);
+    }
+
     public static function install($params)
     {
         $language = $params['language'];
@@ -153,7 +160,7 @@ class ScriptExecutor extends ProcessMakerModel
     {
         $list = [];
         $executors =
-            self::where('is_system', false)->orderBy('language', 'asc')
+            self::active()->where('is_system', false)->orderBy('language', 'asc')
             ->orderBy('created_at', 'asc');
 
         if ($language) {

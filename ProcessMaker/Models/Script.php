@@ -73,6 +73,8 @@ class Script extends ProcessMakerModel implements ScriptInterface
 
     const categoryClass = ScriptCategory::class;
 
+    const deprecatedLanguages = ['lua', 'r'];
+
     protected $connection = 'processmaker';
 
     protected $guarded = [
