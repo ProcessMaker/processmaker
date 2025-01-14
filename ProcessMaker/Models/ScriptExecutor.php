@@ -147,11 +147,19 @@ class ScriptExecutor extends ProcessMakerModel
 
     public static function rules($existing = null)
     {
+        if ($existing) {
+            $allowedLanguages = Script::scriptFormatValues();
+        } else {
+            $allowedLanguages = array_filter(Script::scriptFormatValues(), function ($language) {
+                return !in_array($language, Script::deprecatedLanguages);
+            });
+        }
+
         return [
             'title' => 'required',
             'language' => [
                 'required',
-                Rule::in(Script::scriptFormatValues()),
+                Rule::in($allowedLanguages),
             ],
         ];
     }

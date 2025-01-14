@@ -130,14 +130,27 @@ class Script extends ProcessMakerModel implements ScriptInterface
     {
         $unique = Rule::unique('scripts')->ignore($existing);
 
+        if ($existing) {
+            $allowedLanguages = static::scriptFormatValues();
+            $allowedExecutorIds = ScriptExecutor::all()->pluck('id')->toArray();
+        } else {
+            $allowedLanguages = array_filter(static::scriptFormatValues(), function ($language) {
+                return !in_array($language, Script::deprecatedLanguages);
+            });
+            $allowedExecutorIds = ScriptExecutor::active()->pluck('id')->toArray();
+        }
+
         return [
             'key' => 'unique:scripts,key',
             'title' => ['required', 'string', $unique, 'alpha_spaces'],
             'language' => [
                 'required_without:script_executor_id',
-                Rule::in(static::scriptFormatValues()),
+                Rule::in($allowedLanguages),
             ],
-            'script_executor_id' => 'required_without:language|exists:script_executors,id',
+            'script_executor_id' => [
+                'required_without:language',
+                Rule::in($allowedExecutorIds),
+            ],
             'description' => 'required',
             'run_as_user_id' => 'required',
             'timeout' => 'integer|min:0|max:65535',
