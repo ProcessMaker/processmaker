@@ -29,6 +29,7 @@ use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\Bookmark;
 use ProcessMaker\Models\Embed;
 use ProcessMaker\Models\Group;
+use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessLaunchpad;
 use ProcessMaker\Models\ProcessPermission;
@@ -1636,14 +1637,14 @@ class ProcessController extends Controller
         $response = false;
         if (isset($group)) {
             try {
-                $responseUsers = (new GroupController(new Group()))->users($group, $request);
-                $users = $responseUsers->all();
+                $queryResponse = GroupMember::query()
+                ->where('group_id', $group->id)
+                ->where('member_id', $currentUser)
+                ->first();
 
-                foreach ($users as $user) {
-                    if ($user->resource->member_id === $currentUser) {
-                        $response = true;
-                    }
-                }
+                $response = $queryResponse ? true : false;
+
+                return $response;
             } catch (\Exception $error) {
                 return ['error' => $error->getMessage()];
             }
