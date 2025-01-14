@@ -340,7 +340,7 @@
             "fieldConfig": {
                 "defaults": {
                     "color": {
-                        "mode": "continuous-blues"
+                        "mode": "palette-classic"
                     },
                     "custom": {
                         "axisBorderShow": false,
@@ -439,7 +439,7 @@
             "fieldConfig": {
                 "defaults": {
                     "color": {
-                        "mode": "thresholds"
+                        "mode": "palette-classic"
                     },
                     "fieldMinMax": false,
                     "mappings": [],
@@ -467,6 +467,92 @@
                 "x": 0,
                 "y": 16
             },
+            "id": 6,
+            "interval": "15s",
+            "options": {
+                "displayMode": "gradient",
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": false
+                },
+                "maxVizHeight": 300,
+                "minVizHeight": 16,
+                "minVizWidth": 8,
+                "namePlacement": "auto",
+                "orientation": "horizontal",
+                "reduceOptions": {
+                    "calcs": [],
+                    "fields": "",
+                    "values": false
+                },
+                "showUnfilled": true,
+                "sizing": "auto",
+                "valueMode": "color"
+            },
+            "pluginVersion": "11.4.0",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "${DS_PROMETHEUS-PM-SPRING-2025}"
+                    },
+                    "disableTextWrap": false,
+                    "editorMode": "code",
+                    "exemplar": false,
+                    "expr": "avg without(activity_id) (processmaker_activity_execution_time_seconds_sum{element_type=\"task\"})",
+                    "format": "time_series",
+                    "fullMetaSearch": false,
+                    "includeNullMetadata": true,
+                    "instant": false,
+                    "interval": "",
+                    "legendFormat": "{{activity_name}} (process={{process_id}})",
+                    "range": true,
+                    "refId": "A",
+                    "useBackend": false
+                }
+            ],
+            "title": "Task Execution Time",
+            "type": "bargauge"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS-PM-SPRING-2025}"
+            },
+            "description": "Top Slowest Tasks",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "fieldMinMax": false,
+                    "mappings": [],
+                    "min": 0,
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "ms"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 16
+            },
             "id": 5,
             "interval": "15s",
             "options": {
@@ -492,7 +578,7 @@
                     "disableTextWrap": false,
                     "editorMode": "code",
                     "exemplar": false,
-                    "expr": "topk(5, avg(processmaker_activity_execution_time_seconds_sum{element_type=\"task\"}) by (process_id, activity_name))",
+                    "expr": "topk(10, avg(processmaker_activity_execution_time_seconds_sum{element_type=\"task\"}) by (process_id, activity_name))",
                     "format": "time_series",
                     "fullMetaSearch": false,
                     "includeNullMetadata": true,
@@ -504,7 +590,7 @@
                     "useBackend": false
                 }
             ],
-            "title": "Task Execution Time",
+            "title": "Top Slowest Tasks",
             "type": "gauge"
         }
     ],
@@ -514,13 +600,13 @@
         "list": []
     },
     "time": {
-        "from": "now-3h",
+        "from": "now-24h",
         "to": "now"
     },
     "timepicker": {},
     "timezone": "browser",
     "title": "ProcessMaker Dashboard",
     "uid": "be96wxsnlmn7kc",
-    "version": 29,
+    "version": 35,
     "weekStart": ""
 }
