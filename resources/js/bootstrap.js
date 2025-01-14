@@ -373,11 +373,16 @@ if (userID) {
   });
 
   // Restart the timeout worker (when the user interacts with the page)
-  document.addEventListener("click", () => {
-    window.ProcessMaker.AccountTimeoutWorker.postMessage({
-      method: "restart",
+  const eventsTimeoutWorker = ["click", "keypress"];
+
+  eventsTimeoutWorker.forEach((event) => {
+    document.addEventListener(event, () => {
+      window.ProcessMaker.AccountTimeoutWorker.postMessage({
+        method: "restart",
+      });
     });
   });
+
   // End -> Restart the timeout worker (when the user interacts with the page)
 
   const isSameDevice = (e) => {
