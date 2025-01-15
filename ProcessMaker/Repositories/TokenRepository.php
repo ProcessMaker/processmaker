@@ -12,9 +12,11 @@ use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\FeelExpressionEvaluator;
 use ProcessMaker\Models\ProcessAbeRequestToken;
 use ProcessMaker\Models\ProcessCollaboration;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessRequestToken as Token;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\Collection;
 use ProcessMaker\Nayra\Bpmn\Models\EndEvent;
@@ -264,20 +266,25 @@ class TokenRepository implements TokenRepositoryInterface
      */
     private function prepareEmailData(TokenInterface $token, User $user)
     {
-        $taskName = $token->element_name ?? '';
+        // Get the case
+        $caseTitle = ProcessRequest::where('id', $token->process_request_id)->value('case_title');
         // Prepare the email data
+        $taskName = $token->element_name ?? '';
         $emailData = [
             'firstname' => $user->firstname ?? '',
-            'assigned_by' => '', // You may want to populate this if needed
+            'assigned_by' => Auth::user()->fullname ?? '',
             'element_name' => $taskName,
-            'case_title' => '', // Populate this if needed
+            'case_title' => $caseTitle, // Populate this if needed
             'due_date' => $token->due_at ?? '',
+            'imgHeader' => config('app.url') . '/img/processmaker-login.svg',
         ];
+        // Get the screen
+        $screen = Screen::where('title', 'Default Email Task Notification')->first();
         // Prepare the email configuration
         $configEmail = [
             'emailServer' => 0, // Use the default email server
             'subject' => "{$user->firstname} assigned you in {$taskName}",
-            'screenEmailRef' => 0, // Define here the screen to use
+            'screenEmailRef' => $screen->id ?? 0, // Define here the screen to use
         ];
 
         return [
