@@ -610,6 +610,82 @@
                 "type": "prometheus",
                 "uid": "${DS_PROMETHEUS-PM-SPRING-2025}"
             },
+            "description": "Shows task completion distribution by activity and process to highlight execution patterns and identify key task volumes.",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        }
+                    },
+                    "fieldMinMax": false,
+                    "mappings": []
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 24
+            },
+            "id": 8,
+            "interval": "30m",
+            "options": {
+                "displayLabels": [
+                    "percent"
+                ],
+                "legend": {
+                    "displayMode": "list",
+                    "placement": "right",
+                    "showLegend": true
+                },
+                "pieType": "pie",
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "pluginVersion": "11.4.0",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "${DS_PROMETHEUS-PM-SPRING-2025}"
+                    },
+                    "disableTextWrap": false,
+                    "editorMode": "code",
+                    "exemplar": false,
+                    "expr": "sum(processmaker_activity_completed_total) by (activity_name, process_id)",
+                    "fullMetaSearch": false,
+                    "includeNullMetadata": true,
+                    "instant": false,
+                    "legendFormat": "{{activity_name}} (process={{process_id}})",
+                    "range": true,
+                    "refId": "A",
+                    "useBackend": false
+                }
+            ],
+            "title": "Completion Count by Task and Process",
+            "type": "piechart"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS-PM-SPRING-2025}"
+            },
             "description": "Average task time completition",
             "fieldConfig": {
                 "defaults": {
@@ -720,82 +796,6 @@
             ],
             "title": "Average Task Completion Time chart",
             "type": "timeseries"
-        },
-        {
-            "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS-PM-SPRING-2025}"
-            },
-            "description": "Shows task completion distribution by activity and process to highlight execution patterns and identify key task volumes.",
-            "fieldConfig": {
-                "defaults": {
-                    "color": {
-                        "mode": "palette-classic"
-                    },
-                    "custom": {
-                        "hideFrom": {
-                            "legend": false,
-                            "tooltip": false,
-                            "viz": false
-                        }
-                    },
-                    "fieldMinMax": false,
-                    "mappings": []
-                },
-                "overrides": []
-            },
-            "gridPos": {
-                "h": 8,
-                "w": 12,
-                "x": 12,
-                "y": 24
-            },
-            "id": 8,
-            "interval": "30m",
-            "options": {
-                "displayLabels": [
-                    "percent"
-                ],
-                "legend": {
-                    "displayMode": "list",
-                    "placement": "right",
-                    "showLegend": true
-                },
-                "pieType": "pie",
-                "reduceOptions": {
-                    "calcs": [
-                        "lastNotNull"
-                    ],
-                    "fields": "",
-                    "values": false
-                },
-                "tooltip": {
-                    "mode": "single",
-                    "sort": "none"
-                }
-            },
-            "pluginVersion": "11.4.0",
-            "targets": [
-                {
-                    "datasource": {
-                        "type": "prometheus",
-                        "uid": "${DS_PROMETHEUS-PM-SPRING-2025}"
-                    },
-                    "disableTextWrap": false,
-                    "editorMode": "code",
-                    "exemplar": false,
-                    "expr": "sum(processmaker_activity_completed_total) by (activity_name, process_id)",
-                    "fullMetaSearch": false,
-                    "includeNullMetadata": true,
-                    "instant": false,
-                    "legendFormat": "{{activity_name}} (process={{process_id}})",
-                    "range": true,
-                    "refId": "A",
-                    "useBackend": false
-                }
-            ],
-            "title": "Completion Count by Task and Process",
-            "type": "piechart"
         }
     ],
     "schemaVersion": 40,
