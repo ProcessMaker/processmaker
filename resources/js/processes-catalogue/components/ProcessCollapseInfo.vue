@@ -3,32 +3,37 @@
     <div id="processData">
       <process-header-start
         :process="process"
+        :ellipsis-permission="ellipsisPermission"
+        :show-process-info="showProcessInfo"
         @goBack="goBack()"
         @onProcessNavigate="onProcessNavigate"
+        @toggle-info="toggleInfo"
         v-if="!mobileApp"
       />
-      <process-header
-        :process="process"
-        :hide-header-options="true"
-        :icon-wizard-template="createdFromWizardTemplate"
-        @goBack="goBack()"
-      />
-      <div
-        id="collapseProcessInfo"
-        class="collapse show custom-class"
-      >
-        <div class="info-collapse">
-          <b-row>
-            <b-col class="process-carousel col-12">
-              <processes-carousel
-                :process="process"
-                :full-carousel="{ url: null, hideLaunchpad: false }"
-              />
-            </b-col>
-            <b-col class="process-options col-12">
-              <process-options :process="process" />
-            </b-col>
-          </b-row>
+      <div v-if="showProcessInfo">
+        <process-header
+          :process="process"
+          :hide-header-options="true"
+          :icon-wizard-template="createdFromWizardTemplate"
+          @goBack="goBack()"
+        /> 
+         <div
+          id="collapseProcessInfo"
+          class="collapse show custom-class"
+        >
+          <div class="info-collapse">
+            <b-row>
+              <b-col class="process-carousel col-12">
+                <processes-carousel
+                  :process="process"
+                  :full-carousel="{ url: null, hideLaunchpad: false }"
+                />
+              </b-col>
+              <b-col class="process-options col-12">
+                <process-options :process="process" />
+              </b-col>
+            </b-row>
+          </div>
         </div>
       </div>
     </div>
@@ -92,7 +97,7 @@ export default {
     ProcessHeaderStart,
   },
   mixins: [ProcessesMixin, ellipsisMenuMixin, processNavigationMixin],
-  props: ["process", "currentUserId"],
+  props: ["process", "currentUserId", "ellipsisPermission"],
   computed: {
     createdFromWizardTemplate() {
       return !!this.process?.properties?.wizardTemplateUuid;
@@ -109,7 +114,8 @@ export default {
   },
   data() {
     return {
-      mobileApp: window.ProcessMaker.mobileApp
+      mobileApp: window.ProcessMaker.mobileApp,
+      showProcessInfo: false,
     };
   },
   methods: {
@@ -129,6 +135,9 @@ export default {
     },
     getHelperProcess() {
       this.$refs.wizardHelperProcessModal.getHelperProcessStartEvent();
+    },
+    toggleInfo() {
+      this.showProcessInfo = !this.showProcessInfo;
     },
   },
 };

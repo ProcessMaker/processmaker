@@ -1,10 +1,10 @@
 @font-face {font-family: "processmaker-font";
-  src: url('processmaker-font.eot?t=1730322668195'); /* IE9*/
-  src: url('processmaker-font.eot?t=1730322668195#iefix') format('embedded-opentype'), /* IE6-IE8 */
-  url("processmaker-font.woff2?t=1730322668195") format("woff2"),
-  url("processmaker-font.woff?t=1730322668195") format("woff"),
-  url('processmaker-font.ttf?t=1730322668195') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
-  url('processmaker-font.svg?t=1730322668195#processmaker-font') format('svg'); /* iOS 4.1- */
+  src: url('processmaker-font.eot?t=1736427523749'); /* IE9*/
+  src: url('processmaker-font.eot?t=1736427523749#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url("processmaker-font.woff2?t=1736427523749") format("woff2"),
+  url("processmaker-font.woff?t=1736427523749") format("woff"),
+  url('processmaker-font.ttf?t=1736427523749') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+  url('processmaker-font.svg?t=1736427523749#processmaker-font') format('svg'); /* iOS 4.1- */
 }
 
 [class^="fp-"], [class*=" fp-"] {
@@ -53,8 +53,9 @@
 .fp-slack:before { content: "\ea25"; }
 .fp-slideshow:before { content: "\ea26"; }
 .fp-table:before { content: "\ea27"; }
-.fp-trash:before { content: "\ea28"; }
-.fp-unlink:before { content: "\ea29"; }
+.fp-tachometer-alt-average:before { content: "\ea28"; }
+.fp-trash:before { content: "\ea29"; }
+.fp-unlink:before { content: "\ea2a"; }
 
 $fp-bpmn-action-by-email: "\ea01";
 $fp-bpmn-data-connector: "\ea02";
@@ -95,6 +96,7 @@ $fp-slack-notification: "\ea24";
 $fp-slack: "\ea25";
 $fp-slideshow: "\ea26";
 $fp-table: "\ea27";
-$fp-trash: "\ea28";
-$fp-unlink: "\ea29";
+$fp-tachometer-alt-average: "\ea28";
+$fp-trash: "\ea29";
+$fp-unlink: "\ea2a";
 

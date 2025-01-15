@@ -44,6 +44,8 @@ class TaskController extends Controller
     {
         $title = 'To Do Tasks';
 
+        $showOldTaskScreen = Request::path() !== 'inbox';
+
         if (Request::input('status') == 'CLOSED') {
             $title = 'Completed Tasks';
         }
@@ -58,7 +60,9 @@ class TaskController extends Controller
 
         $taskDraftsEnabled = TaskDraft::draftsEnabled();
 
-        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns', 'taskDraftsEnabled'));
+        $userConfiguration = (new UserConfigurationController())->index()['ui_configuration'] ?? [];
+
+        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns', 'taskDraftsEnabled', 'userConfiguration', 'showOldTaskScreen'));
     }
 
     public function edit(ProcessRequestToken $task, string $preview = '')
