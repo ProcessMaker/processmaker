@@ -82,6 +82,7 @@
     <BundleConfigurations
       :configurations="platformConfigurations"
       :values="bundle.settings"
+      :disabled="bundle.dev_link_id !== null"
       @config-change="handleConfigChange"
       title="Platform Configurations"
     />
@@ -89,6 +90,7 @@
     <BundleConfigurations
       :configurations="settings"
       :values="bundle.settings"
+      :disabled="bundle.dev_link_id !== null"
       @config-change="handleConfigChange"
       title="Settings"
       type="settings"

@@ -142,10 +142,13 @@ class DevLink extends ProcessMakerModel
         $bundleExport = $this->client()->get(
             route('api.devlink.export-local-bundle', ['bundle' => $remoteBundleId], false)
         )->json();
-        dd($bundleExport);
 
         $bundleSettingsExport = $this->client()->get(
             route('api.devlink.export-local-bundle-settings', ['bundle' => $remoteBundleId], false)
+        )->json();
+
+        $bundleSettingsPayloads = $this->client()->get(
+            route('api.devlink.export-local-bundle-setting-payloads', ['bundle' => $remoteBundleId], false)
         )->json();
 
         $bundle = Bundle::updateOrCreate(
@@ -161,7 +164,9 @@ class DevLink extends ProcessMakerModel
         );
 
         $bundle->install($bundleExport['payloads'], $updateType, $this->logger);
+        $bundle->installSettingsPayloads($bundleSettingsPayloads['payloads'][0], $updateType, $this->logger);
         $bundle->installSettings($bundleSettingsExport['settings']);
+
         $this->logger->setStatus('done');
     }
 

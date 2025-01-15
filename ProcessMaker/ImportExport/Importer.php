@@ -36,7 +36,7 @@ class Importer
 
     public function loadManifest()
     {
-        return Manifest::fromArray($this->payload['export'], $this->options, $this->logger);
+        return Manifest::fromArray($this->payload['export'], $this->options, $this->logger, $this->payload['root']);
     }
 
     public function doImport($existingAssetInDatabase = null, $importingFromTemplate = false)
@@ -50,6 +50,7 @@ class Importer
             $this->logger->log("Importing {$count} assets");
             foreach ($this->manifest->all() as $uuid => $exporter) {
                 $this->logger->setStatus('saving', $uuid);
+                \Log::info('Importing ' . get_class($exporter->model), ['mode' => $exporter->mode]);
                 if ($exporter->mode !== 'discard') {
                     $this->logger->log('Importing ' . get_class($exporter->model));
                     if ($exporter->disableEventsWhenImporting) {

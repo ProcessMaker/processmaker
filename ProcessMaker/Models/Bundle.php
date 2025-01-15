@@ -9,6 +9,7 @@ use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Logger;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\ProcessMakerModel;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\SettingsMenus;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -80,6 +81,17 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
     public function exportSettings()
     {
+        $exports = [];
+
+        foreach ($this->settings as $setting) {
+            $exports[] = $setting;
+        }
+
+        return $exports;
+    }
+
+    public function exportSettingPayloads()
+    {
         return $this->settings()->get()->map(function ($setting) {
             return $setting->export();
         });
@@ -142,6 +154,11 @@ class Bundle extends ProcessMakerModel implements HasMedia
     public function addSettings($setting, $newId, $type = null)
     {
         $existingSetting = $this->settings()->where('setting', $setting)->first();
+        // verify if newId is a json with id key
+        $decodedNewId = json_decode($newId, true);
+        if (json_last_error() === JSON_ERROR_NONE && isset($decodedNewId['id'])) {
+            $newId = $decodedNewId['id'];
+        }
 
         if ($existingSetting) {
             // If the config is null, do not add the new ID
@@ -169,24 +186,36 @@ class Bundle extends ProcessMakerModel implements HasMedia
             ]);
         } else {
             // Create a new BundleSetting with the initial ID
-            $config = ['id' => []];
-            if ($newId && $type !== 'settings') {
-                $config['id'][] = $newId;
-            }
-
-            if ($type) {
-                $settingsMenu = SettingsMenus::where('menu_group', $setting)->first();
-                if ($settingsMenu) {
-                    $config['id'][] = $settingsMenu->id;
-                    $config['type'] = $type;
+            if ($newId === null && $type === null) {
+                BundleSetting::create([
+                    'bundle_id' => $this->id,
+                    'setting' => $setting,
+                    'config' => null,
+                ]);
+            } else {
+                $config = ['id' => []];
+                if ($newId && $type !== 'settings') {
+                    $config['id'][] = $newId;
                 }
-            }
 
-            BundleSetting::create([
-                'bundle_id' => $this->id,
-                'setting' => $setting,
-                'config' => json_encode($config),
-            ]);
+                if ($type === 'settings') {
+                    $settingsMenu = SettingsMenus::where('menu_group', $setting)->first();
+                    $settingsKeys = Setting::where([
+                        ['group_id', '=', $settingsMenu->id],
+                        ['hidden', '=', false],
+                    ])->pluck('key')->toArray();
+                    if ($settingsMenu) {
+                        $config['id'] = $settingsKeys;
+                        $config['type'] = $type;
+                    }
+                }
+
+                BundleSetting::create([
+                    'bundle_id' => $this->id,
+                    'setting' => $setting,
+                    'config' => json_encode($config),
+                ]);
+            }
         }
     }
 
@@ -271,6 +300,57 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
         foreach ($settings as $setting) {
             $this->addSettings($setting['setting'], $setting['config']);
+        }
+    }
+
+    public function installSettingsPayloads(array $payloads, $mode, $logger = null)
+    {
+        $options = new Options([
+            'mode' => $mode,
+        ]);
+        $clientRepository = app('Laravel\Passport\ClientRepository');
+
+        $assets = [];
+        foreach ($payloads as $payload) {
+            if (isset($payload['export'])) {
+                $logger->status('Installing bundle settings on the this instance');
+                $logger->setSteps($payloads);
+                $assets[] = DevLink::import($payload, $options, $logger);
+            } else {
+                switch ($payload['setting_type']) {
+                    case 'auth_clients':
+                        $clientRepository->create(
+                            null,
+                            $payload['name'],
+                            $payload['redirect'],
+                            $payload['provider'],
+                            $payload['personal_access_client'],
+                            $payload['password_client']
+                        );
+                        break;
+                    case 'User Settings':
+                    case 'Email':
+                    case 'Integrations':
+                    case 'Log-In & Auth':
+                        $settingsMenu = SettingsMenus::where('menu_group', $payload['setting_type'])->first();
+                        foreach ($payload['id'] as $key) {
+                            Setting::updateOrCreate([
+                                'key' => $key,
+                            ], [
+                                'config' => $payload['config'],
+                                'name' => $payload['name'],
+                                'helper' => $payload['helper'],
+                                'format' => $payload['format'],
+                                'hidden' => $payload['hidden'],
+                                'read_only' => $payload['read_only'],
+                                'ui' => $payload['ui'],
+                                'group' => $payload['group'],
+                                'group_id' => $settingsMenu->id,
+                            ]);
+                        }
+                        break;
+                }
+            }
         }
     }
 

@@ -16,6 +16,7 @@
           <b-form-checkbox
             :checked="!!isInSettings(config)"
             switch
+            :disabled="props.disabled"
             @change="$emit('config-change', { 
               key: config.type,
               value: $event,
@@ -51,6 +52,11 @@ const props = defineProps({
   type: {
     type: String,
     required: false
+  },
+  disabled: {
+    type: Boolean,
+    required: false,
+    default: false
   }
 });
 

@@ -81,7 +81,7 @@ class Manifest
         return $manifest;
     }
 
-    public static function fromArray(array $array, Options $options, $logger)
+    public static function fromArray(array $array, Options $options, $logger, $root)
     {
         self::$logger = $logger;
 
@@ -95,7 +95,8 @@ class Manifest
             $exporterClass = $assetInfo['exporter'];
             $modeOption = $options->get('mode', $uuid);
             $saveAssetsModeOption = $options->get('saveAssetsMode', $uuid);
-            list($mode, $model, $matchedBy) = self::getModel($uuid, $assetInfo, $modeOption, $exporterClass);
+            $isRoot = $uuid === $root;
+            list($mode, $model, $matchedBy) = self::getModel($uuid, $assetInfo, $modeOption, $exporterClass, $isRoot);
             $model = self::updateBPMNDefinitions($model, $saveAssetsModeOption);
             $exporter = new $exporterClass($model, $manifest, $options, false);
             $exporter->logger = $logger;
@@ -134,7 +135,7 @@ class Manifest
         $this->manifest[$uuid] = $exporter;
     }
 
-    public static function getModel($uuid, $assetInfo, $mode, $exporterClass)
+    public static function getModel($uuid, $assetInfo, $mode, $exporterClass, $isRoot)
     {
         $model = null;
         $class = $assetInfo['model'];
@@ -153,7 +154,7 @@ class Manifest
             }
         }
 
-        if ($exporterClass::doNotImport($uuid, $assetInfo)) {
+        if (!$isRoot && $exporterClass::doNotImport($uuid, $assetInfo)) {
             $mode = 'discard';
         }
 

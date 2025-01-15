@@ -64,7 +64,7 @@ const save = (event) => {
     if (props.setting) {
       const setting = {
         'setting': props.assetType,
-        'config': assetId.value,
+        'config': null,
         'bundles': bundles,
         'type': props.settingType || null
       };

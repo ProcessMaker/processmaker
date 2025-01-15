@@ -208,6 +208,11 @@ class DevLinkController extends Controller
         return ['settings' => $bundle->exportSettings()];
     }
 
+    public function exportLocalBundleSettingPayloads(Bundle $bundle)
+    {
+        return ['payloads' => $bundle->exportSettingPayloads()];
+    }
+
     public function exportLocalAsset(Request $request)
     {
         $asset = $request->input('class')::findOrFail($request->input('id'));
