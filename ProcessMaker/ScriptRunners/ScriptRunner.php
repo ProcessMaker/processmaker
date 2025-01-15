@@ -50,7 +50,6 @@ class ScriptRunner
      */
     private function getScriptRunner(ScriptExecutor $executor): Base|ScriptMicroserviceRunner
     {
-        // Todo compare if executor is custom $executor->type = 'custom'
         if (!config('script-runner-microservice.enabled') || $executor->type === ScriptExecutorType::Custom) {
             $language = strtolower($executor->language);
             $runner = config("script-runners.{$language}.runner");

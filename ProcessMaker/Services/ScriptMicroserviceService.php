@@ -9,6 +9,7 @@ use ProcessMaker\Jobs\CompleteActivity;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 
 class ScriptMicroserviceService
@@ -31,11 +32,14 @@ class ScriptMicroserviceService
                 null,
                 $response['metadata']['nonce']));
         }
-        if (!empty($response['metadata']['script_task']) && $response['status'] === 'success') {
+        if (!empty($response['metadata']['script_task'])) {
+            $script = Script::find($response['metadata']['script_task']['script_id']);
             $definitions = Definitions::find($response['metadata']['script_task']['definition_id']);
             $instance = ProcessRequest::find($response['metadata']['script_task']['instance_id']);
             $token = ProcessRequestToken::find($response['metadata']['script_task']['token_id']);
-            CompleteActivity::dispatch($definitions, $instance, $token, $response['output'])->onQueue('bpmn');
+            if ($response['status'] === 'success') {
+                CompleteActivity::dispatch($definitions, $instance, $token, $response['output'])->onQueue('bpmn');
+            }
         }
     }
 }
