@@ -3,6 +3,7 @@
     <screen-select
       v-if="allowInterstitial"
       v-model="screen"
+      name="interstitialScreen"
       :label="$t('Screen Interstitial')"
       :required="true"
       :helper="$t('What Screen Should Be Used For Rendering This Interstitial')"

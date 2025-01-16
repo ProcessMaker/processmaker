@@ -18,6 +18,7 @@
       track-by="id"
       @open="load()"
       @search-change="load"
+      :name="name"
     >
       <template slot="noResult">
         {{ $t("No elements found. Consider changing the search query.") }}
@@ -72,6 +73,7 @@ export default {
     "required",
     "placeholder",
     "defaultKey",
+    "name",
   ],
   data() {
     return {
