@@ -6,6 +6,7 @@
     <Badge
       v-for="(item, index) in data"
       :key="item.fieldName"
+      :id="`badge-${item.fieldName.replace(/\s+/g, '-')}`"
       class="tw-text-xs tw-bg-gray-100"
       color="gray">
       <span>

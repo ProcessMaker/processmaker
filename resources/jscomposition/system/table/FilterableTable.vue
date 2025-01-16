@@ -9,6 +9,7 @@
       v-for="(column, index) in columns"
       #[`theader-filter-${column.field}`]>
       <FilterColumn
+        :id="column.field"
         v-if="column.filter"
         :key="`default-${index}-${hasFilter(index,column)}`"
         :filter="column.filter"
