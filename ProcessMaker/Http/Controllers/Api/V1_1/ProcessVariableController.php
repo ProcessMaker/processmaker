@@ -230,7 +230,7 @@ class ProcessVariableController extends Controller
         }
 
         // Paginate the query result directly
-        return $query->select(
+        $query->select(
             'vfv.id',
             'pv.process_id',
             'vfv.data_type AS format',
@@ -239,7 +239,23 @@ class ProcessVariableController extends Controller
             DB::raw('NULL AS `default`'),
             'vfv.created_at',
             'vfv.updated_at',
-        )->paginate($perPage, ['*'], 'page', $page);
+        );
+
+        // Return the paginated result
+        $paginator = $query->paginate($perPage, ['*'], 'page', $page);
+
+        if ($request->has('onlyAvailable')) {
+            // Get the available columns from the saved search
+            $availableColumns = $savedSearch->available_columns;
+            // Merge the available columns with the paginated items
+            $availableColumns = $availableColumns->merge($paginator->items());
+            // Set the collection to the merged collection
+            $paginator->setCollection($availableColumns);
+
+            return $paginator;
+        }
+
+        return $query->paginate($perPage, ['*'], 'page', $page);
     }
 
     /**
