@@ -1634,36 +1634,37 @@ class ProcessController extends Controller
     {
         $currentUser = Auth::user()->id;
         $group = Group::find($groupId);
-        $response = false;
-        if (isset($group)) {
-            try {
-                $queryResponse = GroupMember::query()
-                ->where('group_id', $group->id)
-                ->where('member_id', $currentUser)
-                ->first();
 
-                $response = $queryResponse ? true : false;
-
-                return $response;
-            } catch (\Exception $error) {
-                return ['error' => $error->getMessage()];
-            }
-
-            try {
-                $responseGroups = (new GroupController(new Group()))->groups($group, $request);
-                $groups = $responseGroups->all();
-
-                foreach ($groups as $group) {
-                    if ($this->checkUsersGroup($group->resource->member_id, $request)) {
-                        $response = true;
-                    }
-                }
-            } catch (\Exception $error) {
-                return ['error' => $error->getMessage()];
-            }
+        // If the group does not exist return false
+        if (!$group) {
+            return false;
         }
 
-        return $response;
+        try {
+            // Check is the user is group member
+            $isMember = GroupMember::where('group_id', $group->id)
+                ->where('member_id', $currentUser)
+                ->exists();
+
+            if ($isMember) {
+                return true;
+            }
+
+            // Get other groups
+            $responseGroups = (new GroupController(new Group()))->groups($group, $request);
+            $groups = $responseGroups->all();
+
+            // Check Groups
+            foreach ($groups as $nestedGroup) {
+                if ($this->checkUsersGroup($nestedGroup->resource->member_id, $request)) {
+                    return true;
+                }
+            }
+        } catch (\Exception $error) {
+            return ['error' => $error->getMessage()];
+        }
+
+        return false;
     }
 
     /**
