@@ -10,6 +10,9 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use ProcessMaker\Managers\ExportManager;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 use ProcessMaker\Package\VariableFinder\Models\ProcessVariable;
 
@@ -202,7 +205,7 @@ class ProcessVariableController extends Controller
     {
         // If the classes or tables do not exist, fallback to a saved search approach.
         if (!class_exists(ProcessVariable::class) || !Schema::hasTable('process_variables')) {
-            return $this->getProcessesVariablesFromSavedSearch($processIds);
+            return $this->getProcessesVariablesFrom($processIds);
         }
 
         // Determine which columns to exclude based on the saved search
@@ -219,7 +222,8 @@ class ProcessVariableController extends Controller
         $query = DB::table('var_finder_variables AS vfv')
             ->join('asset_variables AS av', 'vfv.asset_variable_id', '=', 'av.id')
             ->join('process_variables AS pv', 'av.id', '=', 'pv.asset_variable_id')
-            ->whereIn('pv.process_id', $processIds);
+            ->whereIn('pv.process_id', $processIds)
+            ->orderBy('vfv.id');
 
         if (!empty($activeColumns)) {
             $query->whereNotIn('vfv.field', $activeColumns);
@@ -243,8 +247,51 @@ class ProcessVariableController extends Controller
      *
      * @return void
      */
-    public static function mock()
+    public static function mock(bool $value = true)
     {
-        static::$mockData = true;
+        static::$mockData = $value;
+    }
+
+    /**
+     * Retrieve process variables from its screens.
+     *
+     * @param array $processIds
+     *
+     * @return LengthAwarePaginator
+     */
+    private function getProcessesVariablesFrom(array $processIds)
+    {
+        // Get screens used in the processes
+        $processes = Process::whereIn('id', $processIds)->get();
+        $ids = collect([]);
+        foreach ($processes as $process) {
+            $manager = app(ExportManager::class);
+            try {
+                $ids = $ids->merge($manager->getDependenciesOfType(Screen::class, $process));
+            } catch (\Exception $e) {
+                $ids = collect([]);
+            }
+        }
+
+        // Get columns from screens
+        $columns = collect([]);
+        $screens = Screen::whereIn('id', $ids->unique())->where('type', '!=', 'DISPLAY')->get();
+        foreach ($screens as $screen) {
+            $screenColumns = $screen->fields->map(function ($item) {
+                $item->field = "data.{$item->field}";
+
+                return $item;
+            });
+
+            $columns = $columns->merge($screenColumns);
+        }
+
+        // Paginate the result
+        $page = request()->get('page', 1);
+        $perPage = request()->get('per_page', 20);
+        $total = $columns->count();
+        $items = $columns->forPage($page, $perPage);
+
+        return new LengthAwarePaginator($items, $total, $perPage, $page);
     }
 }
