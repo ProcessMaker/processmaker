@@ -138,6 +138,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   ProcessMaker.$modeler = null;
   modelerRef.value.reset({ readOnly: true });
+  modelerRef.value.reset({ panMode: true });
   modelerRef.value = null;
   tooltipRef.value = null;
 });
