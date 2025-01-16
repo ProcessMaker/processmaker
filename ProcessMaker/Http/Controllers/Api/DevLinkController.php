@@ -168,14 +168,15 @@ class DevLinkController extends Controller
     public function installRemoteBundle(Request $request, DevLink $devLink, $remoteBundleId)
     {
         $updateType = $request->input('updateType', DevLinkInstall::MODE_UPDATE);
-        DevLinkInstall::dispatch(
-            $request->user()->id,
-            $devLink->id,
-            Bundle::class,
-            $remoteBundleId,
-            $updateType,
-            DevLinkInstall::TYPE_INSTALL_BUNDLE,
-        );
+        // DevLinkInstall::dispatch(
+        //     $request->user()->id,
+        //     $devLink->id,
+        //     Bundle::class,
+        //     $remoteBundleId,
+        //     $updateType,
+        //     DevLinkInstall::TYPE_INSTALL_BUNDLE,
+        // );
+        $devLink->installRemoteBundle($remoteBundleId, $updateType);
 
         return [
             'status' => 'queued',
@@ -210,6 +211,10 @@ class DevLinkController extends Controller
 
     public function exportLocalBundleSettingPayloads(Bundle $bundle)
     {
+        if ($bundle->settings->isEmpty()) {
+            return ['payloads' => [0 => []]];
+        }
+
         return ['payloads' => $bundle->exportSettingPayloads()];
     }
 
