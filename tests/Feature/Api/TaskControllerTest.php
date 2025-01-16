@@ -196,4 +196,61 @@ class TaskControllerTest extends TestCase
             'meta',
         ]);
     }
+
+    public function testProcessesIManage()
+    {
+        $managerUser = User::factory()->create();
+        $taskUser = User::factory()->create();
+        Auth::login($managerUser);
+
+        $process = Process::factory()->create([
+            'properties' => [
+                'manager_id' => $managerUser->id,
+            ],
+        ]);
+
+        $processRequest = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+        ]);
+
+        $selfServiceTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'process_id' => $process->id,
+            'user_id' => null,
+            'status' => 'ACTIVE',
+            'is_self_service' => true,
+        ]);
+
+        $regularTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'process_id' => $process->id,
+            'user_id' => $taskUser->id,
+            'status' => 'ACTIVE',
+        ]);
+
+        $this->user = $managerUser;
+        $params = [
+            'processesIManage' => 'true',
+            'pmql' => '(status = "Self Service" or status = "In Progress")',
+        ];
+        $response = $this->apiCall('GET', '/tasks', $params);
+        $this->assertCount(2, $response->json()['data']);
+        $this->assertEquals($selfServiceTask->id, $response->json()['data'][0]['id']);
+        $this->assertEquals($regularTask->id, $response->json()['data'][1]['id']);
+
+        // Add the advanced filter to only show the self service task
+        $params['advanced_filter'] = [
+            [
+                'subject' => [
+                    'type' => 'Status',
+                    'value' => 'status',
+                ],
+                'operator' => '=',
+                'value' => 'Self Service',
+            ],
+        ];
+        $response = $this->apiCall('GET', '/tasks', $params);
+        $this->assertCount(1, $response->json()['data']);
+        $this->assertEquals($selfServiceTask->id, $response->json()['data'][0]['id']);
+    }
 }
