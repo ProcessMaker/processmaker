@@ -42,7 +42,9 @@ import { getColumns } from "./config/columns";
 import { FilterableTable, TablePlaceholder } from "../../system";
 import * as api from "./api";
 import { user } from "./variables";
-import { formatFilters, formatFilterBadges } from "./utils";
+import {
+  formatFilters, formatFilterBadges, formattedFilter, formatFilterSaved,
+} from "./utils";
 
 const props = defineProps({
   listId: {
@@ -76,6 +78,11 @@ const setMetaPagination = (meta) => {
     pages: meta.lastPage,
     perPage: meta.perPage,
   };
+};
+
+const getFilters = async () => {
+  const response = await api.getCaseFilters(route.params?.id);
+  return response;
 };
 
 const getData = async () => {
@@ -131,7 +138,14 @@ const onChangeSearch = async (val) => {
   await hookGetData();
 };
 
+const saveFilters = async (filtersData) => {
+  const response = await api.saveCaseFilters(formattedFilter(filtersData), route.params?.id);
+  return response;
+};
+
 const onChangeFilter = async (filtersData) => {
+  saveFilters(filtersData);
+
   filters.value = filtersData;
   dataPagination.value.page = 1; // Reset page to 1
 
@@ -151,7 +165,12 @@ const onRemoveBadge = async (badge, index) => {
 };
 
 onMounted(async () => {
-  await hookGetData();
+  getFilters().then((response) => {
+    const filtersSaved = formatFilterSaved(response.data.filters);
+    filters.value = filtersSaved;
+    badgesData.value = formatFilterBadges(filtersSaved, columnsConfig.value);
+    hookGetData();
+  });
 
   columnsConfig.value = getColumns(props.listId);
 });

@@ -3,6 +3,7 @@ import { formatDate } from "../../../utils";
 export const formatFilters = (filters) => {
   const response = filters.map((element) => {
     let { value } = element;
+    let label = "";
 
     if (!element.operator) {
       return null;
@@ -15,6 +16,7 @@ export const formatFilters = (filters) => {
     // Case status is a dropdown filter, using for the API
     if (element.field === "case_status") {
       value = element.value.value;
+      label = element.value.label;
     }
 
     return {
@@ -24,9 +26,53 @@ export const formatFilters = (filters) => {
       },
       operator: element.operator,
       value: value || "",
+      label,
+      _column_field: element.field,
     };
   });
 
+  return response.filter((e) => e);
+};
+
+export const getFilterOrder = (filters) => {
+  let response = {};
+  filters.forEach((element) => {
+    if (element.sortable) {
+      response = {
+        by: element.field,
+        direction: element.sortable,
+      };
+    }
+  });
+  return response;
+};
+
+export const formattedFilter = (filters) => {
+  const response = formatFilters(filters);
+  const order = getFilterOrder(filters);
+  return {
+    filters: [...response],
+    order,
+  };
+};
+
+export const formatFilterSaved = (filters) => {
+  const response = filters.map((element) => {
+    let value = "";
+    if (element.subject.value === "case_status") {
+      value = {
+        value: element.value,
+        label: element.label,
+      };
+    } else {
+      value = element.value;
+    }
+    return {
+      field: element.subject.value,
+      operator: element.operator,
+      value,
+    };
+  });
   return response.filter((e) => e);
 };
 
