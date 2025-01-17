@@ -204,6 +204,7 @@ return [
         'SkinManager' => ProcessMaker\Facades\SkinManager::class,
         'Theme' => Igaster\LaravelTheme\Facades\Theme::class,
         'WorkspaceManager' => ProcessMaker\Facades\WorkspaceManager::class,
+        'SettingCache' => ProcessMaker\Cache\Settings\SettingCacheFacade::class,
     ])->toArray(),
 
     'debug_blacklist' => [
