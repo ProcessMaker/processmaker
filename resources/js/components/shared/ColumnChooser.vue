@@ -5,6 +5,7 @@
             <div ref="columnBefore">
                 <div class="pb-4">
                     <small class="form-text text-muted">{{ $t('Drag any columns you want to view in your table from right to left. You may also sort, configure, and remove columns.') }}</small>
+                    <slot name="title1"></slot>
                 </div>
                 <div class="title-container  d-flex flex-row align-content-stretch">
                     <div class="w-50 mr-3">
@@ -211,6 +212,7 @@ export default {
           let windowHeight = window.innerHeight;
           
           let height = (windowHeight - top);
+          console.log("paso", document.querySelector('.tab-content-columns'));
           document.querySelector('.tab-content-columns').style.height = `${height}px`;
         },
         resizeColumnContainer() {

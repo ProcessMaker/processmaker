@@ -1,10 +1,10 @@
 @font-face {font-family: "processmaker-font";
-  src: url('processmaker-font.eot?t=1730322668195'); /* IE9*/
-  src: url('processmaker-font.eot?t=1730322668195#iefix') format('embedded-opentype'), /* IE6-IE8 */
-  url("processmaker-font.woff2?t=1730322668195") format("woff2"),
-  url("processmaker-font.woff?t=1730322668195") format("woff"),
-  url('processmaker-font.ttf?t=1730322668195') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
-  url('processmaker-font.svg?t=1730322668195#processmaker-font') format('svg'); /* iOS 4.1- */
+  src: url('processmaker-font.eot?t=1737060380917'); /* IE9*/
+  src: url('processmaker-font.eot?t=1737060380917#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url("processmaker-font.woff2?t=1737060380917") format("woff2"),
+  url("processmaker-font.woff?t=1737060380917") format("woff"),
+  url('processmaker-font.ttf?t=1737060380917') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+  url('processmaker-font.svg?t=1737060380917#processmaker-font') format('svg'); /* iOS 4.1- */
 }
 
 [class^="fp-"], [class*=" fp-"] {
@@ -14,87 +14,91 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.fp-bpmn-action-by-email:before { content: "\ea01"; }
-.fp-bpmn-data-connector:before { content: "\ea02"; }
-.fp-bpmn-data-object:before { content: "\ea03"; }
-.fp-bpmn-data-store:before { content: "\ea04"; }
-.fp-bpmn-docusign:before { content: "\ea05"; }
-.fp-bpmn-end-event:before { content: "\ea06"; }
-.fp-bpmn-flowgenie:before { content: "\ea07"; }
-.fp-bpmn-gateway:before { content: "\ea08"; }
-.fp-bpmn-generic-gateway:before { content: "\ea09"; }
-.fp-bpmn-idp:before { content: "\ea0a"; }
-.fp-bpmn-intermediate-event:before { content: "\ea0b"; }
-.fp-bpmn-pool:before { content: "\ea0c"; }
-.fp-bpmn-send-email:before { content: "\ea0d"; }
-.fp-bpmn-start-event:before { content: "\ea0e"; }
-.fp-bpmn-task:before { content: "\ea0f"; }
-.fp-bpmn-text-annotation:before { content: "\ea10"; }
-.fp-brush-icon:before { content: "\ea11"; }
-.fp-close:before { content: "\ea12"; }
-.fp-cloud-download-outline:before { content: "\ea13"; }
-.fp-copy:before { content: "\ea14"; }
-.fp-desktop:before { content: "\ea15"; }
-.fp-eye:before { content: "\ea16"; }
-.fp-fields-icon:before { content: "\ea17"; }
-.fp-flowgenie-outline:before { content: "\ea18"; }
-.fp-folder-outline:before { content: "\ea19"; }
-.fp-fullscreen:before { content: "\ea1a"; }
-.fp-github:before { content: "\ea1b"; }
-.fp-layout-icon:before { content: "\ea1c"; }
-.fp-map:before { content: "\ea1d"; }
-.fp-mobile:before { content: "\ea1e"; }
-.fp-pdf:before { content: "\ea1f"; }
-.fp-play-outline:before { content: "\ea20"; }
-.fp-plus:before { content: "\ea21"; }
-.fp-screen-outline:before { content: "\ea22"; }
-.fp-script-outline:before { content: "\ea23"; }
-.fp-slack-notification:before { content: "\ea24"; }
-.fp-slack:before { content: "\ea25"; }
-.fp-slideshow:before { content: "\ea26"; }
-.fp-table:before { content: "\ea27"; }
-.fp-trash:before { content: "\ea28"; }
-.fp-unlink:before { content: "\ea29"; }
+.fp-arrow-left:before { content: "\ea01"; }
+.fp-box-arrow-up-right:before { content: "\ea02"; }
+.fp-bpmn-action-by-email:before { content: "\ea03"; }
+.fp-bpmn-data-connector:before { content: "\ea04"; }
+.fp-bpmn-data-object:before { content: "\ea05"; }
+.fp-bpmn-data-store:before { content: "\ea06"; }
+.fp-bpmn-docusign:before { content: "\ea07"; }
+.fp-bpmn-end-event:before { content: "\ea08"; }
+.fp-bpmn-flowgenie:before { content: "\ea09"; }
+.fp-bpmn-gateway:before { content: "\ea0a"; }
+.fp-bpmn-generic-gateway:before { content: "\ea0b"; }
+.fp-bpmn-idp:before { content: "\ea0c"; }
+.fp-bpmn-intermediate-event:before { content: "\ea0d"; }
+.fp-bpmn-pool:before { content: "\ea0e"; }
+.fp-bpmn-send-email:before { content: "\ea0f"; }
+.fp-bpmn-start-event:before { content: "\ea10"; }
+.fp-bpmn-task:before { content: "\ea11"; }
+.fp-bpmn-text-annotation:before { content: "\ea12"; }
+.fp-brush-icon:before { content: "\ea13"; }
+.fp-close:before { content: "\ea14"; }
+.fp-cloud-download-outline:before { content: "\ea15"; }
+.fp-copy:before { content: "\ea16"; }
+.fp-desktop:before { content: "\ea17"; }
+.fp-eye:before { content: "\ea18"; }
+.fp-fields-icon:before { content: "\ea19"; }
+.fp-flowgenie-outline:before { content: "\ea1a"; }
+.fp-folder-outline:before { content: "\ea1b"; }
+.fp-fullscreen:before { content: "\ea1c"; }
+.fp-github:before { content: "\ea1d"; }
+.fp-layout-icon:before { content: "\ea1e"; }
+.fp-map:before { content: "\ea1f"; }
+.fp-mobile:before { content: "\ea20"; }
+.fp-pdf:before { content: "\ea21"; }
+.fp-play-outline:before { content: "\ea22"; }
+.fp-plus:before { content: "\ea23"; }
+.fp-screen-outline:before { content: "\ea24"; }
+.fp-script-outline:before { content: "\ea25"; }
+.fp-slack-notification:before { content: "\ea26"; }
+.fp-slack:before { content: "\ea27"; }
+.fp-slideshow:before { content: "\ea28"; }
+.fp-table:before { content: "\ea29"; }
+.fp-trash:before { content: "\ea2a"; }
+.fp-unlink:before { content: "\ea2b"; }
 
-$fp-bpmn-action-by-email: "\ea01";
-$fp-bpmn-data-connector: "\ea02";
-$fp-bpmn-data-object: "\ea03";
-$fp-bpmn-data-store: "\ea04";
-$fp-bpmn-docusign: "\ea05";
-$fp-bpmn-end-event: "\ea06";
-$fp-bpmn-flowgenie: "\ea07";
-$fp-bpmn-gateway: "\ea08";
-$fp-bpmn-generic-gateway: "\ea09";
-$fp-bpmn-idp: "\ea0a";
-$fp-bpmn-intermediate-event: "\ea0b";
-$fp-bpmn-pool: "\ea0c";
-$fp-bpmn-send-email: "\ea0d";
-$fp-bpmn-start-event: "\ea0e";
-$fp-bpmn-task: "\ea0f";
-$fp-bpmn-text-annotation: "\ea10";
-$fp-brush-icon: "\ea11";
-$fp-close: "\ea12";
-$fp-cloud-download-outline: "\ea13";
-$fp-copy: "\ea14";
-$fp-desktop: "\ea15";
-$fp-eye: "\ea16";
-$fp-fields-icon: "\ea17";
-$fp-flowgenie-outline: "\ea18";
-$fp-folder-outline: "\ea19";
-$fp-fullscreen: "\ea1a";
-$fp-github: "\ea1b";
-$fp-layout-icon: "\ea1c";
-$fp-map: "\ea1d";
-$fp-mobile: "\ea1e";
-$fp-pdf: "\ea1f";
-$fp-play-outline: "\ea20";
-$fp-plus: "\ea21";
-$fp-screen-outline: "\ea22";
-$fp-script-outline: "\ea23";
-$fp-slack-notification: "\ea24";
-$fp-slack: "\ea25";
-$fp-slideshow: "\ea26";
-$fp-table: "\ea27";
-$fp-trash: "\ea28";
-$fp-unlink: "\ea29";
+$fp-arrow-left: "\ea01";
+$fp-box-arrow-up-right: "\ea02";
+$fp-bpmn-action-by-email: "\ea03";
+$fp-bpmn-data-connector: "\ea04";
+$fp-bpmn-data-object: "\ea05";
+$fp-bpmn-data-store: "\ea06";
+$fp-bpmn-docusign: "\ea07";
+$fp-bpmn-end-event: "\ea08";
+$fp-bpmn-flowgenie: "\ea09";
+$fp-bpmn-gateway: "\ea0a";
+$fp-bpmn-generic-gateway: "\ea0b";
+$fp-bpmn-idp: "\ea0c";
+$fp-bpmn-intermediate-event: "\ea0d";
+$fp-bpmn-pool: "\ea0e";
+$fp-bpmn-send-email: "\ea0f";
+$fp-bpmn-start-event: "\ea10";
+$fp-bpmn-task: "\ea11";
+$fp-bpmn-text-annotation: "\ea12";
+$fp-brush-icon: "\ea13";
+$fp-close: "\ea14";
+$fp-cloud-download-outline: "\ea15";
+$fp-copy: "\ea16";
+$fp-desktop: "\ea17";
+$fp-eye: "\ea18";
+$fp-fields-icon: "\ea19";
+$fp-flowgenie-outline: "\ea1a";
+$fp-folder-outline: "\ea1b";
+$fp-fullscreen: "\ea1c";
+$fp-github: "\ea1d";
+$fp-layout-icon: "\ea1e";
+$fp-map: "\ea1f";
+$fp-mobile: "\ea20";
+$fp-pdf: "\ea21";
+$fp-play-outline: "\ea22";
+$fp-plus: "\ea23";
+$fp-screen-outline: "\ea24";
+$fp-script-outline: "\ea25";
+$fp-slack-notification: "\ea26";
+$fp-slack: "\ea27";
+$fp-slideshow: "\ea28";
+$fp-table: "\ea29";
+$fp-trash: "\ea2a";
+$fp-unlink: "\ea2b";
 
