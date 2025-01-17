@@ -261,6 +261,12 @@ class ProcessVariableController extends Controller
      */
     private function getProcessesVariablesFrom(array $processIds)
     {
+        $perPage = request()->get('per_page', 20);
+        // Validate processIds input is required
+        if (empty($processIds)) {
+            return new LengthAwarePaginator([], 0, $perPage, 1);
+        }
+
         // Get screens used in the processes
         $processes = Process::whereIn('id', $processIds)->get();
         $ids = collect([]);
@@ -288,7 +294,6 @@ class ProcessVariableController extends Controller
 
         // Paginate the result
         $page = request()->get('page', 1);
-        $perPage = request()->get('per_page', 20);
         $total = $columns->count();
         $items = $columns->forPage($page, $perPage);
 
