@@ -144,7 +144,7 @@ const saveFilters = async (filtersData) => {
 };
 
 const onChangeFilter = async (filtersData) => {
-  // saveFilters(filtersData);
+  saveFilters(filtersData);
 
   filters.value = filtersData;
   dataPagination.value.page = 1; // Reset page to 1
