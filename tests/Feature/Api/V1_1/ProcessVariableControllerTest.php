@@ -371,4 +371,144 @@ class ProcessVariableControllerTest extends TestCase
             ],
         ]);
     }
+
+    public function test_saved_search_with_all_available_columns(): void
+    {
+        // Create a saved search with specific columns
+        $savedSearch = SavedSearch::factory()->create([
+            'type' => 'request',
+            'meta' => [
+                "icon" => "bath",
+                "file" => null,
+                "collection_id" => null,
+                "columns" => [],
+            ],
+            'pmql' => '',
+        ]);
+
+        $response = $this->apiCall('GET', '/api/1.1/processes/variables?processIds=1&savedSearchId=' . $savedSearch->id . '&onlyAvailable=');
+
+        $responseData = $response->json();
+
+        $filteredFields = collect($responseData['data'])->pluck('field');
+
+        $this->assertTrue($filteredFields->contains('case_number'));
+        $this->assertTrue($filteredFields->contains('case_title'));
+        $this->assertTrue($filteredFields->contains('name'));
+        $this->assertTrue($filteredFields->contains('active_tasks'));
+        $this->assertTrue($filteredFields->contains('process_version_alternative'));
+        $this->assertTrue($filteredFields->contains('participants'));
+        $this->assertTrue($filteredFields->contains('status'));
+        $this->assertTrue($filteredFields->contains('initiated_at'));
+        $this->assertTrue($filteredFields->contains('completed_at'));
+    }
+
+    public function test_saved_search_with_remaining_available_columns(): void
+    {
+        // Create a saved search with specific columns
+        $savedSearch = SavedSearch::factory()->create([
+            'type' => 'request',
+            'meta' => [
+                "icon" => "bath",
+                "file" => null,
+                "collection_id" => null,
+                "columns" => [
+                    [
+                        "label" => "Case Number",
+                        "field" => "case_number",
+                    ],
+                    [
+                        "label" => "Case Title",
+                        "field" => "case_title",
+                    ],
+                ],
+            ],
+            'pmql' => '',
+        ]);
+
+        $response = $this->apiCall('GET', '/api/1.1/processes/variables?processIds=1&savedSearchId=' . $savedSearch->id . '&onlyAvailable=');
+
+        $responseData = $response->json();
+
+        $filteredFields = collect($responseData['data'])->pluck('field');
+
+        $this->assertFalse($filteredFields->contains('case_number'));
+        $this->assertFalse($filteredFields->contains('case_title'));
+
+        $this->assertTrue($filteredFields->contains('name'));
+        $this->assertTrue($filteredFields->contains('active_tasks'));
+        $this->assertTrue($filteredFields->contains('process_version_alternative'));
+        $this->assertTrue($filteredFields->contains('participants'));
+        $this->assertTrue($filteredFields->contains('status'));
+        $this->assertTrue($filteredFields->contains('initiated_at'));
+        $this->assertTrue($filteredFields->contains('completed_at'));
+    }
+
+    public function test_saved_search_with_no_available_columns(): void
+    {
+        // Create a saved search with specific columns
+        $savedSearch = SavedSearch::factory()->create([
+            'type' => 'request',
+            'meta' => [
+                "icon" => "bath",
+                "file" => null,
+                "collection_id" => null,
+                "columns" => [
+                    [
+                        "label" => "Case Number",
+                        "field" => "case_number",
+                    ],
+                    [
+                        "label" => "Case Title",
+                        "field" => "case_title",
+                    ],
+                    [
+                        "label" => "Name",
+                        "field" => "name",
+                    ],
+                    [
+                        'label' => 'Active Tasks',
+                        'field' => 'active_tasks',
+                    ],
+                    [
+                        'label' => 'Process Version Alternative',
+                        'field' => 'process_version_alternative',
+                    ],
+                    [
+                        'label' => 'Participants',
+                        'field' => 'participants',
+                    ],
+                    [
+                        'label' => 'Status',
+                        'field' => 'status',
+                    ],
+                    [
+                        'label' => 'Initiated At',
+                        'field' => 'initiated_at',
+                    ],
+                    [
+                        'label' => 'Completed At',
+                        'field' => 'completed_at',
+                    ],
+                ],
+            ],
+            'pmql' => '',
+        ]);
+
+        $response = $this->apiCall('GET', '/api/1.1/processes/variables?processIds=1&savedSearchId=' . $savedSearch->id . '&onlyAvailable=');
+
+        $responseData = $response->json();
+
+        $filteredFields = collect($responseData['data'])->pluck('field');
+
+        $this->assertFalse($filteredFields->contains('case_number'));
+        $this->assertFalse($filteredFields->contains('case_title'));
+        $this->assertFalse($filteredFields->contains('name'));
+        $this->assertFalse($filteredFields->contains('active_tasks'));
+        $this->assertFalse($filteredFields->contains('process_version_alternative'));
+        $this->assertFalse($filteredFields->contains('participants'));
+        $this->assertFalse($filteredFields->contains('status'));
+        $this->assertFalse($filteredFields->contains('initiated_at'));
+        $this->assertFalse($filteredFields->contains('completed_at'));
+    }
 }
