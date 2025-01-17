@@ -4,6 +4,7 @@ namespace ProcessMaker\Traits;
 
 use Illuminate\Support\Arr;
 use Log;
+use ProcessMaker\Cache\Screens\ScreenCache;
 use ProcessMaker\Cache\Screens\ScreenCacheFactory;
 use ProcessMaker\Models\Column;
 use ProcessMaker\Models\Screen;
@@ -60,14 +61,15 @@ trait HasScreenFields
         $parsedFields = $screenCache->get($key);
 
         if (!$parsedFields || collect($parsedFields)->isEmpty()) {
-            $this->parsedFields = collect([]);
+            $this->parsedFields = ScreenCache::makeFrom($this, []);
             if ($this->config) {
                 $this->walkArray($this->config);
             }
+            $this->parsedFields = ScreenCache::makeFrom($this, $this->parsedFields);
 
             $screenCache->set($key, $this->parsedFields);
         } else {
-            $this->parsedFields = collect($parsedFields);
+            $this->parsedFields = ScreenCache::makeFrom($this, $parsedFields);
         }
     }
 

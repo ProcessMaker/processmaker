@@ -3,12 +3,13 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use ProcessMaker\Contracts\PrometheusMetricInterface;
 use ProcessMaker\Contracts\ScreenInterface;
 use ProcessMaker\Events\TranslationChanged;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasScreenFields;
 
-class ScreenVersion extends ProcessMakerModel implements ScreenInterface
+class ScreenVersion extends ProcessMakerModel implements ScreenInterface, PrometheusMetricInterface
 {
     use HasCategories;
     use HasScreenFields;
@@ -76,5 +77,10 @@ class ScreenVersion extends ProcessMakerModel implements ScreenInterface
     public function scopePublished(Builder $query)
     {
         return $query->where('draft', false);
+    }
+
+    public function getPrometheusMetricLabel(): string
+    {
+        return 'screen.' . $this->screen_id;
     }
 }

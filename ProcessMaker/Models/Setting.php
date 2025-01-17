@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Log;
 use ProcessMaker\Cache\Settings\SettingCacheFactory;
+use ProcessMaker\Contracts\PrometheusMetricInterface;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia;
@@ -48,7 +49,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  *   },
  * )
  */
-class Setting extends ProcessMakerModel implements HasMedia
+class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInterface
 {
     use ExtendedPMQL;
     use InteractsWithMedia;
@@ -496,5 +497,15 @@ class Setting extends ProcessMakerModel implements HasMedia
                 }
             }
         });
+    }
+
+    /**
+     * Get the label used in grafana reports
+     *
+     * @return string 
+     */
+    public function getPrometheusMetricLabel(): string
+    {
+        return 'settings.' . $this->key;
     }
 }
