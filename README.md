@@ -525,6 +525,10 @@ To make things even easier, you can run `Metrics::counter('cases')->inc();` or `
 
 You can provide an optional description, for example `Metrics::gauge('active_tasks', 'Total Active Tasks')->...`
 
+### Import Grafana Dashboards
+
+Go to Grafana and import the dashboards from the `resources/grafana` folder. Each JSON file represents a configured dashboard that can be imported into Grafana to visualize metrics and data.
+
 # License
 
 Distributed under the [AGPL Version 3](https://www.gnu.org/licenses/agpl-3.0.en.html)
