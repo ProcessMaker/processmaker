@@ -21,6 +21,7 @@ class ProcessVariableController extends Controller
 
     const CACHE_TTL = 60;
     private static bool $mockData = false;
+    private static bool $useVarFinder = true;
 
     /**
      * @OA\Schema(
@@ -203,11 +204,6 @@ class ProcessVariableController extends Controller
      */
     public function getProcessesVariables(array $processIds, $excludeSavedSearch, $page, $perPage, $request)
     {
-        // If the classes or tables do not exist, fallback to a saved search approach.
-        if (!class_exists(ProcessVariable::class) || !Schema::hasTable('process_variables')) {
-            return $this->getProcessesVariablesFrom($processIds);
-        }
-
         // Determine which columns to exclude based on the saved search
         $activeColumns = [];
         if ($excludeSavedSearch) {
@@ -215,6 +211,27 @@ class ProcessVariableController extends Controller
             if ($savedSearch && $savedSearch->current_columns) {
                 $activeColumns = $savedSearch->current_columns->pluck('field')->toArray();
             }
+        }
+
+        // If the classes or tables do not exist, fallback to a saved search approach.
+        if (
+            !class_exists(ProcessVariable::class)
+            || !Schema::hasTable('process_variables')
+            || !self::$useVarFinder
+        ) {
+            $paginator = $this->getProcessesVariablesFrom($processIds);
+            if ($request->has('onlyAvailable')) {
+                // Get the available columns from the saved search
+                $availableColumns = $savedSearch->available_columns;
+                // Merge the available columns with the paginated items
+                $availableColumns = $availableColumns->merge($paginator->items());
+                // Set the collection to the merged collection
+                $paginator->setCollection($availableColumns);
+
+                return $paginator;
+            }
+
+            return $paginator;
         }
 
         // Build a single query that joins process_variables, asset_variables, and var_finder_variables
@@ -230,7 +247,7 @@ class ProcessVariableController extends Controller
         }
 
         // Paginate the query result directly
-        return $query->select(
+        $query->select(
             'vfv.id',
             'pv.process_id',
             'vfv.data_type AS format',
@@ -239,7 +256,23 @@ class ProcessVariableController extends Controller
             DB::raw('NULL AS `default`'),
             'vfv.created_at',
             'vfv.updated_at',
-        )->paginate($perPage, ['*'], 'page', $page);
+        );
+
+        // Return the paginated result
+        $paginator = $query->paginate($perPage, ['*'], 'page', $page);
+
+        if ($request->has('onlyAvailable')) {
+            // Get the available columns from the saved search
+            $availableColumns = $savedSearch->available_columns;
+            // Merge the available columns with the paginated items
+            $availableColumns = $availableColumns->merge($paginator->items());
+            // Set the collection to the merged collection
+            $paginator->setCollection($availableColumns);
+
+            return $paginator;
+        }
+
+        return $query->paginate($perPage, ['*'], 'page', $page);
     }
 
     /**
@@ -250,6 +283,16 @@ class ProcessVariableController extends Controller
     public static function mock(bool $value = true)
     {
         static::$mockData = $value;
+    }
+
+    /**
+     * Change ProcessVariableController to not use VariableFinder
+     *
+     * @return void
+     */
+    public static function useVarFinder(bool $value = true)
+    {
+        static::$useVarFinder = $value;
     }
 
     /**
