@@ -89,6 +89,58 @@ class ProcessVariableControllerTest extends TestCase
         $this->assertEquals(30, $responseData['meta']['total']);
     }
 
+    /**
+     * Test successful variables retrieval with pagination
+     */
+    public function test_can_get_process_variables_from_process_screens_with_pagination(): void
+    {
+        $bpmn = file_get_contents(base_path('tests/Feature/Api/bpmnPatterns/SimpleTaskProcess.bpmn'));
+        ProcessVariableController::mock(false);
+        $screen1 = $this->createScreenWithFields(1, 10);
+        $screen2 = $this->createScreenWithFields(2, 10);
+        $screen3 = $this->createScreenWithFields(3, 10);
+        Process::factory()->create(['id' => 1, 'bpmn' => str_replace('pm:screenRef="2"', 'pm:screenRef="' . $screen1->id . '"', $bpmn)]);
+        Process::factory()->create(['id' => 2, 'bpmn' => str_replace('pm:screenRef="2"', 'pm:screenRef="' . $screen2->id . '"', $bpmn)]);
+        Process::factory()->create(['id' => 3, 'bpmn' => str_replace('pm:screenRef="2"', 'pm:screenRef="' . $screen3->id . '"', $bpmn)]);
+
+        // Make request to the endpoint
+        $response = $this->apiCall('GET', '/api/1.1/processes/variables?processIds=1,2,3&page=1&per_page=15');
+
+        // Assert response structure and status
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => [
+                        //'id',
+                        //'process_id',
+                        'format',
+                        'label',
+                        'field',
+                        'default',
+                        //'created_at',
+                        //'updated_at',
+                    ]
+                ],
+                'meta' => [
+                    'current_page',
+                    'from',
+                    'last_page',
+                    'path',
+                    'per_page',
+                    'to',
+                    'total',
+                ]
+            ]);
+
+        // Assert pagination works correctly
+        $responseData = $response->json();
+        $this->assertEquals(15, $responseData['meta']['per_page']);
+        $this->assertEquals(1, $responseData['meta']['current_page']);
+
+        // Since we're generating 10 variables per process (3 processes = 30 total)
+        $this->assertEquals(30, $responseData['meta']['total']);
+    }
+
     private function mockVariableFinder(array $processIds, $excludeSavedSearch)
     {
         // Create a cache key based on process IDs
@@ -280,5 +332,43 @@ class ProcessVariableControllerTest extends TestCase
 
         // Check that the total count is reduced by the number of excluded fields
         $this->assertEquals(8, $responseData['meta']['total']); // 10 total - 2 excluded
+    }
+
+    /**
+     * Create a screen with a given number of fields
+     *
+     * @param int $processId
+     * @param int $fieldsCount
+     *
+     * @return Screen
+     */
+    private function createScreenWithFields(int $processId, int $fieldsCount)
+    {
+        $items = [];
+        for ($i = 1; $i <= $fieldsCount; $i++) {
+            $items[] = [
+                'component' => 'FormInput',
+                'config' => [
+                    'name' => "var_{$processId}_{$i}",
+                    'type' => 'text',
+                    'label' => "Variable {$i} for Process {$processId}",
+                    'helper' => null,
+                    'dataFormat' => 'string',
+                    'validation' => null,
+                    'placeholder' => null,
+                ],
+            ];
+        }
+
+        return Screen::factory()->create([
+            'config' => [
+                [
+                    [
+                        'name' => 'screen name',
+                        'items' => $items,
+                    ],
+                ]
+            ],
+        ]);
     }
 }
