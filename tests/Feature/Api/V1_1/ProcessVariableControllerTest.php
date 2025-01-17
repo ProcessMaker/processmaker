@@ -35,13 +35,20 @@ class ProcessVariableControllerTest extends TestCase
         // Check if the VariableFinder package is enabled
         $this->isVariablesFinderEnabled = class_exists(ProcessVariable::class) && Schema::hasTable('process_variables');
 
+        // Clear process variables cache
+        $this->clearCache([1, 2, 3]);
+        $this->clearCache([1, 2]);
+
         // Create the processes variables
         if (!$this->isVariablesFinderEnabled) {
             // Mock the ProcessVariableController to use mock data instead of VariableFinder package
-            ProcessVariableController::mock();
+            ProcessVariableController::mock(true);
+            ProcessVariableController::useVarFinder(false);
             $this->mockVariableFinder([1, 2, 3], null);
             $this->mockVariableFinder([1, 2], null);
         } else {
+            ProcessVariableController::mock(false);
+            ProcessVariableController::useVarFinder(true);
             $this->loadVariableFinderData([1, 2, 3]);
         }
     }
@@ -90,21 +97,36 @@ class ProcessVariableControllerTest extends TestCase
     }
 
     /**
-     * Test successful variables retrieval with pagination
+     * Test successful variables retrieval with pagination without us
      */
     public function test_can_get_process_variables_from_process_screens_with_pagination(): void
     {
+        ProcessVariableController::mock(false);
+        ProcessVariableController::useVarFinder(false);
+
         $bpmn = file_get_contents(base_path('tests/Feature/Api/bpmnPatterns/SimpleTaskProcess.bpmn'));
         ProcessVariableController::mock(false);
         $screen1 = $this->createScreenWithFields(1, 10);
         $screen2 = $this->createScreenWithFields(2, 10);
         $screen3 = $this->createScreenWithFields(3, 10);
-        Process::factory()->create(['id' => 1, 'bpmn' => str_replace('pm:screenRef="2"', 'pm:screenRef="' . $screen1->id . '"', $bpmn)]);
-        Process::factory()->create(['id' => 2, 'bpmn' => str_replace('pm:screenRef="2"', 'pm:screenRef="' . $screen2->id . '"', $bpmn)]);
-        Process::factory()->create(['id' => 3, 'bpmn' => str_replace('pm:screenRef="2"', 'pm:screenRef="' . $screen3->id . '"', $bpmn)]);
+        $processIds = [];
+        $processIds[] = Process::factory()->create([
+            'bpmn' => str_replace('pm:screenRef="2"', 'pm:screenRef="' . $screen1->id . '"', $bpmn)
+        ])->id;
+        $processIds[] = Process::factory()->create([
+            'bpmn' => str_replace('pm:screenRef="2"', 'pm:screenRef="' . $screen2->id . '"', $bpmn)
+        ])->id;
+        $processIds[] = Process::factory()->create([
+            'bpmn' => str_replace('pm:screenRef="2"', 'pm:screenRef="' . $screen3->id . '"', $bpmn)
+        ])->id;
+        $route = route('api.1.1.process_variables.index', [
+            'processIds' => implode(',', $processIds),
+            'page' => 1,
+            'per_page' => 15
+        ]);
 
         // Make request to the endpoint
-        $response = $this->apiCall('GET', '/api/1.1/processes/variables?processIds=1,2,3&page=1&per_page=15');
+        $response = $this->apiCall('GET', $route);
 
         // Assert response structure and status
         $response->assertStatus(200)
@@ -173,6 +195,12 @@ class ProcessVariableControllerTest extends TestCase
         });
 
         return $variables;
+    }
+
+    private function clearCache(array $processIds)
+    {
+        $cacheKey = 'process_variables_' . implode('_', $processIds);
+        Cache::forget($cacheKey);
     }
 
     private function getRandomDataType(): string
@@ -276,6 +304,10 @@ class ProcessVariableControllerTest extends TestCase
      */
     public function test_process_ids_filtering(): void
     {
+        ProcessVariableController::mock(true);
+        $this->mockVariableFinder([1, 2, 3], null);
+        $this->mockVariableFinder([1, 2], null);
+    
         $response = $this->apiCall('GET', '/api/1.1/processes/variables?processIds=1,2&per_page=50');
 
         $responseData = $response->json();
@@ -374,6 +406,7 @@ class ProcessVariableControllerTest extends TestCase
 
     public function test_saved_search_with_all_available_columns(): void
     {
+        ProcessVariableController::mock(false);
         // Create a saved search with specific columns
         $savedSearch = SavedSearch::factory()->create([
             'type' => 'request',
@@ -405,6 +438,7 @@ class ProcessVariableControllerTest extends TestCase
 
     public function test_saved_search_with_remaining_available_columns(): void
     {
+        ProcessVariableController::mock(false);
         // Create a saved search with specific columns
         $savedSearch = SavedSearch::factory()->create([
             'type' => 'request',
