@@ -47,7 +47,7 @@ export const getFilterOrder = (filters) => {
   return response;
 };
 
-export const fortmattedFilter = (filters) => {
+export const formattedFilter = (filters) => {
   const response = formatFilters(filters);
   const order = getFilterOrder(filters);
   return {

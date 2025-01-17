@@ -43,7 +43,7 @@ import { FilterableTable, TablePlaceholder } from "../../system";
 import * as api from "./api";
 import { user } from "./variables";
 import {
-  formatFilters, formatFilterBadges, fortmattedFilter, formatFilterSaved,
+  formatFilters, formatFilterBadges, formattedFilter, formatFilterSaved,
 } from "./utils";
 
 const props = defineProps({
@@ -139,7 +139,7 @@ const onChangeSearch = async (val) => {
 };
 
 const saveFilters = async (filtersData) => {
-  const response = await api.saveCaseFilters(fortmattedFilter(filtersData), route.params?.id);
+  const response = await api.saveCaseFilters(formattedFilter(filtersData), route.params?.id);
   return response;
 };
 
