@@ -168,15 +168,14 @@ class DevLinkController extends Controller
     public function installRemoteBundle(Request $request, DevLink $devLink, $remoteBundleId)
     {
         $updateType = $request->input('updateType', DevLinkInstall::MODE_UPDATE);
-        // DevLinkInstall::dispatch(
-        //     $request->user()->id,
-        //     $devLink->id,
-        //     Bundle::class,
-        //     $remoteBundleId,
-        //     $updateType,
-        //     DevLinkInstall::TYPE_INSTALL_BUNDLE,
-        // );
-        $devLink->installRemoteBundle($remoteBundleId, $updateType);
+        DevLinkInstall::dispatch(
+            $request->user()->id,
+            $devLink->id,
+            Bundle::class,
+            $remoteBundleId,
+            $updateType,
+            DevLinkInstall::TYPE_INSTALL_BUNDLE,
+        );
 
         return [
             'status' => 'queued',

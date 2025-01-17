@@ -44,105 +44,75 @@ class BundleSetting extends ProcessMakerModel
             case 'users':
                 if (empty($this->config)) {
                     $users = User::all();
-
-                    return $users->map(function ($user) {
-                        return $this->exportHelper($user, UserExporter::class);
-                    });
                 } else {
                     $users = User::whereIn('id', $ids)->get();
-
-                    return $users->map(function ($user) {
-                        return $this->exportHelper($user, UserExporter::class);
-                    });
                 }
+
+                return $users->map(function ($user) {
+                    return $this->exportHelper($user, UserExporter::class);
+                });
             case 'groups':
                 if (empty($this->config)) {
                     $groups = Group::all();
-
-                    return $groups->map(function ($group) {
-                        return $this->exportHelper($group, GroupExporter::class);
-                    });
                 } else {
                     $groups = Group::whereIn('id', $ids)->get();
-
-                    return $groups->map(function ($group) {
-                        return $this->exportHelper($group, GroupExporter::class);
-                    });
                 }
+
+                return $groups->map(function ($group) {
+                    return $this->exportHelper($group, GroupExporter::class);
+                });
             case 'script_executors':
                 if (empty($this->config)) {
                     $scriptExecutors = ScriptExecutor::all();
-
-                    return $scriptExecutors->map(function ($scriptExecutor) {
-                        return $this->exportHelper($scriptExecutor, ScriptExecutorExporter::class);
-                    });
                 } else {
                     $scriptExecutors = ScriptExecutor::whereIn('id', $ids)->get();
-
-                    return $scriptExecutors->map(function ($scriptExecutor) {
-                        return $this->exportHelper($scriptExecutor, ScriptExecutorExporter::class);
-                    });
                 }
+
+                return $scriptExecutors->map(function ($scriptExecutor) {
+                    return $this->exportHelper($scriptExecutor, ScriptExecutorExporter::class);
+                });
             case 'ui_dashboards':
                 if (empty($this->config)) {
                     $uiDashboards = Dashboard::all();
-
-                    return $uiDashboards->map(function ($uiDashboard) {
-                        return $this->exportHelper($uiDashboard, DashboardExporter::class);
-                    });
                 } else {
                     $uiDashboards = Dashboard::whereIn('id', $ids)->get();
-
-                    return $uiDashboards->map(function ($uiDashboard) {
-                        return $this->exportHelper($uiDashboard, DashboardExporter::class);
-                    });
                 }
+
+                return $uiDashboards->map(function ($uiDashboard) {
+                    return $this->exportHelper($uiDashboard, DashboardExporter::class);
+                });
             case 'ui_menus':
                 if (empty($this->config)) {
                     $uiMenus = Menu::all();
-
-                    return $uiMenus->map(function ($uiMenu) {
-                        return $this->exportHelper($uiMenu, MenuExporter::class);
-                    });
                 } else {
                     $uiMenus = Menu::whereIn('id', $ids)->get();
-
-                    return $uiMenus->map(function ($uiMenu) {
-                        return $this->exportHelper($uiMenu, MenuExporter::class);
-                    });
                 }
+
+                return $uiMenus->map(function ($uiMenu) {
+                    return $this->exportHelper($uiMenu, MenuExporter::class);
+                });
             case 'translations':
                 if (empty($this->config)) {
                     $translations = Translatable::all();
-
-                    return $translations->map(function ($translation) {
-                        return $this->exportHelper($translation, TranslatableExporter::class);
-                    });
                 } else {
                     $translations = Translatable::whereIn('key', $ids)->get();
-
-                    return $translations->map(function ($translation) {
-                        return $this->exportHelper($translation, TranslatableExporter::class);
-                    });
                 }
+
+                return $translations->map(function ($translation) {
+                    return $this->exportHelper($translation, TranslatableExporter::class);
+                });
             case 'auth_clients':
                 if (empty($this->config)) {
                     $authClients = \Laravel\Passport\Client::where('revoked', false)->get();
-
-                    return $authClients->map(function ($authClient) {
-                        $authClient->setting_type = $this->setting;
-
-                        return $authClient;
-                    });
                 } else {
                     $authClients = \Laravel\Passport\Client::where('revoked', false)->whereIn('id', $ids)->get();
-
-                    return $authClients->map(function ($authClient) {
-                        $authClient->setting_type = $this->setting;
-
-                        return $authClient;
-                    });
                 }
+
+                return $authClients->map(function ($authClient) {
+                    $authClient->setting_type = $this->setting;
+
+                    return $authClient;
+                });
             case 'Log-In & Auth':
             case 'User Settings':
             case 'Email':
