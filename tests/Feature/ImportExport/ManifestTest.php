@@ -147,7 +147,7 @@ class ManifestTest extends TestCase
             ],
         ];
 
-        Manifest::fromArray($payload, new Options([]), new Logger($user->id));
+        Manifest::fromArray($payload, new Options([]), new Logger($user->id), $user->uuid);
 
         Event::assertDispatched(ImportLog::class, function ($event) {
             return $event->message === 'Class My\Test\Package does not exist.';
@@ -168,7 +168,7 @@ class ManifestTest extends TestCase
             ],
         ];
 
-        Manifest::fromArray($payload, new Options([]), new Logger($user->id));
+        Manifest::fromArray($payload, new Options([]), new Logger($user->id), $user->uuid);
 
         Event::assertDispatched(ImportLog::class, function ($event) {
             return $event->message === 'Class Some\Other\Class does not exist.';
@@ -192,7 +192,7 @@ class ManifestTest extends TestCase
             ],
         ];
 
-        Manifest::fromArray($payload, new Options([]), new Logger($user->id));
+        Manifest::fromArray($payload, new Options([]), new Logger($user->id), $user->uuid);
 
         Event::assertDispatched(ImportLog::class, function ($event) {
             return $event->message === "Attribute 'a_missing_column' does not exist in the table 'screens'";
