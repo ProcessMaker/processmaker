@@ -1,6 +1,6 @@
 [
   {
-     "name":"Default Email Task Notification",
+     "name":"DEFAULT_EMAIL_TASK_NOTIFICATION",
      "items":[
         {
            "label":"Rich Text",

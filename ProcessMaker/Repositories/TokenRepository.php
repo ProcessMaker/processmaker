@@ -177,7 +177,9 @@ class TokenRepository implements TokenRepositoryInterface
             // Review if the task has enable the action by email
             $this->validateAndSendActionByEmail($activity, $token, $user->email);
             // Review if the user has enable the email notification
-            $this->validateEmailUserNotification($token, $user);
+            $isEmailTaskValid = $this->validateEmailUserNotification($token, $user);
+            // Define the flag if the email needs to sent
+            $token->is_emailsent = $isEmailTaskValid ? 1 : 0;
         }
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
     }
@@ -279,7 +281,7 @@ class TokenRepository implements TokenRepositoryInterface
             'imgHeader' => config('app.url') . '/img/processmaker-login.svg',
         ];
         // Get the screen
-        $screen = Screen::where('title', 'Default Email Task Notification')->first();
+        $screen = Screen::where('title', 'DEFAULT_EMAIL_TASK_NOTIFICATION')->first();
         // Prepare the email configuration
         $configEmail = [
             'emailServer' => 0, // Use the default email server

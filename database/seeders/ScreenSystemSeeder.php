@@ -35,6 +35,7 @@ class ScreenSystemSeeder extends Seeder
             $systemCategory = ScreenCategory::where('is_system', true)->first();
             if ($screen && $systemCategory && $screen->screen_category_id === $systemCategory->id) {
                 $screen->screen_category_id = null;
+                $screen->config = $json;
                 $screen->categories()->sync([]);
                 $screen->save();
             }
