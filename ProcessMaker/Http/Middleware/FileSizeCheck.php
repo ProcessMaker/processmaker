@@ -20,11 +20,8 @@ class FileSizeCheck
     public function handle(Request $request, Closure $next)
     {
         if ($request->allFiles()) {
-            $maxFileSize = $this->getMaxFileSize();
-            $convertedMaxFileSize = $this->convertToBytes($maxFileSize);
-
             try {
-                $this->validateFiles($request, $convertedMaxFileSize, $maxFileSize);
+                $this->validateFiles($request);
             } catch (ValidationException $e) {
                 return response()->json([
                     'message' => $e->errors()['file'][0],
@@ -55,11 +52,45 @@ class FileSizeCheck
     /**
      * Get the maximum file size allowed
      *
+     * @param string $filetype
      * @return string
      */
-    protected function getMaxFileSize()
+    protected function getMaxFileSize($filetype)
     {
-        return ini_get('upload_max_filesize');
+        // Define image types
+        $imageMimeTypes = [
+            'image/jpeg',
+            'image/jpg',
+            'image/png',
+            'image/gif',
+        ];
+
+        // Define document types
+        $documentMimeTypes = [
+            'text/plain',
+            'application/rtf',
+            'text/markdown',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.ms-powerpoint',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'application/pdf',
+            'text/csv',
+            'text/html',
+            'application/xml',
+            'text/xml',
+            'application/json',
+        ];
+
+        if (in_array($filetype, $imageMimeTypes)) {
+            return config('app.settings.img_max_filesize_limit');
+        } elseif (in_array($filetype, $documentMimeTypes)) {
+            return config('app.settings.doc_max_filesize_limit');
+        } else {
+            return config('app.settings.max_filesize_limit') ?? ini_get('upload_max_filesize');
+        }
     }
 
     /**
@@ -94,19 +125,19 @@ class FileSizeCheck
      * Recursively validate files
      *
      * @param Request $request
-     * @param int $maxSize
-     * @param string $maxSizeDisplay
      * @throws ValidationException
      */
-    private function validateFiles($request, $maxSize, $maxSizeDisplay)
+    private function validateFiles($request)
     {
         $files = $request->allFiles();
         $totalSize = (int) $request->get('totalSize', 0);
+        $maxSize = config('app.settings.max_filesize_limit');
+        $maxSizeInBytes = $this->convertToBytes($maxSize);
 
-        // Check total size first if it exists
-        if ($totalSize > 0 && $totalSize > $maxSize) {
+        // Check total size first if it exists (using a general max_filesize_limit from env)
+        if ($totalSize > 0 && $totalSize > $maxSizeInBytes) {
             throw ValidationException::withMessages([
-                'file' => ['The file is too large. Maximum allowed size is ' . $maxSizeDisplay],
+                'file' => ['The total upload size is too large. Maximum allowed size is ' . $maxSize],
             ]);
         }
 
@@ -118,9 +149,14 @@ class FileSizeCheck
                 ]);
             }
 
-            if ($totalSize == 0 && $file->getSize() > $maxSize) {
+            // Get max filesize depending on filetype
+            $fileType = $file->getClientMimeType();
+            $maxFileSize = $this->getMaxFileSize($fileType);
+            $maxFileSizeInBytes = $this->convertToBytes($maxFileSize);
+
+            if ($totalSize == 0 && $file->getSize() > $maxFileSizeInBytes) {
                 throw ValidationException::withMessages([
-                    'file' => ['The file is too large. Maximum allowed size is ' . $maxSizeDisplay],
+                    'file' => ['The file is too large. Maximum allowed size is ' . $maxFileSize],
                 ]);
             }
         }
