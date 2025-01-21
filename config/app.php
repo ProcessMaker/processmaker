@@ -140,7 +140,6 @@ return [
 
     // Global app settings
     'settings' => [
-
         // Path to logo image to be used on login page
         'login_logo_path' => env('LOGIN_LOGO_PATH', '/img/processmaker-login.svg'),
 
@@ -153,6 +152,14 @@ return [
         // Path to site-wide favicon
         'favicon_path' => env('FAVICON_PATH', '/img/favicon.svg'),
 
+        // Maximum file size for images to be set as default (in bytes) (5MB)
+        'img_max_filesize_limit' => env('IMG_MAX_FILESIZE_LIMIT', '5M'),
+
+        // Maximum file size for documents to be set as default (in bytes) (10MB)
+        'doc_max_filesize_limit' => env('DOC_MAX_FILESIZE_LIMIT', '10M'),
+
+        // Maximum file size for all files to be set as default (in bytes) (10MB)
+        'max_filesize_limit' => env('MAX_FILESIZE_LIMIT', '10M'),
     ],
 
     // Turn on/off the recommendation engine
@@ -246,7 +253,7 @@ return [
     // Process Request security log rate limit: 1 per day (86400 seconds)
     'process_request_errors_rate_limit' => env('PROCESS_REQUEST_ERRORS_RATE_LIMIT', 1),
     'process_request_errors_rate_limit_duration' => env('PROCESS_REQUEST_ERRORS_RATE_LIMIT_DURATION', 86400),
-    
+
     'default_colors' => [
         'primary' => '#2773F3',
         'secondary' => '#728092',
