@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import {
   CaseTitleCell,
   TruncatedOptionsCell,
@@ -7,7 +8,6 @@ import {
   TruncatedColumn,
 } from "../../../system/index";
 import { formatDate } from "../../../utils";
-import { t } from "i18next";
 
 export default {};
 /**
@@ -78,7 +78,7 @@ export const processColumn = () => ({
 
 export const taskColumn = () => ({
   field: "tasks",
-  header: "Task",
+  header: t("Current Task"),
   resizable: true,
   width: 200,
   cellRenderer: () => ({
