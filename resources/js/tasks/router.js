@@ -24,7 +24,9 @@ const router = new VueRouter({
       name: "dashboard",
       component: DashboardViewer,
       props: route => ({
-        dashboardId: route.params.dashboardId || null
+        dashboardId: route.params.dashboardId || null,
+        screen: route.params.screen || null,
+        formData: route.params.formData || null
       })
     }
   ]

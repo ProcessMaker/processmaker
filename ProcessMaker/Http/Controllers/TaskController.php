@@ -62,7 +62,9 @@ class TaskController extends Controller
 
         $userConfiguration = (new UserConfigurationController())->index()['ui_configuration'] ?? [];
 
-        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns', 'taskDraftsEnabled', 'userConfiguration', 'showOldTaskScreen'));
+        $currentUser = Auth::user();
+
+        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns', 'taskDraftsEnabled', 'userConfiguration', 'showOldTaskScreen', 'currentUser'));
     }
 
     public function edit(ProcessRequestToken $task, string $preview = '')

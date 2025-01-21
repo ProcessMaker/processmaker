@@ -22,20 +22,18 @@
 
       <div class="divider-custom"></div>
 
-      <div class="dashboard-section">
-        <div class="buttons-list-dashboard">
-          <button
-            v-for="dashboard in dashboards"
-            :key="dashboard.id"
-            class="menu-btn"
-            @click="openProcessDashboard(dashboard.id, 'dashboard')"
-          >
-            <i class="fp-tachometer-alt-average"></i>
-            <span :id="`dashboard-${dashboard.id}`" class="title-dashboard">
-              {{ dashboard.name }}
-            </span>
-          </button>
-        </div>
+      <div class="buttons-list-dashboard">
+        <button
+          v-for="dashboard in dashboards"
+          :key="dashboard.id"
+          class="menu-btn"
+          @click="openProcessDashboard(dashboard.id, 'dashboard')"
+        >
+          <i class="fp-tachometer-alt-average"></i>
+          <span :id="`dashboard-${dashboard.id}`" class="title-dashboard">
+            {{ dashboard.title }}
+          </span>
+        </button>
       </div>
     </div>
   </div>
@@ -50,15 +48,14 @@ export default {
       pmql: `user_id=${window.ProcessMaker.user.id}`,
       processesList: [],
       labelIcon: "Default Icon",
-      dashboards: [
-        { id: 1, name: "Dashboard 1" },
-        { id: 2, name: "Dashboard 2" },
-        { id: 3, name: "Dashboard 3" },
-      ],
+      dashboards: [],
+      screen: null,
+      formData: null,
     };
   },
   mounted() {
     this.loadProcesses();
+    this.loadDashboards();
   },
   methods: {
     openProcessDashboard(id, type) {
@@ -76,26 +73,41 @@ export default {
             }
           });
       } else {
-        router
-          .push({
-            name: "dashboard",
-            params: { dashboardId: id.toString() },
-          })
-          .catch((err) => {
-            if (err.name !== "NavigationDuplicated") {
-              throw err;
-            }
-          });
+        this.getDashboardViewScreen(id.toString());
       }
 
       this.$emit("processDashboardSelected", { id, type });
       this.$emit("menuItemSelected");
+    },
+    callDashboardViewScreen(id, screen, formData) {
+      const router = this.$router || this.$root.$router;
+      router
+        .push({
+          name: "dashboard",
+          params: {
+            dashboardId: id.toString(),
+            screen: screen,
+            formData: formData,
+          },
+        })
+        .catch((err) => {
+          if (err.name !== "NavigationDuplicated") {
+            throw err;
+          }
+        });
     },
     loadProcesses() {
       const url = this.buildURL();
 
       ProcessMaker.apiClient.get(url).then((response) => {
         this.processesList = this.processesList.concat(response.data.data);
+      });
+    },
+    loadDashboards() {
+      const url = this.buildURLDashboards();
+
+      ProcessMaker.apiClient.get(url).then((response) => {
+        this.dashboards = this.dashboards.concat(response.data);
       });
     },
     /**
@@ -109,6 +121,13 @@ export default {
         &order_by=name&order_direction=asc
         &include=user,categories,category`;
     },
+    buildURLDashboards() {
+      return `/dynamic-ui/custom-dashboards`;
+    },
+    buildURLDashboardsScreen(id) {
+      //return `/dynamic-ui/custom-dashboards/${token}`;
+      return `/dynamic-ui/custom-dashboards/screen/${id}`;
+    },
     getIconProcess(process) {
       let icon = "Default Icon";
       const unparseProperties = process?.launchpad?.properties || null;
@@ -117,6 +136,15 @@ export default {
       }
 
       return `/img/launchpad-images/icons/${icon}.svg`;
+    },
+    getDashboardViewScreen(id) {
+      const url = this.buildURLDashboardsScreen(id);
+
+      ProcessMaker.apiClient.get(url).then((response) => {
+        this.screen = response.data.screen;
+        this.formData = response.data.formData;
+        this.callDashboardViewScreen(id, this.screen, this.formData);
+      });
     },
   },
 };

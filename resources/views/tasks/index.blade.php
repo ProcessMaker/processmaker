@@ -159,6 +159,7 @@
         window.ProcessMaker.userConfiguration = @json($userConfiguration ?? []);
         window.sessionStorage.setItem('elementDestinationURL', window.location.href);
         window.ProcessMaker.showOldTaskScreen = @json($showOldTaskScreen);
+        window.Processmaker.user = @json($currentUser);
     </script>
     <script>
         window.ProcessMaker.ellipsisPermission = {{
