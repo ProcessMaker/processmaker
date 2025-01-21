@@ -243,7 +243,7 @@ class TokenRepository implements TokenRepositoryInterface
         try {
             Log::Info('User isEmailTaskEnable: ' . $user->email_task_notification);
             // Return if email task notification is not enabled or email is empty
-            if (!$user->email_task_notification || empty($user->email)) {
+            if ($user->email_task_notification === 0 || empty($user->email)) {
                 return null;
             }
             // Prepare data for the email
@@ -278,14 +278,15 @@ class TokenRepository implements TokenRepositoryInterface
             'element_name' => $taskName,
             'case_title' => $caseTitle, // Populate this if needed
             'due_date' => $token->due_at ?? '',
-            'imgHeader' => config('app.url') . '/img/processmaker-login.svg',
+            'link_review_task' => config('app.url') . 'tasks/' . $token->id . '/edit',
+            'imgHeader' => config('app.url') . '/img/header-slideshow-default-email.png',
         ];
         // Get the screen
         $screen = Screen::where('title', 'DEFAULT_EMAIL_TASK_NOTIFICATION')->first();
         // Prepare the email configuration
         $configEmail = [
             'emailServer' => 0, // Use the default email server
-            'subject' => "{$user->firstname} assigned you in {$taskName}",
+            'subject' => "{$user->firstname} assigned you in '{$taskName}'",
             'screenEmailRef' => $screen->id ?? 0, // Define here the screen to use
         ];
 
