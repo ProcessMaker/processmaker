@@ -2,10 +2,10 @@
 
 namespace ProcessMaker\Console\Commands;
 
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class RevokeOauthAccessTokens extends Command
 {
@@ -37,11 +37,13 @@ class RevokeOauthAccessTokens extends Command
 
         if (!$name && !$after && !$clientId) {
             $this->error('At least one of --name, --after, or --client_id must be specified.');
+
             return;
         }
 
         if (!$noInteraction && !$this->confirm('Are you sure you want to revoke this certificate?')) {
             $this->info('Certificate revocation cancelled.');
+
             return;
         }
 

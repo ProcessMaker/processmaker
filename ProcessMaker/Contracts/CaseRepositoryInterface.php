@@ -14,6 +14,7 @@ interface CaseRepositoryInterface
      * @return void
      */
     public function create(ExecutionInstanceInterface $instance): void;
+
     /**
      * Update the case started.
      *
@@ -22,6 +23,7 @@ interface CaseRepositoryInterface
      * @return void
      */
     public function update(ExecutionInstanceInterface $instance, TokenInterface $token): void;
+
     /**
      * Update the status of a case started.
      *

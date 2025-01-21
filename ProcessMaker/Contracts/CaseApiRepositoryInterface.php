@@ -15,6 +15,7 @@ interface CaseApiRepositoryInterface
      * @return Builder
      */
     public function getAllCases(Request $request): Builder;
+
     /**
      * Get all cases in progress
      *
@@ -23,6 +24,7 @@ interface CaseApiRepositoryInterface
      * @return Builder
      */
     public function getInProgressCases(Request $request): Builder;
+
     /**
      * Get all completed cases
      *
@@ -31,6 +33,7 @@ interface CaseApiRepositoryInterface
      * @return Builder
      */
     public function getCompletedCases(Request $request): Builder;
+
     /**
      * Search by case number or case title.
 
@@ -40,6 +43,7 @@ interface CaseApiRepositoryInterface
      * @return void
      */
     public function search(Request $request, Builder $query): void;
+
     /**
      * Filter the query.
      *
@@ -50,6 +54,7 @@ interface CaseApiRepositoryInterface
      * @return void
      */
     public function filterBy(Request $request, Builder $query): void;
+
     /**
      * Sort the query.
      *

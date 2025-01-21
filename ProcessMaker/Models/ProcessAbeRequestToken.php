@@ -37,7 +37,7 @@ class ProcessAbeRequestToken extends ProcessMakerModel
         'data',
         'is_answered',
         'require_login',
-        'answered_at'
+        'answered_at',
     ];
 
     public static function rules(): array

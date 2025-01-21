@@ -48,7 +48,7 @@ return [
              * Read more about possible values at https://www.rabbitmq.com/tutorials/amqp-concepts.html
              */
 
-            'type' => env('RABBITMQ_EXCHANGE_TYPE', \PhpAmqpLib\Exchange\AMQPExchangeType::DIRECT),
+            'type' => env('RABBITMQ_EXCHANGE_TYPE', PhpAmqpLib\Exchange\AMQPExchangeType::DIRECT),
             'passive' => env('RABBITMQ_EXCHANGE_PASSIVE', false),
             'durable' => env('RABBITMQ_EXCHANGE_DURABLE', true),
             'auto_delete' => env('RABBITMQ_EXCHANGE_AUTODELETE', false),

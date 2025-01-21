@@ -32,6 +32,7 @@ class UpdateSettingsGroupId extends Command
     {
         // Update the setting.group_id with the corresponding category created in settings_menus
         Setting::updateAllSettingsGroupId();
-        return $this->info("Settings group_id updated successfully");
+
+        return $this->info('Settings group_id updated successfully');
     }
 }

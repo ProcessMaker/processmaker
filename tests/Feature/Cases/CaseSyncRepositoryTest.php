@@ -2,11 +2,11 @@
 
 namespace Tests\Feature\Cases;
 
-use ProcessMaker\Repositories\CaseSyncRepository;
+use Illuminate\Support\Facades\DB;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Repositories\CaseSyncRepository;
 use Tests\TestCase;
-use Illuminate\Support\Facades\DB;
 
 class CaseSyncRepositoryTest extends TestCase
 {
@@ -24,7 +24,7 @@ class CaseSyncRepositoryTest extends TestCase
                 'status' => 'ACTIVE',
                 'element_id' => 'task-1',
                 'process_request_id' => $processRequest1->id,
-                'process_id' => $processRequest1->process_id
+                'process_id' => $processRequest1->process_id,
             ])->toArray(),
             ProcessRequestToken::factory()->make([
                 'element_name' => 'Task 2',
@@ -32,7 +32,7 @@ class CaseSyncRepositoryTest extends TestCase
                 'status' => 'CLOSED',
                 'element_id' => 'task-2',
                 'process_request_id' => $processRequest1->id,
-                'process_id' => $processRequest1->process_id
+                'process_id' => $processRequest1->process_id,
             ])->toArray(),
             ProcessRequestToken::factory()->make([
                 'element_name' => 'Task 3',
@@ -40,7 +40,7 @@ class CaseSyncRepositoryTest extends TestCase
                 'status' => 'ACTIVE',
                 'element_id' => 'call-activity-1',
                 'process_request_id' => $processRequest1->id,
-                'process_id' => $processRequest1->process_id
+                'process_id' => $processRequest1->process_id,
             ])->toArray(),
         ]);
 
@@ -51,7 +51,7 @@ class CaseSyncRepositoryTest extends TestCase
                 'status' => 'CLOSED',
                 'element_id' => 'task-4',
                 'process_request_id' => $processRequest2->id,
-                'process_id' => $processRequest2->process_id
+                'process_id' => $processRequest2->process_id,
             ])->toArray(),
             ProcessRequestToken::factory()->make([
                 'element_name' => 'Task 5',
@@ -59,7 +59,7 @@ class CaseSyncRepositoryTest extends TestCase
                 'status' => 'ACTIVE',
                 'element_id' => 'task-5',
                 'process_request_id' => $processRequest2->id,
-                'process_id' => $processRequest2->process_id
+                'process_id' => $processRequest2->process_id,
             ])->toArray(),
         ]);
 
@@ -85,21 +85,21 @@ class CaseSyncRepositoryTest extends TestCase
                 'name' => 'Task 5',
                 'status' => 'ACTIVE',
                 'element_id' => 'task-5',
-                'process_id' => $processRequest2->process_id
+                'process_id' => $processRequest2->process_id,
             ],
             [
                 'id' => $processRequest1->tokens()->where('element_id', 'task-2')->first()->id,
                 'name' => 'Task 2',
                 'status' => 'CLOSED',
                 'element_id' => 'task-2',
-                'process_id' => $processRequest1->process_id
+                'process_id' => $processRequest1->process_id,
             ],
             [
                 'id' => $processRequest1->tokens()->where('element_id', 'task-1')->first()->id,
                 'name' => 'Task 1',
                 'status' => 'ACTIVE',
                 'element_id' => 'task-1',
-                'process_id' => $processRequest1->process_id
+                'process_id' => $processRequest1->process_id,
             ],
         ];
         $expectedParticipants = [

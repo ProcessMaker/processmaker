@@ -214,7 +214,7 @@ class GroupMemberController extends Controller
     /**
      * Display a listing of groups available
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  Request $request
      * @return ApiCollection
      *
      * @OA\Get(
@@ -338,7 +338,7 @@ class GroupMemberController extends Controller
     /**
      * Display a listing of users available
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  Request $request
      * @return ApiCollection
      *
      * @OA\Get(

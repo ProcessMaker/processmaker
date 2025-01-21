@@ -45,6 +45,7 @@ class InterstitialTest extends TestCase
     {
         $data = [];
         $data['bpmn'] = Process::getProcessTemplate($file);
+
         return Process::factory()->create($data);
     }
 
@@ -56,6 +57,7 @@ class InterstitialTest extends TestCase
         $maxId = Process::max('id') ?? 0;
         $data = json_decode(file_get_contents(base_path('tests/Fixtures/' . $file)), true);
         $this->import($data);
+
         return Process::where('id', '>', $maxId)->get();
     }
 
@@ -63,6 +65,7 @@ class InterstitialTest extends TestCase
     {
         $route = route('api.process_events.trigger', [$process->id, 'event' => $event]);
         $response = $this->apiCall('POST', $route, $data);
+
         return $response->json();
     }
 
@@ -71,8 +74,10 @@ class InterstitialTest extends TestCase
         //Get the active tasks of the request
         $route = route('api.tasks.index', ['status' => 'ACTIVE']);
         $response = $this->apiCall('GET', $route);
+
         return $response->json('data');
     }
+
     private function completeActiveTask(array $data = [])
     {
         //Get the active tasks of the request
@@ -80,6 +85,7 @@ class InterstitialTest extends TestCase
         //Complete the task
         $route = route('api.tasks.update', [$tasks[0]['id'], 'status' => 'COMPLETED']);
         $response = $this->apiCall('PUT', $route, ['data' => $data]);
+
         return $response->json();
     }
 
@@ -91,6 +97,7 @@ class InterstitialTest extends TestCase
                 return false;
             }
         }
+
         return true;
     }
 
@@ -118,7 +125,7 @@ class InterstitialTest extends TestCase
                 [
                     'tokenId' => $tasks[0]['id'],
                     'nodeId' => $tasks[0]['element_id'],
-                ]
+                ],
             ],
         ];
         $dispatched[] = $expectedEvent;
@@ -136,14 +143,13 @@ class InterstitialTest extends TestCase
             'params' => [
                 [
                     'tokenId' => $tasks[0]['id'],
-                ]
+                ],
             ],
         ];
         $dispatched[] = $expectedEvent;
         Event::assertDispatched(RedirectToEvent::class, function ($event) use ($expectedEvent) {
             return $event->method === $expectedEvent['method']
                 && $event->params[0]['tokenId'] === $expectedEvent['params'][0]['tokenId'];
-                
         });
 
         // Complete active task (sub process - Task 2) and check RedirectToEvent dispatched to next Task not to subprocess summary
@@ -154,12 +160,12 @@ class InterstitialTest extends TestCase
             'params' => [
                 [
                     'tokenId' => $tasks[0]['id'],
-                ]
+                ],
             ],
             'broadcastTo' => [
                 'private-ProcessMaker.Models.ProcessRequest.' . $tasks[0]['process_request_id'], // active task: parent request
                 'private-ProcessMaker.Models.ProcessRequest.' . $task['process_request_id'], // completed task: child request
-            ]
+            ],
         ];
         $dispatched[] = $expectedEvent;
         Event::assertDispatched(RedirectToEvent::class, function ($event) use ($expectedEvent, $task) {

@@ -113,7 +113,7 @@ class TimerExpression implements FormalExpressionInterface
     /**
      * Get a DateTime if the expression is a date.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     protected function getDateExpression($expression)
     {
@@ -180,7 +180,7 @@ class TimerExpression implements FormalExpressionInterface
     /**
      * Get a DateInterval if the expression is a duration.
      *
-     * @return \DateInterval
+     * @return DateInterval
      */
     protected function getDurationExpression($expression)
     {

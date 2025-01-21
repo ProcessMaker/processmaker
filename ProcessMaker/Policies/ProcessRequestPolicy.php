@@ -14,7 +14,7 @@ class ProcessRequestPolicy
      * Run before all methods to determine if the
      * user is an admin and can do everything.
      *
-     * @param  \ProcessMaker\Models\User  $user
+     * @param  User  $user
      * @return mixed
      */
     public function before(User $user)
@@ -27,8 +27,8 @@ class ProcessRequestPolicy
     /**
      * Determine whether the user can view the process request.
      *
-     * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Models\ProcessRequest  $processRequest
+     * @param  User  $user
+     * @param  ProcessRequest  $processRequest
      * @return mixed
      */
     public function view(User $user, ProcessRequest $processRequest)
@@ -42,8 +42,8 @@ class ProcessRequestPolicy
     /**
      * Determine whether the user can update the process request.
      *
-     * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Models\ProcessRequest  $processRequest
+     * @param  User  $user
+     * @param  ProcessRequest  $processRequest
      * @return mixed
      */
     public function update(User $user, ProcessRequest $processRequest)
@@ -60,8 +60,8 @@ class ProcessRequestPolicy
     /**
      * Determine whether the user can update the process request.
      *
-     * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Models\ProcessRequest  $processRequest
+     * @param  User  $user
+     * @param  ProcessRequest  $processRequest
      * @return mixed
      */
     public function destroy(User $user, ProcessRequest $processRequest)
@@ -74,7 +74,7 @@ class ProcessRequestPolicy
     /**
      * Determine whether the user can edit request data.
      *
-     * @param  \ProcessMaker\Models\User  $user
+     * @param  User  $user
      * @param  \ProcessMaker\Process  $process
      * @return bool
      */
@@ -94,8 +94,8 @@ class ProcessRequestPolicy
     /**
      * User has access if participates in the request.
      *
-     * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Models\ProcessRequest  $processRequest
+     * @param  User  $user
+     * @param  ProcessRequest  $processRequest
      *
      * @return mixed
      */

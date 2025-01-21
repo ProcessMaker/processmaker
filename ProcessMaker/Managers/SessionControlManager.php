@@ -16,9 +16,11 @@ use Symfony\Component\HttpFoundation\Response;
 class SessionControlManager
 {
     const IP_RESTRICTION_KEY = 'session-control.ip_restriction';
+
     const DEVICE_RESTRICTION_KEY = 'session-control.device_restriction';
 
     private ?User $user;
+
     private string $clientIp;
 
     public function __construct(?User $user, string $clientIp)
@@ -28,7 +30,6 @@ class SessionControlManager
     }
 
     /**
-     *
      * If the session is blocked by some of the ProcessMaker policies, returns true, false otherwise
      *
      * @return bool
@@ -47,7 +48,6 @@ class SessionControlManager
         return false;
     }
 
-
     /**
      * Checks if a user's session is a duplicate based on their IP address.
      *
@@ -57,6 +57,7 @@ class SessionControlManager
     {
         // Get the user's most recent session
         $session = $this->user->sessions->sortByDesc('created_at')->first();
+
         // Get the user's current IP address
         return $session->ip_address === $this->clientIp;
     }

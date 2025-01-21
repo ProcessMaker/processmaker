@@ -43,7 +43,7 @@ trait ExtendedPMQL
      * PMQL scope that extends the standard PMQL scope by supporting any custom
      * aliases specified in the model.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param Builder $builder
      * @param string $query
      * @param callable $callback
      *
@@ -92,8 +92,8 @@ trait ExtendedPMQL
      * Callback function to check for and handle any field aliases, value
      * aliases, or field wildcards specified in the given model.
      *
-     * @param \ProcessMaker\Query\Expression $expression
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param Expression $expression
+     * @param Builder $builder
      *
      * @return mixed
      */
@@ -190,7 +190,7 @@ trait ExtendedPMQL
      * Set the value as a string if possible. Also convert to the logged-in
      * user's timezone if the value is parsable by Carbon as a date.
      *
-     * @param \ProcessMaker\Query\Expression $expression
+     * @param Expression $expression
      *
      * @return mixed
      */

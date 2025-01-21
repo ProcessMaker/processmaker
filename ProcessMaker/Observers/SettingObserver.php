@@ -11,7 +11,7 @@ class SettingObserver
     /**
      * Handle the setting "created" event.
      *
-     * @param  \ProcessMaker\Models\Setting  $setting
+     * @param  Setting  $setting
      * @return void
      */
     public function saving(Setting $setting)
@@ -39,7 +39,7 @@ class SettingObserver
                     try {
                         $return = json_decode($config);
                         $return = json_encode($return);
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         $return = $config;
                     }
                 } else {
@@ -55,7 +55,7 @@ class SettingObserver
                     try {
                         $return = json_decode($config, true);
                         $return = json_encode($return);
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         $return = $config;
                     }
                 } else {

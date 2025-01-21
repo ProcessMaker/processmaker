@@ -2,8 +2,8 @@
 
 namespace ProcessMaker\EncryptedData;
 
-use Illuminate\Support\Facades\App;
 use Illuminate\Encryption\Encrypter;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 use ProcessMaker\EncryptedData\EncryptedDataInterface;
 use ProcessMaker\Models\EncryptedData;
@@ -40,7 +40,7 @@ class Local implements EncryptedDataInterface
 
         // Store last $iv used
         self::$iv = $iv;
-        
+
         return $cipherText;
     }
 

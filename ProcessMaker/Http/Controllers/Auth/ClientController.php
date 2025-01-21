@@ -14,7 +14,7 @@ class ClientController extends PassportClientController
     /**
      * List auth clients
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return array
      */
     public function index(Request $request)
@@ -27,7 +27,7 @@ class ClientController extends PassportClientController
     /**
      * Get an individual auth client
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @param  string $clientId
      * @return array
      */
@@ -42,7 +42,7 @@ class ClientController extends PassportClientController
     /**
      * Store a new client.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return \Laravel\Passport\Client
      */
     public function store(Request $request)
@@ -70,7 +70,7 @@ class ClientController extends PassportClientController
     /**
      * Update the given client.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @param  string  $clientId
      * @return \Illuminate\Http\Response|\Laravel\Passport\Client
      */
@@ -108,7 +108,7 @@ class ClientController extends PassportClientController
     /**
      * Delete the given client.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @param  string  $clientId
      * @return null
      */

@@ -145,7 +145,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
      * @param array $data
      * @param callable $beforeStart
      *
-     * @return \ProcessMaker\Models\ProcessRequest
+     * @return ProcessRequest
      */
     public function triggerStartEvent(Definitions $definitions, StartEventInterface $event, array $data, callable $beforeStart = null)
     {
@@ -163,7 +163,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
      * @param ProcessInterface $process
      * @param array $data
      *
-     * @return \ProcessMaker\Models\ProcessRequest
+     * @return ProcessRequest
      */
     public function callProcess(Definitions $definitions, ProcessInterface $process, array $data)
     {
@@ -410,6 +410,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
                 . ' must be an instance of '
                 . ServiceTaskImplementationInterface::class
             );
+
             return false;
         }
 

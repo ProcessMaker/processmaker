@@ -45,7 +45,7 @@ class CaseTaskRepository
     public function updateTaskStatus()
     {
         try {
-            $case = $this->findCaseByTaskId($this->caseNumber, (string)$this->task->id);
+            $case = $this->findCaseByTaskId($this->caseNumber, (string) $this->task->id);
 
             if (!$case) {
                 Log::error('CaseException: ' . 'Case not found, case_number=' . $this->caseNumber . ', task_id=' . $this->task->id);
@@ -80,7 +80,7 @@ class CaseTaskRepository
         return DB::table($this->table)
             ->select([
                 'case_number',
-                DB::raw("JSON_UNQUOTE(JSON_SEARCH(tasks, 'one', ?, NULL, '$[*].id')) as task_index")
+                DB::raw("JSON_UNQUOTE(JSON_SEARCH(tasks, 'one', ?, NULL, '$[*].id')) as task_index"),
             ])
             ->where('case_number', $caseNumber)
             ->whereJsonContains('tasks', ['id' => $taskId])

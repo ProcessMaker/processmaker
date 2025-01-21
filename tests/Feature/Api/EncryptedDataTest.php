@@ -27,7 +27,7 @@ class EncryptedDataTest extends TestCase
 
         // Create required dummy objects
         $screen = Screen::factory()->create(['config' => $config]);
-        
+
         // Build data to send
         $data = [
             'field_name' => 'form_input_1',
@@ -112,7 +112,7 @@ class EncryptedDataTest extends TestCase
 
         // Create required dummy objects
         $screen = Screen::factory()->create();
-        
+
         // Build data to send
         $data = [
             'field_name' => '', // Empty
@@ -138,7 +138,7 @@ class EncryptedDataTest extends TestCase
 
         // Create required dummy objects
         $screen = Screen::factory()->create();
-        
+
         // Build data to send
         $data = [
             'field_name' => $faker->word(),
@@ -161,7 +161,7 @@ class EncryptedDataTest extends TestCase
     {
         // Initialize Faker
         $faker = Faker::create();
-        
+
         // Build data to send
         $data = [
             'field_name' => $faker->word(),

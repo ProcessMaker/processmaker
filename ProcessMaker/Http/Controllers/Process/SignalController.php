@@ -28,7 +28,7 @@ class SignalController extends Controller
     /**
      * Get a specific signal
      *
-     * @return \Illuminate\View\View|\Illuminate\Contracts\View
+     * @return View|\Illuminate\Contracts\View
      */
     public function edit($id)
     {

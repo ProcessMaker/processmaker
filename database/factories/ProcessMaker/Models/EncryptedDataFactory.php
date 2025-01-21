@@ -21,6 +21,7 @@ class EncryptedDataFactory extends Factory
         $driver = config('app.encrypted_data.driver');
 
         $cipherText = EncryptedData::driver($driver)->encryptText($this->faker->sentence(3));
+
         return [
             'field_name' => $this->faker->word(),
             'iv' => base64_encode(EncryptedData::driver($driver)->getIv()),

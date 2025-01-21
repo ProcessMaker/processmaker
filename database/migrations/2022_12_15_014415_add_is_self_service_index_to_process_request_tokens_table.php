@@ -20,7 +20,6 @@ return new class extends Migration {
 
     public function __construct()
     {
-
     }
 
     public function up()

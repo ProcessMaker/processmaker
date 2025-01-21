@@ -123,8 +123,8 @@ class CaseUtilsTest extends TestCase
 
     public function test_extract_data_process()
     {
-        $object = (object)[
-            'process' => (object)[
+        $object = (object) [
+            'process' => (object) [
                 'id' => 1,
                 'name' => 'Process 1',
             ],
@@ -138,11 +138,11 @@ class CaseUtilsTest extends TestCase
 
     public function test_extract_data_request()
     {
-        $object = (object)[
-            'processRequest' => (object)[
+        $object = (object) [
+            'processRequest' => (object) [
                 'id' => 1,
                 'name' => 'Request 1',
-                'parentRequest' => (object)[
+                'parentRequest' => (object) [
                     'id' => 2,
                 ],
             ],
@@ -157,7 +157,7 @@ class CaseUtilsTest extends TestCase
 
     public function test_extract_data_task()
     {
-        $object = (object)[
+        $object = (object) [
             'id' => 1,
             'element_id' => 101,
             'element_name' => 'Task 1',

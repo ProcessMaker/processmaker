@@ -18,7 +18,7 @@ class ProcessLaunchpadTest extends TestCase
     const STRUCTURE = [
         'launchpad',
         'media',
-        'embed'
+        'embed',
     ];
 
     /**
@@ -29,11 +29,11 @@ class ProcessLaunchpadTest extends TestCase
         // Create data
         $process = Process::factory()->create();
         // Call the api GET
-        $response = $this->apiCall('GET', self::API_TEST_URL .'/' . $process->id);
+        $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $process->id);
         // Validate the header status code
         $response->assertStatus(200);
         $this->assertNotEmpty($response);
-        
+
         // Create data related with the auth user
         $user = Auth::user();
         $process = Process::factory()->create();
@@ -42,7 +42,7 @@ class ProcessLaunchpadTest extends TestCase
             'user_id' => $user->id,
         ]);
         // Call the api GET
-        $response = $this->apiCall('GET', self::API_TEST_URL .'/' . $process->id);
+        $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $process->id);
         // Validate the header status code
         $response->assertStatus(200);
         $this->assertNotEmpty($response);
@@ -59,7 +59,7 @@ class ProcessLaunchpadTest extends TestCase
             'process_id' => $process->id,
         ]);
         // Call the api PUT
-        $values = json_encode(["icon" => "fa-user"]);
+        $values = json_encode(['icon' => 'fa-user']);
         $response = $this->apiCall('PUT', self::API_TEST_URL . '/' . $process->id, ['properties' => $values]);
         // Validate the header status code
         $response->assertStatus(200);

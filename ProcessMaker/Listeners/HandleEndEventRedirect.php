@@ -7,7 +7,6 @@ use ProcessMaker\Events\ProcessCompleted;
 
 class HandleEndEventRedirect extends HandleRedirectListener
 {
-
     /**
      * Handle the event.
      */
