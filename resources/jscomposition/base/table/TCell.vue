@@ -1,13 +1,15 @@
 <template>
   <td
-    class="tw-relative"
-    :style="{ width: `${column.width}px` }">
+    :style="{ width: width }"
+    class="tw-relative">
     <template v-if="!column.cellRenderer">
       <slot
         :columns="columns"
         :column="column"
         :row="row">
-        <div class="tw-p-3 tw-text-ellipsis tw-text-nowrap tw-overflow-hidden">
+        <div
+          :style="{ width: width }"
+          class="tw-p-3 tw-text-ellipsis tw-text-nowrap tw-overflow-hidden">
           {{ getValue() }}
         </div>
       </slot>
@@ -15,6 +17,7 @@
     <component
       :is="getComponent()"
       v-else
+      :style="{ width: width }"
       v-bind="getParams()"
       :columns="columns"
       :column="column"
@@ -24,7 +27,7 @@
 </template>
 
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, computed } from "vue";
 import { isFunction, get } from "lodash";
 
 export default defineComponent({
@@ -56,11 +59,21 @@ export default defineComponent({
 
     const collapseContainer = (value) => emit("toogleContainer", value);
 
+    const index = computed(() => props.columns.findIndex((column) => column.field === props.column.field));
+
+    const width = computed(() => {
+      if (index.value === props.columns.length - 1) {
+        return "auto";
+      }
+      return `${props.column.width || 200}px`;
+    });
+
     return {
       getComponent,
       getParams,
       getValue,
       collapseContainer,
+      width,
     };
   },
 });

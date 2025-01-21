@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import {
   CaseTitleCell,
   TruncatedOptionsCell,
@@ -7,7 +8,6 @@ import {
   TruncatedColumn,
 } from "../../../system/index";
 import { formatDate } from "../../../utils";
-import { t } from "i18next";
 
 export default {};
 /**
@@ -33,7 +33,7 @@ export const caseNumberColumn = () => ({
   field: "case_number",
   header: "Case #",
   resizable: true,
-  width: 100,
+  width: 144,
   filter: {
     dataType: "string",
     operators: ["=", ">", ">=", "in", "between"],
@@ -162,7 +162,7 @@ export const completedColumn = () => ({
   field: "completed_at",
   header: "Completed",
   resizable: true,
-  width: 200,
+  width: "auto",
   formatter: (row, column, columns) => formatDate(row.completed_at, "datetime"),
   filter: {
     dataType: "datetime",
