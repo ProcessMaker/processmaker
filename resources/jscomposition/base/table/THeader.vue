@@ -1,9 +1,9 @@
 <template>
   <th
-    class="tw-relative thead-resizable"
+    class="tw-relative thead-resizable tw-p-0"
     :style="{ width: width + 'px' }">
     <div
-      class="tw-py-4 tw-px-3 tw-text-left tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis">
+      class="tw-py-3 tw-px-3 tw-text-left tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis">
       <slot>
         {{ $t(getValue()) }}
       </slot>
