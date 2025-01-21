@@ -1,6 +1,6 @@
 <template>
   <td
-    class="tw-relative"
+    class="tw-relative tw-p-0"
     :style="{ width: `${column.width}px` }">
     <template v-if="!column.cellRenderer">
       <slot
