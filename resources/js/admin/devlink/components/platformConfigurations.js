@@ -31,8 +31,4 @@ export default [
     type: "public_files",
     name: "Public Files",
   },
-  {
-    type: "translations",
-    name: "Translations",
-  },
 ];

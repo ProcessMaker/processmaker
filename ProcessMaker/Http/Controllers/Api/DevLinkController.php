@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Http\Controllers\Controller;
@@ -10,9 +11,12 @@ use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Jobs\DevLinkInstall;
 use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\BundleAsset;
+use ProcessMaker\Models\BundleInstance;
 use ProcessMaker\Models\BundleSetting;
 use ProcessMaker\Models\DevLink;
 use ProcessMaker\Models\Setting;
+use ProcessMaker\Models\User;
+use ProcessMaker\Notifications\BundleUpdatedNotification;
 
 class DevLinkController extends Controller
 {
@@ -154,8 +158,25 @@ class DevLinkController extends Controller
 
     public function increaseBundleVersion(Bundle $bundle)
     {
+        $bundle->notifyBundleUpdated();
+
         $bundle->version = $bundle->version + 1;
         $bundle->saveOrFail();
+
+        return $bundle;
+    }
+
+    public function bundleUpdated($bundleId, $token)
+    {
+        $bundle = Bundle::find('remote_id', $bundleId);
+        $storedToken = $bundle->webhook_token;
+
+        if ($token !== $storedToken) {
+            return response()->json(['error' => 'Invalid token'], 403);
+        }
+        $adminUsers = User::where('is_administrator', true)->get();
+
+        Notification::send($adminUsers, new BundleUpdatedNotification($bundle));
 
         return $bundle;
     }
@@ -168,15 +189,14 @@ class DevLinkController extends Controller
     public function installRemoteBundle(Request $request, DevLink $devLink, $remoteBundleId)
     {
         $updateType = $request->input('updateType', DevLinkInstall::MODE_UPDATE);
-        // DevLinkInstall::dispatch(
-        //     $request->user()->id,
-        //     $devLink->id,
-        //     Bundle::class,
-        //     $remoteBundleId,
-        //     $updateType,
-        //     DevLinkInstall::TYPE_INSTALL_BUNDLE,
-        // );
-        $devLink->installRemoteBundle($remoteBundleId, $updateType);
+        DevLinkInstall::dispatch(
+            $request->user()->id,
+            $devLink->id,
+            Bundle::class,
+            $remoteBundleId,
+            $updateType,
+            DevLinkInstall::TYPE_INSTALL_BUNDLE,
+        );
 
         return [
             'status' => 'queued',
@@ -197,6 +217,14 @@ class DevLinkController extends Controller
         return [
             'status' => 'queued',
         ];
+    }
+
+    public function addBundleInstance(Request $request, Bundle $bundle)
+    {
+        BundleInstance::create([
+            'bundle_id' => $bundle->id,
+            'instance_url' => $request->input('instance_url'),
+        ]);
     }
 
     public function exportLocalBundle(Bundle $bundle)

@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Http;
 use ProcessMaker\Exception\ExporterNotSupported;
 use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\ImportExport\Importer;
@@ -390,5 +391,23 @@ class Bundle extends ProcessMakerModel implements HasMedia
         $this->install($payloads, $mode, $logger);
 
         $logger?->setStatus('done');
+    }
+
+    public function notifyBundleUpdated()
+    {
+        $bundleInstances = BundleInstance::where('bundle_id', $this->id)->get();
+        foreach ($bundleInstances as $bundleInstance) {
+            $url = $bundleInstance->instance_url;
+
+            try {
+                $response = Http::post($url);
+
+                if ($response->status() === 403) {
+                    \Log::error("Failed to notify bundle update for URL: $url " . $response);
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error notifying bundle update: ' . $e->getMessage());
+            }
+        }
     }
 }
