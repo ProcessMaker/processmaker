@@ -115,6 +115,7 @@ class ExecuteScript implements ShouldQueue
         ]);
         $result = curl_exec($ch);
         curl_close($ch);
+
         return $result;
     }
 

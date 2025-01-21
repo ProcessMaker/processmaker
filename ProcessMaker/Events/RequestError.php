@@ -75,6 +75,7 @@ class RequestError implements SecurityLogEventInterface
 
         if (RateLimiter::tooManyAttempts($key, $limit)) {
             Log::warning("Process {$request->id} has reached the request error limit for today.");
+
             return false;
         }
 

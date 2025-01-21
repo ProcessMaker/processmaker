@@ -17,7 +17,7 @@ class ProcessPolicy
      * Run before all methods to determine if the
      * user is an admin and can do everything.
      *
-     * @param  \ProcessMaker\Models\User  $user
+     * @param  User  $user
      * @return mixed
      */
     public function before(User $user)
@@ -39,8 +39,8 @@ class ProcessPolicy
     /**
      * Determine whether the user can start the process.
      *
-     * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Models\Process  $process
+     * @param  User  $user
+     * @param  Process  $process
      * @return mixed
      */
     public function start(User $user, Process $process)
@@ -81,8 +81,8 @@ class ProcessPolicy
     /**
      * Determine whether the user can cancel the process.
      *
-     * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Models\Process  $process
+     * @param  User  $user
+     * @param  Process  $process
      *
      * @return bool
      */
@@ -111,8 +111,8 @@ class ProcessPolicy
     /**
      * Determine whether the user can edit data.
      *
-     * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Models\Process  $process
+     * @param  User  $user
+     * @param  Process  $process
      *
      * @return bool
      */

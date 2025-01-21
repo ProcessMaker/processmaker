@@ -83,26 +83,25 @@ class ModelerController extends Controller
         Request $request,
         string $alternative,
         $isTemplate = false
-    )
-    {
+    ) {
         // Retrieve PM block list and external integrations list
         $pmBlockList = $this->getPmBlockList();
         $externalIntegrationsList = $this->getExternalIntegrationsList();
 
         // Emit ModelerStarting event to allow customization of modeler controls
         event(new ModelerStarting($manager));
-        
+
         // Count process categories for creating subprocess modal
         $countProcessCategories = ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
 
         // Retrieve screen types and count screen categories for creating screen modal
         $screenTypes = ScreenType::pluck('name')->map(fn ($type) => __(ucwords(strtolower($type))))->sort()->toArray();
         $countScreenCategories = ScreenCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
-        
+
         // Check if Projects and AI packages are installed
         $isProjectsInstalled = PackageHelper::isPackageInstalled(PackageHelper::PM_PACKAGE_PROJECTS);
         $isPackageAiInstalled = hasPackage('package-ai');
-        
+
         // Retrieve script executors and count script categories for creating script modal
         $scriptExecutors = ScriptExecutor::list();
         $countScriptCategories = ScriptCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();

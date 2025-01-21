@@ -986,6 +986,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     {
         $array = $this->toArray();
         unset($array['process_version']['svg']);
+
         return $array;
     }
 

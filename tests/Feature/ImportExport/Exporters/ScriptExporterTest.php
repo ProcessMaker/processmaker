@@ -58,7 +58,7 @@ class ScriptExporterTest extends TestCase
     {
         DB::beginTransaction();
         (new CategorySystemSeeder)->run();
-        $uncategorizedCategory = \ProcessMaker\Models\ScriptCategory::first();
+        $uncategorizedCategory = ScriptCategory::first();
 
         $script = Script::factory()->create(['title' => 'test']);
         $script->categories()->sync([$uncategorizedCategory->id]);
@@ -66,7 +66,7 @@ class ScriptExporterTest extends TestCase
         DB::rollBack(); // Delete all created items since DB::beginTransaction
 
         (new CategorySystemSeeder)->run();
-        $existingUncategorizedCategory = \ProcessMaker\Models\ScriptCategory::first();
+        $existingUncategorizedCategory = ScriptCategory::first();
         $existingUuid = $existingUncategorizedCategory->uuid;
 
         $this->import($payload);
@@ -191,4 +191,5 @@ class ScriptExporterTest extends TestCase
         $this->assertDatabaseHas('environment_variables', ['name' => $environmentVariable1->name . '_2']);
         $this->assertDatabaseHas('environment_variables', ['name' => $environmentVariable2->name . '_2']);
         $this->assertDatabaseMissing('environment_variables', ['name' => $environmentVariable3->name . '_2']);
-    }}
+    }
+}

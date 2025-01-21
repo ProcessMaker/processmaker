@@ -10,7 +10,7 @@ class ScriptRunner
     /**
      * Concrete script runner
      *
-     * @var \ProcessMaker\ScriptRunners\Base
+     * @var Base
      */
     private $runner;
 
@@ -41,8 +41,8 @@ class ScriptRunner
      *
      * @param ScriptExecutor $executor
      *
-     * @return \ProcessMaker\ScriptRunners\Base
-     * @throws \ProcessMaker\Exception\ScriptLanguageNotSupported
+     * @return Base
+     * @throws ScriptLanguageNotSupported
      */
     private function getScriptRunner(ScriptExecutor $executor)
     {

@@ -139,7 +139,7 @@ class Permission extends ProcessMakerModel
                     ->on('assignables.assignable_id', '=', 'users.id');
                 })
                 ->select('users.*')
-                ->union(\ProcessMaker\Models\User::where('is_administrator', '=', true))
+                ->union(User::where('is_administrator', '=', true))
                 ->groupBy('users.id')
                 ->get();
 

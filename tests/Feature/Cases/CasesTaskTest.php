@@ -40,15 +40,16 @@ class CasesTaskTest extends TestCase
             'user_id' => $this->user->id,
             'process_request_id' => $this->instance->id,
             'element_type' => 'task',
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ]);
 
         $this->caseNumber = 1234;
-        $this->task = (object)[
+        $this->task = (object) [
             'id' => 'task-1',
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ];
     }
+
     public function test_update_case_started_task_status()
     {
         $repo = new CaseRepository();
@@ -148,7 +149,7 @@ class CasesTaskTest extends TestCase
             'case_number' => $this->caseNumber,
             'tasks' => [
                 ['id' => 'task-1', 'status' => 'ACTIVE'],
-                ['id' => 'task-2', 'status' => 'ACTIVE']
+                ['id' => 'task-2', 'status' => 'ACTIVE'],
             ],
         ]);
 
@@ -175,7 +176,7 @@ class CasesTaskTest extends TestCase
             'case_number' => $this->caseNumber,
             'tasks' => [
                 ['id' => 'task-1', 'status' => 'ACTIVE'],
-                ['id' => 'task-2', 'status' => 'ACTIVE']
+                ['id' => 'task-2', 'status' => 'ACTIVE'],
             ],
         ]);
 
@@ -198,7 +199,7 @@ class CasesTaskTest extends TestCase
             'case_number' => $this->caseNumber,
             'tasks' => [
                 ['id' => 'task-1', 'status' => 'ACTIVE'],
-                ['id' => 'task-2', 'status' => 'ACTIVE']
+                ['id' => 'task-2', 'status' => 'ACTIVE'],
             ],
         ]);
 
