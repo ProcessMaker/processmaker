@@ -1,16 +1,19 @@
 <template>
   <div
-    class="tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis tw-p-3">
+    class="tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis tw-p-3"
+  >
     <a
       v-if="href !== null"
       class="hover:tw-text-blue-400 tw-text-gray-500"
-      :href="href(row)">
+      :href="href(row)"
+    >
       {{ getValue() }}
     </a>
     <span
       v-else
       class="hover:tw-text-blue-400 tw-text-gray-500 hover:tw-cursor-pointer"
-      @click.prevent="onClick">
+      @click.prevent="onClick"
+    >
       {{ getValue() }}
     </span>
   </div>
