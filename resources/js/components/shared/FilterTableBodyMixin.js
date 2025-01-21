@@ -52,10 +52,16 @@ export default {
       };
     },
     formatCategory(categories) {
-      return categories.map(item => item.name).join(', ');
+      return categories?.map(item => item.name).join(', ');
     },
     getNestedPropertyValue(obj, header) {
-      return this.format(get(obj, header.field), header);
+      const value = get(obj, header.field);
+
+      if (typeof header.cb === 'function') {
+        return header.cb(value, obj);
+      }
+
+      return this.format(value, header);
     },
     format(value, header) {
       let config = "";
