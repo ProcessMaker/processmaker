@@ -148,6 +148,11 @@ export default {
       ProcessMaker.apiClient.get(url).then((response) => {
         this.screen = response.data.screen;
         this.formData = response.data.formData;
+        
+        // Saved in sessionStorage (data is deleted when the browser is closed)
+        sessionStorage.setItem('dashboard_screen', JSON.stringify(response.data.screen));
+        sessionStorage.setItem('dashboard_formData', JSON.stringify(response.data.formData));
+        
         this.callDashboardViewScreen(id, this.screen, this.formData);
       });
     },

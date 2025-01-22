@@ -136,7 +136,7 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('modeler/{process}/inflight/{request?}', [ModelerController::class, 'inflight'])->name('modeler.inflight')->middleware('can:view,request');
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
-    Route::get('/inbox', [TaskController::class, 'index'])->name('inbox')->middleware('no-cache');
+    Route::get('/inbox/{router?}', [TaskController::class, 'index'])->where(['router' => '.*'])->name('inbox')->middleware('no-cache');
     Route::get('/redirect-to-intended', [HomeController::class, 'redirectToIntended'])->name('redirect_to_intended');
 
     Route::post('/keep-alive', [LoginController::class, 'keepAlive'])->name('keep-alive');

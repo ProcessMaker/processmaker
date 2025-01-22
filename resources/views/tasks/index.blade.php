@@ -11,8 +11,8 @@
 @section('breadcrumbs')
     @include('shared.breadcrumbs', [
         'routes' => [
-            __('Tasks') => route('tasks.index'),
-            __($title) => null,
+            Route::currentRouteName() === 'inbox' ? __('Inbox') : __('Tasks') => Route::currentRouteName() === 'inbox' ? route('inbox') : route('tasks.index'),
+            __(Route::currentRouteName() === 'inbox' ? 'Process or Dashboard' : $title) => null,
         ],
     ])
 @endsection
@@ -160,6 +160,7 @@
         window.sessionStorage.setItem('elementDestinationURL', window.location.href);
         window.ProcessMaker.showOldTaskScreen = @json($showOldTaskScreen);
         window.Processmaker.user = @json($currentUser);
+        window.Processmaker.selectedProcess = @json($selectedProcess);
     </script>
     <script>
         window.ProcessMaker.ellipsisPermission = {{

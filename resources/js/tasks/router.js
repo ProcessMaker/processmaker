@@ -4,6 +4,8 @@ import DashboardViewer from "./components/DashboardViewer.vue";
 import Process from "../processes-catalogue/components/Process";
 
 Vue.use(VueRouter);
+const screen = JSON.parse(sessionStorage.getItem('dashboard_screen'));
+const formData = JSON.parse(sessionStorage.getItem('dashboard_formData'));
 
 const router = new VueRouter({
   mode: "history",
@@ -25,8 +27,8 @@ const router = new VueRouter({
       component: DashboardViewer,
       props: route => ({
         dashboardId: route.params.dashboardId || null,
-        screen: route.params.screen || null,
-        formData: route.params.formData || null
+        screen: route.params.screen || screen,
+        formData: route.params.formData || formData
       })
     }
   ]

@@ -42,10 +42,13 @@ class TaskController extends Controller
 
     public function index()
     {
+
+        $routerPath = Request::route('router');
+
         $title = 'To Do Tasks';
-
-        $showOldTaskScreen = Request::path() !== 'inbox';
-
+        $path = Request::path() !== 'inbox';
+        $showOldTaskScreen = $path === true && $routerPath === null;
+        $selectedProcess = $routerPath === null ? 'inbox' : 'reload';
         if (Request::input('status') == 'CLOSED') {
             $title = 'Completed Tasks';
         }
@@ -64,7 +67,7 @@ class TaskController extends Controller
 
         $currentUser = Auth::user();
 
-        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns', 'taskDraftsEnabled', 'userConfiguration', 'showOldTaskScreen', 'currentUser'));
+        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns', 'taskDraftsEnabled', 'userConfiguration', 'showOldTaskScreen', 'currentUser', 'selectedProcess'));
     }
 
     public function edit(ProcessRequestToken $task, string $preview = '')

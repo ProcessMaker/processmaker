@@ -254,14 +254,14 @@ export default {
     savedsearchDefaultsEditRoute: {
       type: String,
       required: true,
-    },
+    }
   },
   data() {
     return {
       showMenu: false,
       urlConfiguration: "users/configuration",
       localUserConfiguration: {},
-      selectedProcess: "inbox",
+      selectedProcess: window.Processmaker.selectedProcess,
     };
   },
   mounted() {
