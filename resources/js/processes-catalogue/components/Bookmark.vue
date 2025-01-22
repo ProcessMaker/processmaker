@@ -76,18 +76,21 @@ export default {
 }
 
 .marked {
-  color: #f5bC00;
+  color: #ffc400;
+  -webkit-text-stroke-color: #ffc400;
+  -webkit-text-stroke-width: 0;
 }
 .unmarked {
-  color: #fff;
-  -webkit-text-stroke-color: #bed1e5;
+  color: #e9ecf1;
+  -webkit-text-stroke-color: #9fa8b5;
   -webkit-text-stroke-width: 2px;
 }
 .unmarked:hover {
   @media (max-width: $lp-breakpoint) {
     color: #fff;
   }
-  color: #ffd445;
-  -webkit-text-stroke-width: 0;
+  color: #fff4c6;
+  -webkit-text-stroke-color: #ffc400;
+  -webkit-text-stroke-width: 2px;
 }
 </style>

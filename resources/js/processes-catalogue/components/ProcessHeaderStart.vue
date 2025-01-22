@@ -189,11 +189,13 @@ export default {
 
 .card-bookmark {
   float: right;
-  font-size: 20px;
+  width: 20px;
+  height: 23px;
 }
 
 .card-bookmark:hover {
   cursor: pointer;
+  background-color: #fff4c6;
 }
 
 .card-custom {
@@ -227,6 +229,7 @@ export default {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  font-weight: 700;
   
   span {
     color: #ffffff;

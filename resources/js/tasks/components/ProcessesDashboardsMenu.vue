@@ -1,7 +1,10 @@
 <template>
   <div class="inbox-process-menu">
     <div class="menu-sections">
-      <div class="divider-custom"></div>
+      <div class="divider-custom">
+        <span class="divider-text">{{ $t('Processes') }}</span>
+        <div class="divider-line"></div>
+      </div>
       <div class="buttons-list-process">
         <button
           v-for="process in processesList"
@@ -20,7 +23,10 @@
         </button>
       </div>
 
-      <div class="divider-custom"></div>
+      <div class="divider-custom">
+        <span class="divider-text">{{ $t('Dashboards') }}</span>
+        <div class="divider-line"></div>
+      </div>
 
       <div class="buttons-list-dashboard">
         <button
@@ -234,7 +240,24 @@ h4 {
 }
 
 .divider-custom {
-  border-top: 2px solid #dee2e6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
   margin: 0;
+}
+
+.divider-text {
+  font-size: 13px;
+  color: #959595;
+  white-space: nowrap;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.divider-line {
+  flex-grow: 1;
+  height: 2px;
+  background-color: #dee2e6;
 }
 </style>
