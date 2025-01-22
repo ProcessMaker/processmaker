@@ -42,7 +42,6 @@ class TaskController extends Controller
 
     public function index()
     {
-
         $routerPath = Request::route('router');
 
         $title = 'To Do Tasks';
