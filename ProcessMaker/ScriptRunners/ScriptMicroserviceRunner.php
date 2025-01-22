@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Exception\ConfigurationException;
 use ProcessMaker\Exception\ScriptException;
+use ProcessMaker\Exception\ScriptTimeoutException;
 use ProcessMaker\GenerateAccessToken;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Script;
@@ -92,7 +93,16 @@ class ScriptMicroserviceRunner
 
         $response->throw();
 
-        return $response->json();
+        $result = $response->json();
+
+        if ($sync && $result['status'] === 'error') {
+            if (str_starts_with($result['message'], 'Command exceeded timeout of')) {
+                throw new ScriptTimeoutException($result['message']);
+            }
+            throw new ScriptException($result['message']);
+        }
+
+        return $result;
     }
 
     private function getEnvironmentVariables(User $user)
