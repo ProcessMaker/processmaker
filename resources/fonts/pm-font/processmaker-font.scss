@@ -1,10 +1,10 @@
 @font-face {font-family: "processmaker-font";
-  src: url('processmaker-font.eot?t=1736427523749'); /* IE9*/
-  src: url('processmaker-font.eot?t=1736427523749#iefix') format('embedded-opentype'), /* IE6-IE8 */
-  url("processmaker-font.woff2?t=1736427523749") format("woff2"),
-  url("processmaker-font.woff?t=1736427523749") format("woff"),
-  url('processmaker-font.ttf?t=1736427523749') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
-  url('processmaker-font.svg?t=1736427523749#processmaker-font') format('svg'); /* iOS 4.1- */
+  src: url('processmaker-font.eot?t=1737569295141'); /* IE9*/
+  src: url('processmaker-font.eot?t=1737569295141#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url("processmaker-font.woff2?t=1737569295141") format("woff2"),
+  url("processmaker-font.woff?t=1737569295141") format("woff"),
+  url('processmaker-font.ttf?t=1737569295141') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+  url('processmaker-font.svg?t=1737569295141#processmaker-font') format('svg'); /* iOS 4.1- */
 }
 
 [class^="fp-"], [class*=" fp-"] {
@@ -41,21 +41,22 @@
 .fp-folder-outline:before { content: "\ea19"; }
 .fp-fullscreen:before { content: "\ea1a"; }
 .fp-github:before { content: "\ea1b"; }
-.fp-layout-icon:before { content: "\ea1c"; }
-.fp-map:before { content: "\ea1d"; }
-.fp-mobile:before { content: "\ea1e"; }
-.fp-pdf:before { content: "\ea1f"; }
-.fp-play-outline:before { content: "\ea20"; }
-.fp-plus:before { content: "\ea21"; }
-.fp-screen-outline:before { content: "\ea22"; }
-.fp-script-outline:before { content: "\ea23"; }
-.fp-slack-notification:before { content: "\ea24"; }
-.fp-slack:before { content: "\ea25"; }
-.fp-slideshow:before { content: "\ea26"; }
-.fp-table:before { content: "\ea27"; }
-.fp-tachometer-alt-average:before { content: "\ea28"; }
-.fp-trash:before { content: "\ea29"; }
-.fp-unlink:before { content: "\ea2a"; }
+.fp-inbox:before { content: "\ea1c"; }
+.fp-layout-icon:before { content: "\ea1d"; }
+.fp-map:before { content: "\ea1e"; }
+.fp-mobile:before { content: "\ea1f"; }
+.fp-pdf:before { content: "\ea20"; }
+.fp-play-outline:before { content: "\ea21"; }
+.fp-plus:before { content: "\ea22"; }
+.fp-screen-outline:before { content: "\ea23"; }
+.fp-script-outline:before { content: "\ea24"; }
+.fp-slack-notification:before { content: "\ea25"; }
+.fp-slack:before { content: "\ea26"; }
+.fp-slideshow:before { content: "\ea27"; }
+.fp-table:before { content: "\ea28"; }
+.fp-tachometer-alt-average:before { content: "\ea29"; }
+.fp-trash:before { content: "\ea2a"; }
+.fp-unlink:before { content: "\ea2b"; }
 
 $fp-bpmn-action-by-email: "\ea01";
 $fp-bpmn-data-connector: "\ea02";
@@ -84,19 +85,20 @@ $fp-flowgenie-outline: "\ea18";
 $fp-folder-outline: "\ea19";
 $fp-fullscreen: "\ea1a";
 $fp-github: "\ea1b";
-$fp-layout-icon: "\ea1c";
-$fp-map: "\ea1d";
-$fp-mobile: "\ea1e";
-$fp-pdf: "\ea1f";
-$fp-play-outline: "\ea20";
-$fp-plus: "\ea21";
-$fp-screen-outline: "\ea22";
-$fp-script-outline: "\ea23";
-$fp-slack-notification: "\ea24";
-$fp-slack: "\ea25";
-$fp-slideshow: "\ea26";
-$fp-table: "\ea27";
-$fp-tachometer-alt-average: "\ea28";
-$fp-trash: "\ea29";
-$fp-unlink: "\ea2a";
+$fp-inbox: "\ea1c";
+$fp-layout-icon: "\ea1d";
+$fp-map: "\ea1e";
+$fp-mobile: "\ea1f";
+$fp-pdf: "\ea20";
+$fp-play-outline: "\ea21";
+$fp-plus: "\ea22";
+$fp-screen-outline: "\ea23";
+$fp-script-outline: "\ea24";
+$fp-slack-notification: "\ea25";
+$fp-slack: "\ea26";
+$fp-slideshow: "\ea27";
+$fp-table: "\ea28";
+$fp-tachometer-alt-average: "\ea29";
+$fp-trash: "\ea2a";
+$fp-unlink: "\ea2b";
 

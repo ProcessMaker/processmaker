@@ -6,11 +6,12 @@
   >
     <div class="menu">
       <button 
-        class="pl-3 menu-title button-class" 
+        class="pl-3 menu-title button-class d-flex align-items-center" 
         :class="{ 'button-transparent': selectedProcess !== 'inbox', 'menu-title-inbox': selectedProcess !== 'inbox' }"
         @click="getAllTasks"
       >
-        {{ $t("Inbox") }}
+        <i class="fp-inbox me-2" style="color: #2773f3; font-size: 20px;"></i>
+        <span>{{ $t("Inbox") }}</span>
       </button>
       <ProcessesDashboardsMenu
         @processDashboardSelected="processDashboardSelected"
@@ -543,10 +544,10 @@ export default {
 
 .menu-title {
   color: #1472c2;
-  font-size: 22px;
+  font-size: 14px;
   font-style: normal;
-  font-weight: 600;
-  line-height: 46.08px;
+  font-weight: 700;
+  line-height: 19.07px;
   letter-spacing: -0.44px;
   display: block;
   width: 92%;
@@ -583,11 +584,13 @@ export default {
 }
 
 .button-class {
-  background-color: #e6f3ff;
+  background-color: #e4edf3;
   padding: 5px 15px;
-  border-radius: 10px;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
+  height: 44px;
+  gap: 10px;
 }
 
 .button-transparent {
