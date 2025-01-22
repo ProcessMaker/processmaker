@@ -180,11 +180,10 @@ export default {
 }
 
 .buttons-list-dashboard {
-  padding-left: 15px;
-  display: flex;
   flex-direction: column;
-  height: 350px;
+  height: 130px;
   overflow-y: auto;
+  padding-left: 15px;
 }
 
 .menu-btn {
