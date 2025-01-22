@@ -125,7 +125,6 @@ export default {
       return `/dynamic-ui/custom-dashboards`;
     },
     buildURLDashboardsScreen(id) {
-      //return `/dynamic-ui/custom-dashboards/${token}`;
       return `/dynamic-ui/custom-dashboards/screen/${id}`;
     },
     getIconProcess(process) {
