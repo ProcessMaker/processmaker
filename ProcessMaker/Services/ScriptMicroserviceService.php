@@ -26,7 +26,7 @@ class ScriptMicroserviceService
                 : $response;
 
             event(new ScriptResponseEvent(
-                User::find($response['metadata']['user_id']),
+                User::find($response['metadata']['current_user']),
                 $status,
                 $output,
                 null,

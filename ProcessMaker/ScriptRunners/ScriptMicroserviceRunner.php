@@ -143,7 +143,6 @@ class ScriptMicroserviceRunner
     public function getMetadata($user)
     {
         return [
-            'nonce' => $this->script->nonce,
             'script_id' => $this->script->id,
             'instance' => config('app.url'),
             'user_id' => $user->id,

@@ -61,8 +61,11 @@ class TestScript implements ShouldQueue
         try {
             // Just set the code but do not save the object (preview only)
             $this->script->code = $this->code;
-            $this->script->nonce = $this->nonce;
-            $response = $this->script->runScript($this->data, $this->configuration, '', null, 0);
+            $metadata = [
+                'nonce' => $this->nonce,
+                'current_user' => $this->current_user,
+            ];
+            $response = $this->script->runScript($this->data, $this->configuration, '', null, 0, $metadata);
             \Log::debug('Response api microservice: ' . print_r($response, true));
 
             if (!config('script-runner-microservice.enabled') ||
