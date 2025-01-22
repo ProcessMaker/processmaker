@@ -1123,6 +1123,12 @@ nav {
 
 // VarFinder Panel CSS
 
-.combined-input-container .multiselect .multiselect__tags {
-  border: none !important;
+.combined-input-container .multiselect {
+  .multiselect__tags {
+    border: none !important;
+  }
+
+  .multiselect__select:before {
+    display: none;
+  }
 }
