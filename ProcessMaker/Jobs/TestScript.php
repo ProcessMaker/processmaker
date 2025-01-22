@@ -63,7 +63,7 @@ class TestScript implements ShouldQueue
             $this->script->code = $this->code;
             $metadata = [
                 'nonce' => $this->nonce,
-                'current_user' => $this->current_user,
+                'current_user' => $this->current_user?->id,
             ];
             $response = $this->script->runScript($this->data, $this->configuration, '', null, 0, $metadata);
             \Log::debug('Response api microservice: ' . print_r($response, true));
