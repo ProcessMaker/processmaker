@@ -57,6 +57,9 @@ export const formattedFilter = (filters) => {
 };
 
 export const formatFilterSaved = (filters) => {
+  if (!filters) {
+    return [];
+  }
   const response = filters.map((element) => {
     let value = "";
     if (element.subject.value === "case_status") {

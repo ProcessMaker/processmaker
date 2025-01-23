@@ -78,7 +78,7 @@ export const processColumn = () => ({
 
 export const taskColumn = () => ({
   field: "tasks",
-  header: "Task",
+  header: t("Current Task"),
   resizable: true,
   width: 200,
   cellRenderer: () => ({

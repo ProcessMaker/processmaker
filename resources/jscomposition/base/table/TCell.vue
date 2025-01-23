@@ -1,7 +1,7 @@
 <template>
   <td
-    :style="{ width: width }"
-    class="tw-relative">
+    class="tw-relative tw-p-0"
+    :style="{ width: width }">
     <template v-if="!column.cellRenderer">
       <slot
         :columns="columns"
