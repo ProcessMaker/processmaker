@@ -9,6 +9,8 @@ use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Logger;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\ProcessMakerModel;
+use ProcessMaker\Models\Setting;
+use ProcessMaker\Models\SettingsMenus;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -79,6 +81,17 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
     public function exportSettings()
     {
+        $exports = [];
+
+        foreach ($this->settings as $setting) {
+            $exports[] = $setting;
+        }
+
+        return $exports;
+    }
+
+    public function exportSettingPayloads()
+    {
         return $this->settings()->get()->map(function ($setting) {
             return $setting->export();
         });
@@ -138,18 +151,81 @@ class Bundle extends ProcessMakerModel implements HasMedia
         ]);
     }
 
-    public function addSettings($setting, $config)
+    public function addSettings($setting, $newId, $type = null)
     {
-        $exists = $this->settings()->where('setting', $setting)->exists();
-        if ($exists) {
-            $this->settings()->where('setting', $setting)->update([
-                'config' => $config,
+        $existingSetting = $this->settings()->where('setting', $setting)->first();
+        //If $newId is null, set config to null
+        if (is_null($newId) && is_null($type)) {
+            if ($existingSetting) {
+                $existingSetting->update(['config' => null]);
+            } else {
+                BundleSetting::create([
+                    'bundle_id' => $this->id,
+                    'setting' => $setting,
+                    'config' => null,
+                ]);
+            }
+
+            return;
+        }
+        // verify if newId is a json with id key
+        $decodedNewId = json_decode($newId, true);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            if (is_array($decodedNewId)) {
+                $newId = $decodedNewId;
+            } elseif (isset($decodedNewId['id'])) {
+                $newId = [$decodedNewId['id']];
+            } else {
+                $newId = ['id' => [$decodedNewId]];
+            }
+        } else {
+            $newId = ['id' => [$newId]];
+        }
+
+        if ($existingSetting) {
+            // Decode the existing JSON
+            $config = json_decode($existingSetting->config, true);
+            // Ensure 'id' is an array
+            if (!isset($config['id']) || !is_array($config['id'])) {
+                $config['id'] = [];
+            }
+            // Add the new ID
+            foreach ($newId['id'] as $id) {
+                $config['id'][] = $id;
+            }
+            // Remove duplicates
+            $config['id'] = array_unique($config['id']);
+            //reindex the array
+            $config['id'] = array_values($config['id']);
+            // Update the config
+            $existingSetting->update([
+                'config' => json_encode($config),
             ]);
         } else {
+            // Create a new BundleSetting with the initial ID
+            $config = ['id' => []];
+            if ($newId && $type !== 'settings') {
+                foreach ($newId['id'] as $id) {
+                    $config['id'][] = $id;
+                }
+            }
+
+            if ($type === 'settings') {
+                $settingsMenu = SettingsMenus::where('menu_group', $setting)->first();
+                $settingsKeys = Setting::where([
+                    ['group_id', '=', $settingsMenu->id],
+                    ['hidden', '=', false],
+                ])->pluck('key')->toArray();
+                if ($settingsMenu) {
+                    $config['id'] = $settingsKeys;
+                    $config['type'] = $type;
+                }
+            }
+
             BundleSetting::create([
                 'bundle_id' => $this->id,
                 'setting' => $setting,
-                'config' => $config,
+                'config' => json_encode($config),
             ]);
         }
     }
@@ -159,6 +235,18 @@ class Bundle extends ProcessMakerModel implements HasMedia
         $message = null;
         try {
             $this->addAsset($asset);
+        } catch (ValidationException $ve) {
+            $message = $ve->getMessage();
+        }
+
+        return $message;
+    }
+
+    public function addSettingToBundles($setting, $newId, $type = null)
+    {
+        $message = null;
+        try {
+            $this->addSettings($setting, $newId, $type);
         } catch (ValidationException $ve) {
             $message = $ve->getMessage();
         }
@@ -223,6 +311,55 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
         foreach ($settings as $setting) {
             $this->addSettings($setting['setting'], $setting['config']);
+        }
+    }
+
+    public function installSettingsPayloads(array $payloads, $mode, $logger = null)
+    {
+        $options = new Options([
+            'mode' => $mode,
+        ]);
+        $clientRepository = app('Laravel\Passport\ClientRepository');
+
+        $assets = [];
+        foreach ($payloads as $payload) {
+            if (isset($payload[0]['export'])) {
+                $logger->status('Installing bundle settings on the this instance');
+                $logger->setSteps($payloads[0]);
+                $assets[] = DevLink::import($payload[0], $options, $logger);
+            } else {
+                switch ($payload[0]['setting_type']) {
+                    case 'auth_clients':
+                        $clientRepository->create(
+                            null,
+                            $payload[0]['name'],
+                            $payload[0]['redirect'],
+                            $payload[0]['provider'],
+                            $payload[0]['personal_access_client'],
+                            $payload[0]['password_client']
+                        );
+                        break;
+                    case 'User Settings':
+                    case 'Email':
+                    case 'Integrations':
+                    case 'Log-In & Auth':
+                        $settingsMenu = SettingsMenus::where('menu_group', $payload[0]['setting_type'])->first();
+                        Setting::updateOrCreate([
+                            'key' => $payload[0]['key'],
+                        ], [
+                            'config' => $payload[0]['config'],
+                            'name' => $payload[0]['name'],
+                            'helper' => $payload[0]['helper'],
+                            'format' => $payload[0]['format'],
+                            'hidden' => $payload[0]['hidden'],
+                            'readonly' => $payload[0]['readonly'],
+                            'ui' => $payload[0]['ui'],
+                            'group_id' => $settingsMenu->id,
+                            'group' => $payload[0]['group'],
+                        ]);
+                        break;
+                }
+            }
         }
     }
 

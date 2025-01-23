@@ -29,6 +29,7 @@
             @navigate="onNavigate"
             :actions="actions"
             :data="props.rowData"
+            :permission="permission"
             :divider="true"
           />
         </template>
@@ -46,6 +47,10 @@
           {{ props.rowData.secret.substr(0, 10) }}...
         </template>
       </vuetable>
+      <add-to-bundle
+        asset-type="auth_clients"
+        :setting="true"
+      />
       <pagination
         :single="$t('Auth Client')"
         :plural="$t('Auth Clients')"
@@ -63,13 +68,14 @@
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
+import AddToBundle from "../../../components/shared/AddToBundle.vue";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  components: {EllipsisMenu},
+  components: {EllipsisMenu, AddToBundle},
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
-  props: ["filter"],
+  props: ["filter", "permission"],
   data() {
     return {
       copytext: "",
@@ -82,6 +88,7 @@ export default {
       ],
       actions: [
         { value: "edit-item", content: "Edit Auth Client", icon: "fas fa-pen-square", ariaDescribedBy: 'data.id'},
+        { value: "add-to-bundle", content: "Add to Bundle", icon: "fas fa-folder-plus", permission: "admin", emit_on_root: 'add-to-bundle'},
         { value: "delete-item", content: "Delete Auth Client", icon: "fas fa-trash-alt",  ariaDescribedBy: 'data.id'},
       ],
       fields: [

@@ -1,18 +1,18 @@
 export default [
   {
-    type: "email_settings",
+    type: "Email",
     name: "Email Settings",
   },
   {
-    type: "log-in_auth",
+    type: "Log-In & Auth",
     name: "Log-in & Auth",
   },
   {
-    type: "user_settings",
+    type: "User Settings",
     name: "User Settings",
   },
   {
-    type: "integrations",
+    type: "Integrations",
     name: "Integrations",
   },
 ];

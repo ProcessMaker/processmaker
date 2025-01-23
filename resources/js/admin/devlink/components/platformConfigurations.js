@@ -16,12 +16,16 @@ export default [
     name: "UI Settings",
   },
   {
-    type: "script_executors",
-    name: "Script Executors",
+    type: "ui_dashboards",
+    name: "Dashboards",
   },
   {
-    type: "analytics_settings",
-    name: "Analytics Settings",
+    type: "ui_menus",
+    name: "Menus",
+  },
+  {
+    type: "script_executors",
+    name: "Script Executors",
   },
   {
     type: "public_files",
