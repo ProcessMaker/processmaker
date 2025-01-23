@@ -279,7 +279,7 @@ class TokenRepository implements TokenRepositoryInterface
             'case_title' => $caseTitle, // Populate this if needed
             'due_date' => $token->due_at ?? '',
             'link_review_task' => config('app.url') . 'tasks/' . $token->id . '/edit',
-            'imgHeader' => config('app.url') . '/img/header-slideshow-default-email.png',
+            'imgHeader' => config('app.url') . '/img/processmaker_login.png',
         ];
         // Get the screen
         $screen = Screen::where('title', 'DEFAULT_EMAIL_TASK_NOTIFICATION')->first();
