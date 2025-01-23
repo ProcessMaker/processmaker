@@ -173,7 +173,7 @@ class DevLink extends ProcessMakerModel
         );
 
         $bundle->install($bundleExport['payloads'], $updateType, $this->logger);
-        $bundle->installSettingsPayloads($bundleSettingsPayloads['payloads'][0], $updateType, $this->logger);
+        $bundle->installSettingsPayloads($bundleSettingsPayloads['payloads'], $updateType, $this->logger);
         $bundle->installSettings($bundleSettingsExport['settings']);
 
         $this->logger->setStatus('done');

@@ -187,13 +187,11 @@ export default {
           name: "categories",
           sortField: "category.name",
           label: this.$t("Category"),
-          field: "category.name",
+          field: "categories",
           sortable: true,
           direction: "none",
           width: 150,
-          callback(categories) {
-            return categories.map(item => item.name).join(', ');
-          },
+          cb: (categories) => this.formatCategory(categories),
         },
         {
           title: () => this.$t("Language"),

@@ -37,7 +37,7 @@ const save = (event) => {
     if (props.setting) {
       window.ProcessMaker.apiClient.post(`devlink/local-bundles/${selected.value.id}/add-settings`, {
         setting: props.assetType,
-        config: null,
+        config: assetId.value,
         type: props.settingType || null
       })
         .then(() => {
@@ -64,7 +64,7 @@ const save = (event) => {
     if (props.setting) {
       const setting = {
         'setting': props.assetType,
-        'config': null,
+        'config': assetId.value,
         'bundles': bundles,
         'type': props.settingType || null
       };
