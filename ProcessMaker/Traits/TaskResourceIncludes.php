@@ -139,7 +139,7 @@ trait TaskResourceIncludes
     {
         $interstitial = $this->getInterstitial();
 
-        if ($interstitial['interstitial_screen']) {
+        if ($interstitial['interstitial_screen'] && $interstitial['allow_interstitial']) {
             // Translate interstitials
             $screenTranslation = new ScreenTranslation();
             $translatedConf = $screenTranslation->applyTranslations($interstitial['interstitial_screen']->getLatestVersion());

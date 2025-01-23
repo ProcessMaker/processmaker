@@ -118,6 +118,16 @@
 @endsection
 
 @section('js')
+<script src="{{ mix('js/processes/modeler/initialLoad.js') }}"></script>
+<script>
+  window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+  window.Processmaker = {
+        csrfToken: "{{csrf_token()}}",
+        userId: "{{\Auth::user()->id}}",
+        messages: [],
+        apiTimeout: {{config('app.api_timeout')}}
+      };
+</script>
   <script>
     const data = @json($request->getRequestData());
     const requestId = @json($request->getKey());
@@ -129,6 +139,28 @@
     const canViewComments = @json($canViewComments);
     const comentable_type = @json(get_class($request));
     const requestCount = @json($requestCount);
+    const inflightData = @json($inflightData);
+
+    window.ProcessMaker.PMBlockList = @json($pmBlockList);
+
+    window.ProcessMaker.modeler = {
+      xml: @json($bpmn),
+      configurables: [],
+      requestCompletedNodes: inflightData.requestCompletedNodes,
+      requestInProgressNodes: inflightData.requestInProgressNodes,
+      requestIdleNodes: inflightData.requestIdleNodes,
+      requestId: inflightData.requestId,
+    }
+
+    window.ProcessMaker.EventBus.$on('modeler-start', ({
+      loadXML
+    }) => {
+      loadXML(window.ProcessMaker.modeler.xml);
+    });
+
+    window.PM4ConfigOverrides = {
+      requestFiles: @json($request->requestFiles())
+    };
   </script>
   
   @if (hasPackage('package-files'))
@@ -140,6 +172,11 @@
 
   @foreach($manager->getScripts() as $script)
     <script src="{{$script}}"></script>
+  @endforeach
+  @foreach($managerModeler->getScripts() as $script)
+    @if (!str_contains($script, 'slideshow'))
+      <script src="{{ $script }}"></script>
+    @endif
   @endforeach
 @endsection
 
