@@ -177,7 +177,9 @@ class TokenRepository implements TokenRepositoryInterface
             // Review if the task has enable the action by email
             $this->validateAndSendActionByEmail($activity, $token, $user->email);
             // Review if the user has enable the email notification
-            $this->validateEmailUserNotification($token, $user);
+            $isEmailTaskValid = $this->validateEmailUserNotification($token, $user);
+            // Define the flag if the email needs to sent
+            $token->is_emailsent = $isEmailTaskValid ? 1 : 0;
         }
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
     }
@@ -241,7 +243,7 @@ class TokenRepository implements TokenRepositoryInterface
         try {
             Log::Info('User isEmailTaskEnable: ' . $user->email_task_notification);
             // Return if email task notification is not enabled or email is empty
-            if (!$user->email_task_notification || empty($user->email)) {
+            if ($user->email_task_notification === 0 || empty($user->email)) {
                 return null;
             }
             // Prepare data for the email
@@ -276,14 +278,15 @@ class TokenRepository implements TokenRepositoryInterface
             'element_name' => $taskName,
             'case_title' => $caseTitle, // Populate this if needed
             'due_date' => $token->due_at ?? '',
-            'imgHeader' => config('app.url') . '/img/processmaker-login.svg',
+            'link_review_task' => config('app.url') . 'tasks/' . $token->id . '/edit',
+            'imgHeader' => config('app.url') . '/img/processmaker_login.png',
         ];
         // Get the screen
-        $screen = Screen::where('title', 'Default Email Task Notification')->first();
+        $screen = Screen::where('title', 'DEFAULT_EMAIL_TASK_NOTIFICATION')->first();
         // Prepare the email configuration
         $configEmail = [
             'emailServer' => 0, // Use the default email server
-            'subject' => "{$user->firstname} assigned you in {$taskName}",
+            'subject' => "{$user->firstname} assigned you in '{$taskName}'",
             'screenEmailRef' => $screen->id ?? 0, // Define here the screen to use
         ];
 
