@@ -560,7 +560,7 @@ export default {
 }
 .menu-title-inbox {
   color: #4f606d;
-  font-size: 22px;
+  font-size: 14px;
   font-style: normal;
   font-weight: 500;
   line-height: 46.08px;

@@ -11,8 +11,7 @@
 @section('breadcrumbs')
     @include('shared.breadcrumbs', [
         'routes' => [
-            Route::currentRouteName() === 'inbox' ? __('Inbox') : __('Tasks') => Route::currentRouteName() === 'inbox' ? route('inbox') : route('tasks.index'),
-            __(Route::currentRouteName() === 'inbox' ? 'Process or Dashboard' : $title) => null,
+            Route::currentRouteName() === 'inbox' ? __('Inbox') : __('Tasks') => Route::currentRouteName() === 'inbox' ? route('inbox') : route('tasks.index')
         ],
     ])
 @endsection

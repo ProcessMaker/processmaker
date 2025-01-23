@@ -35,7 +35,11 @@
           class="menu-btn"
           @click="openProcessDashboard(dashboard.id, 'dashboard')"
         >
-          <i class="fp-tachometer-alt-average"></i>
+          <img
+            class="icon-size" 
+            :src="`/img/launchpad-images/icons/Launchpad.svg`" 
+            :alt="$t('No Image')"
+            />
           <span :id="`dashboard-${dashboard.id}`" class="title-dashboard">
             {{ dashboard.title }}
           </span>
@@ -263,5 +267,10 @@ h4 {
   flex-grow: 1;
   height: 2px;
   background-color: #dee2e6;
+}
+
+.icon-size {
+  width: 20px;
+  height: 15px;
 }
 </style>
