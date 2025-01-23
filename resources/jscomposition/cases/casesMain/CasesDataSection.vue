@@ -158,7 +158,7 @@ const onRemoveBadge = async (badge, index) => {
   badgesData.value.splice(index, 1);
   filters.value.splice(index, 1);
   dataPagination.value.page = 1; // Reset page to 1
-
+  saveFilters(filters.value);
   // Remove filter from table
   table.value.removeFilter(index);
   await hookGetData();

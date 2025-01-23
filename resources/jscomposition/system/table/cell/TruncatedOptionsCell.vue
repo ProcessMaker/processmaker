@@ -2,7 +2,8 @@
   <div class="tw-flex tw-relative tw-text-nowrap tw-whitespace-nowrap tw-p-3">
     <div
       v-if="optionsModel.length"
-      class="tw-overflow-hidden tw-text-ellipsis">
+      class="tw-overflow-hidden tw-text-ellipsis"
+    >
       <a
         v-if="href !== null"
         class="hover:tw-text-blue-400 tw-text-gray-500"

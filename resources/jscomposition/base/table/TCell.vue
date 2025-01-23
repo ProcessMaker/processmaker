@@ -1,14 +1,12 @@
 <template>
   <td
-    class="tw-relative"
-    :style="{ width: `${column.width}px` }"
-  >
+    class="tw-relative tw-p-0"
+    :style="{ width: `${column.width}px` }">
     <template v-if="!column.cellRenderer">
       <slot
         :columns="columns"
         :column="column"
-        :row="row"
-      >
+        :row="row">
         <div class="tw-p-3 tw-text-ellipsis tw-text-nowrap tw-overflow-hidden">
           {{ getValue() }}
         </div>
@@ -21,8 +19,7 @@
       :columns="columns"
       :column="column"
       :row="row"
-      @collapseContainer="collapseContainer"
-    />
+      @collapseContainer="collapseContainer" />
   </td>
 </template>
 
