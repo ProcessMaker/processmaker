@@ -25,10 +25,12 @@ class CasesController extends Controller
      */
     public function index()
     {
+        $manager = app(ScreenBuilderManager::class);
+        event(new ScreenBuilderStarting($manager, 'FORM'));
         $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
 
         // This is a temporary API the engine team will provide the new
-        return view('cases.casesMain', compact('currentUser'));
+        return view('cases.casesMain', compact('currentUser', 'manager'));
     }
 
     /**
