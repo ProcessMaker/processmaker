@@ -109,7 +109,7 @@
                   role="tabpanel" aria-labelledby="errors-tab">
                   <request-errors :errors="errorLogs"></request-errors>
                 </div>
-                <div class="tab-pane fade show card card-body border-top-0 p-0" :class="{ active: activePending }"
+                <div class="tab-pane show card card-body border-top-0 p-0" :class="{ active: activePending }"
                   id="pending" role="tabpanel" aria-labelledby="pending-tab">
                   <request-detail ref="pending" :process-request-id="requestId" status="ACTIVE"
                     :is-process-manager="{{ $isProcessManager ? 'true' : 'false' }}"
@@ -187,7 +187,7 @@
                     </div>
                   @endcan
                 @endif
-                <div class="tab-pane fade card card-body border-top-0 p-0" id="completed" role="tabpanel"
+                <div class="tab-pane card card-body border-top-0 p-0" id="completed" role="tabpanel"
                   aria-labelledby="completed-tab">
                   <request-detail ref="completed" :process-request-id="requestId" status="CLOSED"
                     :is-admin="{{ Auth::user()->is_administrator ? 'true' : 'false' }}">
@@ -195,12 +195,12 @@
                 </div>
 
                 <template v-for="{ tab, component } in packages">
-                  <div class="tab-pane fade card card-body border-top-0 p-0" :id="tab.target" role="tabpanel">
+                  <div class="tab-pane card card-body border-top-0 p-0" :id="tab.target" role="tabpanel">
                     <component :is="component" :process-request-id="requestId"></component>
                   </div>
                 </template>
 
-                <div class="tab-pane fade card card-body border-top-0 p-3" id="files" role="tabpanel"
+                <div class="tab-pane card card-body border-top-0 p-3" id="files" role="tabpanel"
                   aria-labelledby="files-tab">
                   <div class="card">
                     <div>
@@ -228,12 +228,12 @@
                     </div>
                   </div>
                 </div>
-                <div class="tab-pane fade card card-body border-top-0 p-0" id="forms" role="tabpanel"
+                <div class="tab-pane card card-body border-top-0 p-0" id="forms" role="tabpanel"
                   aria-labelledby="forms-tab" v-show="canViewPrint">
                   <request-screens :id="requestId" :information="dataSummary" ref="forms">
                   </request-screens>
                 </div>
-                <div v-if="activeTab === 'overview'" class="tab-pane fade p-0" id="overview" role="tabpanel"
+                <div v-if="activeTab === 'overview'" class="tab-pane p-0" id="overview" role="tabpanel"
                   aria-labelledby="overview-tab">
                   <div class="card card-height" style="border-top: none !important;">
                     <div class="card-body">
@@ -244,7 +244,7 @@
 
                 @isset($addons)
                   @foreach ($addons as $addon)
-                    <div class="tab-pane fade show" id="{{ $addon['id'] }}" role="tabpanel"
+                    <div class="tab-pane show" id="{{ $addon['id'] }}" role="tabpanel"
                       aria-labelledby="{{ $addon['id'] }}">
                       {!! $addon['content'] !!}
                     </div>
@@ -303,7 +303,7 @@
                   <div
                     v-if="showInfo"
                     id="details"
-                    v-bind:class="{ 'tab-pane':true, fade: true, show: showInfo, active: showInfo }"
+                    v-bind:class="{ 'tab-pane':true, show: showInfo, active: showInfo }"
                     role="tabpanel"
                     aria-labelledby="details-tab"
                   >
@@ -430,7 +430,7 @@
                   <div
                     v-if="!showInfo"
                     id="comments"
-                    v-bind:class="{ 'tab-pane':true, fade: true, show: !showInfo, active: !showInfo }"
+                    v-bind:class="{ 'tab-pane':true, show: !showInfo, active: !showInfo }"
                     role="tabpanel"
                     aria-labelledby="comments-tab"
                   >
