@@ -269,7 +269,10 @@ return [
         'vault_transit_key' => env('ENCRYPTED_DATA_VAULT_TRANSIT_KEY', ''),
     ],
 
+    'custom_executors' => env('CUSTOM_EXECUTORS', false),
+
     'prometheus_namespace' => env('PROMETHEUS_NAMESPACE', 'processmaker'),
+  
     'server_timing' => [
         'enabled' => env('SERVER_TIMING_ENABLED', true),
         'min_package_time' => env('SERVER_TIMING_MIN_PACKAGE_TIME', 5), // Minimum time in milliseconds
