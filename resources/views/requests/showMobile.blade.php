@@ -83,7 +83,7 @@
       >
         <div
           id="tasks"
-          class="tab-pane fade show card card-body border-top-0 p-3 active"
+          class="tab-pane show card card-body border-top-0 p-3 active"
           role="tabpanel"
           aria-labelledby="tasks-tab"
         >
@@ -110,7 +110,7 @@
 
         <div 
           id="files" 
-          class="tab-pane fade card card-body border-top-0 p-3" 
+          class="tab-pane card card-body border-top-0 p-3" 
           role="tabpanel"
           aria-labelledby="files-tab"
         >

@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use ProcessMaker\Http\Middleware\ServerTimingMiddleware;
 
 class Kernel extends HttpKernel
 {
@@ -20,6 +21,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         Middleware\TrustProxies::class,
         Middleware\BrowserCache::class,
+        ServerTimingMiddleware::class,
     ];
 
     /**

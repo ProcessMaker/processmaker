@@ -311,7 +311,7 @@ class TemplateController extends Controller
 
     protected function createProcess(Request $request)
     {
-        $request->validate(Process::rules($request->id));
+        $request->validate(Template::rules($request->id, $this->types['process'][4]));
         $postOptions = $this->checkIfAssetsExist($request);
 
         if (!empty($postOptions)) {
