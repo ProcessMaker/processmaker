@@ -20,6 +20,11 @@ class ProcessRequestTokenObserver
         }
     }
 
+    public function creating(ProcessRequestToken $token)
+    {
+        $token->created_at_ms = now();
+    }
+
     /**
      * Once a token is saved, it also saves the version reference of the
      * screen or script executed
@@ -29,5 +34,8 @@ class ProcessRequestTokenObserver
     public function saving(ProcessRequestToken $token)
     {
         $token->saveVersion();
+        if ($token->completed_at && $token->isDirty('completed_at')) {
+            $token->completed_at_ms = now();
+        }
     }
 }

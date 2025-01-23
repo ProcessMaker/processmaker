@@ -46,7 +46,7 @@
 
                         {{-- Configuration --}}
                         <div
-                            class="tab-pane fade show"
+                            class="tab-pane show"
                             :class="{'active': activeTab === '' || activeTab === 'nav-config'}"
                             id="nav-config"
                             role="tabpanel"
@@ -375,7 +375,7 @@
                         </div>
 
                         {{-- Notifications --}}
-                        <div class="tab-pane fade show p-3" id="nav-notifications" role="tabpanel"
+                        <div class="tab-pane show p-3" id="nav-notifications" role="tabpanel"
                              aria-labelledby="nav-notifications-tab">
                             <div class="form-group p-0">
 
@@ -530,7 +530,7 @@
                         {{-- Addons --}}
                         @isset($addons)
                             @foreach ($addons as $addon)
-                                <div class="tab-pane fade show" id="{{$addon['id']}}" role="tabpanel"
+                                <div class="tab-pane show" id="{{$addon['id']}}" role="tabpanel"
                                      aria-labelledby="nav-notifications-tab">
                                     {!! $addon['content'] !!}
                                 </div>
