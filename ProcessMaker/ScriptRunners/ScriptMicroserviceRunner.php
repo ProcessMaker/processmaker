@@ -80,12 +80,14 @@ class ScriptMicroserviceRunner
             'script' => base64_encode(str_replace("'", '&#39;', $code)),
             'secrets' => $this->getEnvironmentVariables($user),
             'callback' => config('script-runner-microservice.callback'),
+            'callback_secure' => true,
+            'callback_token' => 'API_TOKEN',
             'debug' => true,
             'timeout' => $timeout,
             'sync' => $sync,
         ];
 
-        Log::debug(print_r($payload, true));
+        Log::debug('Payload: ' . print_r($payload, true));
 
         $response = Http::withToken($this->getAccessToken())
             ->post(config('script-runner-microservice.base_url') . '/requests/create', $payload);
