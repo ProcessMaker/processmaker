@@ -20,6 +20,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         Middleware\TrustProxies::class,
         Middleware\BrowserCache::class,
+        Middleware\FileSizeCheck::class,
     ];
 
     /**
@@ -41,7 +42,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             Middleware\GenerateMenus::class,
             \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class,
-            \ProcessMaker\Http\Middleware\IgnoreMapFiles::class,
+            Middleware\IgnoreMapFiles::class,
         ],
         'api' => [
             // API Middleware is defined with routeMiddleware below.
@@ -83,6 +84,7 @@ class Kernel extends HttpKernel
         'session_kill' => Middleware\SessionControlKill::class,
         'no-cache' => Middleware\NoCache::class,
         'admin' => Middleware\IsAdmin::class,
+        'file_size_check' => Middleware\FileSizeCheck::class,
     ];
 
     /**
