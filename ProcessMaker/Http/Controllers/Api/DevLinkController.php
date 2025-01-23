@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\Rule;
@@ -17,7 +18,6 @@ use ProcessMaker\Models\DevLink;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\BundleUpdatedNotification;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class DevLinkController extends Controller
 {

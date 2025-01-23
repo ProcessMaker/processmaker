@@ -49,7 +49,7 @@ class DevLinkInstall implements ShouldQueue
     public function handle(): void
     {
         //log
-        \Log::info("DevLinkInstall job started: ".$this->devLinkId);
+        \Log::info('DevLinkInstall job started: ' . $this->devLinkId);
         $devLink = DevLink::findOrFail($this->devLinkId);
         $logger = new Logger($this->userId);
 
