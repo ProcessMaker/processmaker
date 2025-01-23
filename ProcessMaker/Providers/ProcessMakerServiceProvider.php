@@ -17,6 +17,7 @@ use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
 use Lavary\Menu\Menu;
+use ProcessMaker\Cache\Settings\SettingCacheManager;
 use ProcessMaker\Console\Migration\ExtendedMigrateCommand;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ScreenBuilderStarting;
@@ -31,6 +32,7 @@ use ProcessMaker\Managers\ScreenCompiledManager;
 use ProcessMaker\Models;
 use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
+use RuntimeException;
 
 /**
  * Provide our ProcessMaker specific services.
@@ -187,6 +189,14 @@ class ProcessMakerServiceProvider extends ServiceProvider
         // Register the compiled screen service
         $this->app->singleton('compiledscreen', function ($app) {
             return new ScreenCompiledManager();
+        });
+
+        $this->app->singleton('setting.cache', function ($app) {
+            if ($app['config']->get('cache.stores.cache_settings')) {
+                return new SettingCacheManager($app->make('cache'));
+            } else {
+                throw new RuntimeException('Cache configuration is missing.');
+            }
         });
     }
 

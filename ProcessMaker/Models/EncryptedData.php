@@ -27,7 +27,7 @@ class EncryptedData extends ProcessMakerModel
         'created_at',
         'updated_at',
     ];
-    
+
     /**
      * The attributes that are mass assignable.
      *
@@ -41,12 +41,12 @@ class EncryptedData extends ProcessMakerModel
 
     /**
      * Check user permission for the encrypted data
-     * 
+     *
      * @param string $userId
      * @param string $screenId
      * @param string $fieldName
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public static function checkUserPermission($userId, $screenId, $fieldName)
     {
