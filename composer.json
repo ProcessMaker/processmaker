@@ -10,7 +10,7 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": "^8.2",
+        "php": "^8.3",
         "babenkoivan/elastic-scout-driver": "^3.0",
         "bacon/bacon-qr-code": "^2.0",
         "codegreencreative/laravel-samlidp": "^5.2",
