@@ -13,11 +13,6 @@ Vue.component("TreeView", () => import("../components/TreeView.vue"));
 
 const main = new Vue({
   el: "#task",
-  components: {
-    TaskSaveNotification,
-    TaskSavePanel,
-    TasksList,
-  },
   mixins: addons,
   data: {
     // Edit data
@@ -132,6 +127,9 @@ const main = new Vue({
         } else {
           this.lastAutosave = "-";
           this.lastAutosaveNav = "-";
+        }
+        if (task.id !== oldTask.id) {
+          this.editJsonData();
         }
       },
     },

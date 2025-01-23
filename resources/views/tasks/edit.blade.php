@@ -189,7 +189,7 @@
               <div
                 v-if="showInfo"
                 id="details"
-                v-bind:class="{ 'tab-pane':true, fade: true, show: showInfo, active: showInfo }"
+                v-bind:class="{ 'tab-pane':true, show: showInfo, active: showInfo }"
                 role="tabpanel"
                 aria-labelledby="details-tab">
                 <div class="ml-md-3 mt-3 mt-md-0">
@@ -338,7 +338,7 @@
               <div
                 v-if="!showInfo"
                 id="comments"
-                v-bind:class="{ 'tab-pane':true, fade: true, show: !showInfo, active: !showInfo }"
+                v-bind:class="{ 'tab-pane':true, show: !showInfo, active: !showInfo }"
                 role="tabpanel"
                 aria-labelledby="comments-tab">
                 <div class="ml-md-3 mt-md-0 mt-3 collapse-content">
