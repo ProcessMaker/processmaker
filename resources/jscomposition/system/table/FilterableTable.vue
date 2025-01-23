@@ -3,14 +3,14 @@
     :columns="columns"
     :data="data"
     :placeholder="placeholder"
-    class="tw-grow"
-  >
+    :config="config"
+    class="tw-grow">
     <template
       v-for="(column, index) in columns"
       #[`theader-filter-${column.field}`]>
       <FilterColumn
-        :id="column.field"
         v-if="column.filter"
+        :id="column.field"
         :key="`default-${index}-${hasFilter(index,column)}`"
         :filter="column.filter"
         :value="getFilter(index, column)"
@@ -41,6 +41,10 @@ const props = defineProps({
   placeholder: {
     type: Boolean,
     default: () => false,
+  },
+  config: {
+    type: Object,
+    default: () => {},
   },
 });
 

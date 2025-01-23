@@ -1,8 +1,7 @@
 <template>
   <div
     class="tw-w-full tw-relative tw-text-gray-600 tw-text-sm
-      tw-border tw-rounded-xl tw-border-gray-300 tw-overflow-hidden tw-overflow-x-auto tw-overflow-y-auto"
-  >
+      tw-border tw-rounded-xl tw-border-gray-300 tw-overflow-hidden tw-overflow-x-auto tw-overflow-y-auto">
     <table
       class="tw-w-full tw-border-collapse"
       :class="{
@@ -86,7 +85,7 @@ import TCell from "./TCell.vue";
 import ContainerRow from "./ContainerRow.vue";
 
 const defaultConfig = () => ({
-  tableFixed: true,
+  tableFixed: false,
 });
 
 export default defineComponent({
