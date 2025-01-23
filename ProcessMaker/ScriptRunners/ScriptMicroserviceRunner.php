@@ -70,6 +70,7 @@ class ScriptMicroserviceRunner
             throw new ConfigurationException('No exists script executor for this language: ' . $this->language);
         }
         $metadata = array_merge($this->getMetadata($user), $metadata);
+        $environmentVariables = $this->getEnvironmentVariables($user);
 
         $payload = [
             'version' => config('script-runner-microservice.version') ?? $this->getProcessMakerVersion(),
@@ -78,10 +79,10 @@ class ScriptMicroserviceRunner
             'data' => !empty($data) ? $this->sanitizeCss($data) : new stdClass(),
             'config' => !empty($config) ? $config : new stdClass(),
             'script' => base64_encode(str_replace("'", '&#39;', $code)),
-            'secrets' => $this->getEnvironmentVariables($user),
+            'secrets' => $environmentVariables,
             'callback' => config('script-runner-microservice.callback'),
             'callback_secure' => true,
-            'callback_token' => 'API_TOKEN',
+            'callback_token' => $environmentVariables['API_TOKEN'],
             'debug' => true,
             'timeout' => $timeout,
             'sync' => $sync,

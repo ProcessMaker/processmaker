@@ -44,11 +44,11 @@ class ScriptRunner
      *
      * @param ScriptExecutor $executor
      *
-     * @return Base|ScriptMicroserviceRunner
+     * @return Base|ScriptMicroserviceRunner|MockRunner
      * @throws ScriptLanguageNotSupported
      * @throws BindingResolutionException
      */
-    private function getScriptRunner(ScriptExecutor $executor): Base|ScriptMicroserviceRunner
+    private function getScriptRunner(ScriptExecutor $executor): Base|ScriptMicroserviceRunner|MockRunner
     {
         if (!config('script-runner-microservice.enabled') || $executor->type === ScriptExecutorType::Custom) {
             $language = strtolower($executor->language);
