@@ -37,7 +37,7 @@ class FileSizeCheckTest extends TestCase
 
         $middlewareMock->expects($this->any())
             ->method('getMaxFileSize')
-            ->with('application/pdf')
+            ->with($this->equalTo('application/pdf'))
             ->willReturn('10M');
 
         $this->app->instance(FileSizeCheck::class, $middlewareMock);
