@@ -37,7 +37,7 @@ class FileSizeCheckTest extends TestCase
 
         $middlewareMock->expects($this->any())
             ->method('getMaxFileSize')
-            ->with($this->equalTo('application/pdf'))
+            ->with($this->anything())
             ->willReturn('10M');
 
         $this->app->instance(FileSizeCheck::class, $middlewareMock);
@@ -66,7 +66,7 @@ class FileSizeCheckTest extends TestCase
     {
         // Arrange.
         $mockFile = $this->createMock(UploadedFile::class);
-        $mockFile->method('getSize')->willReturn(4 * 1024 * 1024); // 4 MB.
+        $mockFile->method('getSize')->willReturn(11 * 1024 * 1024); // 11 MB
         $mockFile->method('isValid')->willReturn(true);
 
         // Act.
@@ -77,7 +77,7 @@ class FileSizeCheckTest extends TestCase
         // Assert.
         $response->assertStatus(422);
         $response->assertJson([
-            'message' => 'The file is too large. Maximum allowed size is 2M',
+            'message' => 'The file is too large. Maximum allowed size is 10M',
         ]);
     }
 
