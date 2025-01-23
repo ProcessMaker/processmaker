@@ -470,6 +470,9 @@
                 this.lastAutosave = "-";
                 this.lastAutosaveNav = "-"
               }
+              if (task.id !== oldTask.id) {
+                this.editJsonData();
+              }
             }
           },
           formData: {
