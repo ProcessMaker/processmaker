@@ -3,20 +3,18 @@
     <CaseFilter @enter="onChangeSearch" />
     <BadgesSection
       v-model="badgesData"
-      @remove="onRemoveBadge"
-    />
+      @remove="onRemoveBadge" />
     <FilterableTable
       ref="table"
       :columns="columnsConfig"
       :data="data"
       :placeholder="showPlaceholder"
       @changeFilter="onChangeFilter"
-    >
+      @resetFilters="onChangeFilter">
       <template #placeholder>
         <TablePlaceholder
           :placeholder="placeholderType"
-          class="tw-grow"
-        />
+          class="tw-grow" />
       </template>
     </FilterableTable>
     <Pagination
@@ -28,8 +26,7 @@
       :page="dataPagination.page"
       :pages="dataPagination.pages"
       @perPage="onPerPage"
-      @go="onGo"
-    />
+      @go="onGo" />
   </div>
 </template>
 <script setup>

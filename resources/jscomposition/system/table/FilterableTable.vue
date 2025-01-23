@@ -3,19 +3,19 @@
     :columns="columns"
     :data="data"
     :placeholder="placeholder"
-    class="tw-grow"
-  >
+    class="tw-grow">
     <template
       v-for="(column, index) in columns"
       #[`theader-filter-${column.field}`]>
       <FilterColumn
-        :id="column.field"
         v-if="column.filter"
+        :id="column.field"
         :key="`default-${index}-${hasFilter(index,column)}`"
         :filter="column.filter"
         :value="getFilter(index, column)"
         @change="e=> onChangeFilter(column, e, index)"
-        @clear="e=> onClear(column, e, index)" />
+        @clear="e=> onClear(column, e, index)"
+        @resetTable="e=> onResetTable()" />
     </template>
     <template #placeholder>
       <slot name="placeholder" />
@@ -75,6 +75,12 @@ const onClear = (column, val, index) => {
   indexFilter !== -1 && (filters.value.splice(indexFilter, 1));
 
   emit("changeFilter", filters.value);
+};
+
+const onResetTable = () => {
+  filters.value = [];
+
+  emit("resetFilters", filters.value);
 };
 
 const removeFilter = (index) => {
