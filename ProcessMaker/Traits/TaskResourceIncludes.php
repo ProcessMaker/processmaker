@@ -41,7 +41,12 @@ trait TaskResourceIncludes
 
     private function includeRequestor()
     {
-        return ['requestor' => new Users($this->processRequest->user)];
+        $user = $this->processRequest->user;
+
+        // Exclude 'active_at' to prevent ETag inconsistencies.
+        $user->makeHidden(['active_at']);
+
+        return ['requestor' => new Users($user)];
     }
 
     private function includeProcessRequest()

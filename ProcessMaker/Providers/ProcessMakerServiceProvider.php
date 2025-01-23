@@ -12,6 +12,7 @@ use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Support\Facades;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
@@ -22,6 +23,7 @@ use ProcessMaker\Console\Migration\ExtendedMigrateCommand;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Helpers\PmHash;
+use ProcessMaker\Http\Middleware\Etag\HandleEtag;
 use ProcessMaker\ImportExport\Extension;
 use ProcessMaker\ImportExport\SignalHelper;
 use ProcessMaker\Jobs\SmartInbox;
@@ -41,10 +43,13 @@ class ProcessMakerServiceProvider extends ServiceProvider
 {
     // Track the start time for service providers boot
     private static $bootStart;
+
     // Track the boot time for service providers
     private static $bootTime;
+
     // Track the boot time for each package
     private static $packageBootTiming = [];
+
     // Track the query time for each request
     private static $queryTime = 0;
 
@@ -69,6 +74,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         parent::boot();
 
+        Route::pushMiddlewareToGroup('api', HandleEtag::class);
         // Hook after service providers boot
         self::$bootTime = (microtime(true) - self::$bootStart) * 1000; // Convert to milliseconds
     }
@@ -231,14 +237,14 @@ class ProcessMakerServiceProvider extends ServiceProvider
             $notifiable = get_class($event->notifiable);
             $notification = get_class($event->notification);
 
-            Facades\Log::debug("Sent Notification to {$notifiable} #{$id}: {$notification}");
+            Log::debug("Sent Notification to {$notifiable} #{$id}: {$notification}");
         });
 
         // Log Broadcasts (messages sent to laravel-echo-server and redis)
         Facades\Event::listen(BroadcastNotificationCreated::class, function ($event) {
             $channels = implode(', ', $event->broadcastOn());
 
-            Facades\Log::debug('Broadcasting Notification ' . $event->broadcastType() . 'on channel(s) ' . $channels);
+            Log::debug('Broadcasting Notification ' . $event->broadcastType() . 'on channel(s) ' . $channels);
         });
 
         // Fire job when task is assigned to a user
