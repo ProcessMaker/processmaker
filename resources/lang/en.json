@@ -162,6 +162,8 @@
   "Are you sure you want to restore the user {{item}}?": "Are you sure you want to restore the user {{item}}?",
   "Are you sure you want to rollback to the task @{{name}}? Warning! This request will continue as the current published process version.": "Are you sure you want to rollback to the task @{{name}}? Warning! This request will continue as the current published process version.",
   "Aria Label": "Aria Label",
+  "Enter the property name for the aria label from the Request data variable.": "Enter the property name for the aria label from the Request data variable.",
+  "Aria label for accessibility support.": "Aria label for accessibility support.",
   "Array": "Array",
   "As Participant": "As Participant",
   "As Requester": "As Requester",
