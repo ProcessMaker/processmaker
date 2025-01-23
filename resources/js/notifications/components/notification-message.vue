@@ -36,6 +36,7 @@ const messages = {
   TASK_OVERDUE: "Task {{- subject }} is overdue. Originally due on {{- due }}",
   PROCESS_CREATED: "{{- user}} started the process {{- subject }}",
   PROCESS_COMPLETED: "{{- subject }} completed",
+  BUNDLE_UPDATED: "The bundle {{- subject }} has a new version. Click to check it",
   ERROR_EXECUTION: "{{- subject }} caused an error",
   COMMENT: "{{- user}} commented on {{- subject}}",
   "ProcessMaker\\Notifications\\ImportReady": "Imported {{- subject }}",

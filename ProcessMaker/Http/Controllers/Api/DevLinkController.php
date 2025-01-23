@@ -17,6 +17,7 @@ use ProcessMaker\Models\DevLink;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\BundleUpdatedNotification;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class DevLinkController extends Controller
 {
@@ -168,7 +169,12 @@ class DevLinkController extends Controller
 
     public function bundleUpdated($bundleId, $token)
     {
-        $bundle = Bundle::find('remote_id', $bundleId);
+        try {
+            $bundle = Bundle::where('remote_id', $bundleId)->firstOrFail();
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Bundle not found'], 403);
+        }
+
         $storedToken = $bundle->webhook_token;
 
         if ($token !== $storedToken) {

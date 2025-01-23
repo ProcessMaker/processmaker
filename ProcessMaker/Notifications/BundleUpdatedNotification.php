@@ -69,6 +69,11 @@ class BundleUpdatedNotification extends Notification
         ];
     }
 
+    public function toDatabase($notifiable)
+    {
+        return $this->toArray($notifiable);
+    }
+
     public function toBroadcast($notifiable)
     {
         return new BroadcastMessage($this->toArray($notifiable));
