@@ -347,6 +347,9 @@ class ScriptExecutorController extends Controller
     {
         $languages = [];
         foreach (Script::scriptFormats() as $key => $config) {
+            if (in_array($key, Script::deprecatedLanguages)) {
+                continue;
+            }
             if (!array_key_exists('system', $config) || (array_key_exists('system', $config) && !$config['system'])) {
                 $languages[] = [
                     'value' => $key,
