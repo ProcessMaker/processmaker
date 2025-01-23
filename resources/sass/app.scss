@@ -1128,7 +1128,30 @@ nav {
     border: none !important;
   }
 
+  .multiselect__select {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 40px;
+    top: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+  }
+
   .multiselect__select:before {
     display: none;
   }
+}
+
+.combined-input-container .multiselect:focus {
+  box-shadow: none;
+  border: none !important;
+}
+
+.combined-input-container .form-control:focus {
+  box-shadow: none;
+  border: none !important;
+  border-left: 1px solid #D7DDE5 !important;
 }
