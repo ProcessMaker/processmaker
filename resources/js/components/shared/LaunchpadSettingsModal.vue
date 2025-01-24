@@ -499,14 +499,15 @@ export default {
     },
     async getMyTasksColumns() {
       this.myTasks.currentColumns = this.myTasksColumns;
-      await ProcessMaker.apiClient.get('saved-searches/17/columns?include=default')
+      let defaultSavedSearch = window.ProcessMaker.defaultSavedSearch || null;
+      await ProcessMaker.apiClient.get(`saved-searches/${defaultSavedSearch}/columns?include=default`)
         .then((response) => {
           if (response.data && response.data.default) {
             this.myTasks.defaultColumns = response.data.default;
           }
         });
 
-      await ProcessMaker.apiClient.get('saved-searches/17/columns?include=available,data')
+      await ProcessMaker.apiClient.get(`saved-searches/${defaultSavedSearch}/columns?include=available,data`)
         .then((response) => {
           if (response.data) {
             if (response.data.available) {
