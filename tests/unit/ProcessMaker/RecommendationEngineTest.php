@@ -24,7 +24,7 @@ class RecommendationEngineTest extends TestCase
 
     private SyncRecommendations $syncRecommendations;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
