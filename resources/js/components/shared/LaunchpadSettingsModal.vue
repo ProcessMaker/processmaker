@@ -265,8 +265,8 @@ export default {
           if (launchpadProperties !== "" && "tabs" in launchpadProperties) {
             this.tabs = launchpadProperties.tabs;
           }
-          if (launchpadProperties !== "" && "my_tasks_current_columns" in launchpadProperties) {
-            this.myTasks.currentColumns = launchpadProperties.my_tasks_current_columns;
+          if (launchpadProperties !== "" && "my_tasks_columns" in launchpadProperties) {
+            this.myTasks.currentColumns = launchpadProperties.my_tasks_columns;
           }
           if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
             this.selectedSavedChart = this.getSelectedSavedChartJSONFromResult(launchpadProperties);
@@ -360,7 +360,7 @@ export default {
         icon: this.selectedLaunchpadIcon,
         icon_label: this.selectedLaunchpadIconLabel,
         tabs: this.tabs,
-        my_tasks_current_columns: this.myTasks.currentColumns
+        my_tasks_columns: this.myTasks.currentColumns
       }, null, 1);
 
       ProcessMaker.apiClient
@@ -497,20 +497,28 @@ export default {
         this.getMyTasksColumns();
       });
     },
-    getMyTasksColumns() {
+    async getMyTasksColumns() {
       this.myTasks.currentColumns = this.myTasksColumns;
-      ProcessMaker.apiClient.get('saved-searches/17/columns?include=default')
+      await ProcessMaker.apiClient.get('saved-searches/17/columns?include=default')
         .then((response) => {
           if (response.data && response.data.default) {
             this.myTasks.defaultColumns = response.data.default;
           }
         });
 
-      ProcessMaker.apiClient.get('saved-searches/17/columns?include=available,data')
+      await ProcessMaker.apiClient.get('saved-searches/17/columns?include=available,data')
         .then((response) => {
           if (response.data) {
             if (response.data.available) {
               this.myTasks.availableColumns = response.data.available;
+              // Update availableColumns with the fields that are not in currentColumns.
+              let columns = [...this.myTasks.defaultColumns, ...this.myTasks.availableColumns];
+              const difference = columns.filter(column => 
+                !this.myTasks.currentColumns.some(currentColumn => 
+                  currentColumn.field === column.field
+                )
+              );
+              this.myTasks.availableColumns = difference;
             }
             if (response.data.data) {
               this.myTasks.dataColumns = response.data.data;

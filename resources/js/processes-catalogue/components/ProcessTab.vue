@@ -253,6 +253,7 @@
     },
     mounted() {
       this.requestTabConfiguration();
+      this.requestMyTasksColumns();
       this.verifyTabsLength();
     },
     methods: {
@@ -365,6 +366,14 @@
           }
         }
         this.onTabsInput(0);
+      },
+      requestMyTasksColumns() {
+        if (this.process.launchpad) {
+          let properties = JSON.parse(this.process.launchpad.properties);
+          if ("my_tasks_columns" in properties && properties.my_tasks_columns.length > 0) {
+            this.updateColumnsByType("myTasks", _.cloneDeep(properties.my_tasks_columns));
+          }
+        }
       },
       saveTabConfiguration() {
         let properties = {};
