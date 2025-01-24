@@ -400,6 +400,20 @@
             this.bTabsHide = true;
           }
         });
+      },
+      updateColumnsByType(type, columns) {
+        this.tabsList.forEach(tab => {
+          if (tab.type === type) {
+            tab.columns = _.cloneDeep(columns);
+          }
+        });
+      },
+      getDefaultColumnsByType(type) {
+        const index = this.tabsList.findIndex(tab => tab.type === type);
+        if (index !== -1) {
+          return _.cloneDeep(this.$refs["list" + index][0].visibleHeaders);
+        }
+        return [];
       }
     }
   };

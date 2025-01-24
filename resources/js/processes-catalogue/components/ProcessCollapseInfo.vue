@@ -63,6 +63,8 @@
       :options="optionsData"
       :description-settings="process.description"
       :process="process"
+      :my-tasks-columns="myTasksColumns"
+      @updateMyTasksColumns="updateMyTasksColumns"
     />
   </div>
 </template>
@@ -92,7 +94,7 @@ export default {
     ProcessHeaderStart,
   },
   mixins: [ProcessesMixin, ellipsisMenuMixin, processNavigationMixin],
-  props: ["process", "currentUserId"],
+  props: ["process", "currentUserId", "myTasksColumns"],
   computed: {
     createdFromWizardTemplate() {
       return !!this.process?.properties?.wizardTemplateUuid;
@@ -130,6 +132,9 @@ export default {
     getHelperProcess() {
       this.$refs.wizardHelperProcessModal.getHelperProcessStartEvent();
     },
+    updateMyTasksColumns(columns) {
+      this.$emit('updateMyTasksColumns', columns);
+    }
   },
 };
 </script>

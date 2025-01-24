@@ -84,7 +84,7 @@
             </div>
             <label></label>
             <div>
-              <a href="#" @click.prevent="$refs['editTaskColumn'].show()">{{ $t("Edit Task Column") }} <i class="fp-box-arrow-up-right" /></a>
+              <a href="#" @click.prevent="showEditTaskColumn">{{ $t("Edit Task Column") }} <i class="fp-box-arrow-up-right" /></a>
             </div>
           </div>
         </div>
@@ -123,10 +123,10 @@
            :title="$t('Edit Task Column')"
            >
       <div class="modal-content-custom">
-        <column-chooser v-model="currentColumns" 
-                        :available-columns="availableColumns"
-                        :default-columns="defaultColumns" 
-                        :data-columns="dataColumns">
+        <column-chooser v-model="myTasks.currentColumns" 
+                        :available-columns="myTasks.availableColumns"
+                        :default-columns="myTasks.defaultColumns" 
+                        :data-columns="myTasks.dataColumns">
           <template #title1>
             <small class="form-text text-muted">
               <a href="#" @click.prevent="$refs['editTaskColumn'].hide()">
@@ -139,7 +139,7 @@
             <b-button variant="outline-secondary" @click="$refs['editTaskColumn'].hide()" class="mr-1">
               {{ $t('Cancel and go back') }}
             </b-button>
-            <b-button variant="secondary" @click="saveEditTaskColumn">
+            <b-button variant="secondary" @click="$refs['editTaskColumn'].hide()">
               {{ $t('Save columns') }}
             </b-button>
           </template>
@@ -181,12 +181,10 @@ export default {
       type: Object,
       default: () => ({}),
     },
-    defaultColumns: {
+    myTasksColumns: {
       type: Array,
-      default() {
-        return [];
-      }
-    }
+      default: () => ([]),
+    },
   },
   data() {
     return {
@@ -236,9 +234,12 @@ export default {
         },
       ],
       tabs: [],
-      availableColumns: [],
-      dataColumns: [],
-      currentColumns: []
+      myTasks: {
+        currentColumns: [],
+        availableColumns: [],
+        defaultColumns: [],
+        dataColumns: []
+      }
     };
   },
   mounted() {
@@ -263,6 +264,9 @@ export default {
           const launchpadProperties = unparseProperties ? JSON.parse(unparseProperties) : "";
           if (launchpadProperties !== "" && "tabs" in launchpadProperties) {
             this.tabs = launchpadProperties.tabs;
+          }
+          if (launchpadProperties !== "" && "my_tasks_current_columns" in launchpadProperties) {
+            this.myTasks.currentColumns = launchpadProperties.my_tasks_current_columns;
           }
           if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
             this.selectedSavedChart = this.getSelectedSavedChartJSONFromResult(launchpadProperties);
@@ -355,7 +359,8 @@ export default {
         screen_title: this.selectedScreen.title,
         icon: this.selectedLaunchpadIcon,
         icon_label: this.selectedLaunchpadIconLabel,
-        tabs: this.tabs
+        tabs: this.tabs,
+        my_tasks_current_columns: this.myTasks.currentColumns
       }, null, 1);
 
       ProcessMaker.apiClient
@@ -376,6 +381,7 @@ export default {
           ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
           ProcessMaker.EventBus.$emit("getChartId", this.selectedSavedChart.id);
           this.customModalButtons[1].disabled = false;
+          this.$emit('updateMyTasksColumns', this.myTasks.currentColumns);
           this.hideModal();
         })
         .catch((error) => {
@@ -481,8 +487,36 @@ export default {
       this.selectedLaunchpadIcon = iconData.value;
       this.selectedLaunchpadIconLabel = iconData.label;
     },
-    saveEditTaskColumn() {
-      this.$refs['editTaskColumn'].hide();
+    /**
+     * This method shows a modal window to edit the columns of the My Tasks list.
+     * If you don't use the nextTick method, the modal will not be displayed correctly.
+     */
+    showEditTaskColumn() {
+      this.$refs['editTaskColumn'].show();
+      this.$nextTick(() => {
+        this.getMyTasksColumns();
+      });
+    },
+    getMyTasksColumns() {
+      this.myTasks.currentColumns = this.myTasksColumns;
+      ProcessMaker.apiClient.get('saved-searches/17/columns?include=default')
+        .then((response) => {
+          if (response.data && response.data.default) {
+            this.myTasks.defaultColumns = response.data.default;
+          }
+        });
+
+      ProcessMaker.apiClient.get('saved-searches/17/columns?include=available,data')
+        .then((response) => {
+          if (response.data) {
+            if (response.data.available) {
+              this.myTasks.availableColumns = response.data.available;
+            }
+            if (response.data.data) {
+              this.myTasks.dataColumns = response.data.data;
+            }
+          }
+        });
     }
   },
 };

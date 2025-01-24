@@ -212,8 +212,9 @@ export default {
           let windowHeight = window.innerHeight;
           
           let height = (windowHeight - top);
-          console.log("paso", document.querySelector('.tab-content-columns'));
-          document.querySelector('.tab-content-columns').style.height = `${height}px`;
+          if(document.querySelector('.tab-content-columns')) {
+            document.querySelector('.tab-content-columns').style.height = `${height}px`;
+          }
         },
         resizeColumnContainer() {
           let containerHeight = document.querySelector('.tab-content').offsetHeight;
