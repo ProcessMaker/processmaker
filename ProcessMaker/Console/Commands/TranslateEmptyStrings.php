@@ -55,7 +55,7 @@ class TranslateEmptyStrings extends Command
     private function translateCoreEmptyStrings($langCode)
     {
         $this->files = [];
-        $translationsCore = app()->basePath() . '/resources/lang';
+        $translationsCore = app()->basePath() . '/lang';
         $this->listFiles($translationsCore);
         $filesIgnore = ['/en/', '.gitignore', '/en.json', '.php', '.DS_Store'];
 

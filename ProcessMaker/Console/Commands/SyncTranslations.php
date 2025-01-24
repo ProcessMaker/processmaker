@@ -45,23 +45,23 @@ class SyncTranslations extends Command
                 if (!(str_contains($pathFile, '.json') || str_contains($pathFile, '.php')) || str_contains($pathFile, '.bak.')) {
                     continue;
                 }
-                // updating resources/lang
+                // updating lang
                 $this->syncFile(str_replace('/resources-core/', '/resources/', $pathFile), $pathFile);
                 if ($existsLangOrig) {
-                    // updating resources/lang.orig
+                    // updating lang.orig
                     $this->syncFile(str_replace(['/resources-core/', '/lang/'], ['/resources/', '/lang.orig/'], $pathFile), $pathFile);
                 }
             }
 
             // updating all languages with new labels
             $this->files = [];
-            $translationsCore = app()->basePath() . '/resources/lang';
+            $translationsCore = app()->basePath() . '/lang';
             $this->listFiles($translationsCore);
             foreach ($this->files as $pathFile) {
                 if (!(str_contains($pathFile, '.json') || str_contains($pathFile, '.php')) || str_contains($pathFile, '.bak.')) {
                     continue;
                 }
-                // updating resources/lang
+                // updating lang
                 $backup = str_replace('/resources/', '/resources-core/', preg_replace('/(?<=lang).+?(?=json)/', '/en.', $pathFile));
                 $path1 = explode('/lang/', $backup);
                 $path2 = explode('/', $path1[1]);
@@ -71,7 +71,7 @@ class SyncTranslations extends Command
 
                 $this->syncFile($pathFile, $backup);
                 if ($existsLangOrig) {
-                    // updating resources/lang.orig
+                    // updating lang.orig
                     $this->syncFile(str_replace('/lang/', '/lang.orig/', $pathFile), $backup);
                 }
             }
@@ -97,10 +97,10 @@ class SyncTranslations extends Command
                         if (!str_contains($pathFile, '.json') || str_contains($pathFile, '.bak.')) {
                             continue;
                         }
-                        // updating resources/lang
+                        // updating lang
                         $this->syncFile($pathFile, $pathPackage . '/en.json');
                         if ($existsLangOrig) {
-                            // updating resources/lang.orig
+                            // updating lang.orig
                             $this->syncFile(str_replace('/lang-', '/lang.orig-', $pathFile), $pathPackage . '/en.json');
                         }
                     }
