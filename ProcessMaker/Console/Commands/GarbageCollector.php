@@ -48,7 +48,7 @@ class GarbageCollector extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->writeln("Running Garbage Collector\n", 'info', true);
 

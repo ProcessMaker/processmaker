@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Exception\PmqlMethodException;
 use ProcessMaker\Traits\ExtendedPMQL;
@@ -33,7 +34,7 @@ class ScreenTemplates extends Template implements HasMedia
      *
      * @return BelongsTo
      */
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(ScreenCategory::class, 'screen_category_id')->withDefault();
     }

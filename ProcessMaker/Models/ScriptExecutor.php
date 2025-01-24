@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
@@ -91,7 +92,7 @@ class ScriptExecutor extends ProcessMakerModel
         return $initialExecutor;
     }
 
-    public function versions()
+    public function versions(): HasMany
     {
         return $this->hasMany(ScriptExecutorVersion::class);
     }
@@ -201,7 +202,7 @@ class ScriptExecutor extends ProcessMakerModel
         return $tag;
     }
 
-    public function scripts()
+    public function scripts(): HasMany
     {
         return $this->hasMany(Script::class);
     }

@@ -31,7 +31,7 @@ class NotificationsTest extends TestCase
     /**
      * Create new notification successfully
      */
-    public function testCreateNotification()
+    public function testCreateNotification(): void
     {
         //Post title duplicated
         $url = self::API_TEST_URL;
@@ -49,7 +49,7 @@ class NotificationsTest extends TestCase
     /**
      * Get a list of Notifications without query parameters.
      */
-    public function testListNotification()
+    public function testListNotification(): void
     {
         $existing = Notification::count();
 
@@ -76,7 +76,7 @@ class NotificationsTest extends TestCase
     /**
      * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
      */
-    public function testNotificationListDates()
+    public function testNotificationListDates(): void
     {
         $newEntity = Notification::factory()->create([
             'notifiable_type' => User::class,
@@ -99,7 +99,7 @@ class NotificationsTest extends TestCase
     /**
      * Get a notification
      */
-    public function testGetNotification()
+    public function testGetNotification(): void
     {
         //get the id from the factory
         $notification = Notification::factory()->create()->id;
@@ -117,7 +117,7 @@ class NotificationsTest extends TestCase
     /**
      * Update notification in process
      */
-    public function testUpdateNotification()
+    public function testUpdateNotification(): void
     {
         $url = self::API_TEST_URL . '/' . Notification::factory()->create()->id;
 
@@ -142,7 +142,7 @@ class NotificationsTest extends TestCase
     /**
      * Delete notification in process
      */
-    public function testDeleteNotification()
+    public function testDeleteNotification(): void
     {
         //Remove notification
         $url = self::API_TEST_URL . '/' . Notification::factory()->create()->id;
@@ -155,7 +155,7 @@ class NotificationsTest extends TestCase
     /**
      * The notification does not exist in process
      */
-    public function testDeleteNotificationNotExist()
+    public function testDeleteNotificationNotExist(): void
     {
         //Notification not exist
         $url = self::API_TEST_URL . '/' . Notification::factory()->make()->id;

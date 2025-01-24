@@ -15,7 +15,7 @@ class ScriptsTest extends TestCase
      *
      * @return void
      */
-    public function testIndexRoute()
+    public function testIndexRoute(): void
     {
         // get the URL
         $response = $this->webCall('GET', '/designer/scripts');

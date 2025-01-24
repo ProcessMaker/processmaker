@@ -13,7 +13,7 @@ class InboxRuleFactory extends Factory
 {
     protected $model = InboxRule::class;
 
-    public function definition()
+    public function definition(): array
     {
         //Generates random saved_search_id and process_request_token_id even with null values
         //But never both null

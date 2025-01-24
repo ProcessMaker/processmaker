@@ -33,7 +33,7 @@ class ExportImportTest extends TestCase
     use HelperTrait;
     use WithFaker;
 
-    public function testDownloadExportFile()
+    public function testDownloadExportFile(): void
     {
         $screen = Screen::factory()->create(['title' => 'Screen With Space']);
 
@@ -65,7 +65,7 @@ class ExportImportTest extends TestCase
         $this->assertEquals($screen->categories[0]->id, $exportInfo['ScreenCategory']['ids'][0]);
     }
 
-    public function testImportPreview()
+    public function testImportPreview(): void
     {
         [$file] = $this->importFixtures();
 
@@ -79,7 +79,7 @@ class ExportImportTest extends TestCase
         $this->assertArrayHasKey('manifest', $json);
     }
 
-    public function testImport()
+    public function testImport(): void
     {
         [$file] = $this->importFixtures();
 
@@ -91,7 +91,7 @@ class ExportImportTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testHandleDuplicateAttributes()
+    public function testHandleDuplicateAttributes(): void
     {
         [$file, $screen, $nestedScreen] = $this->importFixtures();
 
@@ -162,7 +162,7 @@ class ExportImportTest extends TestCase
         ];
     }
 
-    public function testImportOldProcess()
+    public function testImportOldProcess(): void
     {
         $content = file_get_contents(base_path('tests/Feature/ImportExport/fixtures/old-process-payload-41.json'));
         // Run old process importer job
@@ -183,7 +183,7 @@ class ExportImportTest extends TestCase
      * Not yet implemented
      * - Collections
      */
-    public function testExportImportFull($importType)
+    public function testExportImportFull($importType): void
     {
         $classes = [
             DataSourceCategory::class,

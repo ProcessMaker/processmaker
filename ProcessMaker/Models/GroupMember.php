@@ -2,6 +2,9 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 /**
  * Represents a group Members definition.
  *
@@ -92,12 +95,12 @@ class GroupMember extends ProcessMakerModel
         ];
     }
 
-    public function member()
+    public function member(): MorphTo
     {
         return $this->morphTo(null, null, 'member_id');
     }
 
-    public function group()
+    public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class);
     }

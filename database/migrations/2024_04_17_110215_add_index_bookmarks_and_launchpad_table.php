@@ -10,7 +10,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('user_process_bookmarks', function (Blueprint $table) {
             // Create index
@@ -27,7 +27,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('user_process_bookmarks', function (Blueprint $table) {
             // Drop index

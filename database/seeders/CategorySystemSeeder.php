@@ -14,7 +14,7 @@ class CategorySystemSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         ScreenCategory::factory()->create([
             'name' => __('Uncategorized'),

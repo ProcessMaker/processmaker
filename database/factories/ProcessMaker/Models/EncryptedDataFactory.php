@@ -15,7 +15,7 @@ class EncryptedDataFactory extends Factory
      *
      * @return array
      */
-    public function definition()
+    public function definition(): array
     {
         // Get configured driver for encrypted data
         $driver = config('app.encrypted_data.driver');

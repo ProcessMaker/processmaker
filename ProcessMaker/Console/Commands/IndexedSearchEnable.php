@@ -184,7 +184,7 @@ class IndexedSearchEnable extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         if ($this->interactive()) {
             $confirmed = $this->confirm(

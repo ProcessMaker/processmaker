@@ -2,6 +2,9 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Contracts\ScriptInterface;
 use ProcessMaker\Exception\ConfigurationException;
@@ -275,7 +278,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
     /**
      * Get the associated versions
      */
-    public function versions()
+    public function versions(): HasMany
     {
         return $this->hasMany(ScriptVersion::class);
     }
@@ -283,7 +286,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
     /**
      * Get the associated run_as_user
      */
-    public function runAsUser()
+    public function runAsUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'run_as_user_id');
     }
@@ -291,7 +294,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
     /**
      * Get the associated projects
      */
-    public function projects()
+    public function projects(): BelongsToMany
     {
         return $this->belongsToMany('ProcessMaker\Package\Projects\Models\Project',
             'project_assets',
@@ -303,7 +306,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
     }
 
     // Define the relationship with the ProjectAsset model
-    public function projectAssets()
+    public function projectAssets(): BelongsToMany
     {
         return $this->belongsToMany('ProcessMaker\Package\Projects\Models\ProjectAsset',
             'project_assets', 'asset_id', 'project_id')
@@ -325,7 +328,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
     /**
      * Get the associated category
      */
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(ScriptCategory::class, 'script_category_id');
     }
@@ -353,7 +356,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
     /**
      * Get the associated executor
      */
-    public function scriptExecutor()
+    public function scriptExecutor(): BelongsTo
     {
         return $this->belongsTo(ScriptExecutor::class, 'script_executor_id');
     }

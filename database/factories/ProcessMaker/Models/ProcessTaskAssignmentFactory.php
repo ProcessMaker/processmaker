@@ -18,7 +18,7 @@ class ProcessTaskAssignmentFactory extends Factory
      *
      * @return array
      */
-    public function definition()
+    public function definition(): array
     {
         $model = $this->faker->randomElement([
             User::class,

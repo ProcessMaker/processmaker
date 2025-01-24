@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
 use ProcessMaker\Contracts\ScreenInterface;
 use ProcessMaker\Traits\HasCategories;
@@ -51,7 +52,7 @@ class ScreenVersion extends ProcessMakerModel implements ScreenInterface
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function parent()
+    public function parent(): BelongsTo
     {
         return $this->belongsTo(Screen::class, 'screen_id', 'id');
     }

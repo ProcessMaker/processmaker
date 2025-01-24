@@ -28,7 +28,7 @@ class UpdateSettingsGroupId extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         // Update the setting.group_id with the corresponding category created in settings_menus
         Setting::updateAllSettingsGroupId();

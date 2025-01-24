@@ -9,7 +9,7 @@ use Tests\TestCase;
 
 class RequestLockTest extends TestCase
 {
-    public function testExitJobWithoutUnlock()
+    public function testExitJobWithoutUnlock(): void
     {
         $request = new TestBpmnActionLock;
         $request->requestLock([1]);
@@ -18,7 +18,7 @@ class RequestLockTest extends TestCase
         $this->assertNull($locks[0]->due_at);
     }
 
-    public function testCurrentLock()
+    public function testCurrentLock(): void
     {
         $request = new TestBpmnActionLock;
         $request->requestLock([1]);
@@ -27,7 +27,7 @@ class RequestLockTest extends TestCase
         $this->assertNull($currentLock->due_at);
     }
 
-    public function testRequestLockInParallel()
+    public function testRequestLockInParallel(): void
     {
         $request = new TestBpmnActionLock;
         $lock = $request->requestLock([1]);
@@ -38,7 +38,7 @@ class RequestLockTest extends TestCase
         $this->assertEquals($lock->id, $currentLock->id);
     }
 
-    public function testUnlock()
+    public function testUnlock(): void
     {
         $request = new TestBpmnActionLock;
         $request->requestLock([1]);
@@ -50,7 +50,7 @@ class RequestLockTest extends TestCase
         $this->assertCount(0, $locksActive);
     }
 
-    public function testActivateLock()
+    public function testActivateLock(): void
     {
         $request = new TestBpmnActionLock;
         $lock = $request->requestLock([1]);
@@ -63,7 +63,7 @@ class RequestLockTest extends TestCase
         $this->assertCount(1, $locksActive);
     }
 
-    public function testActivateLocksThenUnlock()
+    public function testActivateLocksThenUnlock(): void
     {
         $request = new TestBpmnActionLock;
         $lock1 = $request->requestLock([1]);

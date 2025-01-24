@@ -12,7 +12,7 @@ class DevLinkTest extends TestCase
 {
     use RequestHelper;
 
-    public function testIndexStoreClientCredentials()
+    public function testIndexStoreClientCredentials(): void
     {
         $devLink = DevLink::factory()->create();
 
@@ -39,7 +39,7 @@ class DevLinkTest extends TestCase
         $this->assertEquals($devLink->client_secret, $params['client_secret']);
     }
 
-    public function testIndexStoreOauthCredentials()
+    public function testIndexStoreOauthCredentials(): void
     {
         $devLink = DevLink::factory()->create([
             'url' => 'http://remote-instance.test',
@@ -72,7 +72,7 @@ class DevLinkTest extends TestCase
         $this->assertEquals($devLink->expires_in, 3600);
     }
 
-    public function testGetOauthClient()
+    public function testGetOauthClient(): void
     {
         $devLink = DevLink::factory()->create([
             'url' => 'http://placeholder.test',

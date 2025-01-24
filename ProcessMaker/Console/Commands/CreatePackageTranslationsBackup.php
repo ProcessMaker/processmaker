@@ -28,7 +28,7 @@ class CreatePackageTranslationsBackup extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         // get All packages installed
         $packages = App::make(PackageManager::class)->getJsonTranslationsRegistered();

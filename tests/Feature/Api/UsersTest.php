@@ -84,7 +84,7 @@ class UsersTest extends TestCase
     /**
      * Test verify the parameter required for create form
      */
-    public function testNotCreatedForParameterRequired()
+    public function testNotCreatedForParameterRequired(): void
     {
         // Post should have the parameter required
         $response = $this->apiCall('POST', self::API_TEST_URL, []);
@@ -97,7 +97,7 @@ class UsersTest extends TestCase
     /**
      * Create new user successfully
      */
-    public function testCreateUser()
+    public function testCreateUser(): void
     {
         // Post title duplicated
         $faker = Faker::create();
@@ -115,7 +115,7 @@ class UsersTest extends TestCase
         $response->assertStatus(201);
     }
 
-    public function testCreatePreviouslyDeletedUser()
+    public function testCreatePreviouslyDeletedUser(): void
     {
         $url = self::API_TEST_URL;
 
@@ -145,7 +145,7 @@ class UsersTest extends TestCase
         $this->assertEquals('The Username has already been taken.', $response->json()['errors']['username'][0]);
     }
 
-    public function testDefaultValuesOfUser()
+    public function testDefaultValuesOfUser(): void
     {
         config()->set('app.timezone', 'America/Los_Angeles');
         putenv('DATE_FORMAT=m/d/Y H:i');
@@ -215,7 +215,7 @@ class UsersTest extends TestCase
     /**
      * Can not create a user with an existing username
      */
-    public function testNotCreateUserWithUsernameExists()
+    public function testNotCreateUserWithUsernameExists(): void
     {
         User::factory()->create([
             'username' => 'mytestusername',
@@ -237,7 +237,7 @@ class UsersTest extends TestCase
     /**
      * Get a list of Users without query parameters.
      */
-    public function testListUser()
+    public function testListUser(): void
     {
         User::query()->delete();
 
@@ -261,7 +261,7 @@ class UsersTest extends TestCase
     /**
      * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
      */
-    public function testUserListDates()
+    public function testUserListDates(): void
     {
         $username = 'userTestTimezone';
         $newEntity = User::factory()->create(['username' => $username]);
@@ -283,7 +283,7 @@ class UsersTest extends TestCase
     /**
      * Get a list of User with parameters
      */
-    public function testListUserWithQueryParameter()
+    public function testListUserWithQueryParameter(): void
     {
         $username = 'mytestusername';
 
@@ -314,7 +314,7 @@ class UsersTest extends TestCase
     /**
      * Tests filtering a user based off of email address
      */
-    public function testFetchUserByEmailAddressFilter()
+    public function testFetchUserByEmailAddressFilter(): void
     {
         User::factory()->create([
             'email' => 'test@example.com',
@@ -340,7 +340,7 @@ class UsersTest extends TestCase
     /**
      * Get a user
      */
-    public function testGetUser()
+    public function testGetUser(): void
     {
         // get the id from the factory
         $user = User::factory()->create()->id;
@@ -358,7 +358,7 @@ class UsersTest extends TestCase
     /**
      * Parameters required for update of user
      */
-    public function testUpdateUserParametersRequired()
+    public function testUpdateUserParametersRequired(): void
     {
         // The post must have the required parameters
         $url = self::API_TEST_URL . '/' . User::factory()->create()->id;
@@ -374,7 +374,7 @@ class UsersTest extends TestCase
     /**
      * Update user in process
      */
-    public function testUpdateUser()
+    public function testUpdateUser(): void
     {
         $faker = Faker::create();
 
@@ -403,7 +403,7 @@ class UsersTest extends TestCase
     /**
      * Update user in process
      */
-    public function testUpdateUserForceChangePasswordFlag()
+    public function testUpdateUserForceChangePasswordFlag(): void
     {
         $faker = Faker::create();
 
@@ -434,7 +434,7 @@ class UsersTest extends TestCase
     /**
      * Check that the validation wont allow duplicate usernames
      */
-    public function testUpdateUserTitleExists()
+    public function testUpdateUserTitleExists(): void
     {
         $user1 = User::factory()->create([
             'username' => 'MyUserName',
@@ -455,7 +455,7 @@ class UsersTest extends TestCase
     /**
      * Delete user in process
      */
-    public function testDeleteUser()
+    public function testDeleteUser(): void
     {
         // Remove user
         $url = self::API_TEST_URL . '/' . User::factory()->create()->id;
@@ -468,7 +468,7 @@ class UsersTest extends TestCase
     /**
      * The user does not exist in process
      */
-    public function testDeleteUserNotExist()
+    public function testDeleteUserNotExist(): void
     {
         // User not exist
         $url = self::API_TEST_URL . '/' . User::factory()->make()->id;
@@ -481,7 +481,7 @@ class UsersTest extends TestCase
     /**
      * The user can upload an avatar
      */
-    public function testUpdateUserAvatar()
+    public function testUpdateUserAvatar(): void
     {
         // Create a new user
         $user = User::factory()->create([
@@ -529,7 +529,7 @@ class UsersTest extends TestCase
      * Tests the archiving and restoration of a process
      * @group agustin
      */
-    public function testRestoreSoftDeletedUser()
+    public function testRestoreSoftDeletedUser(): void
     {
         // create an user
         $user = User::factory()->create([
@@ -598,7 +598,7 @@ class UsersTest extends TestCase
         $response->assertJsonFragment(['id' => $id]);
     }
 
-    public function testCreateWithoutPassword()
+    public function testCreateWithoutPassword(): void
     {
         $payload = [
             'firstname' => 'foo',
@@ -645,7 +645,7 @@ class UsersTest extends TestCase
     /**
      * Create and validate username
      */
-    public function testCreateUserValidateUsername()
+    public function testCreateUserValidateUsername(): void
     {
         // Valid cases
         $usernames = [
@@ -728,7 +728,7 @@ class UsersTest extends TestCase
      * Update username and password
      * If is an admin user can edit username and password himself
      */
-    public function testUpdateUserAdmin()
+    public function testUpdateUserAdmin(): void
     {
         $url = self::API_TEST_URL . '/' . $this->user->id;
 
@@ -755,7 +755,7 @@ class UsersTest extends TestCase
      * Update username and password
      * If is a user without permission can not edit and a user with permission can edit himself
      */
-    public function testUpdateUserNotAdmin()
+    public function testUpdateUserNotAdmin(): void
     {
         // Without permission
         $this->user = User::factory()->create(['status' => 'ACTIVE']);
@@ -799,7 +799,7 @@ class UsersTest extends TestCase
         $this->assertNotEquals($verify, $verifyNew);
     }
 
-    public function testDisableRecommendations()
+    public function testDisableRecommendations(): void
     {
         RecommendationUser::factory()->create([
             'user_id' => $this->user->id,
@@ -823,7 +823,7 @@ class UsersTest extends TestCase
         $this->assertEquals(0, RecommendationUser::where('user_id', $this->user->id)->count());
     }
 
-    public function testGetUsersTaskCount()
+    public function testGetUsersTaskCount(): void
     {
         $admin = $this->user;
         $user = User::factory()->create();

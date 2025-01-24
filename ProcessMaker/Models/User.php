@@ -2,6 +2,9 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -289,17 +292,17 @@ class User extends Authenticatable implements HasMedia
         return $filtered->values();
     }
 
-    public function groupMembersFromMemberable()
+    public function groupMembersFromMemberable(): MorphMany
     {
         return $this->morphMany(GroupMember::class, 'member', null, 'member_id');
     }
 
-    public function groups()
+    public function groups(): MorphToMany
     {
         return $this->morphToMany('ProcessMaker\Models\Group', 'member', 'group_members');
     }
 
-    public function projectMembers()
+    public function projectMembers(): HasMany
     {
         if (class_exists('ProcessMaker\Package\Projects\Models\ProjectMember')) {
             return $this->hasMany('ProcessMaker\Package\Projects\Models\ProjectMember', 'member_id', 'id')->where('member_type', self::class);
@@ -309,12 +312,12 @@ class User extends Authenticatable implements HasMedia
         }
     }
 
-    public function permissions()
+    public function permissions(): MorphToMany
     {
         return $this->morphToMany('ProcessMaker\Models\Permission', 'assignable');
     }
 
-    public function processesFromProcessable()
+    public function processesFromProcessable(): MorphToMany
     {
         return $this->morphToMany('ProcessMaker\Models\Process', 'processable');
     }
@@ -394,7 +397,7 @@ class User extends Authenticatable implements HasMedia
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphMany
      */
-    public function assigned()
+    public function assigned(): MorphMany
     {
         return $this->morphMany(ProcessTaskAssignment::class, 'assigned', 'assignment_type', 'assignment_id');
     }
@@ -499,7 +502,7 @@ class User extends Authenticatable implements HasMedia
      *
      * @return User
      */
-    public function delegationUser()
+    public function delegationUser(): BelongsTo
     {
         return $this->belongsTo(self::class);
     }
@@ -509,7 +512,7 @@ class User extends Authenticatable implements HasMedia
      *
      * @return User
      */
-    public function manager()
+    public function manager(): BelongsTo
     {
         return $this->belongsTo(self::class);
     }
@@ -593,7 +596,7 @@ class User extends Authenticatable implements HasMedia
         return $this;
     }
 
-    public function activeTasks()
+    public function activeTasks(): HasMany
     {
         return $this->hasMany(ProcessRequestToken::class, 'user_id')
                     ->where('status', 'ACTIVE')

@@ -17,7 +17,7 @@ class GlobalSignalsTest extends TestCase
      *
      * @group process_tests
      */
-    public function testGlobalSignalsWithCollaboration()
+    public function testGlobalSignalsWithCollaboration(): void
     {
         // Create the processes
         $parent = $this->createProcess([
@@ -83,7 +83,7 @@ class GlobalSignalsTest extends TestCase
      *
      * @group process_tests
      */
-    public function testGlobalStartSignalWithoutCollaboration()
+    public function testGlobalStartSignalWithoutCollaboration(): void
     {
         // Create the processes
         $parent = $this->createProcess([
@@ -153,7 +153,7 @@ class GlobalSignalsTest extends TestCase
      *
      * @group process_tests
      */
-    public function testProcessWithUndefinedSignals()
+    public function testProcessWithUndefinedSignals(): void
     {
         // Create the processes
         $parent = $this->createProcess([

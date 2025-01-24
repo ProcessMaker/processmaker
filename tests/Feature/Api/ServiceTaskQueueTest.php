@@ -22,7 +22,7 @@ class ServiceTaskQueueTest extends TestCase
     /**
      * Tests the ServiceTask is dispatched to the custom queue.
      */
-    public function testCustomQueue()
+    public function testCustomQueue(): void
     {
         Bus::fake();
 
@@ -41,7 +41,7 @@ class ServiceTaskQueueTest extends TestCase
     /**
      * Tests the ServiceTask is dispatched to the bpmn queue.
      */
-    public function testDefaultQueue()
+    public function testDefaultQueue(): void
     {
         Bus::fake();
 

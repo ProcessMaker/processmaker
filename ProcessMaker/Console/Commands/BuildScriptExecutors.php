@@ -63,7 +63,7 @@ class BuildScriptExecutors extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         if (env('PM_CI', false)) {
             // Do not run in CI environment

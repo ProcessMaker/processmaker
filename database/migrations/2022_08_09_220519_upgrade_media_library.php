@@ -11,7 +11,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         // add conversions_disk field to the media table ( varchar 255 nullable )
         Schema::table('media', function (Blueprint $table) {
@@ -40,7 +40,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         // remove conversions_disk field from the media table
         Schema::table('media', function (Blueprint $table) {

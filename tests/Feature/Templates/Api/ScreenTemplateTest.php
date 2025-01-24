@@ -27,7 +27,7 @@ class ScreenTemplateTest extends TestCase
 
     private const SCREEN_PATH = 'tests/Feature/Templates/fixtures/screen-config-with-two-pages.json';
 
-    public function testCreateScreenTemplate()
+    public function testCreateScreenTemplate(): void
     {
         $screenCategoryId = ScreenCategory::factory()->create()->id;
         $screen = Screen::factory()->create([
@@ -60,7 +60,7 @@ class ScreenTemplateTest extends TestCase
         $this->assertDatabaseHas('screen_templates', ['name' => 'Test Screen Template Creation']);
     }
 
-    public function testUpdateScreenTemplate()
+    public function testUpdateScreenTemplate(): void
     {
         $nonAdminUser = User::factory()->create(['is_administrator' => false]);
         $screenTemplateId = ScreenTemplates::factory()->create([
@@ -99,7 +99,7 @@ class ScreenTemplateTest extends TestCase
         ]);
     }
 
-    public function testDeleteScreenTemplate()
+    public function testDeleteScreenTemplate(): void
     {
         $screenTemplateId = ScreenTemplates::factory()->create()->id;
         $route = route('api.template.delete', ['screen', $screenTemplateId]);
@@ -112,7 +112,7 @@ class ScreenTemplateTest extends TestCase
         $this->assertDatabaseMissing('screen_templates', ['id' => $screenTemplateId]);
     }
 
-    public function testPublishScreenTemplateWithoutPermissions()
+    public function testPublishScreenTemplateWithoutPermissions(): void
     {
         $screenTemplateId = ScreenTemplates::factory()->create()->id;
         $user = User::factory()->create(['is_administrator' => false]);
@@ -124,7 +124,7 @@ class ScreenTemplateTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function testPublishScreenTemplateWithPermissions()
+    public function testPublishScreenTemplateWithPermissions(): void
     {
         $screenTemplateId = ScreenTemplates::factory()->create()->id;
         $user = User::factory()->create(['is_administrator' => false]);
@@ -146,7 +146,7 @@ class ScreenTemplateTest extends TestCase
         $this->assertSame($screenTemplate->is_public, 1);
     }
 
-    public function testCreateScreenFromTemplate()
+    public function testCreateScreenFromTemplate(): void
     {
         $user = User::factory()->create();
         $defaultScreenTemplate = ScreenTemplates::factory()->withCustomCss()->create([
@@ -177,7 +177,7 @@ class ScreenTemplateTest extends TestCase
         $this->assertNull($newScreen->custom_css);
     }
 
-    public function testCreateScreenFromTemplateWithDefault()
+    public function testCreateScreenFromTemplateWithDefault(): void
     {
         $user = User::factory()->create();
         $screenCategory = ScreenCategory::factory()->create();
@@ -232,7 +232,7 @@ class ScreenTemplateTest extends TestCase
         ]);
     }
 
-    public function testCreateScreenFromTemplateWithProjects()
+    public function testCreateScreenFromTemplateWithProjects(): void
     {
         if (!class_exists(Project::class)) {
             $this->markTestSkipped('Package Projects is not installed.');
@@ -257,7 +257,7 @@ class ScreenTemplateTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testShareScreenTemplate()
+    public function testShareScreenTemplate(): void
     {
         $screenTemplate = ScreenTemplates::factory()->create(['is_public' => false]);
 
@@ -279,7 +279,7 @@ class ScreenTemplateTest extends TestCase
         $this->assertEquals(1, $screenTemplate->is_public);
     }
 
-    public function testMakePrivateScreenTemplate()
+    public function testMakePrivateScreenTemplate(): void
     {
         $screenTemplate = ScreenTemplates::factory()->create(['is_public' => true]);
 
@@ -298,7 +298,7 @@ class ScreenTemplateTest extends TestCase
         $this->assertEquals(0, $screenTemplate->is_public);
     }
 
-    public function testShowScreenTemplate()
+    public function testShowScreenTemplate(): void
     {
         // Create screen template
         $name = 'Test Screen Template';
@@ -322,7 +322,7 @@ class ScreenTemplateTest extends TestCase
         $this->assertEquals('SCREEN_TEMPLATE', $editingScreen->asset_type);
     }
 
-    public function testImportExportScreenTemplate()
+    public function testImportExportScreenTemplate(): void
     {
         $adminUser = User::factory()->create();
         $screenTemplate = ScreenTemplates::factory()->create(['name' => 'ScreenTemplate', 'user_id' => $adminUser->id]);
@@ -338,7 +338,7 @@ class ScreenTemplateTest extends TestCase
         $this->assertEquals($actingAsUser->id, $importedTemplate->user_id);
     }
 
-    public function testImportExportScreenTemplatesRoutes()
+    public function testImportExportScreenTemplatesRoutes(): void
     {
         $screenTemplate = ScreenTemplates::factory()->create(['is_public' => true, 'name' => 'Screen Template Routes']);
         // Test download route
@@ -359,7 +359,7 @@ class ScreenTemplateTest extends TestCase
         $this->get('/screen-template/import')->assertStatus(200)->assertSee('Import Screen Template');
     }
 
-    public function testSharedTemplateAuthorization()
+    public function testSharedTemplateAuthorization(): void
     {
         $user = User::factory()->create();
         $sharedTemplate = ScreenTemplates::factory()->shared()->create(['user_id' => $user->id]);
@@ -390,7 +390,7 @@ class ScreenTemplateTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testApplyCssToExistingScreen()
+    public function testApplyCssToExistingScreen(): void
     {
         // Create a new screen with two pages and no custom_css
         $screenPath = base_path(self::SCREEN_PATH);
@@ -429,7 +429,7 @@ class ScreenTemplateTest extends TestCase
         $this->assertNotNull($updatedScreen->custom_css);
     }
 
-    public function testApplyFieldsToExistingScreen()
+    public function testApplyFieldsToExistingScreen(): void
     {
         // Create screen from template-manifest-with-css-fields-layout.json
         $templatePath = base_path(self::SCREEN_TEMPLATE_PATH);
@@ -477,7 +477,7 @@ class ScreenTemplateTest extends TestCase
         $this->assertNotEmpty($updatedScreen->config[1]['items']);
     }
 
-    public function testApplyLayoutToExistingScreen()
+    public function testApplyLayoutToExistingScreen(): void
     {
         // Create screen from template-manifest-with-css-fields-layout.json
         $templatePath = base_path(self::SCREEN_TEMPLATE_PATH);
@@ -524,7 +524,7 @@ class ScreenTemplateTest extends TestCase
         $this->assertNotEmpty($updatedScreen->config[1]['items']);
     }
 
-    public function testApplyFullTemplateToExistingScreen()
+    public function testApplyFullTemplateToExistingScreen(): void
     {
         // Create screen from template-manifest-with-css-fields-layout.json
         $templatePath = base_path(self::SCREEN_TEMPLATE_PATH);

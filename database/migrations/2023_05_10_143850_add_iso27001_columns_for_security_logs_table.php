@@ -11,7 +11,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('security_logs', function (Blueprint $table) {
             $table->json('data')->nullable();
@@ -32,7 +32,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('security_logs', function (Blueprint $table) {
             $table->dropColumn('data');

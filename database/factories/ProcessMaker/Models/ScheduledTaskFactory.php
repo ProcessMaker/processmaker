@@ -13,7 +13,7 @@ class ScheduledTaskFactory extends Factory
      *
      * @return array
      */
-    public function definition()
+    public function definition(): array
     {
         $token = ProcessRequestToken::factory()->make([]);
 

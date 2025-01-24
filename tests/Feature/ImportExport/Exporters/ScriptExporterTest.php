@@ -26,7 +26,7 @@ class ScriptExporterTest extends TestCase
         $this->createAdminUser();
     }
 
-    public function test()
+    public function test(): void
     {
         DB::beginTransaction();
         $environmentVariable1 = EnvironmentVariable::factory()->create(['name' => 'MY_VAR_1']);
@@ -54,7 +54,7 @@ class ScriptExporterTest extends TestCase
         $this->assertDatabaseMissing('environment_variables', ['name' => $environmentVariable3->name]);
     }
 
-    public function testExportUncategorized()
+    public function testExportUncategorized(): void
     {
         DB::beginTransaction();
         (new CategorySystemSeeder)->run();
@@ -75,7 +75,7 @@ class ScriptExporterTest extends TestCase
         $this->assertEquals($script->categories->first()->uuid, $existingUuid);
     }
 
-    public function testHiddenUsesParentMode()
+    public function testHiddenUsesParentMode(): void
     {
         $scriptCategory1 = ScriptCategory::factory()->create(['name' => 'test category A']);
         $scriptCategory2 = ScriptCategory::factory()->create(['name' => 'test category B']);
@@ -121,7 +121,7 @@ class ScriptExporterTest extends TestCase
         $this->assertEquals('test category B 2', $newCategory2->name);
     }
 
-    public function testNoMatchingRunAsUser()
+    public function testNoMatchingRunAsUser(): void
     {
         DB::beginTransaction();
         $user = User::factory()->create(['username' => 'test']);
@@ -137,7 +137,7 @@ class ScriptExporterTest extends TestCase
         $this->assertEquals($script->run_as_user_id, $admin_user->id);
     }
 
-    public function testRunAsUserIdNull()
+    public function testRunAsUserIdNull(): void
     {
         DB::beginTransaction();
         $script = Script::factory()->create(['title' => 'test', 'run_as_user_id' => null]);
@@ -155,7 +155,7 @@ class ScriptExporterTest extends TestCase
      * Test that the environment variables are duplicated when they are used in the script
      * and the import options are set to create a copy
      */
-    public function testWithDuplicatedEnvVariable()
+    public function testWithDuplicatedEnvVariable(): void
     {
         $environmentVariable1 = EnvironmentVariable::factory()->create(['name' => 'AWS_ACCESS_KEY_ID']);
         $environmentVariable2 = EnvironmentVariable::factory()->create(['name' => 'AWS_SECRET_ACCESS_KEY']);

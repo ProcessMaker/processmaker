@@ -16,7 +16,7 @@ class SecurityLoggerTest extends TestCase
     /**
      * Test to ensure security events are logged
      */
-    public function testLogSecurityEvents()
+    public function testLogSecurityEvents(): void
     {
         // Set the config to log security events
         config(['auth.log_auth_events' => true]);

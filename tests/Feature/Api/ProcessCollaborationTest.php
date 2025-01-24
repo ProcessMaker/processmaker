@@ -69,7 +69,7 @@ class ProcessCollaborationTest extends TestCase
     /**
      * Execute a process
      */
-    public function testExecuteACollaboration()
+    public function testExecuteACollaboration(): void
     {
         $process = $this->createTestCollaborationProcess();
         //Start a process request

@@ -32,7 +32,7 @@ class ProcessMakerLicenseRemove extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         if (Storage::disk('local')->exists('license.json')) {
             if ($this->option('force') || $this->confirm('Are you sure you want to remove the license.json file?')) {

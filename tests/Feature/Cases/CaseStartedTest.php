@@ -13,7 +13,7 @@ use Tests\TestCase;
 
 class CaseStartedTest extends TestCase
 {
-    public function test_create_case()
+    public function test_create_case(): void
     {
         $user = User::factory()->create();
         $instance = ProcessRequest::factory()->create([
@@ -32,7 +32,7 @@ class CaseStartedTest extends TestCase
         ]);
     }
 
-    public function test_create_multiple_cases()
+    public function test_create_multiple_cases(): void
     {
         $user = User::factory()->create();
         $instance1 = ProcessRequest::factory()->create([
@@ -61,7 +61,7 @@ class CaseStartedTest extends TestCase
         ]);
     }
 
-    public function test_create_case_started_processes()
+    public function test_create_case_started_processes(): void
     {
         $process = Process::factory()->create();
 
@@ -86,7 +86,7 @@ class CaseStartedTest extends TestCase
         ]);
     }
 
-    public function test_create_case_started_requests()
+    public function test_create_case_started_requests(): void
     {
         $process = Process::factory()->create();
 
@@ -112,7 +112,7 @@ class CaseStartedTest extends TestCase
         ]);
     }
 
-    public function test_update_case_started_request_tokens()
+    public function test_update_case_started_request_tokens(): void
     {
         $process = Process::factory()->create();
 
@@ -150,7 +150,7 @@ class CaseStartedTest extends TestCase
         ]);
     }
 
-    public function test_update_case_started_tasks()
+    public function test_update_case_started_tasks(): void
     {
         $process = Process::factory()->create();
 
@@ -212,7 +212,7 @@ class CaseStartedTest extends TestCase
         ]);
     }
 
-    public function test_update_case_started_script_tasks()
+    public function test_update_case_started_script_tasks(): void
     {
         $process = Process::factory()->create();
 
@@ -271,7 +271,7 @@ class CaseStartedTest extends TestCase
         ]);
     }
 
-    public function test_update_case_started_participants()
+    public function test_update_case_started_participants(): void
     {
         $process = Process::factory()->create();
 
@@ -323,7 +323,7 @@ class CaseStartedTest extends TestCase
         ]);
     }
 
-    public function test_update_case_started_status()
+    public function test_update_case_started_status(): void
     {
         $process = Process::factory()->create();
         $user = User::factory()->create();
@@ -376,7 +376,7 @@ class CaseStartedTest extends TestCase
         ]);
     }
 
-    public function test_update_case_started_status_to_canceled()
+    public function test_update_case_started_status_to_canceled(): void
     {
         $process = Process::factory()->create();
         $user = User::factory()->create();
@@ -432,7 +432,7 @@ class CaseStartedTest extends TestCase
         ]);
     }
 
-    public function test_try_update_if_case_has_not_been_created()
+    public function test_try_update_if_case_has_not_been_created(): void
     {
         $user = User::factory()->create();
         $instance = ProcessRequest::factory()->create([
@@ -454,7 +454,7 @@ class CaseStartedTest extends TestCase
         $this->assertDatabaseCount('cases_started', 1);
     }
 
-    public function test_try_store_docusign_authorization_request()
+    public function test_try_store_docusign_authorization_request(): void
     {
         $category = ProcessCategoryFactory::new()->create([
             'name' => 'DocuSign',
@@ -476,7 +476,7 @@ class CaseStartedTest extends TestCase
         $this->assertDatabaseCount('cases_participated', 0);
     }
 
-    public function test_try_store_error_status_on_log_error()
+    public function test_try_store_error_status_on_log_error(): void
     {
         $user = User::factory()->create([
             'is_administrator' => true,

@@ -26,7 +26,7 @@ class UserSeeder extends Seeder
      *
      * @return void
      */
-    public function run(ClientRepository $clients)
+    public function run(ClientRepository $clients): void
     {
         //Create admin user
         $user = User::updateOrCreate([

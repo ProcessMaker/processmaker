@@ -11,7 +11,7 @@ class OpenAiServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->app->bind(\OpenAI\Client::class, function () {
             return \OpenAI::client(config('services.open_ai.secret'));

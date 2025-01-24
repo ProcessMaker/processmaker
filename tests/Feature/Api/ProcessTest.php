@@ -50,7 +50,7 @@ class ProcessTest extends TestCase
     /**
      * Test to verify our processes listing api endpoint works without any filters
      */
-    public function testProcessesListing()
+    public function testProcessesListing(): void
     {
         $initialCount = Process::count();
         // Create some processes
@@ -74,7 +74,7 @@ class ProcessTest extends TestCase
     /**
      * Test to verify our processes listing api endpoint works without any filters
      */
-    public function testProcessesListingWithNoAdminUser()
+    public function testProcessesListingWithNoAdminUser(): void
     {
         // We create a user that isn't administrator
         $this->user = User::factory()->create([
@@ -111,7 +111,7 @@ class ProcessTest extends TestCase
     /**
      * Test to verify our processes listing api endpoint works without any filters
      */
-    public function testProcessesListingWithNoAdminGroup()
+    public function testProcessesListingWithNoAdminGroup(): void
     {
         // We create a user that isn't administrator
         $this->user = User::factory()->create([
@@ -165,7 +165,7 @@ class ProcessTest extends TestCase
     /**
      * Verifies if the list of processes that can be started is correct
      */
-    public function testStartRequestList()
+    public function testStartRequestList(): void
     {
         ProcessRequest::query()->delete();
 
@@ -202,7 +202,7 @@ class ProcessTest extends TestCase
     /**
      * Verifies if is returning a list that not contains processes with start events like timers, conditionals, signals and messages ..
      */
-    public function testStartRequestListProcessesWithoutEventDefinitions()
+    public function testStartRequestListProcessesWithoutEventDefinitions(): void
     {
         ProcessRequest::query()->delete();
 
@@ -254,7 +254,7 @@ class ProcessTest extends TestCase
     /**
      * Verifies if is returning a list that contains processes with start events like conditionals, signals and messages ..
      */
-    public function testStartRequestListProcessesWithEventDefinitions()
+    public function testStartRequestListProcessesWithEventDefinitions(): void
     {
         ProcessRequest::query()->delete();
 
@@ -295,7 +295,7 @@ class ProcessTest extends TestCase
     /**
      * Verifies if a process manager can start a request
      */
-    public function testProcessManagerCanStartARequest()
+    public function testProcessManagerCanStartARequest(): void
     {
         // Create a non admin user:
         $processManagerUser = User::factory()->create([
@@ -339,7 +339,7 @@ class ProcessTest extends TestCase
         $this->assertTrue(in_array($responseData[1]->id, [$processWithManager->id, $processAssigned->id]));
     }
 
-    public function testProcessManagerCanStartProcessWithTwoStartEvents()
+    public function testProcessManagerCanStartProcessWithTwoStartEvents(): void
     {
         // Create a non admin user:
         $processManagerUser = User::factory()->create([
@@ -372,7 +372,7 @@ class ProcessTest extends TestCase
     /**
      * Verify the new request start events do not include web entry start events
      */
-    public function testWebEntryFilteredFromStartEvents()
+    public function testWebEntryFilteredFromStartEvents(): void
     {
         $file = __DIR__ . '/processes/SingleTask.bpmn';
         $regularBpmn = file_get_contents($file);
@@ -396,7 +396,7 @@ class ProcessTest extends TestCase
         $this->assertEquals(['Start Event', 'regular'], $startEvents);
     }
 
-    public function testProcessEventsTrigger()
+    public function testProcessEventsTrigger(): void
     {
         $process = Process::factory()->create([
             'bpmn' => Process::getProcessTemplate('SingleTask.bpmn'),
@@ -423,7 +423,7 @@ class ProcessTest extends TestCase
     /**
      * Verifies that a new request can be created
      */
-    public function testCreateRequest()
+    public function testCreateRequest(): void
     {
         $this->withoutExceptionHandling();
         // Load the process to be used in the test
@@ -458,7 +458,7 @@ class ProcessTest extends TestCase
     /**
      * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
      */
-    public function testProcessListDates()
+    public function testProcessListDates(): void
     {
         $processName = 'processTestTimezone';
         $newEntity = Process::factory()->create(['name' => $processName]);
@@ -479,7 +479,7 @@ class ProcessTest extends TestCase
     /**
      * Test to verify our processes listing API endpoint works without any filters
      */
-    public function testFiltering()
+    public function testFiltering(): void
     {
         $perPage = 10;
 
@@ -531,7 +531,7 @@ class ProcessTest extends TestCase
     /**
      * Test to verify our processes listing api endpoint works with sorting
      */
-    public function testSorting()
+    public function testSorting(): void
     {
         // Create some processes
         Process::factory()->create([
@@ -562,7 +562,7 @@ class ProcessTest extends TestCase
     /**
      * Test filter by bookmark
      */
-    public function testFilterBookmarked()
+    public function testFilterBookmarked(): void
     {
         // This not will return the bookmark
         Process::factory()->count(5)->create();
@@ -586,7 +586,7 @@ class ProcessTest extends TestCase
     /**
      * Test filter by Category
      */
-    public function testFilterCategory()
+    public function testFilterCategory(): void
     {
         // Create Category
         $categoryA = ProcessCategory::factory()->create();
@@ -609,7 +609,7 @@ class ProcessTest extends TestCase
     /**
      * Test pagination of process list
      */
-    public function testPagination()
+    public function testPagination(): void
     {
         // Number of processes in the tables at the moment of starting the test
         $initialRows = Process::all()->count();
@@ -632,7 +632,7 @@ class ProcessTest extends TestCase
     /**
      * Test the creation of processes
      */
-    public function testProcessCreation()
+    public function testProcessCreation(): void
     {
         // Create a process without category
         $this->assertModelCreationFails(
@@ -668,7 +668,7 @@ class ProcessTest extends TestCase
     /**
      * Test the creation of processes with BPMN definition
      */
-    public function testCreateProcessWithBPMN()
+    public function testCreateProcessWithBPMN(): void
     {
         $route = route('api.' . $this->resource . '.store');
         $base = Process::factory()->make([
@@ -689,7 +689,7 @@ class ProcessTest extends TestCase
     /**
      * Test the required fields
      */
-    public function testCreateProcessFieldsValidation()
+    public function testCreateProcessFieldsValidation(): void
     {
         // Test to create a process with an empty name
         $this->assertModelCreationFails(
@@ -738,7 +738,7 @@ class ProcessTest extends TestCase
     /**
      * Test the creation of processes with BPMN definition
      */
-    public function testValidateBpmnWhenCreatingAProcess()
+    public function testValidateBpmnWhenCreatingAProcess(): void
     {
         $route = route('api.' . $this->resource . '.store');
         $base = Process::factory()->make([
@@ -756,7 +756,7 @@ class ProcessTest extends TestCase
     /**
      * Test the creation of processes with invalid XML posted
      */
-    public function testValidateInvalidXmlWhenCreatingAProcess()
+    public function testValidateInvalidXmlWhenCreatingAProcess(): void
     {
         $route = route('api.' . $this->resource . '.store');
         $base = Process::factory()->make([
@@ -774,7 +774,7 @@ class ProcessTest extends TestCase
     /**
      * Test show process
      */
-    public function testShowProcess()
+    public function testShowProcess(): void
     {
         $this->markTestSkipped('FOUR-6653');
 
@@ -800,7 +800,7 @@ class ProcessTest extends TestCase
     /**
      * Test update process
      */
-    public function testUpdateProcess()
+    public function testUpdateProcess(): void
     {
         // Seeder Permissions
         (new PermissionSeeder())->run($this->user);
@@ -821,7 +821,7 @@ class ProcessTest extends TestCase
     /**
      * Test update process
      */
-    public function testUpdateProcessWithCategoryNull()
+    public function testUpdateProcessWithCategoryNull(): void
     {
         // Seeder Permissions
         (new PermissionSeeder())->run($this->user);
@@ -841,7 +841,7 @@ class ProcessTest extends TestCase
     /**
      * Test update process
      */
-    public function testUpdateProcessWithCategory()
+    public function testUpdateProcessWithCategory(): void
     {
         // Seeder Permissions
         (new PermissionSeeder())->run($this->user);
@@ -861,7 +861,7 @@ class ProcessTest extends TestCase
     /**
      * Test update process with invalid parameters
      */
-    public function testUpdateProcessFails()
+    public function testUpdateProcessFails(): void
     {
         // Test to update name and description if required
         $this->assertModelUpdateFails(
@@ -909,7 +909,7 @@ class ProcessTest extends TestCase
     /**
      * Test Update BPMN endpoint.
      */
-    public function testUpdateBPMN()
+    public function testUpdateBPMN(): void
     {
         // Seeder Permissions
         (new PermissionSeeder())->run($this->user);
@@ -935,7 +935,7 @@ class ProcessTest extends TestCase
     /**
      * Test Update BPMN endpoint with and invalid BPMN content.
      */
-    public function testUpdateInvalidBPMN()
+    public function testUpdateInvalidBPMN(): void
     {
         $process = Process::factory()->create();
         $id = $process->id;
@@ -952,7 +952,7 @@ class ProcessTest extends TestCase
     /**
      * Tests the archiving and restoration of a process
      */
-    public function testArchiveRestore()
+    public function testArchiveRestore(): void
     {
         // Generate an active process and get its ID
         $process = Process::factory()->create([
@@ -996,7 +996,7 @@ class ProcessTest extends TestCase
     /**
      * Tests updating a start permission for a node
      */
-    public function testStartPermissionForNode()
+    public function testStartPermissionForNode(): void
     {
         $user = User::factory()->create();
         $bpmn = trim(Process::getProcessTemplate('SingleTask.bpmn'));
@@ -1033,7 +1033,7 @@ class ProcessTest extends TestCase
     /**
      * Tests we only return processes that have nodes that the user can start
      */
-    public function testStartProcessesWithPermission()
+    public function testStartProcessesWithPermission(): void
     {
         $this->user = User::factory()->create();
 
@@ -1077,7 +1077,7 @@ class ProcessTest extends TestCase
      *
      * @return void
      */
-    public function testHasPauseTimerStartEvents()
+    public function testHasPauseTimerStartEvents(): void
     {
         // Loads a process with an start timer event
         $process = Process::factory()->create([
@@ -1099,7 +1099,7 @@ class ProcessTest extends TestCase
     /**
      * Test the creation of processes with BPMN definition
      */
-    public function testCreateProcessWithMultipleBPMNDiagrams()
+    public function testCreateProcessWithMultipleBPMNDiagrams(): void
     {
         $route = route('api.' . $this->resource . '.store');
         $base = Process::factory()->make([
@@ -1116,7 +1116,7 @@ class ProcessTest extends TestCase
         $this->assertTrue(in_array('Multiple diagrams are not supported', $error['errors']['bpmn']));
     }
 
-    public function testUpdateScriptCategories()
+    public function testUpdateScriptCategories(): void
     {
         $screen = Process::factory()->create();
         $url = route('api.processes.update', $screen);
@@ -1129,7 +1129,7 @@ class ProcessTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testProcessManager()
+    public function testProcessManager(): void
     {
         $process = Process::factory()->create();
         $manager = User::factory()->create();
@@ -1154,7 +1154,7 @@ class ProcessTest extends TestCase
         $this->assertEquals($processJson['manager_id'], $process->manager->id);
     }
 
-    public function testUpdateCancelRequest()
+    public function testUpdateCancelRequest(): void
     {
         $process = Process::factory()->create();
         $url = route('api.processes.update', $process);
@@ -1182,7 +1182,7 @@ class ProcessTest extends TestCase
         $this->assertFalse($process->properties['manager_can_cancel_request']);
     }
 
-    public function testUpdateProcessVersions()
+    public function testUpdateProcessVersions(): void
     {
         $process = Process::factory()->create();
         $url = route('api.processes.update', ['process' => $process]);
@@ -1199,7 +1199,7 @@ class ProcessTest extends TestCase
         $this->assertEquals(0, $process->versions()->draft()->count());
     }
 
-    public function testUpdateDraftProcess()
+    public function testUpdateDraftProcess(): void
     {
         $process = Process::factory()->create();
         $url = route('api.processes.update_draft', ['process' => $process]);
@@ -1218,7 +1218,7 @@ class ProcessTest extends TestCase
         $this->assertEquals($bpmn, $draft->bpmn);
     }
 
-    public function testDiscardDraft()
+    public function testDiscardDraft(): void
     {
         // Create draft.
         $process = Process::factory()->create();
@@ -1242,7 +1242,7 @@ class ProcessTest extends TestCase
         $this->assertEquals(0, $process->versions()->draft()->count());
     }
 
-    public function testTriggerStartEventWeb()
+    public function testTriggerStartEventWeb(): void
     {
         $this->withoutExceptionHandling();
         $process = Process::factory()->create([
@@ -1259,7 +1259,7 @@ class ProcessTest extends TestCase
         $response->assertStatus(302);
     }
 
-    public function testGetMediaImagesRoute()
+    public function testGetMediaImagesRoute(): void
     {
         $process = Process::factory()->create();
         $url = route('api.processes.media', $process);
@@ -1270,7 +1270,7 @@ class ProcessTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testDeleteMediaImages()
+    public function testDeleteMediaImages(): void
     {
         $process = Process::factory()->create();
         $imageContent = file_get_contents(__DIR__ . '/images/640x480.png');

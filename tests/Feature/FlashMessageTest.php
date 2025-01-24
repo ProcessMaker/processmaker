@@ -23,7 +23,7 @@ class FlashMessageTest extends TestCase
     }
 
     /*one for success_message*/
-    public function testSuccessMessage()
+    public function testSuccessMessage(): void
     {
         Auth::login(User::first());
         // Create a fake route that flashes a message with a successful alert
@@ -42,7 +42,7 @@ class FlashMessageTest extends TestCase
     /**
      * Tests to ensure that if we do NOT flash an alert to session, no alert is shown
      */
-    public function testNoFlashNoSuccessAlert()
+    public function testNoFlashNoSuccessAlert(): void
     {
         Auth::login(User::first());
         // But we need to ensure we're loading a different route that doesn't reflash
@@ -53,7 +53,7 @@ class FlashMessageTest extends TestCase
         $response->assertDontSee('Test Successful Message');
     }
 
-    public function testErrorMessage()
+    public function testErrorMessage(): void
     {
         // Login
         Auth::login(User::first());
@@ -73,7 +73,7 @@ class FlashMessageTest extends TestCase
     /**
      * Tests to ensure that if we do NOT flash an alert to session, no FAILURE alert is shown
      */
-    public function testNoFlashNoFailureAlert()
+    public function testNoFlashNoFailureAlert(): void
     {
         // Login
         Auth::login(User::first());

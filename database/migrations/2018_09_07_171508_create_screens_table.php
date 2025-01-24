@@ -10,7 +10,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('screens', function (Blueprint $table) {
             // NOTE: Remember to update ScreenVersions when updating this table
@@ -37,7 +37,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('processes', function ($table) {
             $table->dropForeign(['cancel_screen_id']);

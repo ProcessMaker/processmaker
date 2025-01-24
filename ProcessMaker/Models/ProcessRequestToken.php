@@ -2,6 +2,9 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Carbon\Carbon;
 use DB;
 use Exception;
@@ -261,7 +264,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     /**
      * Get the process to which this version points to.
      */
-    public function process()
+    public function process(): BelongsTo
     {
         return $this->belongsTo(Process::class, 'process_id');
     }
@@ -269,7 +272,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     /**
      * Get the request of the token.
      */
-    public function processRequest()
+    public function processRequest(): BelongsTo
     {
         return $this->belongsTo(ProcessRequest::class, 'process_request_id');
     }
@@ -277,7 +280,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     /**
      * Get the creator/author of this request.
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
@@ -588,12 +591,12 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function scheduledTasks()
+    public function scheduledTasks(): HasMany
     {
         return $this->hasMany(ScheduledTask::class, 'process_request_token_id');
     }
 
-    public function draft()
+    public function draft(): HasOne
     {
         return $this->hasOne(TaskDraft::class, 'task_id');
     }
@@ -601,7 +604,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     /**
      * Get the sub-process request associated to the token.
      */
-    public function subProcessRequest()
+    public function subProcessRequest(): BelongsTo
     {
         return $this->belongsTo(ProcessRequest::class, 'subprocess_request_id');
     }

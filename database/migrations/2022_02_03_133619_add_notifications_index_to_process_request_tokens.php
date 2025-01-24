@@ -10,7 +10,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('process_request_tokens', function (Blueprint $table) {
             // Add index by: user_id, status, due_at, due_notified
@@ -23,7 +23,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('process_request_tokens', function (Blueprint $table) {
             // Remove index by: user_id, status, due_at, due_notified

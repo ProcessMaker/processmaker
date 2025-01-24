@@ -9,7 +9,7 @@ use Tests\TestCase;
 
 class ProcessTest extends TestCase
 {
-    public function testGetConsolidatedUsers()
+    public function testGetConsolidatedUsers(): void
     {
         $process = Process::factory()->create();
 

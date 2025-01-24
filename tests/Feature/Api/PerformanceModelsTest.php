@@ -88,7 +88,7 @@ class PerformanceModelsTest extends TestCase
      *
      * @dataProvider FactoryListProvider
      */
-    public function testFactories($model, $baseTime)
+    public function testFactories($model, $baseTime): void
     {
         $baseCount = $this->getTotalRecords();
         $t = microtime(true);

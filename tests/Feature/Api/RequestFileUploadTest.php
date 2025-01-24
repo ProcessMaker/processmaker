@@ -36,7 +36,7 @@ class RequestFileUploadTest extends TestCase
      * Test a user that participate from the request can
      * upload a file.
      */
-    public function testUploadRequestFile()
+    public function testUploadRequestFile(): void
     {
         $this->loadTestProcess(
             file_get_contents(__DIR__ . '/processes/FileUpload.bpmn'),
@@ -73,7 +73,7 @@ class RequestFileUploadTest extends TestCase
      * Test a user that does not participate from the request can
      * not upload a file.
      */
-    public function testCanNotUploadRequestFile()
+    public function testCanNotUploadRequestFile(): void
     {
         // Load the FileUpload.bpmn process
         $this->loadTestProcess(
@@ -114,7 +114,7 @@ class RequestFileUploadTest extends TestCase
     /**
      * Test a user that can claim a self task can view the requests uploaded files.
      */
-    public function testViewUploadedRequestFile()
+    public function testViewUploadedRequestFile(): void
     {
         $this->loadTestProcess(
             file_get_contents(__DIR__ . '/processes/ViewFileUpload.bpmn'),

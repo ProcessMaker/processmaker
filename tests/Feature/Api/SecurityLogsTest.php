@@ -92,7 +92,7 @@ class SecurityLogsTest extends TestCase
     /**
      * Attempt to access security logs
      */
-    public function testAccessSecurityLogsApi()
+    public function testAccessSecurityLogsApi(): void
     {
         $response = $this->apiCall('GET', '/security-logs');
         $response->assertStatus(403);
@@ -109,7 +109,7 @@ class SecurityLogsTest extends TestCase
     /**
      * Return status 200
      */
-    public function testSearchSecurityLogsApi()
+    public function testSearchSecurityLogsApi(): void
     {
         $permission = Permission::byName('view-security-logs');
         $this->user->permissions()->attach($permission->id);
@@ -176,7 +176,7 @@ class SecurityLogsTest extends TestCase
     /**
      * Return status 201
      */
-    public function testStore()
+    public function testStore(): void
     {
         $response = $this->apiCall('POST', '/security-logs');
         $response->assertStatus(403);
@@ -217,7 +217,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test the Setting Update
      */
-    public function testSettingUpdated()
+    public function testSettingUpdated(): void
     {
         $setting = Setting::factory()->create(['key' => 'users.properties']);
         $setting->config = ['city' => 'City of residence'];
@@ -251,7 +251,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Category Created
      */
-    public function testCategoryCreated()
+    public function testCategoryCreated(): void
     {
         $fields = [
             'name' => 'var_1',
@@ -265,7 +265,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Category Deleted
      */
-    public function testCategoryDeleted()
+    public function testCategoryDeleted(): void
     {
         $processCategory = ProcessCategory::factory()->create();
         $processCategory->delete();
@@ -277,7 +277,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Category Updated
      */
-    public function testCategoryUpdated()
+    public function testCategoryUpdated(): void
     {
         $processCategory = ProcessCategory::factory()->create();
         $original = $processCategory->getOriginal();
@@ -292,7 +292,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Environment Variables Created
      */
-    public function testEnvironmentVariablesCreated()
+    public function testEnvironmentVariablesCreated(): void
     {
         $fields = [
             'name' => 'var_1',
@@ -308,7 +308,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Environment Variables Deleted
      */
-    public function testEnvironmentVariablesDeleted()
+    public function testEnvironmentVariablesDeleted(): void
     {
         $vars = EnvironmentVariable::factory()->create([
             'name' => 'var_2',
@@ -322,7 +322,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Environment Variables Updated
      */
-    public function testEnvironmentVariablesUpdated()
+    public function testEnvironmentVariablesUpdated(): void
     {
         $vars = EnvironmentVariable::factory()->create([
             'name' => 'var_3',
@@ -339,7 +339,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Group Created
      */
-    public function testGroupCreated()
+    public function testGroupCreated(): void
     {
         $fields = [
             'name' => 'group_1',
@@ -353,7 +353,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Group Deleted
      */
-    public function testGroupDeleted()
+    public function testGroupDeleted(): void
     {
         $group = Group::factory()->create([
             'name' => 'group_1',
@@ -367,7 +367,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Group Updated
      */
-    public function testGroupUpdated()
+    public function testGroupUpdated(): void
     {
         $group = Group::factory()->create([
             'name' => 'group_2',
@@ -384,7 +384,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Process Archived
      */
-    public function testProcessArchived()
+    public function testProcessArchived(): void
     {
         $process = Process::factory()->create();
         $process->status = 'ARCHIVED';
@@ -397,7 +397,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Process Created
      */
-    public function testProcessCreated()
+    public function testProcessCreated(): void
     {
         $process = Process::factory()->create();
         ProcessCreated::dispatch($process);
@@ -408,7 +408,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Process Published
      */
-    public function testProcessPublished()
+    public function testProcessPublished(): void
     {
         $process = Process::factory()->create();
         $original = $process->getOriginal();
@@ -423,7 +423,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Process Restored
      */
-    public function testProcessRestored()
+    public function testProcessRestored(): void
     {
         $process = Process::factory()->create();
         $process->status = 'ARCHIVED';
@@ -438,7 +438,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Screen Created
      */
-    public function testScreenCreated()
+    public function testScreenCreated(): void
     {
         $fields = [
             'id' => 999,
@@ -454,7 +454,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Screen Deleted
      */
-    public function testScreenDeleted()
+    public function testScreenDeleted(): void
     {
         $screen = Screen::factory()->create();
         $screen->delete();
@@ -466,7 +466,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Screen Updated
      */
-    public function testScreenUpdated()
+    public function testScreenUpdated(): void
     {
         $screen = Screen::factory()->create();
         $original = $screen->getOriginal();
@@ -481,7 +481,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Script Created
      */
-    public function testScriptCreated()
+    public function testScriptCreated(): void
     {
         $script = Script::factory()->create();
         $changes = $script->getChanges();
@@ -493,7 +493,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Script Deleted
      */
-    public function testScriptDeleted()
+    public function testScriptDeleted(): void
     {
         $script = Script::factory()->create();
         $script->delete();
@@ -505,7 +505,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Script Duplicated
      */
-    public function testScriptDuplicated()
+    public function testScriptDuplicated(): void
     {
         $script = Script::factory()->create();
         $changes = $script->getChanges();
@@ -517,7 +517,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Script Updated
      */
-    public function testScriptUpdated()
+    public function testScriptUpdated(): void
     {
         $script = Script::factory()->create();
         $original = array_intersect_key($script->getOriginal(), $script->getDirty());
@@ -532,7 +532,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Script Executor Created
      */
-    public function testScriptExecutorCreated()
+    public function testScriptExecutorCreated(): void
     {
         $fields = [
             'id' => 999,
@@ -550,7 +550,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Script Executor Deleted
      */
-    public function testScriptExecutorDeleted()
+    public function testScriptExecutorDeleted(): void
     {
         $fields = [
             'id' => 99999,
@@ -568,7 +568,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Script Executor Updated
      */
-    public function testScriptExecutorUpdated()
+    public function testScriptExecutorUpdated(): void
     {
         $fields = [
             'id' => 9999,
@@ -588,7 +588,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Signal Created
      */
-    public function testSignalCreated()
+    public function testSignalCreated(): void
     {
         $this->addGlobalSignalProcess();
         $fields = [
@@ -606,7 +606,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Signal Deleted
      */
-    public function testSignalDeleted()
+    public function testSignalDeleted(): void
     {
         $this->addGlobalSignalProcess();
         $fields = [
@@ -625,7 +625,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Signal Updated
      */
-    public function testSignalUpdated()
+    public function testSignalUpdated(): void
     {
         $this->addGlobalSignalProcess();
         $oldSignal = [
@@ -662,7 +662,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Template Created
      */
-    public function testTemplateCreated()
+    public function testTemplateCreated(): void
     {
         $this->addGlobalSignalProcess();
         $fields = [
@@ -678,7 +678,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Template Deleted
      */
-    public function testTemplateDeleted()
+    public function testTemplateDeleted(): void
     {
         $this->addGlobalSignalProcess();
         $templates = ProcessTemplates::factory()->create();
@@ -690,7 +690,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Template Published
      */
-    public function testTemplatePublished()
+    public function testTemplatePublished(): void
     {
         $this->addGlobalSignalProcess();
         $fields = [
@@ -706,7 +706,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Template Updated
      */
-    public function testTemplateUpdated()
+    public function testTemplateUpdated(): void
     {
         $this->addGlobalSignalProcess();
         // When the template is a process
@@ -726,7 +726,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Token Created
      */
-    public function testTokenCreated()
+    public function testTokenCreated(): void
     {
         $user = User::factory()->create([
             'status' => 'ACTIVE',
@@ -741,7 +741,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test Token Deleted
      */
-    public function testTokenDeleted()
+    public function testTokenDeleted(): void
     {
         $user = User::factory()->create([
             'status' => 'ACTIVE',
@@ -756,7 +756,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test User Created
      */
-    public function testUserCreated()
+    public function testUserCreated(): void
     {
         // Create a user created
         $user = User::factory()->create([
@@ -770,7 +770,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test User Deleted
      */
-    public function testUserDeleted()
+    public function testUserDeleted(): void
     {
         // Create a user deleted
         $user = User::factory()->create([
@@ -785,7 +785,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test User Restored
      */
-    public function testUserRestored()
+    public function testUserRestored(): void
     {
         // Create a user restored
         $user = User::factory()->create([
@@ -800,7 +800,7 @@ class SecurityLogsTest extends TestCase
     /**
      * This test User Updated
      */
-    public function testUserUpdated()
+    public function testUserUpdated(): void
     {
         // Create a user updated
         $user = User::factory()->create([

@@ -2,6 +2,9 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -142,7 +145,7 @@ class Screen extends ProcessMakerModel implements ScreenInterface
     /**
      * Get the associated versions
      */
-    public function versions()
+    public function versions(): HasMany
     {
         return $this->hasMany(ScreenVersion::class);
     }
@@ -150,7 +153,7 @@ class Screen extends ProcessMakerModel implements ScreenInterface
     /**
      * Get the associated category
      */
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(ScreenCategory::class, 'screen_category_id');
     }
@@ -158,7 +161,7 @@ class Screen extends ProcessMakerModel implements ScreenInterface
     /**
      * Get the associated projects
      */
-    public function projects()
+    public function projects(): BelongsToMany
     {
         return $this->belongsToMany('ProcessMaker\Package\Projects\Models\Project',
             'project_assets',
@@ -170,7 +173,7 @@ class Screen extends ProcessMakerModel implements ScreenInterface
     }
 
     // Define the relationship with the ProjectAsset model
-    public function projectAssets()
+    public function projectAssets(): BelongsToMany
     {
         return $this->belongsToMany('ProcessMaker\Package\Projects\Models\ProjectAsset',
             'project_assets', 'asset_id', 'project_id')

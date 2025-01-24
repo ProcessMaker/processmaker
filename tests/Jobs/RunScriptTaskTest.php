@@ -21,7 +21,7 @@ class RunScriptTaskTest extends TestCase
     /**
      * @dataProvider jobTypes
      */
-    public function testScriptNotSet($class)
+    public function testScriptNotSet($class): void
     {
         $request = $this->runJob($class, '');
 
@@ -32,7 +32,7 @@ class RunScriptTaskTest extends TestCase
     /**
      * @dataProvider jobTypes
      */
-    public function testScriptNotFound($class)
+    public function testScriptNotFound($class): void
     {
         $request = $this->runJob($class, 12345);
 
@@ -43,7 +43,7 @@ class RunScriptTaskTest extends TestCase
     /**
      * @dataProvider jobTypes
      */
-    public function testRunAsUserNotFound($class)
+    public function testRunAsUserNotFound($class): void
     {
         $script = Script::factory()->create(['run_as_user_id' => null]);
         $request = $this->runJob($class, $script->id);

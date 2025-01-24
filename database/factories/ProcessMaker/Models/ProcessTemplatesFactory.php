@@ -19,7 +19,7 @@ class ProcessTemplatesFactory extends Factory
      *
      * @return array
      */
-    public function definition()
+    public function definition(): array
     {
         $process = Process::factory()->create();
 

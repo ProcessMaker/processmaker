@@ -69,7 +69,7 @@ class CaseStartedSubProcessTest extends TestCase
         ]);
     }
 
-    public function test_create_case_sub_process()
+    public function test_create_case_sub_process(): void
     {
         $repo = new CaseRepository();
         $repo->create($this->parentRequest);
@@ -86,7 +86,7 @@ class CaseStartedSubProcessTest extends TestCase
         ]);
     }
 
-    public function test_create_case_processes()
+    public function test_create_case_processes(): void
     {
         $repo = new CaseRepository();
         $repo->create($this->parentRequest);
@@ -107,7 +107,7 @@ class CaseStartedSubProcessTest extends TestCase
         ]);
     }
 
-    public function test_create_case_requests()
+    public function test_create_case_requests(): void
     {
         $repo = new CaseRepository();
         $repo->create($this->parentRequest);
@@ -130,7 +130,7 @@ class CaseStartedSubProcessTest extends TestCase
         ]);
     }
 
-    public function test_create_case_request_tokens()
+    public function test_create_case_request_tokens(): void
     {
         $repo = new CaseRepository();
         $repo->create($this->parentRequest);
@@ -151,7 +151,7 @@ class CaseStartedSubProcessTest extends TestCase
         ]);
     }
 
-    public function test_create_case_tasks()
+    public function test_create_case_tasks(): void
     {
         $repo = new CaseRepository();
         $repo->create($this->parentRequest);
@@ -180,7 +180,7 @@ class CaseStartedSubProcessTest extends TestCase
         ]);
     }
 
-    public function test_create_case_participated_processes()
+    public function test_create_case_participated_processes(): void
     {
         $repo = new CaseRepository();
         $repo->create($this->parentRequest);
@@ -215,7 +215,7 @@ class CaseStartedSubProcessTest extends TestCase
         ]);
     }
 
-    public function test_create_case_participated_requests()
+    public function test_create_case_participated_requests(): void
     {
         $repo = new CaseRepository();
         $repo->create($this->parentRequest);
@@ -254,7 +254,7 @@ class CaseStartedSubProcessTest extends TestCase
         ]);
     }
 
-    public function test_create_case_participated_request_tokens()
+    public function test_create_case_participated_request_tokens(): void
     {
         $repo = new CaseRepository();
         $repo->create($this->parentRequest);
@@ -285,7 +285,7 @@ class CaseStartedSubProcessTest extends TestCase
         ]);
     }
 
-    public function test_create_case_participated_tasks()
+    public function test_create_case_participated_tasks(): void
     {
         $repo = new CaseRepository();
         $repo->create($this->parentRequest);
@@ -342,7 +342,7 @@ class CaseStartedSubProcessTest extends TestCase
         ]);
     }
 
-    public function test_update_case_participated_completed()
+    public function test_update_case_participated_completed(): void
     {
         $repo = new CaseRepository();
         $repo->create($this->parentRequest);

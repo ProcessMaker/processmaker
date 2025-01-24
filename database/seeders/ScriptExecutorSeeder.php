@@ -8,7 +8,7 @@ use ProcessMaker\Models\ScriptExecutor;
 
 class ScriptExecutorSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
         foreach (config('script-runners') as $key => $config) {
             if ($key === 'javascript') {

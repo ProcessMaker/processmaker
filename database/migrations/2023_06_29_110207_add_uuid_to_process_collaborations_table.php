@@ -10,7 +10,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('process_collaborations', function (Blueprint $table) {
             // add uuid column
@@ -24,7 +24,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('process_collaborations', function (Blueprint $table) {
             // drop collaboration_uuid column

@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class DevLinkTest extends TestCase
 {
-    public function testGetClientUrl()
+    public function testGetClientUrl(): void
     {
         $devLink = DevLink::factory()->create([
             'url' => 'https://remote-instance.test',
@@ -28,7 +28,7 @@ class DevLinkTest extends TestCase
         );
     }
 
-    public function testGetOauthRedirectUrl()
+    public function testGetOauthRedirectUrl(): void
     {
         $devLink = DevLink::factory()->create([
             'url' => 'https://remote-instance.test',
@@ -54,7 +54,7 @@ class DevLinkTest extends TestCase
         );
     }
 
-    public function testInstallRemoteBundle()
+    public function testInstallRemoteBundle(): void
     {
         Storage::fake('local');
 
@@ -102,7 +102,7 @@ class DevLinkTest extends TestCase
         $this->assertCount(2, $payloads);
     }
 
-    public function testRemoteBundles()
+    public function testRemoteBundles(): void
     {
         Http::preventStrayRequests();
 
@@ -134,7 +134,7 @@ class DevLinkTest extends TestCase
         $this->assertEquals($bundles['data'][1]['is_installed'], false);
     }
 
-    public function testUpdateBundle()
+    public function testUpdateBundle(): void
     {
         Storage::fake('local');
 

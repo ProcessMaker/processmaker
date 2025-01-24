@@ -11,7 +11,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         $model = new Comment();
         Schema::connection($model->getConnectionName())->table('comments', function (Blueprint $table) {
@@ -26,7 +26,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         $model = new Comment();
         Schema::connection($model->getConnectionName())->table('comments', function (Blueprint $table) {

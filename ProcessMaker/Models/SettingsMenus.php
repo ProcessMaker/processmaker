@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Models\ProcessMakerModel;
 use ProcessMaker\Models\Setting;
@@ -67,7 +68,7 @@ class SettingsMenus extends ProcessMakerModel
         ];
     }
 
-    public function groups()
+    public function groups(): HasMany
     {
         return $this->hasMany(Setting::class, 'group_id');
     }

@@ -37,7 +37,7 @@ class CasesControllerTest extends TestCase
         ],
     ];
 
-    public function testShowCaseWithUserWithoutParticipation()
+    public function testShowCaseWithUserWithoutParticipation(): void
     {
         // Create user admin
         $user = User::factory()->create();
@@ -60,7 +60,7 @@ class CasesControllerTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function testShowCaseWithUserAdmin()
+    public function testShowCaseWithUserAdmin(): void
     {
         // Create user admin
         $user = User::factory()->create([
@@ -85,7 +85,7 @@ class CasesControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testShowCaseWithParticipateUser()
+    public function testShowCaseWithParticipateUser(): void
     {
         // Create user
         $user = User::factory()->create();
@@ -118,7 +118,7 @@ class CasesControllerTest extends TestCase
      * Test show default summary tab when the status is Error
      * @return void
      */
-    public function testCaseErrorWithDataDefaultSummary()
+    public function testCaseErrorWithDataDefaultSummary(): void
     {
         $process = Process::factory()->create();
         $requestCanceled = ProcessRequest::factory()->create([
@@ -139,7 +139,7 @@ class CasesControllerTest extends TestCase
      * Without custom screen "Request Detail Screen"
      * @return void
      */
-    public function testCaseInProgressWithDataDefaultSummary()
+    public function testCaseInProgressWithDataDefaultSummary(): void
     {
         $process = Process::factory()->create();
         $requestCanceled = ProcessRequest::factory()->create([
@@ -161,7 +161,7 @@ class CasesControllerTest extends TestCase
      * Without custom screen "Cancel Screen"
      * @return void
      */
-    public function testRequestCanceledDefaultSummary()
+    public function testRequestCanceledDefaultSummary(): void
     {
         $process = Process::factory()->create();
         $requestCompleted = ProcessRequest::factory()->create([
@@ -184,7 +184,7 @@ class CasesControllerTest extends TestCase
      * Without end event custom screen "Summary screen"
      * @return void
      */
-    public function testRequestCompletedDefaultSummary()
+    public function testRequestCompletedDefaultSummary(): void
     {
         $process = Process::factory()->create();
         $requestCompleted = ProcessRequest::factory()->create([
@@ -207,7 +207,7 @@ class CasesControllerTest extends TestCase
      * Without end event custom screen "Summary screen"
      * @return void
      */
-    public function testRequestCompletedWithDataDefaultSummary()
+    public function testRequestCompletedWithDataDefaultSummary(): void
     {
         $process = Process::factory()->create();
         $requestCompleted = ProcessRequest::factory()->create([
@@ -230,7 +230,7 @@ class CasesControllerTest extends TestCase
      * With custom screen "Request Detail Screen"
      * @return void
      */
-    public function testRequestInprogressWithCustomScreenSummaryTab()
+    public function testRequestInprogressWithCustomScreenSummaryTab(): void
     {
         $screen = Screen::factory()->create([
             'type' => 'DISPLAY',
@@ -260,7 +260,7 @@ class CasesControllerTest extends TestCase
      * With custom screen "Cancel Screen"
      * @return void
      */
-    public function testRequestCanceledWithCustomScreenSummaryTab()
+    public function testRequestCanceledWithCustomScreenSummaryTab(): void
     {
         $screen = Screen::factory()->create([
             'type' => 'DISPLAY',

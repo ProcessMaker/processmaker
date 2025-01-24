@@ -11,7 +11,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         ProcessTemplates::where('user_id', null)
         ->where('version', null)
@@ -23,7 +23,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         ProcessTemplates::where('user_id', null)
         ->where('version', '1.0.0')

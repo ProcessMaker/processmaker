@@ -14,7 +14,7 @@ class ApiResource extends JsonResource
      */
     public static $wrap = null;
 
-    public function toArray($request)
+    public function toArray($request): array
     {
         return parent::toArray($request);
     }

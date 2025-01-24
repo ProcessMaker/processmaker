@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Traits\Exportable;
@@ -63,7 +64,7 @@ class ScreenCategory extends ProcessMakerModel
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function screens()
+    public function screens(): MorphToMany
     {
         return $this->morphedByMany(Screen::class, 'assignable', 'category_assignments', 'category_id');
     }

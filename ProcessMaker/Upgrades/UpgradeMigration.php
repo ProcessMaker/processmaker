@@ -31,7 +31,7 @@ abstract class UpgradeMigration extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         //
     }
@@ -41,7 +41,7 @@ abstract class UpgradeMigration extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         //
     }

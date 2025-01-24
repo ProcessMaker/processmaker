@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Models\ProcessMakerModel;
 use ProcessMaker\Models\User;
@@ -32,7 +33,7 @@ class Bookmark extends ProcessMakerModel
         ];
     }
 
-    public function users()
+    public function users(): HasMany
     {
         return $this->hasMany(User::class, 'id');
     }

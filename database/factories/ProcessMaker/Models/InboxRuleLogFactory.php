@@ -12,7 +12,7 @@ class InboxRuleLogFactory extends Factory
 {
     protected $model = InboxRuleLog::class;
 
-    public function definition()
+    public function definition(): array
     {
         return [
             'inbox_rule_id' => null,

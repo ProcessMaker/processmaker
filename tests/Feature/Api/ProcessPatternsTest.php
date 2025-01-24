@@ -42,7 +42,7 @@ class ProcessPatternsTest extends TestCase
      *
      * @dataProvider prepareTestCasesProvider
      */
-    public function testProcessPatterns($type, $bpmnFile, $context = [])
+    public function testProcessPatterns($type, $bpmnFile, $context = []): void
     {
         $this->$type($bpmnFile, $context);
     }

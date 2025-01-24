@@ -89,7 +89,7 @@ class PerformanceApiTest extends TestCase
      *
      * @dataProvider RoutesListProvider
      */
-    public function testRoutesSpeed($route, $params)
+    public function testRoutesSpeed($route, $params): void
     {
         $this->user = User::factory()->create(['is_administrator' => true]);
         Comment::factory()->count($this->dbSize)->create();
@@ -124,7 +124,7 @@ class PerformanceApiTest extends TestCase
         $this->assertGreaterThanOrEqual(self::MIN_ROUTE_SPEED, $speed, "Slow route response [$route]\n             Speed ~ $requestsPerSecond [reqs/sec]");
     }
 
-    public function testGetProcessStartEvents()
+    public function testGetProcessStartEvents(): void
     {
         // Create a group (id=10) with 1000 non admin users
         $group = Group::factory()->create(['id' => 10]);

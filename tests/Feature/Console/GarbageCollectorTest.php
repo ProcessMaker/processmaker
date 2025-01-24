@@ -13,7 +13,7 @@ use Tests\TestCase;
 
 class GarbageCollectorTest extends TestCase
 {
-    public function testProcessHaltedScripts()
+    public function testProcessHaltedScripts(): void
     {
         Bus::fake();
         //create a serve task and a script task in status ACTIVE and FAILING
@@ -38,7 +38,7 @@ class GarbageCollectorTest extends TestCase
         Bus::assertDispatched(RunServiceTask::class);
     }
 
-    public function testProcessUnhandledErrors()
+    public function testProcessUnhandledErrors(): void
     {
         Bus::fake();
         // simulate the creation of 2 unhandled errors with 2 tokens
@@ -71,7 +71,7 @@ class GarbageCollectorTest extends TestCase
         $this->assertFileDoesNotExist($errorFile);
     }
 
-    public function testProcessDuplicatedTimerEvents()
+    public function testProcessDuplicatedTimerEvents(): void
     {
         $token1 = ProcessRequestToken::factory()->create([
             'status' => 'ACTIVE',

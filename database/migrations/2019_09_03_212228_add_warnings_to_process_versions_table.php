@@ -10,7 +10,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('process_versions', function (Blueprint $table) {
             $table->text('warnings')->nullable();
@@ -23,7 +23,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('process_versions', function (Blueprint $table) {
             DB::statement('ALTER TABLE process_versions CHANGE bpmn bpmn TEXT');

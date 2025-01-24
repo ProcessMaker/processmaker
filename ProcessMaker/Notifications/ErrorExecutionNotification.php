@@ -37,7 +37,7 @@ class ErrorExecutionNotification extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
-    public function via($notifiable)
+    public function via($notifiable): array
     {
         $via = [];
         if (Arr::get($this->errorHandling, 'inapp_notification') === true) {
@@ -57,7 +57,7 @@ class ErrorExecutionNotification extends Notification
      * @param  mixed  $notifiable
      * @return MailMessage
      */
-    public function toMail($notifiable)
+    public function toMail($notifiable): MailMessage
     {
         $data = $this->toArray($notifiable);
 
@@ -101,7 +101,7 @@ class ErrorExecutionNotification extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
-    public function toArray($notifiable)
+    public function toArray($notifiable): array
     {
         $processRequest = $this->tokenInterface->processRequest;
 

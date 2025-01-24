@@ -40,7 +40,7 @@ class ProcessExporterTest extends TestCase
         $this->createAdminUser();
     }
 
-    public function testExport()
+    public function testExport(): void
     {
         $this->addGlobalSignalProcess();
         [
@@ -64,7 +64,7 @@ class ProcessExporterTest extends TestCase
         $this->assertContains($process->embed()->first()->uuid, $processDependentUuids);
     }
 
-    public function testImport()
+    public function testImport(): void
     {
         [
             'process' => $process,
@@ -118,7 +118,7 @@ class ProcessExporterTest extends TestCase
         $this->assertEquals(1, $process->embed()->count());
     }
 
-    public function testSignals()
+    public function testSignals(): void
     {
         $processA = $this->createProcess('signal-process-a', [
             'name' => 'signal process a',
@@ -135,7 +135,7 @@ class ProcessExporterTest extends TestCase
         $this->assertContains('test_global', $globalSignals);
     }
 
-    public function testSubprocesses()
+    public function testSubprocesses(): void
     {
         $screen = Screen::factory()->create(['title' => 'Screen A']);
         $parentProcess = $this->createProcess('process-with-different-kinds-of-call-activities', ['name' => 'parent']);
@@ -166,7 +166,7 @@ class ProcessExporterTest extends TestCase
         $this->assertEquals(0, Process::where('name', 'package')->count());
     }
 
-    public function testSubprocessInTargetInstance()
+    public function testSubprocessInTargetInstance(): void
     {
         $this->addGlobalSignalProcess();
 
@@ -192,7 +192,7 @@ class ProcessExporterTest extends TestCase
         );
     }
 
-    public function testProcessTaskScreen()
+    public function testProcessTaskScreen(): void
     {
         // Create process from template
         $process = $this->createProcess('process-with-task-screen', ['name' => 'Process with task']);
@@ -252,7 +252,7 @@ class ProcessExporterTest extends TestCase
         }
     }
 
-    public function testProcessTaskScript()
+    public function testProcessTaskScript(): void
     {
         // Create script
         $category = ScriptCategory::factory()->create(['name' => 'test category']);
@@ -304,7 +304,7 @@ class ProcessExporterTest extends TestCase
         }
     }
 
-    public function testDiscardedAssetLinksOnImportIfItExistsOnTheTargetInstance()
+    public function testDiscardedAssetLinksOnImportIfItExistsOnTheTargetInstance(): void
     {
         $this->addGlobalSignalProcess();
 
@@ -345,7 +345,7 @@ class ProcessExporterTest extends TestCase
         $this->assertEquals($subprocessWithSameUUID->id, $pmconfig['processId']);
     }
 
-    public function testDiscardedAssetDoesNotExistOnTargetInstance()
+    public function testDiscardedAssetDoesNotExistOnTargetInstance(): void
     {
         $this->addGlobalSignalProcess();
 
@@ -377,7 +377,7 @@ class ProcessExporterTest extends TestCase
         $this->assertEquals($originalManagerId, $processWithSameUUID->manager_id);
     }
 
-    public function testDiscardOnExport()
+    public function testDiscardOnExport(): void
     {
         $this->addGlobalSignalProcess();
         [
@@ -397,7 +397,7 @@ class ProcessExporterTest extends TestCase
         $this->assertArrayHasKey($user->uuid, $manifest);
     }
 
-    public function testImportMediaWithCopy()
+    public function testImportMediaWithCopy(): void
     {
         $this->addGlobalSignalProcess();
         [
@@ -421,7 +421,7 @@ class ProcessExporterTest extends TestCase
     }
 
     // Process with ABE screens
-    public function testProcessABEScreen()
+    public function testProcessABEScreen(): void
     {
         // Create process from template
         $process = $this->createProcess('process-with-abe-screen', ['name' => 'Process with abe']);
@@ -475,7 +475,7 @@ class ProcessExporterTest extends TestCase
     }
 
     // Process without defined ABE screens
-    public function testProcessWithoutABEScreen()
+    public function testProcessWithoutABEScreen(): void
     {
         // Create process from template
         $process = $this->createProcess('process-without-abe-screen', ['name' => 'Process without abe screens']);
@@ -492,7 +492,7 @@ class ProcessExporterTest extends TestCase
     }
 
     // Process without ABE properties
-    public function testProcessWithoutABEProperties()
+    public function testProcessWithoutABEProperties(): void
     {
         // Create process from template
         $process = $this->createProcess('process-without-abe-properties', ['name' => 'Process without abe properties']);

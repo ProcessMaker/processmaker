@@ -2,6 +2,10 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Support\Collection;
@@ -392,7 +396,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Get tokens of the request.
      */
-    public function tokens()
+    public function tokens(): HasMany
     {
         return $this->hasMany(ProcessRequestToken::class);
     }
@@ -400,7 +404,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Get the creator/author of this request.
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
@@ -408,7 +412,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Get collaboration of this request.
      */
-    public function collaboration()
+    public function collaboration(): BelongsTo
     {
         return $this->belongsTo(
             ProcessCollaboration::class,
@@ -419,7 +423,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Get the creator/author of this request.
      */
-    public function process()
+    public function process(): BelongsTo
     {
         return $this->belongsTo(Process::class, 'process_id');
     }
@@ -427,7 +431,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Get users of the request.
      */
-    public function assigned()
+    public function assigned(): HasMany
     {
         return $this->hasMany(ProcessRequestToken::class)
                 ->with('user')
@@ -517,7 +521,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
-    public function participants()
+    public function participants(): HasManyThrough
     {
         return $this->hasManyThrough(
             User::class,
@@ -588,12 +592,12 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         }
     }
 
-    public function childRequests()
+    public function childRequests(): HasMany
     {
         return $this->hasMany(self::class, 'parent_request_id');
     }
 
-    public function parentRequest()
+    public function parentRequest(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_request_id');
     }
@@ -603,7 +607,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function scheduledTasks()
+    public function scheduledTasks(): HasMany
     {
         return $this->hasMany(ScheduledTask::class, 'process_request_id');
     }
@@ -789,7 +793,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      *
      * @return ProcessVersion
      */
-    public function processVersion()
+    public function processVersion(): BelongsTo
     {
         return $this->belongsTo(ProcessVersion::class, 'process_version_id');
     }
@@ -922,7 +926,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function ownerTask()
+    public function ownerTask(): HasOne
     {
         return $this->hasOne(ProcessRequestToken::class, 'subprocess_request_id', 'id');
     }

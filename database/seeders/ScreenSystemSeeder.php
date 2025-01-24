@@ -13,7 +13,7 @@ class ScreenSystemSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $path = database_path('processes/screens/interstitial.json');
         if (file_exists($path)) {

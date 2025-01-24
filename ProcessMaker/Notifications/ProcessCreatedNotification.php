@@ -37,7 +37,7 @@ class ProcessCreatedNotification extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
-    public function via($notifiable)
+    public function via($notifiable): array
     {
         return ['broadcast', NotificationChannel::class];
     }
@@ -48,7 +48,7 @@ class ProcessCreatedNotification extends Notification
      * @param  mixed  $notifiable
      * @return MailMessage
      */
-    public function toMail($notifiable)
+    public function toMail($notifiable): MailMessage
     {
         return (new MailMessage)
             ->line('The introduction to the notification.')
@@ -67,7 +67,7 @@ class ProcessCreatedNotification extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
-    public function toArray($notifiable)
+    public function toArray($notifiable): array
     {
         $instance = Instance::find($this->instanceUid);
 

@@ -37,7 +37,7 @@ class InstallPreCommitHooks extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $coreHooksPath = base_path('.git/hooks');
         if (!is_dir($coreHooksPath)) {

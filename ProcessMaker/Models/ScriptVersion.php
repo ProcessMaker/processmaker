@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
 use ProcessMaker\Contracts\ScriptInterface;
 use ProcessMaker\Traits\HasCategories;
@@ -39,7 +40,7 @@ class ScriptVersion extends ProcessMakerModel implements ScriptInterface
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function parent()
+    public function parent(): BelongsTo
     {
         return $this->belongsTo(Script::class, 'script_id', 'id');
     }

@@ -10,7 +10,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('media', function (Blueprint $table) {
             $table->index('order_column', 'media_order_column_index');
@@ -22,7 +22,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('media', function (Blueprint $table) {
             $table->dropIndex('media_order_column_index');

@@ -50,7 +50,7 @@ class CasesTaskTest extends TestCase
         ];
     }
 
-    public function test_update_case_started_task_status()
+    public function test_update_case_started_task_status(): void
     {
         $repo = new CaseRepository();
         $repo->create($this->instance);
@@ -81,7 +81,7 @@ class CasesTaskTest extends TestCase
         ]);
     }
 
-    public function test_update_case_participated_task_status()
+    public function test_update_case_participated_task_status(): void
     {
         $repo = new CaseRepository();
         $repo->create($this->instance);
@@ -112,7 +112,7 @@ class CasesTaskTest extends TestCase
         ]);
     }
 
-    public function test_update_case_started_task_status_exception()
+    public function test_update_case_started_task_status_exception(): void
     {
         $repo = new CaseRepository();
         $repo->create($this->instance);
@@ -141,7 +141,7 @@ class CasesTaskTest extends TestCase
         ]);
     }
 
-    public function test_find_case_by_task_id_case_found()
+    public function test_find_case_by_task_id_case_found(): void
     {
         $taskRepo = new CaseTaskRepository($this->caseNumber, $this->task);
 
@@ -161,7 +161,7 @@ class CasesTaskTest extends TestCase
         $this->assertEquals('$[0].id', $result->task_index);
     }
 
-    public function test_find_case_by_task_id_case_not_found()
+    public function test_find_case_by_task_id_case_not_found(): void
     {
         $taskRepo = new CaseTaskRepository($this->caseNumber, $this->task);
         $taskRepo->setTable('cases_started');
@@ -170,7 +170,7 @@ class CasesTaskTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function test_update_task_status_in_case()
+    public function test_update_task_status_in_case(): void
     {
         CaseStartedFactory::new()->create([
             'case_number' => $this->caseNumber,
@@ -193,7 +193,7 @@ class CasesTaskTest extends TestCase
         ]);
     }
 
-    public function test_update_task_status_in_case_not_found()
+    public function test_update_task_status_in_case_not_found(): void
     {
         CaseStartedFactory::new()->create([
             'case_number' => $this->caseNumber,

@@ -36,7 +36,7 @@ class Check extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $name = $this->argument('name');
         $checker = new PackageChecker($name);

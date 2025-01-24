@@ -14,7 +14,7 @@ class SettingFactory extends Factory
      *
      * @return array
      */
-    public function definition()
+    public function definition(): array
     {
         $format = $this->faker->randomElement([
             'text',

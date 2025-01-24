@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -111,12 +112,12 @@ class Permission extends ProcessMakerModel
         }
     }
 
-    public function users()
+    public function users(): MorphToMany
     {
         return $this->morphedByMany('ProcessMaker\Models\User', 'assignable');
     }
 
-    public function groups()
+    public function groups(): MorphToMany
     {
         return $this->morphedByMany('ProcessMaker\Models\Group', 'assignable');
     }

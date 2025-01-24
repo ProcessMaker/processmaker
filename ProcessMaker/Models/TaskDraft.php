@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Arr;
 use ProcessMaker\Models\ProcessMakerModel;
@@ -31,7 +32,7 @@ class TaskDraft extends ProcessMakerModel implements HasMedia
         ];
     }
 
-    public function processRequestToken()
+    public function processRequestToken(): BelongsTo
     {
         return $this->belongsTo(ProcessRequestToken::class, 'task_id');
     }

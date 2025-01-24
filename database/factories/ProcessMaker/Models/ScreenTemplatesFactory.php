@@ -18,7 +18,7 @@ class ScreenTemplatesFactory extends Factory
      *
      * @return array
      */
-    public function definition()
+    public function definition(): array
     {
         $screen = Screen::factory()->create();
         $response = (new ExportController)->manifest('screen', $screen->id);

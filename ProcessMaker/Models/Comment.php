@@ -2,6 +2,10 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\SqlsrvSupportTrait;
@@ -109,7 +113,7 @@ class Comment extends ProcessMakerModel
     /**
      * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
-    public function commentable()
+    public function commentable(): MorphTo
     {
         return $this->morphTo(null, null, 'commentable_id');
     }
@@ -117,7 +121,7 @@ class Comment extends ProcessMakerModel
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
@@ -125,7 +129,7 @@ class Comment extends ProcessMakerModel
     /**
      * Children comments with user
      */
-    public function children()
+    public function children(): HasMany
     {
         return $this->hasMany(self::class, 'commentable_id', 'id')
             ->where('commentable_type', self::class)
@@ -135,7 +139,7 @@ class Comment extends ProcessMakerModel
     /**
      * Replied message.
      */
-    public function repliedMessage()
+    public function repliedMessage(): HasOne
     {
         return $this->hasOne(self::class, 'id', 'parent_id')
                 ->with('user');

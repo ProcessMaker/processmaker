@@ -9,7 +9,7 @@ use Tests\TestCase;
 
 class PerformanceTest extends TestCase
 {
-    public function testImportPerformance()
+    public function testImportPerformance(): void
     {
         User::factory()->create(['is_administrator' => true]);
 

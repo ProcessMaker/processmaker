@@ -31,7 +31,7 @@ class SyncTranslations extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         // Check if exists resources core
         $translationsCore = app()->basePath() . '/resources-core';

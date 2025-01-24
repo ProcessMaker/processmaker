@@ -9,7 +9,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Artisan::call('processmaker:create-data-lake-views');
     }
@@ -19,7 +19,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Artisan::call('processmaker:create-data-lake-views --drop');
     }

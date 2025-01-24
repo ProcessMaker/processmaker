@@ -19,21 +19,21 @@ class UtilsTest extends TestCase
         $this->process = Process::factory()->create(['bpmn' => $this->bpmn]);
     }
 
-    public function testGetServiceTasks()
+    public function testGetServiceTasks(): void
     {
         $result = Utils::getServiceTasks($this->process, 'package-data-sources/data-source-task-service');
         $this->assertCount(1, $result);
         $this->assertEquals('Data Connector', $result->first()->getAttribute('name'));
     }
 
-    public function testGetPmConfig()
+    public function testGetPmConfig(): void
     {
         $result = Utils::getServiceTasks($this->process, 'package-data-sources/data-source-task-service');
         $config = Utils::getPmConfig($result->first());
         $this->assertEquals('list', $config['endpoint']);
     }
 
-    public function testFindScreenDependent()
+    public function testFindScreenDependent(): void
     {
         $config = [
             [

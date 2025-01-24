@@ -19,7 +19,7 @@ class GroupExporterTest extends TestCase
 
     public $withPermissions = true;
 
-    public function testGroupExporter()
+    public function testGroupExporter(): void
     {
         DB::beginTransaction();
         $group = Group::factory()->create(['name' => 'test group']);
@@ -37,7 +37,7 @@ class GroupExporterTest extends TestCase
         $this->assertEquals($permissions, $group->permissions->pluck('name')->toArray());
     }
 
-    public function testGroupWithUsers()
+    public function testGroupWithUsers(): void
     {
         DB::beginTransaction();
 

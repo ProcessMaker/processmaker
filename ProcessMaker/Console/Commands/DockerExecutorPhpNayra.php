@@ -28,7 +28,7 @@ class DockerExecutorPhpNayra extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $exists = ScriptExecutor::where('language', Base::NAYRA_LANG)->exists();
         if (!$exists) {

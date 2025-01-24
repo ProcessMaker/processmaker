@@ -26,7 +26,7 @@ class BookmarkTest extends TestCase
     /**
      * Test get bookmarks
      */
-    public function testGetBookmark()
+    public function testGetBookmark(): void
     {
         // Create data
         Bookmark::factory()->count(10)->create();
@@ -50,7 +50,7 @@ class BookmarkTest extends TestCase
     /**
      * Test store bookmarks
      */
-    public function testStoreBookmark()
+    public function testStoreBookmark(): void
     {
         // Create data
         $process = Process::factory()->create();
@@ -72,7 +72,7 @@ class BookmarkTest extends TestCase
     /**
      * Test delete bookmark
      */
-    public function testDeleteBookmark()
+    public function testDeleteBookmark(): void
     {
         // Create data
         $bookmark = Bookmark::factory()->create();

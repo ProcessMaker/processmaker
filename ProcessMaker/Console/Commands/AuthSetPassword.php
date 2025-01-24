@@ -38,7 +38,7 @@ class AuthSetPassword extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $identifier = $this->ask("Enter the user's id or email address");
 
