@@ -3,6 +3,7 @@
 namespace ProcessMaker\Traits;
 
 use Illuminate\Support\Collection;
+use ProcessMaker\Bpmn\Process;
 use ProcessMaker\Models\ProcessRequest;
 use SimpleXMLElement;
 
@@ -16,6 +17,9 @@ trait ProcessMapTrait
     {
         $xml = simplexml_load_string($bpmn);
         $namespaces = $xml->getNamespaces(true);
+
+        // Register the BPMN namespace explicitly
+        $xml->registerXPathNamespace('bpmn', 'http://www.omg.org/spec/BPMN/20100524/MODEL');
 
         foreach ($namespaces as $prefix => $ns) {
             $xml->registerXPathNamespace($prefix, $ns);
@@ -107,5 +111,46 @@ trait ProcessMapTrait
         $maxToken = $request->tokens()->find($this->getMaxTokenId($request, $sourceRef));
 
         return $maxToken->status === 'ACTIVE' && $sourceCount === $targetCount;
+    }
+
+    private function loadProcessMap(ProcessRequest $request): array
+    {
+        $processRequest = ProcessRequest::find($request->id);
+        $bpmn = $request->process->bpmn;
+        $filteredCompletedNodes = [];
+        $requestInProgressNodes = [];
+        $requestIdleNodes = [];
+
+        if ($processRequest) {
+            $requestCompletedNodes = $processRequest->tokens()
+                ->whereIn('status', ['CLOSED', 'COMPLETED', 'TRIGGERED'])
+                ->pluck('element_id');
+            $requestInProgressNodes = $processRequest->tokens()
+                ->whereIn('status', ['ACTIVE', 'INCOMING'])
+                ->pluck('element_id');
+
+            // Remove any node that is 'ACTIVE' from the completed list.
+            $filteredCompletedNodes = $requestCompletedNodes->diff($requestInProgressNodes)->values();
+
+            // Obtain In-Progress nodes that were completed before
+            $matchingNodes = $requestInProgressNodes->intersect($requestCompletedNodes);
+
+            // Get idle nodes.
+            $xml = $this->loadAndPrepareXML($bpmn);
+            $nodeIds = $this->getNodeIds($xml);
+            $requestIdleNodes = $nodeIds->diff($filteredCompletedNodes)->diff($requestInProgressNodes)->values();
+
+            // Add completed sequence flow to the list of completed nodes.
+            $sequenceFlowNodes = $this->getCompletedSequenceFlow($xml, $filteredCompletedNodes->implode(' '), $requestInProgressNodes->implode(' '), $matchingNodes->implode(' '));
+            $filteredCompletedNodes = $filteredCompletedNodes->merge($sequenceFlowNodes);
+        }
+
+        return [
+            'bpmn' => $bpmn,
+            'requestCompletedNodes' => $filteredCompletedNodes,
+            'requestInProgressNodes' => $requestInProgressNodes,
+            'requestIdleNodes' => $requestIdleNodes,
+            'requestId' => $request->id,
+        ];
     }
 }

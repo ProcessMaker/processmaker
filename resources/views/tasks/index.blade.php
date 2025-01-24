@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnext')
 
 @section('title')
     {{__($title)}}
@@ -77,7 +77,7 @@
         </ul>
 
         <div class="tab-content" id="task-tabContent">
-          <div class="tab-pane fade show active" id="inbox" role="tabpanel" aria-labelledby="inbox-tab">
+          <div class="tab-pane show active" id="inbox" role="tabpanel" aria-labelledby="inbox-tab">
             <div class="card card-body task-list-body">
               <div id="search-bar" class="search advanced-search mb-2">
                 <div class="d-flex">
@@ -90,7 +90,7 @@
                       :filters-value="pmql"
                       :ai-enabled="false"
                       :show-filters="true"
-                      :aria-label="$t('Advanced Search (PMQL)')"
+                      aria-label="{{__('Advanced Search (PMQL)')}}"
                       :param-status="status"
                       :permission="{{ Auth::user()->hasPermissionsFor('users', 'groups') }}"
                       @submit="onNLQConversion"
@@ -170,92 +170,104 @@
 @endsection
 
 @section('js')
-    <script>
-      window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
-      window.ProcessMaker.advanced_filter = @json($userFilter);
-      window.Processmaker.defaultColumns = @json($defaultColumns);
+  <script src="{{ mix('js/manifest.js') }}"></script>
+  <script src="{{ mix('js/vue-vendor.js') }}"></script>
+  <script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
+  <script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
+  <script >
+    window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+  </script>
+  <script src="{{ mix('js/tasks/loaderMain.js')}}"></script>
+  <script>
+    window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
+    window.ProcessMaker.advanced_filter = @json($userFilter);
+    window.Processmaker.defaultColumns = @json($defaultColumns);
 
-      window.sessionStorage.setItem('elementDestinationURL', window.location.href);
-    </script>
-    <script src="{{mix('js/tasks/index.js')}}"></script>
+    window.sessionStorage.setItem('elementDestinationURL', window.location.href);
+  </script>
+  <script src="{{mix('js/tasks/index.js')}}"></script>
+
+  @foreach(GlobalScripts::getScripts() as $script)
+    <script src="{{$script}}"></script>
+  @endforeach
 @endsection
 
 @section('css')
-    <style>
-        .has-search .form-control {
-            padding-left: 2.375rem;
-        }
+  <style>
+    .has-search .form-control {
+      padding-left: 2.375rem;
+    }
 
-        .has-search .form-control-feedback {
-            position: absolute;
-            z-index: 2;
-            display: block;
-            width: 2.375rem;
-            height: 2.375rem;
-            line-height: 2.375rem;
-            text-align: center;
-            pointer-events: none;
-            color: #aaa;
-        }
+    .has-search .form-control-feedback {
+      position: absolute;
+      z-index: 2;
+      display: block;
+      width: 2.375rem;
+      height: 2.375rem;
+      line-height: 2.375rem;
+      text-align: center;
+      pointer-events: none;
+      color: #aaa;
+    }
 
-        .card-border {
-            border-radius: 4px !important;
-        }
+    .card-border {
+      border-radius: 4px !important;
+    }
 
-        .card-size-header {
-            width: 90px;
-        }
+    .card-size-header {
+      width: 90px;
+    }
 
-        .option__image {
-            width: 27px;
-            height: 27px;
-            border-radius: 50%;
-        }
+    .option__image {
+      width: 27px;
+      height: 27px;
+      border-radius: 50%;
+    }
 
-        .initials {
-            display: inline-block;
-            text-align: center;
-            font-size: 12px;
-            max-width: 25px;
-            max-height: 25px;
-            min-width: 25px;
-            min-height: 25px;
-            border-radius: 50%;
-        }
-        .task-nav {
-            border-bottom: 0 !important;
-        }
-        .task-nav-link.active {
-            color: #1572C2 !important;
-            font-weight: 700;
-            font-size: 15px;
-        }
-        .task-nav-link {
-            color: #556271;
-            font-weight: 400;
-            font-size: 15px;
-            border-top-left-radius: 5px !important;
-            border-top-right-radius: 5px !important;
-        }
-        .task-list-body {
-            border-radius: 5px;
-        }
-        .task-inbox-rules {
-          width: max-content;
-        }
-        .task-inbox-rules-content {
-          display: flex;
-          justify-content: space-between;
-          padding: 15px;
-        }
-        .task-inbox-rules-content-text {
-          width: 310px;
-          padding-left: 10px;
-        }
-    </style>
-    <style scoped>
-      .popover{
-        max-width: 450px;
-      }
-    </style>
+    .initials {
+      display: inline-block;
+      text-align: center;
+      font-size: 12px;
+      max-width: 25px;
+      max-height: 25px;
+      min-width: 25px;
+      min-height: 25px;
+      border-radius: 50%;
+    }
+    .task-nav {
+      border-bottom: 0 !important;
+    }
+    .task-nav-link.active {
+      color: #1572C2 !important;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .task-nav-link {
+      color: #556271;
+      font-weight: 400;
+      font-size: 15px;
+      border-top-left-radius: 5px !important;
+      border-top-right-radius: 5px !important;
+    }
+    .task-list-body {
+        border-radius: 5px;
+    }
+    .task-inbox-rules {
+      width: max-content;
+    }
+    .task-inbox-rules-content {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px;
+    }
+    .task-inbox-rules-content-text {
+      width: 310px;
+      padding-left: 10px;
+    }
+  </style>
+  <style scoped>
+    .popover{
+      max-width: 450px;
+    }
+  </style>
 @endsection

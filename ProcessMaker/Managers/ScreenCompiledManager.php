@@ -106,4 +106,28 @@ class ScreenCompiledManager
     {
         return 'screen_' . $screenKey . '.bin';
     }
+
+    /**
+     * Delete all compiled content for a specific screen ID and language
+     *
+     * @param string $screenId Screen ID
+     * @param string $language Language code
+     * @return bool
+     */
+    public function deleteScreenCompiledContent(string $screenId, string $language): bool
+    {
+        $files = Storage::disk($this->storageDisk)->files($this->storagePath);
+        $deleted = false;
+
+        foreach ($files as $file) {
+            // Remove the 'screen_' prefix and '.bin' extension for pattern matching
+            $filename = str_replace(['screen_', '.bin'], '', basename($file));
+            if (strpos($filename, "_{$language}_sid_{$screenId}_") !== false) {
+                Storage::disk($this->storageDisk)->delete($file);
+                $deleted = true;
+            }
+        }
+
+        return $deleted;
+    }
 }

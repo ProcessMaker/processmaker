@@ -11,6 +11,7 @@ use ProcessMaker\Events\ScriptBuilderStarting;
 use ProcessMaker\Managers\IndexManager;
 use ProcessMaker\Managers\LoginManager;
 use ProcessMaker\Managers\PackageManager;
+use ProcessMaker\Providers\ProcessMakerServiceProvider;
 
 /**
  * Add functionality to control a PM plug-in
@@ -20,6 +21,58 @@ trait PluginServiceProviderTrait
     private $modelerScripts = [];
 
     private $scriptBuilderScripts = [];
+
+    private static $bootStart = null;
+
+    private static $bootTime;
+
+    public function __construct($app)
+    {
+        parent::__construct($app);
+
+        $this->bootServerTiming();
+    }
+
+    /**
+     * The `bootServerTiming` function sets up timing measurements for the booting and booted events of the packages
+     *
+     * @return void If the condition `config('app.server_timing.enabled')` is false, nothing is being returned as the
+     * function will exit early.
+     */
+    protected function bootServerTiming(): void
+    {
+        if (!config('app.server_timing.enabled')) {
+            return;
+        }
+
+        $package = $this->getPackageName();
+
+        $this->booting(function () use ($package) {
+            self::$bootStart = microtime(true);
+
+            ProcessMakerServiceProvider::setPackageBootStart($package, self::$bootStart);
+        });
+
+        $this->booted(function () use ($package) {
+            self::$bootTime = microtime(true);
+
+            ProcessMakerServiceProvider::setPackageBootedTime($package, self::$bootTime);
+        });
+    }
+
+    /**
+     * Get the package name for the Server Timing header
+     *
+     * @return string
+     */
+    protected function getPackageName(): string
+    {
+        if (defined('static::name')) {
+            return ucfirst(\Str::camel(static::name));
+        }
+
+        return substr(static::class, strrpos(static::class, '\\') + 1);
+    }
 
     /**
      * Boot the PM plug-in.
@@ -37,7 +90,7 @@ trait PluginServiceProviderTrait
     /**
      * Executed during modeler starting
      *
-     * @param  \ProcessMaker\Events\ModelerStarting  $event
+     * @param  ModelerStarting  $event
      *
      * @throws \Exception
      */
@@ -164,7 +217,7 @@ trait PluginServiceProviderTrait
     /**
      * Executed during script builder starting
      *
-     * @param  \ProcessMaker\Events\ScriptBuilderStarting  $event
+     * @param  ScriptBuilderStarting  $event
      *
      * @throws \Exception
      */

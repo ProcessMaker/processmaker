@@ -33,13 +33,13 @@
 
         <div>
             <div class="tab-content">
-                <div class="tab-pane fade show active" id="nav-users" role="tabpanel" aria-labelledby="nav-users-tab">
+                <div class="tab-pane show active" id="nav-users" role="tabpanel" aria-labelledby="nav-users-tab">
                     <div class="card card-body p-3 border-top-0">
                         @include('admin.users.list')
                     </div>
                 </div>
 
-                <div class="tab-pane fade show" id="nav-deleted-users" role="tabpanel" aria-labelledby="nav-deleted-users-tab">
+                <div class="tab-pane show" id="nav-deleted-users" role="tabpanel" aria-labelledby="nav-deleted-users-tab">
                     <div class="card card-body p-3 border-top-0">
                         @include('admin.users.deletedUsers')
                     </div>
