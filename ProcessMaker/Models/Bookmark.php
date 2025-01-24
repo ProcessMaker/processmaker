@@ -2,8 +2,8 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use ProcessMaker\Models\ProcessMakerModel;
 use ProcessMaker\Models\User;
 

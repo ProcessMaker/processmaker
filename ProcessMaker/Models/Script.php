@@ -2,9 +2,9 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Contracts\ScriptInterface;
 use ProcessMaker\Exception\ConfigurationException;

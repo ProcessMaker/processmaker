@@ -2,8 +2,8 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Arr;
 use ProcessMaker\Models\ProcessMakerModel;
 use Spatie\MediaLibrary\HasMedia;

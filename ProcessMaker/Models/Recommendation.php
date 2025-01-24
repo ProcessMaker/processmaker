@@ -2,8 +2,8 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use ProcessMaker\Filters\Filter;
 
 class Recommendation extends ProcessMakerModel

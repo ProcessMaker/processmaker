@@ -2,12 +2,12 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Carbon\Carbon;
 use DB;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -519,7 +519,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Returns the list of users that have participated in the request
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     * @return HasManyThrough
      */
     public function participants(): HasManyThrough
     {
@@ -605,7 +605,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Scheduled task of the request.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function scheduledTasks(): HasMany
     {
@@ -924,7 +924,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Owner task of the sub process
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function ownerTask(): HasOne
     {

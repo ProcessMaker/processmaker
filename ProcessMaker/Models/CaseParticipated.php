@@ -2,11 +2,11 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Database\Factories\CaseParticipatedFactory;
 use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use ProcessMaker\Models\ProcessMakerModel;
 use ProcessMaker\Traits\HandlesValueAliasStatus;
 

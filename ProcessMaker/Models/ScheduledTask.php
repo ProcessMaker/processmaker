@@ -26,7 +26,7 @@ class ScheduledTask extends ProcessMakerModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function process(): BelongsTo
     {
@@ -34,7 +34,7 @@ class ScheduledTask extends ProcessMakerModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function processRequest(): BelongsTo
     {
@@ -42,7 +42,7 @@ class ScheduledTask extends ProcessMakerModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function processRequestToken(): BelongsTo
     {

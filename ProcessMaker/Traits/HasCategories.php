@@ -2,10 +2,10 @@
 
 namespace ProcessMaker\Traits;
 
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use App\Events\Relations\Attached;
 use App\Events\Relations\Detached;
 use App\Events\Relations\Syncing;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use ProcessMaker\Models\CategoryAssignment;
 
