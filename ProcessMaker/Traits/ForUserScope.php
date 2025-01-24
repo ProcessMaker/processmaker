@@ -21,7 +21,10 @@ trait ForUserScope
             return $query;
         }
 
-        $userParticipated = ProcessRequestToken::where('user_id', $user->id)->pluck('process_request_id')->toArray();
+        $userParticipated = [];
+        if ($user->username !== '_pm4_anon_user') {
+            $userParticipated = ProcessRequestToken::where('user_id', $user->id)->pluck('process_request_id')->toArray();
+        }
 
         $userHasSelfServiceTasks = ProcessRequestToken::where('is_self_service', true)
             ->whereJsonContains('self_service_groups->users', (string) $user->id)
