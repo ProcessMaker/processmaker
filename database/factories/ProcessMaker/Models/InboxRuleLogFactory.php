@@ -2,8 +2,8 @@
 
 namespace Database\Factories\ProcessMaker\Models;
 
-use ProcessMaker\Models\InboxRuleLog;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use ProcessMaker\Models\InboxRuleLog;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\ProcessMaker\Models\InboxRule>

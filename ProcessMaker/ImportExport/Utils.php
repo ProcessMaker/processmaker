@@ -41,7 +41,7 @@ class Utils
     {
         $elements = self::getElementsByPath($document, $path);
         if ($elements->count() !== 1) {
-            throw new \Exception('Invalid xpath');
+            throw new Exception('Invalid xpath');
         }
 
         return $elements->item(0);

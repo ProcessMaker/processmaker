@@ -6,7 +6,6 @@ use ProcessMaker\Events\ActivityCompleted;
 
 class HandleActivityCompletedRedirect extends HandleRedirectListener
 {
-
     /**
      * Handle the event.
      */

@@ -125,7 +125,7 @@ class PopulateCasesParticipatedTest extends TestCase
         ]);
 
         $case = CaseStarted::factory()->create(array_merge([
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ], $this->getCaseStartedData($tokens)));
 
         $this->upgrade();
@@ -182,7 +182,7 @@ class PopulateCasesParticipatedTest extends TestCase
         $data = $this->getCaseStartedData($tokens);
 
         $case = CaseStarted::factory()->create(array_merge([
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ], $data));
 
         $this->upgrade();
@@ -275,7 +275,7 @@ class PopulateCasesParticipatedTest extends TestCase
         $data = $this->getCaseStartedData($tokens);
 
         $case = CaseStarted::factory()->create(array_merge([
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ], $data));
 
         $this->upgrade();
@@ -328,7 +328,7 @@ class PopulateCasesParticipatedTest extends TestCase
         $data = $this->getCaseStartedData($tokens);
 
         $case = CaseStarted::factory()->create(array_merge([
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ], $data));
 
         $this->upgrade();
@@ -396,7 +396,7 @@ class PopulateCasesParticipatedTest extends TestCase
         $data = $this->getCaseStartedData($tokens);
 
         $case = CaseStarted::factory()->create(array_merge([
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ], $data));
 
         $this->upgrade();
@@ -454,7 +454,7 @@ class PopulateCasesParticipatedTest extends TestCase
         ])->toArray();
 
         $case = CaseStarted::factory()->create(array_merge([
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ], $data));
 
         $this->upgrade();
@@ -515,7 +515,7 @@ class PopulateCasesParticipatedTest extends TestCase
         ])->toArray();
 
         $case = CaseStarted::factory()->create(array_merge([
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ], $data));
 
         $this->upgrade();
@@ -587,7 +587,7 @@ class PopulateCasesParticipatedTest extends TestCase
         ])->toArray();
 
         $case = CaseStarted::factory()->create(array_merge([
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ], $data));
 
         $this->upgrade();

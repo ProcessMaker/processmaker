@@ -1,16 +1,20 @@
 <?php
+
 namespace ProcessMaker\Traits;
 
 use Illuminate\Support\Arr;
 use Log;
 use ProcessMaker\Models\Column;
 use ProcessMaker\Models\Screen;
+
 trait HasScreenFields
 {
     private $parsedFields;
+
     private $restrictedComponents = [
         'FormImage',
     ];
+
     public function getFieldsAttribute()
     {
         if (empty($this->parsedFields)) {
@@ -31,6 +35,7 @@ trait HasScreenFields
                 ]);
             }
         }
+
         return $this->parsedFields->unique('field');
     }
 
@@ -56,7 +61,6 @@ trait HasScreenFields
             $array = json_decode($array);
         }
         foreach ($array as $subkey => $value) {
-
             if (isset($value['component']) && $value['component'] === 'FormNestedScreen') {
                 $this->parseNestedScreen($value);
             } elseif (isset($value['component']) && $value['component'] === 'FormCollectionRecordControl') {
@@ -132,6 +136,7 @@ trait HasScreenFields
                     break;
             }
         }
+
         return $format;
     }
 
@@ -159,7 +164,6 @@ trait HasScreenFields
      *
      * @return array
      */
-
     public function screenFilteredFields()
     {
         return $this->fields->pluck('field');

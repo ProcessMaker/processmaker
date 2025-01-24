@@ -93,11 +93,11 @@ if (env('TEST_TOKEN')) {
     $_ENV['DB_DATABASE'] = $database;
     $_ENV['DATA_DB_DATABASE'] = $database;
 } elseif (env('POPULATE_DATABASE')) {
-    Artisan::call('db:wipe', ['--database' => \DB::connection()->getName()]);
+    Artisan::call('db:wipe', ['--database' => DB::connection()->getName()]);
     Artisan::call('migrate:fresh', []);
     Artisan::call('db:seed', ['--class' => 'AnonymousUserSeeder']);
 
-    \Illuminate\Foundation\Testing\RefreshDatabaseState::$migrated = true;
+    Illuminate\Foundation\Testing\RefreshDatabaseState::$migrated = true;
 
     ScriptExecutor::firstOrCreate(
         ['language' => 'php'],

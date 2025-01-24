@@ -74,7 +74,6 @@ class AuthTest extends TestCase
     }
 
     /**
-     * 
      * Test logout flow
      */
     public function testLogoutStandard()

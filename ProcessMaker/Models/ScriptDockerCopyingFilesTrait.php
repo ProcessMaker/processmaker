@@ -19,7 +19,7 @@ trait ScriptDockerCopyingFilesTrait
      * @param array $options
      *
      * @return array
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     protected function executeCopying(array $options)
     {
@@ -47,7 +47,7 @@ trait ScriptDockerCopyingFilesTrait
      * @param string $parameters
      *
      * @return string
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     private function createContainer($image, $command, $parameters = '')
     {
@@ -74,7 +74,7 @@ trait ScriptDockerCopyingFilesTrait
      * @param string $path
      * @param string $content
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     private function putInContainer($container, $path, $content)
     {
@@ -94,7 +94,7 @@ trait ScriptDockerCopyingFilesTrait
      * @param string $container
      * @param string $dest
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     private function execCopy($source, $container, $dest)
     {
@@ -111,7 +111,7 @@ trait ScriptDockerCopyingFilesTrait
      * @param string $path
      *
      * @return string
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     private function getFromContainer($container, $path)
     {

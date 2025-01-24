@@ -62,7 +62,7 @@ class ApiCollection extends ResourceCollection
     /**
      * Generic collection to add sorting and filtering metadata.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return array
      */
     public function toArray($request)
@@ -92,7 +92,7 @@ class ApiCollection extends ResourceCollection
     /**
      * Create an HTTP response that represents the object.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function toResponse($request)
@@ -109,9 +109,9 @@ class ApiCollection extends ResourceCollection
     /**
      * Convert a Collection to a LengthAwarePaginator
      *
-     * @param  \Illuminate\Support\Collection  $collection
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Pagination\LengthAwarePaginator
+     * @param  Collection  $collection
+     * @param  Request  $request
+     * @return LengthAwarePaginator
      */
     public function collectionToPaginator(Collection $collection, Request $request)
     {

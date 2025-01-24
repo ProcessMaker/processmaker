@@ -8,7 +8,6 @@ use ProcessMaker\Models\Process;
 return new class extends Migration {
     public function __construct()
     {
-
     }
 
     /**
