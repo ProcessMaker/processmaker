@@ -26,12 +26,15 @@ class ScreenVersion extends ProcessMakerModel implements ScreenInterface
         'updated_at',
     ];
 
-    protected $casts = [
-        'config' => 'array',
-        'computed' => 'array',
-        'watchers' => 'array',
-        'translations' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'config' => 'array',
+            'computed' => 'array',
+            'watchers' => 'array',
+            'translations' => 'array',
+        ];
+    }
 
     /**
      * Set multiple|single categories to the screen

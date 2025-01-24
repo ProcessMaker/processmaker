@@ -83,13 +83,6 @@ class Screen extends ProcessMakerModel implements ScreenInterface
      */
     protected $table = 'screens';
 
-    protected $casts = [
-        'config' => 'array',
-        'computed' => 'array',
-        'watchers' => 'array',
-        'translations' => 'array',
-    ];
-
     protected $appends = [
         'projects',
     ];
@@ -115,6 +108,16 @@ class Screen extends ProcessMakerModel implements ScreenInterface
 
         static::updating($clearCacheCallback);
         static::deleting($clearCacheCallback);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'config' => 'array',
+            'computed' => 'array',
+            'watchers' => 'array',
+            'translations' => 'array',
+        ];
     }
 
     /**

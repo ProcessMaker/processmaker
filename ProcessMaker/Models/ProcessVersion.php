@@ -42,15 +42,6 @@ class ProcessVersion extends ProcessMakerModel implements ProcessModelInterface
         'updated_at',
     ];
 
-    protected $casts = [
-        'start_events' => 'array',
-        'warnings' => 'array',
-        'self_service_tasks' => 'array',
-        'signal_events' => 'array',
-        'conditional_events' => 'array',
-        'properties' => 'array',
-    ];
-
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -70,6 +61,18 @@ class ProcessVersion extends ProcessMakerModel implements ProcessModelInterface
         });
 
         parent::boot();
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'start_events' => 'array',
+            'warnings' => 'array',
+            'self_service_tasks' => 'array',
+            'signal_events' => 'array',
+            'conditional_events' => 'array',
+            'properties' => 'array',
+        ];
     }
 
     /**

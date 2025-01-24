@@ -24,9 +24,12 @@ class TaskDraft extends ProcessMakerModel implements HasMedia
         'data',
     ];
 
-    protected $casts = [
-        'data' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'data' => 'array',
+        ];
+    }
 
     public function processRequestToken()
     {

@@ -233,15 +233,6 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         'projects',
     ];
 
-    protected $casts = [
-        'start_events' => 'array',
-        'warnings' => 'array',
-        'self_service_tasks' => 'array',
-        'signal_events' => 'array',
-        'conditional_events' => 'array',
-        'properties' => 'array',
-    ];
-
     public static function boot()
     {
         parent::boot();
@@ -256,6 +247,18 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             $model->updated_by = $user?->id;
             self::clearAndRebuildUserProjectAssetsCache();
         });
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'start_events' => 'array',
+            'warnings' => 'array',
+            'self_service_tasks' => 'array',
+            'signal_events' => 'array',
+            'conditional_events' => 'array',
+            'properties' => 'array',
+        ];
     }
 
     /**

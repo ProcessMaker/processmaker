@@ -13,9 +13,12 @@ class InboxRuleLog extends ProcessMakerModel
 
     protected $guarded = [];
 
-    protected $casts = [
-        'inbox_rule_attributes' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'inbox_rule_attributes' => 'array',
+        ];
+    }
 
     public function task(): BelongsTo
     {

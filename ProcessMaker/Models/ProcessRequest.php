@@ -141,21 +141,6 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     ];
 
     /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'completed_at' => 'datetime:c',
-        'initiated_at' => 'datetime:c',
-        'data' => 'array',
-        'errors' => 'array',
-        'do_not_sanitize' => 'array',
-        'signal_events' => 'array',
-        'locked_at' => 'datetime:c',
-    ];
-
-    /**
      * Associated records that can be included with this model
      *
      * @var array
@@ -165,6 +150,24 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         'process',
         'participants',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'completed_at' => 'datetime:c',
+            'initiated_at' => 'datetime:c',
+            'data' => 'array',
+            'errors' => 'array',
+            'do_not_sanitize' => 'array',
+            'signal_events' => 'array',
+            'locked_at' => 'datetime:c',
+        ];
+    }
 
     /**
      * Determine whether the item should be indexed.

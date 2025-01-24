@@ -134,15 +134,6 @@ class User extends Authenticatable implements HasMedia
         'fullname',
     ];
 
-    protected $casts = [
-        'is_administrator' => 'bool',
-        'meta' => 'object',
-        'active_at' => 'datetime',
-        'loggedin_at' => 'datetime',
-        'schedule' => 'array',
-        'preferences_2fa' => 'array',
-    ];
-
     /**
      * Register any model events
      *
@@ -166,6 +157,18 @@ class User extends Authenticatable implements HasMedia
             $user->status = 'INACTIVE';
             $user->removeFromGroups();
         });
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'is_administrator' => 'bool',
+            'meta' => 'object',
+            'active_at' => 'datetime',
+            'loggedin_at' => 'datetime',
+            'schedule' => 'array',
+            'preferences_2fa' => 'array',
+        ];
     }
 
     /**

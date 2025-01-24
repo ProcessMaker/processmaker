@@ -31,10 +31,13 @@ class ProcessRequestLock extends ProcessMakerModel
         'due_at',
     ];
 
-    protected $casts = [
-        'due_at' => 'datetime',
-        'request_ids' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'due_at' => 'datetime',
+            'request_ids' => 'array',
+        ];
+    }
 
     /**
      * Active block that did not overcome.

@@ -140,21 +140,24 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     ];
 
     /**
-     * The attributes that should be cast to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array
+     * @return array<string, string>
      */
-    protected $casts = [
-        'completed_at' => 'datetime',
-        'due_at' => 'datetime',
-        'initiated_at' => 'datetime',
-        'riskchanges_at' => 'datetime',
-        'data' => 'array',
-        'self_service_groups' => 'array',
-        'token_properties' => 'array',
-        'is_priority' => 'boolean',
-        'is_actionbyemail' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'completed_at' => 'datetime',
+            'due_at' => 'datetime',
+            'initiated_at' => 'datetime',
+            'riskchanges_at' => 'datetime',
+            'data' => 'array',
+            'self_service_groups' => 'array',
+            'token_properties' => 'array',
+            'is_priority' => 'boolean',
+            'is_actionbyemail' => 'boolean',
+        ];
+    }
 
     /**
      * Get the indexable data array for the model.

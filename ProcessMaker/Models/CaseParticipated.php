@@ -32,19 +32,22 @@ class CaseParticipated extends ProcessMakerModel
         'keywords',
     ];
 
-    protected $casts = [
-        'processes' => AsCollection::class,
-        'requests' => AsCollection::class,
-        'request_tokens' => AsCollection::class,
-        'tasks' => AsCollection::class,
-        'participants' => AsCollection::class,
-        'completed_at' => 'datetime:c',
-        'initiated_at' => 'datetime:c',
-    ];
-
     protected $attributes = [
         'keywords' => '',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'processes' => AsCollection::class,
+            'requests' => AsCollection::class,
+            'request_tokens' => AsCollection::class,
+            'tasks' => AsCollection::class,
+            'participants' => AsCollection::class,
+            'completed_at' => 'datetime:c',
+            'initiated_at' => 'datetime:c',
+        ];
+    }
 
     protected static function newFactory(): Factory
     {

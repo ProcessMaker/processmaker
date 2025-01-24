@@ -57,22 +57,25 @@ class SecurityLog extends ProcessMakerModel
     ];
 
     /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'data' => 'object',
-        'changes' => 'object',
-        'meta' => 'object',
-    ];
-
-    /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
      */
     protected $hidden = ['changes'];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'data' => 'object',
+            'changes' => 'object',
+            'meta' => 'object',
+        ];
+    }
 
     /**
      * Get the associated user, if any.

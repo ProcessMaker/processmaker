@@ -100,15 +100,18 @@ class Setting extends ProcessMakerModel implements HasMedia
     ];
 
     /**
-     * The attributes that should be cast to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array
+     * @return array<string, string>
      */
-    protected $casts = [
-        'hidden' => 'boolean',
-        'readonly' => 'boolean',
-        'ui' => 'object',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'hidden' => 'boolean',
+            'readonly' => 'boolean',
+            'ui' => 'object',
+        ];
+    }
 
     /**
      * Validation rules

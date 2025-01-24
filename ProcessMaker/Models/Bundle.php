@@ -21,9 +21,12 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
     protected $appends = ['asset_count'];
 
-    protected $casts = [
-        'published' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'published' => 'boolean',
+        ];
+    }
 
     public function scopePublished($query)
     {

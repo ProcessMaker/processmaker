@@ -11,13 +11,6 @@ class Recommendation extends ProcessMakerModel
 
     protected $guarded = [];
 
-    protected $casts = [
-        'min_matches' => 'integer',
-        'dismiss_for_secs' => 'integer',
-        'actions' => 'array',
-        'advanced_filter' => 'array',
-    ];
-
     protected $attributes = [
         'status' => 'ACTIVE',
         'actions' => '[]',
@@ -37,6 +30,16 @@ class Recommendation extends ProcessMakerModel
         });
 
         parent::boot();
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'min_matches' => 'integer',
+            'dismiss_for_secs' => 'integer',
+            'actions' => 'array',
+            'advanced_filter' => 'array',
+        ];
     }
 
     public function recommendationUsers()

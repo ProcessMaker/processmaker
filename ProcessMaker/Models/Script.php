@@ -81,12 +81,6 @@ class Script extends ProcessMakerModel implements ScriptInterface
         'updated_at',
     ];
 
-    protected $casts = [
-        'timeout' => 'integer',
-        'retry_attempts' => 'integer',
-        'retry_wait_time' => 'integer',
-    ];
-
     protected $appends = [
         'projects',
     ];
@@ -115,6 +109,15 @@ class Script extends ProcessMakerModel implements ScriptInterface
 
         static::updating($clearCacheCallback);
         static::deleting($clearCacheCallback);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'timeout' => 'integer',
+            'retry_attempts' => 'integer',
+            'retry_wait_time' => 'integer',
+        ];
     }
 
     /**

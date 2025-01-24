@@ -62,10 +62,13 @@ class Comment extends ProcessMakerModel
         'case_number',
     ];
 
-    protected $casts = [
-        'up' => 'array',
-        'down' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'up' => 'array',
+            'down' => 'array',
+        ];
+    }
 
     public static function rules()
     {
