@@ -1,4 +1,3 @@
-import Vue from "vue";
 import CaseDetail from "./components/CaseDetail.vue";
 import Tabs from "./components/Tabs.vue";
 import Timeline from "../../../js/components/Timeline.vue";

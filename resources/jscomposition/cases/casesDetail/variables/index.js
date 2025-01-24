@@ -21,3 +21,7 @@ export const getRequestCount = () => requestCount;
 export const getErrors = () => errorLogs;
 
 export const isErrors = () => request.status === "ERROR";
+
+export const getInflightData = () => inflightData;
+
+export const getXML = () => inflightData.bpmn;
