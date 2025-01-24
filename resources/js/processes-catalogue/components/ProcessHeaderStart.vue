@@ -230,6 +230,7 @@ export default {
   justify-content: center;
   cursor: pointer;
   font-weight: 700;
+  position: relative;
   
   span {
     color: #ffffff;
@@ -237,11 +238,20 @@ export default {
   }
 }
 
-.info-button:hover {
-  background-color: #6A7887;
-}
-
 .info-button-active {
   background-color: #2773F3 !important;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    background-color: rgba(106, 120, 135, 0.1);
+    border-radius: 8px;
+    z-index: 0;
+    border: 1px solid #d3dbe2;
+  }
 }
 </style>

@@ -185,7 +185,7 @@ export default {
 
 .buttons-list-dashboard {
   flex-direction: column;
-  height: 130px;
+  height: 260px;
   overflow-y: auto;
   padding-left: 15px;
 }
