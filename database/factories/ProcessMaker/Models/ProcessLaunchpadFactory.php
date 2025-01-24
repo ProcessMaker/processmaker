@@ -16,7 +16,7 @@ class ProcessLaunchpadFactory extends Factory
     public function definition()
     {
         return [
-            'uuid' => $this->faker->uuid,
+            'uuid' => $this->faker->uuid(),
             'process_id' => function () {
                 return Process::factory()->create()->getKey();
             },

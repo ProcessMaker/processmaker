@@ -587,7 +587,7 @@ class ProcessExporterTest extends TestCase
             'model_type' => Process::class,
             'mime_type' => 'text/url',
             'custom_properties' => json_encode([
-                'url' => $this->faker->url,
+                'url' => $this->faker->url(),
                 'type' => 'embed',
             ]),
             'order_column' => 1,
