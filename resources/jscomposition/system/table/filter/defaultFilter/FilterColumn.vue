@@ -43,6 +43,7 @@
             }"
             class="tw-flex tw-border-gray-300 tw-justify-start tw-p-4">
             <div
+              id="reset-table-btn"
               class="tw-flex tw-text-gray-500 tw-space-x-2 tw-bg-transparent
                 hover:tw-opacity-80 hover:tw-cursor-pointer tw-justify-center tw-items-center"
               @click="onResetTable">
