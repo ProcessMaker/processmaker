@@ -1,5 +1,6 @@
 const mix = require("laravel-mix");
 const path = require("path");
+const fs = require('fs');
 require("laravel-mix-polyfill");
 // const packageJson = require("./package.json");
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
@@ -21,7 +22,7 @@ mix.webpackConfig({
       analyzerMode: process.env.STATS ? "server" : "disabled",
     }),
   ],
-  externals: ["SharedComponents", "ModelerInspector"],
+  externals: ["monaco-editor", "SharedComponents", "ModelerInspector"],
   resolve: {
     extensions: [".*", ".js", ".ts", ".mjs", ".vue", ".json"],
     symlinks: false,
@@ -168,27 +169,6 @@ mix
 //   targets: "> 0.25%, not dead"
 // });
 
-// Monaco AMD modules. Copy only the files we need to make the build faster.
-const monacoSource = "node_modules/monaco-editor/min/vs/";
-const monacoDestination = "public/vendor/monaco-editor/min/vs/";
-const monacoLanguages = ["php", "css", "lua", "javascript", "csharp", "java", "python", "r", "html", "xml", "typescript", "sql"];
-const monacoFiles = [
-  "loader.js",
-  "editor/editor.main.js",
-  "editor/editor.main.css",
-  "editor/editor.main.nls.js",
-  "base/browser/ui/codicons/codicon/codicon.ttf",
-  "base/worker/workerMain.js",
-  "base/common/worker/simpleWorker.nls.js",
-];
-monacoFiles.forEach((file) => {
-  mix.copy(monacoSource + file, monacoDestination + file);
-});
-monacoLanguages.forEach((lang) => {
-  const path = `basic-languages/${lang}/${lang}.js`;
-  mix.copy(monacoSource + path, monacoDestination + path);
-});
-mix.copyDirectory(`${monacoSource}language`, `${monacoDestination}language`);
 
 mix
   .sass("resources/sass/sidebar/sidebar.scss", "public/css")
@@ -201,3 +181,10 @@ mix
   .version();
 
 mix.vue({ version: 2 });
+
+mix.then(() => {
+  // Use monaco AMD top keep it out of the build and manifest
+  const monacoSource = "node_modules/monaco-editor/min/vs/";
+  const monacoDestination = "public/vendor/monaco-editor/min/vs/";
+  fs.cpSync(monacoSource, monacoDestination, { recursive: true });
+});

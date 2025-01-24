@@ -86,7 +86,6 @@
         "lodash": "^4.17.21",
         "luxon": "^1.25.0",
         "monaco-editor": "^0.34.0",
-        "monaco-editor-webpack-plugin": "^7.0.1",
         "mustache": "3.2.1",
         "npm-font-open-sans": "^1.1.0",
         "oslllo-svg-fixer": "^5.0.0",
