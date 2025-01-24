@@ -92,6 +92,14 @@ const removeFilter = (index) => {
   filters.value.splice(index, 1);
 };
 
+const removeAllFilters = () => {
+  filters.value = [];
+};
+
+const addFilters = (filtersValue) => {
+  filters.value = filtersValue;
+};
+
 const getFilter = (index, column) => {
   const filter = filters.value.find((e) => e.field === column.field);
   return filter || null;
@@ -104,5 +112,7 @@ const hasFilter = (index, column) => {
 
 defineExpose({
   removeFilter,
+  removeAllFilters,
+  addFilters,
 });
 </script>
