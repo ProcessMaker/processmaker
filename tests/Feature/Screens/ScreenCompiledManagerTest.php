@@ -26,7 +26,7 @@ class ScreenCompiledManagerTest extends TestCase
      *
      * @test
      */
-    public function it_stores_compiled_content()
+    public function it_stores_compiled_content(): void
     {
         // Arrange
         $manager = new ScreenCompiledManager();
@@ -50,7 +50,7 @@ class ScreenCompiledManagerTest extends TestCase
      *
      * @test
      */
-    public function it_retrieves_compiled_content()
+    public function it_retrieves_compiled_content(): void
     {
         // Arrange content
         $manager = new ScreenCompiledManager();
@@ -73,7 +73,7 @@ class ScreenCompiledManagerTest extends TestCase
      *
      * @test
      */
-    public function it_returns_null_when_compiled_content_does_not_exist()
+    public function it_returns_null_when_compiled_content_does_not_exist(): void
     {
         // Arrange
         $manager = new ScreenCompiledManager();
@@ -91,7 +91,7 @@ class ScreenCompiledManagerTest extends TestCase
      *
      * @test
      */
-    public function it_clears_all_compiled_assets()
+    public function it_clears_all_compiled_assets(): void
     {
         // Arrange content
         $manager = new ScreenCompiledManager();
@@ -117,7 +117,7 @@ class ScreenCompiledManagerTest extends TestCase
      *
      * @test
      */
-    public function it_clears_process_screens_cache()
+    public function it_clears_process_screens_cache(): void
     {
         // Arrange
         $manager = new ScreenCompiledManager();
@@ -161,7 +161,7 @@ class ScreenCompiledManagerTest extends TestCase
      *
      * @test
      */
-    public function it_creates_a_screen_key()
+    public function it_creates_a_screen_key(): void
     {
         // Arrange
         $manager = new ScreenCompiledManager();
@@ -185,7 +185,7 @@ class ScreenCompiledManagerTest extends TestCase
      *
      * @test
      */
-    public function it_gets_the_last_screen_version_id()
+    public function it_gets_the_last_screen_version_id(): void
     {
         // Create the manager
         $manager = new ScreenCompiledManager();

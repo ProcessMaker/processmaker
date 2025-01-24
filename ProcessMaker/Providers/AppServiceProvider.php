@@ -2,10 +2,10 @@
 
 namespace ProcessMaker\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Database\Migrations\MigrationRepositoryInterface;
-use Illuminate\Database\Migrations\DatabaseMigrationRepository;
 use Illuminate\Database\ConnectionResolverInterface;
+use Illuminate\Database\Migrations\DatabaseMigrationRepository;
+use Illuminate\Database\Migrations\MigrationRepositoryInterface;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {

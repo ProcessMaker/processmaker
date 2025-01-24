@@ -51,7 +51,7 @@ class ActivityCompleted implements ShouldBroadcastNow
     /**
      * Return the process request.
      *
-     * @return \ProcessMaker\Models\ProcessRequestToken
+     * @return ProcessRequestToken
      */
     public function getProcessRequestToken()
     {

@@ -10,7 +10,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('ai_searches', function (Blueprint $table) {
             $table->unsignedInteger('user_id');
@@ -22,7 +22,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('ai_searches', function (Blueprint $table) {
             $table->dropColumn('user_id');

@@ -16,7 +16,7 @@ class FEELFormulasTest extends TestCase
     /**
      * Test to use an unsupported language
      */
-    public function testUnsupportedLanguage()
+    public function testUnsupportedLanguage(): void
     {
         $this->expectException(ScriptLanguageNotSupported::class);
         $expresion = new FormalExpression();
@@ -28,7 +28,7 @@ class FEELFormulasTest extends TestCase
     /**
      * Test formulas
      */
-    public function testCalculatedFields()
+    public function testCalculatedFields(): void
     {
         $expresion = new FormalExpression();
         $expresion->setLanguage('FEEL');
@@ -47,7 +47,7 @@ class FEELFormulasTest extends TestCase
     /**
      * Test formulas with strings concatenation
      */
-    public function testConcatenatedFormula()
+    public function testConcatenatedFormula(): void
     {
         $expresion = new FormalExpression();
         $expresion->setLanguage('FEEL');

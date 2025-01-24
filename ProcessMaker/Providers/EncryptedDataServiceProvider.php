@@ -5,7 +5,7 @@ namespace ProcessMaker\Providers;
 use Illuminate\Support\ServiceProvider;
 use ProcessMaker\Managers\EncryptedDataManager;
 
-class EncryptedDataProvider extends ServiceProvider
+class EncryptedDataServiceProvider extends ServiceProvider
 {
     /**
      * Register services.

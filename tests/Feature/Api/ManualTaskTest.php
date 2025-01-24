@@ -20,7 +20,7 @@ class ManualTaskTest extends TestCase
      * Test a user that participate from the request can
      * upload a file.
      */
-    public function testUploadRequestFile()
+    public function testUploadRequestFile(): void
     {
         $this->loadTestProcess(
             file_get_contents(__DIR__ . '/processes/FileUpload.bpmn'),

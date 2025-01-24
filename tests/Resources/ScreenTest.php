@@ -11,7 +11,7 @@ class ScreenTest extends TestCase
 {
     use RequestHelper;
 
-    public function testScreens()
+    public function testScreens(): void
     {
         $this->be($this->user);
 

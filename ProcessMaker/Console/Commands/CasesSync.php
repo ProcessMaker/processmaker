@@ -25,7 +25,7 @@ class CasesSync extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $requestIds = $this->option('request_ids');
         $requestIds = $requestIds ? explode(',', $requestIds) : [];

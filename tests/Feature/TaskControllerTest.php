@@ -21,7 +21,7 @@ class TaskControllerTest extends TestCase
     /**
      * Test Process action by email with screen completed
      */
-    public function testActionByEmailWithScreen()
+    public function testActionByEmailWithScreen(): void
     {
         $screen = Screen::factory()->create([
             'id' => 4000,
@@ -49,7 +49,7 @@ class TaskControllerTest extends TestCase
     /**
      * Test Process action by email without screen completed
      */
-    public function testActionByEmailWithoutScreen()
+    public function testActionByEmailWithoutScreen(): void
     {
         $process = Process::factory()->create([
             'bpmn' => file_get_contents(__DIR__ . '/../Fixtures/action_by_email_process_require_login.bpmn'),
@@ -73,7 +73,7 @@ class TaskControllerTest extends TestCase
     /**
      * Test Process action by email with empty screen completed
      */
-    public function testActionByEmailWithScreenEmpty()
+    public function testActionByEmailWithScreenEmpty(): void
     {
         $process = Process::factory()->create([
             'bpmn' => file_get_contents(__DIR__ . '/../Fixtures/action_by_email_process_with_screen_complete_empty.bpmn'),
@@ -97,7 +97,7 @@ class TaskControllerTest extends TestCase
     /*
      * Test Process action by email with require login and without screen completed
     */
-    public function testActionByEmailWithRequireLogin()
+    public function testActionByEmailWithRequireLogin(): void
     {
         $process = Process::factory()->create([
             'bpmn' => file_get_contents(__DIR__ . '/../Fixtures/action_by_email_process_require_login.bpmn'),
@@ -116,7 +116,7 @@ class TaskControllerTest extends TestCase
     /*
      * Test Process action by email without require login and without screen completed
     */
-    public function testActionByEmailWithoutRequireLogin()
+    public function testActionByEmailWithoutRequireLogin(): void
     {
         $process = Process::factory()->create([
             'bpmn' => file_get_contents(__DIR__ . '/../Fixtures/action_by_email_process_no_require_login.bpmn'),
@@ -136,7 +136,7 @@ class TaskControllerTest extends TestCase
     /**
      * Test Process action by email when the token is invalid
      */
-    public function testReturnMessageTokenNoFound()
+    public function testReturnMessageTokenNoFound(): void
     {
         $token = Faker::create()->uuid;
         $response = $this->webCall(

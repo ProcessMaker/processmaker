@@ -25,7 +25,7 @@ class ProcessRequestPolicyTest extends TestCase
         $this->user = User::factory()->create();
     }
 
-    public function testUserStartedProcessRequest()
+    public function testUserStartedProcessRequest(): void
     {
         $request = ProcessRequest::factory()->create(['user_id' => $this->user->id]);
         $anotherUser = User::factory()->create();
@@ -40,7 +40,7 @@ class ProcessRequestPolicyTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testUserHasParticipated()
+    public function testUserHasParticipated(): void
     {
         $request = ProcessRequest::factory()->create();
 
@@ -58,7 +58,7 @@ class ProcessRequestPolicyTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testUserHasPermission()
+    public function testUserHasPermission(): void
     {
         $request = ProcessRequest::factory()->create();
 

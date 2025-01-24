@@ -2,9 +2,9 @@
 
 namespace ProcessMaker\Traits;
 
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\Database\Query\Expression;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 trait InteractsWithRawFilter
 {
@@ -20,7 +20,7 @@ trait InteractsWithRawFilter
     /**
      * Unwrap the raw() and retrieve the string value passed
      *
-     * @return \Illuminate\Contracts\Database\Query\Expression
+     * @return Expression
      */
     public function getRawValue(): Expression
     {
@@ -113,7 +113,7 @@ trait InteractsWithRawFilter
         $allowed = $this->validRawFilterOperators;
 
         if (!in_array($this->operator(), $allowed, true)) {
-            abort(422, 'Invalid operator: Only '.implode(', ', $allowed). ' are allowed.');
+            abort(422, 'Invalid operator: Only ' . implode(', ', $allowed) . ' are allowed.');
         }
     }
 }

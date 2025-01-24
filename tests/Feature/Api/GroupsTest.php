@@ -28,7 +28,7 @@ class GroupsTest extends TestCase
     /**
      * Test verify the parameter required for create form
      */
-    public function testNotCreatedForParameterRequired()
+    public function testNotCreatedForParameterRequired(): void
     {
         //Post should have the parameter required
         $response = $this->apiCall('POST', self::API_TEST_URL, []);
@@ -41,7 +41,7 @@ class GroupsTest extends TestCase
     /**
      * Create new group successfully
      */
-    public function testCreateGroup()
+    public function testCreateGroup(): void
     {
         //Post title duplicated
         $url = self::API_TEST_URL;
@@ -57,7 +57,7 @@ class GroupsTest extends TestCase
     /**
      * Can not create a group with an existing name
      */
-    public function testNotCreateGroupWithGroupnameExists()
+    public function testNotCreateGroupWithGroupnameExists(): void
     {
         Group::factory()->create([
             'name' => 'mytestname',
@@ -77,7 +77,7 @@ class GroupsTest extends TestCase
     /**
      * Get a list of Groups without query parameters.
      */
-    public function testListGroup()
+    public function testListGroup(): void
     {
         $existing = Group::count();
         $faker = Faker::create();
@@ -102,7 +102,7 @@ class GroupsTest extends TestCase
     /**
      * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
      */
-    public function testGroupListDates()
+    public function testGroupListDates(): void
     {
         $name = 'tetGroupTimezone';
         $newEntity = Group::factory()->create(['name' => $name]);
@@ -123,7 +123,7 @@ class GroupsTest extends TestCase
     /**
      * Get a list of Group with parameters
      */
-    public function testListGroupWithQueryParameter()
+    public function testListGroupWithQueryParameter(): void
     {
         $name = 'mytestname';
 
@@ -154,7 +154,7 @@ class GroupsTest extends TestCase
     /**
      * Get a group
      */
-    public function testGetGroup()
+    public function testGetGroup(): void
     {
         //get the id from the factory
         $group = Group::factory()->create()->id;
@@ -190,7 +190,7 @@ class GroupsTest extends TestCase
     /**
      * Parameters required for update of group
      */
-    public function testUpdateGroupParametersRequired()
+    public function testUpdateGroupParametersRequired(): void
     {
         $id = Group::factory()->create(['name' => 'mytestname'])->id;
         //The post must have the required parameters
@@ -207,7 +207,7 @@ class GroupsTest extends TestCase
     /**
      * Update group in process
      */
-    public function testUpdateGroup()
+    public function testUpdateGroup(): void
     {
         $url = self::API_TEST_URL . '/' . Group::factory()->create()->id;
 
@@ -232,7 +232,7 @@ class GroupsTest extends TestCase
     /**
      * Check that the validation wont allow duplicate names
      */
-    public function testUpdateGroupTitleExists()
+    public function testUpdateGroupTitleExists(): void
     {
         $group1 = Group::factory()->create([
             'name' => 'MyGroupName',
@@ -253,7 +253,7 @@ class GroupsTest extends TestCase
     /**
      * Delete group in process
      */
-    public function testDeleteGroup()
+    public function testDeleteGroup(): void
     {
         //Remove group
         $url = self::API_TEST_URL . '/' . Group::factory()->create()->id;
@@ -266,7 +266,7 @@ class GroupsTest extends TestCase
     /**
      * The group does not exist in process
      */
-    public function testDeleteGroupNotExist()
+    public function testDeleteGroupNotExist(): void
     {
         //Group not exist
         $url = self::API_TEST_URL . '/' . Group::factory()->make()->id;

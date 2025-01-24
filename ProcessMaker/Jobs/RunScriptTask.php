@@ -32,9 +32,9 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param \ProcessMaker\Models\Process $definitions
-     * @param \ProcessMaker\Models\ProcessRequest $instance
-     * @param \ProcessMaker\Models\ProcessRequestToken $token
+     * @param Definitions $definitions
+     * @param ProcessRequest $instance
+     * @param ProcessRequestToken $token
      * @param array $data
      */
     public function __construct(Definitions $definitions, ProcessRequest $instance, ProcessRequestToken $token, array $data, $attemptNum = 1)

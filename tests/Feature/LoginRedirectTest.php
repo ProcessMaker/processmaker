@@ -9,10 +9,9 @@ use Tests\TestCase;
 class LoginRedirectTest extends TestCase
 {
     /**
-     * 
      * Test to verify that the login page redirects to the about page
      */
-    public function testLoginRedirect()
+    public function testLoginRedirect(): void
     {
         $user = User::factory()->create([
             'username' =>'newuser',
@@ -25,7 +24,7 @@ class LoginRedirectTest extends TestCase
         // Verify it redirects to the login page
         $response->assertRedirect('/login');
 
-        // When we try to open the about page, we should be redirected to the login page 
+        // When we try to open the about page, we should be redirected to the login page
         $response = $this->get(route('about.index'));
         $response->assertRedirect('/login');
 
@@ -37,7 +36,7 @@ class LoginRedirectTest extends TestCase
         $response->assertRedirect(route('about.index'));
     }
 
-    public function testLoginRedirectWithDevtoolsOpeningMapFile()
+    public function testLoginRedirectWithDevtoolsOpeningMapFile(): void
     {
         $user = User::factory()->create([
             'username' =>'newuser',
@@ -50,7 +49,7 @@ class LoginRedirectTest extends TestCase
         // Verify it redirects to the login page
         $response->assertRedirect('/login');
 
-        // When we try to open the about page, we should be redirected to the login page 
+        // When we try to open the about page, we should be redirected to the login page
         $response = $this->get(route('about.index'));
         $response->assertRedirect('/login');
 

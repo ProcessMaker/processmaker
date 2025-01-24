@@ -100,15 +100,18 @@ class Setting extends ProcessMakerModel implements HasMedia
     ];
 
     /**
-     * The attributes that should be cast to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array
+     * @return array<string, string>
      */
-    protected $casts = [
-        'hidden' => 'boolean',
-        'readonly' => 'boolean',
-        'ui' => 'object',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'hidden' => 'boolean',
+            'readonly' => 'boolean',
+            'ui' => 'object',
+        ];
+    }
 
     /**
      * Validation rules
@@ -143,7 +146,7 @@ class Setting extends ProcessMakerModel implements HasMedia
      *
      * @param  string  $key
      *
-     * @return \ProcessMaker\Models\Setting|null
+     * @return Setting|null
      * @throws \Exception
      */
     public static function byKey(string $key)
@@ -382,7 +385,7 @@ class Setting extends ProcessMakerModel implements HasMedia
      */
     public static function groupsByMenu($menuId)
     {
-        $query = Setting::query()
+        $query = self::query()
             ->select('group')
             ->groupBy('group')
             ->where('group_id', $menuId)
@@ -409,7 +412,7 @@ class Setting extends ProcessMakerModel implements HasMedia
      */
     public static function updateSettingsGroup($settingsGroup, $id)
     {
-        Setting::where('group', $settingsGroup)->whereNull('group_id')->chunk(
+        self::where('group', $settingsGroup)->whereNull('group_id')->chunk(
             50,
             function ($settings) use ($id) {
                 foreach ($settings as $setting) {
@@ -429,7 +432,7 @@ class Setting extends ProcessMakerModel implements HasMedia
      */
     public static function updateAllSettingsGroupId()
     {
-        Setting::whereNull('group_id')->chunk(100, function ($settings) {
+        self::whereNull('group_id')->chunk(100, function ($settings) {
             $defaultId = SettingsMenus::EMAIL_MENU_GROUP;
             foreach ($settings as $setting) {
                 // Define the value of 'menu_group' based on 'group'

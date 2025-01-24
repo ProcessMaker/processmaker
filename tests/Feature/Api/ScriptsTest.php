@@ -45,7 +45,7 @@ class ScriptsTest extends TestCase
     /**
      * Test verify the parameter required to create a script
      */
-    public function testNotCreatedForParameterRequired()
+    public function testNotCreatedForParameterRequired(): void
     {
         // Post should have the parameter required
         $url = self::API_TEST_SCRIPT;
@@ -58,7 +58,7 @@ class ScriptsTest extends TestCase
     /**
      * Create new script in process
      */
-    public function testCreateScript()
+    public function testCreateScript(): void
     {
         $faker = Faker::create();
         $user = User::factory()->create(['is_administrator' => true]);
@@ -79,7 +79,7 @@ class ScriptsTest extends TestCase
         $response->assertJsonStructure(self::STRUCTURE);
     }
 
-    public function testCreateCategoryRequired()
+    public function testCreateCategoryRequired(): void
     {
         $url = route('api.scripts.store');
         $params = [
@@ -118,7 +118,7 @@ class ScriptsTest extends TestCase
     /**
      * Can not create a script with an existing title
      */
-    public function testNotCreateScriptWithTitleExists()
+    public function testNotCreateScriptWithTitleExists(): void
     {
         $script = Script::factory()->create([
             'title' => 'Script Title',
@@ -140,7 +140,7 @@ class ScriptsTest extends TestCase
     /**
      * Can not create a script with an existing key
      */
-    public function testNotCreateScriptWithKeyExists()
+    public function testNotCreateScriptWithKeyExists(): void
     {
         $script = Script::factory()->create([
             'key' => 'some-key',
@@ -160,7 +160,7 @@ class ScriptsTest extends TestCase
     /**
      * Get a list of scripts in a project.
      */
-    public function testListScripts()
+    public function testListScripts(): void
     {
         // add scripts to process
         Script::query()->delete();
@@ -194,7 +194,7 @@ class ScriptsTest extends TestCase
     /**
      * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
      */
-    public function testScriptListDates()
+    public function testScriptListDates(): void
     {
         $name = 'tetScriptTimezone';
         $newEntity = Script::factory()->create(['title' => $name]);
@@ -216,7 +216,7 @@ class ScriptsTest extends TestCase
     /**
      * Get a list of Scripts with parameters
      */
-    public function testListScriptsWithQueryParameter()
+    public function testListScriptsWithQueryParameter(): void
     {
         $title = 'search script title';
         Script::factory()->create([
@@ -250,7 +250,7 @@ class ScriptsTest extends TestCase
     /**
      * Get a script of a project.
      */
-    public function testGetScript()
+    public function testGetScript(): void
     {
         // add scripts to process
         $script = Script::factory()->create();
@@ -268,7 +268,7 @@ class ScriptsTest extends TestCase
     /**
      * Parameters required for update of script
      */
-    public function testUpdateScriptParametersRequired()
+    public function testUpdateScriptParametersRequired(): void
     {
         $faker = Faker::create();
 
@@ -290,7 +290,7 @@ class ScriptsTest extends TestCase
     /**
      * Update script in process
      */
-    public function testUpdateScript()
+    public function testUpdateScript(): void
     {
         $faker = Faker::create();
         $user = User::factory()->create(['is_administrator' => true]);
@@ -329,7 +329,7 @@ class ScriptsTest extends TestCase
     /**
      * Update script in process with same title
      */
-    public function testUpdateScriptTitleExists()
+    public function testUpdateScriptTitleExists(): void
     {
         $script1 = Script::factory()->create([
             'title' => 'Some title',
@@ -349,7 +349,7 @@ class ScriptsTest extends TestCase
     /**
      * Copy Script
      */
-    public function testDuplicateScript()
+    public function testDuplicateScript(): void
     {
         $faker = Faker::create();
         $user = User::factory()->create(['is_administrator' => true]);
@@ -373,7 +373,7 @@ class ScriptsTest extends TestCase
     /**
      * Test the preview function
      */
-    public function testPreviewScript()
+    public function testPreviewScript(): void
     {
         Event::fake([
             ScriptResponseEvent::class,
@@ -409,7 +409,7 @@ class ScriptsTest extends TestCase
     /**
      * Test the preview function
      */
-    public function testPreviewScriptFail()
+    public function testPreviewScriptFail(): void
     {
         Event::fake([
             ScriptResponseEvent::class,
@@ -435,7 +435,7 @@ class ScriptsTest extends TestCase
     /**
      * Delete script in process
      */
-    public function testDeleteScript()
+    public function testDeleteScript(): void
     {
         // Remove script
         $url = self::API_TEST_SCRIPT . '/' . Script::factory()->create()->id;
@@ -447,7 +447,7 @@ class ScriptsTest extends TestCase
     /**
      * The script does not exist in process
      */
-    public function testDeleteScriptNotExist()
+    public function testDeleteScriptNotExist(): void
     {
         // Script not exist
         $url = self::API_TEST_SCRIPT . '/' . Script::factory()->make()->id;
@@ -459,7 +459,7 @@ class ScriptsTest extends TestCase
     /**
      * test that script without user to run as assigned generates an error
      */
-    public function testScriptWithoutUser()
+    public function testScriptWithoutUser(): void
     {
         $faker = Faker::create();
         $code = '{"foo":"bar"}';
@@ -491,7 +491,7 @@ class ScriptsTest extends TestCase
     /**
      * Get a list of Screen filter by category
      */
-    public function testFilterByCategory()
+    public function testFilterByCategory(): void
     {
         $name = 'Search title Category Screen';
         $category = ScriptCategory::factory()->create([
@@ -548,7 +548,7 @@ class ScriptsTest extends TestCase
         $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
     }
 
-    public function testUpdateScriptCategories()
+    public function testUpdateScriptCategories(): void
     {
         $screen = Script::factory()->create();
         $url = route('api.scripts.update', $screen);
@@ -563,7 +563,7 @@ class ScriptsTest extends TestCase
         $response->assertStatus(204);
     }
 
-    public function testExecutePolicy()
+    public function testExecutePolicy(): void
     {
         (new PermissionSeeder)->run();
         $asp = new AuthServiceProvider(app());
@@ -598,7 +598,7 @@ class ScriptsTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function testExecuteVersion()
+    public function testExecuteVersion(): void
     {
         $this->markTestSkipped('Skip version locking for now');
 
@@ -629,7 +629,7 @@ class ScriptsTest extends TestCase
         Carbon::setTestNow();
     }
 
-    public function testUpdateDraftScript()
+    public function testUpdateDraftScript(): void
     {
         $faker = Faker::create();
         $user = User::factory()->create(['is_administrator' => true]);
@@ -662,7 +662,7 @@ class ScriptsTest extends TestCase
         $this->assertLessThan(3, $draft->updated_at->diffInSeconds($script->updated_at));
     }
 
-    public function testCloseDraftScript()
+    public function testCloseDraftScript(): void
     {
         $user = User::factory()->create(['is_administrator' => true]);
         $script = Script::factory()->create();

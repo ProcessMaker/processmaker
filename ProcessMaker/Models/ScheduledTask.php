@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
@@ -25,25 +26,25 @@ class ScheduledTask extends ProcessMakerModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function process()
+    public function process(): BelongsTo
     {
         return $this->belongsTo(Process::class);
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function processRequest()
+    public function processRequest(): BelongsTo
     {
         return $this->belongsTo(ProcessRequest::class);
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function processRequestToken()
+    public function processRequestToken(): BelongsTo
     {
         return $this->belongsTo(ProcessRequestToken::class);
     }

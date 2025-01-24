@@ -10,7 +10,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('processables', function (Blueprint $table) {
             $table->integer('process_version_id')
@@ -30,7 +30,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('processables', function (Blueprint $table) {
             $table->dropIfExists('process_version_id');

@@ -4,6 +4,10 @@ namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
 use DB;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -141,21 +145,6 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     ];
 
     /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'completed_at' => 'datetime:c',
-        'initiated_at' => 'datetime:c',
-        'data' => 'array',
-        'errors' => 'array',
-        'do_not_sanitize' => 'array',
-        'signal_events' => 'array',
-        'locked_at' => 'datetime:c',
-    ];
-
-    /**
      * Associated records that can be included with this model
      *
      * @var array
@@ -165,6 +154,24 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         'process',
         'participants',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'completed_at' => 'datetime:c',
+            'initiated_at' => 'datetime:c',
+            'data' => 'array',
+            'errors' => 'array',
+            'do_not_sanitize' => 'array',
+            'signal_events' => 'array',
+            'locked_at' => 'datetime:c',
+        ];
+    }
 
     /**
      * Determine whether the item should be indexed.
@@ -389,7 +396,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Get tokens of the request.
      */
-    public function tokens()
+    public function tokens(): HasMany
     {
         return $this->hasMany(ProcessRequestToken::class);
     }
@@ -397,7 +404,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Get the creator/author of this request.
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
@@ -405,7 +412,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Get collaboration of this request.
      */
-    public function collaboration()
+    public function collaboration(): BelongsTo
     {
         return $this->belongsTo(
             ProcessCollaboration::class,
@@ -416,7 +423,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Get the creator/author of this request.
      */
-    public function process()
+    public function process(): BelongsTo
     {
         return $this->belongsTo(Process::class, 'process_id');
     }
@@ -424,7 +431,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Get users of the request.
      */
-    public function assigned()
+    public function assigned(): HasMany
     {
         return $this->hasMany(ProcessRequestToken::class)
                 ->with('user')
@@ -512,9 +519,9 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Returns the list of users that have participated in the request
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     * @return HasManyThrough
      */
-    public function participants()
+    public function participants(): HasManyThrough
     {
         return $this->hasManyThrough(
             User::class,
@@ -585,12 +592,12 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         }
     }
 
-    public function childRequests()
+    public function childRequests(): HasMany
     {
         return $this->hasMany(self::class, 'parent_request_id');
     }
 
-    public function parentRequest()
+    public function parentRequest(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_request_id');
     }
@@ -598,9 +605,9 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Scheduled task of the request.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function scheduledTasks()
+    public function scheduledTasks(): HasMany
     {
         return $this->hasMany(ScheduledTask::class, 'process_request_id');
     }
@@ -786,7 +793,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      *
      * @return ProcessVersion
      */
-    public function processVersion()
+    public function processVersion(): BelongsTo
     {
         return $this->belongsTo(ProcessVersion::class, 'process_version_id');
     }
@@ -917,9 +924,9 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Owner task of the sub process
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
-    public function ownerTask()
+    public function ownerTask(): HasOne
     {
         return $this->hasOne(ProcessRequestToken::class, 'subprocess_request_id', 'id');
     }
@@ -986,6 +993,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     {
         $array = $this->toArray();
         unset($array['process_version']['svg']);
+
         return $array;
     }
 

@@ -22,7 +22,7 @@ class UserExporterTest extends TestCase
 
     public $withPermissions = true;
 
-    public function test()
+    public function test(): void
     {
         DB::beginTransaction();
         $user = User::factory()->create(['username' => 'testuser', 'email' => 'foo@bar.com']);
@@ -43,7 +43,7 @@ class UserExporterTest extends TestCase
         $this->assertEquals($permissions, $user->permissions->pluck('name')->toArray());
     }
 
-    public function testDoNotCopyAdmin()
+    public function testDoNotCopyAdmin(): void
     {
         DB::beginTransaction();
         $this->addGlobalSignalProcess();

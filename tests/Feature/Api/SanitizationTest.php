@@ -18,7 +18,7 @@ class SanitizationTest extends TestCase
      * This allows us to test fields that should be sanitized and
      * those that should not, all within one model.
      */
-    public function testSanitizationMiddleware()
+    public function testSanitizationMiddleware(): void
     {
         // Create our fake data
         $title = 'Best Script Ever';

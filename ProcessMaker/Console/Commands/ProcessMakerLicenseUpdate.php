@@ -30,7 +30,7 @@ class ProcessMakerLicenseUpdate extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         $input = $this->argument('licenseFile');
 

@@ -10,11 +10,11 @@ class WizardTemplateFactory extends Factory
 {
     protected $model = WizardTemplate::class;
 
-    public function definition()
+    public function definition(): array
     {
         return [
-            'uuid' => $this->faker->uuid,
-            'unique_template_id' => $this->faker->uuid,
+            'uuid' => $this->faker->uuid(),
+            'unique_template_id' => $this->faker->uuid(),
             'process_template_id' => null,
             'name' => $this->faker->unique()->name(),
             'description' => $this->faker->unique()->name(),

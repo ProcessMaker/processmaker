@@ -20,7 +20,7 @@ class ProcessRequestFileTest extends TestCase
     /**
      * test process request files index
      */
-    public function testIndex()
+    public function testIndex(): void
     {
         //create a request
         $process_request = ProcessRequest::factory()->create();
@@ -42,7 +42,7 @@ class ProcessRequestFileTest extends TestCase
     /**
      * Test file upload associated with a process request id
      */
-    public function testFileUploadWithProcessRequestID()
+    public function testFileUploadWithProcessRequestID(): void
     {
         //create a request
         $process_request = ProcessRequest::factory()->create();
@@ -59,7 +59,7 @@ class ProcessRequestFileTest extends TestCase
     /**
      * test delete of Media attached to a request
      */
-    public function testDeleteFile()
+    public function testDeleteFile(): void
     {
         //create a request
         $process_request = ProcessRequest::factory()->create();
@@ -80,7 +80,7 @@ class ProcessRequestFileTest extends TestCase
     /**
      * test get a single file for a process by id
      */
-    public function testShow()
+    public function testShow(): void
     {
         //create a request
         $process_request = ProcessRequest::factory()->create();

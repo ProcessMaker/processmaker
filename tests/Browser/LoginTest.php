@@ -11,7 +11,7 @@ use Tests\DuskTestCase;
 
 class LoginTest extends DuskTestCase
 {
-    public function test_login_page_loads()
+    public function test_login_page_loads(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->visit(new LoginPage)
@@ -19,7 +19,7 @@ class LoginTest extends DuskTestCase
         });
     }
 
-    public function test_login_page_works()
+    public function test_login_page_works(): void
     {
         $user = User::factory()->create([
             'username' => 'testuser',
@@ -37,7 +37,7 @@ class LoginTest extends DuskTestCase
         });
     }
 
-    public function test_inactive_user_login_fails()
+    public function test_inactive_user_login_fails(): void
     {
         $user = User::factory()->create([
             'username' => 'testuser',

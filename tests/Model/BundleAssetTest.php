@@ -11,14 +11,14 @@ use Tests\TestCase;
 
 class BundleAssetTest extends TestCase
 {
-    public function testCanExport()
+    public function testCanExport(): void
     {
         $screen = Screen::factory()->create();
 
         $this->assertTrue(BundleAsset::canExport($screen));
     }
 
-    public function testExporterNotSupported()
+    public function testExporterNotSupported(): void
     {
         $group = Group::factory()->create();
         $bundle = Bundle::factory()->create();

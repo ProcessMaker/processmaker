@@ -12,7 +12,7 @@ use Tests\TestCase;
 
 class ConditionalStartEventTest extends TestCase
 {
-    public function testConditionalEventMustTriggeredWhenActive()
+    public function testConditionalEventMustTriggeredWhenActive(): void
     {
         Bus::fake([
             StartEventConditional::class,
@@ -31,7 +31,7 @@ class ConditionalStartEventTest extends TestCase
         Bus::assertDispatched(StartEventConditional::class);
     }
 
-    public function testConditionalEventMustNotTriggeredWhenInactive()
+    public function testConditionalEventMustNotTriggeredWhenInactive(): void
     {
         Bus::fake([
             StartEventConditional::class,

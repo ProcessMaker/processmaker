@@ -11,7 +11,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         // Update processes without any version saved
         foreach (Process::has('versions', 0)->get() as $process) {
@@ -24,7 +24,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         //
     }

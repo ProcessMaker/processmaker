@@ -9,7 +9,7 @@ use ProcessMaker\ScreenConsolidator;
 
 class ScreenConsolidatorTest extends TestCase
 {
-    public function test()
+    public function test(): void
     {
         $this->markTestSkipped('FOUR-6653');
 

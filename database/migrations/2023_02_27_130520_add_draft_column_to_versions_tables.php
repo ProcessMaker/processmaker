@@ -10,7 +10,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('process_versions', function (Blueprint $table) {
             $table->boolean('draft')->default(false)->after('user_id');
@@ -31,7 +31,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('process_versions', function (Blueprint $table) {
             $table->dropColumn('draft');

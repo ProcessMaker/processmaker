@@ -61,7 +61,7 @@ class TasksTest extends TestCase
     /**
      * Test to get the list of tokens
      */
-    public function testGetListOfTasks()
+    public function testGetListOfTasks(): void
     {
         $request = ProcessRequest::factory()->create();
         // Create some tokens
@@ -80,7 +80,7 @@ class TasksTest extends TestCase
     /**
      * Test to get the list of overdue tasks.
      */
-    public function testGetListOfOverdueTasks()
+    public function testGetListOfOverdueTasks(): void
     {
         $user = User::factory()->create(['is_administrator' => true]);
         $request = ProcessRequest::factory()->create();
@@ -125,7 +125,7 @@ class TasksTest extends TestCase
     /**
      * You only see tasks that belong to you if you are not admin
      */
-    public function testGetListAssignedTasks()
+    public function testGetListAssignedTasks(): void
     {
         $user_1 = User::factory()->create();
         $user_2 = User::factory()->create();
@@ -156,7 +156,7 @@ class TasksTest extends TestCase
      * Return all tasks if we are only requesting closed tasks and if
      * the user can view the request.
      */
-    public function testGetListClosedTasks()
+    public function testGetListClosedTasks(): void
     {
         // Run the permission seeder
         (new PermissionSeeder)->run();
@@ -198,7 +198,7 @@ class TasksTest extends TestCase
     /**
      * You only see non system type tasks.
      */
-    public function testGetListNonSystemTasks()
+    public function testGetListNonSystemTasks(): void
     {
         $user_1 = User::factory()->create();
         $user_2 = User::factory()->create();
@@ -235,7 +235,7 @@ class TasksTest extends TestCase
     /**
      * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
      */
-    public function testTaskListDates()
+    public function testTaskListDates(): void
     {
         $name = 'testTaskTimezone';
         $request = ProcessRequest::factory()->create(['name' => $name]);
@@ -266,7 +266,7 @@ class TasksTest extends TestCase
     /**
      * Test the filtering getting active tokens
      */
-    public function testFilteringGetActiveTasks()
+    public function testFilteringGetActiveTasks(): void
     {
         $request = ProcessRequest::factory()->create();
         // Create some tokens
@@ -291,7 +291,7 @@ class TasksTest extends TestCase
     /**
      * Test that we filter only for human tasks
      */
-    public function testFilteringGetOnlyHumanTasks()
+    public function testFilteringGetOnlyHumanTasks(): void
     {
         $request = ProcessRequest::factory()->create();
 
@@ -328,7 +328,7 @@ class TasksTest extends TestCase
     /**
      * Test filtering with string vs number
      */
-    public function testFilteringWithStringOrNumber()
+    public function testFilteringWithStringOrNumber(): void
     {
         $request = ProcessRequest::factory()->create();
         $process = $request->process;
@@ -361,7 +361,7 @@ class TasksTest extends TestCase
     /**
      * Test list of tokens sorting by completed_at
      */
-    public function testSorting()
+    public function testSorting(): void
     {
         $request = ProcessRequest::factory()->create();
         // Create some tokens
@@ -388,7 +388,7 @@ class TasksTest extends TestCase
         $this->assertArraySubset(['completed_at' => null], $firstRow);
     }
 
-    public function testSortByRequestName()
+    public function testSortByRequestName(): void
     {
         // $request = ProcessRequest::factory()->create();
 
@@ -423,7 +423,7 @@ class TasksTest extends TestCase
     /**
      * Test pagination of tokens list
      */
-    public function testPagination()
+    public function testPagination(): void
     {
         $request = ProcessRequest::factory()->create();
         // Number of tokens in the tables at the moment of starting the test
@@ -459,7 +459,7 @@ class TasksTest extends TestCase
     /**
      * Test show a token
      */
-    public function testShowTask()
+    public function testShowTask(): void
     {
         $request = ProcessRequest::factory()->create();
         // Create a new process without category
@@ -479,7 +479,7 @@ class TasksTest extends TestCase
     /**
      * Test get a token including user child.
      */
-    public function testShowTaskWithUser()
+    public function testShowTaskWithUser(): void
     {
         $request = ProcessRequest::factory()->create();
         // Create a new process without category
@@ -497,7 +497,7 @@ class TasksTest extends TestCase
         $response->assertJsonStructure(['user' => ['id', 'email'], 'definition' => []]);
     }
 
-    public function testShowTaskWithParentRequest()
+    public function testShowTaskWithParentRequest(): void
     {
         $this->user = User::factory()->create();
         $parent = ProcessRequest::factory()->create();
@@ -527,7 +527,7 @@ class TasksTest extends TestCase
         $this->assertTrue($json['can_view_parent_request']);
     }
 
-    public function testUpdateTask()
+    public function testUpdateTask(): void
     {
         $this->user = User::factory()->create(); // normal user
         $request = ProcessRequest::factory()->create();
@@ -543,7 +543,7 @@ class TasksTest extends TestCase
         $this->assertStatus(200, $response);
     }
 
-    public function testUpdateTaskRichText()
+    public function testUpdateTaskRichText(): void
     {
         // $this->user = User::factory()->create(); // normal user
         $screen = Screen::factory()->create([
@@ -584,7 +584,7 @@ class TasksTest extends TestCase
         $this->assertStatus(200, $response);
     }
 
-    public function testWithUserWithoutAuthorization()
+    public function testWithUserWithoutAuthorization(): void
     {
         // We'll test viewing a new task with someone that is not authenticated
         $request = ProcessRequest::factory()->create();
@@ -601,7 +601,7 @@ class TasksTest extends TestCase
         $response->assertStatus(401);
     }
 
-    public function testSelfServeTasks()
+    public function testSelfServeTasks(): void
     {
         $this->user = $user = User::factory()->create(['status' => 'ACTIVE']);
         $otherUser = User::factory()->create(['status' => 'ACTIVE']);
@@ -679,7 +679,7 @@ class TasksTest extends TestCase
         $this->assertEquals($expectedTaskIds, $actualIds);
     }
 
-    public function testSelfServeNotifications()
+    public function testSelfServeNotifications(): void
     {
         Notification::fake();
 
@@ -711,7 +711,7 @@ class TasksTest extends TestCase
         Notification::assertSentTo([$this->user], ActivityActivatedNotification::class);
     }
 
-    public function testRollback()
+    public function testRollback(): void
     {
         $bpmn = file_get_contents(__DIR__ . '/../../Fixtures/rollback_test.bpmn');
         $bpmn = str_replace('[task_user_id]', $this->user->id, $bpmn);
@@ -757,7 +757,7 @@ class TasksTest extends TestCase
         $this->assertEquals('COMPLETED', $request->refresh()->status);
     }
 
-    public function testAdvancedFilter()
+    public function testAdvancedFilter(): void
     {
         $hitProcess = Process::factory()->create(['name' => 'foo']);
         $missProcess = Process::factory()->create(['name' => 'bar']);
@@ -788,7 +788,7 @@ class TasksTest extends TestCase
         $this->assertEquals($hitTask->id, $json['data'][0]['id']);
     }
 
-    public function testGetScreenFields()
+    public function testGetScreenFields(): void
     {
         $this->be($this->user);
 

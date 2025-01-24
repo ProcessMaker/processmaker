@@ -39,7 +39,7 @@ class IndexedSearchDisable extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         if ($this->interactive()) {
             $confirmed = $this->confirm('Are you sure you wish to disable indexed search?');

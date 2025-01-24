@@ -16,7 +16,6 @@ use ProcessMaker\Models\Process;
 abstract class TestCase extends BaseTestCase
 {
     use DatabaseTransactions;
-    use CreatesApplication;
     use ArraySubsetAsserts;
 
     public $withPermissions = false;

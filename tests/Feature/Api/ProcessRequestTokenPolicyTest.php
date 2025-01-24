@@ -20,7 +20,7 @@ class ProcessRequestTokenPolicyTest extends TestCase
 {
     use RequestHelper;
 
-    public function testGetScreensFromToken()
+    public function testGetScreensFromToken(): void
     {
         $taskUser = User::factory()->create();
         $otherUser = User::factory()->create();
@@ -77,7 +77,7 @@ class ProcessRequestTokenPolicyTest extends TestCase
         $this->assertEquals('child', $response->json()['config'][0]['name']);
     }
 
-    public function testGetInterstitialNestedScreen()
+    public function testGetInterstitialNestedScreen(): void
     {
         $taskUser = User::factory()->create();
         $otherUser = User::factory()->create();
@@ -147,7 +147,7 @@ class ProcessRequestTokenPolicyTest extends TestCase
         return $task;
     }
 
-    public function testReassignTask()
+    public function testReassignTask(): void
     {
         $assignedUser = User::factory()->create();
         $reassignToUser = User::factory()->create();
@@ -162,7 +162,7 @@ class ProcessRequestTokenPolicyTest extends TestCase
         $this->assertEquals($reassignToUser->id, $task->refresh()->user_id);
     }
 
-    public function testReassignWithoutTaskSetting()
+    public function testReassignWithoutTaskSetting(): void
     {
         $assignedUser = User::factory()->create();
         $reassignToUser = User::factory()->create();
@@ -177,7 +177,7 @@ class ProcessRequestTokenPolicyTest extends TestCase
         $this->assertEquals('Not authorized to reassign this task', $response->json()['message']);
     }
 
-    public function testAdminReassignWithoutTaskSetting()
+    public function testAdminReassignWithoutTaskSetting(): void
     {
         $assignedUser = User::factory()->create();
         $reassignToUser = User::factory()->create();

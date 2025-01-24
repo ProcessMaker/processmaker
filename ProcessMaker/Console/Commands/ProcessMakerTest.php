@@ -44,7 +44,7 @@ class ProcessMakerTest extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->test('DBConnection', [$this, 'testDBConnection']);
         $this->test('Horizon', [$this, 'testHorizonService']);

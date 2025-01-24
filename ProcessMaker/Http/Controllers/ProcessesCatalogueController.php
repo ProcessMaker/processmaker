@@ -48,6 +48,7 @@ class ProcessesCatalogueController extends Controller
             return view('processes-catalogue.mobile', compact('title', 'process', 'currentUser', 'manager'));
         }
         $userConfiguration = (new UserConfigurationController())->index()['ui_configuration'];
+
         return view('processes-catalogue.index', compact('process', 'currentUser', 'manager', 'userConfiguration'));
     }
 }

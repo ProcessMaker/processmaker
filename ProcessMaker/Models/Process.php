@@ -4,7 +4,10 @@ namespace ProcessMaker\Models;
 
 use DOMElement;
 use Exception;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
@@ -233,15 +236,6 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         'projects',
     ];
 
-    protected $casts = [
-        'start_events' => 'array',
-        'warnings' => 'array',
-        'self_service_tasks' => 'array',
-        'signal_events' => 'array',
-        'conditional_events' => 'array',
-        'properties' => 'array',
-    ];
-
     public static function boot()
     {
         parent::boot();
@@ -258,12 +252,24 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         });
     }
 
+    protected function casts(): array
+    {
+        return [
+            'start_events' => 'array',
+            'warnings' => 'array',
+            'self_service_tasks' => 'array',
+            'signal_events' => 'array',
+            'conditional_events' => 'array',
+            'properties' => 'array',
+        ];
+    }
+
     /**
      * Category of the process.
      *
      * @return BelongsTo
      */
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(ProcessCategory::class, 'process_category_id')->withDefault();
     }
@@ -271,7 +277,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     /**
      * Get the associated projects
      */
-    public function projects()
+    public function projects(): BelongsToMany
     {
         if (!class_exists('ProcessMaker\Package\Projects\Models\Project')) {
             // return an empty collection
@@ -288,7 +294,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     }
 
     // Define the relationship with the ProjectAsset model
-    public function projectAssets()
+    public function projectAssets(): BelongsToMany
     {
         return $this->belongsToMany('ProcessMaker\Package\Projects\Models\ProjectAsset',
             'project_assets', 'asset_id', 'project_id')
@@ -296,7 +302,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             ->wherePivot('asset_type', static::class)->withTimestamps();
     }
 
-    public function projectAsset()
+    public function projectAsset(): BelongsToMany
     {
         return $this->belongsToMany('ProcessMaker\Package\Projects\Models\ProjectAsset',
             'project_assets',
@@ -308,7 +314,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     /**
      * Returns a single record from the `Alternative` model
      */
-    public function alternativeInfo()
+    public function alternativeInfo(): HasOne
     {
         return $this->hasOne('ProcessMaker\Package\PackageABTesting\Models\Alternative', 'process_id', 'id');
     }
@@ -318,7 +324,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      *
      * @return HasMany
      */
-    public function notification_settings()
+    public function notification_settings(): HasMany
     {
         return $this->hasMany(ProcessNotificationSetting::class);
     }
@@ -326,7 +332,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     /**
      * Get the associated embed
      */
-    public function embed()
+    public function embed(): HasMany
     {
         return $this->hasMany(Embed::class, 'model_id', 'id');
     }
@@ -399,7 +405,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      *
      * @return BelongsTo
      */
-    public function cancelScreen()
+    public function cancelScreen(): BelongsTo
     {
         return $this->belongsTo(Screen::class, 'cancel_screen_id');
     }
@@ -429,7 +435,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     /**
      * Get the creator/author of this process.
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
@@ -437,7 +443,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     /**
      * Get the last user that updated the process
      */
-    public function updatedByUser()
+    public function updatedByUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
@@ -568,7 +574,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      *
      * @return BelongsTo
      */
-    public function requests()
+    public function requests(): HasMany
     {
         return $this->hasMany(ProcessRequest::class);
     }
@@ -578,7 +584,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      *
      * @return BelongsTo
      */
-    public function collaborations()
+    public function collaborations(): HasMany
     {
         return $this->hasMany(ProcessCollaboration::class);
     }
@@ -1318,7 +1324,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     /**
      * Get the associated versions
      */
-    public function versions()
+    public function versions(): HasMany
     {
         return $this->hasMany(ProcessVersion::class);
     }
@@ -1326,7 +1332,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     /**
      * Get the associated webEntryRoute
      */
-    public function webentryRoute()
+    public function webentryRoute(): HasOne
     {
         return $this->hasOne(WebentryRoute::class);
     }
@@ -1334,7 +1340,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     /**
      * Get the associated launchpad
      */
-    public function launchpad()
+    public function launchpad(): HasOne
     {
         return $this->hasOne(ProcessLaunchpad::class, 'process_id', 'id');
     }
@@ -1344,7 +1350,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      *
      * @return HasMany
      */
-    public function assignments()
+    public function assignments(): HasMany
     {
         return $this->hasMany(ProcessTaskAssignment::class);
     }
@@ -1827,7 +1833,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     /**
      * Define the "belongsTo" relationship between the Process model and the PmBlock model.
      */
-    public function pmBlock()
+    public function pmBlock(): BelongsTo
     {
         return $this->belongsTo('ProcessMaker\Package\PackagePmBlocks\Models\PmBlock', 'id', 'editing_process_id');
     }

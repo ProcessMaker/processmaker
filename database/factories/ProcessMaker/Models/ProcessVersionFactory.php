@@ -19,7 +19,7 @@ class ProcessVersionFactory extends Factory
      *
      * @return array
      */
-    public function definition()
+    public function definition(): array
     {
         $emptyProcess = Arr::random(glob(Process::getProcessTemplatesPath() . '/*.bpmn'));
         $process = Process::factory()->make();

@@ -116,7 +116,7 @@ class PermissionSeeder extends Seeder
         ],
     ];
 
-    public function run($seedUser = null)
+    public function run($seedUser = null): void
     {
         foreach ($this->permissionGroups as $groupName => $permissions) {
             foreach ($permissions as $permissionString) {

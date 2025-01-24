@@ -68,7 +68,7 @@ class ProcessManualTaskTest extends TestCase
     /**
      * Execute a process
      */
-    public function testExecuteAProcess()
+    public function testExecuteAProcess(): void
     {
         //Start a process request
         $route = route('api.process_events.trigger', [$this->process->id, 'event' => 'StartEventUID']);
@@ -109,7 +109,7 @@ class ProcessManualTaskTest extends TestCase
     /**
      * Try to close an already closed manual task
      */
-    public function testCloseAClosedTask()
+    public function testCloseAClosedTask(): void
     {
         //Start a process request
         $route = route('api.process_events.trigger', [$this->process->id, 'event' => 'StartEventUID']);
@@ -141,7 +141,7 @@ class ProcessManualTaskTest extends TestCase
     /**
      * Try to update a task status
      */
-    public function testUpdateTaskInvalidStatus()
+    public function testUpdateTaskInvalidStatus(): void
     {
         //Start a process request
         $route = route('api.process_events.trigger', [$this->process->id, 'event' => 'StartEventUID']);
@@ -169,7 +169,7 @@ class ProcessManualTaskTest extends TestCase
     /**
      * Test to get the status information of a task
      */
-    public function testGetTaskStatusPage()
+    public function testGetTaskStatusPage(): void
     {
         $this->withoutExceptionHandling();
         //Start a process request
@@ -204,7 +204,7 @@ class ProcessManualTaskTest extends TestCase
     /**
      * Test that the task gets assigned to the correct person in a group
      */
-    public function testTaskAssignedToGroup()
+    public function testTaskAssignedToGroup(): void
     {
         $foo = User::factory()->create(
             ['firstname' => 'Foo', 'status' => 'ACTIVE']

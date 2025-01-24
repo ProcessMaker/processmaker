@@ -30,7 +30,7 @@ class TaskAssignmentExecutionTest extends TestCase
     protected $task;
 
     /**
-     * @var \ProcessMaker\Models\User
+     * @var User
      */
     protected $assigned;
 
@@ -74,7 +74,7 @@ class TaskAssignmentExecutionTest extends TestCase
     /**
      * Execute a process with single user assignment
      */
-    public function testSingleUserAssignment()
+    public function testSingleUserAssignment(): void
     {
         $this->loadTestProcessUserAssignment();
 
@@ -102,7 +102,7 @@ class TaskAssignmentExecutionTest extends TestCase
         $this->assertEquals($request->tokens[1]->user_id, $this->assigned->id);
     }
 
-    public function testUserByIdAssignment()
+    public function testUserByIdAssignment(): void
     {
         $user = User::factory()->create();
 
@@ -141,13 +141,13 @@ class TaskAssignmentExecutionTest extends TestCase
         $this->assertFalse(array_key_exists('errors', $response));
     }
 
-    public function testDueDate()
+    public function testDueDate(): void
     {
         $process = Process::factory()->create([
             'bpmn' => file_get_contents(__DIR__ . '/processes/TaskConfiguredCustomDueIn.bpmn'),
         ]);
         $data = [
-            'var_due_date' => 24
+            'var_due_date' => 24,
         ];
         $route = route('api.process_events.trigger',
             [$process->id, 'event' => 'node_1']);
@@ -160,11 +160,11 @@ class TaskAssignmentExecutionTest extends TestCase
             'process_request_id' => $response['id'],
             'status' => 'ACTIVE',
         ])->firstOrFail();
-        
+
         $this->assertFalse($task->due_at->greaterThanOrEqualTo($expectedDueDate));
     }
 
-    public function testSelfServeAssignment()
+    public function testSelfServeAssignment(): void
     {
         $users = User::factory()->count(20)->create(['status'=>'ACTIVE']);
         $userWithNoGroup = User::factory()->create(['status'=>'ACTIVE']);
@@ -242,7 +242,7 @@ class TaskAssignmentExecutionTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testSelfServeUserPersistence()
+    public function testSelfServeUserPersistence(): void
     {
         $users = User::factory()->count(20)->create(['status'=>'ACTIVE']);
         $userWithNoGroup = User::factory()->create(['status'=>'ACTIVE']);
@@ -311,7 +311,7 @@ class TaskAssignmentExecutionTest extends TestCase
     /**
      * Execute a process with Process Manager assignment
      */
-    public function testProcessManagerAssignment()
+    public function testProcessManagerAssignment(): void
     {
         $manager = User::factory()->create(['status'=>'ACTIVE']);
 
@@ -350,7 +350,7 @@ class TaskAssignmentExecutionTest extends TestCase
     /**
      * Execute a process with Process Manager assignment, but without a Manager defined
      */
-    public function testProcessManagerAssignmentWithoutAManagerAssociated()
+    public function testProcessManagerAssignmentWithoutAManagerAssociated(): void
     {
         // Create a new process
         $this->process = Process::factory()->create();

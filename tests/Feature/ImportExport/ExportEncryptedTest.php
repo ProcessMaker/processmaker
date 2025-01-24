@@ -19,7 +19,7 @@ class ExportEncryptedTest extends TestCase
 {
     use RequestHelper;
 
-    public function testExportEncrypted()
+    public function testExportEncrypted(): void
     {
         $password = '3KctomfPgE';
         $export = [
@@ -45,7 +45,7 @@ class ExportEncryptedTest extends TestCase
         $this->assertEquals(['foo'], $exportEncrypted['export']['processes']);
     }
 
-    public function testExportSensitiveAssetWithNoPassword()
+    public function testExportSensitiveAssetWithNoPassword(): void
     {
         // Add global signal
         ProcessCategory::factory()->create(['is_system' => true]);
@@ -93,7 +93,7 @@ class ExportEncryptedTest extends TestCase
         $this->assertEquals('Password protection required.', $response->json()['message']);
     }
 
-    public function testExportSensitiveAssetWithPassword()
+    public function testExportSensitiveAssetWithPassword(): void
     {
         // Add global signal
         ProcessCategory::factory()->create(['is_system' => true]);

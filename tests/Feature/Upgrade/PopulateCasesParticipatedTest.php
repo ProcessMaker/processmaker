@@ -116,7 +116,7 @@ class PopulateCasesParticipatedTest extends TestCase
         ];
     }
 
-    public function test_one_participant()
+    public function test_one_participant(): void
     {
         $tokens = ProcessRequestToken::factory()->count(5)->create([
             'user_id' => $this->user->id,
@@ -125,7 +125,7 @@ class PopulateCasesParticipatedTest extends TestCase
         ]);
 
         $case = CaseStarted::factory()->create(array_merge([
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ], $this->getCaseStartedData($tokens)));
 
         $this->upgrade();
@@ -157,7 +157,7 @@ class PopulateCasesParticipatedTest extends TestCase
         ]);
     }
 
-    public function test_multiple_participants()
+    public function test_multiple_participants(): void
     {
         $tokens1 = ProcessRequestToken::factory()->count(5)->create([
             'user_id' => $this->user->id,
@@ -182,7 +182,7 @@ class PopulateCasesParticipatedTest extends TestCase
         $data = $this->getCaseStartedData($tokens);
 
         $case = CaseStarted::factory()->create(array_merge([
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ], $data));
 
         $this->upgrade();
@@ -251,7 +251,7 @@ class PopulateCasesParticipatedTest extends TestCase
         ]);
     }
 
-    public function test_participants()
+    public function test_participants(): void
     {
         $tokens1 = ProcessRequestToken::factory()->count(5)->create([
             'user_id' => $this->user->id,
@@ -275,7 +275,7 @@ class PopulateCasesParticipatedTest extends TestCase
         $data = $this->getCaseStartedData($tokens);
 
         $case = CaseStarted::factory()->create(array_merge([
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ], $data));
 
         $this->upgrade();
@@ -304,7 +304,7 @@ class PopulateCasesParticipatedTest extends TestCase
         ]);
     }
 
-    public function test_request_tokens()
+    public function test_request_tokens(): void
     {
         $tokens1 = ProcessRequestToken::factory()->count(2)->create([
             'user_id' => $this->user->id,
@@ -328,7 +328,7 @@ class PopulateCasesParticipatedTest extends TestCase
         $data = $this->getCaseStartedData($tokens);
 
         $case = CaseStarted::factory()->create(array_merge([
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ], $data));
 
         $this->upgrade();
@@ -369,7 +369,7 @@ class PopulateCasesParticipatedTest extends TestCase
         ]);
     }
 
-    public function test_tasks()
+    public function test_tasks(): void
     {
         $tokens1 = ProcessRequestToken::factory()->count(2)->create([
             'user_id' => $this->user->id,
@@ -396,7 +396,7 @@ class PopulateCasesParticipatedTest extends TestCase
         $data = $this->getCaseStartedData($tokens);
 
         $case = CaseStarted::factory()->create(array_merge([
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ], $data));
 
         $this->upgrade();
@@ -422,7 +422,7 @@ class PopulateCasesParticipatedTest extends TestCase
         ]);
     }
 
-    public function test_sub_processes()
+    public function test_sub_processes(): void
     {
         $tokens1 = ProcessRequestToken::factory()->count(2)->create([
             'user_id' => $this->user->id,
@@ -454,7 +454,7 @@ class PopulateCasesParticipatedTest extends TestCase
         ])->toArray();
 
         $case = CaseStarted::factory()->create(array_merge([
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ], $data));
 
         $this->upgrade();
@@ -470,7 +470,7 @@ class PopulateCasesParticipatedTest extends TestCase
         ]);
     }
 
-    public function test_child_requests()
+    public function test_child_requests(): void
     {
         $tokens1 = ProcessRequestToken::factory()->count(2)->create([
             'user_id' => $this->user->id,
@@ -515,7 +515,7 @@ class PopulateCasesParticipatedTest extends TestCase
         ])->toArray();
 
         $case = CaseStarted::factory()->create(array_merge([
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ], $data));
 
         $this->upgrade();
@@ -542,7 +542,7 @@ class PopulateCasesParticipatedTest extends TestCase
         ]);
     }
 
-    public function test_sub_process_tasks()
+    public function test_sub_process_tasks(): void
     {
         $tokens1 = ProcessRequestToken::factory()->count(2)->create([
             'user_id' => $this->user->id,
@@ -587,7 +587,7 @@ class PopulateCasesParticipatedTest extends TestCase
         ])->toArray();
 
         $case = CaseStarted::factory()->create(array_merge([
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ], $data));
 
         $this->upgrade();

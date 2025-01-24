@@ -31,7 +31,7 @@ class TasksTest extends TestCase
         return $process;
     }
 
-    public function testIndex()
+    public function testIndex(): void
     {
         $response = $this->webGet(self::TASKS_URL, []);
         $response->assertStatus(200);
@@ -39,7 +39,7 @@ class TasksTest extends TestCase
         $response->assertSee('Tasks');
     }
 
-    public function testViewTaskWithComments()
+    public function testViewTaskWithComments(): void
     {
         //Start a process request
         $process = $this->createTestProcess();

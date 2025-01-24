@@ -39,7 +39,7 @@ class HideSystemCategoriesTest extends TestCase
         $this->assertContains($category->id, $ids);
     }
 
-    public function testCategoryFiltered()
+    public function testCategoryFiltered(): void
     {
         $this->markTestSkipped('FOUR-6653');
 
@@ -76,7 +76,7 @@ class HideSystemCategoriesTest extends TestCase
         $this->assertContains($instance->id, $ids);
     }
 
-    public function testResourceInCategoryFiltered()
+    public function testResourceInCategoryFiltered(): void
     {
         $this->resourceInCategoryFiltered(Process::class);
         $this->resourceInCategoryFiltered(Script::class);
@@ -100,14 +100,14 @@ class HideSystemCategoriesTest extends TestCase
         $this->assertContains($instance->id, $ids);
     }
 
-    public function testResourceWithoutCategoryNotFiltered()
+    public function testResourceWithoutCategoryNotFiltered(): void
     {
         $this->resourceWithoutCategoryNotFiltered(Process::class);
         $this->resourceWithoutCategoryNotFiltered(Script::class);
         $this->resourceWithoutCategoryNotFiltered(Screen::class);
     }
 
-    public function testProcessRequestFiltered()
+    public function testProcessRequestFiltered(): void
     {
         $category = ProcessCategory::factory()->create([
             'is_system' => false,

@@ -13,7 +13,7 @@ class DesignerControllerTest extends TestCase
      *
      * @return void
      */
-    public function testIndexMethod()
+    public function testIndexMethod(): void
     {
         $user = User::factory()->create([
             'is_administrator' => true,

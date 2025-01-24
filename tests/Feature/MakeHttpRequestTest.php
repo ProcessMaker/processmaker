@@ -24,7 +24,7 @@ class MakeHttpRequestTest extends TestCase
     /**
      * Tests the prepareRequestWithOutboundConfig function
      */
-    public function testRequestConstruction()
+    public function testRequestConstruction(): void
     {
         // Prepare the object that will use the trait
         $testStub = $this->getObjectForTrait(MakeHttpRequests::class);
@@ -74,7 +74,7 @@ class MakeHttpRequestTest extends TestCase
      * Tests the prepareRequestWithOutboundConfig function with no standard parameters
      * (See comments in code for details)
      */
-    public function testRequestConstructionWithoutCommonParams()
+    public function testRequestConstructionWithoutCommonParams(): void
     {
         // Prepare the object that will use the trait
         $testStub = $this->getObjectForTrait(MakeHttpRequests::class);
@@ -127,7 +127,7 @@ class MakeHttpRequestTest extends TestCase
     /**
      * Verifies that different Guzzle Http Responses are mapped correctly calling the function responseWithHeaderData
      */
-    public function testResponseMapping()
+    public function testResponseMapping(): void
     {
         // Prepare the object that will use the trait
         $testStub = $this->getObjectForTrait(MakeHttpRequests::class);
@@ -162,7 +162,7 @@ class MakeHttpRequestTest extends TestCase
 
         // Verify that the endpoint maps an attribute
         $stream = \GuzzleHttp\Psr7\Utils::streamFor('{"id" : "11", "name": "testName"}');
-        $response = new \GuzzleHttp\Psr7\Response(200, ['Content-Type' => 'application/json'], $stream);
+        $response = new Response(200, ['Content-Type' => 'application/json'], $stream);
         $mapped = $this->callMethod($testStub,
             'responseWithHeaderData',
             [$response, $requestData, $endpointConfig]);
@@ -174,7 +174,7 @@ class MakeHttpRequestTest extends TestCase
             ['value' => '', 'key' => 'allData', 'format' => 'dotNotation'],
         ];
         $stream = \GuzzleHttp\Psr7\Utils::streamFor('{"id" : "11", "name": "testName"}');
-        $response = new \GuzzleHttp\Psr7\Response(200, ['Content-Type' => 'application/json'], $stream);
+        $response = new Response(200, ['Content-Type' => 'application/json'], $stream);
         $mapped = $this->callMethod($testStub,
             'responseWithHeaderData',
             [$response, $requestData, $endpointConfig]);
@@ -186,14 +186,14 @@ class MakeHttpRequestTest extends TestCase
             ['value' => 'data.code', 'key' => 'responseCode', 'format' => 'dotNotation'],
         ];
         $stream = \GuzzleHttp\Psr7\Utils::streamFor('{"data": {"user": {"id" : "11", "name": "testName"}, "code":99}}');
-        $response = new \GuzzleHttp\Psr7\Response(200, ['Content-Type' => 'application/json'], $stream);
+        $response = new Response(200, ['Content-Type' => 'application/json'], $stream);
         $mapped = $this->callMethod($testStub,
             'responseWithHeaderData',
             [$response, $requestData, $endpointConfig]);
         $this->assertEquals(['user' =>['id' => 11, 'name' => 'testName'], 'responseCode' => 99], $mapped);
     }
 
-    public function testCallRest()
+    public function testCallRest(): void
     {
         // Prepare the object that will use the trait
         $testStub = $this->getObjectForTrait(MakeHttpRequests::class);
@@ -246,7 +246,7 @@ class MakeHttpRequestTest extends TestCase
         $this->assertEquals(json_decode('{"id": 1}'), json_decode($body));
     }
 
-    public function testRequestCall()
+    public function testRequestCall(): void
     {
         // Prepare the object that will use the trait
         $testStub = $this->getObjectForTrait(MakeHttpRequests::class);
@@ -323,7 +323,7 @@ class MakeHttpRequestTest extends TestCase
         $this->assertEquals(['pmRequestId' => 11], $result);
     }
 
-    public function testRequestCallsWhenEndPointReturnErrors()
+    public function testRequestCallsWhenEndPointReturnErrors(): void
     {
         // Prepare the object that will use the trait
         $testStub = $this->getObjectForTrait(MakeHttpRequests::class);

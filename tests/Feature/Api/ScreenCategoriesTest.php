@@ -34,7 +34,7 @@ class ScreenCategoriesTest extends TestCase
     /**
      * Test the creation of screens
      */
-    public function testCreateScreenCategory()
+    public function testCreateScreenCategory(): void
     {
         //Create a screen category
         $route = route($this->resource . '.store');
@@ -51,7 +51,7 @@ class ScreenCategoriesTest extends TestCase
     /**
      * Test the required fields
      */
-    public function testCreateNameRequired()
+    public function testCreateNameRequired(): void
     {
         $route = route($this->resource . '.store');
         $base = ScreenCategory::factory()->make(['name' => null]);
@@ -67,7 +67,7 @@ class ScreenCategoriesTest extends TestCase
     /**
      * Test create duplicate name Screen Category
      */
-    public function testCreateDuplicateName()
+    public function testCreateDuplicateName(): void
     {
         $route = route($this->resource . '.store');
 
@@ -85,7 +85,7 @@ class ScreenCategoriesTest extends TestCase
     /**
      * Test to verify our screen categories listing api endpoint works without any filters
      */
-    public function testScreensListing()
+    public function testScreensListing(): void
     {
         $initialCount = ScreenCategory::nonSystem()->count();
         // Create some screens
@@ -118,7 +118,7 @@ class ScreenCategoriesTest extends TestCase
     /**
      * Test to verify our screens categories listing API endpoint works without any filters
      */
-    public function testFiltering()
+    public function testFiltering(): void
     {
         $perPage = 10;
         $initialInactiveCount = ScreenCategory::nonSystem()->where('status', 'INACTIVE')->count();
@@ -178,7 +178,7 @@ class ScreenCategoriesTest extends TestCase
     /**
      * Test list categories by status
      */
-    public function testFilteringStatus()
+    public function testFilteringStatus(): void
     {
         $perPage = 10;
         $initialActiveCount = ScreenCategory::nonSystem()->where('status', 'ACTIVE')->count();
@@ -218,7 +218,7 @@ class ScreenCategoriesTest extends TestCase
     /**
      * Test to verify our screen categories listing api endpoint works with sorting
      */
-    public function testSorting()
+    public function testSorting(): void
     {
         // Create some screens
         ScreenCategory::factory()->create([
@@ -267,7 +267,7 @@ class ScreenCategoriesTest extends TestCase
     /**
      * Test pagination of screen list
      */
-    public function testPagination()
+    public function testPagination(): void
     {
         // Number of screens in the tables at the moment of starting the test
         $initialRows = ScreenCategory::nonSystem()->get()->count();
@@ -290,7 +290,7 @@ class ScreenCategoriesTest extends TestCase
     /**
      * Test show screen category
      */
-    public function testShowScreenCategory()
+    public function testShowScreenCategory(): void
     {
         //Create a new screen category
         $category = ScreenCategory::factory()->create();
@@ -305,7 +305,7 @@ class ScreenCategoriesTest extends TestCase
     /*
     + Test update screen category
      */
-    public function testUpdateScreen()
+    public function testUpdateScreen(): void
     {
         $item = ScreenCategory::factory()->create();
 
@@ -326,7 +326,7 @@ class ScreenCategoriesTest extends TestCase
     /*
     + Test change status
      */
-    public function testChangeStatus()
+    public function testChangeStatus(): void
     {
         $item = ScreenCategory::factory()->create(['status' => 'ACTIVE']);
 
@@ -347,7 +347,7 @@ class ScreenCategoriesTest extends TestCase
     /*
     + Test validate name required
      */
-    public function testValidateNameNotNull()
+    public function testValidateNameNotNull(): void
     {
         $item = ScreenCategory::factory()->create();
 
@@ -366,7 +366,7 @@ class ScreenCategoriesTest extends TestCase
     /*
     + Test validate name unique
      */
-    public function testValidateNameUnique()
+    public function testValidateNameUnique(): void
     {
         $name = 'Some name';
         ScreenCategory::factory()->create(['name' => $name]);
@@ -387,7 +387,7 @@ class ScreenCategoriesTest extends TestCase
     /**
      * Test validate data valid for status
      */
-    public function testValidateStatus()
+    public function testValidateStatus(): void
     {
         $item = ScreenCategory::factory()->create();
 
@@ -405,7 +405,7 @@ class ScreenCategoriesTest extends TestCase
     /**
      * Delete screen category
      */
-    public function testDeleteScreenCategory()
+    public function testDeleteScreenCategory(): void
     {
         $screenCategory = ScreenCategory::factory()->create();
         $route = route($this->resource . '.destroy', [$screenCategory->id]);
@@ -418,7 +418,7 @@ class ScreenCategoriesTest extends TestCase
     /**
      * test can not delete the category because you have assigned screens
      */
-    public function testDeleteFailScreenCategory()
+    public function testDeleteFailScreenCategory(): void
     {
         $screen = Screen::factory()->create();
         $route = route($this->resource . '.destroy', [$screen->screen_category_id]);

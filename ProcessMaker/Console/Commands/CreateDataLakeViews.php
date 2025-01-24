@@ -180,6 +180,7 @@ class CreateDataLakeViews extends Command
         $tables = array_map(function ($item) {
             return $item['name'];
         }, Schema::getTables());
+
         return $tables;
     }
 
@@ -191,6 +192,7 @@ class CreateDataLakeViews extends Command
         $views = array_map(function ($item) {
             return $item['name'];
         }, Schema::getViews());
+
         return $views;
     }
 }

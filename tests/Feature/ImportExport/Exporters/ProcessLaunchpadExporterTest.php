@@ -61,7 +61,7 @@ class ProcessLaunchpadExporterTest extends TestCase
         ];
     }
 
-    public function testExport()
+    public function testExport(): void
     {
         $this->addGlobalSignalProcess();
         [
@@ -80,7 +80,7 @@ class ProcessLaunchpadExporterTest extends TestCase
         $this->assertContains($launchpad->uuid, $processDependentUuids);
     }
 
-    public function testImportWithCopy()
+    public function testImportWithCopy(): void
     {
         $this->addGlobalSignalProcess();
         [

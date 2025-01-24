@@ -35,7 +35,7 @@ class ProcessMakerValidateProcesses extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Starting ProcessMaker Validate Processes...');
         $processes = Process::nonSystem()->get();

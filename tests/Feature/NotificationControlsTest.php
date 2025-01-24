@@ -31,7 +31,7 @@ class NotificationControlsTest extends TestCase
      *
      * @return void
      */
-    public function testRequestWithNotifications()
+    public function testRequestWithNotifications(): void
     {
         // Create a user
         $adminUser = User::factory()->create([
@@ -105,7 +105,7 @@ class NotificationControlsTest extends TestCase
      *
      * @return void
      */
-    public function testRequestWithoutNotifications()
+    public function testRequestWithoutNotifications(): void
     {
         // Create a user
         $adminUser = User::factory()->create([
@@ -152,7 +152,7 @@ class NotificationControlsTest extends TestCase
     /**
      * Verify that a notification is marked as read when the user edits the related task
      */
-    public function testNotificationMarkedAsReadWhenTaskIsVisited()
+    public function testNotificationMarkedAsReadWhenTaskIsVisited(): void
     {
         // Create a request token to simulate that a new task is created for the user
         $token = ProcessRequestToken::factory()->create();

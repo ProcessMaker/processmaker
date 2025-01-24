@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use ProcessMaker\Filters\Filter;
 
 class Recommendation extends ProcessMakerModel
@@ -10,13 +11,6 @@ class Recommendation extends ProcessMakerModel
     protected $connection = 'processmaker';
 
     protected $guarded = [];
-
-    protected $casts = [
-        'min_matches' => 'integer',
-        'dismiss_for_secs' => 'integer',
-        'actions' => 'array',
-        'advanced_filter' => 'array',
-    ];
 
     protected $attributes = [
         'status' => 'ACTIVE',
@@ -39,7 +33,17 @@ class Recommendation extends ProcessMakerModel
         parent::boot();
     }
 
-    public function recommendationUsers()
+    protected function casts(): array
+    {
+        return [
+            'min_matches' => 'integer',
+            'dismiss_for_secs' => 'integer',
+            'actions' => 'array',
+            'advanced_filter' => 'array',
+        ];
+    }
+
+    public function recommendationUsers(): HasMany
     {
         return $this->hasMany(RecommendationUser::class, 'recommendation_id');
     }

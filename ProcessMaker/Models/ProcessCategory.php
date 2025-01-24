@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Traits\Exportable;
@@ -64,7 +65,7 @@ class ProcessCategory extends ProcessMakerModel
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function processes()
+    public function processes(): MorphToMany
     {
         return $this->morphedByMany(Process::class, 'assignable', 'category_assignments', 'category_id');
     }

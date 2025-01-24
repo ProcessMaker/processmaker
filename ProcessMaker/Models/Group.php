@@ -2,6 +2,10 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\EmptyModel;
 use ProcessMaker\Query\Traits\PMQL;
@@ -53,9 +57,12 @@ class Group extends ProcessMakerModel
         'enabled_2fa',
     ];
 
-    protected $casts = [
-        'enabled_2fa' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'enabled_2fa' => 'boolean',
+        ];
+    }
 
     public static function rules($existing = null)
     {
@@ -67,22 +74,22 @@ class Group extends ProcessMakerModel
         ];
     }
 
-    public function permissions()
+    public function permissions(): MorphToMany
     {
         return $this->morphToMany('ProcessMaker\Models\Permission', 'assignable');
     }
 
-    public function processesFromProcessable()
+    public function processesFromProcessable(): MorphToMany
     {
         return $this->morphToMany('ProcessMaker\Models\Process', 'processable');
     }
 
-    public function groupMembersFromMemberable()
+    public function groupMembersFromMemberable(): MorphMany
     {
         return $this->morphMany(GroupMember::class, 'member', null, 'member_id');
     }
 
-    public function groupMembers()
+    public function groupMembers(): HasMany
     {
         return $this->hasMany(GroupMember::class);
     }
@@ -97,14 +104,14 @@ class Group extends ProcessMakerModel
     /**
      * Manager of the group.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function manager()
+    public function manager(): BelongsTo
     {
         return $this->belongsTo(User::class, 'manager_id');
     }
 
-    public function projectMembers()
+    public function projectMembers(): HasMany
     {
         if (class_exists('ProcessMaker\Package\Projects\Models\ProjectMember')) {
             return $this->hasMany('ProcessMaker\Package\Projects\Models\ProjectMember', 'member_id', 'id')->where('member_type', self::class);
@@ -150,9 +157,9 @@ class Group extends ProcessMakerModel
     /**
      * Group as assigned.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     * @return MorphMany
      */
-    public function assigned()
+    public function assigned(): MorphMany
     {
         return $this->morphMany(ProcessTaskAssignment::class, 'assigned', 'assignment_type', 'assignment_id');
     }

@@ -26,7 +26,7 @@ class DashboardTest extends TestCase
         $asp->boot();
     }
 
-    public function testIndexRoute()
+    public function testIndexRoute(): void
     {
         $this->user = User::factory()->create();
         $response = $this->webCall('GET', '/admin');

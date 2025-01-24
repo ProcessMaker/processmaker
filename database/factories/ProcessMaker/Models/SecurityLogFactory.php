@@ -12,7 +12,7 @@ class SecurityLogFactory extends Factory
      *
      * @return array
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             'event' => $this->faker->word(),

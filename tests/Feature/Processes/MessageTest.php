@@ -17,7 +17,7 @@ class MessageTest extends TestCase
         $this->withPersonalAccessClient();
     }
 
-    public function test()
+    public function test(): void
     {
         $script = Script::factory()->create([
             'language' => 'php',

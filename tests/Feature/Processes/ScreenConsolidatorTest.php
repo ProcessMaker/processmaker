@@ -21,7 +21,7 @@ class ScreenConsolidatorTest extends TestCase
      *
      * @return void
      */
-    public function testExportImportProcess()
+    public function testExportImportProcess(): void
     {
         // Create an admin user
         $adminUser = User::factory()->create([
@@ -258,7 +258,7 @@ class ScreenConsolidatorTest extends TestCase
      *
      * @return void
      */
-    public function testNestedNavButtons()
+    public function testNestedNavButtons(): void
     {
         // Create an admin user
         $adminUser = User::factory()->create([
@@ -325,7 +325,7 @@ class ScreenConsolidatorTest extends TestCase
      *
      * @return void
      */
-    public function testRecordListWithoutRecordForm()
+    public function testRecordListWithoutRecordForm(): void
     {
         // Create an admin user
         $adminUser = User::factory()->create([

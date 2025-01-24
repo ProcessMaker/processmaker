@@ -36,7 +36,7 @@ class PermissionsTest extends TestCase
         $asp->boot();
     }
 
-    public function testApiPermissions()
+    public function testApiPermissions(): void
     {
         $group = Group::factory()->create([
             'name' => 'All Permissions',
@@ -82,7 +82,7 @@ class PermissionsTest extends TestCase
         $response->assertStatus(204);
     }
 
-    public function testSetPermissionsForUser()
+    public function testSetPermissionsForUser(): void
     {
         $this->user = User::factory()->create([
             'password' => Hash::make('password'),
@@ -103,7 +103,7 @@ class PermissionsTest extends TestCase
         $this->assertEquals($testUser->permissions->first()->id, $testPermission->id);
     }
 
-    public function testSetPermissionsViewProcessCatalogForUser()
+    public function testSetPermissionsViewProcessCatalogForUser(): void
     {
         $faker = Faker::create();
         Permission::updateOrCreate([
@@ -129,7 +129,7 @@ class PermissionsTest extends TestCase
         session(['permissions' => null]);
     }
 
-    public function testCategoryPermission()
+    public function testCategoryPermission(): void
     {
         $context = function ($type, $class) {
             $attrs = ['name' => 'Test Category', 'status' => 'ACTIVE'];
@@ -215,7 +215,7 @@ class PermissionsTest extends TestCase
     /**
      * Test if the created event in UserObserver assigns the correct permissions.
      */
-    public function testSetPermissionsViewMyRequestForUser()
+    public function testSetPermissionsViewMyRequestForUser(): void
     {
         $permissionName = 'view-my_requests';
         $permissionTitle = 'View My Requests';
@@ -232,7 +232,7 @@ class PermissionsTest extends TestCase
     /**
      * Test that the permissions are seeded and assigned to users and groups.
      */
-    public function testSetPermissionsViewMyRequestForUsersAndGroupCreated()
+    public function testSetPermissionsViewMyRequestForUsersAndGroupCreated(): void
     {
         // Set up the users and groups
         $users = User::factory()->count(5)->create();

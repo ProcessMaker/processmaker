@@ -4,8 +4,8 @@ namespace ProcessMaker\Console\Commands;
 
 use Exception;
 use Illuminate\Console\Command;
-use ProcessMaker\Facades\EncryptedData;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Facades\EncryptedData;
 
 class ChangeKeyEncryptedData extends Command
 {
@@ -38,7 +38,7 @@ class ChangeKeyEncryptedData extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         try {
             if ($this->confirm(self::message, false)) {

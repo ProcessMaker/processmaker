@@ -27,7 +27,7 @@ class RequestsTest extends DuskTestCase
         return $user;
     }
 
-    public function test_request_route_protected()
+    public function test_request_route_protected(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/requests')
@@ -35,7 +35,7 @@ class RequestsTest extends DuskTestCase
         });
     }
 
-    public function test_request_route_loads()
+    public function test_request_route_loads(): void
     {
         $user = $this->setuser();
 
@@ -47,7 +47,7 @@ class RequestsTest extends DuskTestCase
         });
     }
 
-    public function test_pmql_initial_load()
+    public function test_pmql_initial_load(): void
     {
         $user = $this->setuser();
 
@@ -58,7 +58,7 @@ class RequestsTest extends DuskTestCase
         });
     }
 
-    public function test_vuetable_initial_load()
+    public function test_vuetable_initial_load(): void
     {
         // Initial load of the site would have no requests started
         $user = $this->setuser();
@@ -71,7 +71,7 @@ class RequestsTest extends DuskTestCase
         });
     }
 
-    public function test_start_request()
+    public function test_start_request(): void
     {
         $user = $this->setuser();
 

@@ -16,7 +16,9 @@ class Vault implements EncryptedDataInterface
     public static $iv = '';
 
     private $host;
+
     private $token;
+
     private $transitKey;
 
     public function __construct()
@@ -94,7 +96,7 @@ class Vault implements EncryptedDataInterface
 
             // Store new values
             $record->data = $cipherText;
-            $record->save(); 
+            $record->save();
         }
     }
 
@@ -121,7 +123,7 @@ class Vault implements EncryptedDataInterface
     /**
      * Build transit API object
      *
-     * @return \VaultPHP\SecretEngines\Engines\Transit\Transit
+     * @return Transit
      */
     private function buildTransitApi()
     {

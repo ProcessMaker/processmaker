@@ -153,7 +153,7 @@ class CaseUtils
         ) {
             unset($taskData['element_type']);
             // This field is converted to string because: The Json_Search in MySQL only works with strings
-            $taskData['id'] = (string)$taskData['id'];
+            $taskData['id'] = (string) $taskData['id'];
             $tasks->prepend($taskData);
         }
 

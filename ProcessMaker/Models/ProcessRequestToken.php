@@ -6,6 +6,9 @@ use Carbon\Carbon;
 use DB;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Notification;
@@ -140,21 +143,24 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     ];
 
     /**
-     * The attributes that should be cast to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array
+     * @return array<string, string>
      */
-    protected $casts = [
-        'completed_at' => 'datetime',
-        'due_at' => 'datetime',
-        'initiated_at' => 'datetime',
-        'riskchanges_at' => 'datetime',
-        'data' => 'array',
-        'self_service_groups' => 'array',
-        'token_properties' => 'array',
-        'is_priority' => 'boolean',
-        'is_actionbyemail' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'completed_at' => 'datetime',
+            'due_at' => 'datetime',
+            'initiated_at' => 'datetime',
+            'riskchanges_at' => 'datetime',
+            'data' => 'array',
+            'self_service_groups' => 'array',
+            'token_properties' => 'array',
+            'is_priority' => 'boolean',
+            'is_actionbyemail' => 'boolean',
+        ];
+    }
 
     /**
      * Get the indexable data array for the model.
@@ -258,7 +264,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     /**
      * Get the process to which this version points to.
      */
-    public function process()
+    public function process(): BelongsTo
     {
         return $this->belongsTo(Process::class, 'process_id');
     }
@@ -266,7 +272,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     /**
      * Get the request of the token.
      */
-    public function processRequest()
+    public function processRequest(): BelongsTo
     {
         return $this->belongsTo(ProcessRequest::class, 'process_request_id');
     }
@@ -274,7 +280,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     /**
      * Get the creator/author of this request.
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
@@ -583,14 +589,14 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     /**
      * Scheduled task for this token
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function scheduledTasks()
+    public function scheduledTasks(): HasMany
     {
         return $this->hasMany(ScheduledTask::class, 'process_request_token_id');
     }
 
-    public function draft()
+    public function draft(): HasOne
     {
         return $this->hasOne(TaskDraft::class, 'task_id');
     }
@@ -598,7 +604,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     /**
      * Get the sub-process request associated to the token.
      */
-    public function subProcessRequest()
+    public function subProcessRequest(): BelongsTo
     {
         return $this->belongsTo(ProcessRequest::class, 'subprocess_request_id');
     }

@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use ProcessMaker\Models\ProcessMakerModel;
 
 class Clipboard extends ProcessMakerModel
@@ -27,15 +28,18 @@ class Clipboard extends ProcessMakerModel
     ];
 
     /**
-     * The attributes that should be cast to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array
+     * @return array<string, string>
      */
-    protected $casts = [
-        'config' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'config' => 'array',
+        ];
+    }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

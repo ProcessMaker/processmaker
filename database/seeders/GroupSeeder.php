@@ -79,7 +79,7 @@ class GroupSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $this->setDefaults();
 

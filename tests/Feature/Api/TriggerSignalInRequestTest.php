@@ -34,7 +34,7 @@ class TriggerSignalInRequestTest extends TestCase
      * Tests one process with boundary signal event and one with start signal event.
      *
      **/
-    public function testScheduleStartEvent()
+    public function testScheduleStartEvent(): void
     {
         $process = $this->createProcess([
             'id' => 1,
@@ -50,7 +50,7 @@ class TriggerSignalInRequestTest extends TestCase
         $this->assertCount(2, $activeTokens);
     }
 
-    public function testBoundaryLoop()
+    public function testBoundaryLoop(): void
     {
         $import = (new ImportProcess(
             file_get_contents(base_path('tests/Fixtures/boundary_loop.json'))

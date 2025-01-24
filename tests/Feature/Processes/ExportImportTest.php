@@ -47,7 +47,7 @@ class ExportImportTest extends TestCase
      *
      * @return void
      */
-    public function testProcessImportRefs()
+    public function testProcessImportRefs(): void
     {
         // Create a pre-existing screen and script
         Screen::factory()->count(1)->create(['title' => 'Existing Screen']);
@@ -172,7 +172,7 @@ class ExportImportTest extends TestCase
      *
      * @return void
      */
-    public function testExportImportProcess()
+    public function testExportImportProcess(): void
     {
         // Create an admin user
         $adminUser = User::factory()->create([
@@ -283,7 +283,7 @@ class ExportImportTest extends TestCase
      * Test anonymous user assignments are not removed. Instead,
      * they are are updated to the current instance's anon user ID
      */
-    public function testExportWithAnonymousUser()
+    public function testExportWithAnonymousUser(): void
     {
         $originalAnonUser = app(AnonymousUser::class);
         $adminUser = User::factory()->create([
@@ -338,7 +338,7 @@ class ExportImportTest extends TestCase
     /**
      * Test different assignments should not be removed except by user group.
      */
-    public function test_different_assignments_should_not_be_removed_except_by_user_group()
+    public function test_different_assignments_should_not_be_removed_except_by_user_group(): void
     {
         // Load file to import
         $file = new UploadedFile(base_path('tests/storage/process/') . 'test_process_import_different_tasks_assignments.json', 'test_process_import_different_tasks_assignments.json', null, null, true);
@@ -449,7 +449,7 @@ class ExportImportTest extends TestCase
     /**
      * Test assignments after import process.
      */
-    public function test_assignmets_after_import()
+    public function test_assignmets_after_import(): void
     {
         // Load file to import
         $file = new UploadedFile(base_path('tests/storage/process/') . 'test_process_import.json', 'test_process_import.json', null, null, true);
@@ -572,7 +572,7 @@ class ExportImportTest extends TestCase
      *
      * @return void
      */
-    public function testProcessImportInvalidTextFile()
+    public function testProcessImportInvalidTextFile(): void
     {
         // Set path and name of file to import
         $filePath = 'tests/storage/process/';
@@ -595,7 +595,7 @@ class ExportImportTest extends TestCase
      *
      * @return void
      */
-    public function testProcessImportInvalidJsonFile()
+    public function testProcessImportInvalidJsonFile(): void
     {
         // Set path and name of file to import
         $filePath = 'tests/storage/process/';
@@ -618,7 +618,7 @@ class ExportImportTest extends TestCase
      *
      * @return void
      */
-    public function testProcessImportInvalidBase64File()
+    public function testProcessImportInvalidBase64File(): void
     {
         // Set path and name of file to import
         $filePath = 'tests/storage/process/';
@@ -641,7 +641,7 @@ class ExportImportTest extends TestCase
      *
      * @return void
      */
-    public function testProcessImportInvalidBinaryFile()
+    public function testProcessImportInvalidBinaryFile(): void
     {
         // Set path and name of file to import
         $filePath = 'tests/storage/process/';
@@ -664,7 +664,7 @@ class ExportImportTest extends TestCase
      *
      * @return void
      */
-    public function testImportMultipleAssets()
+    public function testImportMultipleAssets(): void
     {
         // Create a pre-existing screen and script
         Screen::factory()->count(2)->create(['title' => 'Existing Screen']);
@@ -742,7 +742,7 @@ class ExportImportTest extends TestCase
         $this->assertEquals($scripts['Script for Watcher'], $nested->watchers[0]['script_id']);
     }
 
-    public function testNestedScreensRecursion()
+    public function testNestedScreensRecursion(): void
     {
         $this->spy(Screen::class, function ($mock) {
             $mock->shouldNotReceive('findOrFail');
@@ -756,7 +756,7 @@ class ExportImportTest extends TestCase
         $this->apiCall('POST', "/processes/{$processId}/export");
     }
 
-    public function testExportImportWithProcessManager()
+    public function testExportImportWithProcessManager(): void
     {
         $process = Process::factory()->create(['name' => 'Manager test']);
         $process->manager_id = 123;

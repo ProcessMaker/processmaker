@@ -14,7 +14,7 @@ class EncryptedDataTest extends TestCase
 {
     use RequestHelper;
 
-    public function test_encrypt_text_ok()
+    public function test_encrypt_text_ok(): void
     {
         // Initialize Faker
         $faker = Faker::create();
@@ -27,7 +27,7 @@ class EncryptedDataTest extends TestCase
 
         // Create required dummy objects
         $screen = Screen::factory()->create(['config' => $config]);
-        
+
         // Build data to send
         $data = [
             'field_name' => 'form_input_1',
@@ -43,7 +43,7 @@ class EncryptedDataTest extends TestCase
         $this->assertTrue(Str::isUuid($response->content()));
     }
 
-    public function test_encrypt_text_uuid()
+    public function test_encrypt_text_uuid(): void
     {
         // Initialize Faker
         $faker = Faker::create();
@@ -105,14 +105,14 @@ class EncryptedDataTest extends TestCase
         $response->assertStatus(422);
     }
 
-    public function test_encrypt_text_field_name_empty()
+    public function test_encrypt_text_field_name_empty(): void
     {
         // Initialize Faker
         $faker = Faker::create();
 
         // Create required dummy objects
         $screen = Screen::factory()->create();
-        
+
         // Build data to send
         $data = [
             'field_name' => '', // Empty
@@ -131,14 +131,14 @@ class EncryptedDataTest extends TestCase
         $this->assertIsArray($responseData['errors']);
     }
 
-    public function test_encrypt_text_text_plain_empty()
+    public function test_encrypt_text_text_plain_empty(): void
     {
         // Initialize Faker
         $faker = Faker::create();
 
         // Create required dummy objects
         $screen = Screen::factory()->create();
-        
+
         // Build data to send
         $data = [
             'field_name' => $faker->word(),
@@ -157,11 +157,11 @@ class EncryptedDataTest extends TestCase
         $this->assertIsArray($responseData['errors']);
     }
 
-    public function test_encrypt_text_screen_id_not_found()
+    public function test_encrypt_text_screen_id_not_found(): void
     {
         // Initialize Faker
         $faker = Faker::create();
-        
+
         // Build data to send
         $data = [
             'field_name' => $faker->word(),

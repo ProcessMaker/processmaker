@@ -16,7 +16,7 @@ class JsonColumnIndexTest extends TestCase
         return [];
     }
 
-    public function test()
+    public function test(): void
     {
         $fields = ['stringValue', 'numberValue', 'stringNumberValue'];
 
@@ -72,7 +72,7 @@ class JsonColumnIndexTest extends TestCase
         $this->assertEquals($expected, ProcessRequest::pmql($query)->count());
     }
 
-    public function testCustomMysqlGrammar()
+    public function testCustomMysqlGrammar(): void
     {
         $processRequest = ProcessRequest::pmql('data.firstname = "Agustin"')->toSql();
         $this->assertEquals(

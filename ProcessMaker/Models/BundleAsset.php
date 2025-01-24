@@ -3,6 +3,8 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use ProcessMaker\Enums\ExporterMap;
 
 class BundleAsset extends ProcessMakerModel
@@ -27,12 +29,12 @@ class BundleAsset extends ProcessMakerModel
         return method_exists($asset, 'export') && ExporterMap::getExporterClassForModel($asset);
     }
 
-    public function bundle()
+    public function bundle(): BelongsTo
     {
         return $this->belongsTo(Bundle::class);
     }
 
-    public function asset()
+    public function asset(): MorphTo
     {
         return $this->morphTo();
     }

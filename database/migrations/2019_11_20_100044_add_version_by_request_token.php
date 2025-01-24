@@ -15,7 +15,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         $model = new ProcessRequest();
         Schema::connection($model->getConnectionName())->table('process_requests', function (Blueprint $table) {
@@ -48,7 +48,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         $model = new ProcessRequest();
         Schema::table('process_request_tokens', function (Blueprint $table) {

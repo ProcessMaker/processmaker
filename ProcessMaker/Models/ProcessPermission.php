@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
@@ -43,7 +44,7 @@ class ProcessPermission extends ProcessMakerModel
         'assignable_type',
     ];
 
-    public function assignable()
+    public function assignable(): MorphTo
     {
         return $this->morphTo(null, null, 'assignable_id');
     }

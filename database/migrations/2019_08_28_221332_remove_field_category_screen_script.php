@@ -14,7 +14,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         foreach (Script::all() as $script) {
             if ($script->category) {
@@ -50,7 +50,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('scripts', function (Blueprint $table) {
             $table->string('category', '100')->after('status')->nullable()->default(null);

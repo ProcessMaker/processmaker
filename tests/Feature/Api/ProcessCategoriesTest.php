@@ -35,7 +35,7 @@ class ProcessCategoriesTest extends TestCase
     /**
      * Test the creation of processes
      */
-    public function testCreateProcessCategory()
+    public function testCreateProcessCategory(): void
     {
         //Create a process category
         $route = route($this->resource . '.store');
@@ -52,7 +52,7 @@ class ProcessCategoriesTest extends TestCase
     /**
      * Test the required fields
      */
-    public function testCreateNameRequired()
+    public function testCreateNameRequired(): void
     {
         $route = route($this->resource . '.store');
         $base = ProcessCategory::factory()->make(['name' => null]);
@@ -68,7 +68,7 @@ class ProcessCategoriesTest extends TestCase
     /**
      * Test create duplicate name Process Category
      */
-    public function testCreateDuplicateName()
+    public function testCreateDuplicateName(): void
     {
         $route = route($this->resource . '.store');
 
@@ -86,7 +86,7 @@ class ProcessCategoriesTest extends TestCase
     /**
      * Test to verify our process categories listing api endpoint works without any filters
      */
-    public function testProcessesListing()
+    public function testProcessesListing(): void
     {
         $initialCount = ProcessCategory::nonSystem()->count();
         // Create some processes
@@ -119,7 +119,7 @@ class ProcessCategoriesTest extends TestCase
     /**
      * Test to verify our processes categories listing API endpoint works without any filters
      */
-    public function testFiltering()
+    public function testFiltering(): void
     {
         $perPage = 10;
         $initialActiveCount = ProcessCategory::nonSystem()->where('status', 'ACTIVE')->count();
@@ -176,7 +176,7 @@ class ProcessCategoriesTest extends TestCase
     /**
      * Test list categories by status
      */
-    public function testFilteringStatus()
+    public function testFilteringStatus(): void
     {
         $perPage = 10;
         $initialActiveCount = ProcessCategory::nonSystem()->where('status', 'ACTIVE')->count();
@@ -216,7 +216,7 @@ class ProcessCategoriesTest extends TestCase
     /**
      * Test to verify our process categories listing api endpoint works with sorting
      */
-    public function testSorting()
+    public function testSorting(): void
     {
         // Create some processes
         ProcessCategory::factory()->create([
@@ -265,7 +265,7 @@ class ProcessCategoriesTest extends TestCase
     /**
      * Test pagination of process list
      */
-    public function testPagination()
+    public function testPagination(): void
     {
         // Number of processes in the tables at the moment of starting the test
         $initialRows = ProcessCategory::nonSystem()->count();
@@ -288,7 +288,7 @@ class ProcessCategoriesTest extends TestCase
     /**
      * Test show process category
      */
-    public function testShowProcessCategory()
+    public function testShowProcessCategory(): void
     {
         //Create a new process category
         $category = ProcessCategory::factory()->create();
@@ -303,7 +303,7 @@ class ProcessCategoriesTest extends TestCase
     /*
     + Test update process category
      */
-    public function testUpdateProcess()
+    public function testUpdateProcess(): void
     {
         $item = ProcessCategory::factory()->create();
 
@@ -324,7 +324,7 @@ class ProcessCategoriesTest extends TestCase
     /*
     + Test change status
      */
-    public function testChangeStatus()
+    public function testChangeStatus(): void
     {
         $item = ProcessCategory::factory()->create(['status' => 'ACTIVE']);
 
@@ -345,7 +345,7 @@ class ProcessCategoriesTest extends TestCase
     /*
     + Test validate name required
      */
-    public function testValidateNameNotNull()
+    public function testValidateNameNotNull(): void
     {
         $item = ProcessCategory::factory()->create();
 
@@ -364,7 +364,7 @@ class ProcessCategoriesTest extends TestCase
     /*
     + Test validate name unique
      */
-    public function testValidateNameUnique()
+    public function testValidateNameUnique(): void
     {
         $name = 'Some name';
         ProcessCategory::factory()->create(['name' => $name]);
@@ -385,7 +385,7 @@ class ProcessCategoriesTest extends TestCase
     /**
      * Test validate data valid for status
      */
-    public function testValidateStatus()
+    public function testValidateStatus(): void
     {
         $item = ProcessCategory::factory()->create();
 
@@ -403,7 +403,7 @@ class ProcessCategoriesTest extends TestCase
     /**
      * Delete process category
      */
-    public function testDeleteProcessCategory()
+    public function testDeleteProcessCategory(): void
     {
         $processCategory = ProcessCategory::factory()->create();
         $route = route($this->resource . '.destroy', [$processCategory->id]);
@@ -416,7 +416,7 @@ class ProcessCategoriesTest extends TestCase
     /**
      * test can not delete the category because you have assigned processes
      */
-    public function testDeleteFailProcessCategory()
+    public function testDeleteFailProcessCategory(): void
     {
         $process = Process::factory()->create();
         $route = route($this->resource . '.destroy', [$process->process_category_id]);

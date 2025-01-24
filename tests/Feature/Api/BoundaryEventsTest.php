@@ -17,7 +17,7 @@ class BoundaryEventsTest extends TestCase
     /**
      * Tests the a process with a signal boundary event
      */
-    public function testSignalBoundaryEvent()
+    public function testSignalBoundaryEvent(): void
     {
         // Create a process
         $process = $this->createProcess(file_get_contents(__DIR__ . '/processes/Signal_BoundaryEvent.bpmn'));
@@ -48,7 +48,7 @@ class BoundaryEventsTest extends TestCase
      * Tests a process with a timer boundary event
      * @group timer_events
      */
-    public function testCycleTimerBoundaryEvent()
+    public function testCycleTimerBoundaryEvent(): void
     {
         // Mock current date for TaskSchedulerManager
         $now = TaskSchedulerManager::fakeToday('2018-05-01T00:00:00Z');
@@ -88,7 +88,7 @@ class BoundaryEventsTest extends TestCase
     /**
      * Tests a process with a error boundary event in a script task
      */
-    public function testErrorBoundaryEventScriptTask()
+    public function testErrorBoundaryEventScriptTask(): void
     {
         // Create a process
         $process = $this->createProcess(file_get_contents(__DIR__ . '/processes/Error_BoundaryEvent_ScriptTask.bpmn'));
@@ -114,7 +114,7 @@ class BoundaryEventsTest extends TestCase
     /**
      * Tests a process with a error boundary event in a CallActivity
      */
-    public function testErrorBoundaryEventCallActivity()
+    public function testErrorBoundaryEventCallActivity(): void
     {
         // Create a process
         $process = $this->createProcess(file_get_contents(__DIR__ . '/processes/Error_EndEvent_CallActivity.bpmn'));
@@ -135,7 +135,7 @@ class BoundaryEventsTest extends TestCase
      *
      * @group timer_events
      */
-    public function testCycleTimerBoundaryEventCallActivity()
+    public function testCycleTimerBoundaryEventCallActivity(): void
     {
         // Mock current date for TaskSchedulerManager
         $now = TaskSchedulerManager::fakeToday('2018-05-01T00:00:00Z');
@@ -181,7 +181,7 @@ class BoundaryEventsTest extends TestCase
     /**
      * Tests the a process with a signal boundary event attached to a CallActivity
      */
-    public function testSignalBoundaryEventCallActivity()
+    public function testSignalBoundaryEventCallActivity(): void
     {
         // Create a process
         $process = $this->createProcess(file_get_contents(__DIR__ . '/processes/Signal_BoundaryEvent_CallActivity.bpmn'));
@@ -204,7 +204,7 @@ class BoundaryEventsTest extends TestCase
      *
      * @group timer_events
      */
-    public function testCycleTimerBoundaryEventNonInterrupting()
+    public function testCycleTimerBoundaryEventNonInterrupting(): void
     {
         // Mock current date for TaskSchedulerManager
         $now = TaskSchedulerManager::fakeToday('2018-05-01T00:00:00Z');
@@ -239,7 +239,7 @@ class BoundaryEventsTest extends TestCase
     /**
      * Tests a process with an error boundary non interrupting event attached to a script task
      */
-    public function testErrorBoundaryEventScriptTaskNonInterrupting()
+    public function testErrorBoundaryEventScriptTaskNonInterrupting(): void
     {
         // Create a process
         $process = $this->createProcess(file_get_contents(__DIR__ . '/processes/Error_BoundaryEvent_ScriptTask_NonInterrupting.bpmn'));
@@ -263,7 +263,7 @@ class BoundaryEventsTest extends TestCase
     /**
      * Tests a process with an error boundary non interrupting event attached to a CallActivity
      */
-    public function testErrorBoundaryEventCallActivityNonInterrupting()
+    public function testErrorBoundaryEventCallActivityNonInterrupting(): void
     {
         // Create a process
         $process = $this->createProcess(file_get_contents(__DIR__ . '/processes/Error_BoundaryEvent_CallActivity_NonInterrupting.bpmn'));
@@ -287,7 +287,7 @@ class BoundaryEventsTest extends TestCase
      *
      * @group timer_events
      */
-    public function testCycleTimerBoundaryEventCallActivityNonInterrupting()
+    public function testCycleTimerBoundaryEventCallActivityNonInterrupting(): void
     {
         // Mock current date for TaskSchedulerManager
         $now = TaskSchedulerManager::fakeToday('2018-05-01T00:00:00Z');
@@ -334,7 +334,7 @@ class BoundaryEventsTest extends TestCase
     /**
      * Tests the a process with a signal boundary non interrupting event attached to a CallActivity
      */
-    public function testSignalBoundaryEventCallActivityNonInterrupting()
+    public function testSignalBoundaryEventCallActivityNonInterrupting(): void
     {
         // Create a process
         $process = $this->createProcess(file_get_contents(__DIR__ . '/processes/Signal_BoundaryEvent_CallActivity_NonInterrupting.bpmn'));
@@ -356,7 +356,7 @@ class BoundaryEventsTest extends TestCase
      *
      * @group timer_events
      */
-    public function testConcurrentBoundaryEventCallActivityNonInterrupting()
+    public function testConcurrentBoundaryEventCallActivityNonInterrupting(): void
     {
         // Mock current date for TaskSchedulerManager
         $now = TaskSchedulerManager::fakeToday('2018-05-01T00:00:00Z');
@@ -399,7 +399,7 @@ class BoundaryEventsTest extends TestCase
     /**
      * Tests the a process with a timer boundary event on a multi-instance task
      */
-    public function testTimerBoundaryEventMultiInstance()
+    public function testTimerBoundaryEventMultiInstance(): void
     {
         $now = TaskSchedulerManager::fakeToday('2018-05-01T00:00:00Z');
         // Create a process

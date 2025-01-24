@@ -16,7 +16,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         MigrationHelper::addUuidsToTables(self::TABLES);
         MigrationHelper::populateUuids(self::TABLES);
@@ -27,7 +27,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         MigrationHelper::removeUuidsFromTables(self::TABLES);
     }

@@ -19,7 +19,7 @@ class TaskAssignmentByVariableTest extends TestCase
 {
     use RequestHelper;
 
-    public function testProcessVariableAssignmentWithSimpleIds()
+    public function testProcessVariableAssignmentWithSimpleIds(): void
     {
         // Create users of a group and a user without group
         $user = User::factory()->create(['status'=>'ACTIVE']);
@@ -39,7 +39,7 @@ class TaskAssignmentByVariableTest extends TestCase
         $this->assertEquals($group->users->first()->id, $task->user_id);
     }
 
-    public function testProcessVariableAssignmentWithArrayOfIds()
+    public function testProcessVariableAssignmentWithArrayOfIds(): void
     {
         // Create users of a group and a user without group
         $users = User::factory(2)->create(['status'=>'ACTIVE']);
@@ -78,7 +78,7 @@ class TaskAssignmentByVariableTest extends TestCase
         $this->assertEquals($group1->users->first()->id, $task->user_id);
     }
 
-    public function testProcessVariableAssignmentWithInvalidUsers()
+    public function testProcessVariableAssignmentWithInvalidUsers(): void
     {
         // Create users of a group and a user without group
         $users = User::factory(2)->create(['status'=>'INACTIVE']);
@@ -99,7 +99,7 @@ class TaskAssignmentByVariableTest extends TestCase
         $this->assertEquals(0, $assignedTasks);
     }
 
-    public function testSelfServiceWithProcessVariableAssignment()
+    public function testSelfServiceWithProcessVariableAssignment(): void
     {
         $user = User::factory()->create(['status'=>'ACTIVE']);
         $group = $this->createGroup(5);
@@ -116,7 +116,7 @@ class TaskAssignmentByVariableTest extends TestCase
         $this->assertEquals(['users' => [$user->id], 'groups' =>[$group->id]], $task->self_service_groups);
     }
 
-    public function testSelfServiceClaims()
+    public function testSelfServiceClaims(): void
     {
         // Create users of a group and a user without group
         $user = User::factory()->create(['status'=>'ACTIVE']);
@@ -167,7 +167,7 @@ class TaskAssignmentByVariableTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function testSelfServiceWithUserGroupAssignment()
+    public function testSelfServiceWithUserGroupAssignment(): void
     {
         // Create users of a group and a user without group
         $users = User::factory()->count(3)->create(['status'=>'ACTIVE']);
@@ -185,7 +185,7 @@ class TaskAssignmentByVariableTest extends TestCase
         $this->assertEquals(['users' => $users->pluck('id')->toArray(), 'groups' =>[$group->id]], $task->self_service_groups);
     }
 
-    public function testSelfServiceWithExpressionAssignment()
+    public function testSelfServiceWithExpressionAssignment(): void
     {
         // Create users of a group and a user without group
         $users = User::factory()->count(5)->create(['status'=>'ACTIVE']);
@@ -220,7 +220,7 @@ class TaskAssignmentByVariableTest extends TestCase
     }
 
     // tests assignment using object values (FOUR-8708)
-    public function testProcessVariableAssignmentWithObjectVariable()
+    public function testProcessVariableAssignmentWithObjectVariable(): void
     {
         // test with variables with simple ids
         $user = User::factory()->create(['status'=>'ACTIVE']);

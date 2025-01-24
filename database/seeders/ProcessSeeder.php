@@ -33,7 +33,7 @@ class ProcessSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         if (Process::count() !== 0) {
             return;

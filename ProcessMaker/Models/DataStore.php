@@ -21,12 +21,12 @@ class DataStore implements DataStoreInterface
     private $removed = [];
 
     /**
-     * @var \ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface
+     * @var ProcessInterface
      */
     private $process;
 
     /**
-     * @var \ProcessMaker\Nayra\Contracts\Bpmn\ItemDefinitionInterface
+     * @var ItemDefinitionInterface
      */
     private $itemSubject;
 
@@ -43,7 +43,7 @@ class DataStore implements DataStoreInterface
     /**
      * Get Process of the application.
      *
-     * @param \ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface $process
+     * @param ProcessInterface $process
      *
      * @return ProcessInterface
      */

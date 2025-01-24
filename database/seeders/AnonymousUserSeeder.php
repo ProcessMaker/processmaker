@@ -14,7 +14,7 @@ class AnonymousUserSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $user = User::updateOrCreate(
             ['username' => AnonymousUser::ANONYMOUS_USERNAME],

@@ -40,7 +40,7 @@ class RequestTest extends TestCase
      *
      * @return void
      */
-    public function testIndexRoute()
+    public function testIndexRoute(): void
     {
         // get the URL
         $response = $this->webCall('GET', '/requests');
@@ -54,7 +54,7 @@ class RequestTest extends TestCase
      *
      * @return void
      */
-    public function testRequestAllRouteAsAdmin()
+    public function testRequestAllRouteAsAdmin(): void
     {
         $this->user = User::factory()->create();
         $request = ProcessRequest::factory()->create();
@@ -77,7 +77,7 @@ class RequestTest extends TestCase
      *
      * @return void
      */
-    public function testShowRouteForUser()
+    public function testShowRouteForUser(): void
     {
         $this->user = User::factory()->create();
         $request = ProcessRequest::factory()->create();
@@ -100,7 +100,7 @@ class RequestTest extends TestCase
      *
      * @return void
      */
-    public function testShowCancelRoute()
+    public function testShowCancelRoute(): void
     {
         $Request_id = ProcessRequest::factory()->create()->id;
         // get the URL
@@ -111,7 +111,7 @@ class RequestTest extends TestCase
         $response->assertSee('Requested By');
     }
 
-    public function testShowRouteWithAssignedUser()
+    public function testShowRouteWithAssignedUser(): void
     {
         $this->user = User::factory()->create();
 
@@ -123,7 +123,7 @@ class RequestTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testShowRouteWithAdministrator()
+    public function testShowRouteWithAdministrator(): void
     {
         $this->user = User::factory()->create([
             'is_administrator' => true,
@@ -135,7 +135,7 @@ class RequestTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testShowMediaFiles()
+    public function testShowMediaFiles(): void
     {
         $process_request = ProcessRequest::factory()->create();
         $file_1 = $process_request
@@ -158,7 +158,7 @@ class RequestTest extends TestCase
         $response->assertSee('photo1.jpg</a>', false);
     }
 
-    public function testCompletedCount()
+    public function testCompletedCount(): void
     {
         $completed1 = ProcessRequest::factory()->create([
             'status' => 'COMPLETED',
@@ -178,7 +178,7 @@ class RequestTest extends TestCase
      * Test show default summary tab
      * @return void
      */
-    public function testRequestShowWithCaseNumberNull()
+    public function testRequestShowWithCaseNumberNull(): void
     {
         $category = ProcessCategory::factory()->create([
             'is_system' => true,
@@ -211,7 +211,7 @@ class RequestTest extends TestCase
      * Test show the request is when the status is Error
      * @return void
      */
-    public function testRequestError()
+    public function testRequestError(): void
     {
         $process = Process::factory()->create();
         $requestCanceled = ProcessRequest::factory()->create([
@@ -232,7 +232,7 @@ class RequestTest extends TestCase
      * Test show default summary tab
      * @return void
      */
-    public function testShowDefaultSummaryTab()
+    public function testShowDefaultSummaryTab(): void
     {
         $process = Process::factory()->create();
         $process_request = ProcessRequest::factory()->create([
@@ -254,7 +254,7 @@ class RequestTest extends TestCase
      * Test show custom request detail screen summary tab
      * @return void
      */
-    public function testShowCustomRequestDetailScreenSummaryTab()
+    public function testShowCustomRequestDetailScreenSummaryTab(): void
     {
         $screen = Screen::factory()->create([
             'type' => 'DISPLAY',
@@ -282,7 +282,7 @@ class RequestTest extends TestCase
      * Without custom screen "Request Detail Screen"
      * @return void
      */
-    public function testRequestInProgressWithDataDefaultSummary()
+    public function testRequestInProgressWithDataDefaultSummary(): void
     {
         $process = Process::factory()->create();
         $requestCanceled = ProcessRequest::factory()->create([
@@ -305,7 +305,7 @@ class RequestTest extends TestCase
      * Without custom screen "Cancel Screen"
      * @return void
      */
-    public function testRequestCanceledDefaultSummary()
+    public function testRequestCanceledDefaultSummary(): void
     {
         $process = Process::factory()->create();
         $requestCompleted = ProcessRequest::factory()->create([
@@ -328,7 +328,7 @@ class RequestTest extends TestCase
      * Without end event custom screen "Summary screen"
      * @return void
      */
-    public function testRequestCompletedDefaultSummary()
+    public function testRequestCompletedDefaultSummary(): void
     {
         $process = Process::factory()->create();
         $requestCompleted = ProcessRequest::factory()->create([
@@ -351,7 +351,7 @@ class RequestTest extends TestCase
      * Without end event custom screen "Summary screen"
      * @return void
      */
-    public function testRequestCompletedWithDataDefaultSummary()
+    public function testRequestCompletedWithDataDefaultSummary(): void
     {
         $process = Process::factory()->create();
         $requestCompleted = ProcessRequest::factory()->create([
@@ -374,7 +374,7 @@ class RequestTest extends TestCase
      * With custom screen "Request Detail Screen"
      * @return void
      */
-    public function testRequestInprogressWithCustomScreenSummaryTab()
+    public function testRequestInprogressWithCustomScreenSummaryTab(): void
     {
         $screen = Screen::factory()->create([
             'type' => 'DISPLAY',
@@ -404,7 +404,7 @@ class RequestTest extends TestCase
      * With custom screen "Cancel Screen"
      * @return void
      */
-    public function testRequestCanceledWithCustomScreenSummaryTab()
+    public function testRequestCanceledWithCustomScreenSummaryTab(): void
     {
         $screen = Screen::factory()->create([
             'type' => 'DISPLAY',
@@ -434,7 +434,7 @@ class RequestTest extends TestCase
      * With custom screen "Summary Screen"
      * @return void
      */
-    public function testRequestCompletedWithCustomScreenSummaryTab()
+    public function testRequestCompletedWithCustomScreenSummaryTab(): void
     {
         $screen = Screen::factory()->create([
             'type' => 'DISPLAY',

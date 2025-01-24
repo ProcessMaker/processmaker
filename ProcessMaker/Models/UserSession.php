@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use ProcessMaker\Models\ProcessMakerModel;
 
 class UserSession extends ProcessMakerModel
@@ -21,12 +22,15 @@ class UserSession extends ProcessMakerModel
         'expired_date',
     ];
 
-    protected $casts = [
-        'is_active' => 'boolean',
-        'expired_date' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean',
+            'expired_date' => 'datetime',
+        ];
+    }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

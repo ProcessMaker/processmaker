@@ -12,7 +12,7 @@ class SettingsMenusSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         // Menu 1. Email SettingsMenus::EMAIL_GROUP_ID = 1
         // Menu 2. Integrations SettingsMenus::INTEGRATIONS_GROUP_ID = 2

@@ -3,6 +3,8 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use ProcessMaker\Exception\ExporterNotSupported;
 use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\ImportExport\Importer;
@@ -21,9 +23,12 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
     protected $appends = ['asset_count'];
 
-    protected $casts = [
-        'published' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'published' => 'boolean',
+        ];
+    }
 
     public function scopePublished($query)
     {
@@ -40,12 +45,12 @@ class Bundle extends ProcessMakerModel implements HasMedia
         return $this->dev_link_id === null;
     }
 
-    public function assets()
+    public function assets(): HasMany
     {
         return $this->hasMany(BundleAsset::class);
     }
 
-    public function devLink()
+    public function devLink(): BelongsTo
     {
         return $this->belongsTo(DevLink::class, 'dev_link_id');
     }
@@ -125,7 +130,7 @@ class Bundle extends ProcessMakerModel implements HasMedia
             'asset_id' => $asset->id,
         ]);
     }
-    
+
     public function addAssetToBundles(ProcessMakerModel $asset)
     {
         $message = null;
@@ -134,6 +139,7 @@ class Bundle extends ProcessMakerModel implements HasMedia
         } catch (ValidationException $ve) {
             $message = $ve->getMessage();
         }
+
         return $message;
     }
 

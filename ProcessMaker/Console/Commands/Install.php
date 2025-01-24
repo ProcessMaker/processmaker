@@ -95,7 +95,7 @@ class Install extends Command
      *
      * @return mixed If the command succeeds, true
      */
-    public function handle()
+    public function handle(): int
     {
         // Setup our initial encryption key and set our running laravel app key to it
         $this->key = 'base64:' . base64_encode(Encrypter::generateKey($this->laravel['config']['app.cipher']));
@@ -108,7 +108,7 @@ class Install extends Command
             'APP_ENV' => 'production',
             'APP_KEY' => $this->key,
             'APP_URL' => $this->option('url'),
-            'BROADCAST_DRIVER' => $this->option('broadcast-driver'),
+            'BROADCAST_CONNECTION' => $this->option('broadcast-driver'),
             'BROADCASTER_HOST' => null,
             'BROADCASTER_KEY' => $this->option('broadcast-key') ? $this->option('broadcast-key') : '21a795019957dde6bcd96142e05d4b10',
             'LARAVEL_ECHO_SERVER_AUTH_HOST' => null,

@@ -26,7 +26,7 @@ class DataSchema extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): int
     {
         $this->info(__('The ProcessMaker data tables will be installed.'));
 

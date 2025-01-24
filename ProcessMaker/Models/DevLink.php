@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use ProcessMaker\ImportExport\Importer;
@@ -179,7 +180,7 @@ class DevLink extends ProcessMakerModel
         return $model;
     }
 
-    public function bundles()
+    public function bundles(): HasMany
     {
         return $this->hasMany(Bundle::class);
     }

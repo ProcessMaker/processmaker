@@ -2,22 +2,23 @@
 
 namespace ProcessMaker\Jobs;
 
+use Facades\ProcessMaker\InboxRules\ApplyAction;
+use Facades\ProcessMaker\InboxRules\MatchingTasks;
+use Facades\ProcessMaker\Models\InboxRule;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Facades\ProcessMaker\InboxRules\MatchingTasks;
-use Facades\ProcessMaker\InboxRules\ApplyAction;
-use Facades\ProcessMaker\Models\InboxRule;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class SmartInboxExistingTasks implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $inboxRuleId;
+
     /**
      * Create a new job instance.
      */

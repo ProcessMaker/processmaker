@@ -14,7 +14,7 @@ class MediaPolicy
      * Run before all methods to determine if the
      * user is an admin and can do everything.
      *
-     * @param  \ProcessMaker\Models\User  $user
+     * @param  User  $user
      * @return mixed
      */
     public function before(User $user)
@@ -27,8 +27,8 @@ class MediaPolicy
     /**
      * Determine whether the user can view the media.
      *
-     * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Models\Media  $media
+     * @param  User  $user
+     * @param  Media  $media
      * @return mixed
      */
     public function view(User $user, Media $media)
@@ -43,7 +43,7 @@ class MediaPolicy
     /**
      * Determine whether the user can create media.
      *
-     * @param  \ProcessMaker\Models\User  $user
+     * @param  User  $user
      * @return mixed
      */
     public function create(User $user)
@@ -78,8 +78,8 @@ class MediaPolicy
     /**
      * Determine whether the user can update the media.
      *
-     * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Models\Media  $media
+     * @param  User  $user
+     * @param  Media  $media
      * @return mixed
      */
     public function update(User $user, Media $media)
@@ -94,8 +94,8 @@ class MediaPolicy
     /**
      * Determine whether the user can delete the media.
      *
-     * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Models\Media  $media
+     * @param  User  $user
+     * @param  Media  $media
      * @return mixed
      */
     public function delete(User $user, Media $media)

@@ -52,7 +52,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
     /**
      * Register in the database any Timer Start Event of a process
      *
-     * @param \ProcessMaker\Models\Process $process
+     * @param Process $process
      * @return void
      * @internal param string $script Path to the javascript to load
      */
@@ -139,9 +139,9 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         $today = $this->today();
         try {
             /**
-             * This validation is removed; the database schema should exist before 
+             * This validation is removed; the database schema should exist before
              * any initiation of 'jobs' and 'schedule'.
-             * 
+             *
              * if (!Schema::hasTable('scheduled_tasks')) {
              *     return;
              * }
@@ -206,7 +206,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                 }
             }
         } catch (PDOException $e) {
-            Log::error('The connection to the database had problems (scheduleTasks): ' .  $e->getMessage());
+            Log::error('The connection to the database had problems (scheduleTasks): ' . $e->getMessage());
         }
     }
 

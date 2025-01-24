@@ -17,7 +17,7 @@ class UserTest extends TestCase
 {
     use RequestHelper;
 
-    public function testPermissions()
+    public function testPermissions(): void
     {
         $president_user = User::factory()->create(['password' => Hash::make('password')]);
         $technician_user = User::factory()->create(['password' => Hash::make('password')]);
@@ -61,7 +61,7 @@ class UserTest extends TestCase
         $this->assertFalse($mom_user->hasPermission('launch.nukes'));
     }
 
-    public function testCanAnyFirst()
+    public function testCanAnyFirst(): void
     {
         $user = User::factory()->create();
 
@@ -86,7 +86,7 @@ class UserTest extends TestCase
         $this->assertEquals('baz', $user->canAnyFirst('foo|baz'));
     }
 
-    public function testAddCategoryViewPermissions()
+    public function testAddCategoryViewPermissions(): void
     {
         $testFor = [
             'processes' => 'view-process-categories',

@@ -38,7 +38,7 @@ class TaskActionByEmail
             $emailServer = $config['emailServer'] ?? 0;
             $subject = $config['subject'] ?? '';
             $emailScreenRef = $config['screenEmailRef'] ?? 0;
-    
+
             $emailConfig = [
                 'subject' => $this->mustache($subject, $data),
                 'addEmails' => $to,
@@ -47,7 +47,7 @@ class TaskActionByEmail
                 'json_data' => '{}',
                 'emailServer' => $emailServer,
             ];
-    
+
             if (!empty($emailScreenRef)) {
                 // Retrieve and render custom screen if specified
                 $customScreen = Screen::findOrFail($emailScreenRef);
@@ -56,10 +56,9 @@ class TaskActionByEmail
                 // Default message if no custom screen is configured
                 $emailConfig['body'] = __('No screen configured');
             }
-    
+
             // Send the email using emailProvider
             $this->emailProvider->send($emailConfig);
-    
         } catch (\Exception $e) {
             Log::error('Error sending ABE email', [
                 'to' => $to,

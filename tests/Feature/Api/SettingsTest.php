@@ -38,7 +38,7 @@ class SettingsTest extends TestCase
     /**
      * Test get settings menus
      */
-    public function testGetSettingsMenus()
+    public function testGetSettingsMenus(): void
     {
         SettingsMenus::query()->delete();
         // Create
@@ -64,7 +64,7 @@ class SettingsTest extends TestCase
     /**
      * Test get settings menus group related
      */
-    public function testGetSettingsMenusGroup()
+    public function testGetSettingsMenusGroup(): void
     {
         // Get setting menus
         $menus = SettingsMenus::factory()->create();
@@ -86,7 +86,7 @@ class SettingsTest extends TestCase
     /**
      * Test update settings for specific group
      */
-    public function testUpdateSettingsForSpecificGroup()
+    public function testUpdateSettingsForSpecificGroup(): void
     {
         $menus = SettingsMenus::factory()->create();
         $group = 'Custom group';
@@ -107,7 +107,7 @@ class SettingsTest extends TestCase
     /**
      * Test extended properties variable valid name validation
      */
-    public function testUpdateExtendedPropertiesWithValidVariableName()
+    public function testUpdateExtendedPropertiesWithValidVariableName(): void
     {
         $this->markTestSkipped('Not using validation in backend yet, because there are some config data that should not be validated as LDAP config...');
 
@@ -135,7 +135,7 @@ class SettingsTest extends TestCase
     /**
      * Test extended properties variable invalid name validation
      */
-    public function testUpdateExtendedPropertiesWithInvalidVariableName()
+    public function testUpdateExtendedPropertiesWithInvalidVariableName(): void
     {
         $this->markTestSkipped('Not using validation in backend yet, because there are some config data that should not be validated as LDAP config...');
 

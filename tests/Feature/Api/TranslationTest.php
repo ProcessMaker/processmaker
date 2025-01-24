@@ -19,7 +19,7 @@ class TranslationTest extends TestCase
 {
     use RequestHelper;
 
-    public function testTranslationWithDefaultLanguage()
+    public function testTranslationWithDefaultLanguage(): void
     {
         $defaultAdminUser = User::factory()->create(['is_administrator' => true]);
         $portugueseUser = User::factory()->create(['is_administrator' => true, 'language' => 'pt']);
@@ -132,7 +132,7 @@ class TranslationTest extends TestCase
         $this->assertEquals('Edad', $ageItem['config']['label']);
     }
 
-    public function testTranslationWithLanguageThatDoesNotHaveTranslation()
+    public function testTranslationWithLanguageThatDoesNotHaveTranslation(): void
     {
         $defaultAdminUser = User::factory()->create(['is_administrator' => true]);
         $portugueseUser = User::factory()->create(['is_administrator' => true, 'language' => 'pt']);
@@ -190,7 +190,7 @@ class TranslationTest extends TestCase
         $this->assertEquals('Age', $ageItem['config']['label']);
     }
 
-    public function testTranslationWithLanguageThatHasTranslation()
+    public function testTranslationWithLanguageThatHasTranslation(): void
     {
         $spanishUser = User::factory()->create(['is_administrator' => true, 'language' => 'es']);
         $this->user = User::factory()->create(['is_administrator' => true, 'language' => 'es']);

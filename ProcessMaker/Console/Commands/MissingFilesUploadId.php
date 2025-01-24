@@ -40,7 +40,7 @@ class MissingFilesUploadId extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->writeln("Searching for request with calls to sub-process\n", 'info', true);
         $aux = '';

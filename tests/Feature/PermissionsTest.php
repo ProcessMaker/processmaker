@@ -32,7 +32,7 @@ class PermissionsTest extends TestCase
         $asp->boot();
     }
 
-    public function testSetPermissionsForUser()
+    public function testSetPermissionsForUser(): void
     {
         $this->user = User::factory()->create([
             'is_administrator' => false,
@@ -54,7 +54,7 @@ class PermissionsTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testSetPermissionsForGroup()
+    public function testSetPermissionsForGroup(): void
     {
         $this->user = User::factory()->create([
             'is_administrator' => false,
@@ -88,7 +88,7 @@ class PermissionsTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testAdminPermissions()
+    public function testAdminPermissions(): void
     {
         $this->user = User::factory()->create([
             'is_administrator' => false,
@@ -109,7 +109,7 @@ class PermissionsTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testCreatePermission()
+    public function testCreatePermission(): void
     {
         $attributes = [
             'name' => 'create-package_permissions',

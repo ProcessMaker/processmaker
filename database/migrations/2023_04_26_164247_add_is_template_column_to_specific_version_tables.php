@@ -10,7 +10,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         // Add the names of the tables you want to modify here
         $tables_to_modify = ['process_versions', 'screen_versions', 'script_versions'];
@@ -29,7 +29,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         // Add the names of the tables you want to modify here
         $tables_to_modify = ['process_versions', 'screen_versions', 'script_versions'];

@@ -11,7 +11,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         $model = new ProcessRequest;
         Schema::connection($model->getConnectionName())->create('process_requests', function (Blueprint $table) {
@@ -46,7 +46,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         $model = new ProcessRequest;
         Schema::connection($model->getConnectionName())->dropIfExists('process_requests');

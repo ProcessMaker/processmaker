@@ -91,7 +91,7 @@ class PerformanceRoutesTest extends TestCase
      *
      * @dataProvider RoutesListProvider
      */
-    public function testRoutesSpeed($route, $params)
+    public function testRoutesSpeed($route, $params): void
     {
         $this->user = User::factory()->create(['is_administrator' => true]);
         Comment::factory()->count($this->dbSize)->create();

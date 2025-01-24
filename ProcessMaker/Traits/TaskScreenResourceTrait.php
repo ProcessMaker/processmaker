@@ -4,7 +4,6 @@ namespace ProcessMaker\Traits;
 
 trait TaskScreenResourceTrait
 {
-
     /**
      * Removes the inspector metadata from the screen configuration
      *
@@ -16,6 +15,7 @@ trait TaskScreenResourceTrait
         foreach ($config as $i => $page) {
             $config[$i]['items'] = $this->removeInspectorMetadataItems($page['items']);
         }
+
         return $config;
     }
 
@@ -40,6 +40,7 @@ trait TaskScreenResourceTrait
             }
             $items[$i] = $item;
         }
+
         return $items;
     }
 }

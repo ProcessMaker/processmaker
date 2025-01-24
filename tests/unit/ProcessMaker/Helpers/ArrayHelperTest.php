@@ -8,7 +8,7 @@ use Tests\TestCase;
 
 class ArrayHelperTest extends TestCase
 {
-    public function testStdClassToArray()
+    public function testStdClassToArray(): void
     {
         $myObject = new stdClass();
         $myObject->name = 'John';
@@ -22,7 +22,7 @@ class ArrayHelperTest extends TestCase
         );
     }
 
-    public function testGetArrayDifferencesWithFormat()
+    public function testGetArrayDifferencesWithFormat(): void
     {
         //Case 1: Two arrays with same keys and different values
         $this->assertEquals([
@@ -72,7 +72,7 @@ class ArrayHelperTest extends TestCase
         ));
     }
 
-    public function testReplaceKeyInArray()
+    public function testReplaceKeyInArray(): void
     {
         //Case 1: Existing Key
         $myArray = [
@@ -105,7 +105,7 @@ class ArrayHelperTest extends TestCase
         );
     }
 
-    public function testCustomArrayDiffAssoc()
+    public function testCustomArrayDiffAssoc(): void
     {
         $array1 = [
             'a' => 'green',

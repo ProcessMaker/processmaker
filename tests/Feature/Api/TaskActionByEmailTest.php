@@ -25,7 +25,7 @@ class TaskActionByEmailTest extends TestCase
     /**
      * Execute a process with an empty Action by Email
      */
-    public function testProcessWithEmptyActionByEmail()
+    public function testProcessWithEmptyActionByEmail(): void
     {
         $this->loadTestProcessUserAssignment(file_get_contents(__DIR__ . '/processes/TaskWithActionByEmailEmpty.bpmn'));
 
@@ -42,7 +42,7 @@ class TaskActionByEmailTest extends TestCase
     /**
      * Execute a process with an Action by Email
      */
-    public function testProcessWithActionByEmail()
+    public function testProcessWithActionByEmail(): void
     {
         $this->loadTestProcessUserAssignment(file_get_contents(__DIR__ . '/processes/TaskWithActionByEmail.bpmn'));
 

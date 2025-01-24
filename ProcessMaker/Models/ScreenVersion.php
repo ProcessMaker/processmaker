@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use ProcessMaker\Contracts\ScreenInterface;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasScreenFields;
@@ -26,12 +27,15 @@ class ScreenVersion extends ProcessMakerModel implements ScreenInterface
         'updated_at',
     ];
 
-    protected $casts = [
-        'config' => 'array',
-        'computed' => 'array',
-        'watchers' => 'array',
-        'translations' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'config' => 'array',
+            'computed' => 'array',
+            'watchers' => 'array',
+            'translations' => 'array',
+        ];
+    }
 
     /**
      * Set multiple|single categories to the screen
@@ -46,9 +50,9 @@ class ScreenVersion extends ProcessMakerModel implements ScreenInterface
     /**
      * Get the associated screen
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function parent()
+    public function parent(): BelongsTo
     {
         return $this->belongsTo(Screen::class, 'screen_id', 'id');
     }

@@ -10,7 +10,7 @@ class HasUuidsTest extends TestCase
 {
     use RequestHelper;
 
-    public function testSetUuidWhenCreating()
+    public function testSetUuidWhenCreating(): void
     {
         $screen = Screen::factory()->create();
         $this->assertNotNull($screen->uuid);

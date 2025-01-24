@@ -7,12 +7,12 @@ use Tests\TestCase;
 
 class SensitiveDataHelperTest extends TestCase
 {
-    public function testParseString()
+    public function testParseString(): void
     {
         $this->assertEquals('****', SensitiveDataHelper::parseString('1234'));
     }
 
-    public function testIsSensitiveKey()
+    public function testIsSensitiveKey(): void
     {
         $this->assertTrue(SensitiveDataHelper::isSensitiveKey('password'));
         $this->assertTrue(SensitiveDataHelper::isSensitiveKey('PASSWORD'));
@@ -21,7 +21,7 @@ class SensitiveDataHelperTest extends TestCase
         $this->assertFalse(SensitiveDataHelper::isSensitiveKey('name'));
     }
 
-    public function testParseArray()
+    public function testParseArray(): void
     {
         $this->assertEquals([
             'password' => '****',

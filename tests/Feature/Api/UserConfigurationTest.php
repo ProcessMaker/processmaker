@@ -22,7 +22,7 @@ class UserConfigurationTest extends TestCase
     /**
      * Test get deafult user configuration
      */
-    public function testGetDefaultUserConfiguration()
+    public function testGetDefaultUserConfiguration(): void
     {
         // Call the api GET
         $response = $this->apiCall('GET', self::API_TEST_URL);
@@ -39,7 +39,7 @@ class UserConfigurationTest extends TestCase
     /**
      * Test store user configuration and get the new values
      */
-    public function testStoreUserConfigurationAndGetNewValues()
+    public function testStoreUserConfigurationAndGetNewValues(): void
     {
         // Call the api PUT
         $values = [
@@ -79,7 +79,7 @@ class UserConfigurationTest extends TestCase
     /**
      * Test store user configuration with invalid values
      */
-    public function testStoreUserConfigurationWithInvalidValues()
+    public function testStoreUserConfigurationWithInvalidValues(): void
     {
         // With no values
         $response = $this->apiCall('PUT', self::API_TEST_URL);

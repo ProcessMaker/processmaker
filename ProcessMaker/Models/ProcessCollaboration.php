@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use ProcessMaker\Traits\HasUuids;
 
 /**
@@ -51,7 +52,7 @@ class ProcessCollaboration extends ProcessMakerModel
     /**
      * Get requests in the collaboration.
      */
-    public function requests()
+    public function requests(): HasMany
     {
         return $this->hasMany(ProcessRequest::class);
     }

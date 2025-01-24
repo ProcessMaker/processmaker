@@ -11,7 +11,7 @@ class SearchAutocompleteTraitTest extends TestCase
 {
     use RequestHelper;
 
-    public function testDoesNotIncludeSystemProcesses()
+    public function testDoesNotIncludeSystemProcesses(): void
     {
         $regularProcessCategory = ProcessCategory::factory()->create();
         $systemProcessCategory = ProcessCategory::factory()->create(['is_system' => true]);

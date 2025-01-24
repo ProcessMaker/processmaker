@@ -11,7 +11,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         $model = new ProcessRequest();
         Schema::connection($model->getConnectionName())->table('request_user_permissions', function (Blueprint $table) {
@@ -27,7 +27,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::connection($model->getConnectionName())->table('request_user_permissions', function (Blueprint $table) {
             $table->dropColumn(['id']);

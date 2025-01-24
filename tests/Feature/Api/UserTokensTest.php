@@ -21,7 +21,7 @@ class UserTokensTest extends TestCase
     /**
      * Get a list of User tokens without query parameters.
      */
-    public function testListTokensWithEmptyTokens()
+    public function testListTokensWithEmptyTokens(): void
     {
         $user = $this->user;
         $response = $this->apiCall('GET', '/users/' . $user->id . '/tokens');
@@ -36,7 +36,7 @@ class UserTokensTest extends TestCase
     /**
      * Get a list of User tokens without query parameters for another user.
      */
-    public function testListTokensWithEmptyTokensForOtherUser()
+    public function testListTokensWithEmptyTokensForOtherUser(): void
     {
         $user = User::factory()->create();
         $response = $this->apiCall('GET', '/users/' . $user->id . '/tokens');
@@ -48,7 +48,7 @@ class UserTokensTest extends TestCase
         $this->assertEquals(0, $response->json()['meta']['total']);
     }
 
-    public function testPermissionDeniedForUserWithoutViewPermissions()
+    public function testPermissionDeniedForUserWithoutViewPermissions(): void
     {
         $this->debug = false;
         $user = User::factory()->create();
@@ -63,7 +63,7 @@ class UserTokensTest extends TestCase
     /**
      * Test validation failure
      */
-    public function testTokenCreateValidationError()
+    public function testTokenCreateValidationError(): void
     {
         $user = $this->user;
         $response = $this->apiCall('POST', '/users/' . $user->id . '/tokens');
@@ -72,7 +72,7 @@ class UserTokensTest extends TestCase
         $response->assertStatus(422);
     }
 
-    public function testPermissionDeniedForUserWithoutEditPermissionsForCreatingToken()
+    public function testPermissionDeniedForUserWithoutEditPermissionsForCreatingToken(): void
     {
         $this->debug = false;
         $user = User::factory()->create();
@@ -87,7 +87,7 @@ class UserTokensTest extends TestCase
     /**
      * Test creation of a user token with a default expire of 1 year
      */
-    public function testCreateTokenDefaultExpire()
+    public function testCreateTokenDefaultExpire(): void
     {
         $now = new Carbon();
         $user = $this->user;
@@ -108,7 +108,7 @@ class UserTokensTest extends TestCase
         $this->assertTrue($checkDate->equalTo($expireDate));
     }
 
-    public function testListingWithExistingToken()
+    public function testListingWithExistingToken(): void
     {
         $user = $this->user;
         $response = $this->apiCall('POST', '/users/' . $user->id . '/tokens', [
@@ -127,7 +127,7 @@ class UserTokensTest extends TestCase
         $this->assertEquals(1, $response->json()['meta']['total']);
     }
 
-    public function testShowToken()
+    public function testShowToken(): void
     {
         $user = $this->user;
         $response = $this->apiCall('POST', '/users/' . $user->id . '/tokens', [
@@ -144,7 +144,7 @@ class UserTokensTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testPermissionDeniedForUserWithoutViewPermissionsForViewingToken()
+    public function testPermissionDeniedForUserWithoutViewPermissionsForViewingToken(): void
     {
         $this->debug = false;
 
@@ -170,7 +170,7 @@ class UserTokensTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function testRevokeTokenForUser()
+    public function testRevokeTokenForUser(): void
     {
         $user = $this->user;
         $response = $this->apiCall('POST', '/users/' . $user->id . '/tokens', [
@@ -197,7 +197,7 @@ class UserTokensTest extends TestCase
         $this->assertEquals(0, $response->json()['meta']['total']);
     }
 
-    public function testPermissionDeniedForUserWithoutEditPermissionsForDeletingToken()
+    public function testPermissionDeniedForUserWithoutEditPermissionsForDeletingToken(): void
     {
         $this->debug = false;
 
@@ -223,7 +223,7 @@ class UserTokensTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function test404WithRevokeOfUnknownToken()
+    public function test404WithRevokeOfUnknownToken(): void
     {
         $user = $this->user;
         $response = $this->apiCall('DELETE', '/users/' . $user->id . '/tokens/12345');

@@ -48,6 +48,6 @@ interface EncryptedDataInterface
 
     /**
      * Get IV value
-    */
+     */
     public function getIv(): string;
 }

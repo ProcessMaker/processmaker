@@ -7,7 +7,7 @@
     ],
     "homepage": "http://processmaker.com",
     "license": "GAGPL-3.0-or-later",
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
         "php": "^8.3",
@@ -22,7 +22,7 @@
         "guzzlehttp/guzzle": "^7.9",
         "igaster/laravel-theme": "^2.0",
         "jenssegers/agent": "^2.6",
-        "laravel/framework": "^11.0",
+        "laravel/framework": "^11.39",
         "laravel/horizon": "^5.30",
         "laravel/pail": "^1.2",
         "laravel/passport": "^12.3",
@@ -30,7 +30,6 @@
         "laravel/telescope": "^5.2",
         "laravel/tinker": "^2.10",
         "laravel/ui": "^4.6",
-
         "lavary/laravel-menu": "^1.8",
         "lcobucci/jwt": "^5.4",
         "league/flysystem-aws-s3-v3": "^3.29",
@@ -77,8 +76,7 @@
         "nunomaduro/collision": "^8.5",
         "phpunit/phpunit": "^11.5",
         "squizlabs/php_codesniffer": "^3.11",
-        "symfony/dom-crawler": "^7.2",
-        "spatie/laravel-ignition": "^2.9"
+        "symfony/dom-crawler": "^7.2"
     },
     "autoload": {
         "files": [
