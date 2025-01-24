@@ -11,27 +11,46 @@
 
       <template #content>
         <div
-          class="tw-shadow-md tw-text-xs tw-p-4 tw-h-60 tw-space-y-2 tw-flex tw-flex-col tw-justify-between
-            tw-font-normal tw-bg-white tw-text-gray-600tw-overflow-hidden tw-rounded-lg tw-border tw-border-gray-300">
-          <SortingButtons
-            @asc="onAsc"
-            @desc="onDesc" />
+          class="tw-shadow-md tw-text-xs tw-space-y-2 tw-flex tw-flex-col tw-justify-between
+            tw-font-normal tw-bg-white tw-text-gray-600 tw-overflow-hidden tw-rounded-lg tw-border tw-border-gray-300">
+          <div
+            v-if="filter.operators"
+            class="tw-flex tw-flex-col tw-space-y-2 tw-px-4 tw-pt-4">
+            <SortingButtons
+              @asc="onAsc"
+              @desc="onDesc" />
 
-          <div class="tw-grow tw-overflow-auto tw-space-y-4">
-            <FilterOperator
-              :key="key"
-              ref="filterOperatorsRef"
-              :value="filterOperator"
-              :operators="filter.operators"
-              :type="filter.dataType"
-              :config="filter.config"
-              @change="(e) => onChangeFilterOperator(e)" />
+            <div class="tw-grow tw-overflow-auto tw-space-y-4">
+              <FilterOperator
+                :key="key"
+                ref="filterOperatorsRef"
+                :value="filterOperator"
+                :operators="filter.operators"
+                :type="filter.dataType"
+                :config="filter.config"
+                @change="(e) => onChangeFilterOperator(e)" />
+            </div>
+
+            <FooterButtons
+              @cancel="onCancel"
+              @clear="onClear"
+              @apply="onApply" />
           </div>
-
-          <FooterButtons
-            @cancel="onCancel"
-            @clear="onClear"
-            @apply="onApply" />
+          <div
+            v-if="filter.resetTable"
+            :class="{
+              'tw-border-t': filter.operators,
+            }"
+            class="tw-flex tw-border-gray-300 tw-justify-start tw-p-4">
+            <div
+              id="reset-table-btn"
+              class="tw-flex tw-text-gray-500 tw-space-x-2 tw-bg-transparent
+                hover:tw-opacity-80 hover:tw-cursor-pointer tw-justify-center tw-items-center"
+              @click="onResetTable">
+              <i class="fas fa-reply" />
+              <span>{{ $t("Reset Table") }}</span>
+            </div>
+          </div>
         </div>
       </template>
     </AppPopover>
@@ -98,6 +117,12 @@ const onClear = () => {
     ...filter,
     sortable: null,
   });
+
+  show.value = false;
+};
+
+const onResetTable = () => {
+  emit("resetTable");
 
   show.value = false;
 };

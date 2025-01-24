@@ -15,7 +15,8 @@
         :filter="column.filter"
         :value="getFilter(index, column)"
         @change="e=> onChangeFilter(column, e, index)"
-        @clear="e=> onClear(column, e, index)" />
+        @clear="e=> onClear(column, e, index)"
+        @resetTable="e=> onResetTable()" />
     </template>
     <template #placeholder>
       <slot name="placeholder" />
@@ -81,8 +82,22 @@ const onClear = (column, val, index) => {
   emit("changeFilter", filters.value);
 };
 
+const onResetTable = () => {
+  filters.value = [];
+
+  emit("resetFilters", filters.value);
+};
+
 const removeFilter = (index) => {
   filters.value.splice(index, 1);
+};
+
+const removeAllFilters = () => {
+  filters.value = [];
+};
+
+const addFilters = (filtersValue) => {
+  filters.value = filtersValue;
 };
 
 const getFilter = (index, column) => {
@@ -97,5 +112,7 @@ const hasFilter = (index, column) => {
 
 defineExpose({
   removeFilter,
+  removeAllFilters,
+  addFilters,
 });
 </script>

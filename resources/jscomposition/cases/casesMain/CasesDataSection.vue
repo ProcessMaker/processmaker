@@ -3,13 +3,26 @@
     <CaseFilter @enter="onChangeSearch" />
     <BadgesSection
       v-model="badgesData"
-      @remove="onRemoveBadge" />
+      @remove="onRemoveBadge">
+      <template #endsection>
+        <div
+          id="reset-table-btn"
+          class="tw-flex tw-text-gray-500 tw-space-x-2 tw-bg-transparent
+            tw-text-xs tw-border-l tw-border-gray-300 tw-pl-2
+            hover:tw-opacity-80 hover:tw-cursor-pointer tw-justify-center tw-items-center"
+          @click="onResetTable">
+          <i class="fas fa-reply" />
+          <span>{{ $t("Reset Table") }}</span>
+        </div>
+      </template>
+    </BadgesSection>
     <FilterableTable
       ref="table"
       :columns="columnsConfig"
       :data="data"
       :placeholder="showPlaceholder"
-      @changeFilter="onChangeFilter">
+      @changeFilter="onChangeFilter"
+      @resetFilters="onChangeFilter">
       <template #placeholder>
         <TablePlaceholder
           :placeholder="placeholderType"
@@ -160,11 +173,22 @@ const onRemoveBadge = async (badge, index) => {
   await hookGetData();
 };
 
+const onResetTable = async () => {
+  filters.value = [];
+  badgesData.value = [];
+  dataPagination.value.page = 1; // Reset page to 1
+  saveFilters(filters.value);
+
+  table.value.removeAllFilters();
+  await hookGetData();
+};
+
 onMounted(async () => {
   getFilters().then((response) => {
     const filtersSaved = formatFilterSaved(response.data.filters);
     filters.value = filtersSaved;
     badgesData.value = formatFilterBadges(filtersSaved, columnsConfig.value);
+    table.value.addFilters(filtersSaved);
     hookGetData();
   });
 
