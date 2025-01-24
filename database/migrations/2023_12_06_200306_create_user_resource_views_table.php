@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserResourceViewsTable extends Migration
+return new class extends Migration
 {
     public function up()
     {
@@ -29,4 +29,4 @@ class CreateUserResourceViewsTable extends Migration
     {
         Schema::dropIfExists('user_resource_views');
     }
-}
+};

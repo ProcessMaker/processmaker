@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class ModifyWizardTemplatesTable extends Migration
+return new class extends Migration
 {
     public function up()
     {
@@ -52,4 +52,4 @@ class ModifyWizardTemplatesTable extends Migration
             $table->dropColumn('config_collection_id');
         });
     }
-}
+};
