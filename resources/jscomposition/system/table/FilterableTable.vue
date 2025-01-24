@@ -3,6 +3,7 @@
     :columns="columns"
     :data="data"
     :placeholder="placeholder"
+    :config="config"
     class="tw-grow">
     <template
       v-for="(column, index) in columns"
@@ -41,6 +42,10 @@ const props = defineProps({
   placeholder: {
     type: Boolean,
     default: () => false,
+  },
+  config: {
+    type: Object,
+    default: () => {},
   },
 });
 

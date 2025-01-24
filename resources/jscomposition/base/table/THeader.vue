@@ -1,8 +1,9 @@
 <template>
   <th
     class="tw-relative thead-resizable tw-p-0"
-    :style="{ width: width + 'px' }">
+    :style="{ width: width }">
     <div
+      :style="{ width: width }"
       class="tw-py-3 tw-px-3 tw-text-left tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis">
       <slot>
         {{ $t(getValue()) }}
@@ -22,7 +23,7 @@
 
 <script>
 import { isFunction } from "lodash";
-import { defineComponent, computed } from "vue";
+import { defineComponent, computed, ref } from "vue";
 import { columnResizeComposable } from "./composables/columnComposable";
 
 export default defineComponent({
@@ -39,7 +40,14 @@ export default defineComponent({
   setup(props, { emit }) {
     const columnResize = columnResizeComposable(props.column);
 
-    const width = computed(() => props.column.width || 200);
+    const index = computed(() => props.columns.findIndex((column) => column.field === props.column.field));
+
+    const width = computed(() => {
+      if (index.value === props.columns.length - 1) {
+        return "auto";
+      }
+      return `${props.column.width || 200}px`;
+    });
 
     const getValue = () => {
       if (isFunction(props.column?.headerFormatter)) {
@@ -50,6 +58,7 @@ export default defineComponent({
     };
     return {
       getValue,
+      index,
       width,
       columnResize,
     };

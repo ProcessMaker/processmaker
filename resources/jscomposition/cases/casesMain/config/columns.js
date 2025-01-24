@@ -1,7 +1,7 @@
 import { t } from "i18next";
 import {
   CaseTitleCell,
-  TruncatedOptionsCell,
+  TruncatedGroupOptionsCell,
   ParticipantsCell,
   StatusCell,
   LinkCell,
@@ -33,7 +33,7 @@ export const caseNumberColumn = () => ({
   field: "case_number",
   header: "Case #",
   resizable: true,
-  width: 100,
+  width: 144,
   filter: {
     dataType: "string",
     operators: ["=", ">", ">=", "in", "between"],
@@ -90,15 +90,37 @@ export const taskColumn = () => ({
     resetTable: true,
   },
   cellRenderer: () => ({
-    component: TruncatedOptionsCell,
+    component: TruncatedGroupOptionsCell,
     params: {
       href: (option) => `/tasks/${option.id}/edit`,
       formatterOptions: (option, row, column, columns) => option.name,
-      filterData: (row, column, columns) => {
+      formatData: (row, column, columns) => {
         if (row.case_status === "COMPLETED") {
           return [];
         }
-        return row.tasks.filter((el) => el.status === "ACTIVE");
+
+        const groupedTasks = row.tasks.reduce((acc, task) => {
+          if (task.status !== "ACTIVE") {
+            return acc;
+          }
+
+          const processId = task.process_id;
+          const existGroup = acc.find((group) => group.process_id === processId);
+
+          if (existGroup) {
+            existGroup.options.push(task);
+          } else {
+            acc.push({
+              process_id: processId,
+              options: [task],
+              ...row.processes.find((process) => process.id === processId),
+            });
+          }
+
+          return acc;
+        }, []);
+
+        return groupedTasks;
       },
     },
   }),
@@ -175,7 +197,7 @@ export const completedColumn = () => ({
   field: "completed_at",
   header: "Completed",
   resizable: true,
-  width: 200,
+  width: "auto",
   formatter: (row, column, columns) => formatDate(row.completed_at, "datetime"),
   filter: {
     dataType: "datetime",
