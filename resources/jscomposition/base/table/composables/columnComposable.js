@@ -20,9 +20,6 @@ export const columnResizeComposable = (column) => {
       const diff = event.pageX - startX.value;
       const min = minWidth;
       const currentWidth = Math.max(min, startWidth.value + diff);
-
-      console.log("doResize", currentWidth);
-
       column.width = currentWidth;
     }
   };
@@ -40,7 +37,6 @@ export const columnResizeComposable = (column) => {
     isResizing.value = true;
     startX.value = event.pageX;
     startWidth.value = column.width || minWidth;
-    console.log("startResize", startWidth.value);
 
     document.addEventListener("mousemove", doResize);
     document.addEventListener("mouseup", stopResize);

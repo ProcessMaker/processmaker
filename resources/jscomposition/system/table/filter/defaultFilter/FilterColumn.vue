@@ -4,15 +4,17 @@
       v-model="show"
       :hover="false"
       position="bottom">
-      <i
-        class="hover:tw-cursor-pointer hover:hover:tw-text-blue-500"
-        :class="iconClass()"
-        @click.prevent="onClick" />
-
+      <div
+        class="tw-text-xs tw-py-1 tw-px-1 hover:tw-cursor-pointer
+        hover:tw-bg-gray-200 tw-rounded">
+        <i
+          :class="iconClass()"
+          @click.prevent="onClick" />
+      </div>
       <template #content>
         <div
           class="tw-shadow-md tw-text-xs tw-p-4 tw-h-60 tw-space-y-2 tw-flex tw-flex-col tw-justify-between
-            tw-font-normal tw-bg-white tw-text-gray-600tw-overflow-hidden tw-rounded-lg tw-border tw-border-gray-300">
+            tw-font-normal tw-bg-white tw-text-gray-600 tw-overflow-hidden tw-rounded-lg tw-border tw-border-gray-300">
           <SortingButtons
             @asc="onAsc"
             @desc="onDesc" />

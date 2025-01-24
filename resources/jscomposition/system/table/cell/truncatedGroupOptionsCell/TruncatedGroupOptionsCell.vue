@@ -11,7 +11,7 @@
       </a>
       <span
         v-else
-        class="hover:tw-text-blue-400 tw-text-gray-500 hover:tw-cursor-pointer"
+        class="hover:tw-text-blue-400 hover:tw-cursor-pointer"
         href="#"
         @click.prevent.stop="onClickOption(optionsModel[0].options[0])">
         {{ getValueOption(optionsModel[0].options[0]) }}
