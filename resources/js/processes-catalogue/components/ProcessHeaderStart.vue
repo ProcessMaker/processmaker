@@ -15,12 +15,12 @@
           </div>
         </div>
         <div class="d-flex align-items-center flex-shrink-0">
-          <button class="info-button mx-2" 
+          <button class="info-button mx-3" 
             :class="showProcessInfo ? 'info-button-active' : 'info-button'"
             @click="handleInfoClick">
             <span>i</span>
           </button>
-          <div class="card-bookmark mx-2">
+          <div class="card-bookmark mx-3">
             <bookmark :process="process" />
           </div>
           <span class="ellipsis-border">
@@ -220,8 +220,8 @@ export default {
 }
 
 .info-button {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   background-color: #6A7887;
   border: none;
   border-radius: 4px;

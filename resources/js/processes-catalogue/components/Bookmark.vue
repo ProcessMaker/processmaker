@@ -69,7 +69,7 @@ export default {
 <style lang="scss" scoped>
 @import '~styles/variables';
 .bookmark {
-  font-size: 1.5em;
+  font-size: 20px;
 }
 .bookmark:hover {
   cursor: pointer;
