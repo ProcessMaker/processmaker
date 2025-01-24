@@ -4,6 +4,8 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
+use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Facades\Docker;
 use ProcessMaker\Traits\Exportable;
@@ -56,7 +58,7 @@ class ScriptExecutor extends ProcessMakerModel
     use HideSystemResources;
 
     protected $fillable = [
-        'title', 'description', 'language', 'config', 'is_system',
+        'title', 'description', 'language', 'config', 'is_system', 'type',
     ];
 
     // Lua and R are deprecated. This scope can be removed
@@ -160,6 +162,11 @@ class ScriptExecutor extends ProcessMakerModel
             'language' => [
                 'required',
                 Rule::in($allowedLanguages),
+            ],
+            'type' => [
+                'sometimes',
+                new Enum(ScriptExecutorType::class),
+                'nullable',
             ],
         ];
     }
