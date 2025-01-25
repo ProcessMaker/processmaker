@@ -106,6 +106,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
                     'token_id' => $this->tokenId,
                     'data' => $data,
                     'attempts' => $this->attemptNum,
+                    'job_class' => get_class($this),
                 ],
             ];
             $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling->timeout(), 1, $metadata);

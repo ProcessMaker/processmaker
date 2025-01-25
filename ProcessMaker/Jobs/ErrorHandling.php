@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Jobs;
 
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
@@ -12,7 +13,10 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptVersion;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Notifications\ErrorExecutionNotification;
+use Throwable;
 
 class ErrorHandling
 {
@@ -35,29 +39,52 @@ class ErrorHandling
      */
     public $defaultErrorHandling = [];
 
+    public $job;
+
+    public $exception;
+
+    public $metadata;
+
     public function __construct(
-        public $element,
-        public $processRequestToken,
+        public ActivityInterface $element,
+        public ProcessRequestToken $processRequestToken,
     ) {
         $this->bpmnErrorHandling = json_decode($element->getProperty('errorHandling'), true) ?? [];
     }
 
-    public function handleRetries($job, $exception)
+    public function handleRetries(ShouldQueue $job, Throwable $exception)
     {
-        $message = $exception->getMessage();
+        $this->job = $job;
+        $this->exception = $exception;
+
+        return $this->handldRetryAttempts();
+    }
+
+    public function handleRetriesForScriptMicroservice(Throwable $exception, array $metadata)
+    {
+        $this->metadata = $metadata;
+        $this->exception = $exception;
+
+        return $this->handldRetryAttempts();
+    }
+
+    private function handldRetryAttempts()
+    {
         $finalAttempt = true;
+        $attemptNumber = $this->getAttemptNumber();
+        $message = $this->getMessage();
 
         if ($this->retryAttempts() > 0) {
-            if ($job->attemptNum <= $this->retryAttempts()) {
-                Log::info('Retry the job process. Attempt ' . $job->attemptNum . ' of ' . $this->retryAttempts() . ', Wait time: ' . $this->retryWaitTime());
-                $this->requeue($job);
+            if ($attemptNumber <= $this->retryAttempts()) {
+                Log::info('Retry the job process. Attempt ' . $attemptNumber . ' of ' . $this->retryAttempts() . ', Wait time: ' . $this->retryWaitTime());
+                $this->requeue();
 
                 $finalAttempt = false;
 
                 return [$message, $finalAttempt];
             }
 
-            $message = __('Job failed after :attempts total attempts', ['attempts' => $job->attemptNum]) . "\n" . $message;
+            $message = __('Job failed after :attempts total attempts', ['attempts' => $attemptNumber]) . "\n" . $message;
 
             $this->sendExecutionErrorNotification($message);
         } else {
@@ -67,24 +94,44 @@ class ErrorHandling
         return [$message, $finalAttempt];
     }
 
-    private function requeue($job)
+    private function requeue()
     {
-        $class = get_class($job);
-        if ($job instanceof RunNayraServiceTask) {
+        if ($this->job instanceof RunNayraServiceTask) {
             $newJob = new RunNayraServiceTask($this->processRequestToken);
-            $newJob->attemptNum = $job->attemptNum + 1;
+            $newJob->attemptNum = $this->attemptNumber + 1;
         } else {
-            $newJob = new $class(
-                Process::findOrFail($job->definitionsId),
-                ProcessRequest::findOrFail($job->instanceId),
-                ProcessRequestToken::findOrFail($job->tokenId),
-                $job->data,
-                $job->attemptNum + 1
+            $jobClass = $this->getJobClass();
+            $newJob = new $jobClass(
+                $this->processRequestToken->process,
+                $this->processRequestToken->processRequest,
+                $this->processRequestToken,
+                $this->getData(),
+                $this->getAttemptNumber() + 1
             );
         }
         $newJob->delay($this->retryWaitTime());
         $newJob->onQueue('bpmn');
         dispatch($newJob);
+    }
+
+    private function getData()
+    {
+        return $this->job ? $this->job->data : $this->metadata['data'];
+    }
+
+    private function getAttemptNumber()
+    {
+        return $this->job ? $this->job->attemptNum : $this->metadata['attemptNum'];
+    }
+
+    private function getMessage()
+    {
+        $this->exception->getMessage();
+    }
+
+    private function getJobClass()
+    {
+        return $this->job ? get_class($this->job) : $this->metadata['job_class'];
     }
 
     /**
@@ -205,15 +252,5 @@ class ErrorHandling
             'retry_attempts' => Arr::get($endpointConfig, 'retry_attempts', 0),
             'retry_wait_time' => Arr::get($endpointConfig, 'retry_wait_time', 5),
         ];
-    }
-
-    public static function convertResponseToException($result)
-    {
-        if ($result['status'] === 'error') {
-            if (str_starts_with($result['message'], 'Command exceeded timeout of')) {
-                throw new ScriptTimeoutException($result['message']);
-            }
-            throw new ScriptException($result['message']);
-        }
     }
 }

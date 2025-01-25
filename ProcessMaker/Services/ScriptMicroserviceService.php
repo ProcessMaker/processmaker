@@ -5,7 +5,11 @@ namespace ProcessMaker\Services;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Events\ScriptResponseEvent;
+use ProcessMaker\Exception\ScriptException;
+use ProcessMaker\Exception\ScriptTimeoutException;
 use ProcessMaker\Jobs\CompleteActivity;
+use ProcessMaker\Jobs\ErrorHandling;
+use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -40,6 +44,24 @@ class ScriptMicroserviceService
             if ($response['status'] === 'success') {
                 CompleteActivity::dispatch($definitions, $instance, $token, $response['output'])->onQueue('bpmn');
             }
+        }
+
+        try {
+            $this->convertResponseToException($response);
+        } catch (ScriptException|ScriptTimeoutException $e) {
+            $element = $definitions->getElementInstanceById($token->element_id);
+            $errorHandling = new ErrorHandling($element, $token);
+            $errorHandling->handleRetriesForScriptMicroservice($e, $response['metadata']);
+        }
+    }
+
+    public function convertResponseToException($response)
+    {
+        if ($response['status'] === 'error') {
+            if (str_starts_with($response['message'], 'Command exceeded timeout of')) {
+                throw new ScriptTimeoutException($response['message']);
+            }
+            throw new ScriptException($response['message']);
         }
     }
 }
