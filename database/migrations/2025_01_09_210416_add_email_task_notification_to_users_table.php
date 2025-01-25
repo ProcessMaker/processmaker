@@ -13,7 +13,7 @@ return new class extends Migration {
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->boolean('email_task_notification')->default(1);
+            $table->boolean('email_task_notification')->default(0);
         });
     }
 
