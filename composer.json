@@ -30,7 +30,6 @@
         "laravel/telescope": "^5.2",
         "laravel/tinker": "^2.10",
         "laravel/ui": "^4.6",
-
         "lavary/laravel-menu": "^1.8",
         "lcobucci/jwt": "^5.4",
         "league/flysystem-aws-s3-v3": "^3.29",
@@ -58,7 +57,7 @@
         "ralouphie/getallheaders": "^3.0",
         "simplesoftwareio/simple-qrcode": "*",
         "spatie/laravel-fractal": "^6.3",
-        "spatie/laravel-html": "*",
+        "spatie/laravel-html": "^3.11",
         "spatie/laravel-medialibrary": "^11.11",
         "spomky-labs/otphp": "^11.3",
         "symfony/expression-language": "^7.2",
