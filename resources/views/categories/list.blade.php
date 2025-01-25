@@ -53,18 +53,16 @@
         <pm-modal ref="createCategoryModal" id="createCategoryModal" :title="getTitle()" @hidden="onClose" @ok.prevent="onSubmit" :ok-disabled="disabled" style="display: none;">
             <required></required>
             <div class="form-group">
-                {!!Form::label('category-name', __('Category Name'))!!}<small class="ml-1">*</small>
-                {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name', 'id' => 'category-name',
-                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}', 'required', 'aria-required' => 'true'])!!}
+                {{ html()->label(__('Category Name'), 'category-name') }}<small class="ml-1">*</small>
+                {{ html()->text('name')->class('form-control')->attribute('v-model', 'name')->id('category-name')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':errors.name}')->required()->attribute('aria-required', 'true') }}
                 <small class="form-text text-muted" v-if="! errors.name">
                     {{ __('The category name must be unique.') }}
                 </small>
                 <div class="invalid-feedback" role="alert" v-for="name in errors.name">@{{name}}</div>
             </div>
             <div class="form-group">
-                {!! Form::label('status', __('Status')) !!}
-                {!! Form::select('status', ['ACTIVE' => __('Active'), 'INACTIVE' => __('Inactive')], null, ['id' => 'status',
-                'class' => 'form-control', 'v-model' => 'status', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.status}']) !!}
+                {{ html()->label(__('Status'), 'status') }}
+                {{ html()->select('status', ['ACTIVE' => __('Active'), 'INACTIVE' => __('Inactive')])->id('status')->class('form-control')->attribute('v-model', 'status')->attribute('v-bind:class', '{"form-control":true, "is-invalid":errors.status}') }}
                 <div class="invalid-feedback" role="alert" v-for="status in errors.status">@{{status}}</div>
             </div>
         </pm-modal>

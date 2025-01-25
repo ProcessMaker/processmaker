@@ -42,9 +42,8 @@
                         <div class="tab-pane fade show active" id="nav-config" role="tabpanel" aria-labelledby="nav-config-tab">
                             <required></required>
                             <div class="form-group">
-                            {!! Form::label('title', __('Name')  . '<small class="ml-1">*</small>', [], false) !!}
-                            {!! Form::text('title', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'formData.title',
-                            'v-bind:class' => '{"form-control":true, "is-invalid":errors.title}', 'required', 'aria-required' => 'true']) !!}
+                            {{ html()->label(__('Name') . '<small class="ml-1">*</small>', 'title') }}
+                            {{ html()->text('title')->id('title')->class('form-control')->attribute('v-model', 'formData.title')->attribute('v-bind:class', '{"form-control":true, "is-invalid":errors.title}')->required()->attribute('aria-required', 'true') }}
                             <small class="form-text text-muted"
                                   v-if="! errors.title">{{ __('The script name must be unique.') }}</small>
                             <div class="invalid-feedback" role="alert" v-if="errors.title">@{{errors.title[0]}}</div>
@@ -71,17 +70,15 @@
                             }
                         @endphp
                         <div class="form-group">
-                            {!!Form::label('script_executor_id', __('Script Executor'))!!}<small class="ml-1">*</small>
-                            {!!Form::select('script_executor_id', [''=>__('Select')] + $scriptExecutorsLang, null, ['class'=>
-                            'form-control', 'v-model'=> 'formData.script_executor_id', 'v-bind:class' => '{\'form-control\':true,
-                            \'is-invalid\':errors.script_executor_id}', 'required', 'aria-required' => 'true']);!!}
+                            {{ html()->label(__('Script Executor'), 'script_executor_id') }}<small class="ml-1">*</small>
+                            {{ html()->select('script_executor_id', ['' => __('Select')] + $scriptExecutorsLang)->class('form-control')->attribute('v-model', 'formData.script_executor_id')->attribute('v-bind:class', '{\'form-control\':true,
+                            \'is-invalid\':errors.script_executor_id}')->required()->attribute('aria-required', 'true') }}
                             <div class="invalid-feedback" role="alert" v-if="errors.script_executor_id">@{{errors.script_executor_id[0]}}</div>
                         </div>
 
                         <div class="form-group">
-                            {!! Form::label('description', __('Description') . '<small class="ml-1">*</small>', [], false) !!}
-                            {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control',
-                            'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}', 'required', 'aria-required' => 'true']) !!}
+                            {{ html()->label(__('Description') . '<small class="ml-1">*</small>', 'description') }}
+                            {{ html()->textarea('description')->id('description')->rows(4)->class('form-control')->attribute('v-model', 'formData.description')->attribute('v-bind:class', '{"form-control":true, "is-invalid":errors.description}')->required()->attribute('aria-required', 'true') }}
                             <div class="invalid-feedback" role="alert" v-if="errors.description">@{{errors.description[0]}}</div>
                         </div>
 
@@ -124,8 +121,8 @@
                         ></component>
                         <br>
                         <div class="text-right">
-                            {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                            {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
+                            {{ html()->button(__('Cancel'), 'button')->class('btn btn-outline-secondary')->attribute('@click', 'onClose') }}
+                            {{ html()->button(__('Save'), 'button')->class('btn btn-secondary ml-2')->attribute('@click', 'onUpdate') }}
                         </div>
                         </div>
                         @isset($addons)

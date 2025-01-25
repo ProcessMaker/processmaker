@@ -41,16 +41,14 @@
                         <div class="tab-pane fade show active" id="nav-config" role="tabpanel" aria-labelledby="nav-config-tab">
                             <required></required>
                             <div class="form-group">
-                                {!! Form::label('title', __('Name')  . '<small class="ml-1">*</small>', [], false) !!}
-                                {!! Form::text('title', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'formData.title',
-                                'v-bind:class' => '{"form-control":true, "is-invalid":errors.title}', 'required', 'aria-required' => 'true']) !!}
+                                {{ html()->label(__('Name') . '<small class="ml-1">*</small>', 'title') }}
+                                {{ html()->text('title')->id('title')->class('form-control')->attribute('v-model', 'formData.title')->attribute('v-bind:class', '{"form-control":true, "is-invalid":errors.title}')->required()->attribute('aria-required', 'true') }}
                                 <small class="form-text text-muted" v-if="! errors.title">{{__('The screen name must be unique.') }}</small>
                                 <div class="invalid-feedback" role="alert" v-if="errors.title">@{{errors.title[0]}}</div>
                             </div>
                             <div class="form-group">
-                                {!! Form::label('description', __('Description') . '<small class="ml-1">*</small>', [], false) !!}
-                                {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control',
-                                'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}', 'required', 'aria-required' => 'true']) !!}
+                                {{ html()->label(__('Description') . '<small class="ml-1">*</small>', 'description') }}
+                                {{ html()->textarea('description')->id('description')->rows(4)->class('form-control')->attribute('v-model', 'formData.description')->attribute('v-bind:class', '{"form-control":true, "is-invalid":errors.description}')->required()->attribute('aria-required', 'true') }}
                                 <div class="invalid-feedback" role="alert" v-if="errors.description">@{{errors.description[0]}}</div>
                             </div>
                             <category-select :label="$t('Category')" api-get="screen_categories" api-list="screen_categories" v-model="formData.screen_category_id" :errors="errors.screen_category_id">
@@ -64,14 +62,8 @@
                             </project-select>
                             <br>
                             <div class="text-right">
-                                {!! Form::button(__('Cancel'), [
-                                    'class'=>'btn btn-outline-secondary',
-                                    '@click' => 'onClose'
-                                ]) !!}
-                                {!! Form::button(__('Save and publish'), [
-                                    'class'=>'btn btn-secondary ml-2',
-                                    '@click' => 'onUpdate'
-                                ]) !!}
+                                {{ html()->button(__('Cancel'), 'button')->class('btn btn-outline-secondary')->attribute('@click', 'onClose') }}
+                                {{ html()->button(__('Save and publish'), 'button')->class('btn btn-secondary ml-2')->attribute('@click', 'onUpdate') }}
                             </div>
                         </div>
                         @isset($addons)
