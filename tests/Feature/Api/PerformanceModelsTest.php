@@ -42,7 +42,7 @@ class PerformanceModelsTest extends TestCase
      *
      * @return array
      */
-    public function FactoryListProvider()
+    public static function FactoryListProvider()
     {
         // TODO: fix for laravel 8 factories. This test is skipped in the trait.
         return [];

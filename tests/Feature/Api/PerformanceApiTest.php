@@ -78,7 +78,7 @@ class PerformanceApiTest extends TestCase
 
     const DESIRABLE_ROUTE_SPEED = 11;
 
-    public function RoutesListProvider()
+    public static function RoutesListProvider()
     {
         file_exists('coverage') ?: mkdir('coverage');
 
