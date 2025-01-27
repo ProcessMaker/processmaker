@@ -1,5 +1,6 @@
 <template>
   <BaseTable
+    ref="baseTable"
     :columns="columns"
     :data="data"
     :placeholder="placeholder"
@@ -50,6 +51,8 @@ const props = defineProps({
 });
 
 const filters = ref([]);
+
+const baseTable = ref(null);
 
 const onChangeFilter = (column, val, index) => {
   // All filter with sortable are reset to null
@@ -110,9 +113,15 @@ const hasFilter = (index, column) => {
   return filter || "";
 };
 
+const getHeightTBody = () => baseTable.value.$el.clientHeight - baseTable.value.$refs.thead.clientHeight;
+
+const getHeightThead = () => baseTable.value.$refs.thead.clientHeight;
+
 defineExpose({
   removeFilter,
   removeAllFilters,
   addFilters,
+  getHeightTBody,
+  getHeightThead,
 });
 </script>
