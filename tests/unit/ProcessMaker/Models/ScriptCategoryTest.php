@@ -5,14 +5,14 @@ namespace ProcessMaker\Models;
 use ProcessMaker\Models\ScriptCategory;
 use Tests\TestCase;
 
-class ScriptCategoryTest extends TestCase
+final class ScriptCategoryTest extends TestCase
 {
     /**
      * Test ScriptCategory Model.
      *
      * @return void
      */
-    public function testGetNamesByIds()
+    public function testGetNamesByIds(): void
     {
         //Case 1: one Id
         $category = ScriptCategory::factory()->create([

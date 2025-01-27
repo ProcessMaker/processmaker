@@ -9,7 +9,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class RedirectTest extends TestCase
+final class RedirectTest extends TestCase
 {
     use RequestHelper;
 
@@ -18,7 +18,7 @@ class RedirectTest extends TestCase
      *
      * @return void
      */
-    public function test401RedirectsToLogin()
+    public function test401RedirectsToLogin(): void
     {
         $user = User::factory()->create([
             'is_administrator' => false,
@@ -36,7 +36,7 @@ class RedirectTest extends TestCase
     /**
      * Redirect to password change when user has flag to true
      */
-    public function testRedirectToForcePasswordChange()
+    public function testRedirectToForcePasswordChange(): void
     {
         $user = User::factory()->create([
             'force_change_password' => 1,

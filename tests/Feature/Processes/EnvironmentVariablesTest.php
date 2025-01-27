@@ -6,7 +6,7 @@ use ProcessMaker\Models\EnvironmentVariable;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class EnvironmentVariablesTest extends TestCase
+final class EnvironmentVariablesTest extends TestCase
 {
     use RequestHelper;
 
@@ -15,7 +15,7 @@ class EnvironmentVariablesTest extends TestCase
      *
      * @return void
      */
-    public function testIndexRoute()
+    public function testIndexRoute(): void
     {
         // get the URL
         $response = $this->webCall('GET', '/designer/environment-variables');
@@ -32,7 +32,7 @@ class EnvironmentVariablesTest extends TestCase
      *
      * @return void
      */
-    public function testEditRoute()
+    public function testEditRoute(): void
     {
         // get the URL
         $response = $this->webCall('GET', '/designer/environment-variables/' .

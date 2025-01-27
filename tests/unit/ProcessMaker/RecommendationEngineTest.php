@@ -18,13 +18,13 @@ use ProcessMaker\RecommendationEngine;
 use ProcessMaker\SyncRecommendations;
 use Tests\TestCase;
 
-class RecommendationEngineTest extends TestCase
+final class RecommendationEngineTest extends TestCase
 {
     private static array $generatedModelUuids;
 
     private SyncRecommendations $syncRecommendations;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 

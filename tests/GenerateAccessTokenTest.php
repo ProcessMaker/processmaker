@@ -6,22 +6,22 @@ use ProcessMaker\GenerateAccessToken;
 use ProcessMaker\Models\User;
 use RuntimeException;
 
-class GenerateAccessTokenTest extends TestCase
+final class GenerateAccessTokenTest extends TestCase
 {
     public function setUpWithPersonalAccessClient()
     {
         $this->withPersonalAccessClient();
     }
 
-    public function testGetNewToken()
+    public function testGetNewToken(): void
     {
         $user = User::factory()->create();
         $tokenRef = new GenerateAccessToken($user);
         // use regex to verify JWT
-        $this->assertRegExp("/^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+$/", $tokenRef->getToken());
+        $this->assertMatchesRegularExpression("/^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+$/", $tokenRef->getToken());
     }
 
-    public function testDeleteToken()
+    public function testDeleteToken(): void
     {
         $user = User::factory()->create();
         $this->assertEquals(0, $user->tokens()->count());

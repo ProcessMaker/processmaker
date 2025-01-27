@@ -7,9 +7,9 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use ProcessMaker\ScreenConsolidator;
 
-class ScreenConsolidatorTest extends TestCase
+final class ScreenConsolidatorTest extends TestCase
 {
-    public function test()
+    public function test(): void
     {
         $this->markTestSkipped('FOUR-6653');
 

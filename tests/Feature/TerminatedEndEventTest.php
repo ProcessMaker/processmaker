@@ -13,11 +13,11 @@ use ProcessMaker\Models\ProcessRequestToken;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class TerminatedEndEventTest extends TestCase
+final class TerminatedEndEventTest extends TestCase
 {
     use RequestHelper;
 
-    public function testTerminateEndEventClosesAllTokens()
+    public function testTerminateEndEventClosesAllTokens(): void
     {
         // Create the process to test
         ImportProcess::dispatchSync(
@@ -45,7 +45,7 @@ class TerminatedEndEventTest extends TestCase
         $this->assertEquals('COMPLETED', $instance->status);
     }
 
-    public function testEndEventDoesNotClosePendingTasks()
+    public function testEndEventDoesNotClosePendingTasks(): void
     {
         // Create the process to test
         ImportProcess::dispatchSync(

@@ -6,14 +6,14 @@ use Auth;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 
-class DesignerControllerTest extends TestCase
+final class DesignerControllerTest extends TestCase
 {
     /**
      * A basic test.
      *
      * @return void
      */
-    public function testIndexMethod()
+    public function testIndexMethod(): void
     {
         $user = User::factory()->create([
             'is_administrator' => true,

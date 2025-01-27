@@ -18,11 +18,11 @@ use Tests\Feature\ImportExport\HelperTrait;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class SignalExporterTest extends TestCase
+final class SignalExporterTest extends TestCase
 {
     use HelperTrait;
 
-    public function test()
+    public function test(): void
     {
         DB::beginTransaction();
 
@@ -47,7 +47,7 @@ class SignalExporterTest extends TestCase
         $this->assertEquals('Test Global Signal', $signals['test_some_global']);
     }
 
-    public function testExcludeGlobalSignalsFromExport()
+    public function testExcludeGlobalSignalsFromExport(): void
     {
         DB::beginTransaction();
         $this->addGlobalSignalProcess();
@@ -73,7 +73,7 @@ class SignalExporterTest extends TestCase
         $this->assertSignalsNotAdded();
     }
 
-    public function testImportWithSignalExcluded()
+    public function testImportWithSignalExcluded(): void
     {
         DB::beginTransaction();
         $this->addGlobalSignalProcess();
@@ -117,7 +117,7 @@ class SignalExporterTest extends TestCase
         $this->assertArrayNotHasKey('test_some_global', $globalSignals);
     }
 
-    public function testCopySignal()
+    public function testCopySignal(): void
     {
         $this->addGlobalSignalProcess();
 

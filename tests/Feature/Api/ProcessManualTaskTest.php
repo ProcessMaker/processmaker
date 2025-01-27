@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
@@ -14,10 +15,9 @@ use Tests\TestCase;
 
 /**
  * Test the execution of manual tasks
- *
- * @group process_tests
  */
-class ProcessManualTaskTest extends TestCase
+#[Group('process_tests')]
+final class ProcessManualTaskTest extends TestCase
 {
     use RequestHelper;
     use WithFaker;

@@ -2,12 +2,13 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Managers\ScreenCompiledManager;
 use Tests\TestCase;
 
-class ScreenCompiledManagerTest extends TestCase
+final class ScreenCompiledManagerTest extends TestCase
 {
     protected $storageDisk = 'local';
 
@@ -23,10 +24,9 @@ class ScreenCompiledManagerTest extends TestCase
 
     /**
      * Validate a screen can be stored into the screens cache
-     *
-     * @test
      */
-    public function it_stores_compiled_content()
+    #[Test]
+    public function it_stores_compiled_content(): void
     {
         // Arrange
         $manager = new ScreenCompiledManager();
@@ -47,10 +47,9 @@ class ScreenCompiledManagerTest extends TestCase
 
     /**
      * Validate a screen can be retrieved from screens cache
-     *
-     * @test
      */
-    public function it_retrieves_compiled_content()
+    #[Test]
+    public function it_retrieves_compiled_content(): void
     {
         // Arrange content
         $manager = new ScreenCompiledManager();
@@ -70,10 +69,9 @@ class ScreenCompiledManagerTest extends TestCase
 
     /**
      * Validate a null value is returned when compiled content does not exist
-     *
-     * @test
      */
-    public function it_returns_null_when_compiled_content_does_not_exist()
+    #[Test]
+    public function it_returns_null_when_compiled_content_does_not_exist(): void
     {
         // Arrange
         $manager = new ScreenCompiledManager();
@@ -88,10 +86,9 @@ class ScreenCompiledManagerTest extends TestCase
 
     /**
      * Validate all compiled assets can be cleared
-     *
-     * @test
      */
-    public function it_clears_all_compiled_assets()
+    #[Test]
+    public function it_clears_all_compiled_assets(): void
     {
         // Arrange content
         $manager = new ScreenCompiledManager();
@@ -114,10 +111,9 @@ class ScreenCompiledManagerTest extends TestCase
     /**
      * Validate a screen key can be created and can be used to store and retrieve compiled content
      * Also validate if screens cache can be cleared for a specific process
-     *
-     * @test
      */
-    public function it_clears_process_screens_cache()
+    #[Test]
+    public function it_clears_process_screens_cache(): void
     {
         // Arrange
         $manager = new ScreenCompiledManager();
@@ -158,10 +154,9 @@ class ScreenCompiledManagerTest extends TestCase
 
     /**
      * Validate a screen key can be created
-     *
-     * @test
      */
-    public function it_creates_a_screen_key()
+    #[Test]
+    public function it_creates_a_screen_key(): void
     {
         // Arrange
         $manager = new ScreenCompiledManager();
@@ -182,10 +177,9 @@ class ScreenCompiledManagerTest extends TestCase
 
     /**
      * Validate the last screen version ID can be retrieved
-     *
-     * @test
      */
-    public function it_gets_the_last_screen_version_id()
+    #[Test]
+    public function it_gets_the_last_screen_version_id(): void
     {
         // Create the manager
         $manager = new ScreenCompiledManager();

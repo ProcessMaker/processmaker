@@ -2,16 +2,17 @@
 
 namespace ProcessMaker;
 
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
-class MediaOrderColumnIndexTest extends TestCase
+final class MediaOrderColumnIndexTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_has_order_column_index_on_media_table()
+    #[Test]
+    public function it_has_order_column_index_on_media_table(): void
     {
         // Run the migration to add the index
         $this->artisan('migrate');

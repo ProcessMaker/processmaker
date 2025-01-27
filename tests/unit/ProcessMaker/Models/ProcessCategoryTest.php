@@ -5,14 +5,14 @@ namespace ProcessMaker\Models;
 use ProcessMaker\Models\ProcessCategory;
 use Tests\TestCase;
 
-class ProcessCategoryTest extends TestCase
+final class ProcessCategoryTest extends TestCase
 {
     /**
      * Test ProcessCategory Model.
      *
      * @return void
      */
-    public function testGetNamesByIds()
+    public function testGetNamesByIds(): void
     {
         //Case 1: one Id
         $category = ProcessCategory::factory()->create([

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use Faker\Provider\DateTime;
 use Illuminate\Foundation\Testing\WithFaker;
 use Laravel\Passport\Passport;
@@ -22,10 +23,9 @@ use Tests\TestCase;
 
 /**
  * Tests boundary signal events in Jobs triggers the right number of requests
- *
- * @group process_tests
  */
-class TriggerSignalInRequestTest extends TestCase
+#[Group('process_tests')]
+final class TriggerSignalInRequestTest extends TestCase
 {
     use RequestHelper;
     use ProcessTestingTrait;
@@ -34,7 +34,7 @@ class TriggerSignalInRequestTest extends TestCase
      * Tests one process with boundary signal event and one with start signal event.
      *
      **/
-    public function testScheduleStartEvent()
+    public function testScheduleStartEvent(): void
     {
         $process = $this->createProcess([
             'id' => 1,
@@ -50,7 +50,7 @@ class TriggerSignalInRequestTest extends TestCase
         $this->assertCount(2, $activeTokens);
     }
 
-    public function testBoundaryLoop()
+    public function testBoundaryLoop(): void
     {
         $import = (new ImportProcess(
             file_get_contents(base_path('tests/Fixtures/boundary_loop.json'))

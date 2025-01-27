@@ -6,9 +6,9 @@ use Carbon\Carbon;
 use DateTime;
 use Tests\TestCase;
 
-class FormalExpressionTest extends TestCase
+final class FormalExpressionTest extends TestCase
 {
-    public function testDateFunction()
+    public function testDateFunction(): void
     {
         $formalExp = new FormalExpression();
         $formalExp->setLanguage('FEEL');
@@ -33,7 +33,7 @@ class FormalExpressionTest extends TestCase
         $this->assertEquals($date, $feelDate);
     }
 
-    public function testDateFunctionWithTimeZone()
+    public function testDateFunctionWithTimeZone(): void
     {
         $formalExp = new FormalExpression();
         $formalExp->setLanguage('FEEL');

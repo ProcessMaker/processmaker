@@ -9,9 +9,9 @@ use ProcessMaker\Models\InboxRule;
 use ProcessMaker\Models\ProcessRequestToken;
 use Tests\TestCase;
 
-class SmartInboxExistingTasksTest extends TestCase
+final class SmartInboxExistingTasksTest extends TestCase
 {
-    public function testJobIsCalledToExistingTasksFromInboxRule()
+    public function testJobIsCalledToExistingTasksFromInboxRule(): void
     {
         $task = ProcessRequestToken::factory()->create();
         $inboxRule = InboxRule::factory()->create();

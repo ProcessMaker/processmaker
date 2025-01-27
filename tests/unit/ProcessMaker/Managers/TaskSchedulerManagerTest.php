@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use DateTime;
 use Tests\TestCase;
 
-class TaskSchedulerManagerTest extends TestCase
+final class TaskSchedulerManagerTest extends TestCase
 {
     /**
      * @var TaskSchedulerManager
@@ -19,7 +19,7 @@ class TaskSchedulerManagerTest extends TestCase
         $this->manager = new TaskSchedulerManager;
     }
 
-    public function testRoundDates()
+    public function testRoundDates(): void
     {
         // Exact minute:                 00:01:00 -> 00:01:00
         $date = new DateTime('2019-08-14 00:01:00');
@@ -47,7 +47,7 @@ class TaskSchedulerManagerTest extends TestCase
         $this->assertEquals('00:02:00', $rounded->format('H:i:s'));
     }
 
-    public function testTruncateDates()
+    public function testTruncateDates(): void
     {
         // Exact minute:                 00:01:00 -> 00:01:00
         $date = new DateTime('2019-08-14 00:01:00');

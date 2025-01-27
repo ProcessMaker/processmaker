@@ -19,7 +19,7 @@ use ProcessMaker\ScriptRunners\MockRunner;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class ErrorExecutionNotificationTest extends TestCase
+final class ErrorExecutionNotificationTest extends TestCase
 {
     use RequestHelper;
 
@@ -54,7 +54,7 @@ class ErrorExecutionNotificationTest extends TestCase
         });
     }
 
-    public function testNoManager()
+    public function testNoManager(): void
     {
         Notification::fake();
         $this->mockScriptRunner();
@@ -65,7 +65,7 @@ class ErrorExecutionNotificationTest extends TestCase
         Notification::assertNothingSent();
     }
 
-    public function testInAppNotificationFromScript()
+    public function testInAppNotificationFromScript(): void
     {
         Notification::fake();
         $this->mockScriptRunner();
@@ -84,7 +84,7 @@ class ErrorExecutionNotificationTest extends TestCase
         );
     }
 
-    public function testMailNotificationFromScript()
+    public function testMailNotificationFromScript(): void
     {
         Notification::fake();
         $this->mockScriptRunner();

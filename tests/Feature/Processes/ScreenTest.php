@@ -6,7 +6,7 @@ use ProcessMaker\Models\Screen;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class ScreenTest extends TestCase
+final class ScreenTest extends TestCase
 {
     use RequestHelper;
 
@@ -15,7 +15,7 @@ class ScreenTest extends TestCase
      *
      * @return void
      */
-    public function testIndexRoute()
+    public function testIndexRoute(): void
     {
         // get the URL
         $response = $this->webCall('GET', '/designer/screens');
@@ -30,7 +30,7 @@ class ScreenTest extends TestCase
      *
      * @return void
      */
-    public function testEditRoute()
+    public function testEditRoute(): void
     {
         // get the URL
         $response = $this->webCall('GET', '/designer/screens/' .

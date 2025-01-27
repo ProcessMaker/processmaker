@@ -9,7 +9,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use Tests\TestCase;
 
-class PopulateCommentsCaseNumberTest extends TestCase
+final class PopulateCommentsCaseNumberTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -18,7 +18,7 @@ class PopulateCommentsCaseNumberTest extends TestCase
      *
      * @return void
      */
-    public function test_populate_comments_case_number()
+    public function test_populate_comments_case_number(): void
     {
         // Create ProcessRequest and ProcessRequestToken
         $processRequest = ProcessRequest::factory()->create();

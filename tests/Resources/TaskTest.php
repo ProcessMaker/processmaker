@@ -12,11 +12,11 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class TaskTest extends TestCase
+final class TaskTest extends TestCase
 {
     use RequestHelper;
 
-    public function testScreens()
+    public function testScreens(): void
     {
         $date = Carbon::now();
         $this->be($this->user);
@@ -68,7 +68,7 @@ class TaskTest extends TestCase
         // $this->assertEquals('original child3 description', $json['screen']['nested'][2]['description']);
     }
 
-    public function testRequestFiles()
+    public function testRequestFiles(): void
     {
         $processRequest = ProcessRequest::factory()->create();
         $file1 = UploadedFile::fake()->create('file1.txt', 1);

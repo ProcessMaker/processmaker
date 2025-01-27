@@ -21,7 +21,7 @@ use Tests\TestCase;
 /**
  * Test edit data
  */
-class DataManagerTest extends TestCase
+final class DataManagerTest extends TestCase
 {
     use RequestHelper;
 
@@ -61,7 +61,7 @@ class DataManagerTest extends TestCase
     /**
      * Verify the magic variables for a valid request token
      */
-    public function testDataForAValidRequestToken()
+    public function testDataForAValidRequestToken(): void
     {
         $manager = new DataManager();
         $token = ProcessRequestToken::factory()->create();
@@ -75,7 +75,7 @@ class DataManagerTest extends TestCase
     /**
      * Verify the magic variables for a valid webentry screen
      */
-    public function testDataForAStartEventWebentry()
+    public function testDataForAStartEventWebentry(): void
     {
         $manager = new DataManager();
         $user = $this->user;

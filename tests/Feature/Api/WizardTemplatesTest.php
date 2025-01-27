@@ -8,11 +8,11 @@ use ProcessMaker\Models\WizardTemplate;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class WizardTemplatesTest extends TestCase
+final class WizardTemplatesTest extends TestCase
 {
     use RequestHelper;
 
-    public function testGetWizardTemplates()
+    public function testGetWizardTemplates(): void
     {
         $total = 20;
         WizardTemplate::factory()->count($total)->create();
@@ -35,7 +35,7 @@ class WizardTemplatesTest extends TestCase
         ]);
     }
 
-    public function testItCanAddFilesFromUrlToMediaCollection()
+    public function testItCanAddFilesFromUrlToMediaCollection(): void
     {
         // Create fake files.
         Storage::fake('public');

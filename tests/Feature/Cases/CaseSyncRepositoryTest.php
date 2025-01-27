@@ -8,9 +8,9 @@ use ProcessMaker\Models\ProcessRequestToken;
 use Tests\TestCase;
 use Illuminate\Support\Facades\DB;
 
-class CaseSyncRepositoryTest extends TestCase
+final class CaseSyncRepositoryTest extends TestCase
 {
-    public function testSyncCases()
+    public function testSyncCases(): void
     {
         // Create some ProcessRequest instances
         $processRequest1 = ProcessRequest::factory()->create();

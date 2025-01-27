@@ -6,7 +6,7 @@ use Illuminate\Http\Response;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class OAuthTest extends TestCase
+final class OAuthTest extends TestCase
 {
     use RequestHelper;
 
@@ -42,7 +42,7 @@ class OAuthTest extends TestCase
      *
      * @return void
      */
-    public function testCreateAndList()
+    public function testCreateAndList(): void
     {
         $response = $this->actingAs($this->user)
                          ->json('GET', '/oauth/clients');
@@ -59,7 +59,7 @@ class OAuthTest extends TestCase
      *
      * @return void
      */
-    public function testEdit()
+    public function testEdit(): void
     {
         $this->assertNotContains('password_client', $this->json['types']);
         $this->assertNotContains('personal_access_client', $this->json['types']);
@@ -92,7 +92,7 @@ class OAuthTest extends TestCase
      *
      * @return void
      */
-    public function testDelete()
+    public function testDelete(): void
     {
         $this->actingAs($this->user)
              ->json('POST', '/oauth/clients', [

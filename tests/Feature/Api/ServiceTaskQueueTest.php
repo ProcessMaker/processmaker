@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use Illuminate\Support\Facades\Bus;
 use ProcessMaker\Jobs\RefreshArtisanCaches;
 use ProcessMaker\Jobs\RunServiceTask;
@@ -11,10 +12,9 @@ use Tests\TestCase;
 
 /**
  * Test Service Task Queue
- *
- * @group process_tests
  */
-class ServiceTaskQueueTest extends TestCase
+#[Group('process_tests')]
+final class ServiceTaskQueueTest extends TestCase
 {
     use RequestHelper;
     use ProcessTestingTrait;
@@ -22,7 +22,7 @@ class ServiceTaskQueueTest extends TestCase
     /**
      * Tests the ServiceTask is dispatched to the custom queue.
      */
-    public function testCustomQueue()
+    public function testCustomQueue(): void
     {
         Bus::fake();
 
@@ -41,7 +41,7 @@ class ServiceTaskQueueTest extends TestCase
     /**
      * Tests the ServiceTask is dispatched to the bpmn queue.
      */
-    public function testDefaultQueue()
+    public function testDefaultQueue(): void
     {
         Bus::fake();
 

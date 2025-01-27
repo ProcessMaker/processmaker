@@ -11,7 +11,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class CssOverrideTest extends TestCase
+final class CssOverrideTest extends TestCase
 {
     use RequestHelper;
 
@@ -28,7 +28,7 @@ class CssOverrideTest extends TestCase
     /**
      * Verifies that the bootstrap styles are validated
      */
-    public function testEmptyParameters()
+    public function testEmptyParameters(): void
     {
         $response = $this->actingAs($this->user, 'api')->call('POST', '/api/1.0/customize-ui', []);
 
@@ -38,7 +38,7 @@ class CssOverrideTest extends TestCase
     /**
      * Verifies that the bootstrap styles are validated
      */
-    public function testWrongKeys()
+    public function testWrongKeys(): void
     {
         $response = $this->actingAs($this->user, 'api')->call('POST', '/api/1.0/customize-ui', ['wrongkey' => 'key']);
 
@@ -48,7 +48,7 @@ class CssOverrideTest extends TestCase
     /**
      * Verifies that the reset css works
      */
-    public function testResetCss()
+    public function testResetCss(): void
     {
         $this->markTestSkipped('FOUR-6653');
         // Create some css override setting with custom logos

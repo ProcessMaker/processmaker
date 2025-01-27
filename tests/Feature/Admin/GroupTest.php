@@ -8,7 +8,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class GroupTest extends TestCase
+final class GroupTest extends TestCase
 {
     use RequestHelper;
 
@@ -17,7 +17,7 @@ class GroupTest extends TestCase
      *
      * @return void
      */
-    public function testIndexRoute()
+    public function testIndexRoute(): void
     {
         $response = $this->webCall('GET', '/admin/groups');
         $response->assertStatus(200);
@@ -29,7 +29,7 @@ class GroupTest extends TestCase
      *
      * @return void
      */
-    public function testEditRoute()
+    public function testEditRoute(): void
     {
         $groupId = Group::factory()->create()->getKey();
         // get the URL

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Illuminate\Database\Eloquent\Factory as EloquentFactory;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +18,7 @@ use Tests\TestCase;
 /**
  * Tests routes related to processes / CRUD related methods
  */
-class PerformanceModelsTest extends TestCase
+final class PerformanceModelsTest extends TestCase
 {
     use WithFaker;
     use RequestHelper;
@@ -41,7 +42,7 @@ class PerformanceModelsTest extends TestCase
      *
      * @return array
      */
-    public function FactoryListProvider()
+    public static function FactoryListProvider(): array
     {
         // TODO: fix for laravel 8 factories. This test is skipped in the trait.
         return [];
@@ -85,10 +86,9 @@ class PerformanceModelsTest extends TestCase
      * @param [type] $model
      * @param [type] $baseCount
      * @param [type] $baseTime
-     *
-     * @dataProvider FactoryListProvider
      */
-    public function testFactories($model, $baseTime)
+    #[DataProvider('FactoryListProvider')]
+    public function testFactories($model, $baseTime): void
     {
         $baseCount = $this->getTotalRecords();
         $t = microtime(true);

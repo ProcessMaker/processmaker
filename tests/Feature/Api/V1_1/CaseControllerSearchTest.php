@@ -8,18 +8,18 @@ use ProcessMaker\Repositories\CaseUtils;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class CaseControllerSearchTest extends TestCase
+final class CaseControllerSearchTest extends TestCase
 {
     use RequestHelper, RefreshDatabase;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->user = CaseControllerTest::createUser('user_a');
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         User::where('id', $this->user->id)->forceDelete();
 

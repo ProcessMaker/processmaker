@@ -4,9 +4,9 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 
-class SessionTest extends TestCase
+final class SessionTest extends TestCase
 {
-    public function test()
+    public function test(): void
     {
         $this->markTestSkipped('FOUR-6653');
 

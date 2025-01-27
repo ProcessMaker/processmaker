@@ -10,7 +10,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Repositories\CaseRepository;
 use Tests\TestCase;
 
-class CaseExceptionTest extends TestCase
+final class CaseExceptionTest extends TestCase
 {
     use RefreshDatabase;
 

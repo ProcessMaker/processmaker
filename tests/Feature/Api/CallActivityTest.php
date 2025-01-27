@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\ProcessRequest;
@@ -11,17 +12,16 @@ use Tests\Feature\Shared\ProcessTestingTrait;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class CallActivityTest extends TestCase
+final class CallActivityTest extends TestCase
 {
     use RequestHelper;
     use ProcessTestingTrait;
 
     /**
      * Tests the a process with call activity to a external process definition
-     *
-     * @group process_tests
      */
-    public function testCallActivity()
+    #[Group('process_tests')]
+    public function testCallActivity(): void
     {
         // Script task requires passport installed (oauth token)
         Artisan::call('passport:install', ['-vvv' => true]);
@@ -56,7 +56,7 @@ class CallActivityTest extends TestCase
         $this->assertEquals('COMPLETED', $subInstance->status);
     }
 
-    public function testCallActivityFiles()
+    public function testCallActivityFiles(): void
     {
         // Create the processes
         $child = $this->createProcess([
@@ -143,7 +143,7 @@ class CallActivityTest extends TestCase
         $this->assertEquals('overwrite.jpg', $file3->file_name);
     }
 
-    public function testCallActivityWithUpdateInProgress()
+    public function testCallActivityWithUpdateInProgress(): void
     {
         // Script task requires passport installed (oauth token)
         Artisan::call('passport:install', ['-vvv' => true]);
@@ -215,7 +215,7 @@ class CallActivityTest extends TestCase
         $this->assertEquals('COMPLETED', $subInstance->status);
     }
 
-    public function testCallActivityValidation()
+    public function testCallActivityValidation(): void
     {
         $child = $this->createProcess([
             'id' => 29,
@@ -232,7 +232,7 @@ class CallActivityTest extends TestCase
         ]], $parent->warnings);
     }
 
-    public function testCallActivityValidationToWebEntryStartEvent()
+    public function testCallActivityValidationToWebEntryStartEvent(): void
     {
         $child = $this->createProcess([
             'id' => 29,
@@ -249,7 +249,7 @@ class CallActivityTest extends TestCase
         ]], $parent->warnings);
     }
 
-    public function testCallActivityValidationToNonStartEventElement()
+    public function testCallActivityValidationToNonStartEventElement(): void
     {
         $child = $this->createProcess([
             'id' => 29,
@@ -269,7 +269,7 @@ class CallActivityTest extends TestCase
         ]], $parent->warnings);
     }
 
-    public function testCallActivityValidationToDeletedElement()
+    public function testCallActivityValidationToDeletedElement(): void
     {
         $child = $this->createProcess([
             'id' => 29,
@@ -289,7 +289,7 @@ class CallActivityTest extends TestCase
         ]], $parent->warnings);
     }
 
-    public function testProcessLoop()
+    public function testProcessLoop(): void
     {
         // Script task requires passport installed (oauth token)
         Artisan::call('passport:install', ['-vvv' => true]);
@@ -336,7 +336,7 @@ class CallActivityTest extends TestCase
         $this->assertEquals(['input_1' => 1, 'input_2' => 2, 'input_3' => 3], $data);
     }
 
-    public function testCallActivityWithError()
+    public function testCallActivityWithError(): void
     {
         $this->withPersonalAccessClient();
         $child = $this->createProcess([

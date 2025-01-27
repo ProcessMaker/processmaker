@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Group;
@@ -14,7 +15,7 @@ use Tests\TestCase;
 /**
  * Tests routes related to processes / CRUD related methods
  */
-class PerformanceRoutesTest extends TestCase
+final class PerformanceRoutesTest extends TestCase
 {
     use WithFaker;
     use RequestHelper;
@@ -79,7 +80,7 @@ class PerformanceRoutesTest extends TestCase
 
     const DESIRABLE_ROUTE_SPEED = 11;
 
-    public function RoutesListProvider()
+    public static function RoutesListProvider(): array
     {
         file_exists('coverage') ?: mkdir('coverage');
 
@@ -88,10 +89,9 @@ class PerformanceRoutesTest extends TestCase
 
     /**
      * Test routes speed
-     *
-     * @dataProvider RoutesListProvider
      */
-    public function testRoutesSpeed($route, $params)
+    #[DataProvider('RoutesListProvider')]
+    public function testRoutesSpeed($route, $params): void
     {
         $this->user = User::factory()->create(['is_administrator' => true]);
         Comment::factory()->count($this->dbSize)->create();

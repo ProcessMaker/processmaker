@@ -11,7 +11,7 @@ use ProcessMaker\Providers\WorkflowServiceProvider;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class ManualTaskTest extends TestCase
+final class ManualTaskTest extends TestCase
 {
     use RequestHelper;
     use TestProcessExecutionTrait;
@@ -20,7 +20,7 @@ class ManualTaskTest extends TestCase
      * Test a user that participate from the request can
      * upload a file.
      */
-    public function testUploadRequestFile()
+    public function testUploadRequestFile(): void
     {
         $this->loadTestProcess(
             file_get_contents(__DIR__ . '/processes/FileUpload.bpmn'),

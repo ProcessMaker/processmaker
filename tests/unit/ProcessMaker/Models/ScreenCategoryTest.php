@@ -5,14 +5,14 @@ namespace ProcessMaker\Models;
 use ProcessMaker\Models\ScreenCategory;
 use Tests\TestCase;
 
-class ScreenCategoryTest extends TestCase
+final class ScreenCategoryTest extends TestCase
 {
     /**
      * Test ScreenCategory Model.
      *
      * @return void
      */
-    public function testGetNamesByIds()
+    public function testGetNamesByIds(): void
     {
         //Case 1: one Id
         $category = ScreenCategory::factory()->create([

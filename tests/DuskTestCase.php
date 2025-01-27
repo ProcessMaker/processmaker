@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use PHPUnit\Framework\Attributes\BeforeClass;
 use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -13,10 +14,9 @@ abstract class DuskTestCase extends BaseTestCase
 
     /**
      * Prepare for Dusk test execution.
-     *
-     * @beforeClass
      * @return void
      */
+    #[BeforeClass]
     public static function prepare()
     {
         static::startChromeDriver();

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\CoversNothing;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Event;
 use ProcessMaker\Events\ActivityAssigned;
@@ -27,14 +28,14 @@ use Tests\TestCase;
 
 /**
  * @internal
- * @coversNothing
  */
-class BroadcastTest extends TestCase
+#[CoversNothing]
+final class BroadcastTest extends TestCase
 {
     use LoggingHelper;
     use WithFaker;
 
-    public function testBroadcastEventsHaveTesting()
+    public function testBroadcastEventsHaveTesting(): void
     {
         $this->markTestSkipped('FOUR-6653');
 
@@ -53,7 +54,7 @@ class BroadcastTest extends TestCase
     /**
      * Test that the SettingsLoaded event was fired during the Application boot up.
      */
-    public function testSettingsLoadedBroadcast()
+    public function testSettingsLoadedBroadcast(): void
     {
         $this->markTestSkipped('FOUR-6653');
 
@@ -63,7 +64,7 @@ class BroadcastTest extends TestCase
     /**
      * Asserts that the ActivityAssigned broadcast event works.
      */
-    public function testActivityAssignedBroadcast()
+    public function testActivityAssignedBroadcast(): void
     {
         $task = Task::factory()->create([
             'data' => [
@@ -80,7 +81,7 @@ class BroadcastTest extends TestCase
     /**
      * Asserts that the ActivityCompleted broadcast event works.
      */
-    public function testActivityCompletedBroadcast()
+    public function testActivityCompletedBroadcast(): void
     {
         $task = Task::factory()->create([
             'data' => [
@@ -96,7 +97,7 @@ class BroadcastTest extends TestCase
     /**
      * Asserts that the ProcessCompleted broadcast event works.
      */
-    public function testProcessCompletedBroadcast()
+    public function testProcessCompletedBroadcast(): void
     {
         $request = Request::factory()->create([
             'data' => [
@@ -112,7 +113,7 @@ class BroadcastTest extends TestCase
     /**
      * Asserts that the ProcessUpdated broadcast event works.
      */
-    public function testProcessUpdatedBroadcast()
+    public function testProcessUpdatedBroadcast(): void
     {
         $request = Request::factory()->create([
             'data' => [
@@ -128,7 +129,7 @@ class BroadcastTest extends TestCase
     /**
      * Asserts that the ScreenBuilderStarting broadcast event works.
      */
-    public function testScreenBuilderStartingBroadcast()
+    public function testScreenBuilderStartingBroadcast(): void
     {
         Event::fake();
         $manager = new ScreenBuilder();
@@ -140,7 +141,7 @@ class BroadcastTest extends TestCase
     /**
      * Asserts that the ScreenBuilderStarting broadcast event works.
      */
-    public function testModelerStartingBroadcast()
+    public function testModelerStartingBroadcast(): void
     {
         Event::fake();
         $manager = new Modeler();
@@ -152,7 +153,7 @@ class BroadcastTest extends TestCase
     /**
      * Asserts that the SessionStart broadcast event works.
      */
-    public function testSessionStartedBroadcast()
+    public function testSessionStartedBroadcast(): void
     {
         $user = User::factory()->create();
         event(new SessionStartedEvent($user));
@@ -164,7 +165,7 @@ class BroadcastTest extends TestCase
     /**
      * Asserts that the BuildScriptExecutor event works.
      */
-    public function testBuildScriptExecutorBroadcast()
+    public function testBuildScriptExecutorBroadcast(): void
     {
         $user = User::factory()->create();
         event(new BuildScriptExecutor('output-text', $user->id, 'output-status'));
@@ -177,7 +178,7 @@ class BroadcastTest extends TestCase
     /**
      * Asserts that the ScreenBuilderStarting broadcast event works.
      */
-    public function testScriptBuilderStartingBroadcast()
+    public function testScriptBuilderStartingBroadcast(): void
     {
         Event::fake();
         $manager = new ScreenBuilderManager();
@@ -190,7 +191,7 @@ class BroadcastTest extends TestCase
     /**
      * Asserts that the BuildScriptExecutor event works.
      */
-    public function testImportedScreenSavedBroadcast()
+    public function testImportedScreenSavedBroadcast(): void
     {
         Event::fake();
         $screen = Screen::factory()->create();
@@ -202,7 +203,7 @@ class BroadcastTest extends TestCase
     /**
      * Asserts that the TestStatusEvent event works.
      */
-    public function testTestStatusEventBroadcast()
+    public function testTestStatusEventBroadcast(): void
     {
         Event::fake();
         event(new TestStatusEvent('test', 'test status event'));
@@ -213,7 +214,7 @@ class BroadcastTest extends TestCase
     /**
      * Asserts that the BuildScriptExecutor event works.
      */
-    public function testScriptResponseEventBroadcast()
+    public function testScriptResponseEventBroadcast(): void
     {
         Event::fake();
         $user = User::factory()->create();

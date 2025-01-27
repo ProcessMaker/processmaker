@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class ScriptsTest extends TestCase
+final class ScriptsTest extends TestCase
 {
     use RequestHelper;
 
@@ -15,7 +15,7 @@ class ScriptsTest extends TestCase
      *
      * @return void
      */
-    public function testIndexRoute()
+    public function testIndexRoute(): void
     {
         // get the URL
         $response = $this->webCall('GET', '/designer/scripts');

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use Illuminate\Foundation\Testing\WithFaker;
 use mysql_xdevapi\Warning;
 use ProcessMaker\Models\Process;
@@ -17,10 +18,9 @@ use Tests\TestCase;
 
 /**
  * Tests routes related to processes / CRUD related methods
- *
- * @group process_tests
  */
-class SearchByCategoryTest extends TestCase
+#[Group('process_tests')]
+final class SearchByCategoryTest extends TestCase
 {
     use WithFaker;
     use ResourceAssertionsTrait;
@@ -29,7 +29,7 @@ class SearchByCategoryTest extends TestCase
     /**
      * Test filtering processes by category
      */
-    public function testSearchProcessesByCategory()
+    public function testSearchProcessesByCategory(): void
     {
         $cata = ProcessCategory::factory()->create(['name' => 'category_a']);
         $catb = ProcessCategory::factory()->create(['name' => 'category_b']);
@@ -96,7 +96,7 @@ class SearchByCategoryTest extends TestCase
     /**
      * Test filtering processes by category
      */
-    public function testSearchScreensByCategory()
+    public function testSearchScreensByCategory(): void
     {
         $cata = ScreenCategory::factory()->create(['name' => 'category_a']);
         $catb = ScreenCategory::factory()->create(['name' => 'category_b']);
@@ -163,7 +163,7 @@ class SearchByCategoryTest extends TestCase
     /**
      * Test filtering processes by category
      */
-    public function testSearchScriptsByCategory()
+    public function testSearchScriptsByCategory(): void
     {
         $cata = ScriptCategory::factory()->create(['name' => 'category_a']);
         $catb = ScriptCategory::factory()->create(['name' => 'category_b']);

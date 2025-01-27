@@ -6,7 +6,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class AboutTest extends TestCase
+final class AboutTest extends TestCase
 {
     use RequestHelper;
 
@@ -24,7 +24,7 @@ class AboutTest extends TestCase
      *
      * @return void
      */
-    public function testIndexRoute()
+    public function testIndexRoute(): void
     {
         // user without any permissions
         $this->user = User::factory()->create();

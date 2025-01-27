@@ -2,22 +2,22 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use ProcessMaker\Models\ProcessRequest;
 use Tests\Feature\Shared\ProcessTestingTrait;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class GlobalSignalsTest extends TestCase
+final class GlobalSignalsTest extends TestCase
 {
     use RequestHelper;
     use ProcessTestingTrait;
 
     /**
      * Test signals in a process collaboration
-     *
-     * @group process_tests
      */
-    public function testGlobalSignalsWithCollaboration()
+    #[Group('process_tests')]
+    public function testGlobalSignalsWithCollaboration(): void
     {
         // Create the processes
         $parent = $this->createProcess([
@@ -80,10 +80,9 @@ class GlobalSignalsTest extends TestCase
 
     /**
      * Test an start event signal from two different processes
-     *
-     * @group process_tests
      */
-    public function testGlobalStartSignalWithoutCollaboration()
+    #[Group('process_tests')]
+    public function testGlobalStartSignalWithoutCollaboration(): void
     {
         // Create the processes
         $parent = $this->createProcess([
@@ -150,10 +149,9 @@ class GlobalSignalsTest extends TestCase
 
     /**
      * Test process with undefined signals
-     *
-     * @group process_tests
      */
-    public function testProcessWithUndefinedSignals()
+    #[Group('process_tests')]
+    public function testProcessWithUndefinedSignals(): void
     {
         // Create the processes
         $parent = $this->createProcess([

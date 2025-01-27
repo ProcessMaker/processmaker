@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -9,17 +10,16 @@ use Tests\Feature\Shared\ProcessTestingTrait;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class CallActivityMultilevelTest extends TestCase
+final class CallActivityMultilevelTest extends TestCase
 {
     use RequestHelper;
     use ProcessTestingTrait;
 
     /**
      * Tests the a process with call activity to a external process definition
-     *
-     * @group process_tests
      */
-    public function testCallActivity()
+    #[Group('process_tests')]
+    public function testCallActivity(): void
     {
         // Script task requires passport installed (oauth token)
         Artisan::call('passport:install', ['-vvv' => true]);

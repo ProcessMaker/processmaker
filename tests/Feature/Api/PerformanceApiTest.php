@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Group;
@@ -15,7 +16,7 @@ use Tests\TestCase;
 /**
  * Tests routes related to processes / CRUD related methods
  */
-class PerformanceApiTest extends TestCase
+final class PerformanceApiTest extends TestCase
 {
     use WithFaker;
     use RequestHelper;
@@ -77,7 +78,7 @@ class PerformanceApiTest extends TestCase
 
     const DESIRABLE_ROUTE_SPEED = 11;
 
-    public function RoutesListProvider()
+    public static function RoutesListProvider(): array
     {
         file_exists('coverage') ?: mkdir('coverage');
 
@@ -86,10 +87,9 @@ class PerformanceApiTest extends TestCase
 
     /**
      * Test routes speed
-     *
-     * @dataProvider RoutesListProvider
      */
-    public function testRoutesSpeed($route, $params)
+    #[DataProvider('RoutesListProvider')]
+    public function testRoutesSpeed($route, $params): void
     {
         $this->user = User::factory()->create(['is_administrator' => true]);
         Comment::factory()->count($this->dbSize)->create();
@@ -124,7 +124,7 @@ class PerformanceApiTest extends TestCase
         $this->assertGreaterThanOrEqual(self::MIN_ROUTE_SPEED, $speed, "Slow route response [$route]\n             Speed ~ $requestsPerSecond [reqs/sec]");
     }
 
-    public function testGetProcessStartEvents()
+    public function testGetProcessStartEvents(): void
     {
         // Create a group (id=10) with 1000 non admin users
         $group = Group::factory()->create(['id' => 10]);

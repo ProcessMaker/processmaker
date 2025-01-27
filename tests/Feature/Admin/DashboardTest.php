@@ -11,7 +11,7 @@ use ProcessMaker\Providers\AuthServiceProvider;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class DashboardTest extends TestCase
+final class DashboardTest extends TestCase
 {
     use RequestHelper;
 
@@ -26,7 +26,7 @@ class DashboardTest extends TestCase
         $asp->boot();
     }
 
-    public function testIndexRoute()
+    public function testIndexRoute(): void
     {
         $this->user = User::factory()->create();
         $response = $this->webCall('GET', '/admin');

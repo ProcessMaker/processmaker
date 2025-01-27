@@ -5,14 +5,14 @@ namespace ProcessMaker\Models;
 use ProcessMaker\Models\Group;
 use Tests\TestCase;
 
-class GroupTest extends TestCase
+final class GroupTest extends TestCase
 {
     /**
      * Test group without manager.
      *
      * @return void
      */
-    public function testGroupWithManager()
+    public function testGroupWithManager(): void
     {
         $manager = User::factory()->create();
         $group = Group::factory()->create(['manager_id' => $manager->id]);
@@ -26,7 +26,7 @@ class GroupTest extends TestCase
      *
      * @return void
      */
-    public function testGroupWithoutManager()
+    public function testGroupWithoutManager(): void
     {
         $group = Group::factory()->make([
             'manager_id' => null,

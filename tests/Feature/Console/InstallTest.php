@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Artisan;
 use Tests\Feature\Shared\InstallParameter as Param;
 use Tests\TestCase;
 
-class InstallTest extends TestCase
+final class InstallTest extends TestCase
 {
     /**
      * Parse the table output of the Artisan command
@@ -75,7 +75,7 @@ class InstallTest extends TestCase
      *
      * @return void
      */
-    public function testNonInteractiveInstall()
+    public function testNonInteractiveInstall(): void
     {
         // Setup our collection of parameters
         $params = $this->generateParameters();

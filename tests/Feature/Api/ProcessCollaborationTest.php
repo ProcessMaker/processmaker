@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTaskAssignment;
@@ -11,10 +12,9 @@ use Tests\TestCase;
 
 /**
  * Test the process execution with requests
- *
- * @group process_tests
  */
-class ProcessCollaborationTest extends TestCase
+#[Group('process_tests')]
+final class ProcessCollaborationTest extends TestCase
 {
     use WithFaker;
     use RequestHelper;
@@ -69,7 +69,7 @@ class ProcessCollaborationTest extends TestCase
     /**
      * Execute a process
      */
-    public function testExecuteACollaboration()
+    public function testExecuteACollaboration(): void
     {
         $process = $this->createTestCollaborationProcess();
         //Start a process request

@@ -8,7 +8,7 @@ use ProcessMaker\Models\Script;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class MessageTest extends TestCase
+final class MessageTest extends TestCase
 {
     use RequestHelper;
 
@@ -17,7 +17,7 @@ class MessageTest extends TestCase
         $this->withPersonalAccessClient();
     }
 
-    public function test()
+    public function test(): void
     {
         $script = Script::factory()->create([
             'language' => 'php',

@@ -4,9 +4,9 @@ namespace ProcessMaker;
 
 use Tests\TestCase;
 
-class SanitizeHelperTest extends TestCase
+final class SanitizeHelperTest extends TestCase
 {
-    public function testSanitize()
+    public function testSanitize(): void
     {
         $this->assertEquals('test', SanitizeHelper::strip_tags('<p>test</p>'));
         $this->assertEquals('image:;', SanitizeHelper::strip_tags('image:<img src="https://example.com/image" />;'));

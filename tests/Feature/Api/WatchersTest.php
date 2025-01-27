@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Event;
 use ProcessMaker\Events\ScriptResponseEvent;
@@ -12,10 +13,8 @@ use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
 
-/**
- * @group process_tests
- */
-class WatchersTest extends TestCase
+#[Group('process_tests')]
+final class WatchersTest extends TestCase
 {
     use WithFaker;
     use ResourceAssertionsTrait;
@@ -31,7 +30,7 @@ class WatchersTest extends TestCase
     /**
      * Test watcher calling script
      */
-    public function testExecuteWatcherScript()
+    public function testExecuteWatcherScript(): void
     {
         Event::fake([
             ScriptResponseEvent::class,

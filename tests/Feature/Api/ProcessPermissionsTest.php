@@ -15,7 +15,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class ProcessPermissionsTest extends TestCase
+final class ProcessPermissionsTest extends TestCase
 {
     use RequestHelper;
 
@@ -31,7 +31,7 @@ class ProcessPermissionsTest extends TestCase
         (new PermissionSeeder)->run($this->user);
     }
 
-    public function testUpdateProcessPermissionRequestCancelTypeUser()
+    public function testUpdateProcessPermissionRequestCancelTypeUser(): void
     {
         // Create a process
         $process = Process::factory()->create();

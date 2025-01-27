@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
@@ -14,10 +15,9 @@ use Tests\TestCase;
 
 /**
  * Test the process execution with requests
- *
- * @group process_tests
  */
-class ProcessScriptsTest extends TestCase
+#[Group('process_tests')]
+final class ProcessScriptsTest extends TestCase
 {
     use ResourceAssertionsTrait;
     use WithFaker;
@@ -69,7 +69,7 @@ class ProcessScriptsTest extends TestCase
     /**
      * Execute a process
      */
-    public function testExecuteAProcess()
+    public function testExecuteAProcess(): void
     {
         if (!file_exists(config('app.processmaker_scripts_home')) || !file_exists(config('app.processmaker_scripts_docker'))) {
             $this->markTestSkipped(

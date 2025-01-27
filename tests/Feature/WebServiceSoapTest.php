@@ -13,7 +13,7 @@ use ProcessMaker\WebServices\SoapServiceCaller;
 use ProcessMaker\WebServices\WebServiceRequest;
 use Tests\TestCase;
 
-class WebServiceSoapTest extends TestCase
+final class WebServiceSoapTest extends TestCase
 {
     use WithFaker;
 
@@ -27,7 +27,7 @@ class WebServiceSoapTest extends TestCase
         $this->app = $this->createApplication();
     }
 
-    public function testExecution()
+    public function testExecution(): void
     {
         $mockedDataSource = Mockery::mock(Model::class, function ($mock) {
             $mock->shouldReceive('getAttribute')->with('credentials')->andReturn([

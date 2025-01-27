@@ -6,13 +6,13 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class RequestListingPerformanceTest extends TestCase
+final class RequestListingPerformanceTest extends TestCase
 {
     use RequestHelper;
 
     public $withPermissions = true;
 
-    public function testPerformance()
+    public function testPerformance(): void
     {
         $seeder = new RequestListingPerformanceData();
 

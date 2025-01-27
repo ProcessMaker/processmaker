@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
@@ -13,10 +14,9 @@ use Tests\TestCase;
 
 /**
  * Test the process execution with service task
- *
- * @group process_tests
  */
-class ServiceTaskExecutionTest extends TestCase
+#[Group('process_tests')]
+final class ServiceTaskExecutionTest extends TestCase
 {
     use RequestHelper;
     use WithFaker;
@@ -75,7 +75,7 @@ class ServiceTaskExecutionTest extends TestCase
     /**
      * Execute a process with service task
      */
-    public function testExecuteAProcess()
+    public function testExecuteAProcess(): void
     {
         //Start a process request
         $route = route('api.process_events.trigger',
@@ -99,7 +99,7 @@ class ServiceTaskExecutionTest extends TestCase
         $this->assertEquals($request->data['pong'], $ping);
     }
 
-    public function testWithUserWithoutAuthorization()
+    public function testWithUserWithoutAuthorization(): void
     {
         // We'll test executing a process with someone that is not authenticated
         $url = route('api.process_events.trigger',

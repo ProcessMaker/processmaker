@@ -11,12 +11,12 @@ use Tests\TestCase;
 /**
  * Test FELL expressions that uses Mustache syntax
  */
-class MustacheFEELTest extends TestCase
+final class MustacheFEELTest extends TestCase
 {
     /**
      * Test basic mustache templating
      */
-    public function testMustacheTemplates()
+    public function testMustacheTemplates(): void
     {
         $expresion = new FormalExpression();
         $expresion->setLanguage('FEEL');
@@ -29,7 +29,7 @@ class MustacheFEELTest extends TestCase
     /**
      * Test basic mustache with FEEL string concatenation
      */
-    public function testStringConcatenation()
+    public function testStringConcatenation(): void
     {
         $expresion = new FormalExpression();
         $expresion->setLanguage('FEEL');
@@ -46,7 +46,7 @@ class MustacheFEELTest extends TestCase
     /**
      * Test formulas with mustache
      */
-    public function testFormulaAndMustache()
+    public function testFormulaAndMustache(): void
     {
         $expresion = new FormalExpression();
         $expresion->setLanguage('FEEL');

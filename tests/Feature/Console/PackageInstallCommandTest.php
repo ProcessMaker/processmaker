@@ -4,7 +4,7 @@ namespace Tests\Feature\Console;
 
 use Tests\TestCase;
 
-class PackageInstallCommandTest extends TestCase
+final class PackageInstallCommandTest extends TestCase
 {
     protected function setUp() : void
     {
@@ -12,7 +12,7 @@ class PackageInstallCommandTest extends TestCase
         $this->app->register(TestPackage\TestPackageServiceProvider::class);
     }
 
-    public function testFullInstall()
+    public function testFullInstall(): void
     {
         $this->artisan('processmaker:test-package-install')
             ->expectsOutput('PreInstall')
@@ -21,21 +21,21 @@ class PackageInstallCommandTest extends TestCase
             ->assertExitCode(0);
     }
 
-    public function testOptionPreinstall()
+    public function testOptionPreinstall(): void
     {
         $this->artisan('processmaker:test-package-install --preinstall')
             ->expectsOutput('PreInstall')
             ->assertExitCode(0);
     }
 
-    public function testOptionInstall()
+    public function testOptionInstall(): void
     {
         $this->artisan('processmaker:test-package-install --install')
             ->expectsOutput('Install')
             ->assertExitCode(0);
     }
 
-    public function testOptionPostinstall()
+    public function testOptionPostinstall(): void
     {
         $this->artisan('processmaker:test-package-install --postinstall')
             ->expectsOutput('PostInstall')

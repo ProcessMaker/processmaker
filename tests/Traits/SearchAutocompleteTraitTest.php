@@ -7,11 +7,11 @@ use ProcessMaker\Models\ProcessCategory;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class SearchAutocompleteTraitTest extends TestCase
+final class SearchAutocompleteTraitTest extends TestCase
 {
     use RequestHelper;
 
-    public function testDoesNotIncludeSystemProcesses()
+    public function testDoesNotIncludeSystemProcesses(): void
     {
         $regularProcessCategory = ProcessCategory::factory()->create();
         $systemProcessCategory = ProcessCategory::factory()->create(['is_system' => true]);

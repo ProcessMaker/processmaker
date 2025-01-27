@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\EnvironmentVariable;
@@ -9,14 +10,14 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class EnvironmentVariablesTest extends TestCase
+final class EnvironmentVariablesTest extends TestCase
 {
     use RequestHelper;
 
     const API_TEST_VARIABLES = '/environment_variables';
 
-    /** @test */
-    public function it_should_create_an_environment_variable()
+    #[Test]
+    public function it_should_create_an_environment_variable(): void
     {
         $data = [
             'name' => 'testvariable',
@@ -36,8 +37,8 @@ class EnvironmentVariablesTest extends TestCase
         $this->assertDatabaseHas('environment_variables', $data);
     }
 
-    /** @test */
-    public function it_should_store_values_as_encrypted()
+    #[Test]
+    public function it_should_store_values_as_encrypted(): void
     {
         $variable = EnvironmentVariable::factory()->create([
             'value' => 'testvalue',
@@ -48,8 +49,8 @@ class EnvironmentVariablesTest extends TestCase
         $this->assertEquals('testvalue', $variable->value);
     }
 
-    /** @test */
-    public function it_should_have_validation_errors_on_name_uniqueness_during_create()
+    #[Test]
+    public function it_should_have_validation_errors_on_name_uniqueness_during_create(): void
     {
         // Create an environment variable with a set name
         EnvironmentVariable::factory()->create([
@@ -71,8 +72,8 @@ class EnvironmentVariablesTest extends TestCase
         $this->assertDatabaseMissing('environment_variables', $data);
     }
 
-    /** @test */
-    public function it_should_not_allow_whitespace_in_variable_name()
+    #[Test]
+    public function it_should_not_allow_whitespace_in_variable_name(): void
     {
         // Data with a name with a space
         $data = [
@@ -86,8 +87,8 @@ class EnvironmentVariablesTest extends TestCase
         $response->assertStatus(422);
     }
 
-    /** @test */
-    public function it_should_successfully_return_an_environment_variable()
+    #[Test]
+    public function it_should_successfully_return_an_environment_variable(): void
     {
         // Create an environment variable with a set name
         $variable = EnvironmentVariable::factory()->create([
@@ -108,8 +109,8 @@ class EnvironmentVariablesTest extends TestCase
         // Ensure the JSON response does NOT have value attribute, as this should be hidden
     }
 
-    /** @test */
-    public function it_should_have_validation_errors_on_name_uniqueness_during_update()
+    #[Test]
+    public function it_should_have_validation_errors_on_name_uniqueness_during_update(): void
     {
         // Create an environment variable with a set name for the update
         $variable = EnvironmentVariable::factory()->create([
@@ -134,8 +135,8 @@ class EnvironmentVariablesTest extends TestCase
         $response->assertStatus(422);
     }
 
-    /** @test */
-    public function it_should_successfully_update_an_environment_variable()
+    #[Test]
+    public function it_should_successfully_update_an_environment_variable(): void
     {
         // Create an environment variable with a set name
         $variable = EnvironmentVariable::factory()->create([
@@ -160,8 +161,8 @@ class EnvironmentVariablesTest extends TestCase
         $this->assertEquals('newvalue', $variable->value);
     }
 
-    /** @test */
-    public function it_should_return_paginated_environment_variables_during_index()
+    #[Test]
+    public function it_should_return_paginated_environment_variables_during_index(): void
     {
         // Can't truncate because of DatabaseTransactions
         EnvironmentVariable::whereNotNull('id')->delete();
@@ -179,8 +180,8 @@ class EnvironmentVariablesTest extends TestCase
         $this->assertEquals(50, $data['meta']['total']);
     }
 
-    /** @test */
-    public function it_should_return_filtered_environment_variables()
+    #[Test]
+    public function it_should_return_filtered_environment_variables(): void
     {
         EnvironmentVariable::factory()->count(50)->create();
         // Put in a match
@@ -197,8 +198,8 @@ class EnvironmentVariablesTest extends TestCase
         $this->assertEquals('matchingfield', $data['meta']['filter']);
     }
 
-    /** @test */
-    public function it_should_successfully_remove_environment_variable()
+    #[Test]
+    public function it_should_successfully_remove_environment_variable(): void
     {
         // Create an environment variable with a set name
         $variable = EnvironmentVariable::factory()->create([
@@ -216,8 +217,8 @@ class EnvironmentVariablesTest extends TestCase
         ]);
     }
 
-    /** @test */
-    public function it_value_does_not_change_if_value_is_null()
+    #[Test]
+    public function it_value_does_not_change_if_value_is_null(): void
     {
         // Create an environment variable with a set name
         $variable = EnvironmentVariable::factory()->create([

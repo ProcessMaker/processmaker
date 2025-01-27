@@ -25,7 +25,7 @@ use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
 
-class ClearRequestsTest extends TestCase
+final class ClearRequestsTest extends TestCase
 {
     use ResourceAssertionsTrait;
     use WithFaker;
@@ -293,7 +293,7 @@ class ClearRequestsTest extends TestCase
         $this->completeTask($token);
     }
 
-    public function testCommandClearRequests()
+    public function testCommandClearRequests(): void
     {
         $existingProcessIds = Process::pluck('id');
 

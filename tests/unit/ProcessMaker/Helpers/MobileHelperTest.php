@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Helpers\MobileHelper;
 use Tests\TestCase;
 
-class MobileHelperTest extends TestCase
+final class MobileHelperTest extends TestCase
 {
     use WithFaker;
 
@@ -27,7 +27,7 @@ class MobileHelperTest extends TestCase
         return $this->faker->randomElement($agent);
     }
 
-    public function testIsMobileWithoutCookie()
+    public function testIsMobileWithoutCookie(): void
     {
         $result = MobileHelper::isMobile($this->getUserAgent());
         $this->assertFalse($result);
