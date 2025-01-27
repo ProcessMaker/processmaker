@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
@@ -13,9 +14,8 @@ use Tests\TestCase;
 
 /**
  * Test the process execution with service task
- *
- * @group process_tests
  */
+#[Group('process_tests')]
 class ServiceTaskExecutionTest extends TestCase
 {
     use RequestHelper;

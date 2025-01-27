@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
@@ -12,9 +13,8 @@ use Tests\TestCase;
 
 /**
  * Tests routes related to screens / CRUD related methods
- *
- * @group screen_tests
  */
+#[Group('screen_tests')]
 class ScreenCategoriesTest extends TestCase
 {
     use WithFaker;

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use Carbon\Carbon;
 use Database\Seeders\PermissionSeeder;
 use Facades\ProcessMaker\RollbackProcessRequest;
@@ -31,9 +32,8 @@ use Tests\TestCase;
  * Tests routes related to tokens list and show
  * the creation, update and deletion are controller by the engine
  * and should not be changed by endpoints
- *
- * @group process_tests
  */
+#[Group('process_tests')]
 class TasksTest extends TestCase
 {
     use WithFaker;

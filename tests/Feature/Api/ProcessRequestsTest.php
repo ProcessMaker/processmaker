@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
@@ -20,9 +21,8 @@ use Tests\TestCase;
 
 /**
  * Tests routes related to processes / CRUD related methods
- *
- * @group process_tests
  */
+#[Group('process_tests')]
 class ProcessRequestsTest extends TestCase
 {
     use RequestHelper;

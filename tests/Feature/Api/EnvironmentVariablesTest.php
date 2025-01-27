@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\EnvironmentVariable;
@@ -15,7 +16,7 @@ class EnvironmentVariablesTest extends TestCase
 
     const API_TEST_VARIABLES = '/environment_variables';
 
-    /** @test */
+    #[Test]
     public function it_should_create_an_environment_variable()
     {
         $data = [
@@ -36,7 +37,7 @@ class EnvironmentVariablesTest extends TestCase
         $this->assertDatabaseHas('environment_variables', $data);
     }
 
-    /** @test */
+    #[Test]
     public function it_should_store_values_as_encrypted()
     {
         $variable = EnvironmentVariable::factory()->create([
@@ -48,7 +49,7 @@ class EnvironmentVariablesTest extends TestCase
         $this->assertEquals('testvalue', $variable->value);
     }
 
-    /** @test */
+    #[Test]
     public function it_should_have_validation_errors_on_name_uniqueness_during_create()
     {
         // Create an environment variable with a set name
@@ -71,7 +72,7 @@ class EnvironmentVariablesTest extends TestCase
         $this->assertDatabaseMissing('environment_variables', $data);
     }
 
-    /** @test */
+    #[Test]
     public function it_should_not_allow_whitespace_in_variable_name()
     {
         // Data with a name with a space
@@ -86,7 +87,7 @@ class EnvironmentVariablesTest extends TestCase
         $response->assertStatus(422);
     }
 
-    /** @test */
+    #[Test]
     public function it_should_successfully_return_an_environment_variable()
     {
         // Create an environment variable with a set name
@@ -108,7 +109,7 @@ class EnvironmentVariablesTest extends TestCase
         // Ensure the JSON response does NOT have value attribute, as this should be hidden
     }
 
-    /** @test */
+    #[Test]
     public function it_should_have_validation_errors_on_name_uniqueness_during_update()
     {
         // Create an environment variable with a set name for the update
@@ -134,7 +135,7 @@ class EnvironmentVariablesTest extends TestCase
         $response->assertStatus(422);
     }
 
-    /** @test */
+    #[Test]
     public function it_should_successfully_update_an_environment_variable()
     {
         // Create an environment variable with a set name
@@ -160,7 +161,7 @@ class EnvironmentVariablesTest extends TestCase
         $this->assertEquals('newvalue', $variable->value);
     }
 
-    /** @test */
+    #[Test]
     public function it_should_return_paginated_environment_variables_during_index()
     {
         // Can't truncate because of DatabaseTransactions
@@ -179,7 +180,7 @@ class EnvironmentVariablesTest extends TestCase
         $this->assertEquals(50, $data['meta']['total']);
     }
 
-    /** @test */
+    #[Test]
     public function it_should_return_filtered_environment_variables()
     {
         EnvironmentVariable::factory()->count(50)->create();
@@ -197,7 +198,7 @@ class EnvironmentVariablesTest extends TestCase
         $this->assertEquals('matchingfield', $data['meta']['filter']);
     }
 
-    /** @test */
+    #[Test]
     public function it_should_successfully_remove_environment_variable()
     {
         // Create an environment variable with a set name
@@ -216,7 +217,7 @@ class EnvironmentVariablesTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_value_does_not_change_if_value_is_null()
     {
         // Create an environment variable with a set name

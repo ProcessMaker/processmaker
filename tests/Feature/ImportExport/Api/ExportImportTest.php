@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\ImportExport\Api;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use DB;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
@@ -173,8 +175,6 @@ class ExportImportTest extends TestCase
     }
 
     /**
-     * @group agustin
-     * @dataProvider importType
      * There are some assets that are not tested because we are not exporting for now:
      * - Users
      * - Groups
@@ -183,6 +183,8 @@ class ExportImportTest extends TestCase
      * Not yet implemented
      * - Collections
      */
+    #[Group('agustin')]
+    #[DataProvider('importType')]
     public function testExportImportFull($importType)
     {
         $classes = [

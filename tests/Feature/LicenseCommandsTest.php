@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\Group;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\LicensedPackageManifest;
@@ -9,9 +10,8 @@ use Tests\TestCase;
 
 /**
  * Test license commands
- *
- * @group license
  */
+#[Group('license')]
 class LicenseCommandsTest extends TestCase
 {
     protected function setUp(): void

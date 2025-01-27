@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ScheduledTask;
@@ -46,8 +47,8 @@ class BoundaryEventsTest extends TestCase
 
     /**
      * Tests a process with a timer boundary event
-     * @group timer_events
      */
+    #[Group('timer_events')]
     public function testCycleTimerBoundaryEvent()
     {
         // Mock current date for TaskSchedulerManager
@@ -132,9 +133,8 @@ class BoundaryEventsTest extends TestCase
 
     /**
      * Tests a process with a cycle timer boundary event attached to a CallActivity
-     *
-     * @group timer_events
      */
+    #[Group('timer_events')]
     public function testCycleTimerBoundaryEventCallActivity()
     {
         // Mock current date for TaskSchedulerManager
@@ -201,9 +201,8 @@ class BoundaryEventsTest extends TestCase
 
     /**
      * Tests a process with a cycle timer boundary non interrupting event attached to a task
-     *
-     * @group timer_events
      */
+    #[Group('timer_events')]
     public function testCycleTimerBoundaryEventNonInterrupting()
     {
         // Mock current date for TaskSchedulerManager
@@ -284,9 +283,8 @@ class BoundaryEventsTest extends TestCase
 
     /**
      * Tests a process with a cycle timer boundary non interrupting event attached to a CallActivity
-     *
-     * @group timer_events
      */
+    #[Group('timer_events')]
     public function testCycleTimerBoundaryEventCallActivityNonInterrupting()
     {
         // Mock current date for TaskSchedulerManager
@@ -353,9 +351,8 @@ class BoundaryEventsTest extends TestCase
 
     /**
      * Tests a process with concurrent non interrupting boundary events attached to a CallActivity
-     *
-     * @group timer_events
      */
+    #[Group('timer_events')]
     public function testConcurrentBoundaryEventCallActivityNonInterrupting()
     {
         // Mock current date for TaskSchedulerManager

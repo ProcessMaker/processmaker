@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
@@ -14,9 +15,8 @@ use Tests\TestCase;
 
 /**
  * Test the process execution with requests
- *
- * @group process_tests
  */
+#[Group('process_tests')]
 class ProcessScriptsTest extends TestCase
 {
     use ResourceAssertionsTrait;

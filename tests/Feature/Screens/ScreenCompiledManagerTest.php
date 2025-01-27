@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Managers\ScreenCompiledManager;
@@ -23,9 +24,8 @@ class ScreenCompiledManagerTest extends TestCase
 
     /**
      * Validate a screen can be stored into the screens cache
-     *
-     * @test
      */
+    #[Test]
     public function it_stores_compiled_content()
     {
         // Arrange
@@ -47,9 +47,8 @@ class ScreenCompiledManagerTest extends TestCase
 
     /**
      * Validate a screen can be retrieved from screens cache
-     *
-     * @test
      */
+    #[Test]
     public function it_retrieves_compiled_content()
     {
         // Arrange content
@@ -70,9 +69,8 @@ class ScreenCompiledManagerTest extends TestCase
 
     /**
      * Validate a null value is returned when compiled content does not exist
-     *
-     * @test
      */
+    #[Test]
     public function it_returns_null_when_compiled_content_does_not_exist()
     {
         // Arrange
@@ -88,9 +86,8 @@ class ScreenCompiledManagerTest extends TestCase
 
     /**
      * Validate all compiled assets can be cleared
-     *
-     * @test
      */
+    #[Test]
     public function it_clears_all_compiled_assets()
     {
         // Arrange content
@@ -114,9 +111,8 @@ class ScreenCompiledManagerTest extends TestCase
     /**
      * Validate a screen key can be created and can be used to store and retrieve compiled content
      * Also validate if screens cache can be cleared for a specific process
-     *
-     * @test
      */
+    #[Test]
     public function it_clears_process_screens_cache()
     {
         // Arrange
@@ -158,9 +154,8 @@ class ScreenCompiledManagerTest extends TestCase
 
     /**
      * Validate a screen key can be created
-     *
-     * @test
      */
+    #[Test]
     public function it_creates_a_screen_key()
     {
         // Arrange
@@ -182,9 +177,8 @@ class ScreenCompiledManagerTest extends TestCase
 
     /**
      * Validate the last screen version ID can be retrieved
-     *
-     * @test
      */
+    #[Test]
     public function it_gets_the_last_screen_version_id()
     {
         // Create the manager

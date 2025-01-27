@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
@@ -12,9 +13,8 @@ use Tests\TestCase;
 
 /**
  * Tests routes related to script / CRUD related methods
- *
- * @group script_tests
  */
+#[Group('script_tests')]
 class ScriptCategoriesTest extends TestCase
 {
     use WithFaker;

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use Illuminate\Support\Facades\Bus;
 use ProcessMaker\Jobs\RefreshArtisanCaches;
 use ProcessMaker\Jobs\RunServiceTask;
@@ -11,9 +12,8 @@ use Tests\TestCase;
 
 /**
  * Test Service Task Queue
- *
- * @group process_tests
  */
+#[Group('process_tests')]
 class ServiceTaskQueueTest extends TestCase
 {
     use RequestHelper;

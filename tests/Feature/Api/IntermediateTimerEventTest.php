@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Bus;
@@ -17,10 +18,9 @@ use Tests\TestCase;
 
 /**
  * Test the process execution with requests
- *
- * @group process_tests
- * @group timer_events
  */
+#[Group('process_tests')]
+#[Group('timer_events')]
 class IntermediateTimerEventTest extends TestCase
 {
     use ResourceAssertionsTrait;

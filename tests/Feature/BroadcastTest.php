@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\CoversNothing;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Event;
 use ProcessMaker\Events\ActivityAssigned;
@@ -27,8 +28,8 @@ use Tests\TestCase;
 
 /**
  * @internal
- * @coversNothing
  */
+#[CoversNothing]
 class BroadcastTest extends TestCase
 {
     use LoggingHelper;

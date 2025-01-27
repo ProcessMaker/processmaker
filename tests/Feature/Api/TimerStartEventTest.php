@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Managers\TaskSchedulerManager;
@@ -13,10 +14,9 @@ use Tests\TestCase;
 
 /**
  * Test the process execution with requests
- *
- * @group process_tests
- * @group timer_events
  */
+#[Group('process_tests')]
+#[Group('timer_events')]
 class TimerStartEventTest extends TestCase
 {
     use ResourceAssertionsTrait;

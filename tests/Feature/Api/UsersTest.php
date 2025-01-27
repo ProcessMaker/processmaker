@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use Database\Seeders\PermissionSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Http\UploadedFile;
@@ -527,8 +528,8 @@ class UsersTest extends TestCase
 
     /**
      * Tests the archiving and restoration of a process
-     * @group agustin
      */
+    #[Group('agustin')]
     public function testRestoreSoftDeletedUser()
     {
         // create an user

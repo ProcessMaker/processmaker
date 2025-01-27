@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use Faker\Provider\DateTime;
 use Illuminate\Foundation\Testing\WithFaker;
 use Laravel\Passport\Passport;
@@ -22,9 +23,8 @@ use Tests\TestCase;
 
 /**
  * Tests boundary signal events in Jobs triggers the right number of requests
- *
- * @group process_tests
  */
+#[Group('process_tests')]
 class TriggerSignalInRequestTest extends TestCase
 {
     use RequestHelper;

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use Database\Seeders\PermissionSeeder;
 use Faker\Generator as Faker;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -23,9 +24,8 @@ use Tests\TestCase;
 
 /**
  * Tests routes related to processes / CRUD related methods
- *
- * @group process_tests
  */
+#[Group('process_tests')]
 class ProcessTest extends TestCase
 {
     use WithFaker;

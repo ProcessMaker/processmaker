@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
@@ -12,9 +13,8 @@ use Tests\TestCase;
 
 /**
  * Tests routes related to processes / CRUD related methods
- *
- * @group process_tests
  */
+#[Group('process_tests')]
 class ConvertBPMNTest extends TestCase
 {
     use WithFaker;

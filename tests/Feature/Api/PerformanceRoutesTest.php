@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Group;
@@ -88,9 +89,8 @@ class PerformanceRoutesTest extends TestCase
 
     /**
      * Test routes speed
-     *
-     * @dataProvider RoutesListProvider
      */
+    #[DataProvider('RoutesListProvider')]
     public function testRoutesSpeed($route, $params)
     {
         $this->user = User::factory()->create(['is_administrator' => true]);

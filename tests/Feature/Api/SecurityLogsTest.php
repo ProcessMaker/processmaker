@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use Database\Seeders\PermissionSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Artisan;
@@ -62,9 +63,7 @@ use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Templates\HelperTrait;
 use Tests\TestCase;
 
-/**
- * @covers \ProcessMaker\Models\SecurityLog
- */
+#[CoversClass(\ProcessMaker\Models\SecurityLog::class)]
 class SecurityLogsTest extends TestCase
 {
     use HelperTrait;

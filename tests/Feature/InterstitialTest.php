@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\Group;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Event;
 use ProcessMaker\Events\RedirectToEvent;
@@ -13,9 +14,8 @@ use Tests\TestCase;
 
 /**
  * Test the process execution with requests
- *
- * @group process_tests
  */
+#[Group('process_tests')]
 class InterstitialTest extends TestCase
 {
     use RequestHelper;

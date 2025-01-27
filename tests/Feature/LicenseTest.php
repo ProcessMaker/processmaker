@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\Group;
 use Carbon\Carbon;
 use Illuminate\Foundation\PackageManifest;
 use Illuminate\Support\Facades\Artisan;
@@ -14,9 +15,8 @@ use Tests\TestCase;
 
 /**
  * Test license commands
- *
- * @group license
  */
+#[Group('license')]
 class LicenseTest extends TestCase
 {
     protected $skipPackageDiscover = false;

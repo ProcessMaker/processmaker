@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Illuminate\Database\Eloquent\Factory as EloquentFactory;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
@@ -85,9 +86,8 @@ class PerformanceModelsTest extends TestCase
      * @param [type] $model
      * @param [type] $baseCount
      * @param [type] $baseTime
-     *
-     * @dataProvider FactoryListProvider
      */
+    #[DataProvider('FactoryListProvider')]
     public function testFactories($model, $baseTime)
     {
         $baseCount = $this->getTotalRecords();
