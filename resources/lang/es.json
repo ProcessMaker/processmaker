@@ -685,6 +685,7 @@
   "Leave empty to continue until exit condition is satisfied": "Dejar vacío para continuar hasta que se cumpla la condición de salida",
   "When FEEL expression evaluates to true then exit loop": "Cuando la expresión FEEL se evalúe como verdadera, entonces salir del bucle",
   "Reset": "Restablecer",
+  "Reset Table": "Restablecer tabla",
   "Reset to initial scale": "Restablecer a escala inicial",
   "Restore": "Restaurar",
   "Rich Text Content": "Contenido de texto enriquecido",

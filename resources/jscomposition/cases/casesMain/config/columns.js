@@ -37,6 +37,7 @@ export const caseNumberColumn = () => ({
   filter: {
     dataType: "string",
     operators: ["=", ">", ">=", "in", "between"],
+    resetTable: true,
   },
   cellRenderer: () => ({
     component: LinkCell,
@@ -60,6 +61,7 @@ export const caseTitleColumn = () => ({
   filter: {
     dataType: "string",
     operators: ["=", ">", ">=", "in", "between"],
+    resetTable: true,
   },
 });
 
@@ -68,6 +70,9 @@ export const processColumn = () => ({
   header: "Process",
   resizable: true,
   width: 200,
+  filter: {
+    resetTable: true,
+  },
   cellRenderer: () => ({
     component: TruncatedColumn,
     params: {
@@ -81,6 +86,9 @@ export const taskColumn = () => ({
   header: t("Current Task"),
   resizable: true,
   width: 200,
+  filter: {
+    resetTable: true,
+  },
   cellRenderer: () => ({
     component: TruncatedGroupOptionsCell,
     params: {
@@ -123,6 +131,9 @@ export const participantsColumn = () => ({
   header: "Participants",
   resizable: true,
   width: 200,
+  filter: {
+    resetTable: true,
+  },
   cellRenderer: () => ({
     component: ParticipantsCell,
     params: {
@@ -147,6 +158,7 @@ export const statusColumn = () => ({
   filter: {
     dataType: "enum",
     operators: ["="],
+    resetTable: true,
     config: {
       options: [{
         label: t("In progress"),
@@ -177,6 +189,7 @@ export const startedColumn = () => ({
   filter: {
     dataType: "datetime",
     operators: ["between", ">", ">=", "<", "<="],
+    resetTable: true,
   },
 });
 
@@ -189,6 +202,7 @@ export const completedColumn = () => ({
   filter: {
     dataType: "datetime",
     operators: ["between", ">", ">=", "<", "<="],
+    resetTable: true,
   },
 });
 
