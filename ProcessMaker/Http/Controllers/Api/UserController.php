@@ -257,6 +257,8 @@ class UserController extends Controller
 
         $user = new User();
         $fields = $request->json()->all();
+        // Enable this parameter if the parameter is not sent
+        $fields['email_task_notification'] = $request->input('email_task_notification', true);
 
         if (isset($fields['password'])) {
             $fields['password'] = Hash::make($fields['password']);
