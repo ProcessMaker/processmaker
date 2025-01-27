@@ -25,7 +25,7 @@ class ScreenTest extends TestCase
     /**
      * Test verify the parameter required for create screen
      */
-    public function testNotCreatedForParameterRequired()
+    public function testNotCreatedForParameterRequired(): void
     {
         // Post should have the parameter required
         $url = self::API_TEST_SCREEN;
@@ -39,7 +39,7 @@ class ScreenTest extends TestCase
     /**
      * Create Form screen successfully
      */
-    public function testCreateFormScreen()
+    public function testCreateFormScreen(): void
     {
         // Post title duplicated
         $faker = Faker::create();
@@ -56,7 +56,7 @@ class ScreenTest extends TestCase
     /**
      * Create Form screen successfully
      */
-    public function testCreateDisplayScreen()
+    public function testCreateDisplayScreen(): void
     {
         // Post title duplicated
         $faker = Faker::create();
@@ -74,7 +74,7 @@ class ScreenTest extends TestCase
     /**
      * Can not create a screen with an existing title
      */
-    public function testNotCreateScreenWithTitleExists()
+    public function testNotCreateScreenWithTitleExists(): void
     {
         Screen::factory()->create([
             'title' => 'Title Screen',
@@ -94,7 +94,7 @@ class ScreenTest extends TestCase
     /**
      * Get a list of Screen in process without query parameters.
      */
-    public function testListScreen()
+    public function testListScreen(): void
     {
         Screen::query()->delete();
         // add Screen to process
@@ -124,7 +124,7 @@ class ScreenTest extends TestCase
     /**
      * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
      */
-    public function testScreenListDates()
+    public function testScreenListDates(): void
     {
         $title = 'testScreenTimezone';
         $newEntity = Screen::factory()->create(['title' => $title]);
@@ -145,7 +145,7 @@ class ScreenTest extends TestCase
     /**
      * Get a list of Screen with parameters
      */
-    public function testListScreenWithQueryParameter()
+    public function testListScreenWithQueryParameter(): void
     {
         $title = 'search Title Screen';
         Screen::factory()->create([
@@ -182,7 +182,7 @@ class ScreenTest extends TestCase
     /**
      * Get a Screen of a process.
      */
-    public function testGetScreen()
+    public function testGetScreen(): void
     {
         // load Screen
         $url = self::API_TEST_SCREEN . '/' . Screen::factory()->create([
@@ -205,7 +205,7 @@ class ScreenTest extends TestCase
     /**
      * Update Screen parameter are required
      */
-    public function testUpdateScreenParametersRequired()
+    public function testUpdateScreenParametersRequired(): void
     {
         // Post should have the parameter title
         $url = self::API_TEST_SCREEN . '/' . Screen::factory()->create()->id;
@@ -221,7 +221,7 @@ class ScreenTest extends TestCase
     /**
      * Update Screen in process successfully
      */
-    public function testUpdateScreen()
+    public function testUpdateScreen(): void
     {
         $faker = Faker::create();
         $yesterday = now()->yesterday();
@@ -255,7 +255,7 @@ class ScreenTest extends TestCase
     /**
      * Update draft Screen.
      */
-    public function testUpdateDraftScreen()
+    public function testUpdateDraftScreen(): void
     {
         $faker = Faker::create();
         $yesterday = now()->yesterday();
@@ -291,7 +291,7 @@ class ScreenTest extends TestCase
     /**
      * Close draft screen.
      */
-    public function testCloseDraftScreen()
+    public function testCloseDraftScreen(): void
     {
         $screen = Screen::factory()->create();
 
@@ -311,7 +311,7 @@ class ScreenTest extends TestCase
     /**
      * Update Screen Type
      */
-    public function testUpdateScreenType()
+    public function testUpdateScreenType(): void
     {
         $faker = Faker::create();
         $type = 'FORM';
@@ -332,7 +332,7 @@ class ScreenTest extends TestCase
     /**
      * Copy Screen
      */
-    public function testDuplicateScreen()
+    public function testDuplicateScreen(): void
     {
         $faker = Faker::create();
         $config = '{"foo":"bar"}';
@@ -353,7 +353,7 @@ class ScreenTest extends TestCase
     /**
      * Update Screen with same title
      */
-    public function testUpdateSameTitleScreen()
+    public function testUpdateSameTitleScreen(): void
     {
         // Post saved success
         $faker = Faker::create();
@@ -377,7 +377,7 @@ class ScreenTest extends TestCase
     /**
      * Delete Screen in process
      */
-    public function testDeleteScreen()
+    public function testDeleteScreen(): void
     {
         // Remove Screen
         $url = self::API_TEST_SCREEN . '/' . Screen::factory()->create()->id;
@@ -389,7 +389,7 @@ class ScreenTest extends TestCase
     /**
      * Delete Screen in process
      */
-    public function testDeleteScreenNotExist()
+    public function testDeleteScreenNotExist(): void
     {
         // screen not exist
         $url = self::API_TEST_SCREEN . '/' . Screen::factory()->make()->id;
@@ -398,7 +398,7 @@ class ScreenTest extends TestCase
         $response->assertStatus(405);
     }
 
-    public function testCategoryNotRequiredIfAlreadySavedInDatabase()
+    public function testCategoryNotRequiredIfAlreadySavedInDatabase(): void
     {
         $screen = Screen::factory()->create();
         $url = route('api.screens.update', $screen);
@@ -411,7 +411,7 @@ class ScreenTest extends TestCase
         $response->assertStatus(204);
     }
 
-    public function testCreateCategoryRequired()
+    public function testCreateCategoryRequired(): void
     {
         $url = route('api.screens.store');
         $params = [
@@ -448,7 +448,7 @@ class ScreenTest extends TestCase
     /**
      * Get a list of Screen filter by category
      */
-    public function testFilterByCategory()
+    public function testFilterByCategory(): void
     {
         $name = 'Search title Category Screen';
         $category = ScreenCategory::factory()->create([
@@ -505,7 +505,7 @@ class ScreenTest extends TestCase
         $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
     }
 
-    public function testUpdateScreenCategories()
+    public function testUpdateScreenCategories(): void
     {
         $screen = Screen::factory()->create();
         $url = route('api.screens.update', $screen);
@@ -519,7 +519,7 @@ class ScreenTest extends TestCase
         $response->assertStatus(204);
     }
 
-    public function testWithUserWithoutAuthorization()
+    public function testWithUserWithoutAuthorization(): void
     {
         $screen = Screen::factory()->create();
         $url = route('api.screens.update', $screen);
@@ -536,7 +536,7 @@ class ScreenTest extends TestCase
         $response->assertStatus(401);
     }
 
-    public function testPreviewScreen()
+    public function testPreviewScreen(): void
     {
         $this->markTestSkipped('Skip consolidated screen preview');
         $child = Screen::factory()->create([
@@ -577,7 +577,7 @@ class ScreenTest extends TestCase
     /**
      * Test get list of screens with categories but without config field
      */
-    public function testListScreensWithCategoriesAndWithoutConfig()
+    public function testListScreensWithCategoriesAndWithoutConfig(): void
     {
         $category = ScreenCategory::factory()->create();
         $screen1 = Screen::factory()->create([
@@ -607,7 +607,7 @@ class ScreenTest extends TestCase
     /**
      * Test get list of screens with categories with config field
      */
-    public function testListScreensWithCategoriesWithoContent()
+    public function testListScreensWithCategoriesWithoContent(): void
     {
         $category = ScreenCategory::factory()->create();
         $screen1 = Screen::factory()->create([

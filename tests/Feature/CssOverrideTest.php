@@ -14,7 +14,7 @@ class CssOverrideTest extends TestCase
     use RequestHelper;
 
     #[Test]
-    public function a_user_can_view_css_override()
+    public function a_user_can_view_css_override(): void
     {
         // get the URL
         $response = $this->webcall('GET', route('customize-ui.edit'));

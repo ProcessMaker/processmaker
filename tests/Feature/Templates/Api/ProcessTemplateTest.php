@@ -26,7 +26,7 @@ class ProcessTemplateTest extends TestCase
     use HelperTrait;
     use WithFaker;
 
-    public function testIndex()
+    public function testIndex(): void
     {
         $this->addGlobalSignalProcess();
         ProcessTemplates::factory()->count(10)->create();
@@ -52,7 +52,7 @@ class ProcessTemplateTest extends TestCase
         $this->assertArrayNotHasKey('manifest', $data[0]);
     }
 
-    public function testNotAllowingToSaveDuplicateTemplateWithTheSameName()
+    public function testNotAllowingToSaveDuplicateTemplateWithTheSameName(): void
     {
         $this->addGlobalSignalProcess();
 
@@ -90,7 +90,7 @@ class ProcessTemplateTest extends TestCase
         $this->assertEquals('The template name must be unique.', $content->name[0]);
     }
 
-    public function testSaveProcessAssetsAsTemplate()
+    public function testSaveProcessAssetsAsTemplate(): void
     {
         $this->addGlobalSignalProcess();
 
@@ -135,7 +135,7 @@ class ProcessTemplateTest extends TestCase
         $this->assertDatabaseHas('process_templates', ['name' => 'Test Template']);
     }
 
-    public function testSaveProcessModelAsTemplate()
+    public function testSaveProcessModelAsTemplate(): void
     {
         $this->addGlobalSignalProcess();
 
@@ -185,7 +185,7 @@ class ProcessTemplateTest extends TestCase
         $this->assertEquals($process->id, $template->process_id);
     }
 
-    public function testCreateProcessFromTemplate()
+    public function testCreateProcessFromTemplate(): void
     {
         $this->addGlobalSignalProcess();
 
@@ -231,7 +231,7 @@ class ProcessTemplateTest extends TestCase
         $this->assertEquals('Default Templates', $newCategory->name);
     }
 
-    public function testTemplateToProcessSync()
+    public function testTemplateToProcessSync(): void
     {
         $this->markTestSkipped(
             'This test needs to be refactor to mock the transactions.'
@@ -267,7 +267,7 @@ class ProcessTemplateTest extends TestCase
         }
     }
 
-    public function testUpdateAssetsWhenCreatingProcess()
+    public function testUpdateAssetsWhenCreatingProcess(): void
     {
         $this->addGlobalSignalProcess();
         $user = User::factory()->create();

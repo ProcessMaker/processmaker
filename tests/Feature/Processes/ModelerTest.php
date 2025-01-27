@@ -9,7 +9,7 @@ use Tests\TestCase;
 
 class ModelerTest extends TestCase
 {
-    public function testInflightRoute()
+    public function testInflightRoute(): void
     {
         $user = User::factory()->admin()->create();
         $process = Process::factory()->create();
@@ -26,7 +26,7 @@ class ModelerTest extends TestCase
         $response->assertSee(__('Process Map'));
     }
 
-    public function testInflightRouteWithViewPermission()
+    public function testInflightRouteWithViewPermission(): void
     {
         $user = User::factory()->create();
         $adminUser = User::factory()->admin()->create();

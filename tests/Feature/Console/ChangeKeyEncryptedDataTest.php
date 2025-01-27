@@ -9,7 +9,7 @@ use Tests\TestCase;
 
 class ChangeKeyEncryptedDataTest extends TestCase
 {
-    public function test_change_key_driver_local()
+    public function test_change_key_driver_local(): void
     {
         // Set driver to "local"
         $driver = 'local';

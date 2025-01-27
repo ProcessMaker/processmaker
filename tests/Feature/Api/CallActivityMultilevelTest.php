@@ -19,7 +19,7 @@ class CallActivityMultilevelTest extends TestCase
      * Tests the a process with call activity to a external process definition
      */
     #[Group('process_tests')]
-    public function testCallActivity()
+    public function testCallActivity(): void
     {
         // Script task requires passport installed (oauth token)
         Artisan::call('passport:install', ['-vvv' => true]);

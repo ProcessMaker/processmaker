@@ -8,7 +8,7 @@ use Tests\TestCase;
 
 class FormalExpressionTest extends TestCase
 {
-    public function testEvaluateSimpleExpression()
+    public function testEvaluateSimpleExpression(): void
     {
         $formalExp = new FormalExpression();
         $formalExp->setLanguage('FEEL');
@@ -20,7 +20,7 @@ class FormalExpressionTest extends TestCase
         $this->assertTrue($eval);
     }
 
-    public function testLanguageNotSupported()
+    public function testLanguageNotSupported(): void
     {
         $this->expectException(ScriptLanguageNotSupported::class);
 
@@ -30,7 +30,7 @@ class FormalExpressionTest extends TestCase
         $eval = $formalExp(['condition' => 'test']);
     }
 
-    public function testEvaluateExpressionWithMustache()
+    public function testEvaluateExpressionWithMustache(): void
     {
         $formalExp = new FormalExpression();
         $formalExp->setLanguage('FEEL');

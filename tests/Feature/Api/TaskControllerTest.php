@@ -31,7 +31,7 @@ class TaskControllerTest extends TestCase
      *
      * @return void
      */
-    public function testIndexCaseRequiresCaseNumber()
+    public function testIndexCaseRequiresCaseNumber(): void
     {
         // Simulate an authenticated user
         $user = User::factory()->create();
@@ -50,7 +50,7 @@ class TaskControllerTest extends TestCase
      *
      * @return void
      */
-    public function testIndexCaseReturnsActiveTasksForCaseNumberPagination()
+    public function testIndexCaseReturnsActiveTasksForCaseNumberPagination(): void
     {
         // Simulate an authenticated user
         $user = User::factory()->create();
@@ -94,7 +94,7 @@ class TaskControllerTest extends TestCase
      *
      * @return void
      */
-    public function testIndexCaseReturnsInactiveTasksForCaseNumber()
+    public function testIndexCaseReturnsInactiveTasksForCaseNumber(): void
     {
         // Simulate an authenticated user
         $user = User::factory()->create();
@@ -126,7 +126,7 @@ class TaskControllerTest extends TestCase
      *
      * @return void
      */
-    public function testIndexCaseReturnsInactiveTasksForCaseNumberPagination()
+    public function testIndexCaseReturnsInactiveTasksForCaseNumberPagination(): void
     {
         // Simulate an authenticated user
         $user = User::factory()->create();
@@ -170,7 +170,7 @@ class TaskControllerTest extends TestCase
      *
      * @return void
      */
-    public function testIndexCaseReturnsWithData()
+    public function testIndexCaseReturnsWithData(): void
     {
         // Simulate an authenticated user
         $user = User::factory()->create();

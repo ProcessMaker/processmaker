@@ -13,7 +13,7 @@ class BundleTest extends TestCase
 {
     use HelperTrait;
 
-    public function testExport()
+    public function testExport(): void
     {
         $this->addGlobalSignalProcess();
 
@@ -40,7 +40,7 @@ class BundleTest extends TestCase
         $this->assertEquals($screen->title, $payload[1]['name']);
     }
 
-    public function testSyncAssets()
+    public function testSyncAssets(): void
     {
         $screen1 = Screen::factory()->create(['title' => 'Screen 1']);
         $screen2 = Screen::factory()->create(['title' => 'Screen 2']);
@@ -60,7 +60,7 @@ class BundleTest extends TestCase
         $this->assertEquals($screen3->id, $bundle->assets[1]->asset_id);
     }
 
-    public function testReinstallBundle()
+    public function testReinstallBundle(): void
     {
         // Remote
         $screen = Screen::factory()->create(['title' => 'Original Screen Name']);

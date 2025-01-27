@@ -29,7 +29,7 @@ class SearchByCategoryTest extends TestCase
     /**
      * Test filtering processes by category
      */
-    public function testSearchProcessesByCategory()
+    public function testSearchProcessesByCategory(): void
     {
         $cata = ProcessCategory::factory()->create(['name' => 'category_a']);
         $catb = ProcessCategory::factory()->create(['name' => 'category_b']);
@@ -96,7 +96,7 @@ class SearchByCategoryTest extends TestCase
     /**
      * Test filtering processes by category
      */
-    public function testSearchScreensByCategory()
+    public function testSearchScreensByCategory(): void
     {
         $cata = ScreenCategory::factory()->create(['name' => 'category_a']);
         $catb = ScreenCategory::factory()->create(['name' => 'category_b']);
@@ -163,7 +163,7 @@ class SearchByCategoryTest extends TestCase
     /**
      * Test filtering processes by category
      */
-    public function testSearchScriptsByCategory()
+    public function testSearchScriptsByCategory(): void
     {
         $cata = ScriptCategory::factory()->create(['name' => 'category_a']);
         $catb = ScriptCategory::factory()->create(['name' => 'category_b']);

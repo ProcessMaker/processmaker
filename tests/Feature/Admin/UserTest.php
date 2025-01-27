@@ -17,7 +17,7 @@ class UserTest extends TestCase
      *
      * @return void
      */
-    public function testIndexRoute()
+    public function testIndexRoute(): void
     {
         // get the URL
         $response = $this->webCall('GET', '/admin/users');
@@ -33,7 +33,7 @@ class UserTest extends TestCase
      *
      * @return void
      */
-    public function testEditRoute()
+    public function testEditRoute(): void
     {
         $user_id = User::factory()->create()->id;
         // get the URL
@@ -49,7 +49,7 @@ class UserTest extends TestCase
      * Test to make sure the additional information shows in edit user
      * @return void
      */
-    public function testCanSeeAditionalInformationInEditRoute()
+    public function testCanSeeAditionalInformationInEditRoute(): void
     {
         $user_id = User::factory()->create()->id;
         config(['users.properties' => ['MyVar' => 'Test Var']]);
@@ -66,7 +66,7 @@ class UserTest extends TestCase
      * Test to make sure the additional information not shows in profile
      * @return void
      */
-    public function testCannotSeeAditionalInformationInProfileRoute()
+    public function testCannotSeeAditionalInformationInProfileRoute(): void
     {
         config(['users.properties' => ['MyVar' => 'Test Var']]);
         // get the URL

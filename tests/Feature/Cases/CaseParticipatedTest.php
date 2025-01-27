@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class CaseParticipatedTest extends TestCase
 {
-    public function test_create_case_participated()
+    public function test_create_case_participated(): void
     {
         $user = User::factory()->create();
         $process = Process::factory()->create();
@@ -61,7 +61,7 @@ class CaseParticipatedTest extends TestCase
         ]);
     }
 
-    public function test_create_multiple_case_participated()
+    public function test_create_multiple_case_participated(): void
     {
         $user = User::factory()->create();
         $process = Process::factory()->create();
@@ -133,7 +133,7 @@ class CaseParticipatedTest extends TestCase
         ]);
     }
 
-    public function test_update_case_participated_users()
+    public function test_update_case_participated_users(): void
     {
         $user = User::factory()->create();
         $user2 = User::factory()->create();
@@ -206,7 +206,7 @@ class CaseParticipatedTest extends TestCase
         ]);
     }
 
-    public function test_update_case_participated_user_tasks()
+    public function test_update_case_participated_user_tasks(): void
     {
         $user = User::factory()->create();
         $user2 = User::factory()->create();
@@ -299,7 +299,7 @@ class CaseParticipatedTest extends TestCase
         ]);
     }
 
-    public function test_update_case_participated_completed()
+    public function test_update_case_participated_completed(): void
     {
         $user = User::factory()->create();
         $user2 = User::factory()->create();
@@ -406,7 +406,7 @@ class CaseParticipatedTest extends TestCase
         ]);
     }
 
-    public function test_update_case_title()
+    public function test_update_case_title(): void
     {
         $user = User::factory()->create();
         $user2 = User::factory()->create();

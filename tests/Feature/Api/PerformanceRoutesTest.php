@@ -80,7 +80,7 @@ class PerformanceRoutesTest extends TestCase
 
     const DESIRABLE_ROUTE_SPEED = 11;
 
-    public static function RoutesListProvider()
+    public static function RoutesListProvider(): array
     {
         file_exists('coverage') ?: mkdir('coverage');
 
@@ -91,7 +91,7 @@ class PerformanceRoutesTest extends TestCase
      * Test routes speed
      */
     #[DataProvider('RoutesListProvider')]
-    public function testRoutesSpeed($route, $params)
+    public function testRoutesSpeed($route, $params): void
     {
         $this->user = User::factory()->create(['is_administrator' => true]);
         Comment::factory()->count($this->dbSize)->create();

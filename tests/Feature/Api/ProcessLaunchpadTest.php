@@ -24,7 +24,7 @@ class ProcessLaunchpadTest extends TestCase
     /**
      * Test get process launchpad
      */
-    public function testGetProcessLaunchpad()
+    public function testGetProcessLaunchpad(): void
     {
         // Create data
         $process = Process::factory()->create();
@@ -51,7 +51,7 @@ class ProcessLaunchpadTest extends TestCase
     /**
      * Test store process launchpad
      */
-    public function testStoreProcessLaunchpad()
+    public function testStoreProcessLaunchpad(): void
     {
         // Create data
         $process = Process::factory()->create();
@@ -68,7 +68,7 @@ class ProcessLaunchpadTest extends TestCase
     /**
      * Test delete process launchpad
      */
-    public function testDeleteProcessLaunchpad()
+    public function testDeleteProcessLaunchpad(): void
     {
         // Create data
         $launchpad = ProcessLaunchpad::factory()->create();

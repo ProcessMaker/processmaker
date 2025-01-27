@@ -167,7 +167,7 @@ class EditDataTest extends TestCase
     /**
      * Verify edit data disabled without permissions
      */
-    public function testEditDataWithoutPermissions()
+    public function testEditDataWithoutPermissions(): void
     {
         $this->actingAs($this->user);
         $this->assertFalse($this->user->hasPermission('requests.edit_data'));
@@ -187,7 +187,7 @@ class EditDataTest extends TestCase
     /**
      * Test edit data with admin user
      */
-    public function testEditDataWithAdmin()
+    public function testEditDataWithAdmin(): void
     {
         $this->actingAs($this->admin);
 
@@ -206,7 +206,7 @@ class EditDataTest extends TestCase
     /**
      * Verify edit data disabled without permissions from "In progress" task
      */
-    public function testEditDataTaskViewWithoutPermissions()
+    public function testEditDataTaskViewWithoutPermissions(): void
     {
         $this->actingAs($this->user);
 
@@ -223,7 +223,7 @@ class EditDataTest extends TestCase
     /**
      * Test edit data with permissions from "In progress" task
      */
-    public function testEditDataWithPermissions()
+    public function testEditDataWithPermissions(): void
     {
         $this->actingAs($this->user);
 
@@ -242,7 +242,7 @@ class EditDataTest extends TestCase
     /**
      * Test edit data without global permissions
      */
-    public function testEditDataWithoutGlobalPermissions()
+    public function testEditDataWithoutGlobalPermissions(): void
     {
         //Create process, request, and task
         $this->actingAs($this->user);
@@ -260,7 +260,7 @@ class EditDataTest extends TestCase
     /**
      * Test edit data with global permissions
      */
-    public function testEditDataWithGlobalPermissions()
+    public function testEditDataWithGlobalPermissions(): void
     {
         //Create process, request, and task
         $this->actingAs($this->user);
@@ -283,7 +283,7 @@ class EditDataTest extends TestCase
     /**
      * Verify Request screen edit data disabled with permissions but request is "Active"
      */
-    public function testEditDataRequestActive()
+    public function testEditDataRequestActive(): void
     {
         $this->actingAs($this->user);
 
@@ -303,7 +303,7 @@ class EditDataTest extends TestCase
     /**
      * Test Request screen edit data with permissions and request is "Completed"
      */
-    public function testEditDataRequestCompleted()
+    public function testEditDataRequestCompleted(): void
     {
         $this->actingAs($this->user);
 

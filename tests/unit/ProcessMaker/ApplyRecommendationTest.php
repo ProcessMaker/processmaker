@@ -12,7 +12,7 @@ use Tests\TestCase;
 
 class ApplyRecommendationTest extends TestCase
 {
-    public function testMarkAsPriority()
+    public function testMarkAsPriority(): void
     {
         $user = User::factory()->create();
 
@@ -52,7 +52,7 @@ class ApplyRecommendationTest extends TestCase
         $this->assertTrue($activeTask2->is_priority);
     }
 
-    public function testReassignToUserID()
+    public function testReassignToUserID(): void
     {
         $user = User::factory()->create([
             'is_administrator' => true,

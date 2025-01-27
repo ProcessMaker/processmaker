@@ -12,7 +12,7 @@ class MediaOrderColumnIndexTest extends TestCase
     use RefreshDatabase;
 
     #[Test]
-    public function it_has_order_column_index_on_media_table()
+    public function it_has_order_column_index_on_media_table(): void
     {
         // Run the migration to add the index
         $this->artisan('migrate');

@@ -55,7 +55,7 @@ class IntermediateTimerEventTest extends TestCase
         return $process;
     }
 
-    public function testRegisterIntermediateTimerEvents()
+    public function testRegisterIntermediateTimerEvents(): void
     {
         $this->process = $this->createTestProcess();
         $this->be($this->user);
@@ -78,7 +78,7 @@ class IntermediateTimerEventTest extends TestCase
         $this->assertCount(4, $tasks->toArray());
     }
 
-    public function testScheduleIntermediateTimerEvent()
+    public function testScheduleIntermediateTimerEvent(): void
     {
         $this->process = $this->createTestProcess();
         $this->be($this->user);
@@ -107,7 +107,7 @@ class IntermediateTimerEventTest extends TestCase
     /**
      * Tests a process with concurrent non interrupting boundary events attached to a CallActivity
      */
-    public function testConnectedTimerEvents()
+    public function testConnectedTimerEvents(): void
     {
         // Mock current date for TaskSchedulerManager
         $now = TaskSchedulerManager::fakeToday('2018-10-01T00:00:00Z');
@@ -173,7 +173,7 @@ class IntermediateTimerEventTest extends TestCase
         $this->assertEquals('COMPLETED', ProcessRequest::first()->status);
     }
 
-    public function testScheduleIntermediateTimerEventWithMustacheSyntax()
+    public function testScheduleIntermediateTimerEventWithMustacheSyntax(): void
     {
         $this->be($this->user);
         $data = [];

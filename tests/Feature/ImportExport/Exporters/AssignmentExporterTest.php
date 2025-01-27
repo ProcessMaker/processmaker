@@ -60,7 +60,7 @@ class AssignmentExporterTest extends TestCase
         return [$process, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2];
     }
 
-    public function testExportImportAssignments()
+    public function testExportImportAssignments(): void
     {
         // Create users and groups
         $users = User::factory(12)->create();
@@ -162,7 +162,7 @@ class AssignmentExporterTest extends TestCase
         $this->assertEquals("$newGroupIds[9]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]', 'pm:assignedGroups'));
     }
 
-    public function testSomeAssignmentsDoNotExistOnTarget()
+    public function testSomeAssignmentsDoNotExistOnTarget(): void
     {
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
@@ -187,7 +187,7 @@ class AssignmentExporterTest extends TestCase
         $this->assertEquals($group2->id, Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedGroups'));
     }
 
-    public function testAllAssignmentsDoNotExistOnTarget()
+    public function testAllAssignmentsDoNotExistOnTarget(): void
     {
         $user = User::factory()->create();
         $group = Group::factory()->create();

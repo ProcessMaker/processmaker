@@ -16,7 +16,7 @@ class CasesJobTest extends TestCase
 {
     use RequestHelper;
 
-    public function test_handle_case_store_job()
+    public function test_handle_case_store_job(): void
     {
         Queue::fake();
 
@@ -30,7 +30,7 @@ class CasesJobTest extends TestCase
         Queue::assertPushed(CaseStore::class, 1);
     }
 
-    public function test_handle_case_update_job()
+    public function test_handle_case_update_job(): void
     {
         Queue::fake();
 
@@ -48,7 +48,7 @@ class CasesJobTest extends TestCase
         Queue::assertPushed(CaseUpdate::class, 1);
     }
 
-    public function test_handle_case_update_status_job()
+    public function test_handle_case_update_status_job(): void
     {
         Queue::fake();
 

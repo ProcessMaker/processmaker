@@ -75,7 +75,7 @@ class InstallTest extends TestCase
      *
      * @return void
      */
-    public function testNonInteractiveInstall()
+    public function testNonInteractiveInstall(): void
     {
         // Setup our collection of parameters
         $params = $this->generateParameters();

@@ -48,7 +48,7 @@ class ScreenExporterTest extends TestCase
         return [$screen, $screenCategory1, $screenCategory2, $script, $nestedScreen, $nestedNestedScreen];
     }
 
-    public function testExport()
+    public function testExport(): void
     {
         list($screen, $screenCategory1, $screenCategory2, $script, $nestedScreen, $nestedNestedScreen) =
             $this->fixtures();
@@ -77,7 +77,7 @@ class ScreenExporterTest extends TestCase
         $this->assertContains($screenCategory1->uuid, $nestedScreenDependentUuids);
     }
 
-    public function testImport()
+    public function testImport(): void
     {
         list($screen, $screenCategory1, $screenCategory2, $script, $nestedScreen, $nestedNestedScreen) =
             $this->fixtures();
@@ -138,7 +138,7 @@ class ScreenExporterTest extends TestCase
         return $screen;
     }
 
-    public function testImportNewCategoryWithExistingScreen()
+    public function testImportNewCategoryWithExistingScreen(): void
     {
         $screen = $this->importWithCopy('update');
         $screen->refresh();
@@ -150,7 +150,7 @@ class ScreenExporterTest extends TestCase
         $this->assertContains('category 2', $categories);
     }
 
-    public function testImportNewCategoryWithNewScreen()
+    public function testImportNewCategoryWithNewScreen(): void
     {
         $this->importWithCopy('copy');
         $screen = Screen::where('title', 'screen 2')->firstOrFail();
@@ -160,7 +160,7 @@ class ScreenExporterTest extends TestCase
         $this->assertContains('category 4', $categories);
     }
 
-    public function testSeededScreensWithKeyAttribute()
+    public function testSeededScreensWithKeyAttribute(): void
     {
         \DB::beginTransaction();
         $exportedScreen = Screen::factory()->create(['title' => 'exported screen', 'key' => 'foo']);
@@ -177,7 +177,7 @@ class ScreenExporterTest extends TestCase
         $this->assertEquals('exported screen', $existingScreen->title);
     }
 
-    public function testScreenWithScriptWatcher()
+    public function testScreenWithScriptWatcher(): void
     {
         $screen = Screen::factory()->create(['title' => 'Screen with script watcher', 'key' => 'foo']);
         $script = Script::factory()->create(['title' => 'script']);
@@ -216,7 +216,7 @@ class ScreenExporterTest extends TestCase
         $screen->saveOrFail();
     }
 
-    public function testExportScreenInLoop()
+    public function testExportScreenInLoop(): void
     {
         $child1 = Screen::factory()->create(['title' => 'first child screen']);
         $child2 = Screen::factory()->create(['title' => 'second child screen']);
@@ -257,7 +257,7 @@ class ScreenExporterTest extends TestCase
         $this->assertEquals($newChild3->id, Arr::get($newParent->config, '0.items.1.items.1.config.screen'));
     }
 
-    public function testInterstitalUpdate()
+    public function testInterstitalUpdate(): void
     {
         $screen = Screen::factory()->create([
             'title' => 'Updated Interstitial',
@@ -298,7 +298,7 @@ class ScreenExporterTest extends TestCase
         $this->assertEquals('Bar', $screen->config[0]['items'][0]['component']);
     }
 
-    public function testAttemptToAddMultipleInterstials()
+    public function testAttemptToAddMultipleInterstials(): void
     {
         $screen = Screen::factory()->create([
             'title' => 'Default Interstitial',

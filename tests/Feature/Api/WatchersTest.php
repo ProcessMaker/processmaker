@@ -30,7 +30,7 @@ class WatchersTest extends TestCase
     /**
      * Test watcher calling script
      */
-    public function testExecuteWatcherScript()
+    public function testExecuteWatcherScript(): void
     {
         Event::fake([
             ScriptResponseEvent::class,

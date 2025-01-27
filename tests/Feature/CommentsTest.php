@@ -41,7 +41,7 @@ class CommentsTest extends TestCase
     /**
      * @return void
      */
-    public function testCommentMentionAreCorrectlyParsedBetweenUserIdAndUsername()
+    public function testCommentMentionAreCorrectlyParsedBetweenUserIdAndUsername(): void
     {
         // Start a process request
         $task = $this->createTask();
@@ -69,7 +69,7 @@ class CommentsTest extends TestCase
     /**
      * @return void
      */
-    public function testChineseCommentMentionAreCorrectlyParsedBetweenUserIdAndUsername()
+    public function testChineseCommentMentionAreCorrectlyParsedBetweenUserIdAndUsername(): void
     {
         // Start a process request
         $task = $this->createTask();
@@ -97,7 +97,7 @@ class CommentsTest extends TestCase
     /**
      * @return void
      */
-    public function testArabicCommentMentionAreCorrectlyParsedBetweenUserIdAndUsername()
+    public function testArabicCommentMentionAreCorrectlyParsedBetweenUserIdAndUsername(): void
     {
         // Start a process request
         $task = $this->createTask();
@@ -125,7 +125,7 @@ class CommentsTest extends TestCase
     /**
      * @return void
      */
-    public function testGermanCommentMentionAreCorrectlyParsedBetweenUserIdAndUsername()
+    public function testGermanCommentMentionAreCorrectlyParsedBetweenUserIdAndUsername(): void
     {
         // Start a process request
         $task = $this->createTask();
@@ -153,7 +153,7 @@ class CommentsTest extends TestCase
     /**
      * @return void
      */
-    public function testArmenianCommentMentionAreCorrectlyParsedBetweenUserIdAndUsername()
+    public function testArmenianCommentMentionAreCorrectlyParsedBetweenUserIdAndUsername(): void
     {
         // Start a process request
         $task = $this->createTask();
@@ -181,7 +181,7 @@ class CommentsTest extends TestCase
     /**
      * @return void
      */
-    public function testBulgarianCommentMentionAreCorrectlyParsedBetweenUserIdAndUsername()
+    public function testBulgarianCommentMentionAreCorrectlyParsedBetweenUserIdAndUsername(): void
     {
         // Start a process request
         $task = $this->createTask();

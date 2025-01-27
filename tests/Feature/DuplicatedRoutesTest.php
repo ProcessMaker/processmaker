@@ -13,7 +13,7 @@ class DuplicatedRoutesTest extends TestCase
     /**
      * Verify the magic variables for a valid request token
      */
-    public function testRoutesCacheGeneration()
+    public function testRoutesCacheGeneration(): void
     {
         $routes = Route::getRoutes();
 

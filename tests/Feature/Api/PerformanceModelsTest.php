@@ -42,7 +42,7 @@ class PerformanceModelsTest extends TestCase
      *
      * @return array
      */
-    public static function FactoryListProvider()
+    public static function FactoryListProvider(): array
     {
         // TODO: fix for laravel 8 factories. This test is skipped in the trait.
         return [];
@@ -88,7 +88,7 @@ class PerformanceModelsTest extends TestCase
      * @param [type] $baseTime
      */
     #[DataProvider('FactoryListProvider')]
-    public function testFactories($model, $baseTime)
+    public function testFactories($model, $baseTime): void
     {
         $baseCount = $this->getTotalRecords();
         $t = microtime(true);

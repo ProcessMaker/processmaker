@@ -31,7 +31,7 @@ class TaskAssignmentTest extends TestCase
     /**
      * Test to verify the parameters that are required to create an assignment
      */
-    public function testNotCreatedForParameterRequired()
+    public function testNotCreatedForParameterRequired(): void
     {
         //Post should have the parameter required
         $response = $this->apiCall('POST', self::API_TEST_URL, []);
@@ -44,7 +44,7 @@ class TaskAssignmentTest extends TestCase
     /**
      * Create new task assignment type user successfully
      */
-    public function testCreateTaskAssignmentUser()
+    public function testCreateTaskAssignmentUser(): void
     {
         $process = Process::factory()->create();
         $task_uid = Faker::create()->uuid;
@@ -71,7 +71,7 @@ class TaskAssignmentTest extends TestCase
     /**
      * Create new task assignment type Group successfully
      */
-    public function testCreateGroupMembershipForGroup()
+    public function testCreateGroupMembershipForGroup(): void
     {
         $process = Process::factory()->create();
         $task_uid = Faker::create()->uuid;
@@ -98,7 +98,7 @@ class TaskAssignmentTest extends TestCase
     /**
      * Update task assignment successfully
      */
-    public function testUpdateTaskAssignment()
+    public function testUpdateTaskAssignment(): void
     {
         // Create an task assignment
         $processTaskAssignment = ProcessTaskAssignment::factory()->create();
@@ -133,7 +133,7 @@ class TaskAssignmentTest extends TestCase
     /**
      * Invalid user assignment is reassigned to the process manager
      */
-    public function testInvalidUserAssignmentReassignToProcessManager()
+    public function testInvalidUserAssignmentReassignToProcessManager(): void
     {
         $process = Process::factory()->create([
             'status' => 'ACTIVE',
@@ -148,7 +148,7 @@ class TaskAssignmentTest extends TestCase
     /**
      * Invalid group assignment (empty group) is catch and reassigned to the process manager
      */
-    public function testEmptyGroupAssignmentReassignToProcessManager()
+    public function testEmptyGroupAssignmentReassignToProcessManager(): void
     {
         $process = Process::factory()->create([
             'status' => 'ACTIVE',
@@ -167,7 +167,7 @@ class TaskAssignmentTest extends TestCase
     /**
      * Invalid group assignment (group does not exists) is catch and reassigned to the process manager
      */
-    public function testInvalidGroupAssignmentReassignToProcessManager()
+    public function testInvalidGroupAssignmentReassignToProcessManager(): void
     {
         $process = Process::factory()->create([
             'status' => 'ACTIVE',
@@ -182,7 +182,7 @@ class TaskAssignmentTest extends TestCase
     /**
      * Invalid previous users assignment is catch and reassigned to the process manager
      */
-    public function testInvalidPreviousUsersAssignmentReassignToProcessManager()
+    public function testInvalidPreviousUsersAssignmentReassignToProcessManager(): void
     {
         $process = Process::factory()->create([
             'status' => 'ACTIVE',
@@ -197,7 +197,7 @@ class TaskAssignmentTest extends TestCase
     /**
      * Invalid user by ID assignment is catch and reassigned to the process manager
      */
-    public function testInvalidUserByIDAssignmentReassignToProcessManager()
+    public function testInvalidUserByIDAssignmentReassignToProcessManager(): void
     {
         $process = Process::factory()->create([
             'status' => 'ACTIVE',

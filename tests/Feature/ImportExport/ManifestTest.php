@@ -35,7 +35,7 @@ class ManifestTest extends TestCase
         });
     }
 
-    public function testDiscardAndUpdateImportOption()
+    public function testDiscardAndUpdateImportOption(): void
     {
         list($payload, $screen, $screenCategory) = $this->createScreen();
 
@@ -49,7 +49,7 @@ class ManifestTest extends TestCase
         $this->assertEquals('exported category', $screenCategory->refresh()->name);
     }
 
-    public function testCopyImportOption()
+    public function testCopyImportOption(): void
     {
         list($payload, $screen, $screenCategory) = $this->createScreen();
 
@@ -86,7 +86,7 @@ class ManifestTest extends TestCase
         return [$payload, $screen, $screenCategory];
     }
 
-    public function testLastModifiedBy()
+    public function testLastModifiedBy(): void
     {
         $class = \ProcessMaker\Package\Versions\Models\VersionHistory::class;
         if (!class_exists($class)) {
@@ -114,7 +114,7 @@ class ManifestTest extends TestCase
         $this->assertEquals('Bob The Builder', $lastModifiedBy);
     }
 
-    public function testGetProcessManager()
+    public function testGetProcessManager(): void
     {
         $this->addGlobalSignalProcess();
         $managerUser = User::factory()->create([
@@ -134,7 +134,7 @@ class ManifestTest extends TestCase
         $this->assertEquals('John Doe', $processManager);
     }
 
-    public function testWarningIfExporterClassMissing()
+    public function testWarningIfExporterClassMissing(): void
     {
         $user = User::factory()->create();
         Event::fake(ImportLog::class);
@@ -154,7 +154,7 @@ class ManifestTest extends TestCase
         });
     }
 
-    public function testWarningIfModelClassMissing()
+    public function testWarningIfModelClassMissing(): void
     {
         $user = User::factory()->create();
         Event::fake(ImportLog::class);
@@ -175,7 +175,7 @@ class ManifestTest extends TestCase
         });
     }
 
-    public function testWarningIfUnknownColumn()
+    public function testWarningIfUnknownColumn(): void
     {
         $user = User::factory()->create();
         Event::fake(ImportLog::class);

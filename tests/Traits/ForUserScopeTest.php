@@ -30,7 +30,7 @@ class ForUserScopeTest extends TestCase
         $this->user = User::factory()->create();
     }
 
-    public function testUserStarted()
+    public function testUserStarted(): void
     {
         $startedByUser = ProcessRequest::factory()->create(['user_id' => $this->user->id]);
 
@@ -39,7 +39,7 @@ class ForUserScopeTest extends TestCase
         ], $this->requestIds());
     }
 
-    public function testUserHasParticipated()
+    public function testUserHasParticipated(): void
     {
         $userHasParticipated = ProcessRequest::factory()->create();
         ProcessRequestToken::factory()->create([
@@ -52,7 +52,7 @@ class ForUserScopeTest extends TestCase
         ], $this->requestIds());
     }
 
-    public function testUserHasViewPermission()
+    public function testUserHasViewPermission(): void
     {
         $request = ProcessRequest::factory()->create();
         $this->user->giveDirectPermission('view-all_requests');
@@ -60,7 +60,7 @@ class ForUserScopeTest extends TestCase
         $this->assertEquals([$request->id], $this->requestIds());
     }
 
-    public function testUserHasEditPermission()
+    public function testUserHasEditPermission(): void
     {
         $request = ProcessRequest::factory()->create();
         $this->user->giveDirectPermission('edit-request_data');
@@ -68,7 +68,7 @@ class ForUserScopeTest extends TestCase
         $this->assertEquals([$request->id], $this->requestIds());
     }
 
-    public function testUserHasEditProccessDataPermission()
+    public function testUserHasEditProccessDataPermission(): void
     {
         $group = Group::factory()->create();
         $process1 = Process::factory()->create();
@@ -84,7 +84,7 @@ class ForUserScopeTest extends TestCase
         $this->assertEquals([$request1->id, $request2->id], $this->requestIds());
     }
 
-    public function testSelfServeRequests()
+    public function testSelfServeRequests(): void
     {
         $nonMatchingProcess = ProcessRequest::factory()->create();
         $task1 = ProcessRequestToken::factory()->create([

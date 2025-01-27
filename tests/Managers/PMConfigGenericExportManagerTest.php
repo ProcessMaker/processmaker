@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class PMConfigGenericExportManagerTest extends TestCase
 {
-    public function test()
+    public function test(): void
     {
         //
         //

@@ -12,7 +12,7 @@ class LoginRedirectTest extends TestCase
      * 
      * Test to verify that the login page redirects to the about page
      */
-    public function testLoginRedirect()
+    public function testLoginRedirect(): void
     {
         $user = User::factory()->create([
             'username' =>'newuser',
@@ -37,7 +37,7 @@ class LoginRedirectTest extends TestCase
         $response->assertRedirect(route('about.index'));
     }
 
-    public function testLoginRedirectWithDevtoolsOpeningMapFile()
+    public function testLoginRedirectWithDevtoolsOpeningMapFile(): void
     {
         $user = User::factory()->create([
             'username' =>'newuser',

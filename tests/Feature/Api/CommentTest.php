@@ -48,7 +48,7 @@ class CommentTest extends TestCase
         $asp->boot();
     }
 
-    public function testGetCommentListAdministrator()
+    public function testGetCommentListAdministrator(): void
     {
         $model = ProcessRequestToken::factory()->create();
 
@@ -72,7 +72,7 @@ class CommentTest extends TestCase
         $this->assertCount(15, $json);
     }
 
-    public function testGetCommentListNoAdministrator()
+    public function testGetCommentListNoAdministrator(): void
     {
         $model = ProcessRequest::factory()->create();
 
@@ -108,7 +108,7 @@ class CommentTest extends TestCase
         $this->assertCount(10, $json);
     }
 
-    public function testGetCommentByType()
+    public function testGetCommentByType(): void
     {
         $this->user = User::factory()->create([
             'password' => Hash::make('password'),
@@ -155,7 +155,7 @@ class CommentTest extends TestCase
     /**
      * Test verify the parameter required for create form
      */
-    public function testNotCreatedForParameterRequired()
+    public function testNotCreatedForParameterRequired(): void
     {
         //Post should have the parameter required
         $response = $this->apiCall('POST', self::API_TEST_URL, []);
@@ -165,7 +165,7 @@ class CommentTest extends TestCase
         $this->assertArrayHasKey('message', $response->json());
     }
 
-    public function testCreateComment()
+    public function testCreateComment(): void
     {
         $comment = Comment::factory()->make();
 
@@ -183,7 +183,7 @@ class CommentTest extends TestCase
     /**
      * Get a comment
      */
-    public function testGetComment()
+    public function testGetComment(): void
     {
         //get the id from the factory
         $comment = Comment::factory()->create()->id;
@@ -201,7 +201,7 @@ class CommentTest extends TestCase
     /**
      * Delete comment
      */
-    public function testDeleteComment()
+    public function testDeleteComment(): void
     {
         //Remove comment
         $url = self::API_TEST_URL . '/' . Comment::factory()->create(['user_id' => $this->user->getKey()])->id;
@@ -214,7 +214,7 @@ class CommentTest extends TestCase
     /**
      * The comment does not exist
      */
-    public function testDeleteCommentNotExist()
+    public function testDeleteCommentNotExist(): void
     {
         //Comment not exist
         $url = self::API_TEST_URL . '/' . Comment::factory()->make()->id;
@@ -229,7 +229,7 @@ class CommentTest extends TestCase
      *
      * @return void
      */
-    public function testIndexCaseRequiresCaseNumber()
+    public function testIndexCaseRequiresCaseNumber(): void
     {
         // Call the endpoint without the 'case_number' parameter
         $response = $this->apiCall('GET', self::API_COMMENT_BY_CASE);
@@ -242,7 +242,7 @@ class CommentTest extends TestCase
     /**
      * Test comments by case
      */
-    public function testGetCommentByTypeByCase()
+    public function testGetCommentByTypeByCase(): void
     {
         $this->user = User::factory()->create([
             'password' => Hash::make('password'),
@@ -301,7 +301,7 @@ class CommentTest extends TestCase
     /**
      * Test comments by case with pagination
      */
-    public function testGetCommentByTypeByCasePagination()
+    public function testGetCommentByTypeByCasePagination(): void
     {
         $this->user = User::factory()->create([
             'password' => Hash::make('password'),

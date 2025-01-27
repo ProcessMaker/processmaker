@@ -12,7 +12,7 @@ class RequestListingPerformanceTest extends TestCase
 
     public $withPermissions = true;
 
-    public function testPerformance()
+    public function testPerformance(): void
     {
         $seeder = new RequestListingPerformanceData();
 

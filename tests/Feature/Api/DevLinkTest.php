@@ -14,7 +14,7 @@ class DevLinkTest extends TestCase
 {
     use RequestHelper;
 
-    public function testShowBundle()
+    public function testShowBundle(): void
     {
         $bundle = Bundle::factory()->create();
         $response = $this->apiCall('GET', route('api.devlink.local-bundle', ['bundle' => $bundle->id]));
@@ -23,7 +23,7 @@ class DevLinkTest extends TestCase
         $this->assertEquals($bundle->id, $response->json()['id']);
     }
 
-    public function testAddAssets()
+    public function testAddAssets(): void
     {
         $screen1 = Screen::factory()->create();
         $screen2 = Screen::factory()->create();
@@ -43,7 +43,7 @@ class DevLinkTest extends TestCase
         $this->assertEquals('Asset already exists in bundle', $response->json()['error']['message']);
     }
 
-    public function testInstallRemoteAsset()
+    public function testInstallRemoteAsset(): void
     {
         $screen = Screen::factory()->create();
         $devLink = DevLink::factory()->create([

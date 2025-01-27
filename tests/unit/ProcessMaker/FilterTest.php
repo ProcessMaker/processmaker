@@ -21,7 +21,7 @@ class FilterTest extends TestCase
         return $query->toRawSql();
     }
 
-    public function testFormData()
+    public function testFormData(): void
     {
         $sql = $this->filter([
             [
@@ -37,7 +37,7 @@ class FilterTest extends TestCase
         );
     }
 
-    public function testRawValue()
+    public function testRawValue(): void
     {
         $sql = $this->filter([
             [
@@ -53,7 +53,7 @@ class FilterTest extends TestCase
         );
     }
 
-    public function testCompareDataInteger()
+    public function testCompareDataInteger(): void
     {
         $filter = [
             [
@@ -89,7 +89,7 @@ class FilterTest extends TestCase
         $this->assertEquals($task1->id, $results[0]['id']);
     }
 
-    public function testNestedOr()
+    public function testNestedOr(): void
     {
         $sql = $this->filter([
             [
@@ -127,7 +127,7 @@ class FilterTest extends TestCase
         );
     }
 
-    public function testAdditionalOperators()
+    public function testAdditionalOperators(): void
     {
         $sql = $this->filter([
             [
@@ -160,7 +160,7 @@ class FilterTest extends TestCase
         );
     }
 
-    public function testParticipants()
+    public function testParticipants(): void
     {
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
@@ -190,7 +190,7 @@ class FilterTest extends TestCase
         );
     }
 
-    public function testRequestStatus()
+    public function testRequestStatus(): void
     {
         $sql = $this->filter([
             [
@@ -206,7 +206,7 @@ class FilterTest extends TestCase
         );
     }
 
-    public function testTaskStatus()
+    public function testTaskStatus(): void
     {
         $user = User::factory()->create();
 
@@ -233,7 +233,7 @@ class FilterTest extends TestCase
         );
     }
 
-    public function testRequestProcess()
+    public function testRequestProcess(): void
     {
         $sql = $this->filter([
             [
@@ -249,7 +249,7 @@ class FilterTest extends TestCase
         );
     }
 
-    public function testTaskProcess()
+    public function testTaskProcess(): void
     {
         $sql = $this->filter([
             [
@@ -265,7 +265,7 @@ class FilterTest extends TestCase
         );
     }
 
-    public function testTaskCaseTitle()
+    public function testTaskCaseTitle(): void
     {
         $request = ProcessRequest::factory()->create();
         $caseTitle = $request->case_title;
@@ -287,7 +287,7 @@ class FilterTest extends TestCase
         $this->assertEquals($query->first()->id, $task->id);
     }
 
-    public function testTaskCaseNumber()
+    public function testTaskCaseNumber(): void
     {
         $request = ProcessRequest::factory()->create();
         $caseNumber = $request->case_number;

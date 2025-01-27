@@ -10,13 +10,13 @@ use Tests\TestCase;
 
 class BpmnSubscriberTest extends TestCase
 {
-    public function testErrorHandlerRegistration()
+    public function testErrorHandlerRegistration(): void
     {
         $subscriber = new BpmnSubscriber();
         $this->assertNull($subscriber->registerErrorHandler(null, null));
     }
 
-    public function testErrorHandler()
+    public function testErrorHandler(): void
     {
         $path = storage_path('app/private');
         $errorFile = $path . '/unhandled_error.txt';

@@ -14,7 +14,7 @@ class RouteTest extends TestCase
      * This this does some basic checks to make sure we converted routes
      * to the correct class-based routes as part of the Laravel 8 upgrade
      */
-    public function testIndexRoute()
+    public function testIndexRoute(): void
     {
         $ethosRoutePath = base_path('vendor/processmaker/package-ellucian-ethos/routes/');
         if (file_exists($ethosRoutePath . 'api.php')) {

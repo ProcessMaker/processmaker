@@ -16,7 +16,7 @@ class FEELTest extends TestCase
     /**
      * Test to use an unsupported language
      */
-    public function testUnsupportedLanguage()
+    public function testUnsupportedLanguage(): void
     {
         $this->expectException(ScriptLanguageNotSupported::class);
         $expresion = new FormalExpression();
@@ -31,7 +31,7 @@ class FEELTest extends TestCase
      * "hello world"
      * 'hello world'
      */
-    public function testStrings()
+    public function testStrings(): void
     {
         $expresion = new FormalExpression();
         $expresion->setLanguage('FEEL');
@@ -54,7 +54,7 @@ class FEELTest extends TestCase
      * 123.25
      * 12345678901234567890
      */
-    public function testNumbers()
+    public function testNumbers(): void
     {
         $expresion = new FormalExpression();
         $expresion->setLanguage('FEEL');
@@ -80,7 +80,7 @@ class FEELTest extends TestCase
      *
      * [1,2,3]
      */
-    public function testArrays()
+    public function testArrays(): void
     {
         $expresion = new FormalExpression();
         $expresion->setLanguage('FEEL');
@@ -97,7 +97,7 @@ class FEELTest extends TestCase
      * {a:34, "b": "foo"}
      * {complex: {a:[1,2,3], b:"bar"}}
      */
-    public function testHashmaps()
+    public function testHashmaps(): void
     {
         $expresion = new FormalExpression();
         $expresion->setLanguage('FEEL');
@@ -119,7 +119,7 @@ class FEELTest extends TestCase
      * true
      * false
      */
-    public function testBooleans()
+    public function testBooleans(): void
     {
         $expresion = new FormalExpression();
         $expresion->setLanguage('FEEL');
@@ -142,7 +142,7 @@ class FEELTest extends TestCase
      * 1 * 2 + 3 * 4
      * 1 - 3 + 4 / 2
      */
-    public function testArithmeticOperations()
+    public function testArithmeticOperations(): void
     {
         $expresion = new FormalExpression();
         $expresion->setLanguage('FEEL');
@@ -170,7 +170,7 @@ class FEELTest extends TestCase
      * true and false
      * true and not false
      */
-    public function testBooleanExpressions()
+    public function testBooleanExpressions(): void
     {
         $expresion = new FormalExpression();
         $expresion->setLanguage('FEEL');
@@ -201,7 +201,7 @@ class FEELTest extends TestCase
      * 5 >= 6
      * 5 == 6
      */
-    public function testComparisonExpressions()
+    public function testComparisonExpressions(): void
     {
         $expresion = new FormalExpression();
         $expresion->setLanguage('FEEL');
@@ -244,7 +244,7 @@ class FEELTest extends TestCase
      * "firstname" matches "/first/"
      * "firstname" matches "/last/"
      */
-    public function testStringOperations()
+    public function testStringOperations(): void
     {
         $expresion = new FormalExpression();
         $expresion->setLanguage('FEEL');
@@ -272,7 +272,7 @@ class FEELTest extends TestCase
      * 4 in [1,2,3]
      * 4 not in [1,2,3]
      */
-    public function testArrayOperations()
+    public function testArrayOperations(): void
     {
         $expresion = new FormalExpression();
         $expresion->setLanguage('FEEL');
@@ -299,7 +299,7 @@ class FEELTest extends TestCase
      * true ? "true" : "false"
      * false ? "true" : "false"
      */
-    public function testTernaryOperator()
+    public function testTernaryOperator(): void
     {
         $expresion = new FormalExpression();
         $expresion->setLanguage('FEEL');
@@ -322,7 +322,7 @@ class FEELTest extends TestCase
      * foo.property
      * {a: input, b: foo.name}
      */
-    public function testAccessToData()
+    public function testAccessToData(): void
     {
         $expresion = new FormalExpression();
         $expresion->setLanguage('FEEL');
@@ -355,7 +355,7 @@ class FEELTest extends TestCase
      *
      * input +
      */
-    public function testSyntaxErrorException()
+    public function testSyntaxErrorException(): void
     {
         $expresion = new FormalExpression();
         $expresion->setLanguage('FEEL');
@@ -371,7 +371,7 @@ class FEELTest extends TestCase
      *
      * nonobject.bar
      */
-    public function testExpressionFailedException()
+    public function testExpressionFailedException(): void
     {
         $expresion = new FormalExpression();
         $expresion->setLanguage('FEEL');

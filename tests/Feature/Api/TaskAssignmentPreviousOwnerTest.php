@@ -69,7 +69,7 @@ class TaskAssignmentPreviousOwnerTest extends TestCase
     /**
      * Execute a process with single user assignment
      */
-    public function testSingleUserAssignment()
+    public function testSingleUserAssignment(): void
     {
         $this->loadTestProcessPreviousUserAssignment();
 

@@ -63,7 +63,7 @@ class TimerStartEventTest extends TestCase
         $this->process->getDefinitions();
     }
 
-    public function testRegisterTimerEvents()
+    public function testRegisterTimerEvents(): void
     {
         ScheduledTask::get()->each->delete();
 
@@ -81,7 +81,7 @@ class TimerStartEventTest extends TestCase
     /**
      * Tests that the next date of a interval is calculated correctly
      */
-    public function testNextDateNayraInterval()
+    public function testNextDateNayraInterval(): void
     {
         $manager = new TaskSchedulerManager();
 
@@ -182,7 +182,7 @@ class TimerStartEventTest extends TestCase
         }
     }
 
-    public function testScheduleStartEvent()
+    public function testScheduleStartEvent(): void
     {
         //Check triggerStartEvent should be called when process is ACTIVE
         WorkflowManager::shouldReceive('triggerStartEvent')
@@ -204,7 +204,7 @@ class TimerStartEventTest extends TestCase
         $manager->executeTimerStartEvent($task, json_decode($task->configuration));
     }
 
-    public function testScheduleMustNotStartTimerEventWhenProcessInactive()
+    public function testScheduleMustNotStartTimerEventWhenProcessInactive(): void
     {
         //Check triggerStartEvent should NEVER be called when process is INACTIVE
         WorkflowManager::shouldReceive('triggerStartEvent')

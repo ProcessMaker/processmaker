@@ -25,7 +25,7 @@ class UserResourceViewTest extends TestCase
         return $now;
     }
 
-    public function testAddsUserViewedAtToRequests()
+    public function testAddsUserViewedAtToRequests(): void
     {
         $processRequest = ProcessRequest::factory()->create();
         $processRequestNotViewed = ProcessRequest::factory()->create();
@@ -41,7 +41,7 @@ class UserResourceViewTest extends TestCase
         $this->assertNull($results->first(fn ($i) => $i['id'] === $processRequestNotViewed->id)['user_viewed_at']);
     }
 
-    public function testAddsUserViewedAtToTasks()
+    public function testAddsUserViewedAtToTasks(): void
     {
         $task = ProcessRequestToken::factory()->create();
         $taskNotViewed = ProcessRequestToken::factory()->create();

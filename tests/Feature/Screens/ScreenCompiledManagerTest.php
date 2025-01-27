@@ -26,7 +26,7 @@ class ScreenCompiledManagerTest extends TestCase
      * Validate a screen can be stored into the screens cache
      */
     #[Test]
-    public function it_stores_compiled_content()
+    public function it_stores_compiled_content(): void
     {
         // Arrange
         $manager = new ScreenCompiledManager();
@@ -49,7 +49,7 @@ class ScreenCompiledManagerTest extends TestCase
      * Validate a screen can be retrieved from screens cache
      */
     #[Test]
-    public function it_retrieves_compiled_content()
+    public function it_retrieves_compiled_content(): void
     {
         // Arrange content
         $manager = new ScreenCompiledManager();
@@ -71,7 +71,7 @@ class ScreenCompiledManagerTest extends TestCase
      * Validate a null value is returned when compiled content does not exist
      */
     #[Test]
-    public function it_returns_null_when_compiled_content_does_not_exist()
+    public function it_returns_null_when_compiled_content_does_not_exist(): void
     {
         // Arrange
         $manager = new ScreenCompiledManager();
@@ -88,7 +88,7 @@ class ScreenCompiledManagerTest extends TestCase
      * Validate all compiled assets can be cleared
      */
     #[Test]
-    public function it_clears_all_compiled_assets()
+    public function it_clears_all_compiled_assets(): void
     {
         // Arrange content
         $manager = new ScreenCompiledManager();
@@ -113,7 +113,7 @@ class ScreenCompiledManagerTest extends TestCase
      * Also validate if screens cache can be cleared for a specific process
      */
     #[Test]
-    public function it_clears_process_screens_cache()
+    public function it_clears_process_screens_cache(): void
     {
         // Arrange
         $manager = new ScreenCompiledManager();
@@ -156,7 +156,7 @@ class ScreenCompiledManagerTest extends TestCase
      * Validate a screen key can be created
      */
     #[Test]
-    public function it_creates_a_screen_key()
+    public function it_creates_a_screen_key(): void
     {
         // Arrange
         $manager = new ScreenCompiledManager();
@@ -179,7 +179,7 @@ class ScreenCompiledManagerTest extends TestCase
      * Validate the last screen version ID can be retrieved
      */
     #[Test]
-    public function it_gets_the_last_screen_version_id()
+    public function it_gets_the_last_screen_version_id(): void
     {
         // Create the manager
         $manager = new ScreenCompiledManager();
