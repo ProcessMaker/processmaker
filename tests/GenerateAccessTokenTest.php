@@ -18,7 +18,7 @@ class GenerateAccessTokenTest extends TestCase
         $user = User::factory()->create();
         $tokenRef = new GenerateAccessToken($user);
         // use regex to verify JWT
-        $this->assertRegExp("/^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+$/", $tokenRef->getToken());
+        $this->assertMatchesRegularExpression("/^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+$/", $tokenRef->getToken());
     }
 
     public function testDeleteToken()
