@@ -74,9 +74,10 @@
 <script>
 import TaskDetailsMobile from "./TaskDetailsMobile.vue";
 
-Vue.component("TaskDetailsMobile", TaskDetailsMobile);
-
 export default {
+  components: {
+    TaskDetailsMobile,
+  },
   props: ["task", "userisadmin", "userisprocessmanager"],
   data() {
     return {

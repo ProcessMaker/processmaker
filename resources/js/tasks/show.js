@@ -3,6 +3,7 @@ import Vuex from "vuex";
 import Task from "@processmaker/screen-builder";
 import MonacoEditor from "vue-monaco";
 import debounce from "lodash/debounce";
+import Mustache from "mustache";
 import TaskView from "./components/TaskView.vue";
 import NavbarTaskMobile from "./components/NavbarTaskMobile.vue";
 import AvatarImage from "../components/AvatarImage.vue";
@@ -13,7 +14,6 @@ import TasksList from "./components/TasksList.vue";
 import TaskSavePanel from "./components/TaskSavePanel.vue";
 import autosaveMixins from "../modules/autosave/autosaveMixin";
 import draftFileUploadMixin from "../modules/autosave/draftFileUploadMixin";
-import Mustache from "mustache";
 import TaskSaveNotification from "./components/TaskSaveNotification.vue";
 import reassignMixin from "../common/reassignMixin";
 
@@ -30,11 +30,9 @@ Vue.component("TasksList", TasksList);
 Vue.component("TaskSavePanel", TaskSavePanel);
 Vue.component("TaskSaveNotification", TaskSaveNotification);
 Vue.component("PMDropdownSuggest", PMDropdownSuggest);
-
 Vue.mixin(autosaveMixins);
 Vue.mixin(draftFileUploadMixin);
 Vue.mixin(reassignMixin);
-
 window.debounce = debounce;
 window.Vuex = Vuex;
 window.Mustache = Mustache;

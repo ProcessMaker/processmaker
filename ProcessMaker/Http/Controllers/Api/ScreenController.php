@@ -3,10 +3,10 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use ProcessMaker\Cache\Screens\ScreenCacheFactory;
 use ProcessMaker\Events\ScreenCreated;
 use ProcessMaker\Events\ScreenDeleted;
 use ProcessMaker\Events\ScreenUpdated;
-use ProcessMaker\Facades\ScreenCompiledManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -304,7 +304,8 @@ class ScreenController extends Controller
 
         // Clear the screens cache when a screen is updated. All cache is cleared
         // because we don't know which nested screens affect to other screens
-        ScreenCompiledManager::clearCompiledAssets();
+        $screenCache = ScreenCacheFactory::getScreenCache();
+        $screenCache->clearCompiledAssets();
 
         return response([], 204);
     }

@@ -8,7 +8,10 @@ use ProcessMaker\Http\Controllers\Api\TaskController;
 // Engine
 Route::prefix('api/1.0')->name('api.')->group(function () {
     // List of Processes that the user can start
-    Route::get('start_processes', [ProcessController::class, 'startProcesses'])->name('processes.start'); // Filtered in controller
+    Route::get('start_processes', [ProcessController::class, 'startProcesses'])
+        ->middleware('etag')
+        ->defaults('etag_tables', 'processes')
+        ->name('processes.start'); // Filtered in controller
 
     // Start a process
     Route::post('process_events/{process}', [ProcessController::class, 'triggerStartEvent'])->name('process_events.trigger')->middleware('can:start,process');
