@@ -36,9 +36,9 @@ npm.sh
 laravel-echo-server.lock
 public/.htaccess
 coverage
-.phpunit.result.cache
+/.phpunit.cache
 .php-cs-fixer.cache
-.phpunit.result.cache
+/.phpunit.cache
 .editorconfig
 resources/lang/de
 resources/lang/es
