@@ -7,7 +7,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestLock;
 use Tests\TestCase;
 
-class RequestLockTest extends TestCase
+final class RequestLockTest extends TestCase
 {
     public function testExitJobWithoutUnlock(): void
     {

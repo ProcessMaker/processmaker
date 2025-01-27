@@ -16,7 +16,7 @@ use Tests\TestCase;
  * Test the process execution with requests
  */
 #[Group('process_tests')]
-class InterstitialTest extends TestCase
+final class InterstitialTest extends TestCase
 {
     use RequestHelper;
     use WithFaker;

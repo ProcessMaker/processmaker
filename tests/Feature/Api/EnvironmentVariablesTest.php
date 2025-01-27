@@ -10,7 +10,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class EnvironmentVariablesTest extends TestCase
+final class EnvironmentVariablesTest extends TestCase
 {
     use RequestHelper;
 

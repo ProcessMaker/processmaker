@@ -8,7 +8,7 @@ use ProcessMaker\Models\UserResourceView;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class UserResourceViewTest extends TestCase
+final class UserResourceViewTest extends TestCase
 {
     use RequestHelper;
 

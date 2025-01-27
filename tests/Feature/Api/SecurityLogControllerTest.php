@@ -7,7 +7,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class SecurityLogControllerTest extends TestCase
+final class SecurityLogControllerTest extends TestCase
 {
     use RequestHelper;
 

@@ -15,7 +15,7 @@ use ProcessMaker\Package\Translations\Models\Translatable;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class TranslationTest extends TestCase
+final class TranslationTest extends TestCase
 {
     use RequestHelper;
 

@@ -9,7 +9,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class BookmarkTest extends TestCase
+final class BookmarkTest extends TestCase
 {
     use RequestHelper;
 

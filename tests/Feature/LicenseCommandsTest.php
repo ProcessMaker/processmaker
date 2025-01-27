@@ -12,7 +12,7 @@ use Tests\TestCase;
  * Test license commands
  */
 #[Group('license')]
-class LicenseCommandsTest extends TestCase
+final class LicenseCommandsTest extends TestCase
 {
     protected function setUp(): void
     {

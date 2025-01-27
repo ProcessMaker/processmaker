@@ -11,7 +11,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class CasesControllerTest extends TestCase
+final class CasesControllerTest extends TestCase
 {
     use RefreshDatabase;
     use RequestHelper;

@@ -17,7 +17,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Repositories\BpmnDocument;
 
-class RollbackProcessRequestTest extends TestCase
+final class RollbackProcessRequestTest extends TestCase
 {
     public $processRequest;
 

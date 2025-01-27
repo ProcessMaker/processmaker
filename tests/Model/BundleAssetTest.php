@@ -9,7 +9,7 @@ use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Screen;
 use Tests\TestCase;
 
-class BundleAssetTest extends TestCase
+final class BundleAssetTest extends TestCase
 {
     public function testCanExport(): void
     {

@@ -11,7 +11,7 @@ use Tests\TestCase;
 /**
  * Test FELL expressions that uses Mustache syntax
  */
-class MustacheFEELTest extends TestCase
+final class MustacheFEELTest extends TestCase
 {
     /**
      * Test basic mustache templating

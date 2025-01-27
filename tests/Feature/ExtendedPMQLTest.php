@@ -10,7 +10,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class ExtendedPMQLTest extends TestCase
+final class ExtendedPMQLTest extends TestCase
 {
     use RequestHelper;
 

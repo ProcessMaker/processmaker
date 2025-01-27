@@ -14,7 +14,7 @@ use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
 
 #[Group('process_tests')]
-class WatchersTest extends TestCase
+final class WatchersTest extends TestCase
 {
     use WithFaker;
     use ResourceAssertionsTrait;

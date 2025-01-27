@@ -17,7 +17,7 @@ use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Templates\HelperTrait;
 use Tests\TestCase;
 
-class ScreenTemplateTest extends TestCase
+final class ScreenTemplateTest extends TestCase
 {
     use RequestHelper;
     use WithFaker;

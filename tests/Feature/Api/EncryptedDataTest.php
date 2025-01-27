@@ -10,7 +10,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class EncryptedDataTest extends TestCase
+final class EncryptedDataTest extends TestCase
 {
     use RequestHelper;
 

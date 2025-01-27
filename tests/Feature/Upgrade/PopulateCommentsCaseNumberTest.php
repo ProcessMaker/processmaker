@@ -9,7 +9,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use Tests\TestCase;
 
-class PopulateCommentsCaseNumberTest extends TestCase
+final class PopulateCommentsCaseNumberTest extends TestCase
 {
     use RefreshDatabase;
 

@@ -16,7 +16,7 @@ use Tests\TestCase;
  * Test the process execution with service task
  */
 #[Group('process_tests')]
-class ServiceTaskExecutionTest extends TestCase
+final class ServiceTaskExecutionTest extends TestCase
 {
     use RequestHelper;
     use WithFaker;

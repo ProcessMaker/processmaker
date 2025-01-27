@@ -11,7 +11,7 @@ use Tests\TestCase;
 /**
  * Test friendly enough expression language evaluator
  */
-class FEELTest extends TestCase
+final class FEELTest extends TestCase
 {
     /**
      * Test to use an unsupported language

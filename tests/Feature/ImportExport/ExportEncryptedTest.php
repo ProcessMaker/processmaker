@@ -15,7 +15,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class ExportEncryptedTest extends TestCase
+final class ExportEncryptedTest extends TestCase
 {
     use RequestHelper;
 

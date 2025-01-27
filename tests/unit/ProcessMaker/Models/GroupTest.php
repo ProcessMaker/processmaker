@@ -5,7 +5,7 @@ namespace ProcessMaker\Models;
 use ProcessMaker\Models\Group;
 use Tests\TestCase;
 
-class GroupTest extends TestCase
+final class GroupTest extends TestCase
 {
     /**
      * Test group without manager.

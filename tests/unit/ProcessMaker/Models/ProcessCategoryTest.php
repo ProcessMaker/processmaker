@@ -5,7 +5,7 @@ namespace ProcessMaker\Models;
 use ProcessMaker\Models\ProcessCategory;
 use Tests\TestCase;
 
-class ProcessCategoryTest extends TestCase
+final class ProcessCategoryTest extends TestCase
 {
     /**
      * Test ProcessCategory Model.

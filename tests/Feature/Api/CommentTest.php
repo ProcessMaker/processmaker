@@ -15,7 +15,7 @@ use ProcessMaker\Providers\AuthServiceProvider;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class CommentTest extends TestCase
+final class CommentTest extends TestCase
 {
     use RequestHelper;
 

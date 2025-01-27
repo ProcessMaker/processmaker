@@ -14,7 +14,7 @@ use ProcessMaker\Models\SignalData;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class SignalTest extends TestCase
+final class SignalTest extends TestCase
 {
     use RequestHelper;
 

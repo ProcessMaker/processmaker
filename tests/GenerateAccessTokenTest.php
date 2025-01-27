@@ -6,7 +6,7 @@ use ProcessMaker\GenerateAccessToken;
 use ProcessMaker\Models\User;
 use RuntimeException;
 
-class GenerateAccessTokenTest extends TestCase
+final class GenerateAccessTokenTest extends TestCase
 {
     public function setUpWithPersonalAccessClient()
     {

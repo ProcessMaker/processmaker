@@ -15,7 +15,7 @@ use Tests\TestCase;
  * Tests routes related to script / CRUD related methods
  */
 #[Group('script_tests')]
-class ScriptCategoriesTest extends TestCase
+final class ScriptCategoriesTest extends TestCase
 {
     use WithFaker;
     use ResourceAssertionsTrait;

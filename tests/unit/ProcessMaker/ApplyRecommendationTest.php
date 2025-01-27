@@ -10,7 +10,7 @@ use ProcessMaker\Models\Recommendation;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 
-class ApplyRecommendationTest extends TestCase
+final class ApplyRecommendationTest extends TestCase
 {
     public function testMarkAsPriority(): void
     {

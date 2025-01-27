@@ -4,7 +4,7 @@ namespace ProcessMaker;
 
 use Tests\TestCase;
 
-class SanitizeHelperTest extends TestCase
+final class SanitizeHelperTest extends TestCase
 {
     public function testSanitize(): void
     {

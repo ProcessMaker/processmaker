@@ -64,7 +64,7 @@ use Tests\Feature\Templates\HelperTrait;
 use Tests\TestCase;
 
 #[CoversClass(\ProcessMaker\Models\SecurityLog::class)]
-class SecurityLogsTest extends TestCase
+final class SecurityLogsTest extends TestCase
 {
     use HelperTrait;
     use RequestHelper;

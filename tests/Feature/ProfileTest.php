@@ -10,7 +10,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class ProfileTest extends TestCase
+final class ProfileTest extends TestCase
 {
     use RequestHelper;
 

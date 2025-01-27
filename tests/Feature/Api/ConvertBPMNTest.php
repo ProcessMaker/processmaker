@@ -15,7 +15,7 @@ use Tests\TestCase;
  * Tests routes related to processes / CRUD related methods
  */
 #[Group('process_tests')]
-class ConvertBPMNTest extends TestCase
+final class ConvertBPMNTest extends TestCase
 {
     use WithFaker;
     use RequestHelper;

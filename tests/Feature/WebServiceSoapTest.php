@@ -13,7 +13,7 @@ use ProcessMaker\WebServices\SoapServiceCaller;
 use ProcessMaker\WebServices\WebServiceRequest;
 use Tests\TestCase;
 
-class WebServiceSoapTest extends TestCase
+final class WebServiceSoapTest extends TestCase
 {
     use WithFaker;
 

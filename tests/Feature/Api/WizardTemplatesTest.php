@@ -8,7 +8,7 @@ use ProcessMaker\Models\WizardTemplate;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class WizardTemplatesTest extends TestCase
+final class WizardTemplatesTest extends TestCase
 {
     use RequestHelper;
 

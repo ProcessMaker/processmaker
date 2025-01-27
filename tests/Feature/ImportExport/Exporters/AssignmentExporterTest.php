@@ -22,7 +22,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\ImportExport\HelperTrait;
 use Tests\TestCase;
 
-class AssignmentExporterTest extends TestCase
+final class AssignmentExporterTest extends TestCase
 {
     use HelperTrait;
 

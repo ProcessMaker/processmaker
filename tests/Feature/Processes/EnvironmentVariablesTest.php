@@ -6,7 +6,7 @@ use ProcessMaker\Models\EnvironmentVariable;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class EnvironmentVariablesTest extends TestCase
+final class EnvironmentVariablesTest extends TestCase
 {
     use RequestHelper;
 

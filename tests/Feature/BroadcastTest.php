@@ -30,7 +30,7 @@ use Tests\TestCase;
  * @internal
  */
 #[CoversNothing]
-class BroadcastTest extends TestCase
+final class BroadcastTest extends TestCase
 {
     use LoggingHelper;
     use WithFaker;

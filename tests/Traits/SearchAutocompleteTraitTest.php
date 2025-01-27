@@ -7,7 +7,7 @@ use ProcessMaker\Models\ProcessCategory;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class SearchAutocompleteTraitTest extends TestCase
+final class SearchAutocompleteTraitTest extends TestCase
 {
     use RequestHelper;
 

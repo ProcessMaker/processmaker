@@ -20,7 +20,7 @@ use Tests\TestCase;
  * Tests routes related to processes / CRUD related methods
  */
 #[Group('process_tests')]
-class SearchByCategoryTest extends TestCase
+final class SearchByCategoryTest extends TestCase
 {
     use WithFaker;
     use ResourceAssertionsTrait;

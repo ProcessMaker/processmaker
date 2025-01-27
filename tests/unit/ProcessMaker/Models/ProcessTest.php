@@ -7,7 +7,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 
-class ProcessTest extends TestCase
+final class ProcessTest extends TestCase
 {
     public function testGetConsolidatedUsers(): void
     {

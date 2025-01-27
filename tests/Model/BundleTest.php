@@ -9,7 +9,7 @@ use ProcessMaker\Models\Screen;
 use Tests\Feature\ImportExport\HelperTrait;
 use Tests\TestCase;
 
-class BundleTest extends TestCase
+final class BundleTest extends TestCase
 {
     use HelperTrait;
 

@@ -20,7 +20,7 @@ use ProcessMaker\Notifications\ProcessCreatedNotification;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class NotificationControlsTest extends TestCase
+final class NotificationControlsTest extends TestCase
 {
     use RequestHelper;
 

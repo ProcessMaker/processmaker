@@ -9,7 +9,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class SanitizationTest extends TestCase
+final class SanitizationTest extends TestCase
 {
     use RequestHelper;
 

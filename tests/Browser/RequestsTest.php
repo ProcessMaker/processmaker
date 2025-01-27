@@ -10,7 +10,7 @@ use Tests\Browser\Pages\LoginPage;
 use Tests\Browser\Pages\RequestsPage;
 use Tests\DuskTestCase;
 
-class RequestsTest extends DuskTestCase
+final class RequestsTest extends DuskTestCase
 {
     private function setuser()
     {

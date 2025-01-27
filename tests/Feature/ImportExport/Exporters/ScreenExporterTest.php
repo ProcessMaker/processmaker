@@ -13,7 +13,7 @@ use ProcessMaker\Models\Script;
 use Tests\Feature\ImportExport\HelperTrait;
 use Tests\TestCase;
 
-class ScreenExporterTest extends TestCase
+final class ScreenExporterTest extends TestCase
 {
     use HelperTrait;
 

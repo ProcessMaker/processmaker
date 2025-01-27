@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 
-class LoginRedirectTest extends TestCase
+final class LoginRedirectTest extends TestCase
 {
     /**
      * 

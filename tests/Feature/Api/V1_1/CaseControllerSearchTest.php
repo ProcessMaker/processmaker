@@ -8,7 +8,7 @@ use ProcessMaker\Repositories\CaseUtils;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class CaseControllerSearchTest extends TestCase
+final class CaseControllerSearchTest extends TestCase
 {
     use RequestHelper, RefreshDatabase;
 

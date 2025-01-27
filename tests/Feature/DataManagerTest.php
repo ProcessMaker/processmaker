@@ -21,7 +21,7 @@ use Tests\TestCase;
 /**
  * Test edit data
  */
-class DataManagerTest extends TestCase
+final class DataManagerTest extends TestCase
 {
     use RequestHelper;
 

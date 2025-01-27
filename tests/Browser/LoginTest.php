@@ -9,7 +9,7 @@ use ProcessMaker\Models\User;
 use Tests\Browser\Pages\LoginPage;
 use Tests\DuskTestCase;
 
-class LoginTest extends DuskTestCase
+final class LoginTest extends DuskTestCase
 {
     public function test_login_page_loads(): void
     {

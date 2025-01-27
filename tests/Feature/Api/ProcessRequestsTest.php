@@ -23,7 +23,7 @@ use Tests\TestCase;
  * Tests routes related to processes / CRUD related methods
  */
 #[Group('process_tests')]
-class ProcessRequestsTest extends TestCase
+final class ProcessRequestsTest extends TestCase
 {
     use RequestHelper;
     use WithFaker;

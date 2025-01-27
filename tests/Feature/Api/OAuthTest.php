@@ -6,7 +6,7 @@ use Illuminate\Http\Response;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class OAuthTest extends TestCase
+final class OAuthTest extends TestCase
 {
     use RequestHelper;
 

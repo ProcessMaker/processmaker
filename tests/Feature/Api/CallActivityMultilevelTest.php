@@ -10,7 +10,7 @@ use Tests\Feature\Shared\ProcessTestingTrait;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class CallActivityMultilevelTest extends TestCase
+final class CallActivityMultilevelTest extends TestCase
 {
     use RequestHelper;
     use ProcessTestingTrait;

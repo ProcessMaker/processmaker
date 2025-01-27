@@ -14,7 +14,7 @@ use Tests\TestCase;
  * Test the process execution with requests
  */
 #[Group('process_tests')]
-class ProcessCollaborationTest extends TestCase
+final class ProcessCollaborationTest extends TestCase
 {
     use WithFaker;
     use RequestHelper;

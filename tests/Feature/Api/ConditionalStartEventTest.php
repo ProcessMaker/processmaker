@@ -10,7 +10,7 @@ use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Models\Process;
 use Tests\TestCase;
 
-class ConditionalStartEventTest extends TestCase
+final class ConditionalStartEventTest extends TestCase
 {
     public function testConditionalEventMustTriggeredWhenActive(): void
     {

@@ -20,7 +20,7 @@ use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Templates\HelperTrait;
 use Tests\TestCase;
 
-class ProcessTemplateTest extends TestCase
+final class ProcessTemplateTest extends TestCase
 {
     use RequestHelper;
     use HelperTrait;

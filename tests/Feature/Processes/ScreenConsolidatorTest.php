@@ -10,7 +10,7 @@ use ProcessMaker\ScreenConsolidator;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class ScreenConsolidatorTest extends TestCase
+final class ScreenConsolidatorTest extends TestCase
 {
     use RequestHelper;
 

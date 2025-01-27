@@ -25,7 +25,7 @@ use Tests\TestCase;
  * Tests boundary signal events in Jobs triggers the right number of requests
  */
 #[Group('process_tests')]
-class TriggerSignalInRequestTest extends TestCase
+final class TriggerSignalInRequestTest extends TestCase
 {
     use RequestHelper;
     use ProcessTestingTrait;

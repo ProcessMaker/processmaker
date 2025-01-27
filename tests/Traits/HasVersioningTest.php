@@ -8,7 +8,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 use Tests\TestCase;
 
-class HasVersioningTest extends TestCase
+final class HasVersioningTest extends TestCase
 {
     public function testVersionFor(): void
     {

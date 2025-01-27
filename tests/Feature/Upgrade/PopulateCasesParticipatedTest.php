@@ -10,7 +10,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 
-class PopulateCasesParticipatedTest extends TestCase
+final class PopulateCasesParticipatedTest extends TestCase
 {
     use RefreshDatabase;
 

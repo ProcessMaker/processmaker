@@ -15,7 +15,7 @@ use Tests\TestCase;
  * Tests routes related to processes / CRUD related methods
  */
 #[Group('process_tests')]
-class ProcessCategoriesTest extends TestCase
+final class ProcessCategoriesTest extends TestCase
 {
     use WithFaker;
     use ResourceAssertionsTrait;

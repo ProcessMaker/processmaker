@@ -11,7 +11,7 @@ use ReflectionMethod;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class DownloadSecurityLogTest extends TestCase
+final class DownloadSecurityLogTest extends TestCase
 {
     use RequestHelper;
 

@@ -14,7 +14,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use Tests\TestCase;
 
-class SignalEventTest extends TestCase
+final class SignalEventTest extends TestCase
 {
     public function testSignalEventMustTriggeredWhenProcessActive(): void
     {

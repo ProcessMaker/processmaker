@@ -14,7 +14,7 @@ use ProcessMaker\Models\ScriptExecutor;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class HideSystemCategoriesTest extends TestCase
+final class HideSystemCategoriesTest extends TestCase
 {
     use RequestHelper;
 

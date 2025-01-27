@@ -7,7 +7,7 @@ use ProcessMaker\Facades\EncryptedData as EncryptedDataManager;
 use ProcessMaker\Models\EncryptedData;
 use Tests\TestCase;
 
-class ChangeKeyEncryptedDataTest extends TestCase
+final class ChangeKeyEncryptedDataTest extends TestCase
 {
     public function test_change_key_driver_local(): void
     {

@@ -14,7 +14,7 @@ use Tests\TestCase;
  * Test Service Task Queue
  */
 #[Group('process_tests')]
-class ServiceTaskQueueTest extends TestCase
+final class ServiceTaskQueueTest extends TestCase
 {
     use RequestHelper;
     use ProcessTestingTrait;

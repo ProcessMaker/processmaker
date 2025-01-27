@@ -12,7 +12,7 @@ use Tests\Feature\ImportExport\HelperTrait;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class GroupExporterTest extends TestCase
+final class GroupExporterTest extends TestCase
 {
     use HelperTrait;
     use RequestHelper;

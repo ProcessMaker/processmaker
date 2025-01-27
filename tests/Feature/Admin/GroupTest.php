@@ -8,7 +8,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class GroupTest extends TestCase
+final class GroupTest extends TestCase
 {
     use RequestHelper;
 

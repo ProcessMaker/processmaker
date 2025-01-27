@@ -5,7 +5,7 @@ namespace ProcessMaker\Models;
 use ProcessMaker\Models\ScreenCategory;
 use Tests\TestCase;
 
-class ScreenCategoryTest extends TestCase
+final class ScreenCategoryTest extends TestCase
 {
     /**
      * Test ScreenCategory Model.

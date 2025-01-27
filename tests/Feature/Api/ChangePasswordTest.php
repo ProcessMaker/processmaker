@@ -8,7 +8,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class ChangePasswordTest extends TestCase
+final class ChangePasswordTest extends TestCase
 {
     use RequestHelper, RefreshDatabase;
 

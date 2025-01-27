@@ -17,7 +17,7 @@ use Tests\TestCase;
  * Test license commands
  */
 #[Group('license')]
-class LicenseTest extends TestCase
+final class LicenseTest extends TestCase
 {
     protected $skipPackageDiscover = false;
 

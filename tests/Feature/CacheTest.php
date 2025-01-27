@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
-class CacheTest extends TestCase
+final class CacheTest extends TestCase
 {
     /**
      * A basic cache example.

@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class ScriptsTest extends TestCase
+final class ScriptsTest extends TestCase
 {
     use RequestHelper;
 

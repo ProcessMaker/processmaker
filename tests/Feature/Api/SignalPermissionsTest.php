@@ -8,7 +8,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class SignalPermissionsTest extends TestCase
+final class SignalPermissionsTest extends TestCase
 {
     use RequestHelper;
 

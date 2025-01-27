@@ -9,7 +9,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class ProcessLaunchpadTest extends TestCase
+final class ProcessLaunchpadTest extends TestCase
 {
     use RequestHelper;
 

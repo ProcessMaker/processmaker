@@ -11,7 +11,7 @@ use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
 
-class SettingsTest extends TestCase
+final class SettingsTest extends TestCase
 {
     use ResourceAssertionsTrait;
     use WithFaker;

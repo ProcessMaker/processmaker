@@ -12,7 +12,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Script;
 use Tests\TestCase;
 
-class ErrorHandlingTest extends TestCase
+final class ErrorHandlingTest extends TestCase
 {
     private function runAssertions($settings)
     {

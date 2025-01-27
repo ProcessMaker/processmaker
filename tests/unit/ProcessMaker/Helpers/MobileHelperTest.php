@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Helpers\MobileHelper;
 use Tests\TestCase;
 
-class MobileHelperTest extends TestCase
+final class MobileHelperTest extends TestCase
 {
     use WithFaker;
 

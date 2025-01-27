@@ -9,7 +9,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class RedirectTest extends TestCase
+final class RedirectTest extends TestCase
 {
     use RequestHelper;
 

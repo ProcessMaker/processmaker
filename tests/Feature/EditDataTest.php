@@ -20,7 +20,7 @@ use Tests\TestCase;
 /**
  * Test edit data
  */
-class EditDataTest extends TestCase
+final class EditDataTest extends TestCase
 {
     use RequestHelper;
 

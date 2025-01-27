@@ -8,7 +8,7 @@ use ProcessMaker\Listeners\BpmnSubscriber;
 use ProcessMaker\Models\ProcessRequestToken;
 use Tests\TestCase;
 
-class BpmnSubscriberTest extends TestCase
+final class BpmnSubscriberTest extends TestCase
 {
     public function testErrorHandlerRegistration(): void
     {

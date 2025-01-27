@@ -5,7 +5,7 @@ namespace Tests\Feature\Docker;
 use ProcessMaker\Facades\Docker;
 use Tests\TestCase;
 
-class DockerFacadeTest extends TestCase
+final class DockerFacadeTest extends TestCase
 {
     /**
      * Default timeout command

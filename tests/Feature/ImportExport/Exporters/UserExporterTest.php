@@ -15,7 +15,7 @@ use Tests\Feature\ImportExport\HelperTrait;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class UserExporterTest extends TestCase
+final class UserExporterTest extends TestCase
 {
     use HelperTrait;
     use RequestHelper;

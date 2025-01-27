@@ -10,7 +10,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class TaskAssignmentPreviousOwnerTest extends TestCase
+final class TaskAssignmentPreviousOwnerTest extends TestCase
 {
     use RequestHelper;
 

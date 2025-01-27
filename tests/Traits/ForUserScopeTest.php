@@ -18,7 +18,7 @@ use Tests\Feature\Shared\RequestHelper;
 use Tests\RequestListingPerformanceData;
 use Tests\TestCase;
 
-class ForUserScopeTest extends TestCase
+final class ForUserScopeTest extends TestCase
 {
     use RequestHelper;
 

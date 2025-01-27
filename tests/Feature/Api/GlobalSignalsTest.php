@@ -8,7 +8,7 @@ use Tests\Feature\Shared\ProcessTestingTrait;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class GlobalSignalsTest extends TestCase
+final class GlobalSignalsTest extends TestCase
 {
     use RequestHelper;
     use ProcessTestingTrait;

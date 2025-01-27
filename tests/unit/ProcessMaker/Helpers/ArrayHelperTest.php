@@ -6,7 +6,7 @@ use ProcessMaker\Helpers\ArrayHelper;
 use stdClass;
 use Tests\TestCase;
 
-class ArrayHelperTest extends TestCase
+final class ArrayHelperTest extends TestCase
 {
     public function testStdClassToArray(): void
     {

@@ -15,7 +15,7 @@ use Tests\TestCase;
  * Tests routes related to screens / CRUD related methods
  */
 #[Group('screen_tests')]
-class ScreenCategoriesTest extends TestCase
+final class ScreenCategoriesTest extends TestCase
 {
     use WithFaker;
     use ResourceAssertionsTrait;

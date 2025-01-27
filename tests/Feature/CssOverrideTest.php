@@ -9,7 +9,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class CssOverrideTest extends TestCase
+final class CssOverrideTest extends TestCase
 {
     use RequestHelper;
 

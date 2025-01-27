@@ -11,7 +11,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 
-class PopulateCaseStartedTest extends TestCase
+final class PopulateCaseStartedTest extends TestCase
 {
     use RefreshDatabase;
 

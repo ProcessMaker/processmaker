@@ -11,7 +11,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Repositories\CaseRepository;
 use Tests\TestCase;
 
-class CaseStartedTest extends TestCase
+final class CaseStartedTest extends TestCase
 {
     public function test_create_case(): void
     {

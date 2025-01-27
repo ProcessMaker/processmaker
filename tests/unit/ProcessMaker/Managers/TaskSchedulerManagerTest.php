@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use DateTime;
 use Tests\TestCase;
 
-class TaskSchedulerManagerTest extends TestCase
+final class TaskSchedulerManagerTest extends TestCase
 {
     /**
      * @var TaskSchedulerManager

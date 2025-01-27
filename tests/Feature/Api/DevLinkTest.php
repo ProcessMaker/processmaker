@@ -10,7 +10,7 @@ use ProcessMaker\Models\Screen;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class DevLinkTest extends TestCase
+final class DevLinkTest extends TestCase
 {
     use RequestHelper;
 

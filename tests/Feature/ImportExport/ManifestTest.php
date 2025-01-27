@@ -18,7 +18,7 @@ use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 
-class ManifestTest extends TestCase
+final class ManifestTest extends TestCase
 {
     use HelperTrait;
 

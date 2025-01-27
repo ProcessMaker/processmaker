@@ -11,7 +11,7 @@ use ProcessMaker\Providers\AuthServiceProvider;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class DashboardTest extends TestCase
+final class DashboardTest extends TestCase
 {
     use RequestHelper;
 

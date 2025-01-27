@@ -10,7 +10,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Repositories\CaseRepository;
 use Tests\TestCase;
 
-class CaseStartedSubProcessTest extends TestCase
+final class CaseStartedSubProcessTest extends TestCase
 {
     use DatabaseTransactions;
 

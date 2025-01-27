@@ -12,7 +12,7 @@ use Tests\Feature\Api\TestProcessExecutionTrait;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class RequestFileUploadTest extends TestCase
+final class RequestFileUploadTest extends TestCase
 {
     use RequestHelper;
     use TestProcessExecutionTrait;

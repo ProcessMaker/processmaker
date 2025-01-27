@@ -17,7 +17,7 @@ use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 
-class RunScriptTaskTest extends TestCase
+final class RunScriptTaskTest extends TestCase
 {
     #[DataProvider('jobTypes')]
     public function testScriptNotSet($class): void

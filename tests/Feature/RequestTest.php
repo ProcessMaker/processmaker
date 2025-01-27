@@ -12,7 +12,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class RequestTest extends TestCase
+final class RequestTest extends TestCase
 {
     use RequestHelper;
 

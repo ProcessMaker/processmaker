@@ -7,7 +7,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 
-class ModelerTest extends TestCase
+final class ModelerTest extends TestCase
 {
     public function testInflightRoute(): void
     {

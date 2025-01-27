@@ -7,7 +7,7 @@ use Facades\ProcessMaker\JsonColumnIndex;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 
-class JsonColumnIndexTest extends TestCase
+final class JsonColumnIndexTest extends TestCase
 {
     private $table = 'process_requests';
 

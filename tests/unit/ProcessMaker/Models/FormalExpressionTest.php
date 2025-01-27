@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use DateTime;
 use Tests\TestCase;
 
-class FormalExpressionTest extends TestCase
+final class FormalExpressionTest extends TestCase
 {
     public function testDateFunction(): void
     {

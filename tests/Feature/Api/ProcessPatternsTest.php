@@ -21,7 +21,7 @@ use Tests\TestCase;
  * Test the process execution with requests
  */
 #[Group('process_tests')]
-class ProcessPatternsTest extends TestCase
+final class ProcessPatternsTest extends TestCase
 {
     use RequestHelper;
     use ProcessTestingTrait;

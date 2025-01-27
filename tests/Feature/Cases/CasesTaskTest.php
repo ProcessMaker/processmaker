@@ -11,7 +11,7 @@ use ProcessMaker\Repositories\CaseRepository;
 use ProcessMaker\Repositories\CaseTaskRepository;
 use Tests\TestCase;
 
-class CasesTaskTest extends TestCase
+final class CasesTaskTest extends TestCase
 {
     protected $user;
 

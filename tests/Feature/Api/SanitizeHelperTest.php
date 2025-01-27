@@ -15,7 +15,7 @@ use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
 
-class SanitizeHelperTest extends TestCase
+final class SanitizeHelperTest extends TestCase
 {
     use ProcessTestingTrait, WithFaker, RequestHelper, ResourceAssertionsTrait;
 

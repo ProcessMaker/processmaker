@@ -8,7 +8,7 @@ use ProcessMaker\Models\ProcessLaunchpad;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class UserConfigurationTest extends TestCase
+final class UserConfigurationTest extends TestCase
 {
     use RequestHelper;
 

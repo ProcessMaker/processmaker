@@ -11,7 +11,7 @@ use Tests\Feature\Shared\ProcessTestingTrait;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class TaskAssignmentTest extends TestCase
+final class TaskAssignmentTest extends TestCase
 {
     use ProcessTestingTrait;
     use RequestHelper;

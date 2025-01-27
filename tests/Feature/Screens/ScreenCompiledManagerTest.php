@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Managers\ScreenCompiledManager;
 use Tests\TestCase;
 
-class ScreenCompiledManagerTest extends TestCase
+final class ScreenCompiledManagerTest extends TestCase
 {
     protected $storageDisk = 'local';
 

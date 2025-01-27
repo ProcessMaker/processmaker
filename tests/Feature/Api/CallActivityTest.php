@@ -12,7 +12,7 @@ use Tests\Feature\Shared\ProcessTestingTrait;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class CallActivityTest extends TestCase
+final class CallActivityTest extends TestCase
 {
     use RequestHelper;
     use ProcessTestingTrait;

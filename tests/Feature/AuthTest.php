@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 
-class AuthTest extends TestCase
+final class AuthTest extends TestCase
 {
     /**
      * Tests to determine if we can manually log someone in by setting them in the Auth framework immediately

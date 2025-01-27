@@ -11,7 +11,7 @@ use Ramsey\Uuid\Uuid;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class NotificationsTest extends TestCase
+final class NotificationsTest extends TestCase
 {
     use RequestHelper;
 

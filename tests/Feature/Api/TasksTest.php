@@ -34,7 +34,7 @@ use Tests\TestCase;
  * and should not be changed by endpoints
  */
 #[Group('process_tests')]
-class TasksTest extends TestCase
+final class TasksTest extends TestCase
 {
     use WithFaker;
     use ResourceAssertionsTrait;

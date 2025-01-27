@@ -13,7 +13,7 @@ use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 use Tests\Feature\ImportExport\HelperTrait;
 use Tests\TestCase;
 
-class ProcessLaunchpadExporterTest extends TestCase
+final class ProcessLaunchpadExporterTest extends TestCase
 {
     use HelperTrait;
 

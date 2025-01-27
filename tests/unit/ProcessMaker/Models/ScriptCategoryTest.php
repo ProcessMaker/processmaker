@@ -5,7 +5,7 @@ namespace ProcessMaker\Models;
 use ProcessMaker\Models\ScriptCategory;
 use Tests\TestCase;
 
-class ScriptCategoryTest extends TestCase
+final class ScriptCategoryTest extends TestCase
 {
     /**
      * Test ScriptCategory Model.

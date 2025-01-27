@@ -4,7 +4,7 @@ namespace Tests\Feature\Console;
 
 use Tests\TestCase;
 
-class PackageInstallCommandTest extends TestCase
+final class PackageInstallCommandTest extends TestCase
 {
     protected function setUp() : void
     {

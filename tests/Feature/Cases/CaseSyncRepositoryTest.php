@@ -8,7 +8,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use Tests\TestCase;
 use Illuminate\Support\Facades\DB;
 
-class CaseSyncRepositoryTest extends TestCase
+final class CaseSyncRepositoryTest extends TestCase
 {
     public function testSyncCases(): void
     {

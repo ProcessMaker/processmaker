@@ -9,7 +9,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class ScreenTest extends TestCase
+final class ScreenTest extends TestCase
 {
     use RequestHelper;
 

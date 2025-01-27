@@ -9,7 +9,7 @@ use GuzzleHttp\Psr7\Response;
 use ProcessMaker\Traits\MakeHttpRequests as MakeHttpRequests;
 use Tests\TestCase;
 
-class MakeHttpRequestTest extends TestCase
+final class MakeHttpRequestTest extends TestCase
 {
     // Helper function to call private methods in tests
     private function callMethod($obj, $name, array $args)

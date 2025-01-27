@@ -11,7 +11,7 @@ use Tests\TestCase;
 /**
  * Test friendly enough expression language evaluator working together with mustache expressions
  */
-class FEELFormulasTest extends TestCase
+final class FEELFormulasTest extends TestCase
 {
     /**
      * Test to use an unsupported language

@@ -17,7 +17,7 @@ use Tests\TestCase;
  * Test the process execution with requests
  */
 #[Group('process_tests')]
-class ProcessScriptsTest extends TestCase
+final class ProcessScriptsTest extends TestCase
 {
     use ResourceAssertionsTrait;
     use WithFaker;

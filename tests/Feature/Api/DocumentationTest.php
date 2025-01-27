@@ -5,7 +5,7 @@ namespace Tests\Feature\Api;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class DocumentationTest extends TestCase
+final class DocumentationTest extends TestCase
 {
     public function testGenerateSwaggerDocument(): void
     {

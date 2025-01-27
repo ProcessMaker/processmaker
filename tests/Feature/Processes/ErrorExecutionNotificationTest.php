@@ -19,7 +19,7 @@ use ProcessMaker\ScriptRunners\MockRunner;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class ErrorExecutionNotificationTest extends TestCase
+final class ErrorExecutionNotificationTest extends TestCase
 {
     use RequestHelper;
 

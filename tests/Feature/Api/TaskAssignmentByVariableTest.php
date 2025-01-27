@@ -15,7 +15,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class TaskAssignmentByVariableTest extends TestCase
+final class TaskAssignmentByVariableTest extends TestCase
 {
     use RequestHelper;
 

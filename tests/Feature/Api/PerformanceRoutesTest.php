@@ -15,7 +15,7 @@ use Tests\TestCase;
 /**
  * Tests routes related to processes / CRUD related methods
  */
-class PerformanceRoutesTest extends TestCase
+final class PerformanceRoutesTest extends TestCase
 {
     use WithFaker;
     use RequestHelper;

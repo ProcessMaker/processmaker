@@ -9,7 +9,7 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 use Tests\TestCase;
 
-class PMConfigGenericExportManagerTest extends TestCase
+final class PMConfigGenericExportManagerTest extends TestCase
 {
     public function test(): void
     {

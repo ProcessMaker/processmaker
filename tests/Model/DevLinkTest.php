@@ -9,7 +9,7 @@ use ProcessMaker\Models\DevLink;
 use ProcessMaker\Models\Screen;
 use Tests\TestCase;
 
-class DevLinkTest extends TestCase
+final class DevLinkTest extends TestCase
 {
     public function testGetClientUrl(): void
     {

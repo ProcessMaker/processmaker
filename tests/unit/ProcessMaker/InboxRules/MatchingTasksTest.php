@@ -11,7 +11,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 use Tests\TestCase;
 
-class MatchingTasksTest extends TestCase
+final class MatchingTasksTest extends TestCase
 {
     public function testMatchingInboxRulesForTaskType(): void
     {

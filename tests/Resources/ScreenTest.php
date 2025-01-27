@@ -7,7 +7,7 @@ use ProcessMaker\Jobs\ImportProcess;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class ScreenTest extends TestCase
+final class ScreenTest extends TestCase
 {
     use RequestHelper;
 

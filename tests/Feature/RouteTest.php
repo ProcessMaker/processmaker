@@ -6,7 +6,7 @@ use Illuminate\Routing\Router;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class RouteTest extends TestCase
+final class RouteTest extends TestCase
 {
     use RequestHelper;
 

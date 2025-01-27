@@ -5,7 +5,7 @@ namespace Tests\unit\ProcessMaker\Helpers;
 use ProcessMaker\Helpers\SensitiveDataHelper;
 use Tests\TestCase;
 
-class SensitiveDataHelperTest extends TestCase
+final class SensitiveDataHelperTest extends TestCase
 {
     public function testParseString(): void
     {

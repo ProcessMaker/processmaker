@@ -11,7 +11,7 @@ use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 
-class ApplyActionTest extends TestCase
+final class ApplyActionTest extends TestCase
 {
     public function testCompleteTaskWithData(): void
     {

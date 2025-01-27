@@ -26,7 +26,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\ImportExport\HelperTrait;
 use Tests\TestCase;
 
-class ProcessExporterTest extends TestCase
+final class ProcessExporterTest extends TestCase
 {
     use HelperTrait;
     use WithFaker;

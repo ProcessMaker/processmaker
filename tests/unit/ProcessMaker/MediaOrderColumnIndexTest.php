@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
-class MediaOrderColumnIndexTest extends TestCase
+final class MediaOrderColumnIndexTest extends TestCase
 {
     use RefreshDatabase;
 

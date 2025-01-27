@@ -6,7 +6,7 @@ use ProcessMaker\Console\Commands\BuildScriptExecutors;
 use ProcessMaker\Models\ScriptExecutor;
 use Tests\TestCase;
 
-class BuildScriptExecutorsTest extends TestCase
+final class BuildScriptExecutorsTest extends TestCase
 {
 
     public function testBuildScriptExecutorsDockerfile(): void

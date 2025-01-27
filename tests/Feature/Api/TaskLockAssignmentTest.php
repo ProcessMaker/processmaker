@@ -12,7 +12,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class TaskLockAssignmentTest extends TestCase
+final class TaskLockAssignmentTest extends TestCase
 {
     use RequestHelper;
 

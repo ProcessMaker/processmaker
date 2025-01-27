@@ -13,7 +13,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class ProcessRequestFileTest extends TestCase
+final class ProcessRequestFileTest extends TestCase
 {
     use RequestHelper;
 

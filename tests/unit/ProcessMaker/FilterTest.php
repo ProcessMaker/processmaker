@@ -9,7 +9,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 
-class FilterTest extends TestCase
+final class FilterTest extends TestCase
 {
     use RequestHelper;
 

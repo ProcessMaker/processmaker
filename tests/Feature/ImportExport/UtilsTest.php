@@ -7,7 +7,7 @@ use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Models\Process;
 use Tests\TestCase;
 
-class UtilsTest extends TestCase
+final class UtilsTest extends TestCase
 {
     public $bpmn;
 

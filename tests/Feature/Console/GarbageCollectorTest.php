@@ -11,7 +11,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ScheduledTask;
 use Tests\TestCase;
 
-class GarbageCollectorTest extends TestCase
+final class GarbageCollectorTest extends TestCase
 {
     public function testProcessHaltedScripts(): void
     {

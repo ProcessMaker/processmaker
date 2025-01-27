@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 use ProcessMaker\Constants\CaseStatusConstants;
 use ProcessMaker\Repositories\CaseUtils;
 
-class CaseUtilsTest extends TestCase
+final class CaseUtilsTest extends TestCase
 {
     public function test_get_case_number_by_keywords(): void
     {

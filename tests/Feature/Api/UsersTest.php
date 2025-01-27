@@ -19,7 +19,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class UsersTest extends TestCase
+final class UsersTest extends TestCase
 {
     use RequestHelper;
 

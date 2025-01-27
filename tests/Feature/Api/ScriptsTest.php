@@ -22,7 +22,7 @@ use ProcessMaker\Providers\AuthServiceProvider;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class ScriptsTest extends TestCase
+final class ScriptsTest extends TestCase
 {
     use RequestHelper;
 

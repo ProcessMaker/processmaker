@@ -5,7 +5,7 @@ namespace Tests\Sdk;
 use ProcessMaker\BuildSdk;
 use Tests\TestCase;
 
-class BuildSdkTest extends TestCase
+final class BuildSdkTest extends TestCase
 {
     public function setUpSuppressOutput() : void
     {

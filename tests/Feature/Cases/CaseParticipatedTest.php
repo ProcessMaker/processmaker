@@ -9,7 +9,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Repositories\CaseRepository;
 use Tests\TestCase;
 
-class CaseParticipatedTest extends TestCase
+final class CaseParticipatedTest extends TestCase
 {
     public function test_create_case_participated(): void
     {

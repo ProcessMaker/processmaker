@@ -15,7 +15,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class ProcessPermissionsTest extends TestCase
+final class ProcessPermissionsTest extends TestCase
 {
     use RequestHelper;
 

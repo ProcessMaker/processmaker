@@ -13,7 +13,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class TerminatedEndEventTest extends TestCase
+final class TerminatedEndEventTest extends TestCase
 {
     use RequestHelper;
 

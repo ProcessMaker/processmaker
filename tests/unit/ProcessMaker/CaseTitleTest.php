@@ -4,7 +4,7 @@ namespace Tests;
 
 use ProcessMaker\Models\ProcessRequest;
 
-class CaseTitleTest extends TestCase
+final class CaseTitleTest extends TestCase
 {
     const MUSTACHE_VARIABLE = '{{name}}';
 

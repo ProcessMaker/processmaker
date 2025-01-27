@@ -13,7 +13,7 @@ use Tests\TestCase;
 /**
  * Additional tests in tests/Traits/ForUserScopeTest.php
  */
-class ProcessRequestPolicyTest extends TestCase
+final class ProcessRequestPolicyTest extends TestCase
 {
     use RequestHelper;
 

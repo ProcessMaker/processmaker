@@ -10,7 +10,7 @@ use ProcessMaker\Models\User;
 use Tests\Browser\Pages\RequestsPage;
 use Tests\DuskTestCase;
 
-class RequestsSearchTest extends DuskTestCase
+final class RequestsSearchTest extends DuskTestCase
 {
     public function testPmqlErrors(): void
     {

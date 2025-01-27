@@ -10,7 +10,7 @@ use Tests\Feature\Shared\ProcessTestingTrait;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class BoundaryEventsTest extends TestCase
+final class BoundaryEventsTest extends TestCase
 {
     use RequestHelper;
     use ProcessTestingTrait;

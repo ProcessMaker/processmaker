@@ -17,7 +17,7 @@ use Tests\TestCase;
  */
 #[Group('process_tests')]
 #[Group('timer_events')]
-class TimerStartEventTest extends TestCase
+final class TimerStartEventTest extends TestCase
 {
     use ResourceAssertionsTrait;
     use WithFaker;

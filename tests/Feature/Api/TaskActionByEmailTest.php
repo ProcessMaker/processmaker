@@ -7,7 +7,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class TaskActionByEmailTest extends TestCase
+final class TaskActionByEmailTest extends TestCase
 {
     use RequestHelper;
 

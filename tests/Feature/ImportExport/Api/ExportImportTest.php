@@ -29,7 +29,7 @@ use Tests\Feature\ImportExport\HelperTrait;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class ExportImportTest extends TestCase
+final class ExportImportTest extends TestCase
 {
     use RequestHelper;
     use HelperTrait;

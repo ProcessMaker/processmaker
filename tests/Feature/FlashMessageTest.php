@@ -10,7 +10,7 @@ use ProcessMaker\Models\User;
 use Route;
 use Tests\TestCase;
 
-class FlashMessageTest extends TestCase
+final class FlashMessageTest extends TestCase
 {
     /**
      *  Init data user and process

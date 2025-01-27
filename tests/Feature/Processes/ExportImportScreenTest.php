@@ -12,7 +12,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class ExportImportScreenTest extends TestCase
+final class ExportImportScreenTest extends TestCase
 {
     use RequestHelper;
 

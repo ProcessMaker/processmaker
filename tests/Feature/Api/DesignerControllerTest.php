@@ -6,7 +6,7 @@ use Auth;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 
-class DesignerControllerTest extends TestCase
+final class DesignerControllerTest extends TestCase
 {
     /**
      * A basic test.

@@ -13,7 +13,7 @@ use ProcessMaker\Providers\AuthServiceProvider;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class PermissionsTest extends TestCase
+final class PermissionsTest extends TestCase
 {
     use RequestHelper;
 

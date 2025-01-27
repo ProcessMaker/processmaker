@@ -7,7 +7,7 @@ use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 
-class PerformanceTest extends TestCase
+final class PerformanceTest extends TestCase
 {
     public function testImportPerformance(): void
     {

@@ -12,7 +12,7 @@ use Tests\Feature\Shared\LoggingHelper;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class TimeoutsTest extends TestCase
+final class TimeoutsTest extends TestCase
 {
     use BenchmarkHelper, LoggingHelper, RequestHelper;
 

@@ -6,7 +6,7 @@ use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Models\FormalExpression;
 use Tests\TestCase;
 
-class FormalExpressionTest extends TestCase
+final class FormalExpressionTest extends TestCase
 {
     public function testEvaluateSimpleExpression(): void
     {

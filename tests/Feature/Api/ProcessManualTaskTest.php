@@ -17,7 +17,7 @@ use Tests\TestCase;
  * Test the execution of manual tasks
  */
 #[Group('process_tests')]
-class ProcessManualTaskTest extends TestCase
+final class ProcessManualTaskTest extends TestCase
 {
     use RequestHelper;
     use WithFaker;
