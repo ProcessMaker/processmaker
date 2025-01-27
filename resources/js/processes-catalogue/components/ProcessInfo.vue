@@ -4,6 +4,7 @@
       v-show="hideLaunchpad"
       :process="process"
       :current-user-id="currentUserId"
+      :ellipsis-permission="ellipsisPermission"
       :my-tasks-columns="myTasksColumns"
       @goBackCategory="$emit('goBackCategory')"
       @updateMyTasksColumns="updateMyTasksColumns"
@@ -47,7 +48,7 @@ export default {
     ProcessTab,
     ProcessesCarousel,
   },
-  props: ["process", "currentUserId", "currentUser"],
+  props: ["process", "currentUserId", "currentUser", "ellipsisPermission"],
   data() {
     return {
       listCategories: [],

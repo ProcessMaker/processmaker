@@ -15,6 +15,11 @@
           </div>
         </div>
         <div class="d-flex align-items-center flex-shrink-0">
+          <button class="info-button mx-2" 
+            :class="showProcessInfo ? 'info-button-active' : 'info-button'"
+            @click="handleInfoClick">
+            <span>i</span>
+          </button>
           <div class="card-bookmark mx-2">
             <bookmark :process="process" />
           </div>
@@ -28,7 +33,7 @@
               variant="none" 
               @navigate="ellipsisNavigate"
               :isDocumenterInstalled="$root.isDocumenterInstalled" 
-              :permission="$root.permission" />
+              :permission="$root.permission || ellipsisPermission" />
           </span>
           <buttons-start :process="process" :startEvent="singleStartEvent" :processEvents="processEvents" />
         </div>
@@ -62,6 +67,14 @@ export default {
     enableCollapse: {
       type: Boolean,
       default: true
+    },
+    ellipsisPermission: {
+      type: Array,
+      default: () => []
+    },
+    showProcessInfo: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -104,6 +117,9 @@ export default {
           ProcessMaker.alert(err, "danger");
         });
     },
+    handleInfoClick() {
+      this.$emit('toggle-info');
+    }
   }
 }
 </script>
@@ -199,5 +215,30 @@ export default {
 
 .custom-color {
   color: #4C545C;
+}
+
+.info-button {
+  width: 24px;
+  height: 24px;
+  background-color: #6A7887;
+  border: none;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  
+  span {
+    color: #ffffff;
+    font-size: 14px;
+  }
+}
+
+.info-button:hover {
+  background-color: #6A7887;
+}
+
+.info-button-active {
+  background-color: #2773F3 !important;
 }
 </style>

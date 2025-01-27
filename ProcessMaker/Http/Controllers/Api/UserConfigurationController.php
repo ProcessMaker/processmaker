@@ -25,6 +25,9 @@ class UserConfigurationController extends Controller
         'tasks' => [
             'isMenuCollapse' => true,
         ],
+        'tasks_inbox' => [
+            'isMenuCollapse' => false,
+        ],
     ];
 
     public function index()
@@ -54,6 +57,7 @@ class UserConfigurationController extends Controller
             'ui_configuration.cases' => 'required|array',
             'ui_configuration.requests' => 'required|array',
             'ui_configuration.tasks' => 'required|array',
+            'ui_configuration.tasks_inbox' => 'required|array',
         ]);
         $uiConfiguration = json_encode($request->input('ui_configuration'));
 
