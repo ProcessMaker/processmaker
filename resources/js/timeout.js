@@ -1,5 +1,6 @@
 self.time = 0;
 self.interval = null;
+self.restartWorker = false;
 
 self.addEventListener("message", (e) => {
   if (self.hasOwnProperty(e.data.method)) {
@@ -18,13 +19,22 @@ self.start = function (data) {
   const timestampAtStart = Math.floor(Date.now() / 1000);
   const timeoutAt = timestampAtStart + (data.timeout * 60);
 
+  self.restartWorker = false;
+
   clearInterval(self.interval);
-  self.interval = setInterval(function () {
+  self.interval = setInterval(() => {
     const currentTimestamp = Math.floor(Date.now() / 1000);
     const timeRemaining = timeoutAt - currentTimestamp;
 
     if (timeRemaining < data.warnSeconds && timeRemaining > 0) {
       self.postMessage({ method: "countdown", data: { time: timeRemaining } });
+    }
+
+    if (timeRemaining > data.warnSeconds && self.restartWorker) {
+      clearInterval(self.interval);
+      self.start(data);
+      self.restartWorker = false;
+      return;
     }
 
     if (timeRemaining < 1) {
@@ -35,5 +45,10 @@ self.start = function (data) {
 };
 
 self.stop = function () {
+  self.restartWorker = false;
   clearInterval(self.interval);
+};
+
+self.restart = function (data) {
+  self.restartWorker = true;
 };
