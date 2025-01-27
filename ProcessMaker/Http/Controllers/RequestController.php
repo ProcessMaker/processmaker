@@ -28,6 +28,7 @@ use ProcessMaker\Package\PackageComments\PackageServiceProvider;
 use ProcessMaker\ProcessTranslations\ScreenTranslation;
 use ProcessMaker\RetryProcessRequest;
 use ProcessMaker\Traits\HasControllerAddons;
+use ProcessMaker\Traits\ProcessMapTrait;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -35,6 +36,7 @@ class RequestController extends Controller
 {
     use SearchAutocompleteTrait;
     use HasControllerAddons;
+    use ProcessMapTrait;
 
     /**
      * Get the list of requests.
@@ -182,6 +184,10 @@ class RequestController extends Controller
         }
         $this->summaryScreenTranslation($request);
 
+        //Load the process map
+        $inflightData = $this->loadProcessMap($request);
+        $bpmn = $inflightData['bpmn'];
+
         if (isset($_SERVER['HTTP_USER_AGENT']) && MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])) {
             return view('requests.showMobile', compact(
                 'request',
@@ -217,6 +223,8 @@ class RequestController extends Controller
             'eligibleRollbackTask',
             'errorTask',
             'userConfiguration',
+            'bpmn',
+            'inflightData',
         ));
     }
 

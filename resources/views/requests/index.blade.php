@@ -52,7 +52,7 @@
             </counter-card-group>
 
             <div class="tab-content" id="requests-tabContent">
-                <div class="tab-pane fade show active" id="inbox" role="tabpanel" aria-labelledby="inbox-tab">
+                <div class="tab-pane show active" id="inbox" role="tabpanel" aria-labelledby="inbox-tab">
 
                     <div class="card card-body requests-list-body">
                         <div id="search-bar" class="search advanced-search mb-2">

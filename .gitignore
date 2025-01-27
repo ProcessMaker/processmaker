@@ -19,6 +19,7 @@ yarn-error.log
 /public/img
 /public/fonts
 /public/mix-manifest.json
+/public/stats.json
 tests/js/coverage
 tests/coverage-report
 tests/coverage-report/*
