@@ -33,7 +33,7 @@
 
       <div class="tab-content" id="nav-tabContent">
 
-        <div class="card card-body border-top-0 tab-pane p-3 fade show active" id="nav-detail" role="tabpanel" aria-labelledby="nav-detail-tab">
+        <div class="card card-body border-top-0 tab-pane p-3 show active" id="nav-detail" role="tabpanel" aria-labelledby="nav-detail-tab">
           <div class="modal-body">
             <required></required>
             <div class="form-group">
@@ -68,7 +68,7 @@
           </div>
           @endif
         </div>
-        <div class="card card-body border-top-0 tab-pane p-3 fade" id="nav-catch" role="tabpanel" aria-labelledby="nav-catch-tab">
+        <div class="card card-body border-top-0 tab-pane p-3" id="nav-catch" role="tabpanel" aria-labelledby="nav-catch-tab">
           <catch-listing ref="catchList" :filter="filter" items="{{json_encode($signal['processes'])}}" />
         </div>
 

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Log;
+use ProcessMaker\Cache\Settings\SettingCacheFactory;
+use ProcessMaker\Contracts\PrometheusMetricInterface;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia;
@@ -47,7 +49,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  *   },
  * )
  */
-class Setting extends ProcessMakerModel implements HasMedia
+class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInterface
 {
     use ExtendedPMQL;
     use InteractsWithMedia;
@@ -148,7 +150,21 @@ class Setting extends ProcessMakerModel implements HasMedia
      */
     public static function byKey(string $key)
     {
-        return (new self)->where('key', $key)->first();
+        $settingCache = SettingCacheFactory::getSettingsCache();
+        $settingKey = $settingCache->createKey([
+            'key' => $key,
+        ]);
+        $exists = $settingCache->has($settingKey);
+
+        // if the setting is not in the cache, get it from the database and store it in the cache
+        if ($exists) {
+            $setting = $settingCache->get($settingKey);
+        } else {
+            $setting = (new self)->where('key', $key)->first();
+            $settingCache->set($settingKey, $setting);
+        }
+
+        return $setting;
     }
 
     /**
@@ -484,5 +500,15 @@ class Setting extends ProcessMakerModel implements HasMedia
                 }
             }
         });
+    }
+
+    /**
+     * Get the label used in grafana reports
+     *
+     * @return string
+     */
+    public function getPrometheusMetricLabel(): string
+    {
+        return 'settings.' . $this->key;
     }
 }

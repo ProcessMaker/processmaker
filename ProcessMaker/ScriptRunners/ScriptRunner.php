@@ -2,7 +2,10 @@
 
 namespace ProcessMaker\ScriptRunners;
 
+use Illuminate\Contracts\Container\BindingResolutionException;
+use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
+use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptExecutor;
 
 class ScriptRunner
@@ -10,13 +13,13 @@ class ScriptRunner
     /**
      * Concrete script runner
      *
-     * @var \ProcessMaker\ScriptRunners\Base
+     * @var Base
      */
     private $runner;
 
-    public function __construct(ScriptExecutor $executor)
+    public function __construct(protected Script $script)
     {
-        $this->runner = $this->getScriptRunner($executor);
+        $this->runner = $this->getScriptRunner($this->script->scriptExecutor);
     }
 
     /**
@@ -31,9 +34,9 @@ class ScriptRunner
      * @return array
      * @throws \RuntimeException
      */
-    public function run($code, array $data, array $config, $timeout, $user)
+    public function run($code, array $data, array $config, $timeout, $user, $sync, $metadata)
     {
-        return $this->runner->run($code, $data, $config, $timeout, $user);
+        return $this->runner->run($code, $data, $config, $timeout, $user, $sync, $metadata);
     }
 
     /**
@@ -41,19 +44,24 @@ class ScriptRunner
      *
      * @param ScriptExecutor $executor
      *
-     * @return \ProcessMaker\ScriptRunners\Base
-     * @throws \ProcessMaker\Exception\ScriptLanguageNotSupported
+     * @return Base|ScriptMicroserviceRunner|MockRunner
+     * @throws ScriptLanguageNotSupported
+     * @throws BindingResolutionException
      */
-    private function getScriptRunner(ScriptExecutor $executor)
+    private function getScriptRunner(ScriptExecutor $executor): Base|ScriptMicroserviceRunner|MockRunner
     {
-        $language = strtolower($executor->language);
-        $runner = config("script-runners.{$language}.runner");
-        if (!$runner) {
-            throw new ScriptLanguageNotSupported($language);
-        } else {
-            $class = "ProcessMaker\\ScriptRunners\\{$runner}";
+        if (!config('script-runner-microservice.enabled') || $executor->type === ScriptExecutorType::Custom) {
+            $language = strtolower($executor->language);
+            $runner = config("script-runners.{$language}.runner");
+            if (!$runner) {
+                throw new ScriptLanguageNotSupported($language);
+            } else {
+                $class = "ProcessMaker\\ScriptRunners\\{$runner}";
 
-            return app()->make($class, ['scriptExecutor' => $executor]);
+                return app()->make($class, ['scriptExecutor' => $executor]);
+            }
+        } else {
+            return new ScriptMicroserviceRunner($this->script);
         }
     }
 
