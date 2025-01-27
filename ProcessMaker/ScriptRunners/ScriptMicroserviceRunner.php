@@ -6,8 +6,10 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use ProcessMaker\Exception\ConfigurationException;
 use ProcessMaker\GenerateAccessToken;
+use ProcessMaker\Jobs\CheckScriptTimeout;
 use ProcessMaker\Jobs\ErrorHandling;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Script;
@@ -95,7 +97,9 @@ class ScriptMicroserviceRunner
         $result = $response->json();
 
         if ($sync) {
-            ErrorHandling::convertResponseToException($result);
+            ErrorHandling::convertErrorResponseToException($result);
+        } else {
+            CheckScriptTimeout::start($metadata['execution_id'], $timeout);
         }
 
         return $result;
@@ -154,6 +158,7 @@ class ScriptMicroserviceRunner
             'instance' => config('app.url'),
             'user_id' => $user->id,
             'user_email' => $user->email,
+            'execution_id' => 'script-execution-' . Str::uuid(),
         ];
     }
 

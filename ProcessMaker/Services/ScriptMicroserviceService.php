@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 use ProcessMaker\Events\ScriptResponseEvent;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Exception\ScriptTimeoutException;
+use ProcessMaker\Jobs\CheckScriptTimeout;
 use ProcessMaker\Jobs\CompleteActivity;
 use ProcessMaker\Jobs\ErrorHandling;
 use ProcessMaker\Jobs\RunScriptTask;
@@ -36,6 +37,11 @@ class ScriptMicroserviceService
                 null,
                 $response['metadata']['nonce']));
         }
+
+        if ($response['metadata']['execution_id']) {
+            CheckScriptTimeout::stop($response['metadata']['execution_id']);
+        }
+
         if (!empty($response['metadata']['script_task'])) {
             $script = Script::find($response['metadata']['script_task']['script_id']);
             $definitions = Definitions::find($response['metadata']['script_task']['definition_id']);
@@ -47,21 +53,13 @@ class ScriptMicroserviceService
         }
 
         try {
-            $this->convertResponseToException($response);
+            ErrorHandling::convertErrorResponseToException($response);
         } catch (ScriptException|ScriptTimeoutException $e) {
-            $element = $definitions->getElementInstanceById($token->element_id);
+            $element = $definitions->getDefinitions(true)->getElementInstanceById($token->element_id);
             $errorHandling = new ErrorHandling($element, $token);
-            $errorHandling->handleRetriesForScriptMicroservice($e, $response['metadata']);
-        }
-    }
-
-    public function convertResponseToException($response)
-    {
-        if ($response['status'] === 'error') {
-            if (str_starts_with($response['message'], 'Command exceeded timeout of')) {
-                throw new ScriptTimeoutException($response['message']);
-            }
-            throw new ScriptException($response['message']);
+            $errorHandling->setDefaultsFromScript($script->versionFor($instance));
+            [$message, $finalAttempt] = $errorHandling->handleRetriesForScriptMicroservice($e, $response['metadata']);
+            RunScriptTask::setErrorStatus($finalAttempt, $token, $element, $message, $script->id, $e, true);
         }
     }
 }

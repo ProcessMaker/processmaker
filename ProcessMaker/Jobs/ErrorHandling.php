@@ -116,22 +116,22 @@ class ErrorHandling
 
     private function getData()
     {
-        return $this->job ? $this->job->data : $this->metadata['data'];
+        return $this->job ? $this->job->data : $this->metadata['script_task']['data'];
     }
 
     private function getAttemptNumber()
     {
-        return $this->job ? $this->job->attemptNum : $this->metadata['attemptNum'];
+        return $this->job ? $this->job->attemptNum : $this->metadata['script_task']['attempt_num'];
     }
 
     private function getMessage()
     {
-        $this->exception->getMessage();
+        return $this->exception->getMessage();
     }
 
     private function getJobClass()
     {
-        return $this->job ? get_class($this->job) : $this->metadata['job_class'];
+        return $this->job ? get_class($this->job) : $this->metadata['script_task']['job_class'];
     }
 
     /**
@@ -252,5 +252,15 @@ class ErrorHandling
             'retry_attempts' => Arr::get($endpointConfig, 'retry_attempts', 0),
             'retry_wait_time' => Arr::get($endpointConfig, 'retry_wait_time', 5),
         ];
+    }
+
+    public static function convertErrorResponseToException($response)
+    {
+        if ($response['status'] === 'error') {
+            if (str_starts_with($response['message'], 'Command exceeded timeout of')) {
+                throw new ScriptTimeoutException($response['message']);
+            }
+            throw new ScriptException($response['message']);
+        }
     }
 }

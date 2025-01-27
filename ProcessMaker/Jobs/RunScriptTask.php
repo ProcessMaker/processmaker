@@ -105,11 +105,11 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
                     'instance_id' => $this->instanceId,
                     'token_id' => $this->tokenId,
                     'data' => $data,
-                    'attempts' => $this->attemptNum,
+                    'attempt_num' => $this->attemptNum,
                     'job_class' => get_class($this),
                 ],
             ];
-            $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling->timeout(), 1, $metadata);
+            $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling->timeout(), 0, $metadata);
 
             if (!config('script-runner-microservice.enabled') ||
                 ($scriptExecutor && $scriptExecutor->type === ScriptExecutorType::Custom)) {
@@ -127,20 +127,38 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
                 $message = $exception->getMessage();
             }
 
-            if ($finalAttempt) {
-                $token->setStatus(ScriptTaskInterface::TOKEN_STATE_FAILING);
-            }
+            self::setErrorStatus($finalAttempt, $token, $element, $message, $scriptRef, $exception, false);
+        }
+    }
 
-            $error = $element->getRepository()->createError();
-            $error->setName($message);
+    public static function setErrorStatus(
+        bool $finalAttempt,
+        ProcessRequestToken $token,
+        $element,
+        $message,
+        $scriptRef,
+        Throwable $exception,
+        bool $isMicroservice
+    ) {
+        if ($finalAttempt) {
+            $token->setStatus(ScriptTaskInterface::TOKEN_STATE_FAILING);
+        }
 
-            $token->setProperty('error', $error);
-            $exceptionClass = get_class($exception);
-            $modifiedException = new $exceptionClass($message);
-            $token->logError($modifiedException, $element);
+        $error = $element->getRepository()->createError();
+        $error->setName($message);
 
-            Log::error('Script failed: ' . $scriptRef . ' - ' . $message);
-            Log::error($exception->getTraceAsString());
+        $token->setProperty('error', $error);
+        $exceptionClass = get_class($exception);
+        $modifiedException = new $exceptionClass($message);
+        $token->logError($modifiedException, $element);
+
+        Log::error('Script failed: ' . $scriptRef . ' - ' . $message);
+        Log::error($exception->getTraceAsString());
+
+        // If it's from the microservice, we need to call handleFailed()
+        // manually here because failed() is only called when it's a job.
+        if ($isMicroservice) {
+            self::handleFailed($exception, $token->id);
         }
     }
 
@@ -170,7 +188,12 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
      */
     public function failed(Throwable $exception)
     {
-        if (!$this->tokenId) {
+        self::handleFailed($exception, $this->tokenId);
+    }
+
+    private static function handleFailed(Throwable $exception, $tokenId)
+    {
+        if (!$tokenId) {
             Log::error('Script failed: ' . $exception->getMessage());
 
             return;

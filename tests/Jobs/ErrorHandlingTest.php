@@ -20,7 +20,7 @@ class ErrorHandlingTest extends TestCase
 
         extract($settings);
         $errorHandling = ['timeout' => $bpmnTimeout, 'retry_attempts' => $bpmnRetryAttempts, 'retry_wait_time' => $bpmnRetryWaitTime];
-        $element = Mockery::mock();
+        $element = Mockery::mock(\ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface::class);
         $element->shouldReceive('getProperty')->andReturn(json_encode($errorHandling));
 
         $script = Script::factory()->create(['timeout' => $modelTimeout, 'retry_attempts' => $modelRetryAttempts, 'retry_wait_time' => $modelRetryWaitTime]);
@@ -33,16 +33,44 @@ class ErrorHandlingTest extends TestCase
             'process_request_id' => $processRequest->id,
         ]);
 
-        $job = new RunScriptTask($process, $processRequest, $token, [], $attempt);
+        $job = new RunScriptTask($process, $processRequest, $token, ['foo' => 'baz'], $attempt);
         $errorHandling = new ErrorHandling($element, $token);
         $errorHandling->setDefaultsFromScript($script->getLatestVersion());
         $this->assertEquals($expectedTimeout, $errorHandling->timeout());
         $errorHandling->handleRetries($job, new \RuntimeException('error'));
 
+        $expectedData = ['foo' => 'baz'];
+
+        $this->assertQueue($expectedNextAttempt, $expectedWaitTime, $expectedData);
+
+        // Test handleRetriesForScriptMicroservice
+
+        $metadata = [
+            'script_task' => [
+                'job_class' => RunScriptTask::class,
+                'data' => ['foo' => 'bar'],
+                'attempt_num' => $attempt,
+                'message' => 'error',
+            ],
+        ];
+
+        Queue::fake();
+
+        $expectedData = ['foo' => 'bar'];
+        $errorHandling = new ErrorHandling($element, $token);
+        $errorHandling->setDefaultsFromScript($script->getLatestVersion());
+        $errorHandling->handleRetriesForScriptMicroservice(new \RuntimeException('error'), $metadata);
+
+        $this->assertQueue($expectedNextAttempt, $expectedWaitTime, $expectedData);
+    }
+
+    private function assertQueue($expectedNextAttempt, $expectedWaitTime, $expectedData)
+    {
         if ($expectedNextAttempt !== false) {
-            Queue::assertPushed(RunScriptTask::class, function ($job) use ($expectedNextAttempt, $expectedWaitTime) {
+            Queue::assertPushed(RunScriptTask::class, function ($job) use ($expectedNextAttempt, $expectedWaitTime, $expectedData) {
                 return $job->attemptNum === $expectedNextAttempt &&
-                       $job->delay === $expectedWaitTime;
+                       $job->delay === $expectedWaitTime &&
+                       $job->data === $expectedData;
             });
         } else {
             Queue::assertNotPushed(RunScriptTask::class);
