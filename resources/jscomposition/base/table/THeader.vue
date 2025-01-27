@@ -10,13 +10,13 @@
       </slot>
     </div>
 
-    <div class="tw-absolute tw-right-0 tw-top-0 tw-h-full tw-w-5 tw-flex tw-items-center">
+    <div class="tw-absolute tw-right-0 tw-top-0 tw-h-full tw-w-5 tw-flex tw-items-center tw-mr-1">
       <slot name="filter" />
     </div>
 
     <div
-      class="tw-absolute tw-right-0 tw-top-0 tw-w-1 tw-border-r
-        tw-h-full tw-cursor-col-resize tw-select-none tw-border-gray-400"
+      class="tw-absolute tw-right-0 tw-top-0 tw-w-1.5 tw-border-r hover:tw-border-blue-400 hover:tw-border-r-2
+        tw-h-full tw-cursor-col-resize tw-select-none tw-border-gray-300"
       @mousedown="column.resizable ? columnResize.startResize($event) : null" />
   </th>
 </template>

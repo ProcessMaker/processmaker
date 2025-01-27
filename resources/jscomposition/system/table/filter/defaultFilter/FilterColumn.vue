@@ -4,13 +4,17 @@
       v-model="show"
       :hover="false"
       position="bottom">
-      <i
-        class="hover:tw-cursor-pointer hover:hover:tw-text-blue-500"
-        :class="iconClass()"
-        @click.prevent="onClick" />
-
+      <div
+        class="tw-text-xs tw-py-1 tw-px-1 hover:tw-cursor-pointer
+        hover:tw-bg-gray-200 tw-rounded"
+        @click.prevent="onClick">
+        <i :class="iconClass()" />
+      </div>
       <template #content>
         <div
+          :class="{
+            'tw-h-60': filter.operators,
+          }"
           class="tw-shadow-md tw-text-xs tw-space-y-2 tw-flex tw-flex-col tw-justify-between
             tw-font-normal tw-bg-white tw-text-gray-600 tw-overflow-hidden tw-rounded-lg tw-border tw-border-gray-300">
           <div
