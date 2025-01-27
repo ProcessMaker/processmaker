@@ -10,14 +10,22 @@
           <div class="config-status">{{ status(config) }}</div>
         </div>
         <div class="config-action">
-          <button class="config-action-button">
-            <i class="fp-bpmn-data-connector"></i>
+          <button
+            class="config-action-button"
+            @click="$emit('open-settings-modal', {
+              key: config.type,
+              value: $event,
+              settingId: isInSettings(config)?.id,
+              type: props.type
+            })"
+          >
+            <i class="fp-bpmn-data-connector" />
           </button>
           <b-form-checkbox
             :checked="!!isInSettings(config)"
             switch
             :disabled="props.disabled"
-            @change="$emit('config-change', { 
+            @change="$emit('config-change', {
               key: config.type,
               value: $event,
               settingId: isInSettings(config)?.id,
@@ -60,7 +68,7 @@ const props = defineProps({
   }
 });
 
-defineEmits(['config-change']);
+defineEmits(['config-change', 'open-settings-modal']);
 
 const isInSettings = (type) => {
   return (props.values || []).find(value => value.setting === type.type);

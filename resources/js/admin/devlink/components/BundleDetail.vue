@@ -92,6 +92,7 @@
       :values="bundle.settings"
       :disabled="bundle.dev_link_id !== null"
       @config-change="handleConfigChange"
+      @open-settings-modal="openSettingsModal"
       title="Settings"
       type="settings"
     />
@@ -103,6 +104,11 @@
     />
     <UpdateBundle
       ref="reinstallBundle"
+    />
+
+    <BundleSettingsModal
+      ref="bundleSettingsModal"
+      @settings-saved="loadAssets"
     />
 
     <b-modal
@@ -122,6 +128,7 @@ import { ref, onMounted, computed, getCurrentInstance } from 'vue';
 import { useRoute } from 'vue-router/composables';
 import BundleModal, { show as showBundleModal, hide as hideBundleModal } from './BundleModal.vue';
 import UpdateBundle from './UpdateBundle.vue';
+import BundleSettingsModal from './BundleSettingsModal.vue';
 import BundleAssets from './BundleAssets.vue';
 import BundleConfigurations from './BundleConfigurations.vue';
 import VersionCheck from './VersionCheck.vue';
@@ -131,6 +138,7 @@ import settings from './settings';
 const vue = getCurrentInstance().proxy;
 const bundle = ref({});
 const bundleModal = ref(null);
+const bundleSettingsModal = ref(null);
 const reinstallBundle = ref(null);
 const loading = ref(false);
 const route = useRoute();
@@ -152,6 +160,10 @@ const openBundleModalForEdit = () => {
   if (bundleModal.value) {
     bundleModal.value.show();
   }
+};
+
+const openSettingsModal = (event) => {
+  bundleSettingsModal.value.show(event);
 };
 
 const updateBundle = () => {

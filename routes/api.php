@@ -393,6 +393,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
         Route::get('devlink/local-bundles', [DevLinkController::class, 'localBundles'])->name('devlink.local-bundles');
         Route::get('devlink/local-bundles/{bundle}', [DevLinkController::class, 'showBundle'])->name('devlink.local-bundle');
+        Route::get('devlink/local-bundles/{bundle}/setting/{settingKey}', [DevLinkController::class, 'getBundleSetting'])->name('devlink.local-bundle-setting');
+        Route::get('devlink/local-bundles/all-settings/{settingKey}', [DevLinkController::class, 'getBundleAllSettings'])->name('devlink.local-bundle-all-settings');
         Route::post('devlink/local-bundles', [DevLinkController::class, 'createBundle'])->name('devlink.create-bundle');
         Route::put('devlink/local-bundles/{bundle}', [DevLinkController::class, 'updateBundle'])->name('devlink.update-bundle');
         Route::post('devlink/local-bundles/{bundle}/increase-version', [DevLinkController::class, 'increaseBundleVersion'])->name('devlink.increase-bundle-version');

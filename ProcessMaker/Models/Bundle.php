@@ -174,6 +174,16 @@ class Bundle extends ProcessMakerModel implements HasMedia
         if (json_last_error() === JSON_ERROR_NONE) {
             if (is_array($decodedNewId)) {
                 $newId = $decodedNewId;
+                if ($existingSetting) {
+                    if ($decodedNewId['id'] === []) {
+                        $existingSetting->delete();
+
+                        return;
+                    }
+                    $existingSetting->update(['config' => json_encode($newId)]);
+
+                    return;
+                }
             } elseif (isset($decodedNewId['id'])) {
                 $newId = [$decodedNewId['id']];
             } else {

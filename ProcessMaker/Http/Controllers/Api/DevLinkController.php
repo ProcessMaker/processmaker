@@ -16,6 +16,7 @@ use ProcessMaker\Models\BundleInstance;
 use ProcessMaker\Models\BundleSetting;
 use ProcessMaker\Models\DevLink;
 use ProcessMaker\Models\Setting;
+use ProcessMaker\Models\SettingsMenus;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\BundleUpdatedNotification;
 
@@ -364,5 +365,17 @@ class DevLinkController extends Controller
         $bundleSetting->delete();
 
         return response()->json(['message' => 'Bundle setting deleted.'], 200);
+    }
+
+    public function getBundleSetting(Bundle $bundle, $settingKey)
+    {
+        $setting = $bundle->settings()->where('setting', $settingKey)->first();
+
+        return $setting;
+    }
+
+    public function getBundleAllSettings($settingKey)
+    {
+        return Setting::where([['group_id', SettingsMenus::getId($settingKey)], ['hidden', 0]])->get();
     }
 }
