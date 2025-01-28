@@ -2,7 +2,7 @@
   <div class="inbox-process-menu">
     <div class="menu-sections">
       <div class="divider-custom">
-        <span class="divider-text">{{ $t('Processes') }}</span>
+        <span class="divider-text">{{ $t("Processes") }}</span>
         <div class="divider-line"></div>
       </div>
       <div class="buttons-list-process">
@@ -10,7 +10,10 @@
           v-for="process in processesList"
           :key="process.id"
           class="menu-btn"
-          :class="{ 'selected': selectedItem.id === process.id && selectedItem.type === 'process' }"
+          :class="{
+            selected:
+              selectedItem.id === process.id && selectedItem.type === 'process',
+          }"
           @click="openProcessDashboard(process.id, 'process')"
         >
           <img
@@ -25,7 +28,7 @@
       </div>
 
       <div class="divider-custom">
-        <span class="divider-text">{{ $t('Dashboards') }}</span>
+        <span class="divider-text">{{ $t("Dashboards") }}</span>
         <div class="divider-line"></div>
       </div>
 
@@ -34,14 +37,18 @@
           v-for="dashboard in dashboards"
           :key="dashboard.id"
           class="menu-btn"
-          :class="{ 'selected': selectedItem.id === dashboard.id && selectedItem.type === 'dashboard' }"
+          :class="{
+            selected:
+              selectedItem.id === dashboard.id &&
+              selectedItem.type === 'dashboard',
+          }"
           @click="openProcessDashboard(dashboard.id, 'dashboard')"
         >
           <img
-            class="icon-size" 
-            :src="`/img/launchpad-images/icons/Launchpad.svg`" 
+            class="icon-size"
+            :src="`/img/launchpad-images/icons/Launchpad.svg`"
             :alt="$t('No Image')"
-            />
+          />
           <span :id="`dashboard-${dashboard.id}`" class="title-dashboard">
             {{ dashboard.title }}
           </span>
@@ -64,18 +71,28 @@ export default {
       screen: null,
       formData: null,
       selectedItem: {
-        id: null,
-        type: null
+        id: JSON.parse(sessionStorage.getItem("selectedMenuItem"))?.id || null,
+        type: JSON.parse(sessionStorage.getItem("selectedMenuItem"))?.type || null,
       },
     };
   },
   mounted() {
+    // Get the selected item from sessionStorage
+    const savedItem = sessionStorage.getItem("selectedMenuItem");
+    if (savedItem) {
+      const { id, type } = JSON.parse(savedItem);
+      this.openProcessDashboard(id, type);
+    }
+
     this.loadProcesses();
     this.loadDashboards();
   },
   methods: {
     openProcessDashboard(id, type) {
       this.selectedItem = { id, type };
+      // Save the state for selected button in sessionStorage
+      sessionStorage.setItem("selectedMenuItem", JSON.stringify({ id, type }));
+
       const router = this.$router || this.$root.$router;
 
       if (type === "process") {
@@ -159,11 +176,17 @@ export default {
       ProcessMaker.apiClient.get(url).then((response) => {
         this.screen = response.data.screen;
         this.formData = response.data.formData;
-        
+
         // Saved in sessionStorage (data is deleted when the browser is closed)
-        sessionStorage.setItem('dashboard_screen', JSON.stringify(response.data.screen));
-        sessionStorage.setItem('dashboard_formData', JSON.stringify(response.data.formData));
-        
+        sessionStorage.setItem(
+          "dashboard_screen",
+          JSON.stringify(response.data.screen)
+        );
+        sessionStorage.setItem(
+          "dashboard_formData",
+          JSON.stringify(response.data.formData)
+        );
+
         this.callDashboardViewScreen(id, this.screen, this.formData);
       });
     },
@@ -282,7 +305,7 @@ h4 {
 
 .menu-btn.selected .title-process,
 .menu-btn.selected .title-dashboard {
-  color: #1472C2;
+  color: #1472c2;
   font-weight: 700;
   font-size: 14px;
   line-height: 19px;
