@@ -144,21 +144,21 @@ export default {
     filterActions() {
       let btns = this.filterActionsByPermissions();
       btns = this.filterActionsByConditionals(btns);
-
+      console.log("btns",btns);
       return btns;
     },
     filterAboveDivider() {
       const filteredActions = this.filterActions;
 
       const firstActions = filteredActions.slice(0, -1);
-
+      console.log("firstActions above",firstActions);
       return firstActions;
     },
     filterBelowDivider() {
       const filteredActions = this.filterActions;
 
       const lastAction = filteredActions.slice(-1);
-
+      console.log("lastAction below",lastAction);
       return lastAction;
     },
     contractedMenu() {
@@ -260,7 +260,7 @@ export default {
     },
     isProcessesCatalogueInUrl() {
       const currentUrl = window.location.href;
-      const isInUrl = currentUrl.includes("process-browser");
+      const isInUrl = /process-browser|inbox/.test(currentUrl);
       return isInUrl;
     },
   },
