@@ -59,7 +59,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('password/change', [ChangePasswordController::class, 'update'])->name('password.update');
     Route::put('users/update_language', [UserController::class, 'updateLanguage'])->name('users.updateLanguage');
     Route::get('users_task_count', [UserController::class, 'getUsersTaskCount'])->name('users.users_task_count')
-        ->middleware('can:view-users|create-processes|edit-processes|create-projects|view-projects');
+        ->middleware('can:view-users');
 
     // User Groups
     Route::put('users/{user}/groups', [UserController::class, 'updateGroups'])->name('users.groups.update')->middleware('can:edit-users');
@@ -128,6 +128,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('scripts/{script}/preview', [ScriptController::class, 'preview'])->name('scripts.preview')->middleware('can:view-scripts,script');
     Route::post('scripts/execute/{script_id}/{script_key?}', [ScriptController::class, 'execute'])->name('scripts.execute');
     Route::get('scripts/execution/{key}', [ScriptController::class, 'execution'])->name('scripts.execution');
+    Route::post('scripts/microservice/execution', [ScriptController::class, 'microserviceExecution']);
 
     // Script Categories
     Route::get('script_categories', [ScriptCategoryController::class, 'index'])->name('script_categories.index')->middleware('can:view-script-categories');

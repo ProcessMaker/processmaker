@@ -46,7 +46,7 @@
 
                         {{-- Configuration --}}
                         <div
-                            class="tab-pane fade show"
+                            class="tab-pane show"
                             :class="{'active': activeTab === '' || activeTab === 'nav-config'}"
                             id="nav-config"
                             role="tabpanel"
@@ -186,15 +186,6 @@
                                       </div>
                                     </b-col>
                                     <b-col>
-                                      <div class="form-group">
-                                        <select-user-group
-                                            :label="$t('Reassignment Permission')"
-                                            v-model="reassignmentPermissions"
-                                            :multiple="true"
-                                            :activeTasksCount="true"
-                                        />
-                                        <small>{{__('In addition to the process manager, these users and groups will have permission to reassign any task in this process, regardless of the "Allow Reassignment" task setting.')}}</small>
-                                      </div>
                                     </b-col>
                                   </b-row>
                                 </div>
@@ -384,7 +375,7 @@
                         </div>
 
                         {{-- Notifications --}}
-                        <div class="tab-pane fade show p-3" id="nav-notifications" role="tabpanel"
+                        <div class="tab-pane show p-3" id="nav-notifications" role="tabpanel"
                              aria-labelledby="nav-notifications-tab">
                             <div class="form-group p-0">
 
@@ -539,7 +530,7 @@
                         {{-- Addons --}}
                         @isset($addons)
                             @foreach ($addons as $addon)
-                                <div class="tab-pane fade show" id="{{$addon['id']}}" role="tabpanel"
+                                <div class="tab-pane show" id="{{$addon['id']}}" role="tabpanel"
                                      aria-labelledby="nav-notifications-tab">
                                     {!! $addon['content'] !!}
                                 </div>

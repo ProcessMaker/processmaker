@@ -5,6 +5,7 @@ namespace ProcessMaker\Managers;
 class ModelerManager
 {
     private $javascriptRegistry;
+
     private $javascriptParamsRegistry;
 
     /**
@@ -48,6 +49,7 @@ class ModelerManager
     {
         return $this->javascriptRegistry;
     }
+
     /**
      * Retrieve the JavaScript parameters registry.
      *
