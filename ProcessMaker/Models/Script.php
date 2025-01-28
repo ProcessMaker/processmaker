@@ -73,6 +73,8 @@ class Script extends ProcessMakerModel implements ScriptInterface
 
     const categoryClass = ScriptCategory::class;
 
+    const deprecatedLanguages = ['lua', 'r'];
+
     protected $connection = 'processmaker';
 
     protected $guarded = [
@@ -128,14 +130,27 @@ class Script extends ProcessMakerModel implements ScriptInterface
     {
         $unique = Rule::unique('scripts')->ignore($existing);
 
+        if ($existing) {
+            $allowedLanguages = static::scriptFormatValues();
+            $allowedExecutorIds = ScriptExecutor::all()->pluck('id')->toArray();
+        } else {
+            $allowedLanguages = array_filter(static::scriptFormatValues(), function ($language) {
+                return !in_array($language, Script::deprecatedLanguages);
+            });
+            $allowedExecutorIds = ScriptExecutor::active()->pluck('id')->toArray();
+        }
+
         return [
             'key' => 'unique:scripts,key',
             'title' => ['required', 'string', $unique, 'alpha_spaces'],
             'language' => [
                 'required_without:script_executor_id',
-                Rule::in(static::scriptFormatValues()),
+                Rule::in($allowedLanguages),
             ],
-            'script_executor_id' => 'required_without:language|exists:script_executors,id',
+            'script_executor_id' => [
+                'required_without:language',
+                Rule::in($allowedExecutorIds),
+            ],
             'description' => 'required',
             'run_as_user_id' => 'required',
             'timeout' => 'integer|min:0|max:65535',
@@ -149,7 +164,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
      * @param array $data
      * @param array $config
      */
-    public function runScript(array $data, array $config, $tokenId = '', $timeout = null)
+    public function runScript(array $data, array $config, $tokenId = '', $timeout = null, $sync = 1, $metadata = [])
     {
         if (!$timeout) {
             $timeout = $this->timeout;
@@ -158,14 +173,14 @@ class Script extends ProcessMakerModel implements ScriptInterface
         if (!$this->scriptExecutor) {
             throw new ScriptLanguageNotSupported($this->language);
         }
-        $runner = new ScriptRunner($this->scriptExecutor);
+        $runner = new ScriptRunner($this);
         $runner->setTokenId($tokenId);
         $user = User::find($this->run_as_user_id);
         if (!$user) {
             throw new ConfigurationException('A user is required to run scripts');
         }
 
-        return $runner->run($this->code, $data, $config, $timeout, $user);
+        return $runner->run($this->code, $data, $config, $timeout, $user, $sync, $metadata);
     }
 
     /**

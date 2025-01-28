@@ -138,13 +138,9 @@ import AvatarImage from "../../components/AvatarImage.vue";
 import ReassignMobileModal from "./ReassignMobileModal.vue";
 import draftFileUploadMixin from "../../modules/autosave/draftFileUploadMixin";
 
-Vue.component("AvatarImage", AvatarImage);
-Vue.component("ReassignMobileModal", ReassignMobileModal);
-
-Vue.mixin(draftFileUploadMixin);
-
 export default {
-  components: { ReassignMobileModal },
+  components: { ReassignMobileModal, AvatarImage },
+  mixins: [draftFileUploadMixin],
   props: ["task", "userisadmin", "userisprocessmanager"],
   data() {
     return {

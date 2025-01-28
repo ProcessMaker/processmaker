@@ -1,0 +1,26 @@
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: processmaker
+    honor_timestamps: true
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: /metrics
+    scheme: http
+    static_configs:
+      - targets:
+          # Replace this with your local processmaker instance (add port if needed)
+          - processmaker.test
+          # This allows Docker to resolve your Herd domain
+          # - "host.docker.internal:80"
+    # This allows Docker to resolve your Herd domain
+    # relabel_configs:
+    #   - source_labels: [__address__]
+    #     target_label: __param_target
+    #   - source_labels: [__param_target]
+    #     target_label: instance
+    #   - target_label: __address__
+    #     replacement: processmaker.test

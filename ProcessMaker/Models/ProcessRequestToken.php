@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Scout\Searchable;
 use Log;
+use ProcessMaker\Casts\MillisecondsToDateCast;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityReassignment;
 use ProcessMaker\Facades\WorkflowUserManager;
@@ -45,6 +46,8 @@ use Throwable;
  * @property Carbon $riskchanges_at
  * @property Carbon $updated_at
  * @property Carbon $created_at
+ * @property Carbon $created_at_ms
+ * @property Carbon $completed_at_ms
  * @property ProcessRequest $processRequest
  *
  * @OA\Schema(
@@ -154,6 +157,8 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         'token_properties' => 'array',
         'is_priority' => 'boolean',
         'is_actionbyemail' => 'boolean',
+        'created_at_ms' => MillisecondsToDateCast::class,
+        'completed_at_ms' => MillisecondsToDateCast::class,
         'is_emailsent' => 'boolean',
     ];
 

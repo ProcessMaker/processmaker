@@ -65,7 +65,7 @@ abstract class Base
      * @return array
      * @throws RuntimeException
      */
-    public function run($code, array $data, array $config, $timeout, ?User $user)
+    public function run($code, array $data, array $config, $timeout, ?User $user, $sync, $metadata)
     {
         $isNayra = $this->scriptExecutor->language === self::NAYRA_LANG;
 
