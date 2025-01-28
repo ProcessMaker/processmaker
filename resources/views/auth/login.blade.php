@@ -1,6 +1,6 @@
 @extends('layouts.minimal')
 @section('title')
-Login
+{{__('Login')}}
 @endsection
 @section('content')
 <div class="d-flex flex-column" style="min-height: 100vh">
