@@ -56,7 +56,7 @@ class SecurityLogDownloadJobCompleted implements ShouldBroadcastNow
      */
     public function broadcastAs()
     {
-        return 'SecurityLogDownloadJobCompleted';
+        return 'SecurityLogDownloadJobDone';
     }
 
     /**
