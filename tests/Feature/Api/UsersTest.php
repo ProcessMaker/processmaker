@@ -10,8 +10,6 @@ use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\ProcessTaskAssignment;
-use ProcessMaker\Models\Recommendation;
 use ProcessMaker\Models\RecommendationUser;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
@@ -113,6 +111,53 @@ class UsersTest extends TestCase
 
         // Validate the header status code
         $response->assertStatus(201);
+    }
+
+    /**
+     * Create new user and the email task notification needs to enable per default
+     */
+    public function testFlagEmailTaskNotification()
+    {
+        $faker = Faker::create();
+        $url = self::API_TEST_URL;
+        $response = $this->apiCall('POST', $url, [
+            'username' => 'user_test_' . $faker->randomDigit(),
+            'firstname' => 'name',
+            'lastname' => 'name',
+            'email' => $faker->email(),
+            'status' => 'ACTIVE',
+            'password' => $faker->password(8) . 'A_' . '1',
+        ]);
+
+        // Test default value email_task_notification was enable
+        $response->assertStatus(201);
+        $newUser = $response->json();
+        $this->assertEquals(1, $newUser['email_task_notification']);
+        // Test updating email_task_notification is disable
+        $userId = $newUser['id'];
+        $payload = [
+            'username' => $newUser['username'],
+            'firstname' => $newUser['firstname'],
+            'lastname' => $newUser['lastname'],
+            'email' => $newUser['email'],
+            'status' => $newUser['status'],
+            'email_task_notification' => 0,
+        ];
+        $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
+        $response->assertStatus(204);
+        // Validate flag email_task_notification was disable
+        $this->assertDatabaseHas('users', [
+            'email_task_notification' => 0,
+        ]);
+
+        // Test updating email_task_notification is enable
+        $payload['email_task_notification'] = 1;
+        $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
+        $response->assertStatus(204);
+        // Validate flag email_task_notification was enable
+        $this->assertDatabaseHas('users', [
+            'email_task_notification' => 0,
+        ]);
     }
 
     public function testCreatePreviouslyDeletedUser()
