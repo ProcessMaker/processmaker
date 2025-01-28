@@ -14,6 +14,7 @@
         <span>{{ $t("Inbox") }}</span>
       </button>
       <ProcessesDashboardsMenu
+        ref="processesDashboardsMenu"
         @processDashboardSelected="processDashboardSelected"
       />
     </div>
@@ -280,6 +281,7 @@ export default {
     getAllTasks() {
       this.selectedProcess = "inbox";
       this.allInbox = true;
+      this.$refs.processesDashboardsMenu?.clearSelection();
       this.callingTaskList();
     },
     processDashboardSelected(id, type) {

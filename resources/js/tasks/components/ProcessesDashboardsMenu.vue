@@ -190,6 +190,10 @@ export default {
         this.callDashboardViewScreen(id, this.screen, this.formData);
       });
     },
+    clearSelection() {
+      this.selectedItem = { id: null, type: null };
+      sessionStorage.removeItem("selectedMenuItem");
+    },
   },
 };
 </script>
