@@ -144,7 +144,6 @@ export default {
     filterActions() {
       let btns = this.filterActionsByPermissions();
       btns = this.filterActionsByConditionals(btns);
-      console.log("btns",btns);
       return btns;
     },
     filterAboveDivider() {

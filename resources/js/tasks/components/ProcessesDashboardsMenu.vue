@@ -10,6 +10,7 @@
           v-for="process in processesList"
           :key="process.id"
           class="menu-btn"
+          :class="{ 'selected': selectedItem.id === process.id && selectedItem.type === 'process' }"
           @click="openProcessDashboard(process.id, 'process')"
         >
           <img
@@ -33,6 +34,7 @@
           v-for="dashboard in dashboards"
           :key="dashboard.id"
           class="menu-btn"
+          :class="{ 'selected': selectedItem.id === dashboard.id && selectedItem.type === 'dashboard' }"
           @click="openProcessDashboard(dashboard.id, 'dashboard')"
         >
           <img
@@ -61,6 +63,10 @@ export default {
       dashboards: [],
       screen: null,
       formData: null,
+      selectedItem: {
+        id: null,
+        type: null
+      },
     };
   },
   mounted() {
@@ -69,6 +75,7 @@ export default {
   },
   methods: {
     openProcessDashboard(id, type) {
+      this.selectedItem = { id, type };
       const router = this.$router || this.$root.$router;
 
       if (type === "process") {
@@ -217,13 +224,6 @@ h4 {
   cursor: not-allowed;
 }
 
-.selected-task {
-  margin-top: 1rem;
-  padding: 0.5rem;
-  background-color: #f8f8f8;
-  border-radius: 4px;
-}
-
 .icon-process {
   transform: scale(0.5);
   flex-shrink: 0;
@@ -273,5 +273,18 @@ h4 {
 .icon-size {
   width: 20px;
   height: 15px;
+}
+
+.menu-btn.selected {
+  background-color: #e4edf3;
+  border-radius: 8px;
+}
+
+.menu-btn.selected .title-process,
+.menu-btn.selected .title-dashboard {
+  color: #1472C2;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 19px;
 }
 </style>
