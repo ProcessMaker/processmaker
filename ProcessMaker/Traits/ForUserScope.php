@@ -49,7 +49,6 @@ trait ForUserScope
             'method' => 'EDIT_DATA',
         ])->whereIn('processable_id', $stringGroupIds->toArray())->pluck('process_id')->toArray();
 
-        $mainTable = $query->getQuery()->from;
         $filteredQuery = $query->userStarted($user)
             ->orWhereIn('id',
                 array_unique(array_merge($userHasSelfServiceTasks, $userHasSelfServiceTasksGroups)))
@@ -58,6 +57,7 @@ trait ForUserScope
         // If the user has participated in a request, the request is added to the results.
         // For the anonymous user this condition is not needed as it is a "placeholder" system account
         if ($user->username !== '_pm4_anon_user') {
+            $mainTable = $query->getQuery()->from;
             $filteredQuery->orWhereExists(function($query) use ($user, $mainTable) {
                 $query->select('*')
                     ->from('process_request_tokens')
