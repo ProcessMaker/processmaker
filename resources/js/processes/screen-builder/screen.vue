@@ -1243,7 +1243,9 @@ export default {
       );
     },
     updatePage() {
-      this.$refs["preview-screen"].scrollTop = 0;
+      if (this.$refs["preview-screen"]) {
+        this.$refs["preview-screen"].scrollTop = 0;
+      }
     },
   },
 };
