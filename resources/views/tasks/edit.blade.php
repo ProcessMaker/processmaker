@@ -36,7 +36,7 @@
     <div
       class="tw-flex tw-w-full tw-grow px-3">
       <div class="tw-flex tw-w-full tw-grow">
-        <div class="tw-flex tw-flex-col tw-grow">
+        <div class="tw-flex tw-flex-col tw-grow tw-overflow-hidden container-height">
           <div 
             v-if="isSelfService"
             class="alert alert-primary"
@@ -99,6 +99,7 @@
                   initial-loop-context="{{ $task->getLoopContext() }}"
                   :wait-loading-listeners="true"
                   @task-updated="taskUpdated"
+                  @updated-page-core="updatePage"
                   @submit="submit"
                   @completed="completed"
                   @@error="error"
