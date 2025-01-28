@@ -433,6 +433,8 @@
     const userConfiguration = @json($userConfiguration);
 
     window.Processmaker.user = @json($currentUser);
+    window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
+    let screenFields = @json($screenFields);
   </script>
 
   @foreach(GlobalScripts::getScripts() as $script)
