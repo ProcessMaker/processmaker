@@ -110,10 +110,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             ];
             $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling->timeout(), 1, $metadata);
 
-            if (!config('script-runner-microservice.enabled') ||
-                ($scriptExecutor && $scriptExecutor->type === ScriptExecutorType::Custom)) {
-                $this->updateData($response);
-            }
+            $this->updateData($response);
         } catch (ConfigurationException $exception) {
             $this->unlock();
             $this->updateData(['output' => $exception->getMessageForData($token)]);
