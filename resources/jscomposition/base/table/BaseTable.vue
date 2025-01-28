@@ -7,7 +7,7 @@
       :class="{
         'tw-table-fixed':getDefaultConfig(config).tableFixed
       }">
-      <thead class="tw-border-b tw-sticky tw-top-0 tw-z-[9] tw-bg-gray-50">
+      <thead class="tw-border-b tw-sticky tw-top-0 tw-z-[9] tw-bg-gray-50 tw-text-[#5C6066] tw-border-[#EBEDEF]">
         <tr>
           <THeader
             v-for="(column, index) in columns"

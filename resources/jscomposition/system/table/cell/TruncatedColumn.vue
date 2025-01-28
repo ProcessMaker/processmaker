@@ -1,7 +1,7 @@
 <template>
   <div class="tw-flex tw-relative tw-text-nowrap tw-whitespace-nowrap tw-p-3">
     <div class="tw-overflow-hidden tw-text-ellipsis ">
-      <span class="tw-text-gray-500">
+      <span>
         {{ getValue() }}
       </span>
     </div>
@@ -21,7 +21,7 @@
 
       <template #content>
         <ul
-          class="tw-bg-white tw-list-none tw-text-gray-600
+          class="tw-bg-white tw-list-none
             tw-overflow-hidden tw-rounded-lg tw-w-50 tw-text-sm tw-border tw-border-gray-300">
           <template v-for="(option, index) in optionsModel">
             <li
