@@ -3,13 +3,13 @@
     class="tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis tw-p-3">
     <a
       v-if="href !== null"
-      class="hover:tw-text-blue-400 tw-text-gray-600"
+      class="hover:tw-text-blue-400 tw-text-inherit tw-no-underline"
       :href="href(row)">
       {{ getValue() }}
     </a>
     <span
       v-else
-      class="hover:tw-text-blue-400 tw-text-gray-600 hover:tw-cursor-pointer"
+      class="hover:tw-text-blue-400 tw-text-inherit tw-no-underline hover:tw-cursor-pointer"
       @click.prevent="onClick">
       {{ getValue() }}
     </span>
