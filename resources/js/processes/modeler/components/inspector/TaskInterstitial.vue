@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div v-if="!allowInterstitial" class="alert alert-info task-info-alert">
+      "{{ $t('Display Next Assigned Task to Task Assignee') }}" {{ $t('option has been moved to the task destination dropdown') }}
+    </div>
     <screen-select
       v-if="allowInterstitial"
       v-model="screen"
@@ -100,6 +103,13 @@ export default {
         this.$set(this.node, "allowInterstitial", false);
       }
     },
+
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.task-info-alert {
+  background-color: #EAF2FF;
+}
+</style>
