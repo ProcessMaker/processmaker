@@ -16,7 +16,8 @@ import translator from "./modules/lang.js";
 import AccessibilityMixin from "./components/common/mixins/accessibility";
 
 window.__ = translator;
-window._ = require("lodash");
+import _ from "lodash";
+window._ = _;
 window.Popper = require("popper.js").default;
 
 window.$ = window.jQuery = require("jquery");
@@ -87,7 +88,8 @@ window.ProcessMaker.i18nPromise.then(() => { translationsLoaded = true; });
  * REST api endpoints through oauth authentication
  *
  */
-window.ProcessMaker.apiClient = require("axios");
+import ProcessMaker.apiClient from "axios";
+window.ProcessMaker.apiClient = ProcessMaker.apiClient;
 
 window.ProcessMaker.apiClient.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 

@@ -136,7 +136,7 @@
   <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
   @endif
 
-  <script src="{{mix('js/composition/cases/casesDetail/edit.js')}}"></script>
+  @vite('resources/js/composition/cases/casesDetail/edit.js')
 
   @foreach($manager->getScripts() as $script)
     <script src="{{$script}}"></script>

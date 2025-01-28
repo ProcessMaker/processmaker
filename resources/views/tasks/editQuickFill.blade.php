@@ -41,7 +41,7 @@
 </div>
 @endsection
 @section('js')
-<script src="{{mix('js/tasks/show.js')}}"></script>
+@vite('resources/js/tasks/show.js')
 <script>
     let task = @json($task);
     task.draft = @json($task->draft);

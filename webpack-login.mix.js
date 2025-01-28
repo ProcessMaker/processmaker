@@ -5,7 +5,7 @@ const fs = require("fs");
 const manifestPath = path.resolve(__dirname, "public/mix-manifest.json");
 let existingContent = {};
 
-require("laravel-mix-polyfill");
+import "laravel-mix-polyfill";
 
 /*
  |--------------------------------------------------------------------------

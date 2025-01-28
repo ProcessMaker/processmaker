@@ -22,5 +22,5 @@
 
 
 @section('js')
-    <script src="{{mix('js/admin/devlink/index.js')}}"></script>
+    @vite('resources/js/admin/devlink/index.js')
 @endsection

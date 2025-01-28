@@ -234,7 +234,7 @@ import Vue from "vue";
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
-import AvatarImage from "../../components/AvatarImage";
+import AvatarImage from "../../components/AvatarImage.vue";
 import isPMQL from "../../modules/isPMQL";
 import moment from "moment";
 import { createUniqIdsMixin } from "vue-uniq-ids";

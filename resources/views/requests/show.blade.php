@@ -497,7 +497,7 @@
     const request = @json($request);
   </script>
 
-  <script src="{{ mix('js/requests/show.js') }}"></script>
+  @vite('resources/js/requests/show.js')
   <script>
     new Vue({
       el: '#request',
@@ -903,7 +903,7 @@
 @endsection
 
 @section('css')
-<link href="{{ mix('css/collapseDetails.css') }}" rel="stylesheet">
+@vite('resources/css/collapseDetails.css')
 <style>
   .hidden {
     visibility: hidden;

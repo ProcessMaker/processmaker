@@ -23,6 +23,6 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/admin/script-executors/index.js')}}"></script>
+    @vite('resources/js/admin/script-executors/index.js')
 @endsection
 

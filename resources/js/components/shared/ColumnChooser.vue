@@ -84,9 +84,9 @@
 </template>
 
 <script>
-import Column from "./Column";
-import ColumnConfig from "./ColumnConfig";
-import DataLoadingBasic from "./DataLoadingBasic";
+import Column from "./Column.vue";
+import ColumnConfig from "./ColumnConfig.vue";
+import DataLoadingBasic from "./DataLoadingBasic.vue";
 import draggable from "vuedraggable";
 
 export default {

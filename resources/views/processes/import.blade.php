@@ -26,5 +26,5 @@
     window.ProcessMaker.importIsRunning = {{ $importIsRunning ? 'true' : 'false' }};
     window.ProcessMaker.queueImports = {{ config('app.queue_imports') ? 'true' : 'false' }};
   </script>
-  <script src="{{ mix('js/processes/import/index.js') }}"></script>
+  @vite('resources/js/processes/import/index.js')
 @endsection

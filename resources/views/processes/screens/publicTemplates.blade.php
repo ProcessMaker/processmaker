@@ -44,6 +44,6 @@
     </div>
 
 @section('js')
-    <script src="{{mix('js/processes/screen-templates/publicTemplates.js')}}"></script>
+    @vite('resources/js/processes/screen-templates/publicTemplates.js')
 
 @append

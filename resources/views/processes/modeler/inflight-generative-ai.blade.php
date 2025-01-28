@@ -82,5 +82,5 @@
       <script src="{{ $script }}"></script>
     @endif
   @endforeach
-  <script src="{{ mix('js/processes/modeler/process-map.js') }}"></script>
+  @vite('resources/js/processes/modeler/process-map.js')
 @endsection
