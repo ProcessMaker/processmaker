@@ -5,6 +5,7 @@ import debounce from 'lodash/debounce';
 import Status from './Status.vue';
 import EllipsisMenu from '../../../components/shared/EllipsisMenu.vue';
 import DeleteModal from './DeleteModal.vue';
+import CreateDevLinkModal from './CreateDevLinkModal.vue';
 import { store } from '../common';
 
 const vue = getCurrentInstance().proxy;
@@ -13,6 +14,7 @@ const route = useRoute();
 const devlinks = ref([]);
 const editModal = ref(null);
 const deleteModal = ref(null);
+const createDevLinkModal = ref(null);
 const deleteWarningTitle = ref(vue.$t("Delete Confirmation"));
 const filter = ref("");
 const actions = [
@@ -53,6 +55,7 @@ onMounted(() => {
 
 const newName = ref('');
 const newUrl = ref('');
+const status = ref('');
 
 const load = () => {
   ProcessMaker.apiClient
@@ -78,16 +81,12 @@ const clear = () => {
   newUrl.value = '';
 }
 
-const create = (e) => {
-  if (!urlIsValid.value) {
-    e.preventDefault();
-    return;
-  }
-
+const create = (name, url) => {
+  status.value = '';
   ProcessMaker.apiClient
     .post('/devlink', {
-      name: newName.value,
-      url: newUrl.value
+      name: name,
+      url: url
     })
     .then((result) => {
       const newUrl = result.data.url;
@@ -97,7 +96,22 @@ const create = (e) => {
         devlink_id: newId,
         redirect_uri: redirectUri,
       };
-      window.location.href = `${newUrl}/admin/devlink/oauth-client?${new URLSearchParams(params).toString()}`;
+      const fullUrl = `${newUrl}/admin/devlink/oauth-client?${new URLSearchParams(params).toString()}`;
+
+      ProcessMaker.apiClient
+        .get(`devlink/${newId}/ping`)
+        .then((response) => {
+          status.value = 'success';
+          window.location.href = fullUrl;
+        })
+        .catch((e) => {
+          if (e.response.status === 401) {
+            status.value = 'success';
+            window.location.href = fullUrl;
+          } else {
+            status.value = 'error';
+          }
+        });
     });
 };
 
@@ -146,6 +160,15 @@ const handleFilterChange = () => {
   debouncedLoad();
 };
 
+const showCreateModal = () => {
+  status.value = '';
+  createDevLinkModal.value.show();
+};
+
+const handleNewUrlUpdate = (newValue) => {
+  newUrl.value = newValue;
+};
+
 const urlIsValid = computed(() => {
   return /^(https?:\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(:\d{1,5})?$/.test(newUrl.value);
 });
@@ -161,7 +184,7 @@ const urlIsValid = computed(() => {
       <div class="col-2">
         <b-button
           variant="primary"
-          v-b-modal.create
+          @click="showCreateModal"
           class="new-button"
         >
           <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>{{ $t('Add Instance') }}
@@ -169,7 +192,7 @@ const urlIsValid = computed(() => {
       </div>
     </div>
 
-    <b-modal
+    <!-- <b-modal
       id="create"
       centered
       :title="$t('Create new DevLink')"
@@ -188,7 +211,17 @@ const urlIsValid = computed(() => {
       >
         <b-form-input v-model="newUrl"></b-form-input>
       </b-form-group>
-    </b-modal>
+    </b-modal> -->
+    <CreateDevLinkModal
+      ref="createDevLinkModal"
+      :newName="newName"
+      :newUrl="newUrl"
+      :urlIsValid="urlIsValid"
+      :status="status"
+      @clear="clear"
+      @create="create"
+      @update:newUrl="handleNewUrlUpdate"
+    />
 
     <b-modal
       ref="editModal"
