@@ -397,6 +397,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         Route::post('devlink/local-bundles', [DevLinkController::class, 'createBundle'])->name('devlink.create-bundle');
         Route::put('devlink/local-bundles/{bundle}', [DevLinkController::class, 'updateBundle'])->name('devlink.update-bundle');
         Route::post('devlink/local-bundles/{bundle}/increase-version', [DevLinkController::class, 'increaseBundleVersion'])->name('devlink.increase-bundle-version');
+        Route::post('devlink/local-bundles/{bundle}/add-bundle-instance', [DevLinkController::class, 'addBundleInstance'])->name('devlink.add-bundle-instance');
+        Route::post('devlink/bundle-updated/{bundle}', [DevLinkController::class, 'bundleUpdated'])->name('devlink.bundle-updated');
         Route::post('devlink/local-bundles/{bundle}/add-assets', [DevLinkController::class, 'addAsset'])->name('devlink.add-asset');
         Route::post('devlink/local-bundles/{bundle}/add-settings', [DevLinkController::class, 'addSettings'])->name('devlink.add-settings');
         Route::post('devlink/local-bundles/add-asset-to-bundles', [DevLinkController::class, 'addAssetToBundles'])->name('devlink.add-asset-to-bundles');
@@ -417,3 +419,4 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         Route::get('devlink/{devLink}', [DevLinkController::class, 'show'])->name('devlink.show');
     });
 });
+Route::post('devlink/bundle-updated/{bundle}/{token}', [DevLinkController::class, 'bundleUpdated'])->name('devlink.bundle-updated');
