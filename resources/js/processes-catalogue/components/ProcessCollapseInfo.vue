@@ -68,6 +68,8 @@
       :options="optionsData"
       :description-settings="process.description"
       :process="process"
+      :my-tasks-columns="myTasksColumns"
+      @updateMyTasksColumns="updateMyTasksColumns"
     />
   </div>
 </template>
@@ -97,7 +99,7 @@ export default {
     ProcessHeaderStart,
   },
   mixins: [ProcessesMixin, ellipsisMenuMixin, processNavigationMixin],
-  props: ["process", "currentUserId", "ellipsisPermission"],
+  props: ["process", "currentUserId", "ellipsisPermission", "myTasksColumns"],
   computed: {
     createdFromWizardTemplate() {
       return !!this.process?.properties?.wizardTemplateUuid;
@@ -139,6 +141,9 @@ export default {
     toggleInfo() {
       this.showProcessInfo = !this.showProcessInfo;
     },
+    updateMyTasksColumns(columns) {
+      this.$emit('updateMyTasksColumns', columns);
+    }
   },
 };
 </script>

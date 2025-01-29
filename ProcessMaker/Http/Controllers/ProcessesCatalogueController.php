@@ -13,6 +13,7 @@ use ProcessMaker\Models\Bookmark;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessLaunchpad;
+use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 use ProcessMaker\Traits\HasControllerAddons;
 
 /**
@@ -48,6 +49,28 @@ class ProcessesCatalogueController extends Controller
             return view('processes-catalogue.mobile', compact('title', 'process', 'currentUser', 'manager'));
         }
         $userConfiguration = (new UserConfigurationController())->index()['ui_configuration'];
-        return view('processes-catalogue.index', compact('process', 'currentUser', 'manager', 'userConfiguration'));
+
+        $defaultSavedSearch = $this->getDefaultSavedSearchId();
+
+        return view('processes-catalogue.index', compact('process', 'currentUser', 'manager', 'userConfiguration', 'defaultSavedSearch'));
+    }
+
+    /**
+     * Get the ID of the default saved search for tasks.
+     *
+     * @return int|null
+     */
+    private function getDefaultSavedSearchId()
+    {
+        $id = null;
+        if (class_exists(SavedSearch::class)) {
+            $savedSearch = SavedSearch::firstSystemSearchFor(
+                Auth::user(),
+                SavedSearch::KEY_TASKS,
+            );
+            $id = $savedSearch->id;
+        }
+
+        return $id;
     }
 }

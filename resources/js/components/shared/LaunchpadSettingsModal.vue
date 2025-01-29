@@ -1,125 +1,162 @@
 <template>
-  <modal
-    id="launchpadSettingsModal"
-    ref="my-modal-save"
-    size="lg"
-    class="modal-dialog modal-dialog-centered"
-    :title="$t('Launchpad Settings')"
-    :set-custom-buttons="true"
-    :custom-buttons="customModalButtons"
-    @saveModal="saveModal"
-    @closeModal="closeModal"
-  >
-    <div class="modal-content-custom">
-      <p class="text-info-custom">
-        {{ $t('Here you can personalize how your process will be shown in the process browser') }}
-      </p>
-      <div class="row">
-        <div class="col-sm-12 col-lg-6">
-          <div
-            md="12"
-            class="no-padding"
-          >
-            <label>{{ $t("Launchpad Carousel") }}</label>
-            <input-image-carousel ref="image-carousel" />
+  <div>
+    <modal
+      id="launchpadSettingsModal"
+      ref="my-modal-save"
+      size="lg"
+      class="modal-dialog modal-dialog-centered"
+      :title="$t('Launchpad Settings')"
+      :set-custom-buttons="true"
+      :custom-buttons="customModalButtons"
+      @saveModal="saveModal"
+      @closeModal="closeModal"
+      >
+      <div class="modal-content-custom">
+        <p class="text-info-custom">
+          {{ $t('Here you can personalize how your process will be shown in the process browser') }}
+        </p>
+        <div class="row">
+          <div class="col-sm-12 col-lg-6">
+            <div
+              md="12"
+              class="no-padding"
+              >
+              <label>{{ $t("Launchpad Carousel") }}</label>
+              <input-image-carousel ref="image-carousel" />
+            </div>
+          </div>
+          <div class="col-sm-12 col-lg-6 options-launchpad">
+            <label>{{ $t("Launch Screen") }}</label>
+            <div class="multiselect-screen custom-multiselect">
+              <b-input-group>
+                <multiselect
+                  v-model="selectedScreen"
+                  :placeholder="$t('Type to search Screen')"
+                  :options="dropdownSavedScreen"
+                  :multiple="false"
+                  track-by="id"
+                  label="title"
+                  :show-labels="false"
+                  :searchable="true"
+                  :internal-search="true"
+                  :allow-empty="false"
+                  @open="retrieveDisplayScreen"
+                  @search-change="retrieveDisplayScreen"
+                  >
+                  <template slot="noResult">
+                    {{ $t("No elements found. Consider changing the search query.") }}
+                  </template>
+                  <template slot="noOptions">
+                    {{ $t("No Data Available") }}
+                  </template>
+                </multiselect>
+              </b-input-group>
+            </div>
+            <label>
+              {{ $t("Launchpad Icon") }}
+            </label>
+            <icon-dropdown ref="icon-dropdown" />
+            <label>{{ $t("Chart") }}</label>
+            <div class="multiselect-chart custom-multiselect">
+              <b-input-group>
+                <multiselect
+                  v-model="selectedSavedChart"
+                  :placeholder="$t('Type to search Chart')"
+                  :options="dropdownSavedCharts"
+                  :multiple="false"
+                  track-by="id"
+                  label="title"
+                  :show-labels="false"
+                  :searchable="true"
+                  :internal-search="true"
+                  :allow-empty="false"
+                  @open="retrieveSavedSearchCharts"
+                  @search-change="retrieveSavedSearchCharts"
+                  >
+                  <template slot="noResult">
+                    {{ $t("No elements found. Consider changing the search query.") }}
+                  </template>
+                  <template slot="noOptions">
+                    {{ $t("No Data Available") }}
+                  </template>
+                </multiselect>
+              </b-input-group>
+            </div>
+            <label></label>
+            <div>
+              <a href="#" @click.prevent="showEditTaskColumn">{{ $t("Edit Task Column") }} <i class="fp-box-arrow-up-right" /></a>
+            </div>
           </div>
         </div>
-        <div class="col-sm-12 col-lg-6 options-launchpad">
-          <label>{{ $t("Launch Screen") }}</label>
-          <div class="multiselect-screen custom-multiselect">
-            <b-input-group>
-              <multiselect
-                v-model="selectedScreen"
-                :placeholder="$t('Type to search Screen')"
-                :options="dropdownSavedScreen"
-                :multiple="false"
-                track-by="id"
-                label="title"
-                :show-labels="false"
-                :searchable="true"
-                :internal-search="true"
-                :allow-empty="false"
-                @open="retrieveDisplayScreen"
-                @search-change="retrieveDisplayScreen"
-              >
-                <template slot="noResult">
-                  {{ $t("No elements found. Consider changing the search query.") }}
-                </template>
-                <template slot="noOptions">
-                  {{ $t("No Data Available") }}
-                </template>
-              </multiselect>
-            </b-input-group>
-          </div>
-          <label>
-            {{ $t("Launchpad Icon") }}
-          </label>
-          <icon-dropdown ref="icon-dropdown" />
-          <label>{{ $t("Chart") }}</label>
-          <div class="multiselect-chart custom-multiselect">
-            <b-input-group>
-              <multiselect
-                v-model="selectedSavedChart"
-                :placeholder="$t('Type to search Chart')"
-                :options="dropdownSavedCharts"
-                :multiple="false"
-                track-by="id"
-                label="title"
-                :show-labels="false"
-                :searchable="true"
-                :internal-search="true"
-                :allow-empty="false"
-                @open="retrieveSavedSearchCharts"
-                @search-change="retrieveSavedSearchCharts"
-              >
-                <template slot="noResult">
-                  {{ $t("No elements found. Consider changing the search query.") }}
-                </template>
-                <template slot="noOptions">
-                  {{ $t("No Data Available") }}
-                </template>
-              </multiselect>
-            </b-input-group>
-          </div>
-        </div>
+        <label>
+          {{ $t("Description") }}
+        </label>
+        <textarea
+          id="additional-details"
+          v-model="processDescription"
+          class="form-control input-custom mb-0"
+          type="text"
+          rows="5"
+          :aria-label="$t('Description')"
+          disabled
+          />
       </div>
-      <label>
-        {{ $t("Description") }}
-      </label>
-      <textarea
-        id="additional-details"
-        v-model="processDescription"
-        class="form-control input-custom mb-0"
-        type="text"
-        rows="5"
-        :aria-label="$t('Description')"
-        disabled
-      />
-    </div>
-    <template #modal-footer>
-      <b-button
-        variant="outline-secondary"
-        @click="hideModal"
-      >
-        Cancel 2
-      </b-button>
-      <b-button
-        variant="secondary"
-        @click="saveModal"
-      >
-        Save 1
-      </b-button>
-    </template>
-  </modal>
+      <template #modal-footer>
+        <b-button
+          variant="outline-secondary"
+          @click="hideModal"
+          >
+          Cancel 2
+        </b-button>
+        <b-button
+          variant="secondary"
+          @click="saveModal"
+          >
+          Save 1
+        </b-button>
+      </template>
+    </modal>
+    <b-modal ref="editTaskColumn"
+           size="lg"
+           class="modal-dialog modal-dialog-centered"
+           hide-footer
+           :title="$t('Edit Task Column')"
+           >
+      <div class="modal-content-custom">
+        <column-chooser v-model="myTasks.currentColumns" 
+                        :available-columns="myTasks.availableColumns"
+                        :default-columns="myTasks.defaultColumns" 
+                        :data-columns="myTasks.dataColumns">
+          <template #title1>
+            <small class="form-text text-muted">
+              <a href="#" @click.prevent="$refs['editTaskColumn'].hide()">
+                <i class="fp-arrow-left" />
+                {{ $t('Go back to Launchpad Settings') }}
+              </a>
+            </small>
+          </template>
+          <template #footer>
+            <b-button variant="outline-secondary" @click="$refs['editTaskColumn'].hide()" class="mr-1">
+              {{ $t('Cancel and go back') }}
+            </b-button>
+            <b-button variant="secondary" @click="$refs['editTaskColumn'].hide()">
+              {{ $t('Save columns') }}
+            </b-button>
+          </template>
+        </column-chooser>
+      </div>
+    </b-modal>
+  </div>
 </template>
 
 <script>
 import Modal from "./Modal.vue";
 import IconDropdown from "./IconDropdown.vue";
 import InputImageCarousel from "./InputImageCarousel.vue";
+import ColumnChooser from "./ColumnChooser.vue";
 
 export default {
-  components: { Modal, IconDropdown, InputImageCarousel },
+  components: { Modal, IconDropdown, InputImageCarousel, ColumnChooser },
   props: {
     options: {
       type: Object,
@@ -143,6 +180,10 @@ export default {
     process: {
       type: Object,
       default: () => ({}),
+    },
+    myTasksColumns: {
+      type: Array,
+      default: () => ([]),
     },
   },
   data() {
@@ -192,7 +233,13 @@ export default {
           disabled: false,
         },
       ],
-      tabs: []
+      tabs: [],
+      myTasks: {
+        currentColumns: [],
+        availableColumns: [],
+        defaultColumns: [],
+        dataColumns: []
+      }
     };
   },
   mounted() {
@@ -217,6 +264,9 @@ export default {
           const launchpadProperties = unparseProperties ? JSON.parse(unparseProperties) : "";
           if (launchpadProperties !== "" && "tabs" in launchpadProperties) {
             this.tabs = launchpadProperties.tabs;
+          }
+          if (launchpadProperties !== "" && "my_tasks_columns" in launchpadProperties) {
+            this.myTasks.currentColumns = launchpadProperties.my_tasks_columns;
           }
           if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
             this.selectedSavedChart = this.getSelectedSavedChartJSONFromResult(launchpadProperties);
@@ -309,7 +359,8 @@ export default {
         screen_title: this.selectedScreen.title,
         icon: this.selectedLaunchpadIcon,
         icon_label: this.selectedLaunchpadIconLabel,
-        tabs: this.tabs
+        tabs: this.tabs,
+        my_tasks_columns: this.myTasks.currentColumns
       }, null, 1);
 
       ProcessMaker.apiClient
@@ -330,6 +381,7 @@ export default {
           ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
           ProcessMaker.EventBus.$emit("getChartId", this.selectedSavedChart.id);
           this.customModalButtons[1].disabled = false;
+          this.$emit('updateMyTasksColumns', this.myTasks.currentColumns);
           this.hideModal();
         })
         .catch((error) => {
@@ -435,6 +487,46 @@ export default {
       this.selectedLaunchpadIcon = iconData.value;
       this.selectedLaunchpadIconLabel = iconData.label;
     },
+    /**
+     * This method shows a modal window to edit the columns of the My Tasks list.
+     * If you don't use the nextTick method, the modal will not be displayed correctly.
+     */
+    showEditTaskColumn() {
+      this.$refs['editTaskColumn'].show();
+      this.$nextTick(() => {
+        this.getMyTasksColumns();
+      });
+    },
+    async getMyTasksColumns() {
+      this.myTasks.currentColumns = this.myTasksColumns;
+      let defaultSavedSearch = window.ProcessMaker.defaultSavedSearch || null;
+      await ProcessMaker.apiClient.get(`saved-searches/${defaultSavedSearch}/columns?include=default`)
+        .then((response) => {
+          if (response.data && response.data.default) {
+            this.myTasks.defaultColumns = response.data.default;
+          }
+        });
+
+      await ProcessMaker.apiClient.get(`saved-searches/${defaultSavedSearch}/columns?include=available,data`)
+        .then((response) => {
+          if (response.data) {
+            if (response.data.available) {
+              this.myTasks.availableColumns = response.data.available;
+              // Update availableColumns with the fields that are not in currentColumns.
+              let columns = [...this.myTasks.defaultColumns, ...this.myTasks.availableColumns];
+              const difference = columns.filter(column => 
+                !this.myTasks.currentColumns.some(currentColumn => 
+                  currentColumn.field === column.field
+                )
+              );
+              this.myTasks.availableColumns = difference;
+            }
+            if (response.data.data) {
+              this.myTasks.dataColumns = response.data.data;
+            }
+          }
+        });
+    }
   },
 };
 </script>
@@ -612,5 +704,8 @@ label {
     letter-spacing: -0.02em;
     text-align: left;
   }
+}
+.modal-content-custom .column-container {
+  overflow-y: auto;
 }
 </style>
