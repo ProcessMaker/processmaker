@@ -1,8 +1,11 @@
 <template>
-  <div class="tw-w-full tw-space-y-3 tw-flex tw-flex-col tw-overflow-hidden tw-grow">
-    <CaseFilter @enter="onChangeSearch" />
+  <div class="tw-w-full tw-flex tw-flex-col tw-overflow-hidden tw-grow">
+    <CaseFilter
+      class="tw-pb-3"
+      @enter="onChangeSearch" />
     <BadgesSection
       v-model="badgesData"
+      class="tw-pb-3"
       @remove="onRemoveBadge">
       <template #endsection>
         <div
@@ -31,9 +34,11 @@
       </template>
     </FilterableTable>
     <Pagination
+      ref="paginator"
       :key="dataPagination.page"
       :class="{
-        ' tw-opacity-50':showPlaceholder
+        'tw-opacity-50':showPlaceholder,
+        'tw-pt-3':true
       }"
       :total="dataPagination.total"
       :page="dataPagination.page"
@@ -43,7 +48,7 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, nextTick } from "vue";
 import { useRouter, useRoute } from "vue-router/composables";
 import CaseFilter from "./components/CaseFilter.vue";
 import BadgesSection from "./components/BadgesSection.vue";
@@ -69,6 +74,7 @@ const data = ref();
 const search = ref();
 const filters = ref([]);
 const table = ref();
+const paginator = ref();
 const showPlaceholder = ref(false);
 const placeholderType = ref("loading");
 const route = useRoute();
@@ -184,16 +190,35 @@ const onResetTable = async () => {
   await hookGetData();
 };
 
-onMounted(async () => {
+const autoPagination = () => {
+  const heightTable = table.value.getHeightTBody();
+  const heightThead = table.value.getHeightThead();
+
+  const rowsNumber = heightTable / heightThead;
+
+  const pageSizes = [15, 30, 50];
+  const appropriateSize = pageSizes.find((size) => rowsNumber < size) || pageSizes[pageSizes.length - 1];
+
+  dataPagination.value.page = 1;
+  dataPagination.value.perPage = appropriateSize;
+  paginator.value.setPerPage(appropriateSize);
+};
+
+onMounted(() => {
+  columnsConfig.value = getColumns(props.listId);
+
   getFilters().then((response) => {
     const filtersSaved = formatFilterSaved(response.data.filters);
     filters.value = filtersSaved;
     badgesData.value = formatFilterBadges(filtersSaved, columnsConfig.value);
     table.value.addFilters(filtersSaved);
-    hookGetData();
-  });
 
-  columnsConfig.value = getColumns(props.listId);
+    // This section only for auto pagination
+    nextTick(() => {
+      autoPagination();
+      hookGetData();
+    });
+  });
 });
 </script>
 <style scoped>
