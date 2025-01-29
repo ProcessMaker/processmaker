@@ -60,8 +60,7 @@ export const caseTitleColumn = () => ({
   }),
   filter: {
     dataType: "string",
-    operators: ["=", ">", ">=", "in", "between"],
-    resetTable: true,
+    operators: ["=", "in", "contains", "regex"],
   },
 });
 

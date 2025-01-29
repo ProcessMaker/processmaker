@@ -36,7 +36,7 @@
                 </nav>
                 <div class="card card-body card-body-nav-tabs">
                     <div class="tab-content" id="nav-tabContent">
-                        <div class="tab-pane fade show active" id="nav-config" role="tabpanel"
+                        <div class="tab-pane show active" id="nav-config" role="tabpanel"
                              aria-labelledby="nav-config-tab">
                              <required></required>
                             @if ($type === 'process')
@@ -59,7 +59,7 @@
                         </div>
                         @isset($addons)
                             @foreach ($addons as $addon)
-                                <div class="tab-pane fade show" id="{{$addon['id']}}" role="tabpanel"
+                                <div class="tab-pane show" id="{{$addon['id']}}" role="tabpanel"
                                      aria-labelledby="nav-notifications-tab">
                                     {!! $addon['content'] !!}
                                 </div>

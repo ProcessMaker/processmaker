@@ -18,6 +18,7 @@ use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
 use ProcessMaker\Query\SyntaxError;
+use ProcessMaker\Services\ScriptMicroserviceService;
 use ProcessMaker\Traits\ProjectAssetTrait;
 
 class ScriptController extends Controller
@@ -284,6 +285,12 @@ class ScriptController extends Controller
     public function execution($key)
     {
         return response()->json(Cache::get("srn.{$key}"));
+    }
+
+    public function microserviceExecution(Request $request)
+    {
+        $scriptMicroserviceService = new ScriptMicroserviceService();
+        $scriptMicroserviceService->handle($request);
     }
 
     /**
