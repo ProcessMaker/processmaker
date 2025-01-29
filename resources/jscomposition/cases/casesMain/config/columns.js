@@ -59,7 +59,7 @@ export const caseTitleColumn = () => ({
   }),
   filter: {
     dataType: "string",
-    operators: ["=", ">", ">=", "in", "between"],
+    operators: ["=", "in", "contains", "regex"],
   },
 });
 

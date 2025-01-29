@@ -104,12 +104,26 @@ export default {
     this.getOptionsType();
   },
   methods: {
+    isPackageInstalled(packageName) {
+      if (packageName) {
+        return window.ProcessMaker?.packages?.includes(packageName);
+      }
+      return true;
+    },
     getOptionsType() {
       if (this.project) {
         window.ProcessMaker.apiClient
           .get("projects/assets/type")
           .then((response) => {
             this.optionsType = response.data.data;
+            // Filter optionsType based on package installation
+            this.optionsType = Object.keys(this.optionsType).reduce((accumulator, type) => {
+              if (this.isPackageInstalled(this.optionsType[type].package)) {
+                accumulator[type] = this.optionsType[type];
+              }
+              return accumulator;
+            }, {});
+            // Add all asset types to selectedTypes
             Object.keys(this.optionsType).forEach((type) => {
               this.selectedTypes.push(this.optionsType[type].asset_type);
             });

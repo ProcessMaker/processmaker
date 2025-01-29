@@ -110,9 +110,10 @@
 <script>
 import AvatarImage from "../../components/AvatarImage.vue";
 
-Vue.component("AvatarImage", AvatarImage);
-
 export default {
+  components: {
+    AvatarImage,
+  },
   props: ["task"],
   data() {
     return {

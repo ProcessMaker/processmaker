@@ -3,16 +3,21 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Http\Controllers\Process\ModelerController;
+use ProcessMaker\Managers\ModelerManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Package\PackageComments\PackageServiceProvider;
 use ProcessMaker\ProcessTranslations\ScreenTranslation;
+use ProcessMaker\Traits\ProcessMapTrait;
 
 class CasesController extends Controller
 {
+    use ProcessMapTrait;
     /**
      * Get the list of requests.
      *
@@ -20,10 +25,12 @@ class CasesController extends Controller
      */
     public function index()
     {
+        $manager = app(ScreenBuilderManager::class);
+        event(new ScreenBuilderStarting($manager, 'FORM'));
         $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
 
         // This is a temporary API the engine team will provide the new
-        return view('cases.casesMain', compact('currentUser'));
+        return view('cases.casesMain', compact('currentUser', 'manager'));
     }
 
     /**
@@ -38,6 +45,10 @@ class CasesController extends Controller
         // Load event ScreenBuilderStarting
         $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, 'FORM'));
+         // Load event ModelerStarting
+         $managerModeler = app(ModelerManager::class);
+         event(new ModelerStarting($managerModeler));
+
         // Get all the request related to this case number
         $allRequests = ProcessRequest::where('case_number', $case_number)->get();
         $parentRequest = null;
@@ -76,6 +87,14 @@ class CasesController extends Controller
         // Get the summary screen tranlations
         $this->summaryScreenTranslation($request);
 
+        // Load the process map
+        $inflightData = $this->loadProcessMap($request);
+        $bpmn = $inflightData['bpmn'];
+
+        // Get all PM-Blocks
+        $modelerController = new ModelerController();
+        $pmBlockList = $modelerController->getPmBlockList();
+
         // Return the view
         return view('cases.edit', compact(
             'request',
@@ -85,7 +104,11 @@ class CasesController extends Controller
             'canViewComments',
             'canPrintScreens',
             'isProcessManager',
-            'manager'
+            'manager',
+            'managerModeler',
+            'bpmn',
+            'inflightData',
+            'pmBlockList'
         ));
     }
 
