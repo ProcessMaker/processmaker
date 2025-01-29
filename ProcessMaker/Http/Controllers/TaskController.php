@@ -78,12 +78,12 @@ class TaskController extends Controller
         MarkNotificationAsRead::dispatch([['url', '=', '/' . Request::path()]], ['read_at' => Carbon::now()]);
 
         $manager = app(ScreenBuilderManager::class);
-        event(new ScreenBuilderStarting($manager, $task->getScreenVersion() ? $task->getScreenVersion()->type : 'FORM'));
+        $screenVersion = $task->getScreenVersion();
+        event(new ScreenBuilderStarting($manager, $screenVersion ? $screenVersion->type : 'FORM'));
 
         $submitUrl = route('api.tasks.update', $task->id);
         $task->processRequest;
         $task->user;
-        $screenVersion = $task->getScreenVersion();
         $task->component = $screenVersion ? $screenVersion->parent->renderComponent() : null;
         $task->screen = $screenVersion ? $screenVersion->toArray() : null;
         $task->request_data = $dataManager->getData($task);
@@ -97,6 +97,11 @@ class TaskController extends Controller
         $element = $task->getDefinition(true);
         $screenFields = $screenVersion ? $screenVersion->screenFilteredFields() : [];
         $taskDraftsEnabled = TaskDraft::draftsEnabled();
+
+        // Remove screen parent to reduce the size of the response
+        $screen = $task->screen;
+        $screen['parent'] = null;
+        $task->screen = $screen;
 
         if ($element instanceof ScriptTaskInterface) {
             return redirect(route('requests.show', ['request' => $task->processRequest->getKey()]));

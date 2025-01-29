@@ -1,0 +1,11 @@
+# Global configuration settings for Grafana
+apiVersion: 1
+
+# Grafana datasource configuration for Prometheus
+datasources:
+- name: Prometheus
+  type: prometheus
+  url: http://prometheus:9090 
+  isDefault: true
+  access: proxy
+  editable: true

@@ -1,7 +1,7 @@
 <div class="px-3 page-content" id="categorizedList" style="display:none">
     @php
         $firstTab = $secondTab = 'nav-item nav-link';
-        $firstContent = $secondContent = 'tab-pane fade show';
+        $firstContent = $secondContent = 'tab-pane show';
 
         $catListWebRoute = str_replace('.edit', '.index', $catConfig->routes->editCategoryWeb);
         $showCategoriesTab = $catListWebRoute === \Request::route()->getName() || $listConfig->countCategories === 0
@@ -127,7 +127,7 @@
             </div>
             @if(isset($templatesList))
                 @can('view-process-templates')
-                <div class="tab-pane fade" id="nav-templates" role="tabpanel" aria-labelledby="nav-templates-tab">
+                <div class="tab-pane" id="nav-templates" role="tabpanel" aria-labelledby="nav-templates-tab">
                     <div class="card card-body p-3 border-top-0">
                         {{ $templatesList }}
                     </div>
@@ -139,7 +139,7 @@
                 </div>
                 </div>
                 @isset($tabs[3])
-                    <div class="tab-pane fade" id="nav-archived" role="tabpanel" aria-labelledby="nav-archived-tab">
+                    <div class="tab-pane" id="nav-archived" role="tabpanel" aria-labelledby="nav-archived-tab">
                         <div class="card card-body p-3 border-top-0">
                             {{ $archivedList }}
                         </div>
@@ -156,13 +156,13 @@
                         {{ $categoryList }}
                     </div>
                 </div>
-                <div class="tab-pane fade" id="nav-myTemplates" role="tabpanel" aria-labelledby="nav-myTemplates-tab">
+                <div class="tab-pane" id="nav-myTemplates" role="tabpanel" aria-labelledby="nav-myTemplates-tab">
                     <div class="card card-body p-3 border-top-0">
                         {{ $myTemplatesList }}
                     </div>
                 </div>
                 <div
-                    class="tab-pane fade"
+                    class="tab-pane"
                     id="nav-publicTemplates"
                     role="tabpanel"
                     aria-labelledby="nav-publicTemplates-tab"
@@ -178,7 +178,7 @@
                     </div>
                 </div>
                 @isset($tabs[2])
-                    <div class="tab-pane fade" id="nav-archived" role="tabpanel" aria-labelledby="nav-archived-tab">
+                    <div class="tab-pane" id="nav-archived" role="tabpanel" aria-labelledby="nav-archived-tab">
                         <div class="card card-body p-3 border-top-0">
                             {{ $archivedList }}
                         </div>
