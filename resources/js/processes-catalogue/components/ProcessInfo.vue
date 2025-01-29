@@ -5,9 +5,12 @@
       :process="process"
       :current-user-id="currentUserId"
       :ellipsis-permission="ellipsisPermission"
+      :my-tasks-columns="myTasksColumns"
       @goBackCategory="$emit('goBackCategory')"
+      @updateMyTasksColumns="updateMyTasksColumns"
     />
     <process-tab
+      ref="processTab"
       v-show="hideLaunchpad"
       :current-user="currentUser"
       :process="process"
@@ -55,6 +58,7 @@ export default {
       firstImage: 0,
       lastImage: null,
       indexSelectedImage: 0,
+      myTasksColumns: [],
     };
   },
   mounted() {
@@ -71,6 +75,7 @@ export default {
     this.$root.$on("carouselImageSelected", (pos) => {
       this.firstImage = pos + 1;
     });
+    this.getMyTasksColumns();
   },
   computed: {
   },
@@ -78,6 +83,14 @@ export default {
     closeFullCarousel() {
       this.$root.$emit("clickCarouselImage", false);
     },
+    updateMyTasksColumns(columns) {
+      this.$refs['processTab'].updateColumnsByType('myTasks', columns);
+    },
+    getMyTasksColumns() {
+      this.$nextTick(() => {
+        this.myTasksColumns = this.$refs['processTab'].getDefaultColumnsByType("myTasks");
+      });
+    }
   },
 };
 </script>
