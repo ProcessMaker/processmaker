@@ -123,9 +123,9 @@
            :title="$t('Edit Task Column')"
            >
       <div class="modal-content-custom">
-        <column-chooser v-model="myTasks.currentColumns" 
+        <column-chooser v-model="myTasks.currentColumns"
                         :available-columns="myTasks.availableColumns"
-                        :default-columns="myTasks.defaultColumns" 
+                        :default-columns="myTasks.defaultColumns"
                         :data-columns="myTasks.dataColumns">
           <template #title1>
             <small class="form-text text-muted">
@@ -514,8 +514,8 @@ export default {
               this.myTasks.availableColumns = response.data.available;
               // Update availableColumns with the fields that are not in currentColumns.
               let columns = [...this.myTasks.defaultColumns, ...this.myTasks.availableColumns];
-              const difference = columns.filter(column => 
-                !this.myTasks.currentColumns.some(currentColumn => 
+              const difference = columns.filter(column =>
+                !this.myTasks.currentColumns.some(currentColumn =>
                   currentColumn.field === column.field
                 )
               );
