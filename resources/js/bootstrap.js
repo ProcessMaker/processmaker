@@ -3,7 +3,7 @@ import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 import * as bootstrap from "bootstrap";
 import Echo from "laravel-echo";
 import Router from "vue-router";
-import ScreenBuilder, { initializeScreenCache } from "@processmaker/screen-builder";
+import { initializeScreenCache } from "@processmaker/screen-builder";
 import * as VueDeepSet from "vue-deepset";
 
 /**
@@ -79,7 +79,6 @@ window.vue = vue;
 window.bootstrap = bootstrap;
 window.Vue.use(BootstrapVue);
 window.Vue.use(BootstrapVueIcons);
-window.Vue.use(ScreenBuilder);
 window.Vue.use(GlobalStore);
 window.Vue.use(VueDeepSet);
 window.Vue.use(VueCookies);
@@ -88,7 +87,6 @@ if (!document.head.querySelector("meta[name=\"is-horizon\"]")) {
 }
 window.VueMonaco = require("vue-monaco");
 
-window.ScreenBuilder = require("@processmaker/screen-builder");
 window.VueFormElements = require("@processmaker/vue-form-elements");
 window.Modeler = require("@processmaker/modeler");
 
