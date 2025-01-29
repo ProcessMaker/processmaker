@@ -59,7 +59,7 @@ trait ForUserScope
         if ($user->username !== '_pm4_anon_user') {
             $mainTable = $query->getQuery()->from;
             $filteredQuery->orWhereExists(function($query) use ($user, $mainTable) {
-                $query->select('*')
+                $query->select('1')
                     ->from('process_request_tokens')
                     ->where('user_id', $user->id)
                     ->whereRaw('process_request_id = ' . $mainTable . '.id');
