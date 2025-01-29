@@ -23,7 +23,7 @@
       ref="table"
       :columns="columnsConfig"
       :data="data"
-      class="tw-text-gray-600"
+      class="tw-text-[#4F5154]"
       :placeholder="showPlaceholder"
       @changeFilter="onChangeFilter"
       @resetFilters="onChangeFilter">

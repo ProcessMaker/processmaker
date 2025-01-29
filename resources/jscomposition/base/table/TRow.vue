@@ -1,6 +1,6 @@
 <template>
   <tr
-    class="tw-border-b tw-relative"
+    class="tw-border-b tw-relative tw-border-[#EBEDEF]"
     @mouseover="menu = true"
     @mouseleave="menu = false">
     <slot :name="`cell`" />
