@@ -213,24 +213,20 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Get the validation rules for process requests.
      *
-     * @param mixed|null $existing ID of existing process request to ignore in unique validation
+     * @param mixed|null $existing ID of existing process request
      *
      * @return array Array of validation rules for the process request fields:
-     *               - name: Required string, max 100 chars, alpha spaces only, unique unless updating existing
+     *               - name: Required string, max 100 chars, alpha spaces only
      *               - data: Required field
      *               - status: Must be one of: ACTIVE, COMPLETED, ERROR, CANCELED
      *               - process_id: Required and must exist in processes table
      *               - process_collaboration_id: Optional but must exist in process_collaborations table if provided
-     *               - user_id: Must exist in users table
+     *               - user_id: Optional but must exist in users table if provided
      */
     public static function rules($existing = null)
     {
         $self = new self();
-        $unique = Rule::unique($self->getConnectionName() . '.process_requests')->ignore($existing);
         $nameRules = ['required', 'string', 'max:100', 'alpha_spaces'];
-        if ($existing === null) {
-            $nameRules[] = $unique;
-        }
 
         return [
             'name' => $nameRules,
