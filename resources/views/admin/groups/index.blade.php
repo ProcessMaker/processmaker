@@ -36,18 +36,16 @@
                         <pm-modal ref="createGroupModal" id="createGroupModal" title="{{__('Create Group')}}" @hidden="onClose" @ok.prevent="onSubmit" :ok-disabled="disabled" style="display: none;">
                             <required></required>
                             <div class="form-group">
-                                {!! Form::label('name', __('Name')) !!}<small class="ml-1">*</small>
-                                {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' =>
-                                'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}', 'required', 'aria-required' => 'true']) !!}
+                                {{ html()->label(__('Name'), 'name') }}<small class="ml-1">*</small>
+                                {{ html()->text('name')->id('name')->class('form-control')->attribute('v-model', 'formData.name')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':errors.name}')->required()->attribute('aria-required', 'true') }}
                                 <small id="emailHelp"
                                        class="form-text text-muted">{{__('Group name must be unique')}}</small>
                                 <div class="invalid-feedback" role="alert" v-for="name in errors.name">@{{name}}</div>
                             </div>
                             <div class="form-group">
-                                {!! Form::label('description', __('Description')) !!}
-                                {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=>
-                                'form-control', 'v-model' => 'formData.description', 'v-bind:class' => '{\'form-control\':true,
-                                \'is-invalid\':errors.description}']) !!}
+                                {{ html()->label(__('Description'), 'description') }}
+                                {{ html()->textarea('description')->id('description')->rows(4)->class('form-control')->attribute('v-model', 'formData.description')->attribute('v-bind:class', '{\'form-control\':true,
+                                \'is-invalid\':errors.description}') }}
                                 <div class="invalid-feedback" role="alert" v-for="description in errors.description">@{{description}}
                                 </div>
                             </div>

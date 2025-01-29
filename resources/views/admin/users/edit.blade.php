@@ -50,8 +50,8 @@
                                 </div>
                             </div>
                             <div class="d-flex justify-content-end mt-3">
-                                {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'profileUpdate','id'=>'saveUser']) !!}
+                                {{ html()->button(__('Cancel'), 'button')->class('btn btn-outline-secondary')->attribute('@click', 'onClose') }}
+                                {{ html()->button(__('Save'), 'button')->class('btn btn-secondary ml-3')->attribute('@click', 'profileUpdate')->id('saveUser') }}
                             </div>
                         </div>
                         <div class="tab-pane show" id="nav-groups" role="tabpanel"
@@ -71,8 +71,8 @@
                                 />
                             </div>
                             <div class="d-flex justify-content-end mt-3">
-                                {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'onSaveGroups','id'=>'saveGroups']) !!}
+                                {{ html()->button(__('Cancel'), 'button')->class('btn btn-outline-secondary')->attribute('@click', 'onClose') }}
+                                {{ html()->button(__('Save'), 'button')->class('btn btn-secondary ml-3')->attribute('@click', 'onSaveGroups')->id('saveGroups') }}
                             </div>
                         </div>
                         <div class="tab-pane" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
@@ -87,8 +87,8 @@
                                 </div>
                                 @include('admin.shared.permissions')
                                 <div class="d-flex justify-content-end mt-3">
-                                    {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose'])!!}
-                                    {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'permissionUpdate','id'=>'savePermissions'])!!}
+                                    {{ html()->button(__('Cancel'), 'button')->class('btn btn-outline-secondary')->attribute('@click', 'onClose') }}
+                                    {{ html()->button(__('Save'), 'button')->class('btn btn-secondary ml-3')->attribute('@click', 'permissionUpdate')->id('savePermissions') }}
                                 </div>
                             </div>
                         </div>

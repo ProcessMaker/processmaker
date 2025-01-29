@@ -4,21 +4,17 @@
     <h5 class="mb-3">{{__('General Information')}}</h5>
         <div class="row">
             <div class="form-group col">
-                {!! Form::label('firstname', __('First Name') . '<small class="ml-1">*</small>', [], false) !!}
-                {!! Form::text('firstname', null, ['id' => 'firstname','class'=>
-                'form-control', 'v-model' => 'formData.firstname',
-                'v-bind:class' => '{\'form-control\':true,
-                \'is-invalid\':errors.firstname}', 'required', 'aria-required' => 'true']) !!}
+                {{ html()->label(__('First Name') . '<small class="ml-1">*</small>', 'firstname') }}
+                {{ html()->text('firstname')->id('firstname')->class('form-control')->attribute('v-model', 'formData.firstname')->attribute('v-bind:class', '{\'form-control\':true,
+                \'is-invalid\':errors.firstname}')->required()->attribute('aria-required', 'true') }}
                 <div class="invalid-feedback" role="alert" v-if="errors.firstname">
                     @{{errors.firstname[0]}}
                 </div>
             </div>
             <div class="form-group col">
-                {!! Form::label('lastname', __('Last Name') . '<small class="ml-1">*</small>', [], false)!!}
-                {!! Form::text('lastname', null, ['id' => 'lastname', 'rows' => 4,
-                'class'=> 'form-control', 'v-model'
-                => 'formData.lastname', 'v-bind:class' => '{\'form-control\':true,
-                \'is-invalid\':errors.lastname}', 'required', 'aria-required' => 'true']) !!}
+                {{ html()->label(__('Last Name') . '<small class="ml-1">*</small>', 'lastname') }}
+                {{ html()->text('lastname')->id('lastname')->attribute('rows', 4)->class('form-control')->attribute('v-model', 'formData.lastname')->attribute('v-bind:class', '{\'form-control\':true,
+                \'is-invalid\':errors.lastname}')->required()->attribute('aria-required', 'true') }}
                 <div class="invalid-feedback" role="alert" v-if="errors.lastname">
                     @{{errors.lastname[0]}}
                 </div>
@@ -26,7 +22,7 @@
         </div>
 
         <div class="form-group">
-            {!!Form::label('title', __('Job Title')) !!}
+            {{ html()->label(__('Job Title'), 'title') }}
             <b-form-input
               id="title"
               class="mb-2"
@@ -40,41 +36,29 @@
     <h5 class="mt-1 mb-3">{{__('Contact Information')}}</h5>
 
         <div class="form-group">
-            {!! Form::label('email', __('Email') . '<small class="ml-1">*</small>', [], false) !!}
-            {!! Form::email('email', null, ['id' => 'email', 'rows' => 4, 'class'=>
-            'form-control', 'v-model'
-            => 'formData.email', 'v-bind:class' => '{\'form-control\':true,
-            \'is-invalid\':errors.email}', 'required', 'aria-required' => 'true',
-            '@input' => 'checkEmailChange']) !!}
+            {{ html()->label(__('Email') . '<small class="ml-1">*</small>', 'email') }}
+            {{ html()->email('email')->id('email')->attribute('rows', 4)->class('form-control')->attribute('v-model', 'formData.email')->attribute('v-bind:class', '{\'form-control\':true,
+            \'is-invalid\':errors.email}')->attribute('required', )->attribute('aria-required', 'true')->attribute('@input', 'checkEmailChange') }}
             <div class="invalid-feedback" role="alert" v-if="errors.email">@{{errors.email[0]}}
             </div>
         </div>
         <div class="form-group">
-            {!! Form::label('phone', __('Phone')) !!}
-            {!! Form::text('phone', null, ['id' => 'phone','class'=> 'form-control',
-            'v-model' => 'formData.phone',
-            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.phone}'])
-            !!}
+            {{ html()->label(__('Phone'), 'phone') }}
+            {{ html()->text('phone')->id('phone')->class('form-control')->attribute('v-model', 'formData.phone')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':errors.phone}') }}
             <div class="invalid-feedback" role="alert" v-if="errors.phone">@{{errors.phone[0]}}
             </div>
         </div>
 
         <div class="form-group">
-            {!! Form::label('fax', __('Fax')) !!}
-            {!! Form::text('fax', null, ['id' => 'fax','class'=> 'form-control',
-            'v-model' => 'formData.fax',
-            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.fax}'])
-            !!}
+            {{ html()->label(__('Fax'), 'fax') }}
+            {{ html()->text('fax')->id('fax')->class('form-control')->attribute('v-model', 'formData.fax')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':errors.fax}') }}
             <div class="invalid-feedback" role="alert" v-if="errors.fax">@{{errors.fax[0]}}
             </div>
         </div>
 
         <div class="form-group">
-            {!! Form::label('cell', __('Cell')) !!}
-            {!! Form::text('cell', null, ['id' => 'cell','class'=> 'form-control',
-            'v-model' => 'formData.cell',
-            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.cell}'])
-            !!}
+            {{ html()->label(__('Cell'), 'cell') }}
+            {{ html()->text('cell')->id('cell')->class('form-control')->attribute('v-model', 'formData.cell')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':errors.cell}') }}
             <div class="invalid-feedback" role="alert" v-if="errors.cell">@{{errors.cell[0]}}
             </div>
         </div>
@@ -82,7 +66,7 @@
     <h5 class="mt-1 mb-3">{{__('Address')}}</h5>
     <div class="row">
         <div class="form-group col">
-            {!! Form::label('country', __('Country')) !!}
+            {{ html()->label(__('Country'), 'country') }}
             <b-form-select id="country" v-model="formData.country" :options="countries" placeholder="Select" class="form-control">
                 <template slot="first">
                     <option :value="null" disabled>{{__('Select')}}</option>
@@ -95,11 +79,9 @@
     </div>
     <div class="row">
         <div class="form-group col">
-            {!! Form::label('address', __('Address')) !!}
-            {!! Form::text('address', null, ['id' => 'address','class'=>
-            'form-control', 'v-model' => 'formData.address',
-            'v-bind:class' => '{\'form-control\':true,
-            \'is-invalid\':errors.address}']) !!}
+            {{ html()->label(__('Address'), 'address') }}
+            {{ html()->text('address')->id('address')->class('form-control')->attribute('v-model', 'formData.address')->attribute('v-bind:class', '{\'form-control\':true,
+            \'is-invalid\':errors.address}') }}
             <div class="invalid-feedback" role="alert" v-if="errors.address">
                 @{{errors.address}}
             </div>
@@ -107,17 +89,15 @@
     </div>
     <div class="row">
         <div class="form-group col">
-            {!! Form::label('city', __('City')) !!}
-            {!! Form::text('city', null, ['id' => 'city', 'rows' => 4, 'class'=>
-            'form-control', 'v-model'
-            => 'formData.city', 'v-bind:class' => '{\'form-control\':true,
-            \'is-invalid\':errors.city}']) !!}
+            {{ html()->label(__('City'), 'city') }}
+            {{ html()->text('city')->id('city')->attribute('rows', 4)->class('form-control')->attribute('v-model', 'formData.city')->attribute('v-bind:class', '{\'form-control\':true,
+            \'is-invalid\':errors.city}') }}
             <div class="invalid-feedback" role="alert" v-if="errors.city">@{{errors.city}}</div>
         </div>
     </div>
     <div class="row">
         <div class="form-group col" v-if="formData.country == 'US'">
-            {!! Form::label('state', __('State or Region')) !!}
+            {{ html()->label(__('State or Region'), 'state') }}
             <b-form-select v-model="formData.state" :options="states" placeholder="Select" class="form-control">
                 <template slot="first">
                     <option :value="null" disabled>{{__('Select')}}</option>
@@ -127,20 +107,16 @@
             </div>
         </div>
         <div class="form-group col" v-else>
-            {!! Form::label('state', __('State or Region')) !!}
-            {!! Form::text('state', null, ['id' => 'state', 'rows' => 4, 'class'=>
-            'form-control', 'v-model'
-            => 'formData.state', 'v-bind:class' => '{\'form-control\':true,
-            \'is-invalid\':errors.state}']) !!}
+            {{ html()->label(__('State or Region'), 'state') }}
+            {{ html()->text('state')->id('state')->attribute('rows', 4)->class('form-control')->attribute('v-model', 'formData.state')->attribute('v-bind:class', '{\'form-control\':true,
+            \'is-invalid\':errors.state}') }}
             <div class="invalid-feedback" role="alert" v-if="errors.state">@{{errors.state}}
             </div>
         </div>
         <div class="form-group col">
-            {!! Form::label('postal', __('Postal Code')) !!}
-            {!! Form::text('postal', null, ['id' => 'postal', 'rows' => 4, 'class'=>
-            'form-control', 'v-model'
-            => 'formData.postal', 'v-bind:class' => '{\'form-control\':true,
-            \'is-invalid\':errors.postal}']) !!}
+            {{ html()->label(__('Postal Code'), 'postal') }}
+            {{ html()->text('postal')->id('postal')->attribute('rows', 4)->class('form-control')->attribute('v-model', 'formData.postal')->attribute('v-bind:class', '{\'form-control\':true,
+            \'is-invalid\':errors.postal}') }}
             <div class="invalid-feedback" role="alert" v-if="errors.postal">@{{errors.postal}}
             </div>
         </div>
@@ -151,10 +127,8 @@
         @foreach (config('users.properties') as $variable => $label)
             <div class="row">
                 <div class="form-group col">
-                    {!! Form::label("meta.$variable", __($label)) !!}
-                    {!! Form::text("meta.$variable", null, ['id' => "meta.$variable",'class'=>
-                    'form-control', 'v-model' => "formData.meta.$variable",
-                    'v-bind:class' => '{\'form-control\':true}']) !!}
+                    {{ html()->label(__($label), "meta.{$variable}") }}
+                    {{ html()->text("meta.{$variable}")->id("meta.{$variable}")->class('form-control')->attribute('v-model', "formData.meta.{$variable}")->attribute('v-bind:class', '{\'form-control\':true}') }}
                 </div>
             </div>
         @endforeach
@@ -172,10 +146,9 @@
       </div>
       <div class="modal-body">
             <div class="form-group col">
-                {!! Form::label('valpassword', __('Password')) !!}
+                {{ html()->label(__('Password'), 'valpassword') }}
                 <div style="position: relative;">
-                    {!! Form::password('valpassword', ['id' => 'valpassword', 'rows' => 4, 'class'=> 'form-control', 'v-model'
-                            => 'formData.valpassword']) !!}
+                    {{ html()->password('valpassword')->id('valpassword')->attribute('rows', 4)->class('form-control')->attribute('v-model', 'formData.valpassword') }}
                     <i class="fa fa-eye" id="togglePassword" style="position: absolute; top: 32%; right: 4%; cursor: pointer; color: #51585E;"></i>
                 </div>
             </div>

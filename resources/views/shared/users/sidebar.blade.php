@@ -27,9 +27,8 @@
                 <h5 class="mb-3 font-weight-bold">{{__('Login Information')}}</h5>
             </legend>
             <div class="form-group">
-               {!! Form::label('username', __('Username') . '<small class="ml-1">*</small>',  [], false) !!}
-               {!! Form::text('username', null, ['id' => 'username', 'rows' => 4, 'class'=> 'form-control', 'v-model'
-               => 'formData.username', 'autocomplete' => 'off', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.username}', 'required', 'aria-required' => 'true']) !!}
+               {{ html()->label(__('Username') . '<small class="ml-1">*</small>', 'username') }}
+               {{ html()->text('username')->id('username')->attribute('rows', 4)->class('form-control')->attribute('v-model', 'formData.username')->attribute('autocomplete', 'off')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':errors.username}')->required()->attribute('aria-required', 'true') }}
                <div class="invalid-feedback" role="alert" v-if="errors.username">@{{errors.username[0]}}</div>
             </div>
             @if (config('password-policies.users_can_change', true) ||
@@ -43,20 +42,17 @@
                 </div>
             @endcan
             <div class="form-group">
-                {!! Form::label('password', __('New Password')) !!}
+                {{ html()->label(__('New Password'), 'password') }}
                 <vue-password v-model="formData.password" :disable-toggle=true>
                     <div slot="password-input" slot-scope="props">
-                        {!! Form::password('password', ['id' => 'password', 'rows' => 4, 'class'=> 'form-control', 'v-model'
-                        => 'formData.password', 'autocomplete' => 'new-password', '@input' => 'props.updatePassword($event.target.value)',
-                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
+                        {{ html()->password('password')->id('password')->attribute('rows', 4)->class('form-control')->attribute('v-model', 'formData.password')->attribute('autocomplete', 'new-password')->attribute('@input', 'props.updatePassword($event.target.value)')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':errors.password}') }}
                     </div>
                 </vue-password>
             </div>
 
             <div class="form-group">
-                {!! Form::label('confPassword', __('Confirm Password')) !!}
-                {!! Form::password('confPassword', ['id' => 'confPassword', 'rows' => 4, 'class'=> 'form-control', 'v-model'
-                => 'formData.confPassword', 'autocomplete' => 'new-password', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
+                {{ html()->label(__('Confirm Password'), 'confPassword') }}
+                {{ html()->password('confPassword')->id('confPassword')->attribute('rows', 4)->class('form-control')->attribute('v-model', 'formData.confPassword')->attribute('autocomplete', 'new-password')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':errors.password}') }}
                 <div class="invalid-feedback" :style="{display: (errors.password) ? 'block' : 'none' }" role="alert"
                      v-for="(error, index) in errors.password">@{{error}}</div>
             </div>
@@ -73,7 +69,7 @@
 
         @if (!\Request::is('profile/edit'))
         <div class="form-group">
-            {!! Form::label('forceChangePassword', __('User must change password at next login')) !!}
+            {{ html()->label(__('User must change password at next login'), 'forceChangePassword') }}
             <div class="grouped">
                 <div class="custom-control custom-switch">
                     <input v-model="formData.force_change_password" value="1" type="checkbox" class="custom-control-input" :id="'switch_force_change_password'">
@@ -85,7 +81,7 @@
 
         @if (config('password-policies.2fa_enabled', false) && count($global2FAEnabled) > 0 && $is2FAEnabledForGroup)
             <div class="form-group">
-                {!! Form::label('preferences_2fa', __('Two Factor Authentication')) !!}
+                {{ html()->label(__('Two Factor Authentication'), 'preferences_2fa') }}
                 <b-form-checkbox-group
                         id="preferences_2fa"
                         v-model="formData.preferences_2fa"
@@ -108,7 +104,7 @@
     <div class="card card-body mt-3">
         <h5 class="mb-3 font-weight-bold">{{__('Settings')}}</h5>
             <div class="form-group">
-                {!!Form::label('datetime_format', __('Date Format'));!!}
+                {{ html()->label(__('Date Format'), 'datetime_format') }}
                 <b-form-select id="datetime_format" v-model="formData.datetime_format" class="form-control" :options="datetimeFormats">
                 </b-form-select>
                 <div class="invalid-feedback" role="alert" v-if="errors.email">
@@ -116,7 +112,7 @@
                 </div>
             </div>
             <div class="form-group">
-                {!!Form::label('timezone', __('Time Zone'));!!}
+                {{ html()->label(__('Time Zone'), 'timezone') }}
                 <b-form-select id="timezone" v-model="formData.timezone" class="form-control" :options="timezones">
                 </b-form-select>
                 <div class="invalid-feedback" role="alert" v-if="errors.email">@{{errors.timezone}}
@@ -124,7 +120,7 @@
             </div>
 
             <div class="form-group">
-                {!! Form::label('status', __('Status')) !!}
+                {{ html()->label(__('Status'), 'status') }}
                 <b-form-select id="status" v-model="formData.status" class="form-control" :options="status">
                 </b-form-select>
                 <div class="invalid-feedback" role="alert" v-if="errors.status">
@@ -133,7 +129,7 @@
             </div>
             
             <div class="form-group">
-                {!! Form::label('status', __('Recommendations')) !!}
+                {{ html()->label(__('Recommendations'), 'status') }}
                 <b-form-select
                     id="status"
                     v-model="disableRecommendations"

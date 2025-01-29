@@ -364,7 +364,7 @@
             v-cloak
             @hide="cancelReassign">
             <div class="form-group">
-              {!!Form::label('user', __('User'))!!}
+              {{ html()->label(__('User'), 'user') }}
               <p-m-dropdown-suggest v-model="selectedUser"
                 :options="reassignUsers"
                 @pmds-input="onReassignInput"
