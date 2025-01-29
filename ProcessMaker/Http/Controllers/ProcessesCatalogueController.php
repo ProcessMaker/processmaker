@@ -13,8 +13,8 @@ use ProcessMaker\Models\Bookmark;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessLaunchpad;
-use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
+use ProcessMaker\Traits\HasControllerAddons;
 
 /**
  * @param Request $request
@@ -70,6 +70,7 @@ class ProcessesCatalogueController extends Controller
             );
             $id = $savedSearch->id;
         }
+
         return $id;
     }
 }

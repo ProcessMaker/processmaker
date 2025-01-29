@@ -15,12 +15,12 @@
           </div>
         </div>
         <div class="d-flex align-items-center flex-shrink-0">
-          <button class="info-button mx-2" 
+          <button class="info-button mx-3" 
             :class="showProcessInfo ? 'info-button-active' : 'info-button'"
             @click="handleInfoClick">
             <span>i</span>
           </button>
-          <div class="card-bookmark mx-2">
+          <div class="card-bookmark mx-3">
             <bookmark :process="process" />
           </div>
           <span class="ellipsis-border">
@@ -189,11 +189,13 @@ export default {
 
 .card-bookmark {
   float: right;
-  font-size: 20px;
+  width: 20px;
+  height: 23px;
 }
 
 .card-bookmark:hover {
   cursor: pointer;
+  background-color: #fff4c6;
 }
 
 .card-custom {
@@ -218,8 +220,8 @@ export default {
 }
 
 .info-button {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   background-color: #6A7887;
   border: none;
   border-radius: 4px;
@@ -227,6 +229,8 @@ export default {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  font-weight: 700;
+  position: relative;
   
   span {
     color: #ffffff;
@@ -234,11 +238,20 @@ export default {
   }
 }
 
-.info-button:hover {
-  background-color: #6A7887;
-}
-
 .info-button-active {
   background-color: #2773F3 !important;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    background-color: rgba(106, 120, 135, 0.1);
+    border-radius: 8px;
+    z-index: 0;
+    border: 1px solid #d3dbe2;
+  }
 }
 </style>

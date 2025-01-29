@@ -1,19 +1,32 @@
 <template>
     <div>
-        <h2>Dashboard Viewer</h2>
-        <p v-if="dashboardId">Dashboard ID: {{ dashboardId }}</p>
-        <p v-else>No selected dashboard</p>
+        <vue-form-renderer
+          v-model="formData"
+          :config="screen.config"
+          :computed="screen.computed"
+          :custom-css="screen.custom_css"
+          :watchers="screen.watchers"
+        />
     </div>
 </template>
 
 <script>
-export default {
-    name: 'DashboardViewer',
-    props: {
-        dashboardId: {
-            type: [String, null],
-            default: null
+
+  export default {
+    props: ["screen", "formData"],
+    data() {
+      return {
+        disabled: false,
+      };
+    },
+    methods: {},
+    watch: {
+      screen: {
+        deep: true,
+        handler() {
+          this.disabled = false;
         }
+      }
     }
-}
+  };
 </script>
