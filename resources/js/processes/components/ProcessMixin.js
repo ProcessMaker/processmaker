@@ -9,7 +9,7 @@ export default {
 
       for (const record of data.data) {
         // format Status
-        record.owner = this.formatAvatar(record.user);
+        record.owner = this.formatAvatar(record.user, false, true);
         record.category_list = this.formatCategory(record.categories);
       }
       return data;

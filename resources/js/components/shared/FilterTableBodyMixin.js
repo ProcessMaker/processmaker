@@ -39,7 +39,8 @@ export default {
       this.perPage = value;
       this.fetch();
     },
-    formatAvatar(user, $usePmDefaultLabel = false) {
+    formatAvatar(user, $usePmDefaultLabel = false, $usePmDefaultLabelProcess = false) {
+      console.log("EN formatAvatar user",user, "usePmDefaultLabelProcess",$usePmDefaultLabelProcess);
       return {
         component: "AvatarImage",
         props: {
@@ -47,7 +48,8 @@ export default {
           "input-data": user,
           "hide-name": false,
           "name-clickable": true,
-          'use-pm-default-label': $usePmDefaultLabel
+          'use-pm-default-label': $usePmDefaultLabel,
+          'use-pm-default-label-process': $usePmDefaultLabelProcess
         },
       };
     },
