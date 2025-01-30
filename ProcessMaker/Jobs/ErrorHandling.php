@@ -5,6 +5,8 @@ namespace ProcessMaker\Jobs;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
+use ProcessMaker\Exception\ScriptException;
+use ProcessMaker\Exception\ScriptTimeoutException;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -203,5 +205,15 @@ class ErrorHandling
             'retry_attempts' => Arr::get($endpointConfig, 'retry_attempts', 0),
             'retry_wait_time' => Arr::get($endpointConfig, 'retry_wait_time', 5),
         ];
+    }
+
+    public static function convertResponseToException($result)
+    {
+        if ($result['status'] === 'error') {
+            if (str_starts_with($result['message'], 'Command exceeded timeout of')) {
+                throw new ScriptTimeoutException($result['message']);
+            }
+            throw new ScriptException($result['message']);
+        }
     }
 }
