@@ -946,6 +946,83 @@
             ],
             "title": "Script Task Completion Time series",
             "type": "timeseries"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "de96jy15v6qrkc"
+            },
+            "description": "Top Slowest Tasks",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "fieldMinMax": false,
+                    "mappings": [],
+                    "min": 0,
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "ms"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 40
+            },
+            "id": 11,
+            "interval": "15s",
+            "options": {
+                "minVizHeight": 75,
+                "minVizWidth": 75,
+                "orientation": "auto",
+                "reduceOptions": {
+                    "calcs": [],
+                    "fields": "",
+                    "values": false
+                },
+                "showThresholdLabels": false,
+                "showThresholdMarkers": true,
+                "sizing": "auto"
+            },
+            "pluginVersion": "11.4.0",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "de96jy15v6qrkc"
+                    },
+                    "disableTextWrap": false,
+                    "editorMode": "code",
+                    "exemplar": false,
+                    "expr": "topk(10, avg(processmaker_activity_execution_time_seconds_sum{element_type=\"scriptTask\"}) by (process_id, activity_name))",
+                    "format": "time_series",
+                    "fullMetaSearch": false,
+                    "includeNullMetadata": true,
+                    "instant": false,
+                    "interval": "",
+                    "legendFormat": "{{activity_name}} (process={{process_id}})",
+                    "range": true,
+                    "refId": "A",
+                    "useBackend": false
+                }
+            ],
+            "title": "Top Slowest Script Tasks",
+            "type": "gauge"
         }
     ],
     "preload": false,
@@ -955,13 +1032,13 @@
         "list": []
     },
     "time": {
-        "from": "now-6h",
+        "from": "now-30d",
         "to": "now"
     },
     "timepicker": {},
     "timezone": "browser",
     "title": "ProcessMaker Dashboard",
     "uid": "be96wxsnlmn7kc",
-    "version": 43,
+    "version": 45,
     "weekStart": ""
 }
