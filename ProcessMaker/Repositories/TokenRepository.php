@@ -242,10 +242,10 @@ class TokenRepository implements TokenRepositoryInterface
             $mustache = new Mustache_Engine();
             $mustacheDueVariable = $mustache->render($dueVariable, $instanceData);
 
-            return is_numeric($mustacheDueVariable) ? $mustacheDueVariable : '72';
+            return is_numeric($mustacheDueVariable) ? $mustacheDueVariable : 72;
         }
 
-        return $activity->getProperty('dueIn', '72');
+        return (int) $activity->getProperty('dueIn', '72');
     }
 
     /**
