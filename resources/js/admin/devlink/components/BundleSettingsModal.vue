@@ -38,7 +38,7 @@
   </b-modal>
 </template>
 <script setup>
-import { ref, onMounted, getCurrentInstance } from 'vue';
+import { ref } from 'vue';
 import { useRoute } from 'vue-router/composables';
 
 const emit = defineEmits(['settings-saved']);
@@ -58,7 +58,6 @@ const selectedIds = ref([]);
 const allSelected = ref(false);
 
 const onOk = async () => {
-  console.log(selectedIds.value);
   configs.value = {
     id: selectedIds.value,
   };
@@ -123,14 +122,6 @@ const toggleAll = () => {
     }
   });
 };
-
-const refreshSettings = () => {
-  console.log('refreshSettings');
-};
-
-onMounted(() => {
-  //loadSettings();
-});
 
 defineExpose({
   show,

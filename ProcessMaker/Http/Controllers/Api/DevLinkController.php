@@ -55,13 +55,17 @@ class DevLinkController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'unique:dev_links,name'],
-            'url' => ['required', 'url', 'unique:dev_links,url'],
+            'name' => ['required'],
+            'url' => ['required', 'url'],
         ]);
-
-        $devLink = new DevLink();
-        $devLink->name = $request->input('name');
-        $devLink->url = $request->input('url');
+        $devLink = DevLink::where('name', $request->input('name'))->first();
+        if ($devLink) {
+            $devLink->url = $request->input('url');
+        } else {
+            $devLink = new DevLink();
+            $devLink->name = $request->input('name');
+            $devLink->url = $request->input('url');
+        }
         $devLink->saveOrFail();
 
         return $devLink;
@@ -82,7 +86,11 @@ class DevLinkController extends Controller
 
     public function ping(DevLink $devLink)
     {
-        return $devLink->client()->get(route('api.devlink.pong', [], false));
+        try {
+            return$devLink->client()->get(route('api.devlink.pong', [], false));
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'DevLink connection error'], $e->getCode());
+        }
     }
 
     public function pong()
