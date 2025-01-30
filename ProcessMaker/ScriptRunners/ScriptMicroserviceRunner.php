@@ -95,13 +95,7 @@ class ScriptMicroserviceRunner
 
         $response->throw();
 
-        $result = $response->json();
-
-        if ($sync) {
-            ErrorHandling::convertResponseToException($result);
-        }
-
-        return $result;
+        return $response->json();
     }
 
     private function getEnvironmentVariables(User $user)
