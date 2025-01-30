@@ -397,6 +397,9 @@ const main = new Vue({
     taskUpdated(task) {
       this.task = task;
     },
+    updatePage() {
+      document.getElementById("tabContent").scrollTop = 0;
+    },
     updateScreenFields(taskId) {
       return ProcessMaker.apiClient
         .get(`tasks/${taskId}/screen_fields`)
