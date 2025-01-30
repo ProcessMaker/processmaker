@@ -151,7 +151,14 @@ class CaseApiRepository implements CaseApiRepositoryInterface
         if ($request->filled('search')) {
             $search = $request->get('search');
 
-            if (is_numeric($search)) {
+            $model = $query->getModel();
+
+            $matches = $model->search($search)->take(10000)->get()->pluck('id');
+
+            $query->whereIn('id', $matches);
+
+
+            /* if (is_numeric($search)) {
                 $search = CaseUtils::CASE_NUMBER_PREFIX . $search;
             } else {
                 // Remove special characters except another languages
@@ -163,7 +170,7 @@ class CaseApiRepository implements CaseApiRepositoryInterface
                 return '+' . $matches[0] . '*';
             }, $search);
 
-            $query->whereFullText($this->searchableFields, $search, ['mode' => 'boolean']);
+            $query->whereFullText($this->searchableFields, $search, ['mode' => 'boolean']); */
         }
     }
 
