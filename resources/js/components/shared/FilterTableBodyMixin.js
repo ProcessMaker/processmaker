@@ -40,7 +40,6 @@ export default {
       this.fetch();
     },
     formatAvatar(user, $usePmDefaultLabel = false, $usePmDefaultLabelProcess = false) {
-      console.log("EN formatAvatar user",user, "usePmDefaultLabelProcess",$usePmDefaultLabelProcess);
       return {
         component: "AvatarImage",
         props: {
