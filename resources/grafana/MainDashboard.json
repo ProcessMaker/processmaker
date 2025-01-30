@@ -1023,6 +1023,82 @@
             ],
             "title": "Top Slowest Script Tasks",
             "type": "gauge"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "de96jy15v6qrkc"
+            },
+            "description": "Shows task completion distribution by activity and process to highlight execution patterns and identify key task volumes.",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        }
+                    },
+                    "fieldMinMax": false,
+                    "mappings": []
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 40
+            },
+            "id": 12,
+            "interval": "5m",
+            "options": {
+                "displayLabels": [
+                    "percent"
+                ],
+                "legend": {
+                    "displayMode": "list",
+                    "placement": "right",
+                    "showLegend": true
+                },
+                "pieType": "pie",
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "pluginVersion": "11.4.0",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "de96jy15v6qrkc"
+                    },
+                    "disableTextWrap": false,
+                    "editorMode": "code",
+                    "exemplar": false,
+                    "expr": "sum by(activity_name, process_id) (processmaker_script_task_completed_total)",
+                    "fullMetaSearch": false,
+                    "includeNullMetadata": true,
+                    "instant": false,
+                    "legendFormat": "{{activity_name}} (process={{process_id}})",
+                    "range": true,
+                    "refId": "A",
+                    "useBackend": false
+                }
+            ],
+            "title": "Completion Count by Task and Process",
+            "type": "piechart"
         }
     ],
     "preload": false,
@@ -1039,6 +1115,6 @@
     "timezone": "browser",
     "title": "ProcessMaker Dashboard",
     "uid": "be96wxsnlmn7kc",
-    "version": 45,
+    "version": 49,
     "weekStart": ""
 }
