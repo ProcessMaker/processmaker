@@ -286,6 +286,8 @@ export default {
         {
           value: "edit-template",
           content: "Edit Template",
+          link: true,
+          href: "/screen-template/{{id}}/edit",
           permission: ["edit-screens"],
           icon: "fas fa-pen-square",
         },
@@ -322,6 +324,8 @@ export default {
         {
           value: "edit-template",
           content: "Edit Template",
+          link: true,
+          href: "/screen-template/{{id}}/edit",
           permission: ["edit-screens"],
           icon: "fas fa-pen-square",
           conditional: "if(is_owner and user_id, true, false)",
