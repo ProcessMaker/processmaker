@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Exception\ConfigurationException;
-use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\GenerateAccessToken;
+use ProcessMaker\Jobs\ErrorHandling;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
@@ -95,7 +95,13 @@ class ScriptMicroserviceRunner
 
         $response->throw();
 
-        return $response->json();
+        $result = $response->json();
+
+        if ($sync) {
+            ErrorHandling::convertResponseToException($result);
+        }
+
+        return $result;
     }
 
     private function getEnvironmentVariables(User $user)
