@@ -148,16 +148,14 @@ export default {
     },
     filterAboveDivider() {
       const filteredActions = this.filterActions;
-
       const firstActions = filteredActions.slice(0, -1);
-      console.log("firstActions above",firstActions);
+
       return firstActions;
     },
     filterBelowDivider() {
       const filteredActions = this.filterActions;
-
       const lastAction = filteredActions.slice(-1);
-      console.log("lastAction below",lastAction);
+
       return lastAction;
     },
     contractedMenu() {

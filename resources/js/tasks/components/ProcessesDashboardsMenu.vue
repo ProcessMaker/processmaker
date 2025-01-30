@@ -227,7 +227,7 @@ export default {
 
 .menu-btn {
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   background-color: transparent;
   cursor: pointer;
   text-align: left;
