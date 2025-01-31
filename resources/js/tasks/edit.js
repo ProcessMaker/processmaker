@@ -1,6 +1,6 @@
-import TaskSaveNotification from "./components/TaskSaveNotification.vue";
-import TasksList from "./components/TasksList.vue";
-import TaskSavePanel from "./components/TaskSavePanel.vue";
+// import TaskSaveNotification from "./components/TaskSaveNotification.vue";
+// import TasksList from "./components/TasksList.vue";
+// import TaskSavePanel from "./components/TaskSavePanel.vue";
 import autosaveMixins from "../modules/autosave/autosaveMixin";
 import draftFileUploadMixin from "../modules/autosave/draftFileUploadMixin";
 import reassignMixin from "../common/reassignMixin";
@@ -61,6 +61,7 @@ const main = new Vue({
     userConfiguration,
     urlConfiguration: "users/configuration",
     showTabs: true,
+    isLoadingData: false,
   },
   computed: {
     taskDefinitionConfig() {
@@ -287,7 +288,6 @@ const main = new Vue({
     },
     prepareData() {
       this.updateRequestData = debounce(this.updateRequestData, 1000);
-      this.editJsonData();
     },
     updateTask(val) {
       this.$set(this, "task", val);
@@ -406,6 +406,35 @@ const main = new Vue({
         .then((response) => {
           screenFields = response.data;
         });
+    },
+    loadRequestData(taskId) {
+      return ProcessMaker.apiClient
+        .get(`/api/1.1/tasks/${taskId}/request_data`)
+        .then((response) => {
+          console.log(response.data);
+          this.task.request_data = response.data;
+          this.editJsonData();
+        });
+    },
+    async loadDataTab() {
+      console.log("loadDataTab");
+      if (this.jsonData !== "") {
+          // Data already loaded, just resize Monaco
+          this.resizeMonaco();
+          return;
+      }
+
+      this.isLoadingData = true;
+      try {
+          this.loadRequestData(this.task.id);
+          this.$nextTick(() => {
+              this.resizeMonaco();
+          });
+      } catch (error) {
+          console.error('Error loading data:', error);
+      } finally {
+          this.isLoadingData = false;
+      }
     },
     autosaveApiCall() {
       if (!this.taskDraftsEnabled) {

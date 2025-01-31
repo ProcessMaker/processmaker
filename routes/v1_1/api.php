@@ -27,7 +27,10 @@ Route::prefix('api/1.1')
 
             // Route to show the interstitial screen of a task
             Route::get('/{taskId}/interstitial', [TaskController::class, 'showInterstitial'])
-                ->name('show.interstitial');
+                ->name('.interstitial');
+
+            Route::get('/{taskId}/request_data', [TaskController::class, 'getRequestData'])
+                ->name('.request_data');
         });
 
         // Cases Endpoints
