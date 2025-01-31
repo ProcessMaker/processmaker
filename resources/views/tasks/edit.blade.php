@@ -77,9 +77,10 @@
                     role="tab"
                     aria-controls="tab-data"
                     aria-selected="false"
-                    @click="resizeMonaco"
+                    @click="loadDataTab"
                     class="nav-link">
                     {{__('Data')}}
+                    <span v-if="isLoadingData" class="spinner-border spinner-border-sm" role="status"></span>
                   </a>
                 </li>
               </ul>
@@ -93,10 +94,10 @@
                   v-model="formData"
                   :initial-task-id="{{ $task->id }}"
                   :initial-request-id="{{ $task->process_request_id }}"
-                  :screen-version="{{ $task->screen['id'] ?? null }}"
+                  :screen-version="{{ $task->screenId ?? null }}"
                   :user-id="{{ Auth::user()->id }}"
                   csrf-token="{{ csrf_token() }}"
-                  initial-loop-context="{{ $task->getLoopContext() }}"
+                  initial-loop-context="{{ $task->loopContext }}"
                   :wait-loading-listeners="true"
                   @task-updated="taskUpdated"
                   @submit="submit"

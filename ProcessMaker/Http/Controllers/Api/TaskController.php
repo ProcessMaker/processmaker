@@ -419,7 +419,7 @@ class TaskController extends Controller
     }
 
     /**
-     * Only send data for a screen’s fields
+     * Only send data for a screen's fields
      *
      * @param ProcessRequestToken $task
      *
