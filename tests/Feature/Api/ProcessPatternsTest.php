@@ -52,14 +52,14 @@ class ProcessPatternsTest extends TestCase
      *
      * @return array
      */
-    public function prepareTestCasesProvider()
+    public static function prepareTestCasesProvider()
     {
         $tests = [];
-        $tests = $this->prepareTestCases('Conditional_StartEvent.bpmn', $tests);
-        $tests = $this->prepareTestCases('Conditional_IntermediateEvent.bpmn', $tests);
-        $tests = $this->prepareTestCases('MultiInstance_SequentialCallActivity.bpmn', $tests);
-        $tests = $this->prepareTestCases('Loop_Task.bpmn', $tests);
-        $tests = $this->prepareTestCases('SignalWithCustomPayload.bpmn', $tests);
+        $tests = self::prepareTestCases('Conditional_StartEvent.bpmn', $tests);
+        $tests = self::prepareTestCases('Conditional_IntermediateEvent.bpmn', $tests);
+        $tests = self::prepareTestCases('MultiInstance_SequentialCallActivity.bpmn', $tests);
+        $tests = self::prepareTestCases('Loop_Task.bpmn', $tests);
+        $tests = self::prepareTestCases('SignalWithCustomPayload.bpmn', $tests);
 
         return $tests;
     }
@@ -72,7 +72,7 @@ class ProcessPatternsTest extends TestCase
      *
      * @return array
      */
-    private function prepareTestCases($bpmnFile, array $tests)
+    private static function prepareTestCases($bpmnFile, array $tests)
     {
         $file = "{$this->basePath}{$bpmnFile}";
         $name = basename($bpmnFile, '.bpmn');
