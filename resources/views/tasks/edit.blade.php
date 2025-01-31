@@ -432,7 +432,7 @@
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
     const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
     const userConfiguration = @json($userConfiguration);
-
+    var screenFields = @json($screenFields);
     window.Processmaker.user = @json($currentUser);
     window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
   </script>
