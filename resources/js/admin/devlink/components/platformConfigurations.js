@@ -12,10 +12,6 @@ export default [
     name: "Auth Clients",
   },
   {
-    type: "ui_settings",
-    name: "UI Settings",
-  },
-  {
     type: "ui_dashboards",
     name: "Dashboards",
   },
