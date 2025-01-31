@@ -41,7 +41,7 @@ class PerformanceApiTest extends TestCase
     }
 
     // Endpoints to be tested
-    private $endpoints = [
+    private static $endpoints = [
         ['l5-swagger.default.oauth2_callback', []],
         ['passport.tokens.index', []],
         ['passport.clients.index', []],
@@ -77,11 +77,11 @@ class PerformanceApiTest extends TestCase
 
     const DESIRABLE_ROUTE_SPEED = 11;
 
-    public function RoutesListProvider()
+    public static function RoutesListProvider()
     {
         file_exists('coverage') ?: mkdir('coverage');
 
-        return $this->endpoints;
+        return self::$endpoints;
     }
 
     /**

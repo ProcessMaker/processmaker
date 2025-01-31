@@ -237,7 +237,7 @@ class ExportImportTest extends TestCase
         $this->assertAssetsWasImported($scenario);
     }
 
-    public function importType()
+    public static function importType()
     {
         return [
             ['update'],

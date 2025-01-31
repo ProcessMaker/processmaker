@@ -40,7 +40,7 @@ class PerformanceRoutesTest extends TestCase
     }
 
     // Endpoints to be tested
-    private $endpoints = [
+    private static $endpoints = [
         ['groups.index', []],
         ['users.index', []],
         ['auth-clients.index', []],
@@ -79,11 +79,11 @@ class PerformanceRoutesTest extends TestCase
 
     const DESIRABLE_ROUTE_SPEED = 11;
 
-    public function RoutesListProvider()
+    public static function RoutesListProvider()
     {
         file_exists('coverage') ?: mkdir('coverage');
 
-        return $this->endpoints;
+        return self::endpoints;
     }
 
     /**
