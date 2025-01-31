@@ -88,7 +88,7 @@ export default {
         menu_group: "User Settings",
       },
       actions: [
-        { value: "add-to-bundle", content: "Add to Bundle", icon: "fas fa-folder-plus" },
+        { value: "add-to-bundle", content: "Add to Bundle", icon: "fp-add-outlined" },
       ],
     };
   },

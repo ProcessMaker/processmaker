@@ -198,6 +198,8 @@ class DevLinkController extends Controller
 
     public function deleteBundle(Bundle $bundle)
     {
+        $bundle->assets()->delete();
+        $bundle->settings()->delete();
         $bundle->delete();
     }
 
@@ -255,7 +257,7 @@ class DevLinkController extends Controller
     public function exportLocalBundleSettingPayloads(Bundle $bundle)
     {
         if ($bundle->settings->isEmpty()) {
-            return ['payloads' => [0 => []]];
+            return ['payloads' => []];
         }
 
         return ['payloads' => $bundle->exportSettingPayloads()];

@@ -29,8 +29,7 @@
           aria-haspopup="true"
           aria-expanded="false"
         >
-          <i class="fas fp-plus" />
-          {{ $t('Install') }}
+          {{ $t('Reinstall') }}
         </button>
         <div class="dropdown-menu" id="dropdown">
           <a

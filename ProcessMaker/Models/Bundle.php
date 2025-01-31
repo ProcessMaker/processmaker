@@ -292,8 +292,14 @@ class Bundle extends ProcessMakerModel implements HasMedia
         return $this->filesSortedByVersion()->first();
     }
 
-    public function savePayloadsToFile(array $payloads)
+    public function savePayloadsToFile(array $payloads, array $payloadsSettings, $logger = null)
     {
+        if ($logger === null) {
+            $logger = new Logger();
+        }
+        $logger->status('Saving the bundle locally');
+        $payloads = array_merge($payloads, $payloadsSettings[0]);
+
         $this->addMediaFromString(
             gzencode(
                 json_encode($payloads)
@@ -374,14 +380,11 @@ class Bundle extends ProcessMakerModel implements HasMedia
         }
     }
 
-    public function install(array $payloads, $mode, $logger = null)
+    public function install(array $payloads, $mode, $logger = null, $reinstall = false)
     {
         if ($logger === null) {
             $logger = new Logger();
         }
-
-        $logger->status('Saving the bundle locally');
-        $this->savePayloadsToFile($payloads);
 
         $logger->status('Installing bundle on the this instance');
         $logger->setSteps($payloads);
@@ -394,7 +397,7 @@ class Bundle extends ProcessMakerModel implements HasMedia
             $assets[] = DevLink::import($payload, $options, $logger);
         }
 
-        if ($mode === 'update') {
+        if ($mode === 'update' && $reinstall === false) {
             $logger->status('Syncing bundle assets');
             $this->syncAssets($assets);
         }
@@ -406,8 +409,7 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
         $content = file_get_contents($media->getPath());
         $payloads = json_decode(gzdecode($content), true);
-
-        $this->install($payloads, $mode, $logger);
+        $this->install($payloads, $mode, $logger, true);
 
         $logger?->setStatus('done');
     }
