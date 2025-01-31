@@ -31,7 +31,7 @@ class ScriptMicroserviceRunner
             return Cache::get('keycloak.access_token');
         }
 
-        $response = Http::asForm()->post(config('script-runner-microservice.keycloak.base_url'), [
+        $response = Http::asForm()->post(config('script-runner-microservice.keycloak.base_url') ?? '', [
             'grant_type' => 'password',
             'client_id' => config('script-runner-microservice.keycloak.client_id'),
             'client_secret' => config('script-runner-microservice.keycloak.client_secret'),
