@@ -344,7 +344,7 @@ class Bundle extends ProcessMakerModel implements HasMedia
                 $logger->status('Installing bundle settings on the this instance');
                 $logger->setSteps($payloads[0]);
                 $assets[] = DevLink::import($payload[0], $options, $logger);
-            } else {
+            } elseif (isset($payload[0]['setting_type'])) {
                 switch ($payload[0]['setting_type']) {
                     case 'auth_clients':
                         $clientRepository->create(

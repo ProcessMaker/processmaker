@@ -114,7 +114,7 @@ class DevLinkTest extends TestCase
         $this->assertCount(1, $media);
         $gzPath = $media[0]->getPath();
         $payloads = json_decode(gzdecode(file_get_contents($gzPath)), true);
-        $this->assertCount(2, $payloads);
+        $this->assertCount(3, $payloads);
     }
 
     public function testRemoteBundles()
