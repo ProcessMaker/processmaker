@@ -411,13 +411,11 @@ const main = new Vue({
       return ProcessMaker.apiClient
         .get(`/api/1.1/tasks/${taskId}/request_data`)
         .then((response) => {
-          console.log(response.data);
           this.task.request_data = response.data;
           this.editJsonData();
         });
     },
     async loadDataTab() {
-      console.log("loadDataTab");
       if (this.jsonData !== "") {
           // Data already loaded, just resize Monaco
           this.resizeMonaco();

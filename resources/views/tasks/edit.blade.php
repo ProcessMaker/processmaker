@@ -77,9 +77,10 @@
                     role="tab"
                     aria-controls="tab-data"
                     aria-selected="false"
-                    @click="resizeMonaco"
+                    @click="loadDataTab"
                     class="nav-link">
                     {{__('Data')}}
+                    <span v-if="isLoadingData" class="spinner-border spinner-border-sm" role="status"></span>
                   </a>
                 </li>
               </ul>
