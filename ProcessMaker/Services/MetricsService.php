@@ -3,10 +3,11 @@
 namespace ProcessMaker\Services;
 
 use Exception;
+use ProcessMaker\Facades\Metrics;
+use Prometheus\CollectorRegistry;
 use Prometheus\Counter;
 use Prometheus\Gauge;
 use Prometheus\Histogram;
-use Prometheus\CollectorRegistry;
 use Prometheus\RenderTextFormat;
 use Prometheus\Storage\Redis;
 use RuntimeException;
@@ -141,5 +142,82 @@ class MetricsService
         $renderer = new RenderTextFormat();
         $metrics = $this->collectionRegistry->getMetricFamilySamples();
         return $renderer->render($metrics);
+    }
+
+    /**
+     * Increments a counter metric by 1.
+     *
+     * @param string $name The name of the counter.
+     * @param string|null $help The help text of the counter.
+     * @param array $labels The labels of the counter.
+     *
+     * @return void
+     */
+    public function counterInc(string $name, string $help = null, array $labels = []): void
+    {
+        // Add system labels
+        $labels = $this->addSystemLabels($labels);
+        $labelKeys = array_keys($labels);
+        Metrics::counter($name, $help, $labelKeys)->inc($labels);
+    }
+
+    /**
+     * Histogram observation.
+     * 
+     * @param string $name The name of the histogram.
+     * @param string|null $help The help text of the histogram.
+     * @param array $labels The labels of the histogram.
+     * @param array $buckets The buckets of the histogram.
+     * @param float $executionTime The execution
+     *
+     * @return void
+     */
+    public function histogramObserve(string $name, string $help = null, array $labels = [], array $buckets = [0.1, 1, 5, 10], float $executionTime): void
+    {
+        // Add system labels
+        $labels = $this->addSystemLabels($labels);
+        $labelKeys = array_keys($labels);
+        Metrics::histogram(
+            $name,
+            $help,
+            $labelKeys,
+            $buckets
+        )->observe(
+            $executionTime,
+            $labels
+        );
+    }
+
+    /**
+     * Add system labels to the provided labels.
+     * 
+     * @param array $labels The labels to add system labels to.
+     *
+     * @return array The keys of the labels.
+     */
+    public function addSystemLabels(array $labels)
+    {
+        // Add system labels
+        $labels['app_version'] = $this->getApplicationVersion();
+        $labels['app_name'] = config('app.name');
+        $labels['app_custom_label'] = config('app.prometheus_custom_label');
+        return $labels;
+    }
+
+    public function clearMetrics(): void
+    {
+        $this->collectionRegistry->wipeStorage();
+    }
+
+    /**
+     * Gets the version of the application.
+     *
+     * @return string The version of the application.
+     */
+    private function getApplicationVersion()
+    {
+        $root = base_path('composer.json');
+        $composer_json_path = json_decode(file_get_contents($root));
+        return $composer_json_path->version ?? '4.0.0';
     }
 }
