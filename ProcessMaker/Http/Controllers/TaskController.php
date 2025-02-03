@@ -154,7 +154,7 @@ class TaskController extends Controller
 
             return view('tasks.edit', [
                 'task' => $task,
-                'taskNext' => $taskJson,
+                'taskJson' => $taskJson,
                 'dueLabels' => self::$dueLabels,
                 'manager' => $manager,
                 'submitUrl' => $submitUrl,

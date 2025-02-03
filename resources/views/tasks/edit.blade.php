@@ -77,10 +77,9 @@
                     role="tab"
                     aria-controls="tab-data"
                     aria-selected="false"
-                    @click="loadDataTab"
+                    @click="resizeMonaco"
                     class="nav-link">
                     {{__('Data')}}
-                    <span v-if="isLoadingData" class="spinner-border spinner-border-sm" role="status"></span>
                   </a>
                 </li>
               </ul>
@@ -94,10 +93,10 @@
                   v-model="formData"
                   :initial-task-id="{{ $task->id }}"
                   :initial-request-id="{{ $task->process_request_id }}"
-                  :screen-version="{{ $task->screenId ?? null }}"
+                  :screen-version="{{ $task->screen['id'] ?? null }}"
                   :user-id="{{ Auth::user()->id }}"
                   csrf-token="{{ csrf_token() }}"
-                  initial-loop-context="{{ $task->loopContext }}"
+                  initial-loop-context="{{ $task->getLoopContext() }}"
                   :wait-loading-listeners="true"
                   @task-updated="taskUpdated"
                   @updated-page-core="updatePage"
@@ -427,7 +426,7 @@
       '{{ route('requests.show', ['request' => $task->process_request_id]) }}'
     );
 
-    const task = @json($taskNext);
+    const task = @json($taskJson);
     let draftTask = task.draft;
     const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
