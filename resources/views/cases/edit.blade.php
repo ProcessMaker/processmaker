@@ -167,11 +167,20 @@
   @foreach(GlobalScripts::getScripts() as $script)
     <script src="{{$script}}"></script>
   @endforeach
-
-  @foreach($managerModeler->getScripts() as $script)
-    @if (!str_contains($script, 'slideshow'))
-      <script src="{{ $script }}"></script>
-    @endif
+  
+  @php
+    $blacklist = ['package-slideshow','package-process-optimization','package-ab-testing','package-testing'];
+    $filteredScripts = array_filter($managerModeler->getScripts(), function($script) use ($blacklist) {
+      foreach ($blacklist as $term) {
+        if (str_contains($script, $term)) {
+          return false;
+        }
+      }
+      return true;
+    });
+  @endphp
+  @foreach($filteredScripts as $script)
+    <script src="{{ $script }}"></script>
   @endforeach
 
   @if (hasPackage('package-files'))
