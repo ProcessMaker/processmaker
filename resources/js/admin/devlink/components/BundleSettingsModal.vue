@@ -9,7 +9,7 @@
     :cancel-title="'Cancel'"
   >
     <p>
-      These settings will be saved as they are now in the platform. Future changes to the platform's settings won't affect them, as this is a snapshot of the current configuration. To replace this saved configuration with the current one, click "Refresh bundle with current settings".
+      {{ $t("These settings will be saved as they are now in the platform. Future changes to the platform's settings won't affect them, as this is a snapshot of the current configuration. To replace this saved configuration with the current one.") }}
     </p>
     <div class="card settings-listing-card">
       <b-table
@@ -34,7 +34,13 @@
         </template>
       </b-table>
     </div>
-    <p class="mt-3">Setting's date: 12 may 2024 12:12</p>
+    <button
+      v-if="modalTitle === 'ui_settings'"
+      class="btn btn-primary"
+      @click="refreshUi"
+    >
+      {{ $t("Refresh UI") }}
+    </button>
   </b-modal>
 </template>
 <script setup>
@@ -110,6 +116,12 @@ const loadSettings = async () => {
 
   // Update the state of allSelected
   allSelected.value = settings.value.every(setting => setting.enabled);
+};
+
+const refreshUi = async () => {
+  await window.ProcessMaker.apiClient.post(`devlink/local-bundles/setting/refresh-ui`);
+  window.ProcessMaker.alert('UI refreshed', 'success');
+  emit('settings-saved');
 };
 
 const toggleSetting = (key) => {

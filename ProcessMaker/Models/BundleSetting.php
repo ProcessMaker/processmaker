@@ -104,21 +104,10 @@ class BundleSetting extends ProcessMakerModel
                 return $publicFiles->map(function ($publicFile) {
                     return $this->exportHelper($publicFile, MediaExporter::class);
                 });
-            case 'auth_clients':
-                if (empty($this->config)) {
-                    $authClients = \Laravel\Passport\Client::where('revoked', false)->get();
-                } else {
-                    $authClients = \Laravel\Passport\Client::where('revoked', false)->whereIn('id', $ids)->get();
-                }
-
-                return $authClients->map(function ($authClient) {
-                    $authClient->setting_type = $this->setting;
-
-                    return $authClient;
-                });
             case 'Log-In & Auth':
             case 'User Settings':
             case 'Email':
+            case 'ui_settings':
             case 'Integrations':
                 $bundleSettings = Setting::whereIn('key', $ids)->get();
 
