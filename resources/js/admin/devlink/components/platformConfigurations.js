@@ -8,10 +8,6 @@ export default [
     name: "Groups",
   },
   {
-    type: "auth_clients",
-    name: "Auth Clients",
-  },
-  {
     type: "ui_dashboards",
     name: "Dashboards",
   },

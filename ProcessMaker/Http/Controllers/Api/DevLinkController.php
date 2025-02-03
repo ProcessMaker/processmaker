@@ -386,6 +386,14 @@ class DevLinkController extends Controller
 
     public function getBundleAllSettings($settingKey)
     {
-        return Setting::where([['group_id', SettingsMenus::getId($settingKey)], ['hidden', 0]])->get();
+        if ($settingKey === 'ui_settings') {
+            return Setting::whereIn('key', ['css-override', 'login-footer', 'logo-alt-text'])
+                         ->get();
+        }
+
+        return Setting::where([
+            ['group_id', SettingsMenus::getId($settingKey)],
+            ['hidden', 0],
+        ])->get();
     }
 }

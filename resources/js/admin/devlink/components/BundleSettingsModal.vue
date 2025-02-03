@@ -14,7 +14,7 @@
     <div class="card settings-listing-card">
       <b-table
         :items="settings"
-        :fields="fields"
+        :fields="computedFields"
         responsive="sm"
         class="asset-listing-table"
       >
@@ -38,7 +38,7 @@
   </b-modal>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router/composables';
 
 const emit = defineEmits(['settings-saved']);
@@ -47,6 +47,15 @@ const fields = [
   { key: 'name', label: 'Name' },
   { key: 'toggle', label: '', class: 'text-center' },
 ];
+
+const computedFields = computed(() => [
+  { 
+    key: 'name', 
+    label: 'Name',
+    formatter: (value, key, item) => modalTitle.value === 'ui_settings' ? item.key : value
+  },
+  { key: 'toggle', label: '', class: 'text-center' },
+]);
 
 const bundleSettingsModal = ref(null);
 const route = useRoute();
