@@ -427,7 +427,7 @@
       '{{ route('requests.show', ['request' => $task->process_request_id]) }}'
     );
 
-    const task = @json($task);
+    const task = @json($taskNext);
     let draftTask = task.draft;
     const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};

@@ -1,6 +1,6 @@
-// import TaskSaveNotification from "./components/TaskSaveNotification.vue";
-// import TasksList from "./components/TasksList.vue";
-// import TaskSavePanel from "./components/TaskSavePanel.vue";
+import TaskSaveNotification from "./components/TaskSaveNotification.vue";
+import TasksList from "./components/TasksList.vue";
+import TaskSavePanel from "./components/TaskSavePanel.vue";
 import autosaveMixins from "../modules/autosave/autosaveMixin";
 import draftFileUploadMixin from "../modules/autosave/draftFileUploadMixin";
 import reassignMixin from "../common/reassignMixin";

@@ -153,7 +153,8 @@ class TaskController extends Controller
             $taskJson = $taskResource->toArray(request());
 
             return view('tasks.edit', [
-                'task' => json_decode(json_encode($taskJson)),
+                'task' => $task,
+                'taskNext' => $taskJson,
                 'dueLabels' => self::$dueLabels,
                 'manager' => $manager,
                 'submitUrl' => $submitUrl,
