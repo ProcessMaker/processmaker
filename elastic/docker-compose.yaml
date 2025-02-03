@@ -1,0 +1,24 @@
+volumes:
+  pm4_elasticsearch_data:
+    name: pm4_elasticsearch_data
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node # Runs Elasticsearch in single-node mode
+      - xpack.security.enabled=false # Disables security features
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - node.name=es01 # Node name
+      - cluster.name=es-docker-cluster # Cluster name
+      - bootstrap.memory_lock=true # Locks the memory
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200:9200
+      - 9300:9300
+    volumes:
+      - pm4_elasticsearch_data:/usr/share/elasticsearch/data
