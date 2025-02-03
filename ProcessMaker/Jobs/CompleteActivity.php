@@ -47,16 +47,9 @@ class CompleteActivity extends BpmnAction implements ShouldQueue
         $this->engine->runToNextState();
         $element->complete($token);
 
-        Metrics::counter(
+        Metrics::counterInc(
             'activity_completed_total',
             'Total number of activities completed',
-            [
-                'activity_id',
-                'activity_name',
-                'process_id',
-                'request_id',
-            ]
-        )->inc(
             [
                 'activity_id' => $element->getId(),
                 'activity_name' => $element->getName(),
