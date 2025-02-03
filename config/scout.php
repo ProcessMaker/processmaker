@@ -109,4 +109,15 @@ return [
         'searchBoolean' => env('TNTSEARCH_BOOLEAN', false),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Cases Configuration for Elasticsearch
+    |--------------------------------------------------------------------------
+    |
+    | This option allows to control the searchable fields for cases.
+    |
+    */
+    'cases' => [
+        'searchable' => env('ELASTIC_CASES_SEARCHABLE', ''),
+    ]
 ];

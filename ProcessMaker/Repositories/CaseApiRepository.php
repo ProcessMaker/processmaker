@@ -151,27 +151,57 @@ class CaseApiRepository implements CaseApiRepositoryInterface
         if ($request->filled('search')) {
             $search = $request->get('search');
 
-            $model = $query->getModel();
+            if (config('scout.driver') === 'elastic') {
+                $this->searchByElasticSearch($query, $search);
 
-            $matches = $model->search($search)->take(10000)->get()->pluck('id');
-
-            $query->whereIn('id', $matches);
-
-
-            /* if (is_numeric($search)) {
-                $search = CaseUtils::CASE_NUMBER_PREFIX . $search;
-            } else {
-                // Remove special characters except another languages
-                $search = preg_replace(['/[^\p{L}\p{N}\s\_\']/u', '/\s{2,}/'], [' ', ' '], $search);
+                return;
             }
 
-            // Add a plus (+) to the beginning and an asterisk (*) to the end of each word
-            $search = preg_replace_callback("/\b[\w']+\b/u", function ($matches) {
-                return '+' . $matches[0] . '*';
-            }, $search);
-
-            $query->whereFullText($this->searchableFields, $search, ['mode' => 'boolean']); */
+            $this->searchByFullText($query, $search);
         }
+    }
+
+    /**
+     * Search by full text.
+     *
+     * @param Builder $query
+     * @param string $search
+     *
+     * @return void
+     */
+    protected function searchByFullText(Builder $query, string $search): void
+    {
+        if (is_numeric($search)) {
+            $search = CaseUtils::CASE_NUMBER_PREFIX . $search;
+        } else {
+            // Remove special characters except another languages
+            $search = preg_replace(['/[^\p{L}\p{N}\s\_\']/u', '/\s{2,}/'], [' ', ' '], $search);
+        }
+
+        // Add a plus (+) to the beginning and an asterisk (*) to the end of each word
+        $search = preg_replace_callback("/\b[\w']+\b/u", function ($matches) {
+            return '+' . $matches[0] . '*';
+        }, $search);
+
+        $query->whereFullText($this->searchableFields, $search, ['mode' => 'boolean']);
+    }
+
+    /**
+     * Search by ElasticSearch.
+     *
+     * @param Builder $query
+     * @param string $search
+     *
+     * @return void
+     */
+    protected function searchByElasticSearch(Builder $query, string $search): void
+    {
+        // Get the model from the query
+        $model = $query->getModel();
+        // Get the matches from the model
+        $matches = $model->search($search)->take(10000)->get()->pluck('id');
+        // Filter the query by the matches
+        $query->whereIn('id', $matches);
     }
 
     /**

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Laravel\Scout\Searchable;
 use ProcessMaker\Models\ProcessMakerModel;
+use ProcessMaker\Traits\CasesSearchableArray;
 use ProcessMaker\Traits\HandlesValueAliasStatus;
 
 class CaseParticipated extends ProcessMakerModel
@@ -15,6 +16,7 @@ class CaseParticipated extends ProcessMakerModel
     use HasFactory;
     use HandlesValueAliasStatus;
     use Searchable;
+    use CasesSearchableArray;
 
     protected $table = 'cases_participated';
 
@@ -67,24 +69,7 @@ class CaseParticipated extends ProcessMakerModel
      */
     public function toSearchableArray()
     {
-        $searchable = [
-            'case_number' => $this->case_number,
-            'case_title' => $this->case_title,
-        ];
-
-        $columns = env('ELASTIC_CASES_COLUMN_INDEXES', null);
-
-        if ($columns) {
-            $columns = explode(',', $columns);
-
-            $columns = array_intersect($columns, $this->getFillable());
-
-            foreach ($columns as $column) {
-                $searchable[$column] = $this->{$column};
-            }
-        }
-
-        return $searchable;
+        return $this->searchableArray();
     }
 
     /**
