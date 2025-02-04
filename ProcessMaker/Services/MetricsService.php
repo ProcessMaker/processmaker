@@ -172,7 +172,7 @@ class MetricsService
      *
      * @return void
      */
-    public function histogramObserve(string $name, string $help = null, array $labels = [], array $buckets = [0.1, 1, 5, 10], float $executionTime): void
+    public function histogramObserve(string $name, string $help = null, array $labels = [], array $buckets = [0.1, 1, 5, 10], float $executionTime = 0): void
     {
         // Add system labels
         $labels = $this->addSystemLabels($labels);
