@@ -37,7 +37,7 @@ export default {
     },
   },
   mounted() {
-    const jsonCrackEmbed = this.$refs.jsonCrackEmbed;
+    const { jsonCrackEmbed } = this.$refs;
     const json = this.jsonData === "" ? "{}" : this.jsonData;
     const options = {
       theme: "light",

@@ -4,6 +4,7 @@ namespace ProcessMaker\ProcessTranslations;
 
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\Cache;
+use ProcessMaker\Events\TranslationChanged;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Models\MustacheExpressionEvaluator;
 use ProcessMaker\Models\Screen;
@@ -29,6 +30,7 @@ class ScreenTranslation extends TranslationManager
 
         $language = $this->getTargetLanguage($defaultLanguage);
 
+        // event(new TranslationChanged($locale, $changes, $screenId));
         return $this->searchTranslations($screen->screen_id, $config, $language);
     }
 

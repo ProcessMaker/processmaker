@@ -2,13 +2,10 @@
 
 namespace ProcessMaker\Traits;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessPermission;
-use ProcessMaker\Models\User;
 
 trait HasAuthorization
 {
@@ -32,11 +29,12 @@ trait HasAuthorization
 
     public function loadGroupPermissions()
     {
+        $processedGroups = [];
         $permissions = [];
 
         foreach ($this->groupMembersFromMemberable as $gm) {
             $group = $gm->group;
-            $permissions = $this->loadPermissionOfGroups($group, $permissions);
+            $permissions = $this->loadPermissionOfGroups($group, $permissions, $processedGroups);
             $names = $group->permissions->pluck('name')->toArray();
             $permissions = array_merge($permissions, $names);
         }
@@ -44,15 +42,34 @@ trait HasAuthorization
         return $this->addCategoryViewPermissions($permissions);
     }
 
-    public function loadPermissionOfGroups(Group $group, array $permissions = [])
+    public function loadPermissionOfGroups(Group $group, array $permissions = [], array $processedGroups = [])
     {
-        foreach ($group->groupMembersFromMemberable as $member) {
-            $group = $member->group;
-            $permissions = $this->loadPermissionOfGroups($group, $permissions);
-            $permissions = array_merge($permissions, $group->permissions->pluck('name')->toArray());
-        }
+        try {
+            // Check if the group was proccessed
+            if (in_array($group->id, $processedGroups)) {
+                return $permissions;
+            }
+            // Add the group in the processedList
+            $processedGroups[] = $group->id;
+            // Load permissions
+            $groupPermissions = $group->permissions->pluck('name')->toArray();
+            $permissions = array_merge($permissions, $groupPermissions);
+            // Review groups
+            foreach ($group->groupMembersFromMemberable as $member) {
+                $memberGroup = $member->group;
+                $permissions = $this->loadPermissionOfGroups(
+                    $memberGroup,
+                    $permissions,
+                    $processedGroups
+                );
+            }
 
-        return $permissions;
+            return array_unique($permissions);
+        } catch (\Exception $e) {
+            Log::error('Error loading group permissions: ' . $e->getMessage());
+
+            return $permissions;
+        }
     }
 
     public function hasPermission($permissionString)

@@ -15,7 +15,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 class MatchingTasks
 {
     /**
-     * @param  \ProcessMaker\Models\ProcessRequestToken  $task
+     * @param  ProcessRequestToken  $task
      *
      * @return array
      */
@@ -62,9 +62,9 @@ class MatchingTasks
     }
 
     /**
-     * @param  \ProcessMaker\Models\InboxRule  $inboxRule
+     * @param  InboxRule  $inboxRule
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public function get(InboxRule $inboxRule) : Collection
     {

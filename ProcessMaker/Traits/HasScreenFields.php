@@ -1,24 +1,27 @@
 <?php
+
 namespace ProcessMaker\Traits;
 
 use Illuminate\Support\Arr;
 use Log;
+use ProcessMaker\Cache\Screens\ScreenCache;
+use ProcessMaker\Cache\Screens\ScreenCacheFactory;
 use ProcessMaker\Models\Column;
 use ProcessMaker\Models\Screen;
+
 trait HasScreenFields
 {
     private $parsedFields;
+
     private $restrictedComponents = [
         'FormImage',
     ];
+
     public function getFieldsAttribute()
     {
         if (empty($this->parsedFields)) {
             try {
-                $this->parsedFields = collect([]);
-                if ($this->config) {
-                    $this->walkArray($this->config);
-                }
+                $this->loadScreenFields();
             } catch (\Throwable $e) {
                 Log::error("Error encountered while retrieving fields for screen #{$this->id}", [
                     'message' => $e->getMessage(),
@@ -31,7 +34,43 @@ trait HasScreenFields
                 ]);
             }
         }
+
         return $this->parsedFields->unique('field');
+    }
+
+    /**
+     * Load the fields for the screen and cache them
+     *
+     * @return void 
+     */
+    private function loadScreenFields()
+    {
+        $screenCache = ScreenCacheFactory::getScreenCache();
+        // Create cache key
+        $screenId = $this instanceof Screen ? $this->id : $this->screen_id;
+        $screenVersionId = $this instanceof Screen ? 0 : $this->id;
+        $key = $screenCache->createKey([
+            'process_id' => 0,
+            'process_version_id' => 0,
+            'language' => 'all',
+            'screen_id' => (int) $screenId,
+            'screen_version_id' => (int) $screenVersionId,
+        ]) . '_fields';
+
+        // Try to get the screen fields from cache
+        $parsedFields = $screenCache->get($key);
+
+        if (!$parsedFields || collect($parsedFields)->isEmpty()) {
+            $this->parsedFields = ScreenCache::makeFrom($this, []);
+            if ($this->config) {
+                $this->walkArray($this->config);
+            }
+            $this->parsedFields = ScreenCache::makeFrom($this, $this->parsedFields);
+
+            $screenCache->set($key, $this->parsedFields);
+        } else {
+            $this->parsedFields = ScreenCache::makeFrom($this, $parsedFields);
+        }
     }
 
     public function parseNestedScreen($node)
@@ -56,7 +95,6 @@ trait HasScreenFields
             $array = json_decode($array);
         }
         foreach ($array as $subkey => $value) {
-
             if (isset($value['component']) && $value['component'] === 'FormNestedScreen') {
                 $this->parseNestedScreen($value);
             } elseif (isset($value['component']) && $value['component'] === 'FormCollectionRecordControl') {
@@ -132,6 +170,7 @@ trait HasScreenFields
                     break;
             }
         }
+
         return $format;
     }
 
@@ -159,7 +198,6 @@ trait HasScreenFields
      *
      * @return array
      */
-
     public function screenFilteredFields()
     {
         return $this->fields->pluck('field');

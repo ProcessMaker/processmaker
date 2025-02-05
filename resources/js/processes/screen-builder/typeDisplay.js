@@ -1,42 +1,39 @@
-import { renderer, FormBuilderControls, globalProperties } from "@processmaker/screen-builder";
 import formTypes from "./formTypes";
 
-const {
-  FormText,
-} = renderer;
-
-const TableControl = FormBuilderControls.find((control) => control.rendererBinding === "FormMultiColumn");
-const RichTextControl = FormBuilderControls.find((control) => control.rendererBinding === "FormHtmlEditor");
-const FormRecordList = FormBuilderControls.find((control) => control.rendererBinding === "FormRecordList");
-const FormImage = FormBuilderControls.find((control) => control.rendererBinding === "FormImage");
-const FormAvatar = FormBuilderControls.find((control) => control.rendererBinding === "FormAvatar");
-const FormLoop = FormBuilderControls.find((control) => control.rendererBinding === "FormLoop");
-const FormNestedScreen = FormBuilderControls.find((control) => control.rendererBinding === "FormNestedScreen");
-const FileDownloadControl = FormBuilderControls.find((control) => control.builderBinding === "FileDownload");
-const FormListTable = FormBuilderControls.find((control) => control.rendererBinding === "FormListTable");
-const FormAnalyticsChart = FormBuilderControls.find((control) => control.rendererBinding === "FormAnalyticsChart");
-const FormCollectionViewControl = FormBuilderControls.find((control) => control.rendererBinding === "FormCollectionViewControl");
-// Remove editable inspector props
-FormRecordList.control.inspector = FormRecordList.control.inspector.filter((prop) => prop.field !== "editable" && prop.field !== "form");
-
-// Modify record list description when used in a display screen
-FormRecordList.control.popoverContent = "Format content in a table structure";
-
-const controlsDisplay = [
-  RichTextControl,
-  TableControl,
-  FormRecordList,
-  FormImage,
-  FormAvatar,
-  FormLoop,
-  FormNestedScreen,
-  FileDownloadControl,
-  FormListTable,
-  FormAnalyticsChart,
-  FormCollectionViewControl
-];
-
 ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
+  const { FormBuilderControls, globalProperties } = window.ScreenBuilder;
+
+  const TableControl = FormBuilderControls.find((control) => control.rendererBinding === "FormMultiColumn");
+  const RichTextControl = FormBuilderControls.find((control) => control.rendererBinding === "FormHtmlEditor");
+  const FormRecordList = FormBuilderControls.find((control) => control.rendererBinding === "FormRecordList");
+  const FormImage = FormBuilderControls.find((control) => control.rendererBinding === "FormImage");
+  const FormAvatar = FormBuilderControls.find((control) => control.rendererBinding === "FormAvatar");
+  const FormLoop = FormBuilderControls.find((control) => control.rendererBinding === "FormLoop");
+  const FormNestedScreen = FormBuilderControls.find((control) => control.rendererBinding === "FormNestedScreen");
+  const FileDownloadControl = FormBuilderControls.find((control) => control.builderBinding === "FileDownload");
+  const FormListTable = FormBuilderControls.find((control) => control.rendererBinding === "FormListTable");
+  const FormAnalyticsChart = FormBuilderControls.find((control) => control.rendererBinding === "FormAnalyticsChart");
+  const FormCollectionViewControl = FormBuilderControls.find((control) => control.rendererBinding === "FormCollectionViewControl");
+  // Remove editable inspector props
+  FormRecordList.control.inspector = FormRecordList.control.inspector.filter((prop) => prop.field !== "editable" && prop.field !== "form");
+
+  // Modify record list description when used in a display screen
+  FormRecordList.control.popoverContent = "Format content in a table structure";
+
+  const controlsDisplay = [
+    RichTextControl,
+    TableControl,
+    FormRecordList,
+    FormImage,
+    FormAvatar,
+    FormLoop,
+    FormNestedScreen,
+    FileDownloadControl,
+    FormListTable,
+    FormAnalyticsChart,
+    FormCollectionViewControl,
+  ];
+
   controlsDisplay.forEach((item) => {
     item.control.inspector.push(...globalProperties[0].inspector);
     manager.type = formTypes.display;
