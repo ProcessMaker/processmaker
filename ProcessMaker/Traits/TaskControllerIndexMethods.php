@@ -363,7 +363,9 @@ trait TaskControllerIndexMethods
                 Auth::user(),
                 SavedSearch::KEY_TASKS,
             );
-            $id = $savedSearch->id;
+            if ($savedSearch) {
+                $id = $savedSearch->id;
+            }
         }
 
         return $id;
