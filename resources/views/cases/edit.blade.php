@@ -168,18 +168,7 @@
     <script src="{{$script}}"></script>
   @endforeach
   
-  @php
-    $blacklist = ['package-slideshow','package-process-optimization','package-ab-testing','package-testing'];
-    $filteredScripts = array_filter($managerModeler->getScripts(), function($script) use ($blacklist) {
-      foreach ($blacklist as $term) {
-        if (str_contains($script, $term)) {
-          return false;
-        }
-      }
-      return true;
-    });
-  @endphp
-  @foreach($filteredScripts as $script)
+  @foreach($managerModelerScripts as $script)
     <script src="{{ $script }}"></script>
   @endforeach
 
