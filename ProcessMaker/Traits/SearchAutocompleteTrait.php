@@ -13,6 +13,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\Package\Projects\Models\ProjectCategory;
+use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 
 trait SearchAutocompleteTrait
 {
@@ -258,5 +259,24 @@ trait SearchAutocompleteTrait
         return $results->map(function ($request) {
             return $request->only(['id', 'name']);
         });
+    }
+
+    /**
+     * Get the ID of the default saved search for tasks.
+     *
+     * @return int|null
+     */
+    private function getDefaultSavedSearchId()
+    {
+        $id = null;
+        if (class_exists(SavedSearch::class)) {
+            $savedSearch = SavedSearch::firstSystemSearchFor(
+                Auth::user(),
+                SavedSearch::KEY_TASKS,
+            );
+            $id = $savedSearch->id;
+        }
+
+        return $id;
     }
 }

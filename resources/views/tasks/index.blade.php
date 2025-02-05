@@ -160,6 +160,7 @@
         window.ProcessMaker.showOldTaskScreen = @json($showOldTaskScreen);
         window.Processmaker.user = @json($currentUser);
         window.Processmaker.selectedProcess = @json($selectedProcess);
+        window.Processmaker.defaultSavedSearchId = @json($defaultSavedSearchId);
     </script>
     <script>
         window.ProcessMaker.ellipsisPermission = {{

@@ -66,7 +66,9 @@ class TaskController extends Controller
 
         $currentUser = Auth::user();
 
-        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns', 'taskDraftsEnabled', 'userConfiguration', 'showOldTaskScreen', 'currentUser', 'selectedProcess'));
+        $defaultSavedSearchId = $this->getDefaultSavedSearchId();
+
+        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns', 'taskDraftsEnabled', 'userConfiguration', 'showOldTaskScreen', 'currentUser', 'selectedProcess', 'defaultSavedSearchId'));
     }
 
     public function edit(ProcessRequestToken $task, string $preview = '')
