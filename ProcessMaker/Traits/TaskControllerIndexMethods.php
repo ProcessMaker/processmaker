@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Traits;
 
+use Auth;
 use DB;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Arr;
@@ -12,6 +13,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
+use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 use ProcessMaker\Query\SyntaxError;
 
 trait TaskControllerIndexMethods
@@ -346,5 +348,24 @@ trait TaskControllerIndexMethods
             $query->whereIn('process_request_tokens.process_id', array_column($ids, 'id'))
                 ->where('process_request_tokens.status', 'ACTIVE');
         });
+    }
+
+    /**
+     * Get the ID of the default saved search for tasks.
+     *
+     * @return int|null
+     */
+    private function getDefaultSavedSearchId()
+    {
+        $id = null;
+        if (class_exists(SavedSearch::class)) {
+            $savedSearch = SavedSearch::firstSystemSearchFor(
+                Auth::user(),
+                SavedSearch::KEY_TASKS,
+            );
+            $id = $savedSearch->id;
+        }
+
+        return $id;
     }
 }
