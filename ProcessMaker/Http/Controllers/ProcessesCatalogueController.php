@@ -15,6 +15,7 @@ use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessLaunchpad;
 use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 use ProcessMaker\Traits\HasControllerAddons;
+use ProcessMaker\Traits\TaskControllerIndexMethods;
 
 /**
  * @param Request $request
@@ -25,6 +26,7 @@ use ProcessMaker\Traits\HasControllerAddons;
 class ProcessesCatalogueController extends Controller
 {
     use HasControllerAddons;
+    use TaskControllerIndexMethods;
 
     public function index(Request $request, Process $process = null)
     {
@@ -53,24 +55,5 @@ class ProcessesCatalogueController extends Controller
         $defaultSavedSearch = $this->getDefaultSavedSearchId();
 
         return view('processes-catalogue.index', compact('process', 'currentUser', 'manager', 'userConfiguration', 'defaultSavedSearch'));
-    }
-
-    /**
-     * Get the ID of the default saved search for tasks.
-     *
-     * @return int|null
-     */
-    private function getDefaultSavedSearchId()
-    {
-        $id = null;
-        if (class_exists(SavedSearch::class)) {
-            $savedSearch = SavedSearch::firstSystemSearchFor(
-                Auth::user(),
-                SavedSearch::KEY_TASKS,
-            );
-            $id = $savedSearch->id;
-        }
-
-        return $id;
     }
 }
