@@ -43,21 +43,17 @@ class PerformanceModelsTest extends TestCase
      */
     public function FactoryListProvider()
     {
-        // TODO: fix for laravel 8 factories. This test is skipped in the trait.
-        return [];
-
-        file_exists('coverage') ?: mkdir('coverage');
-        $factories = app(EloquentFactory::class);
-        $reflection = new ReflectionObject($factories);
-        $property = $reflection->getProperty('definitions');
-        $property->setAccessible(true);
-        $definitions = $property->getValue($factories);
+        $models = [];
+        $factoriesPath = app_path('Models');
+        $modelFiles = glob($factoriesPath . '/*.php');
 
         $baseTime = $this->calculateUnitTime();
 
-        $models = [];
-        foreach ($definitions as $model => $definition) {
-            $models[] = [$model, $baseTime];
+        foreach ($modelFiles as $file) {
+            $model = 'ProcessMaker\\Models\\' . basename($file, '.php');
+            if (method_exists($model, 'factory')) {
+                $models[] = [$model, $baseTime];
+            }
         }
 
         return $models;
@@ -93,7 +89,7 @@ class PerformanceModelsTest extends TestCase
         $baseCount = $this->getTotalRecords();
         $t = microtime(true);
         $times = 1;
-        $model->factory()->count($times)->create();
+        $model::factory()->count($times)->create();
         $time = microtime(true) - $t;
         $count = $this->getTotalRecords();
         $speed = ($count - $baseCount) / ($time / $baseTime);
