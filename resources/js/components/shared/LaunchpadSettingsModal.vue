@@ -502,6 +502,16 @@ export default {
       let defaultSavedSearch = window.ProcessMaker?.defaultSavedSearch || 
         window.Processmaker?.defaultSavedSearchId ||  
         null;
+        
+      // If there is no defaultSavedSearch, initialize empty arrays and exit
+      if (!defaultSavedSearch) {
+        this.myTasks.defaultColumns = [];
+        this.myTasks.availableColumns = [];
+        this.myTasks.dataColumns = [];
+        return;
+      }
+
+      if (defaultSavedSearch) {
       await ProcessMaker.apiClient.get(`saved-searches/${defaultSavedSearch}/columns?include=default`)
         .then((response) => {
           if (response.data && response.data.default) {
