@@ -61,6 +61,10 @@ class ScriptExecutor extends ProcessMakerModel
         'title', 'description', 'language', 'config', 'is_system', 'type',
     ];
 
+    protected $casts = [
+        'type' => ScriptExecutorType::class,
+    ];
+
     // Lua and R are deprecated. This scope can be removed
     // when they are removed permanently.
     public function scopeActive($query)
