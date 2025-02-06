@@ -499,9 +499,8 @@ export default {
     },
     async getMyTasksColumns() {
       this.myTasks.currentColumns = this.myTasksColumns;
-      let defaultSavedSearch = window.ProcessMaker?.defaultSavedSearchId || 
-        window.Processmaker?.defaultSavedSearchId || 
-        window?.defaultSavedSearchId || 
+      let defaultSavedSearch = window.ProcessMaker?.defaultSavedSearch || 
+        window.Processmaker?.defaultSavedSearchId ||  
         null;
       await ProcessMaker.apiClient.get(`saved-searches/${defaultSavedSearch}/columns?include=default`)
         .then((response) => {
