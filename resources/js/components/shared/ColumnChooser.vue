@@ -217,7 +217,13 @@ export default {
           }
         },
         resizeColumnContainer() {
-          let containerHeight = document.querySelector('.tab-content').offsetHeight;
+          const tabContent = document.querySelector('.tab-content');
+
+          if (!tabContent || !this.$refs.columnBefore || !this.$refs.columnAfter || !this.$refs.columnContainer) {
+            return;
+          }
+          
+          let containerHeight = tabContent.offsetHeight;
           let beforeHeight = this.$refs.columnBefore.offsetHeight;
           let afterHeight = this.$refs.columnAfter.offsetHeight;
           

@@ -195,7 +195,6 @@ export default {
 
 .card-bookmark:hover {
   cursor: pointer;
-  background-color: #fff4c6;
 }
 
 .card-custom {
