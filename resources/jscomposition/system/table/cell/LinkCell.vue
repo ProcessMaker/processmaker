@@ -53,7 +53,6 @@ const props = defineProps({
  *  - Empty string if no valid value found
  */
 const value = computed(() => {
-  console.log("props.row", props.row);
   if (isFunction(props.column?.formatter)) {
     return props.column?.formatter(props.row, props.column, props.columns);
   }
