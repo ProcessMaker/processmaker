@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 use ProcessMaker\Enums\ScriptExecutorType;
@@ -61,6 +62,10 @@ class ScriptExecutor extends ProcessMakerModel
         'title', 'description', 'language', 'config', 'is_system', 'type',
     ];
 
+    protected $casts = [
+        'type' => ScriptExecutorType::class,
+    ];
+
     // Lua and R are deprecated. This scope can be removed
     // when they are removed permanently.
     public function scopeActive($query)
@@ -94,7 +99,13 @@ class ScriptExecutor extends ProcessMakerModel
             ->orderBy('created_at', 'asc')
             ->first();
         if (!$initialExecutor) {
-            throw new ScriptLanguageNotSupported($language);
+            if (app()->runningInConsole()) {
+                Log::error('Script Executor not found for language: ' . $language);
+
+                return null;
+            } else {
+                throw new ScriptLanguageNotSupported($language);
+            }
         }
 
         return $initialExecutor;
