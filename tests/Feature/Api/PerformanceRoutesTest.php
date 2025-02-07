@@ -83,7 +83,7 @@ class PerformanceRoutesTest extends TestCase
     {
         file_exists('coverage') ?: mkdir('coverage');
 
-        return self::endpoints;
+        return self::$endpoints;
     }
 
     /**
