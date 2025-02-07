@@ -107,6 +107,7 @@
 
     <BundleSettingsModal
       ref="bundleSettingsModal"
+      :editable="bundle.dev_link_id === null"
       @settings-saved="loadAssets"
     />
 
