@@ -7,19 +7,19 @@
       class="hover:tw-text-blue-400 tw-text-gray-500"
       :href="href(row)"
     >
-      {{ getValue() }}
+      {{ value }}
     </a>
     <span
       v-else
       class="hover:tw-text-blue-400 tw-text-gray-500 hover:tw-cursor-pointer"
       @click.prevent="onClick"
     >
-      {{ getValue() }}
+      {{ value }}
     </span>
   </div>
 </template>
 <script setup>
-import { defineProps } from "vue";
+import { defineProps,computed } from "vue";
 import { isFunction, get } from "lodash";
 
 const props = defineProps({
@@ -45,12 +45,20 @@ const props = defineProps({
   },
 });
 
-const getValue = () => {
+/**
+ * Computes the display value for the link/text
+ * @returns {string} The formatted value from either:
+ *  - The column formatter if defined
+ *  - The value at the column's field path in the row data
+ *  - Empty string if no valid value found
+ */
+const value = computed(() => {
+  console.log("props.row", props.row);
   if (isFunction(props.column?.formatter)) {
     return props.column?.formatter(props.row, props.column, props.columns);
   }
   return get(props.row, props.column?.field) || "";
-};
+});
 
 const onClick = () => {
   props.click && props.click(props.row, props.column, props.columns);
