@@ -34,7 +34,7 @@
         @click.prevent="onClick"
       >
         <i class="fas fa-ellipsis-v" />
-      </div>``
+      </div>
       <template #content>
         <ul class="tw-bg-white tw-list-none tw-text-gray-600 tw-overflow-hidden tw-rounded-lg tw-w-50 tw-text-sm tw-border tw-border-gray-300">
           <li
