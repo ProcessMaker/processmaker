@@ -25,7 +25,7 @@ class ProcessPatternsTest extends TestCase
     use RequestHelper;
     use ProcessTestingTrait;
 
-    private $basePath = __DIR__ . '/bpmnPatterns/';
+    public static $basePath = __DIR__ . '/bpmnPatterns/';
 
     /**
      * Make sure we have a personal access client set up
@@ -74,7 +74,7 @@ class ProcessPatternsTest extends TestCase
      */
     private static function prepareTestCases($bpmnFile, array $tests)
     {
-        $file = "{$this->basePath}{$bpmnFile}";
+        $file = self::$basePath . $bpmnFile;
         $name = basename($bpmnFile, '.bpmn');
         $jsonFile = substr($file, 0, -4) . 'json';
         if (file_exists($jsonFile)) {
@@ -107,7 +107,7 @@ class ProcessPatternsTest extends TestCase
     private function runProcessWithoutContext($bpmnFile)
     {
         $bpmnRepository = new BpmnDocument();
-        $bpmnRepository->load("{$this->basePath}{$bpmnFile}");
+        $bpmnRepository->load(self::$basePath . $bpmnFile);
         $startEvents = $bpmnRepository->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'startEvent');
         foreach ($startEvents as $startEvent) {
             $data = [];
@@ -132,7 +132,7 @@ class ProcessPatternsTest extends TestCase
             foreach ($context['requires'] as $index => $process) {
                 $this->createProcess([
                     'id' => $index + 1,
-                    'bpmn' => file_get_contents("{$this->basePath}{$process}"),
+                    'bpmn' => file_get_contents(self::$basePath . $process),
                 ]);
             }
         }
@@ -153,7 +153,7 @@ class ProcessPatternsTest extends TestCase
     private function runProcess($bpmnFile, $data, $startEvent, $expectedResult, $events, $output, $context)
     {
         Cache::store('global_variables')->flush();
-        $process = $this->createProcess(file_get_contents("{$this->basePath}{$bpmnFile}"));
+        $process = $this->createProcess(file_get_contents(self::$basePath . $bpmnFile));
         $definitions = $process->getDefinitions();
         $start = $definitions->getStartEvent($startEvent);
         if ($start->getEventDefinitions()->count() > 0) {
