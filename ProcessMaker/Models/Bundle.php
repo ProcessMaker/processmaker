@@ -303,7 +303,9 @@ class Bundle extends ProcessMakerModel implements HasMedia
             $logger = new Logger();
         }
         $logger->status('Saving the bundle locally');
-        $payloads = array_merge($payloads, $payloadsSettings[0]);
+        if (isset($payloadsSettings[0])) {
+            $payloads = array_merge($payloads, $payloadsSettings[0]);
+        }
 
         $this->addMediaFromString(
             gzencode(
