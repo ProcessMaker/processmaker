@@ -88,7 +88,7 @@ export default {
       ],
       actions: [
         { value: "edit-item", content: "Edit Auth Client", icon: "fas fa-pen-square", ariaDescribedBy: 'data.id'},
-        { value: "add-to-bundle", content: "Add to Bundle", icon: "fas fa-folder-plus", permission: "admin", emit_on_root: 'add-to-bundle'},
+        { value: "add-to-bundle", content: "Add to Bundle", icon: "fp-add-outlined", permission: "admin", emit_on_root: 'add-to-bundle'},
         { value: "delete-item", content: "Delete Auth Client", icon: "fas fa-trash-alt",  ariaDescribedBy: 'data.id'},
       ],
       fields: [

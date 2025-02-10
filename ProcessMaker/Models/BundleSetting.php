@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Enums\ExporterMap;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\GroupExporter;
+use ProcessMaker\ImportExport\Exporters\MediaExporter;
 use ProcessMaker\ImportExport\Exporters\ScriptExecutorExporter;
 use ProcessMaker\ImportExport\Exporters\UserExporter;
 use ProcessMaker\Models\ProcessMakerModel;
@@ -91,31 +92,22 @@ class BundleSetting extends ProcessMakerModel
                 return $uiMenus->map(function ($uiMenu) {
                     return $this->exportHelper($uiMenu, MenuExporter::class);
                 });
-            case 'translations':
+            case 'public_files':
                 if (empty($this->config)) {
-                    $translations = Translatable::all();
+                    $publicFiles = Media::all()->filter(function ($media) {
+                        return $media->isPublicFile();
+                    });
                 } else {
-                    $translations = Translatable::whereIn('key', $ids)->get();
+                    $publicFiles = Media::whereIn('id', $ids)->get();
                 }
 
-                return $translations->map(function ($translation) {
-                    return $this->exportHelper($translation, TranslatableExporter::class);
-                });
-            case 'auth_clients':
-                if (empty($this->config)) {
-                    $authClients = \Laravel\Passport\Client::where('revoked', false)->get();
-                } else {
-                    $authClients = \Laravel\Passport\Client::where('revoked', false)->whereIn('id', $ids)->get();
-                }
-
-                return $authClients->map(function ($authClient) {
-                    $authClient->setting_type = $this->setting;
-
-                    return $authClient;
+                return $publicFiles->map(function ($publicFile) {
+                    return $this->exportHelper($publicFile, MediaExporter::class);
                 });
             case 'Log-In & Auth':
             case 'User Settings':
             case 'Email':
+            case 'ui_settings':
             case 'Integrations':
                 $bundleSettings = Setting::whereIn('key', $ids)->get();
 
@@ -125,8 +117,6 @@ class BundleSetting extends ProcessMakerModel
                     return $bundleSetting;
                 });
         }
-
-        return [];
     }
 
     public function exportHelper($model, $exporterClass, $options = null, $ignoreExplicitExport = true)

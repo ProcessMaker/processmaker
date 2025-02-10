@@ -233,6 +233,11 @@ class Bundle extends ProcessMakerModel implements HasMedia
                 }
             }
 
+            if ($type === 'ui_settings') {
+                $config['id'] = ['css-override', 'login-footer', 'logo-alt-text'];
+                $config['type'] = $type;
+            }
+
             BundleSetting::create([
                 'bundle_id' => $this->id,
                 'setting' => $setting,
@@ -292,8 +297,16 @@ class Bundle extends ProcessMakerModel implements HasMedia
         return $this->filesSortedByVersion()->first();
     }
 
-    public function savePayloadsToFile(array $payloads)
+    public function savePayloadsToFile(array $payloads, array $payloadsSettings, $logger = null)
     {
+        if ($logger === null) {
+            $logger = new Logger();
+        }
+        $logger->status('Saving the bundle locally');
+        if (isset($payloadsSettings[0])) {
+            $payloads = array_merge($payloads, $payloadsSettings[0]);
+        }
+
         $this->addMediaFromString(
             gzencode(
                 json_encode($payloads)
@@ -338,50 +351,62 @@ class Bundle extends ProcessMakerModel implements HasMedia
                 $logger->status('Installing bundle settings on the this instance');
                 $logger->setSteps($payloads[0]);
                 $assets[] = DevLink::import($payload[0], $options, $logger);
-            } else {
-                switch ($payload[0]['setting_type']) {
-                    case 'auth_clients':
-                        $clientRepository->create(
-                            null,
-                            $payload[0]['name'],
-                            $payload[0]['redirect'],
-                            $payload[0]['provider'],
-                            $payload[0]['personal_access_client'],
-                            $payload[0]['password_client']
-                        );
-                        break;
-                    case 'User Settings':
-                    case 'Email':
-                    case 'Integrations':
-                    case 'Log-In & Auth':
-                        $settingsMenu = SettingsMenus::where('menu_group', $payload[0]['setting_type'])->first();
-                        Setting::updateOrCreate([
-                            'key' => $payload[0]['key'],
-                        ], [
-                            'config' => $payload[0]['config'],
-                            'name' => $payload[0]['name'],
-                            'helper' => $payload[0]['helper'],
-                            'format' => $payload[0]['format'],
-                            'hidden' => $payload[0]['hidden'],
-                            'readonly' => $payload[0]['readonly'],
-                            'ui' => $payload[0]['ui'],
-                            'group_id' => $settingsMenu->id,
-                            'group' => $payload[0]['group'],
-                        ]);
-                        break;
+            } elseif (isset($payload[0]['setting_type'])) {
+                foreach ($payload as $setting) {
+                    switch ($setting['setting_type']) {
+                        case 'auth_clients':
+                            $clientRepository->create(
+                                null,
+                                $setting['name'],
+                                $setting['redirect'],
+                                $setting['provider'],
+                                $setting['personal_access_client'],
+                                $setting['password_client']
+                            );
+                            break;
+                        case 'User Settings':
+                        case 'Email':
+                        case 'Integrations':
+                        case 'Log-In & Auth':
+                            $settingsMenu = SettingsMenus::where('menu_group', $setting['setting_type'])->first();
+                            Setting::updateOrCreate([
+                                'key' => $setting['key'],
+                            ], [
+                                'config' => $setting['config'],
+                                'name' => $setting['name'],
+                                'helper' => $setting['helper'],
+                                'format' => $setting['format'],
+                                'hidden' => $setting['hidden'],
+                                'readonly' => $setting['readonly'],
+                                'ui' => $setting['ui'],
+                                'group_id' => $settingsMenu->id,
+                                'group' => $setting['group'],
+                            ]);
+                            break;
+                        case 'ui_settings':
+                            Setting::updateOrCreate([
+                                'key' => $setting['key'],
+                            ], [
+                                'config' => $setting['config'],
+                                'name' => $setting['name'],
+                                'helper' => $setting['helper'],
+                                'format' => $setting['format'],
+                                'hidden' => $setting['hidden'],
+                                'readonly' => $setting['readonly'],
+                                'ui' => $setting['ui'],
+                            ]);
+                            break;
+                    }
                 }
             }
         }
     }
 
-    public function install(array $payloads, $mode, $logger = null)
+    public function install(array $payloads, $mode, $logger = null, $reinstall = false)
     {
         if ($logger === null) {
             $logger = new Logger();
         }
-
-        $logger->status('Saving the bundle locally');
-        $this->savePayloadsToFile($payloads);
 
         $logger->status('Installing bundle on the this instance');
         $logger->setSteps($payloads);
@@ -394,7 +419,7 @@ class Bundle extends ProcessMakerModel implements HasMedia
             $assets[] = DevLink::import($payload, $options, $logger);
         }
 
-        if ($mode === 'update') {
+        if ($mode === 'update' && $reinstall === false) {
             $logger->status('Syncing bundle assets');
             $this->syncAssets($assets);
         }
@@ -406,8 +431,7 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
         $content = file_get_contents($media->getPath());
         $payloads = json_decode(gzdecode($content), true);
-
-        $this->install($payloads, $mode, $logger);
+        $this->install($payloads, $mode, $logger, true);
 
         $logger?->setStatus('done');
     }

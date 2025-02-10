@@ -11,6 +11,7 @@
         </div>
         <div class="config-action">
           <button
+            v-if="props.type"
             class="config-action-button"
             @click="$emit('open-settings-modal', {
               key: config.type,

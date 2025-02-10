@@ -15,4 +15,8 @@ export default [
     type: "Integrations",
     name: "Integrations",
   },
+  {
+    type: "ui_settings",
+    name: "UI Settings",
+  },
 ];

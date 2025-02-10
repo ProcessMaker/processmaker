@@ -82,7 +82,7 @@ export default {
       ],
       actions: [
         { value: "edit-item", content: "Edit User", link: true, href: '/admin/users/{{id}}/edit', icon: "fas fa-pen-square", permission:'edit-users', ariaDescribedBy: 'data.id'},
-        { value: "add-to-bundle", content: "Add to Bundle", icon: "fas fa-folder-plus", permission: "admin", emit_on_root: 'add-to-bundle'},
+        { value: "add-to-bundle", content: "Add to Bundle", icon: "fp-add-outlined", permission: "admin", emit_on_root: 'add-to-bundle'},
         { value: "delete-item", content: "Delete User", icon: "fas fa-trash-alt", permission: 'delete-users'},
       ],
       fields: [

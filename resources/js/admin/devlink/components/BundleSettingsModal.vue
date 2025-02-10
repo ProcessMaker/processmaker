@@ -9,18 +9,19 @@
     :cancel-title="'Cancel'"
   >
     <p>
-      These settings will be saved as they are now in the platform. Future changes to the platform's settings won't affect them, as this is a snapshot of the current configuration. To replace this saved configuration with the current one, click "Refresh bundle with current settings".
+      {{ $t("These settings will be saved as they are now in the platform. Future changes to the platform's settings won't affect them, as this is a snapshot of the current configuration.") }}
     </p>
     <div class="card settings-listing-card">
       <b-table
         :items="settings"
-        :fields="fields"
+        :fields="computedFields"
         responsive="sm"
         class="asset-listing-table"
       >
         <template #head(toggle)>
           <b-form-checkbox
             v-model="allSelected"
+            :disabled="!editable"
             @change="toggleAll"
             switch
           />
@@ -28,31 +29,50 @@
         <template #cell(toggle)="data">
           <b-form-checkbox
             v-model="data.item.enabled"
+            :disabled="!editable"
             @change="toggleSetting(data.item.key)"
             switch
           />
         </template>
       </b-table>
     </div>
-    <p class="mt-3">Setting's date: 12 may 2024 12:12</p>
+    <button
+      v-if="settingKey === 'ui_settings'"
+      class="btn btn-primary"
+      @click="refreshUi"
+    >
+      {{ $t("Refresh UI") }}
+    </button>
   </b-modal>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router/composables';
 
 const emit = defineEmits(['settings-saved']);
 
-const fields = [
-  { key: 'name', label: 'Name' },
+const props = defineProps({
+  editable: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const computedFields = computed(() => [
+  { 
+    key: 'name', 
+    label: 'Name',
+    formatter: (value, key, item) => settingKey.value === 'ui_settings' ? item.key : value
+  },
   { key: 'toggle', label: '', class: 'text-center' },
-];
+]);
 
 const bundleSettingsModal = ref(null);
 const route = useRoute();
 const bundleId = route.params.id;
 const settings = ref([]);
 const modalTitle = ref('');
+const settingKey = ref('');
 const configs = ref({});
 const selectedIds = ref([]);
 const allSelected = ref(false);
@@ -62,7 +82,7 @@ const onOk = async () => {
     id: selectedIds.value,
   };
   await window.ProcessMaker.apiClient.post(`devlink/local-bundles/${bundleId}/add-settings`, {
-    setting: modalTitle.value,
+    setting: settingKey.value,
     config: JSON.stringify(configs.value),
     type: null
   });
@@ -72,7 +92,8 @@ const onOk = async () => {
 };
 
 const show = (config) => {
-  modalTitle.value = config.key;
+  modalTitle.value = config.key === 'ui_settings' ? 'UI Settings' : config.key;
+  settingKey.value = config.key;
   if (bundleSettingsModal.value) {
     bundleSettingsModal.value.show();
     loadSettings();
@@ -86,8 +107,8 @@ const hide = () => {
 };
 
 const loadSettings = async () => {
-  const response = await window.ProcessMaker.apiClient.get(`devlink/local-bundles/${bundleId}/setting/${modalTitle.value}`);
-  const settingsResponse = await window.ProcessMaker.apiClient.get(`devlink/local-bundles/all-settings/${modalTitle.value}`);
+  const response = await window.ProcessMaker.apiClient.get(`devlink/local-bundles/${bundleId}/setting/${settingKey.value}`);
+  const settingsResponse = await window.ProcessMaker.apiClient.get(`devlink/local-bundles/all-settings/${settingKey.value}`);
 
   // Check if response.data.config is not empty before parsing
   const configData = response.data.config ? JSON.parse(response.data.config) : { id: [] };
@@ -101,6 +122,12 @@ const loadSettings = async () => {
 
   // Update the state of allSelected
   allSelected.value = settings.value.every(setting => setting.enabled);
+};
+
+const refreshUi = async () => {
+  await window.ProcessMaker.apiClient.post(`devlink/local-bundles/setting/refresh-ui`);
+  window.ProcessMaker.alert('UI refreshed', 'success');
+  emit('settings-saved');
 };
 
 const toggleSetting = (key) => {

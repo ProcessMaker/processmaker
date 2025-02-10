@@ -74,7 +74,7 @@ export default {
       ],
       actions: [
         { value: "edit-item", content: "Edit Group", link: true, href: '/admin/groups/{{id}}/edit', icon: "fas fa-pen-square", permission:'edit-groups', ariaDescribedBy: 'data.id'},
-        { value: "add-to-bundle", content: "Add to Bundle", icon: "fas fa-folder-plus", permission: "admin", emit_on_root: 'add-to-bundle'},
+        { value: "add-to-bundle", content: "Add to Bundle", icon: "fp-add-outlined", permission: "admin", emit_on_root: 'add-to-bundle'},
         { value: "delete-item", content: "Delete Group", icon: "fas fa-trash-alt", permission: 'delete-groups',  ariaDescribedBy: 'data.id'},
       ],
       fields: [

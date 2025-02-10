@@ -4,11 +4,14 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\Rule;
+use ProcessMaker\Events\CustomizeUiUpdated;
 use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Jobs\CompileSass;
 use ProcessMaker\Jobs\DevLinkInstall;
 use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\BundleAsset;
@@ -198,6 +201,8 @@ class DevLinkController extends Controller
 
     public function deleteBundle(Bundle $bundle)
     {
+        $bundle->assets()->delete();
+        $bundle->settings()->delete();
         $bundle->delete();
     }
 
@@ -255,7 +260,7 @@ class DevLinkController extends Controller
     public function exportLocalBundleSettingPayloads(Bundle $bundle)
     {
         if ($bundle->settings->isEmpty()) {
-            return ['payloads' => [0 => []]];
+            return ['payloads' => []];
         }
 
         return ['payloads' => $bundle->exportSettingPayloads()];
@@ -384,6 +389,79 @@ class DevLinkController extends Controller
 
     public function getBundleAllSettings($settingKey)
     {
-        return Setting::where([['group_id', SettingsMenus::getId($settingKey)], ['hidden', 0]])->get();
+        if ($settingKey === 'ui_settings') {
+            return Setting::whereIn('key', ['css-override', 'login-footer', 'logo-alt-text'])
+                         ->get();
+        }
+
+        return Setting::where([
+            ['group_id', SettingsMenus::getId($settingKey)],
+            ['hidden', 0],
+        ])->get();
+    }
+
+    public function refreshUi()
+    {
+        $cssOverride = Setting::where('key', 'css-override')->first();
+
+        $config = $cssOverride->config;
+        $variables = json_decode($config['variables']);
+        $sansSerif = json_decode($config['sansSerifFont'], true);
+
+        $this->writeColors($variables);
+        $this->writeFonts($sansSerif);
+        $this->compileSass(auth()->user()->id);
+        CustomizeUiUpdated::dispatch([], [], false);
+    }
+
+    private function writeColors($data)
+    {
+        // Now generate the _colors.scss file
+        $contents = "// Changed theme colors\n";
+        foreach ($data as $value) {
+            $contents .= $value->id . ': ' . $value->value . ";\n";
+        }
+        File::put(app()->resourcePath('sass') . '/_colors.scss', $contents);
+    }
+
+    /**
+     * Write variables font in file
+     *
+     * @param $sansSerif
+     * @param $serif
+     */
+    private function writeFonts($sansSerif)
+    {
+        $sansSerif = $sansSerif ? $sansSerif : $this->sansSerifFontDefault();
+        // Generate the _fonts.scss file
+        $contents = "// Changed theme fonts\n";
+        $contents .= '$font-family-sans-serif: ' . $sansSerif['id'] . " !default;\n";
+        File::put(app()->resourcePath('sass') . '/_fonts.scss', $contents);
+    }
+
+    /**
+     * run jobs compile
+     */
+    private function compileSass($userId)
+    {
+        // Compile the Sass files
+        $this->dispatch(new CompileSass([
+            'tag' => 'sidebar',
+            'origin' => 'resources/sass/sidebar/sidebar.scss',
+            'target' => 'public/css/sidebar.css',
+            'user' => $userId,
+        ]));
+        $this->dispatch(new CompileSass([
+            'tag' => 'app',
+            'origin' => 'resources/sass/app.scss',
+            'target' => 'public/css/app.css',
+            'user' => $userId,
+        ]));
+        $this->dispatch(new CompileSass([
+            'tag' => 'queues',
+            'origin' => 'resources/sass/admin/queues.scss',
+            'target' => 'public/css/admin/queues.css',
+            'user' => $userId,
+        ]));
     }
 }

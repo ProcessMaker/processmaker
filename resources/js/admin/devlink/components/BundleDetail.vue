@@ -29,8 +29,7 @@
           aria-haspopup="true"
           aria-expanded="false"
         >
-          <i class="fas fp-plus" />
-          {{ $t('Install') }}
+          {{ $t('Reinstall') }}
         </button>
         <div class="dropdown-menu" id="dropdown">
           <a
@@ -108,6 +107,7 @@
 
     <BundleSettingsModal
       ref="bundleSettingsModal"
+      :editable="bundle.dev_link_id === null"
       @settings-saved="loadAssets"
     />
 
