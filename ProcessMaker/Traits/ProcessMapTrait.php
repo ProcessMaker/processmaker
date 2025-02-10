@@ -116,7 +116,11 @@ trait ProcessMapTrait
     private function loadProcessMap(ProcessRequest $request): array
     {
         $processRequest = ProcessRequest::find($request->id);
-        $bpmn = $request->process->bpmn;
+        // Get the bpmn related to the version
+        $bpmn = $request->process->versions()
+            ->where('id', $request->process_version_id)
+            ->firstOrFail()
+            ->bpmn;
         $filteredCompletedNodes = [];
         $requestInProgressNodes = [];
         $requestIdleNodes = [];
