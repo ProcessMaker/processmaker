@@ -14,6 +14,9 @@ use ProcessMaker\ScriptRunners\Base;
 // Bootstrap laravel
 app()->make(Kernel::class)->bootstrap();
 
+// Cache all routes
+Artisan::call('optimize');
+
 // Cache with new config so we don't overwrite our local development database
 Artisan::call('config:cache', ['--env' => 'testing']);
 
