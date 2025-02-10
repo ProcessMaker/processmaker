@@ -26,12 +26,13 @@
           v-if="bundle.dev_link_id !== null"
           class="btn btn-outline-secondary mr-2 dropdown-toggle"
           data-toggle="dropdown"
+          data-offset="5, 5"
           aria-haspopup="true"
           aria-expanded="false"
         >
           {{ $t('Reinstall') }}
         </button>
-        <div class="dropdown-menu" id="dropdown">
+        <div class="dropdown-menu dropdown-menu-right" id="dropdown">
           <a
             v-if="updateAvailable"
             class="dropdown-item"
