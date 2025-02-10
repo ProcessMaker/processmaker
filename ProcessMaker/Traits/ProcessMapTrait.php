@@ -119,6 +119,7 @@ trait ProcessMapTrait
         // Get the bpmn related to the version
         $bpmn = $request->process->versions()
             ->where('id', $request->process_version_id)
+            ->select('bpmn')
             ->firstOrFail()
             ->bpmn;
         $filteredCompletedNodes = [];
