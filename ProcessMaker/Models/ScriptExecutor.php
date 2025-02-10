@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 use ProcessMaker\Enums\ScriptExecutorType;
@@ -98,7 +99,13 @@ class ScriptExecutor extends ProcessMakerModel
             ->orderBy('created_at', 'asc')
             ->first();
         if (!$initialExecutor) {
-            throw new ScriptLanguageNotSupported($language);
+            if (app()->runningInConsole()) {
+                Log::error('Script Executor not found for language: ' . $language);
+
+                return null;
+            } else {
+                throw new ScriptLanguageNotSupported($language);
+            }
         }
 
         return $initialExecutor;
