@@ -83,7 +83,7 @@ class RunScriptTaskTest extends TestCase
         return $request->refresh();
     }
 
-    public function jobTypes()
+    public static function jobTypes()
     {
         return [
             [RunScriptTask::class],

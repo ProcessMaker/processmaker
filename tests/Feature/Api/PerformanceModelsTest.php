@@ -41,7 +41,7 @@ class PerformanceModelsTest extends TestCase
      *
      * @return array
      */
-    public function FactoryListProvider()
+    public static function FactoryListProvider()
     {
         $models = [];
         $factoriesPath = app_path('Models');
