@@ -39,15 +39,26 @@
             href="#"
             @click.prevent="reinstallBundle.show(bundle)"
           >
+            <i class="fp-cloud-download-outline" />
             {{ $t('Update Bundle') }}
           </a>
           <a
             v-if="bundle.dev_link_id !== null"
             class="dropdown-item"
             href="#"
-            @click.prevent="reinstallBundle.show(bundle, true)"
+            @click.prevent="executeReinstall('copy')"
           >
-            {{ $t('Reinstall This Bundle') }}
+            <i class="fp-copy-outline" />
+            {{ $t('Add a Copy') }}
+          </a>
+          <a
+            v-if="bundle.dev_link_id !== null"
+            class="dropdown-item"
+            href="#"
+            @click.prevent="executeReinstall('update')"
+          >
+            <i class="fp-update-outline" />
+            {{ $t('Update') }}
           </a>
         </div>
         <b-button
@@ -210,6 +221,10 @@ const handleConfigChange = (event) => {
         loadAssets();
       });
   }
+};
+
+const executeReinstall = (type) => {
+  reinstallBundle.value.show(bundle.value, true, type);
 };
 
 onMounted(async () => {
