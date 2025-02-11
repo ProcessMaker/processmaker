@@ -138,10 +138,7 @@
                 "pm-platform": "dev-fall",
                 "package-zj-nas": "dev-fall",
                 "package-plg": "dev-release-2024-fall",
-                "package-accessibility": "1.0.0",
-                "package-zj-birmingham": "dev-main",
-                "package-tce": "dev-master",
-                "package-case-overview": "dev-main"
+                "package-accessibility": "1.0.0"
             },
             "enterprise": {
                 "connector-docusign": "1.11.0",
