@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b4f71ed56e303ba6eb0637eb827ae579",
+    "content-hash": "706670a2354d9da32eb60292c716bf1a",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -4730,16 +4730,16 @@
         },
         {
             "name": "litesaml/lightsaml",
-            "version": "v4.2.0",
+            "version": "4.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/litesaml/lightsaml.git",
-                "reference": "da88de24e699418918a128f0142dd09e2c41dd38"
+                "reference": "e8cfe08339f54e27885cc40b3d803ebf0383a9b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/litesaml/lightsaml/zipball/da88de24e699418918a128f0142dd09e2c41dd38",
-                "reference": "da88de24e699418918a128f0142dd09e2c41dd38",
+                "url": "https://api.github.com/repos/litesaml/lightsaml/zipball/e8cfe08339f54e27885cc40b3d803ebf0383a9b3",
+                "reference": "e8cfe08339f54e27885cc40b3d803ebf0383a9b3",
                 "shasum": ""
             },
             "require": {
@@ -4795,7 +4795,7 @@
                 "issues": "https://github.com/litesaml/lightsaml/issues",
                 "source": "https://github.com/litesaml/lightsaml"
             },
-            "time": "2024-02-08T11:59:00+00:00"
+            "time": "2025-02-11T12:04:23+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
@@ -13214,16 +13214,16 @@
         },
         {
             "name": "twilio/sdk",
-            "version": "8.3.13",
+            "version": "8.3.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twilio/twilio-php.git",
-                "reference": "9981b086f1463389cb0df0be59e90c1f64d430c2"
+                "reference": "cb20c1876f9a9b00f3c8b9c38dee17fcb5ae6254"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/9981b086f1463389cb0df0be59e90c1f64d430c2",
-                "reference": "9981b086f1463389cb0df0be59e90c1f64d430c2",
+                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/cb20c1876f9a9b00f3c8b9c38dee17fcb5ae6254",
+                "reference": "cb20c1876f9a9b00f3c8b9c38dee17fcb5ae6254",
                 "shasum": ""
             },
             "require": {
@@ -13261,9 +13261,9 @@
             ],
             "support": {
                 "issues": "https://github.com/twilio/twilio-php/issues",
-                "source": "https://github.com/twilio/twilio-php/tree/8.3.13"
+                "source": "https://github.com/twilio/twilio-php/tree/8.3.14"
             },
-            "time": "2025-01-28T11:38:41+00:00"
+            "time": "2025-02-11T11:18:03+00:00"
         },
         {
             "name": "typo3/class-alias-loader",
