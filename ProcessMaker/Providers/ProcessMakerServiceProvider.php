@@ -2,7 +2,7 @@
 
 namespace ProcessMaker\Providers;
 
-use Illuminate\Console\Events\CommandStarting;
+use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Database\Console\Migrations\MigrateCommand;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Filesystem\Filesystem;
@@ -256,7 +256,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
             SmartInbox::dispatch($task_id);
         });
 
-        Facades\Event::listen(CommandStarting::class, function ($event) {
+        Facades\Event::listen(CommandFinished::class, function ($event) {
             // Also run package:discover after optimize (to rebuild the license cache)
             if ($event->command === 'optimize') {
                 Artisan::call('package:discover');
