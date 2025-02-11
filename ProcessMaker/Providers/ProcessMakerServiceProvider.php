@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Providers;
 
-use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Database\Console\Migrations\MigrateCommand;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Filesystem\Filesystem;
@@ -11,7 +10,6 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Support\Facades;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -254,14 +252,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
             $task_id = $event->getProcessRequestToken()->id;
             // Dispatch the SmartInbox job with the processRequestToken as parameter
             SmartInbox::dispatch($task_id);
-        });
-
-        Facades\Event::listen(CommandStarting::class, function ($event) {
-            // Also run package:discover after optimize (to rebuild the license cache)
-            if ($event->command === 'optimize') {
-                Artisan::call('package:discover');
-                $event->output->writeln(Artisan::output());
-            }
         });
     }
 
