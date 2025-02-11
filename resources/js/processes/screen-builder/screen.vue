@@ -716,7 +716,6 @@ export default {
     // To include another language in the Validator with variable processmaker
     this.user = window.ProcessMaker?.user;
     if (this.user?.lang) {
-      //Validator.useLang(window.ProcessMaker.user.lang);
       window.ProcessMaker.setValidatorLanguage(Validator, window.ProcessMaker.user.lang);
     }
 
