@@ -2,6 +2,7 @@ const mix = require("laravel-mix");
 const path = require("path");
 require("laravel-mix-polyfill");
 // const packageJson = require("./package.json");
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 /*
  |--------------------------------------------------------------------------
@@ -15,14 +16,18 @@ require("laravel-mix-polyfill");
 */
 
 mix.webpackConfig({
-  plugins: [],
-  externals: ["monaco-editor", "SharedComponents", "ModelerInspector"],
+  plugins: [
+    new BundleAnalyzerPlugin({
+      analyzerMode: process.env.STATS ? "server" : "disabled",
+    }),
+  ],
+  externals: ["SharedComponents", "ModelerInspector"],
   resolve: {
     extensions: [".*", ".js", ".ts", ".mjs", ".vue", ".json"],
     symlinks: false,
     alias: {
       "vue-monaco": path.resolve(__dirname, "resources/js/vue-monaco-amd.js"),
-      "styles": path.resolve(__dirname, "resources/sass"),
+      styles: path.resolve(__dirname, "resources/sass"),
     },
   },
 });
@@ -36,23 +41,30 @@ mix.options({
 
 mix
   .extract([
-    "vue",
-    "vue-router",
     "jquery",
     "bootstrap-vue",
-    "axios",
     "popper.js",
-    "lodash",
     "bootstrap",
-    "jointjs",
-    "luxon",
-    "bpmn-moddle",
+  ], "public/js/bootstrap-vendor.js")
+  .extract([
     "@fortawesome/fontawesome-free",
     "@fortawesome/fontawesome-svg-core",
     "@fortawesome/free-brands-svg-icons",
     "@fortawesome/free-solid-svg-icons",
     "@fortawesome/vue-fontawesome",
-  ])
+  ], "public/js/fortawesome-vendor.js")
+  .extract([
+    "jointjs",
+    "luxon",
+    "bpmn-moddle",
+    "@processmaker/modeler",
+  ], "public/js/modeler-vendor.js")
+  .extract([
+    "vue",
+    "vue-router",
+    "axios",
+    "lodash",
+  ], "public/js/vue-vendor.js")
   .copy("resources/img/*", "public/img")
   .copy("resources/img/launchpad-images/*", "public/img/launchpad-images")
   .copy("resources/img/launchpad-images/icons/*", "public/img/launchpad-images/icons")
@@ -134,18 +146,28 @@ mix
   .js("resources/js/tasks/router.js", "public/js/tasks/router.js")
 
   .js("resources/js/notifications/index.js", "public/js/notifications/index.js")
-  .js('resources/js/inbox-rules/index.js', 'public/js/inbox-rules')
-  .js('resources/js/inbox-rules/show.js', 'public/js/inbox-rules')
+  .js("resources/js/inbox-rules/index.js", "public/js/inbox-rules")
+  .js("resources/js/inbox-rules/show.js", "public/js/inbox-rules")
   .js("resources/js/admin/devlink/index.js", "public/js/admin/devlink")
 
   // Note, that this should go last for the extract to properly put the manifest and vendor in the right location
   // See: https://github.com/JeffreyWay/laravel-mix/issues/1118
+  .js("resources/jscomposition/cases/casesMain/loader.js", "public/js/composition/cases/casesMain")
+  .js("resources/jscomposition/cases/casesDetail/loader.js", "public/js/composition/cases/casesDetail")
+  .js("resources/js/initialLoad.js", "public/js")
+
+  .js("resources/js/tasks/loaderMain.js", "public/js/tasks")
+  .js("resources/js/tasks/loaderPreview.js", "public/js/tasks")
+  .js("resources/js/tasks/loaderEdit.js", "public/js/tasks")
+  .js("resources/js/tasks/edit.js", "public/js/tasks/edit.js")
+  .js("resources/js/tasks/preview.js", "public/js/tasks/preview.js")
+
   .js("resources/js/app.js", "public/js");
-  // .polyfill({
-  //   enabled: true,
-  //   useBuiltIns: false,
-  //   targets: "> 0.25%, not dead"
-  // });
+// .polyfill({
+//   enabled: true,
+//   useBuiltIns: false,
+//   targets: "> 0.25%, not dead"
+// });
 
 // Monaco AMD modules. Copy only the files we need to make the build faster.
 const monacoSource = "node_modules/monaco-editor/min/vs/";

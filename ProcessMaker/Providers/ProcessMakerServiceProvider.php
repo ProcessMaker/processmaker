@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Providers;
 
+use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Database\Console\Migrations\MigrateCommand;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Filesystem\Filesystem;
@@ -10,15 +11,21 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Support\Facades;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
 use Lavary\Menu\Menu;
+use ProcessMaker\Cache\Settings\SettingCacheManager;
 use ProcessMaker\Console\Migration\ExtendedMigrateCommand;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Helpers\PmHash;
+use ProcessMaker\Http\Middleware\Etag\HandleEtag;
 use ProcessMaker\ImportExport\Extension;
 use ProcessMaker\ImportExport\SignalHelper;
 use ProcessMaker\Jobs\SmartInbox;
@@ -29,14 +36,30 @@ use ProcessMaker\Managers\ScreenCompiledManager;
 use ProcessMaker\Models;
 use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
+use RuntimeException;
 
 /**
  * Provide our ProcessMaker specific services.
  */
 class ProcessMakerServiceProvider extends ServiceProvider
 {
+    // Track the start time for service providers boot
+    private static $bootStart;
+
+    // Track the boot time for service providers
+    private static $bootTime;
+
+    // Track the boot time for each package
+    private static $packageBootTiming = [];
+
+    // Track the query time for each request
+    private static $queryTime = 0;
+
     public function boot(): void
     {
+        // Track the start time for service providers boot
+        self::$bootStart = microtime(true);
+
         $this->app->singleton(Menu::class, function ($app) {
             return new MenuManager();
         });
@@ -52,10 +75,21 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->setupFactories();
 
         parent::boot();
+
+        Route::pushMiddlewareToGroup('api', HandleEtag::class);
+        // Hook after service providers boot
+        self::$bootTime = (microtime(true) - self::$bootStart) * 1000; // Convert to milliseconds
     }
 
     public function register(): void
     {
+        if (config('app.server_timing.enabled')) {
+            // Listen to query events and accumulate query execution time
+            DB::listen(function ($query) {
+                self::$queryTime += $query->time;
+            });
+        }
+
         // Dusk, if env is appropriate
         // TODO Remove Dusk references and remove from composer dependencies
         if (!$this->app->environment('production')) {
@@ -164,6 +198,14 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton('compiledscreen', function ($app) {
             return new ScreenCompiledManager();
         });
+
+        $this->app->singleton('setting.cache', function ($app) {
+            if ($app['config']->get('cache.stores.cache_settings')) {
+                return new SettingCacheManager($app->make('cache'));
+            } else {
+                throw new RuntimeException('Cache configuration is missing.');
+            }
+        });
     }
 
     /**
@@ -197,14 +239,14 @@ class ProcessMakerServiceProvider extends ServiceProvider
             $notifiable = get_class($event->notifiable);
             $notification = get_class($event->notification);
 
-            Facades\Log::debug("Sent Notification to {$notifiable} #{$id}: {$notification}");
+            Log::debug("Sent Notification to {$notifiable} #{$id}: {$notification}");
         });
 
         // Log Broadcasts (messages sent to laravel-echo-server and redis)
         Facades\Event::listen(BroadcastNotificationCreated::class, function ($event) {
             $channels = implode(', ', $event->broadcastOn());
 
-            Facades\Log::debug('Broadcasting Notification ' . $event->broadcastType() . 'on channel(s) ' . $channels);
+            Log::debug('Broadcasting Notification ' . $event->broadcastType() . 'on channel(s) ' . $channels);
         });
 
         // Fire job when task is assigned to a user
@@ -212,6 +254,14 @@ class ProcessMakerServiceProvider extends ServiceProvider
             $task_id = $event->getProcessRequestToken()->id;
             // Dispatch the SmartInbox job with the processRequestToken as parameter
             SmartInbox::dispatch($task_id);
+        });
+
+        Facades\Event::listen(CommandStarting::class, function ($event) {
+            // Also run package:discover after optimize (to rebuild the license cache)
+            if ($event->command === 'optimize') {
+                Artisan::call('package:discover');
+                $event->output->writeln(Artisan::output());
+            }
         });
     }
 
@@ -357,5 +407,72 @@ class ProcessMakerServiceProvider extends ServiceProvider
         if (config('app.force_https')) {
             URL::forceScheme('https');
         }
+    }
+
+    /**
+     * Get the boot time for service providers.
+     *
+     * @return float|null
+     */
+    public static function getBootTime(): ?float
+    {
+        return self::$bootTime;
+    }
+
+    /**
+     * Get the query time for the request.
+     *
+     * @return float
+     */
+    public static function getQueryTime(): float
+    {
+        return self::$queryTime;
+    }
+
+    /**
+     * Set the boot time for service providers.
+     *
+     * @param string $package
+     * @param float $time
+     */
+    public static function setPackageBootStart(string $package, float $time): void
+    {
+        if ($time < 0) {
+            Log::info("Server Timing: Invalid boot time for package: {$package}, time: {$time}");
+
+            $time = 0;
+        }
+
+        self::$packageBootTiming[$package] = [
+            'start' => $time,
+            'end' => null,
+        ];
+    }
+
+    /**
+     * Set the boot time for service providers.
+     *
+     *
+     * @param float $time
+     */
+    public static function setPackageBootedTime(string $package, $time): void
+    {
+        if (!isset(self::$packageBootTiming[$package]) || $time < 0) {
+            Log::info("Server Timing: Invalid booted time for package: {$package}, time: {$time}");
+
+            return;
+        }
+
+        self::$packageBootTiming[$package]['end'] = $time;
+    }
+
+    /**
+     * Get the boot time for service providers.
+     *
+     * @return array
+     */
+    public static function getPackageBootTiming(): array
+    {
+        return self::$packageBootTiming;
     }
 }

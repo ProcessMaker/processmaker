@@ -164,10 +164,15 @@ trait TaskControllerIndexMethods
     private function excludeNonVisibleTasks($query, $request)
     {
         $nonSystem = filter_var($request->input('non_system'), FILTER_VALIDATE_BOOLEAN);
-        $query->where(function ($query) {
-            $query->where('element_type', '=', 'task');
-            $query->orWhere('element_type', '=', 'serviceTask');
-            $query->where('element_name', '=', 'AI Assistant');
+        $allTasks = filter_var($request->input('all_tasks'), FILTER_VALIDATE_BOOLEAN);
+        $query->when(!$allTasks, function ($query) {
+            $query->where(function ($query) {
+                $query->where('element_type', '=', 'task');
+                $query->orWhere(function ($query) {
+                    $query->where('element_type', '=', 'serviceTask');
+                    $query->where('element_name', '=', 'AI Assistant');
+                });
+            });
         })
             ->when($nonSystem, function ($query) {
                 $query->nonSystem();

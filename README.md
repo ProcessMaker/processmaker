@@ -439,11 +439,97 @@ npm run dev-font
 ```
 
 
-# Message broker driver, possible values: rabbitmq, kafka, this is optional, if not exists or is empty, the Nayra will be work as normally with local execution
-MESSAGE_BROKER_DRIVER=rabbitmq
+# Prometheus and Grafana
 
+This guide explains how to install and run **Prometheus** and **Grafana** using Docker. Both tools complement each other: Prometheus collects and monitors metrics, while Grafana visualizes them with interactive dashboards.
 
-#### License
+## Local Development with docker compose
+### Prometheus & Grafana
+Go to the metrics directory
+```text
+cd metrics
+```
+
+Make sure the ports 9090 and 3000 on the host are not already in use.
+
+Edit `prometheus.yml` and update the target hostname with your local processmaker instance. You might also need to change the scheme if you are using https.
+
+Run `docker compose up -d`
+
+Check that prometheus can connect to your local instance at http://localhost:9090/targets
+
+Go to Grafana at http://localhost:3000/
+
+When you are finished, run `docker compose down`. To delete all data, run `docker compose down -v`
+
+### **Use the Facade in Your Application**
+
+Now you can use the `Metrics` Facade anywhere in your application to manage metrics.
+
+### **1. Counter**
+A **Counter** only **increases** over time or resets to zero. It is used for cumulative events.
+
+- Total number of HTTP requests:  
+  ```php
+  $counter = Metrics::counter('http_requests_total', 'Total HTTP requests', ['method', 'status']);
+  $counter->inc(['GET', '200']);
+  $counter->incBy(2, ['GET', '200']);
+  ```
+- Number of system errors (e.g., HTTP 5xx).
+
+### **2. Gauge**
+A **Gauge** can **increase or decrease**. It is used for values that fluctuate over time.
+
+- Current number of active jobs in a queue:  
+  ```php
+  $gauge = Metrics::gauge('active_jobs', 'Number of active jobs', ['queue']);
+  $gauge->set(10, ['queue1']);
+  ```
+- Memory or CPU usage.
+
+### **3. Histogram**
+A **Histogram** measures **value distributions** by organizing them into buckets. It is ideal for latency or size measurements.
+
+- Duration of HTTP requests:  
+  ```php
+  $histogram = Metrics::histogram('http_request_duration_seconds', 'HTTP request duration', ['method'], [0.1, 0.5, 1, 5, 10]);
+  $histogram->observe(0.3, ['GET']);
+  ```
+- File sizes or request durations.
+
+Each type serves a specific role depending on the data being monitored.
+
+#### **Example: Incrementing a Counter**
+
+In a controller:
+
+```php
+namespace App\Http\Controllers;
+
+use ProcessMaker\Facades\Metrics;
+
+class ExampleController extends Controller
+{
+    public function index()
+    {
+        //use metrics counter
+        $counter = Metrics::counter('http_requests_total', 'Total HTTP requests', ['method', 'status']);
+        $counter->inc(['GET', '200']); // Incrementa el contador para GET y estado 200.
+
+        return response()->json(['message' => 'Hello, world!']);
+    }
+}
+```
+
+To make things even easier, you can run `Metrics::counter('cases')->inc();` or `Metrics::gauge('active_tasks')->set($activeTasks)` anywhere in the code.
+
+You can provide an optional description, for example `Metrics::gauge('active_tasks', 'Total Active Tasks')->...`
+
+### Import Grafana Dashboards
+
+Go to Grafana and import the dashboards from the `resources/grafana` folder. Each JSON file represents a configured dashboard that can be imported into Grafana to visualize metrics and data.
+
+# License
 
 Distributed under the [AGPL Version 3](https://www.gnu.org/licenses/agpl-3.0.en.html)
 

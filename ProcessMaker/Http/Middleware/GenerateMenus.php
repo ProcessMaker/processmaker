@@ -115,10 +115,12 @@ class GenerateMenus
                     'icon' => 'fa-infinity',
                 ]);
 
-                $submenu->add(__('Script Executors'), [
-                    'route' => 'script-executors.index',
-                    'icon' => 'fa-code',
-                ]);
+                if (config('app.custom_executors')) {
+                    $submenu->add(__('Script Executors'), [
+                        'route' => 'script-executors.index',
+                        'icon' => 'fa-code',
+                    ]);
+                }
 
                 $devlinkIcon = base64_encode(file_get_contents(base_path('resources/img/devlink.svg')));
                 $submenu->add(__('DevLink'), [

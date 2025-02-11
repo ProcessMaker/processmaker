@@ -3,7 +3,10 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
+use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Facades\Docker;
 use ProcessMaker\Traits\Exportable;
@@ -56,8 +59,19 @@ class ScriptExecutor extends ProcessMakerModel
     use HideSystemResources;
 
     protected $fillable = [
-        'title', 'description', 'language', 'config', 'is_system',
+        'title', 'description', 'language', 'config', 'is_system', 'type',
     ];
+
+    protected $casts = [
+        'type' => ScriptExecutorType::class,
+    ];
+
+    // Lua and R are deprecated. This scope can be removed
+    // when they are removed permanently.
+    public function scopeActive($query)
+    {
+        return $query->whereNotIn('language', Script::deprecatedLanguages);
+    }
 
     public static function install($params)
     {
@@ -85,7 +99,13 @@ class ScriptExecutor extends ProcessMakerModel
             ->orderBy('created_at', 'asc')
             ->first();
         if (!$initialExecutor) {
-            throw new ScriptLanguageNotSupported($language);
+            if (app()->runningInConsole()) {
+                Log::error('Script Executor not found for language: ' . $language);
+
+                return null;
+            } else {
+                throw new ScriptLanguageNotSupported($language);
+            }
         }
 
         return $initialExecutor;
@@ -140,11 +160,24 @@ class ScriptExecutor extends ProcessMakerModel
 
     public static function rules($existing = null)
     {
+        if ($existing) {
+            $allowedLanguages = Script::scriptFormatValues();
+        } else {
+            $allowedLanguages = array_filter(Script::scriptFormatValues(), function ($language) {
+                return !in_array($language, Script::deprecatedLanguages);
+            });
+        }
+
         return [
             'title' => 'required',
             'language' => [
                 'required',
-                Rule::in(Script::scriptFormatValues()),
+                Rule::in($allowedLanguages),
+            ],
+            'type' => [
+                'sometimes',
+                new Enum(ScriptExecutorType::class),
+                'nullable',
             ],
         ];
     }
@@ -153,7 +186,7 @@ class ScriptExecutor extends ProcessMakerModel
     {
         $list = [];
         $executors =
-            self::where('is_system', false)->orderBy('language', 'asc')
+            self::active()->where('is_system', false)->orderBy('language', 'asc')
             ->orderBy('created_at', 'asc');
 
         if ($language) {

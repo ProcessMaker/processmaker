@@ -4,8 +4,8 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Models\ProcessMakerModel;
-use ProcessMaker\Traits\HasUuids;
 use ProcessMaker\Traits\Exportable;
+use ProcessMaker\Traits\HasUuids;
 
 class Embed extends ProcessMakerModel
 {
@@ -28,7 +28,7 @@ class Embed extends ProcessMakerModel
         'created_at',
         'updated_at',
     ];
-    
+
     /**
      * The attributes that are mass assignable.
      *
@@ -67,7 +67,7 @@ class Embed extends ProcessMakerModel
      */
     public function saveProcessEmbed(Process $process, $properties, $key = 'uuid')
     {
-        $embed = new Embed();
+        $embed = new self();
         // Define the values
         $values = [
             'model_id' => $process->id,
@@ -75,7 +75,7 @@ class Embed extends ProcessMakerModel
             'mime_type' => 'text/url',
             'custom_properties' => json_encode([
                 'url' => $properties['url'],
-                'type' => $properties['type']
+                'type' => $properties['type'],
             ]),
         ];
         // Review if the uuid was defined

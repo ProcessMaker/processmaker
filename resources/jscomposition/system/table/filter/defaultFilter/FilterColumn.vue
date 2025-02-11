@@ -85,6 +85,7 @@ const onDesc = () => {
 };
 
 const onCancel = () => {
+  filterOperator.value = null;
   show.value = false;
 };
 

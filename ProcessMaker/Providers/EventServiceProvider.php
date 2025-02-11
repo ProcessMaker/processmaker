@@ -55,6 +55,7 @@ use ProcessMaker\Events\TemplatePublished;
 use ProcessMaker\Events\TemplateUpdated;
 use ProcessMaker\Events\TokenCreated;
 use ProcessMaker\Events\TokenDeleted;
+use ProcessMaker\Events\TranslationChanged;
 use ProcessMaker\Events\UnauthorizedAccessAttempt;
 use ProcessMaker\Events\UserCreated;
 use ProcessMaker\Events\UserDeleted;
@@ -64,6 +65,7 @@ use ProcessMaker\Events\UserUpdated;
 use ProcessMaker\Listeners\HandleActivityAssignedInterstitialRedirect;
 use ProcessMaker\Listeners\HandleActivityCompletedRedirect;
 use ProcessMaker\Listeners\HandleEndEventRedirect;
+use ProcessMaker\Listeners\InvalidateScreenCacheOnTranslationChange;
 use ProcessMaker\Listeners\SecurityLogger;
 use ProcessMaker\Listeners\SessionControlSettingsUpdated;
 
@@ -105,6 +107,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         ActivityAssigned::class => [
             HandleActivityAssignedInterstitialRedirect::class,
+        ],
+        TranslationChanged::class => [
+            InvalidateScreenCacheOnTranslationChange::class,
         ],
     ];
 
