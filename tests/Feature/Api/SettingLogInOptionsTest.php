@@ -2,14 +2,12 @@
 
 namespace Tests\Feature\Api;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
 class SettingLogInOptionsTest extends TestCase
 {
     use RequestHelper;
-    use RefreshDatabase;
 
     private function upgrade()
     {

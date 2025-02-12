@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -13,7 +12,6 @@ use Tests\TestCase;
 
 class CasesControllerTest extends TestCase
 {
-    use RefreshDatabase;
     use RequestHelper;
 
     const URL_CASES = '/cases/';

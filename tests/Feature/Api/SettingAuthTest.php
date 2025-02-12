@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Api;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Package\Auth\Database\Seeds\AtlassianSeeder;
@@ -21,7 +20,6 @@ use Tests\TestCase;
 class SettingAuthTest extends TestCase
 {
     use RequestHelper;
-    use RefreshDatabase;
 
     private function seedLDAPSettings()
     {
