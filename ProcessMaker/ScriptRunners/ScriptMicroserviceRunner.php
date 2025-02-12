@@ -12,10 +12,13 @@ use ProcessMaker\Jobs\ErrorHandling;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
+use RuntimeException;
 use stdClass;
 
 class ScriptMicroserviceRunner
 {
+    private const DEFAULT_VERSION = '1.0.0';
+
     private string $tokenId = '';
 
     private string $language;
@@ -46,6 +49,11 @@ class ScriptMicroserviceRunner
         return Cache::get('keycloak.access_token');
     }
 
+    /**
+     * Get script runner configuration for the current language
+     *
+     * @return array|null Script runner configuration
+     */
     public function getScriptRunner()
     {
         $response = Cache::remember('script-runner-microservice.script-languages', now()->addDay(), function () {
@@ -58,27 +66,86 @@ class ScriptMicroserviceRunner
         })->first();
     }
 
+    /**
+     * Run a script with the given parameters
+     *
+     * @param string $code The script code to execute
+     * @param array $data Input data for the script
+     * @param array $config Configuration options
+     * @param int $timeout Maximum execution time
+     * @param User $user User executing the script
+     * @param bool $sync Whether to run synchronously
+     * @param array $metadata Additional metadata
+     * @return array Execution results
+     * @throws \Exception
+     */
     public function run($code, array $data, array $config, $timeout, $user, $sync, $metadata)
     {
-        Log::debug('Language: ' . $this->language);
-        Log::debug('Sync: ' . $sync);
-        Log::debug('Metadata: ' . print_r($metadata, true));
+        try {
+            $this->validateScriptRunner();
 
+            $payload = $this->buildPayload(
+                $code,
+                $data,
+                $config,
+                $timeout,
+                $user,
+                $sync,
+                $metadata
+            );
+
+            return $this->sendRequest($payload, $sync);
+        } catch (\Exception $e) {
+            Log::error('Script runner error: ' . $e->getMessage(), [
+                'language' => $this->language,
+                'sync' => $sync,
+                'metadata' => $metadata,
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Validate that a script runner exists for the current language
+     *
+     * @throws ConfigurationException
+     */
+    private function validateScriptRunner(): void
+    {
         $scriptRunner = $this->getScriptRunner();
 
         if (!$scriptRunner) {
-            throw new ConfigurationException('No exists script executor for this language: ' . $this->language);
+            throw new ConfigurationException(
+                "No script executor exists for language: {$this->language}"
+            );
         }
-        $metadata = array_merge($this->getMetadata($user), $metadata);
-        $environmentVariables = $this->getEnvironmentVariables($user);
+    }
 
-        $payload = [
-            'version' => config('script-runner-microservice.version') ?? $this->getProcessMakerVersion(),
+    /**
+     * Build the payload for script execution
+     *
+     * @param string $code Script code
+     * @param array $data Input data
+     * @param array $config Configuration
+     * @param int $timeout Timeout value
+     * @param User $user User executing the script
+     * @param bool $sync Synchronous execution flag
+     * @param array $metadata Additional metadata
+     * @return array Complete payload for the request
+     */
+    private function buildPayload($code, array $data, array $config, $timeout, $user, $sync, array $metadata): array
+    {
+        $scriptRunner = $this->getScriptRunner();
+        $environmentVariables = $this->getEnvironmentVariables($user);
+        $mergedMetadata = array_merge($this->getMetadata($user), $metadata);
+
+        return [
+            'version' => $this->getVersion(),
             'language' => $scriptRunner['language'],
-            'metadata'=> $metadata,
-            'data' => !empty($data) ? $this->sanitizeCss($data) : new stdClass(),
-            'config' => !empty($config) ? $config : new stdClass(),
-            'script' => base64_encode(str_replace("'", '&#39;', $code)),
+            'metadata' => $mergedMetadata,
+            'data' => $this->sanitizeData($data),
+            'config' => $config ?: new stdClass(),
+            'script' => $this->encodeScript($code),
             'secrets' => $environmentVariables,
             'callback' => config('script-runner-microservice.callback'),
             'callback_secure' => true,
@@ -87,13 +154,58 @@ class ScriptMicroserviceRunner
             'timeout' => $timeout,
             'sync' => $sync,
         ];
+    }
 
-        Log::debug('Payload: ' . print_r($payload, true));
+    /**
+     * Get the version for the script runner
+     *
+     * @return string Version number
+     */
+    private function getVersion(): string
+    {
+        return config('script-runner-microservice.version', $this->getProcessMakerVersion())
+            ?: self::DEFAULT_VERSION;
+    }
+
+    /**
+     * Sanitize input data
+     *
+     * @param array $data Input data
+     * @return stdClass|array Sanitized data
+     */
+    private function sanitizeData(array $data): stdClass|array
+    {
+        return !empty($data) ? $this->sanitizeCss($data) : new stdClass();
+    }
+
+    /**
+     * Encode script code for transmission
+     *
+     * @param string $code Script code
+     * @return string Encoded script
+     */
+    private function encodeScript(string $code): string
+    {
+        return base64_encode(str_replace("'", '&#39;', $code));
+    }
+
+    /**
+     * Send the execution request to the microservice
+     *
+     * @param array $payload Request payload
+     * @param bool $sync Synchronous execution flag
+     * @return array Execution results
+     */
+    private function sendRequest(array $payload, bool $sync)
+    {
+        $this->logDebugInfo($payload);
 
         $response = Http::withToken($this->getAccessToken())
-            ->post(config('script-runner-microservice.base_url') . '/requests/create', $payload);
+            ->post($this->getEndpoint(), $payload);
 
-        $response->throw();
+        if ($response->failed()) {
+            $this->handleFailedResponse($response);
+        }
 
         $result = $response->json();
 
@@ -102,6 +214,43 @@ class ScriptMicroserviceRunner
         }
 
         return $result;
+    }
+
+    /**
+     * Get the endpoint URL for the script runner
+     *
+     * @return string Endpoint URL
+     */
+    private function getEndpoint(): string
+    {
+        return rtrim(config('script-runner-microservice.base_url'), '/') . '/requests/create';
+    }
+
+    /**
+     * Handle failed HTTP responses
+     *
+     * @param \Illuminate\Http\Client\Response $response
+     * @throws RuntimeException
+     */
+    private function handleFailedResponse($response): void
+    {
+        $error = $response->json()['output']['error'] ?? $response->body();
+        throw new RuntimeException("Script execution failed: {$error}");
+    }
+
+    /**
+     * Log debug information about the script execution
+     *
+     * @param array $payload Request payload
+     */
+    private function logDebugInfo(array $payload): void
+    {
+        Log::debug('Script execution details', [
+            'language' => $this->language,
+            'sync' => $payload['sync'],
+            'metadata' => $payload['metadata'],
+            'payload' => $payload,
+        ]);
     }
 
     private function getEnvironmentVariables(User $user)
