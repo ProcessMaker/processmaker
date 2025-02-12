@@ -97,8 +97,6 @@ if (env('TEST_TOKEN')) {
     Artisan::call('migrate:fresh', []);
     Artisan::call('db:seed', ['--class' => 'AnonymousUserSeeder']);
 
-    \Illuminate\Foundation\Testing\RefreshDatabaseState::$migrated = true;
-
     ScriptExecutor::firstOrCreate(
         ['language' => 'php'],
         ['title' => 'Test Executor']

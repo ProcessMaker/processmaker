@@ -2,7 +2,6 @@
 
 namespace Tests\Upgrades;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use ProcessMaker\Models\CaseStarted;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
@@ -12,8 +11,6 @@ use Tests\TestCase;
 
 class PopulateCasesParticipatedTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected $user;
 
     protected $user2;
