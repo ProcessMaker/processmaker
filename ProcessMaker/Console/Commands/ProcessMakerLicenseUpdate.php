@@ -42,10 +42,8 @@ class ProcessMakerLicenseUpdate extends Command
 
             Storage::disk('local')->put('license.json', $content);
 
-            $this->info('Calling optimize and package:discover to update the package cache with enabled packages');
-            // Optimize now calls package:discover
-            // Rebuild all cache because there could be new or removed routes
-            Artisan::call('optimize');
+            $this->info('Calling package:discover to update the package cache with enabled packages');
+            Artisan::call('package:discover');
             $this->info(Artisan::output());
 
             $this->info('License updated successfully');
