@@ -474,11 +474,14 @@ class RequestTest extends TestCase
 
     public function testShowTheLinkOpenProcessLaunchpad()
     {
-        $request = ProcessRequest::factory()->create([
-            'process' => Process::factory()->create([
-                'name' => 'SomeOtherProcess',
-            ]),
+        $process = Process::factory()->create([
+            'name' => 'SomeOtherProcess',
         ]);
+        // Create a request associated with the process
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+        ]);
+
         // Get the URL
         $response = $this->webCall('GET', '/requests/' . $request->id);
         $response->assertStatus(200);
@@ -487,11 +490,14 @@ class RequestTest extends TestCase
 
     public function testNotShowTheLinkOpenProcessLaunchpad()
     {
-        $request = ProcessRequest::factory()->create([
-            'process' => Process::factory()->create([
-                'name' => 'DocuSignAuthentication',
-            ]),
+        $process = Process::factory()->create([
+            'name' => 'DocuSignAuthentication',
         ]);
+        // Create a request associated with the process
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+        ]);
+
         // Get the URL
         $response = $this->webCall('GET', '/requests/' . $request->id);
         $response->assertStatus(200);
