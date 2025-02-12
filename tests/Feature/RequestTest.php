@@ -471,4 +471,30 @@ class RequestTest extends TestCase
         // Check custom detail screen is displayed instead default summary
         $response->assertSee('TEST WITH CUSTOM REQUEST DETAIL SCREEN');
     }
+
+    public function testShowTheLinkOpenProcessLaunchpad()
+    {
+        $request = ProcessRequest::factory()->create([
+            'process' => Process::factory()->create([
+                'name' => 'SomeOtherProcess',
+            ]),
+        ]);
+        // Get the URL
+        $response = $this->webCall('GET', '/requests/' . $request->id);
+        $response->assertStatus(200);
+        $response->assertSee('Open Process Launchpad');
+    }
+
+    public function testNotShowTheLinkOpenProcessLaunchpad()
+    {
+        $request = ProcessRequest::factory()->create([
+            'process' => Process::factory()->create([
+                'name' => 'DocuSignAuthentication',
+            ]),
+        ]);
+        // Get the URL
+        $response = $this->webCall('GET', '/requests/' . $request->id);
+        $response->assertStatus(200);
+        $response->assertDontSee('Open Process Launchpad');
+    }
 }
