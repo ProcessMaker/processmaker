@@ -107,6 +107,10 @@ class SettingObserver
      */
     private function updateConfigurationCache(Setting $setting): void
     {
+        if (app()->environment() === 'testing') {
+            return;
+        }
+
         if (app()->configurationIsCached() && $setting->config !== config([$setting->key])) {
             config([$setting->key => $setting->config]);
 
