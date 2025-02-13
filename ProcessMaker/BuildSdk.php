@@ -79,7 +79,7 @@ class BuildSdk
     {
         $this->generatorCid = trim($this->runCmd(Docker::command() . " run -t --stop-timeout 10 -d --entrypoint '/bin/sh' " . $this->imageWithTag()));
 
-        // stop the container after 30 seconds just in case this script fails before stopContainer() is called
+        // stop the container after 5 minutes just in case this script fails before stopContainer() is called
         // Docker stop should always exit with code 0, because the container is probably already stopped
         exec('(sleep 300 && docker stop ' . $this->generatorCid . ' && docker rm ' . $this->generatorCid . ') > /dev/null 2>&1 &');
 
