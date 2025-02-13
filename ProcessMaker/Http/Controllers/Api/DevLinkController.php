@@ -225,12 +225,13 @@ class DevLinkController extends Controller
 
     public function reinstallBundle(Request $request, Bundle $bundle)
     {
+        $updateType = $request->input('updateType', DevLinkInstall::MODE_UPDATE);
         DevLinkInstall::dispatch(
             $request->user()->id,
             $bundle->dev_link_id,
             Bundle::class,
             $bundle->id,
-            DevLinkInstall::MODE_UPDATE,
+            $updateType,
             DevLinkInstall::TYPE_REINSTALL_BUNDLE,
         );
 

@@ -15,9 +15,10 @@ const title = computed(() => {
   return 'Update Bundle';
 });
 
-const show = (bundle, shouldReinstall = false) => {
+const show = (bundle, shouldReinstall = false, type = 'update') => {
   selected.value = bundle;
   reinstall.value = shouldReinstall;
+  selectedOption.value = type;
   confirmUpdateVersion.value.show();
 }
 
@@ -27,7 +28,11 @@ defineExpose({
 
 const updateBundleText = computed(() => {
   if (reinstall.value) {
-    return vue.$t('Are you sure you want to reinstall <strong>{{ selectedBundleName }}</strong>? This will overwrite any changes that have been made to the assets.', { selectedBundleName: selected.value?.name });
+    if (selectedOption.value === 'update') {
+      return vue.$t('Are you sure you want to update <strong>{{ selectedBundleName }}</strong>? This will overwrite any changes that have been made to the assets.', { selectedBundleName: selected.value?.name });
+    } else if (selectedOption.value === 'copy')  {
+      return vue.$t('Are you sure you want to add a copy of <strong>{{ selectedBundleName }}</strong>? This will create a new copy of the bundle assets.', { selectedBundleName: selected.value?.name });
+    }
   }
   return vue.$t('Select how you would like to update the bundle <strong>{{ selectedBundleName }}</strong>.', { selectedBundleName: selected.value?.name });
 });

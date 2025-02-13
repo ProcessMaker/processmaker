@@ -26,27 +26,39 @@
           v-if="bundle.dev_link_id !== null"
           class="btn btn-outline-secondary mr-2 dropdown-toggle"
           data-toggle="dropdown"
+          data-offset="5, 5"
           aria-haspopup="true"
           aria-expanded="false"
         >
           {{ $t('Reinstall') }}
         </button>
-        <div class="dropdown-menu" id="dropdown">
+        <div class="dropdown-menu dropdown-menu-right" id="dropdown">
           <a
             v-if="updateAvailable"
             class="dropdown-item"
             href="#"
             @click.prevent="reinstallBundle.show(bundle)"
           >
+            <i class="fp-cloud-download-outline" />
             {{ $t('Update Bundle') }}
           </a>
           <a
             v-if="bundle.dev_link_id !== null"
             class="dropdown-item"
             href="#"
-            @click.prevent="reinstallBundle.show(bundle, true)"
+            @click.prevent="executeReinstall('copy')"
           >
-            {{ $t('Reinstall This Bundle') }}
+            <i class="fp-copy-outline" />
+            {{ $t('Add a Copy') }}
+          </a>
+          <a
+            v-if="bundle.dev_link_id !== null"
+            class="dropdown-item"
+            href="#"
+            @click.prevent="executeReinstall('update')"
+          >
+            <i class="fp-update-outline" />
+            {{ $t('Update') }}
           </a>
         </div>
         <b-button
@@ -210,6 +222,10 @@ const handleConfigChange = (event) => {
         loadAssets();
       });
   }
+};
+
+const executeReinstall = (type) => {
+  reinstallBundle.value.show(bundle.value, true, type);
 };
 
 onMounted(async () => {
