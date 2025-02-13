@@ -3,7 +3,6 @@
 namespace Tests\Feature\Api;
 
 use Illuminate\Support\Facades\Auth;
-use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
