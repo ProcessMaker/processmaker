@@ -138,7 +138,7 @@ trait TaskControllerIndexMethods
     {
         $dataManager = new DataManager();
         $response->getCollection()->transform(function ($row) use ($dataManager) {
-            $row->taskData = $dataManager->getData($row,true);
+            $row->taskData = $dataManager->getData($row, true);
 
             return $row;
         });
