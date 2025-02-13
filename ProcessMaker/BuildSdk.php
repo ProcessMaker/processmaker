@@ -81,7 +81,7 @@ class BuildSdk
 
         // stop the container after 30 seconds just in case this script fails before stopContainer() is called
         // Docker stop should always exit with code 0, because the container is probably already stopped
-        exec('(sleep 30 && docker stop ' . $this->generatorCid . ' && docker rm ' . $this->generatorCid . ') > /dev/null 2>&1 &');
+        exec('(sleep 300 && docker stop ' . $this->generatorCid . ' && docker rm ' . $this->generatorCid . ') > /dev/null 2>&1 &');
 
         $this->log("Started container with cid: $this->generatorCid");
     }
