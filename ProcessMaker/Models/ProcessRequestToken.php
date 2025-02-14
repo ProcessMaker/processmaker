@@ -992,7 +992,6 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 if (is_numeric($definition['interstitialScreenRef'])) {
                     $interstitialScreen = Screen::find($definition['interstitialScreenRef']);
                 } else {
-                    \Log::info('interstitialScreenRef: ' . $definition['interstitialScreenRef']);
                     $interstitialScreen = Screen::where('key', $definition['interstitialScreenRef'])->first();
                 }
             } else {
