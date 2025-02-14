@@ -266,13 +266,14 @@ class SettingCacheTest extends TestCase
             'format' => 'boolean',
         ]);
 
-        \SettingCache::set($setting->key, $setting);
-        $settingCache = \SettingCache::get($setting->key);
+        $cacheKey = 'setting_' . $setting->key;
+        \SettingCache::set($cacheKey, $setting);
+        $settingCache = \SettingCache::get($cacheKey);
 
         $this->assertEquals(1, $settingCache->config);
 
         $setting->update(['config' => 0]);
-        $settingCache = \SettingCache::get($setting->key);
+        $settingCache = \SettingCache::get($cacheKey);
         $this->assertNull($settingCache);
     }
 
@@ -284,13 +285,14 @@ class SettingCacheTest extends TestCase
             'format' => 'boolean',
         ]);
 
-        \SettingCache::set($setting->key, $setting);
-        $settingCache = \SettingCache::get($setting->key);
+        $cacheKey = 'setting_' . $setting->key;
+        \SettingCache::set($cacheKey, $setting);
+        $settingCache = \SettingCache::get($cacheKey);
 
         $this->assertEquals(1, $settingCache->config);
 
         $setting->delete();
-        $settingCache = \SettingCache::get($setting->key);
+        $settingCache = \SettingCache::get($cacheKey);
         $this->assertNull($settingCache);
     }
 
