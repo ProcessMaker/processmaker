@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Database\Seeders\AnonymousUserSeeder;
 use Illuminate\Database\Seeder;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\ScriptRunners\Base;
@@ -15,16 +16,13 @@ class TestSeeder extends Seeder
      */
     public function run()
     {
-        dump('Running TestSeeder');
         $this->call([
-            // UserSeeder::class,
+            AnonymousUserSeeder::class,
         ]);
 
         ScriptExecutor::firstOrCreate(
             ['language' => 'php-nayra'],
             ['title' => 'Test Executor Nayra']
         );
-
-        Base::initNayraPhpUnitTest();
     }
 }
