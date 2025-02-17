@@ -3,7 +3,7 @@
 namespace Tests;
 
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Bus;
@@ -12,16 +12,19 @@ use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Jobs\RefreshArtisanCaches;
 use ProcessMaker\Models\Process;
+use Tests\TestSeeder;
 
 abstract class TestCase extends BaseTestCase
 {
-    use DatabaseTransactions;
     use CreatesApplication;
     use ArraySubsetAsserts;
+    use RefreshDatabase;
 
     public $withPermissions = false;
 
     protected $skipTeardownPDOException = false;
+
+    protected $seeder = TestSeeder::class;
 
     /**
      * Run additional setUps from traits.
@@ -100,7 +103,7 @@ abstract class TestCase extends BaseTestCase
         try {
             $clients->personalAccessClient();
         } catch (\RuntimeException $e) {
-            Artisan::call('passport:install');
+            Artisan::call('passport:install --no-interaction');
         }
     }
 
