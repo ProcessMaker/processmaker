@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use ProcessMaker\Cache\Settings\SettingCacheException;
+use ProcessMaker\Cache\Settings\SettingCacheFactory;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
@@ -258,38 +259,63 @@ class SettingCacheTest extends TestCase
 
     public function testInvalidateOnSaved()
     {
+        $settingKey = 'password-policies.users_can_change';
+
         $setting = Setting::factory()->create([
-            'key' => 'password-policies.users_can_change',
+            'key' => $settingKey,
             'config' => 1,
             'format' => 'boolean',
         ]);
 
-        \SettingCache::set($setting->key, $setting);
-        $settingCache = \SettingCache::get($setting->key);
+        // Set the setting in the cache
+        $settingCache = SettingCacheFactory::getSettingsCache();
+        $settingCacheKey = $settingCache->createKey([
+            'key' => $settingKey,
+        ]);
 
-        $this->assertEquals(1, $settingCache->config);
+        $settingCache->set($settingCacheKey, $setting);
 
+        // Get the setting from the cache
+        $settingFromCache = $settingCache->get($settingCacheKey);
+        // Check if the setting is in the cache
+        $this->assertEquals(1, $settingFromCache->config);
+
+        // Update the setting to invalidate the cache
         $setting->update(['config' => 0]);
-        $settingCache = \SettingCache::get($setting->key);
-        $this->assertNull($settingCache);
+        // Get the setting from the cache
+        $settingFromCache = $settingCache->get($settingCacheKey);
+        // Check if the setting is invalidated
+        $this->assertNull($settingFromCache);
     }
 
     public function testInvalidateOnDeleted()
     {
+        $settingKey = 'password-policies.users_can_change';
+
         $setting = Setting::factory()->create([
-            'key' => 'password-policies.users_can_change',
+            'key' => $settingKey,
             'config' => 1,
             'format' => 'boolean',
         ]);
 
-        \SettingCache::set($setting->key, $setting);
-        $settingCache = \SettingCache::get($setting->key);
+        // Set the setting in the cache
+        $settingCache = SettingCacheFactory::getSettingsCache();
+        $settingCacheKey = $settingCache->createKey([
+            'key' => $settingKey,
+        ]);
 
-        $this->assertEquals(1, $settingCache->config);
+        $settingCache->set($settingCacheKey, $setting);
+        // Get the setting from the cache
+        $settingFromCache = $settingCache->get($settingCacheKey);
+        // Check if the setting is in the cache
+        $this->assertEquals(1, $settingFromCache->config);
 
+        // Delete the setting to invalidate the cache
         $setting->delete();
-        $settingCache = \SettingCache::get($setting->key);
-        $this->assertNull($settingCache);
+        // Get the setting from the cache
+        $settingFromCache = $settingCache->get($settingCacheKey);
+        // Check if the setting is invalidated
+        $this->assertNull($settingFromCache);
     }
 
     public function testInvalidateWithException()
