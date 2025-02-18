@@ -4,6 +4,7 @@ namespace Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Bus;
 use PDOException;
@@ -69,12 +70,12 @@ abstract class TestCase extends BaseTestCase
      * and since we're using transactions for our tests, we lose any data
      * saved before the command is run. Instead, mock it out here.
      */
-    public function setUpMockConfigCache(): void
-    {
-        Bus::fake([
-            RefreshArtisanCaches::class,
-        ]);
-    }
+    // public function setUpMockConfigCache(): void
+    // {
+    //     Bus::fake([
+    //         RefreshArtisanCaches::class,
+    //     ]);
+    // }
 
     /**
      * Run additional tearDowns from traits.
@@ -158,5 +159,15 @@ abstract class TestCase extends BaseTestCase
     protected function connectionsToTransact()
     {
         return ['processmaker', 'data'];
+    }
+
+    final protected function assertArraySubset(array $subset, array $array)
+    {
+        $dotSubset = Arr::dot($subset);
+        $dotArray = Arr::dot($array);
+        $this->assertTrue(
+            array_intersect_assoc($dotSubset, $dotArray) === $dotSubset,
+            'assertArraySubset: array_intersect_assoc failed'
+        );
     }
 }

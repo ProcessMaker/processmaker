@@ -5,6 +5,7 @@ namespace Tests\Jobs;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Queue;
 use Mockery;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Jobs\ErrorHandling;
 use ProcessMaker\Jobs\RunNayraScriptTask;
@@ -18,9 +19,7 @@ use Tests\TestCase;
 
 class RunScriptTaskTest extends TestCase
 {
-    /**
-     * @dataProvider jobTypes
-     */
+    #[DataProvider('jobTypes')]
     public function testScriptNotSet($class)
     {
         $request = $this->runJob($class, '');
@@ -29,9 +28,7 @@ class RunScriptTaskTest extends TestCase
         $this->assertEquals('my node (node_2): No code or script assigned to "Script Task"', $request->data['_configuration_error_node_2']);
     }
 
-    /**
-     * @dataProvider jobTypes
-     */
+    #[DataProvider('jobTypes')]
     public function testScriptNotFound($class)
     {
         $request = $this->runJob($class, 12345);
@@ -40,9 +37,7 @@ class RunScriptTaskTest extends TestCase
         $this->assertEquals('my node (node_2): Script "12345" not found', $request->data['_configuration_error_node_2']);
     }
 
-    /**
-     * @dataProvider jobTypes
-     */
+    #[DataProvider('jobTypes')]
     public function testRunAsUserNotFound($class)
     {
         $script = Script::factory()->create(['run_as_user_id' => null]);
