@@ -211,6 +211,18 @@ const PMColumnFilterCommonMixin = {
 
       return format;
     },
+    /**
+     * Returns the available alternatives for process version filtering
+     * Used by getFormatRange() to populate dropdown options
+     * 
+     * @returns {Array} Array of objects with value and text properties
+     */
+    getAlternatives() {
+      return [
+        { value: 'A', text: 'A' },
+        { value: 'B', text: 'B' },
+      ];
+    },
     getFormatRange(column) {
       let formatRange;
 
