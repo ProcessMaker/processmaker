@@ -80,6 +80,7 @@ class DevLinkTest extends TestCase
                 'name' => 'Test Bundle',
                 'published' => true,
                 'version' => '5',
+                'description' => 'Test Bundle Description',
             ]),
             'http://remote-instance.test/api/1.0/devlink/export-local-bundle/123' => Http::response([
                 'payloads' => $exports,
@@ -91,7 +92,7 @@ class DevLinkTest extends TestCase
                 ]],
             ]),
             'http://remote-instance.test/api/1.0/devlink/export-local-bundle/123/settings-payloads' => Http::response([
-                'payloads' => $exportsSettingsPayloads,
+                'payloads' => [$exportsSettingsPayloads],
             ]),
             'http://remote-instance.test/api/1.0/devlink/local-bundles/123/add-bundle-instance' => Http::response([], 200),
         ]);
@@ -188,30 +189,35 @@ class DevLinkTest extends TestCase
                     'name' => 'Test Bundle',
                     'published' => true,
                     'version' => '2',
+                    'description' => 'Test Bundle Description',
                 ], 200)
                 ->push([
                     'id' => 123,
                     'name' => 'Test Bundle',
                     'published' => true,
                     'version' => '3',
+                    'description' => 'Test Bundle Description',
                 ], 200)
                 ->push([
                     'id' => 123,
                     'name' => 'Test Bundle',
                     'published' => true,
                     'version' => '4',
+                    'description' => 'Test Bundle Description',
                 ], 200)
                 ->push([
                     'id' => 123,
                     'name' => 'Test Bundle',
                     'published' => true,
                     'version' => '8',
+                    'description' => 'Test Bundle Description',
                 ], 200)
                 ->push([
                     'id' => 123,
                     'name' => 'Test Bundle',
                     'published' => true,
                     'version' => '9',
+                    'description' => 'Test Bundle Description',
                 ], 200),
             'http://remote-instance.test/api/1.0/devlink/export-local-bundle/123' => Http::sequence()
                 ->push([
@@ -236,7 +242,7 @@ class DevLinkTest extends TestCase
                 ]],
             ]),
             'http://remote-instance.test/api/1.0/devlink/export-local-bundle/123/settings-payloads' => Http::response([
-                'payloads' => $exportsSettingsPayloads,
+                'payloads' => [$exportsSettingsPayloads],
             ]),
             'http://remote-instance.test/api/1.0/devlink/local-bundles/123/add-bundle-instance' => Http::response([], 200),
         ]);

@@ -155,95 +155,122 @@ class Bundle extends ProcessMakerModel implements HasMedia
     public function addSettings($setting, $newId, $type = null)
     {
         $existingSetting = $this->settings()->where('setting', $setting)->first();
-        //If $newId is null, set config to null
-        if (is_null($newId) && is_null($type)) {
-            if ($existingSetting) {
-                $existingSetting->update(['config' => null]);
-            } else {
-                BundleSetting::create([
-                    'bundle_id' => $this->id,
-                    'setting' => $setting,
-                    'config' => null,
-                ]);
-            }
 
-            return;
+        if ($this->shouldSetNullConfig($newId, $type)) {
+            return $this->handleNullConfig($existingSetting, $setting);
         }
-        // verify if newId is a json with id key
-        $decodedNewId = json_decode($newId, true);
-        if (json_last_error() === JSON_ERROR_NONE) {
-            if (is_array($decodedNewId)) {
-                $newId = $decodedNewId;
-                if ($existingSetting) {
-                    if ($decodedNewId['id'] === []) {
-                        $existingSetting->delete();
 
-                        return;
-                    }
-                    $existingSetting->update(['config' => json_encode($newId)]);
-
-                    return;
-                }
-            } elseif (isset($decodedNewId['id'])) {
-                $newId = [$decodedNewId['id']];
-            } else {
-                $newId = ['id' => [$decodedNewId]];
-            }
-        } else {
-            $newId = ['id' => [$newId]];
-        }
+        $decodedNewId = $this->parseNewId($newId);
 
         if ($existingSetting) {
-            // Decode the existing JSON
-            $config = json_decode($existingSetting->config, true);
-            // Ensure 'id' is an array
-            if (!isset($config['id']) || !is_array($config['id'])) {
-                $config['id'] = [];
-            }
-            // Add the new ID
-            foreach ($newId['id'] as $id) {
-                $config['id'][] = $id;
-            }
-            // Remove duplicates
-            $config['id'] = array_unique($config['id']);
-            //reindex the array
-            $config['id'] = array_values($config['id']);
-            // Update the config
-            $existingSetting->update([
-                'config' => json_encode($config),
-            ]);
+            return $this->updateExistingSetting($existingSetting, $decodedNewId);
+        }
+
+        $this->createNewSetting($setting, $decodedNewId, $type);
+    }
+
+    private function shouldSetNullConfig($newId, $type)
+    {
+        return is_null($newId) && is_null($type);
+    }
+
+    private function handleNullConfig($existingSetting, $setting)
+    {
+        if ($existingSetting) {
+            $existingSetting->update(['config' => null]);
         } else {
-            // Create a new BundleSetting with the initial ID
-            $config = ['id' => []];
-            if ($newId && $type !== 'settings') {
-                foreach ($newId['id'] as $id) {
-                    $config['id'][] = $id;
-                }
-            }
-
-            if ($type === 'settings') {
-                $settingsMenu = SettingsMenus::where('menu_group', $setting)->first();
-                $settingsKeys = Setting::where([
-                    ['group_id', '=', $settingsMenu->id],
-                    ['hidden', '=', false],
-                ])->pluck('key')->toArray();
-                if ($settingsMenu) {
-                    $config['id'] = $settingsKeys;
-                    $config['type'] = $type;
-                }
-            }
-
-            if ($type === 'ui_settings') {
-                $config['id'] = ['css-override', 'login-footer', 'logo-alt-text'];
-                $config['type'] = $type;
-            }
-
             BundleSetting::create([
                 'bundle_id' => $this->id,
                 'setting' => $setting,
-                'config' => json_encode($config),
+                'config' => null,
             ]);
         }
+    }
+
+    private function parseNewId($newId)
+    {
+        $decodedNewId = json_decode($newId, true);
+
+        if (json_last_error() === JSON_ERROR_NONE) {
+            if (is_array($decodedNewId)) {
+                return $decodedNewId;
+            } elseif (isset($decodedNewId['id'])) {
+                return ['id' => [$decodedNewId['id']]];
+            }
+
+            return ['id' => [$decodedNewId]];
+        }
+
+        return ['id' => [$newId]];
+    }
+
+    private function updateExistingSetting($existingSetting, $decodedNewId)
+    {
+        if (isset($decodedNewId['id']) && $decodedNewId['id'] === []) {
+            $existingSetting->delete();
+
+            return;
+        }
+
+        $config = json_decode($existingSetting->config, true) ?: ['id' => []];
+
+        if (!isset($config['id']) || !is_array($config['id'])) {
+            $config['id'] = [];
+        }
+
+        foreach ($decodedNewId['id'] as $id) {
+            $config['id'][] = $id;
+        }
+
+        $config['id'] = array_values(array_unique($config['id']));
+        $existingSetting->update(['config' => json_encode($config)]);
+    }
+
+    private function createNewSetting($setting, $newId, $type)
+    {
+        $config = ['id' => []];
+
+        if ($type === 'settings') {
+            $config = $this->getSettingsConfig($setting);
+        } elseif ($type === 'ui_settings') {
+            $config = $this->getUiSettingsConfig();
+        } elseif ($newId && $type !== 'settings') {
+            foreach ($newId['id'] as $id) {
+                $config['id'][] = $id;
+            }
+        }
+
+        BundleSetting::create([
+            'bundle_id' => $this->id,
+            'setting' => $setting,
+            'config' => json_encode($config),
+        ]);
+    }
+
+    private function getSettingsConfig($setting)
+    {
+        $config = ['id' => []];
+        $settingsMenu = SettingsMenus::where('menu_group', $setting)->first();
+
+        if ($settingsMenu) {
+            $settingsKeys = Setting::where([
+                ['group_id', '=', $settingsMenu->id],
+                ['hidden', '=', false],
+            ])->pluck('key')->toArray();
+
+            $config['id'] = $settingsKeys;
+            $config['type'] = 'settings';
+        }
+
+        return $config;
+    }
+
+    private function getUiSettingsConfig()
+    {
+        return [
+            'id' => ['css-override', 'login-footer', 'logo-alt-text'],
+            'type' => 'ui_settings',
+        ];
     }
 
     public function addAssetToBundles(ProcessMakerModel $asset)
@@ -349,7 +376,7 @@ class Bundle extends ProcessMakerModel implements HasMedia
         foreach ($payloads as $payload) {
             if (isset($payload[0]['export'])) {
                 $logger->status('Installing bundle settings on the this instance');
-                $logger->setSteps($payloads[0]);
+                $logger->setSteps($payload[0]);
                 $assets[] = DevLink::import($payload[0], $options, $logger);
             } elseif (isset($payload[0]['setting_type'])) {
                 foreach ($payload as $setting) {
