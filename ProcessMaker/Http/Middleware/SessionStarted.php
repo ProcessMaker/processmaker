@@ -33,7 +33,7 @@ class SessionStarted
             config('session.path'),
             config('session.domain'),
             config('session.secure'),
-            true
+            config('session.http_only'),
         );
 
         return $next($request);
