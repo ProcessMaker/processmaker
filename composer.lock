@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "18e1abfeafd865cfc693ec791bd10acb",
+    "content-hash": "925e220b501b9112d279c8df163819d0",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -62,16 +62,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.339.11",
+            "version": "3.339.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "692055cc451a442690ecb839ae1d0cca5c018c77"
+                "reference": "46ef2d3734ba8358966af80e4ac181633bd03692"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/692055cc451a442690ecb839ae1d0cca5c018c77",
-                "reference": "692055cc451a442690ecb839ae1d0cca5c018c77",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/46ef2d3734ba8358966af80e4ac181633bd03692",
+                "reference": "46ef2d3734ba8358966af80e4ac181633bd03692",
                 "shasum": ""
             },
             "require": {
@@ -153,9 +153,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.339.11"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.339.15"
             },
-            "time": "2025-02-11T19:45:23+00:00"
+            "time": "2025-02-17T19:07:50+00:00"
         },
         {
             "name": "babenkoivan/elastic-adapter",
@@ -2029,16 +2029,16 @@
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.394.0",
+            "version": "v0.395.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-api-php-client-services.git",
-                "reference": "17fa8210d62c02c398fb4985ed4bc461d18989c1"
+                "reference": "e023429c6dc53e9e6e3b751f3957fd3118ed1568"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/17fa8210d62c02c398fb4985ed4bc461d18989c1",
-                "reference": "17fa8210d62c02c398fb4985ed4bc461d18989c1",
+                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/e023429c6dc53e9e6e3b751f3957fd3118ed1568",
+                "reference": "e023429c6dc53e9e6e3b751f3957fd3118ed1568",
                 "shasum": ""
             },
             "require": {
@@ -2067,22 +2067,22 @@
             ],
             "support": {
                 "issues": "https://github.com/googleapis/google-api-php-client-services/issues",
-                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.394.0"
+                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.395.0"
             },
-            "time": "2025-02-10T01:06:23+00:00"
+            "time": "2025-02-17T01:08:24+00:00"
         },
         {
             "name": "google/auth",
-            "version": "v1.45.4",
+            "version": "v1.46.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-auth-library-php.git",
-                "reference": "c70b987a3c2685c78e5e86280f9d259d4603839b"
+                "reference": "7fafae99a41984cbfb92508174263cf7bf3049b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-auth-library-php/zipball/c70b987a3c2685c78e5e86280f9d259d4603839b",
-                "reference": "c70b987a3c2685c78e5e86280f9d259d4603839b",
+                "url": "https://api.github.com/repos/googleapis/google-auth-library-php/zipball/7fafae99a41984cbfb92508174263cf7bf3049b9",
+                "reference": "7fafae99a41984cbfb92508174263cf7bf3049b9",
                 "shasum": ""
             },
             "require": {
@@ -2128,9 +2128,9 @@
             "support": {
                 "docs": "https://cloud.google.com/php/docs/reference/auth/latest",
                 "issues": "https://github.com/googleapis/google-auth-library-php/issues",
-                "source": "https://github.com/googleapis/google-auth-library-php/tree/v1.45.4"
+                "source": "https://github.com/googleapis/google-auth-library-php/tree/v1.46.0"
             },
-            "time": "2025-02-10T18:04:06+00:00"
+            "time": "2025-02-12T22:21:37+00:00"
         },
         {
             "name": "graham-campbell/result-type",
@@ -2805,16 +2805,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v11.42.0",
+            "version": "v11.43.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "006375ba67e830e87daa7b52ab65163ba3508d26"
+                "reference": "70760d976486310b11d8e487e873077db069e77a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/006375ba67e830e87daa7b52ab65163ba3508d26",
-                "reference": "006375ba67e830e87daa7b52ab65163ba3508d26",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/70760d976486310b11d8e487e873077db069e77a",
+                "reference": "70760d976486310b11d8e487e873077db069e77a",
                 "shasum": ""
             },
             "require": {
@@ -3016,7 +3016,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2025-02-11T17:17:56+00:00"
+            "time": "2025-02-18T15:37:56+00:00"
         },
         {
             "name": "laravel/horizon",
@@ -4277,16 +4277,16 @@
         },
         {
             "name": "league/fractal",
-            "version": "0.20.1",
+            "version": "0.20.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/fractal.git",
-                "reference": "8b9d39b67624db9195c06f9c1ffd0355151eaf62"
+                "reference": "573ca2e0e348a7fe573a3e8fbc29a6588ece8c4e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/fractal/zipball/8b9d39b67624db9195c06f9c1ffd0355151eaf62",
-                "reference": "8b9d39b67624db9195c06f9c1ffd0355151eaf62",
+                "url": "https://api.github.com/repos/thephpleague/fractal/zipball/573ca2e0e348a7fe573a3e8fbc29a6588ece8c4e",
+                "reference": "573ca2e0e348a7fe573a3e8fbc29a6588ece8c4e",
                 "shasum": ""
             },
             "require": {
@@ -4295,18 +4295,18 @@
             "require-dev": {
                 "doctrine/orm": "^2.5",
                 "illuminate/contracts": "~5.0",
+                "laminas/laminas-paginator": "~2.12",
                 "mockery/mockery": "^1.3",
-                "pagerfanta/pagerfanta": "~1.0.0",
+                "pagerfanta/pagerfanta": "~1.0.0|~4.0.0",
                 "phpstan/phpstan": "^1.4",
                 "phpunit/phpunit": "^9.5",
                 "squizlabs/php_codesniffer": "~3.4",
-                "vimeo/psalm": "^4.22",
-                "zendframework/zend-paginator": "~2.3"
+                "vimeo/psalm": "^4.30"
             },
             "suggest": {
                 "illuminate/pagination": "The Illuminate Pagination component.",
-                "pagerfanta/pagerfanta": "Pagerfanta Paginator",
-                "zendframework/zend-paginator": "Zend Framework Paginator"
+                "laminas/laminas-paginator": "Laminas Framework Paginator",
+                "pagerfanta/pagerfanta": "Pagerfanta Paginator"
             },
             "type": "library",
             "extra": {
@@ -4341,9 +4341,9 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/fractal/issues",
-                "source": "https://github.com/thephpleague/fractal/tree/0.20.1"
+                "source": "https://github.com/thephpleague/fractal/tree/0.20.2"
             },
-            "time": "2022-04-11T12:47:17+00:00"
+            "time": "2025-02-14T21:33:14+00:00"
         },
         {
             "name": "league/mime-type-detection",
@@ -5099,26 +5099,26 @@
         },
         {
             "name": "microsoft/kiota-abstractions",
-            "version": "1.4.0",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/microsoft/kiota-abstractions-php.git",
-                "reference": "b911a9cd389a15f7f1c61002d752dc05edac2a47"
+                "reference": "c62d26dd12cd973d03c1f348df40c9b2792da749"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/microsoft/kiota-abstractions-php/zipball/b911a9cd389a15f7f1c61002d752dc05edac2a47",
-                "reference": "b911a9cd389a15f7f1c61002d752dc05edac2a47",
+                "url": "https://api.github.com/repos/microsoft/kiota-abstractions-php/zipball/c62d26dd12cd973d03c1f348df40c9b2792da749",
+                "reference": "c62d26dd12cd973d03c1f348df40c9b2792da749",
                 "shasum": ""
             },
             "require": {
                 "doctrine/annotations": "^1.13 || ^2.0",
                 "open-telemetry/sdk": "^1.0.0",
                 "php": "^7.4 || ^8.0",
-                "php-http/promise": "~1.2.0",
+                "php-http/promise": "^1.2.0",
                 "psr/http-message": "^1.1 || ^2.0",
                 "ramsey/uuid": "^3 || ^4",
-                "stduritemplate/stduritemplate": "^0.0.53 || ^0.0.54 || ^0.0.55 || ^0.0.56 || ^0.0.57"
+                "stduritemplate/stduritemplate": "^0.0.48"
             },
             "require-dev": {
                 "phpstan/phpstan": "^1.2.0",
@@ -5144,9 +5144,9 @@
             "description": "Abstractions for Kiota",
             "support": {
                 "issues": "https://github.com/microsoft/kiota-abstractions-php/issues",
-                "source": "https://github.com/microsoft/kiota-abstractions-php/tree/1.4.0"
+                "source": "https://github.com/microsoft/kiota-abstractions-php/tree/1.0.2"
             },
-            "time": "2024-05-30T11:52:07+00:00"
+            "time": "2023-12-01T07:53:19+00:00"
         },
         {
             "name": "microsoft/kiota-authentication-phpleague",
@@ -5200,23 +5200,23 @@
         },
         {
             "name": "microsoft/kiota-http-guzzle",
-            "version": "1.3.1",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/microsoft/kiota-http-guzzle-php.git",
-                "reference": "7ff51aa658c3cf9d421501631e2bf45ced425b65"
+                "reference": "881ab5272e4f59b78eba812ff45a9ffa5dbbcdab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/microsoft/kiota-http-guzzle-php/zipball/7ff51aa658c3cf9d421501631e2bf45ced425b65",
-                "reference": "7ff51aa658c3cf9d421501631e2bf45ced425b65",
+                "url": "https://api.github.com/repos/microsoft/kiota-http-guzzle-php/zipball/881ab5272e4f59b78eba812ff45a9ffa5dbbcdab",
+                "reference": "881ab5272e4f59b78eba812ff45a9ffa5dbbcdab",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "ext-zlib": "*",
-                "guzzlehttp/guzzle": "^7.4.5",
-                "microsoft/kiota-abstractions": "^1.1.0",
+                "guzzlehttp/guzzle": "^7.0",
+                "microsoft/kiota-abstractions": "^1.0.2",
                 "php": "^7.4 | ^8.0"
             },
             "require-dev": {
@@ -5242,77 +5242,28 @@
             "description": "Kiota HTTP Request Adapter implementation",
             "support": {
                 "issues": "https://github.com/microsoft/kiota-http-guzzle-php/issues",
-                "source": "https://github.com/microsoft/kiota-http-guzzle-php/tree/1.3.1"
+                "source": "https://github.com/microsoft/kiota-http-guzzle-php/tree/1.1.0"
             },
-            "time": "2024-09-04T11:54:51+00:00"
-        },
-        {
-            "name": "microsoft/kiota-serialization-form",
-            "version": "1.1.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/microsoft/kiota-serialization-form-php.git",
-                "reference": "e6de40f5558d11d070b67e5d8a7b7978b3e99b35"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/microsoft/kiota-serialization-form-php/zipball/e6de40f5558d11d070b67e5d8a7b7978b3e99b35",
-                "reference": "e6de40f5558d11d070b67e5d8a7b7978b3e99b35",
-                "shasum": ""
-            },
-            "require": {
-                "ext-json": "*",
-                "guzzlehttp/psr7": "^1.6 || ^2",
-                "microsoft/kiota-abstractions": "^1.3.1",
-                "php": "^7.4 || ^8"
-            },
-            "require-dev": {
-                "phpstan/phpstan": "^1.4",
-                "phpunit/phpunit": "^8 || ^9",
-                "roave/security-advisories": "dev-latest"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Microsoft\\Kiota\\Serialization\\Form\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Microsoft Graph Client Tooling",
-                    "email": "graphtooling@service.microsoft.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Form implementation of Kiota abstractions serialization.",
-            "support": {
-                "issues": "https://github.com/microsoft/kiota-serialization-form-php/issues",
-                "source": "https://github.com/microsoft/kiota-serialization-form-php/tree/1.1.1"
-            },
-            "time": "2024-05-30T13:38:01+00:00"
+            "time": "2023-12-01T09:35:10+00:00"
         },
         {
             "name": "microsoft/kiota-serialization-json",
-            "version": "v1.3.1",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/microsoft/kiota-serialization-json-php.git",
-                "reference": "85f7fdba1ad5b3adcb5bccdabfbada44e82af7f6"
+                "reference": "dafd911b8f56d00cb3208d07287ca13d3297f4f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/microsoft/kiota-serialization-json-php/zipball/85f7fdba1ad5b3adcb5bccdabfbada44e82af7f6",
-                "reference": "85f7fdba1ad5b3adcb5bccdabfbada44e82af7f6",
+                "url": "https://api.github.com/repos/microsoft/kiota-serialization-json-php/zipball/dafd911b8f56d00cb3208d07287ca13d3297f4f2",
+                "reference": "dafd911b8f56d00cb3208d07287ca13d3297f4f2",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "guzzlehttp/psr7": "^1.6 || ^2",
-                "microsoft/kiota-abstractions": "^1.4.0",
+                "microsoft/kiota-abstractions": "^1.0.2",
                 "php": "^7.4 || ^8"
             },
             "require-dev": {
@@ -5340,76 +5291,27 @@
             "description": "Implementation of Kiota serialization abstractions using Json.",
             "support": {
                 "issues": "https://github.com/microsoft/kiota-serialization-json-php/issues",
-                "source": "https://github.com/microsoft/kiota-serialization-json-php/tree/v1.3.1"
+                "source": "https://github.com/microsoft/kiota-serialization-json-php/tree/1.1.0"
             },
-            "time": "2024-09-16T17:45:09+00:00"
-        },
-        {
-            "name": "microsoft/kiota-serialization-multipart",
-            "version": "1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/microsoft/kiota-serialization-multipart-php.git",
-                "reference": "a6b635c3d9c033d69bdd8ea80444ffd22d1a2b85"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/microsoft/kiota-serialization-multipart-php/zipball/a6b635c3d9c033d69bdd8ea80444ffd22d1a2b85",
-                "reference": "a6b635c3d9c033d69bdd8ea80444ffd22d1a2b85",
-                "shasum": ""
-            },
-            "require": {
-                "ext-json": "*",
-                "guzzlehttp/psr7": "^1.6 || ^2",
-                "microsoft/kiota-abstractions": "^1.2.0",
-                "php": "^7.4 || ^8"
-            },
-            "require-dev": {
-                "phpstan/phpstan": "^1.4",
-                "phpunit/phpunit": "^8 || ^9",
-                "roave/security-advisories": "dev-latest"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Microsoft\\Kiota\\Serialization\\Multipart\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Microsoft Graph Client Tooling",
-                    "email": "graphtooling@service.microsoft.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Multipart implementation of Kiota abstractions serialization.",
-            "support": {
-                "issues": "https://github.com/microsoft/kiota-serialization-multipart-php/issues",
-                "source": "https://github.com/microsoft/kiota-serialization-multipart-php/tree/1.0.0"
-            },
-            "time": "2024-03-27T12:05:13+00:00"
+            "time": "2024-03-15T14:34:42+00:00"
         },
         {
             "name": "microsoft/kiota-serialization-text",
-            "version": "1.1.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/microsoft/kiota-serialization-text-php.git",
-                "reference": "e9ed18ae89704c6de97de473c147559e4575ed0d"
+                "reference": "d5271dd1826f7c1eb8ca363c0d92237042d74ed3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/microsoft/kiota-serialization-text-php/zipball/e9ed18ae89704c6de97de473c147559e4575ed0d",
-                "reference": "e9ed18ae89704c6de97de473c147559e4575ed0d",
+                "url": "https://api.github.com/repos/microsoft/kiota-serialization-text-php/zipball/d5271dd1826f7c1eb8ca363c0d92237042d74ed3",
+                "reference": "d5271dd1826f7c1eb8ca363c0d92237042d74ed3",
                 "shasum": ""
             },
             "require": {
                 "guzzlehttp/psr7": "^1.6 || ^2",
-                "microsoft/kiota-abstractions": "^1.3.1",
+                "microsoft/kiota-abstractions": "^1.0.2",
                 "php": "^7.4 | ^8.0"
             },
             "require-dev": {
@@ -5435,26 +5337,26 @@
             "description": "Implementation of Serialization Abstractions for text/plain content",
             "support": {
                 "issues": "https://github.com/microsoft/kiota-serialization-text-php/issues",
-                "source": "https://github.com/microsoft/kiota-serialization-text-php/tree/1.1.0"
+                "source": "https://github.com/microsoft/kiota-serialization-text-php/tree/1.0.1"
             },
-            "time": "2024-05-08T12:30:40+00:00"
+            "time": "2023-12-01T09:31:45+00:00"
         },
         {
             "name": "microsoft/microsoft-graph",
-            "version": "v2.25.0",
+            "version": "2.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/microsoftgraph/msgraph-sdk-php.git",
-                "reference": "b421ce6b9410fdb52d21eacb15008ba28155998f"
+                "reference": "1e516b86d408a85b49025a15051740e6bcd12587"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/microsoftgraph/msgraph-sdk-php/zipball/b421ce6b9410fdb52d21eacb15008ba28155998f",
-                "reference": "b421ce6b9410fdb52d21eacb15008ba28155998f",
+                "url": "https://api.github.com/repos/microsoftgraph/msgraph-sdk-php/zipball/1e516b86d408a85b49025a15051740e6bcd12587",
+                "reference": "1e516b86d408a85b49025a15051740e6bcd12587",
                 "shasum": ""
             },
             "require": {
-                "microsoft/microsoft-graph-core": "^2.2.1",
+                "microsoft/microsoft-graph-core": "^2.1.0",
                 "php": "^8.0 || ^7.4"
             },
             "require-dev": {
@@ -5482,32 +5384,30 @@
             "homepage": "https://developer.microsoft.com/en-us/graph",
             "support": {
                 "issues": "https://github.com/microsoftgraph/msgraph-sdk-php/issues",
-                "source": "https://github.com/microsoftgraph/msgraph-sdk-php/tree/v2.25.0"
+                "source": "https://github.com/microsoftgraph/msgraph-sdk-php/tree/2.8.0"
             },
-            "time": "2025-01-30T13:44:27+00:00"
+            "time": "2024-05-09T14:24:48+00:00"
         },
         {
             "name": "microsoft/microsoft-graph-core",
-            "version": "v2.2.1",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/microsoftgraph/msgraph-sdk-php-core.git",
-                "reference": "7662774bf351a6e6c55c9c7577d58c45f975b195"
+                "reference": "ff3498a581204eae09984bf60dd3369852300f56"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/microsoftgraph/msgraph-sdk-php-core/zipball/7662774bf351a6e6c55c9c7577d58c45f975b195",
-                "reference": "7662774bf351a6e6c55c9c7577d58c45f975b195",
+                "url": "https://api.github.com/repos/microsoftgraph/msgraph-sdk-php-core/zipball/ff3498a581204eae09984bf60dd3369852300f56",
+                "reference": "ff3498a581204eae09984bf60dd3369852300f56",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "microsoft/kiota-authentication-phpleague": "^1.1.0",
-                "microsoft/kiota-http-guzzle": "^1.3.0",
-                "microsoft/kiota-serialization-form": "^1.1.0",
-                "microsoft/kiota-serialization-json": "^1.2.0",
-                "microsoft/kiota-serialization-multipart": "^1.0.0",
-                "microsoft/kiota-serialization-text": "^1.1.0",
+                "microsoft/kiota-http-guzzle": "^1.1.0",
+                "microsoft/kiota-serialization-json": "^1.0.1",
+                "microsoft/kiota-serialization-text": "^1.0.1",
                 "php": "^8.0 || ^7.4"
             },
             "require-dev": {
@@ -5536,9 +5436,9 @@
             "homepage": "https://developer.microsoft.com/en-us/graph",
             "support": {
                 "issues": "https://github.com/microsoftgraph/msgraph-sdk-php-core/issues",
-                "source": "https://github.com/microsoftgraph/msgraph-sdk-php-core/tree/v2.2.1"
+                "source": "https://github.com/microsoftgraph/msgraph-sdk-php-core/tree/2.1.0"
             },
-            "time": "2025-01-08T14:11:32+00:00"
+            "time": "2024-03-04T18:41:52+00:00"
         },
         {
             "name": "mittwald/vault-php",
@@ -7692,16 +7592,16 @@
         },
         {
             "name": "php-http/promise",
-            "version": "1.2.1",
+            "version": "1.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-http/promise.git",
-                "reference": "44a67cb59f708f826f3bec35f22030b3edb90119"
+                "reference": "fc85b1fba37c169a69a07ef0d5a8075770cc1f83"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-http/promise/zipball/44a67cb59f708f826f3bec35f22030b3edb90119",
-                "reference": "44a67cb59f708f826f3bec35f22030b3edb90119",
+                "url": "https://api.github.com/repos/php-http/promise/zipball/fc85b1fba37c169a69a07ef0d5a8075770cc1f83",
+                "reference": "fc85b1fba37c169a69a07ef0d5a8075770cc1f83",
                 "shasum": ""
             },
             "require": {
@@ -7738,9 +7638,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-http/promise/issues",
-                "source": "https://github.com/php-http/promise/tree/1.2.1"
+                "source": "https://github.com/php-http/promise/tree/1.3.1"
             },
-            "time": "2023-11-08T12:57:08+00:00"
+            "time": "2024-03-15T13:55:21+00:00"
         },
         {
             "name": "phpoption/phpoption",
@@ -9618,21 +9518,21 @@
         },
         {
             "name": "spatie/laravel-fractal",
-            "version": "6.3.1",
+            "version": "6.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-fractal.git",
-                "reference": "10571be5e614488d82816be0e23d2a1a26886c05"
+                "reference": "d078aa670233100e1309a0a7096c42f5b605ef29"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-fractal/zipball/10571be5e614488d82816be0e23d2a1a26886c05",
-                "reference": "10571be5e614488d82816be0e23d2a1a26886c05",
+                "url": "https://api.github.com/repos/spatie/laravel-fractal/zipball/d078aa670233100e1309a0a7096c42f5b605ef29",
+                "reference": "d078aa670233100e1309a0a7096c42f5b605ef29",
                 "shasum": ""
             },
             "require": {
-                "illuminate/contracts": "^8.0|^9.0|^10.0|^11.0",
-                "illuminate/support": "^8.0|^9.0|^10.0|^11.0",
+                "illuminate/contracts": "^8.0|^9.0|^10.0|^11.0|^12.0",
+                "illuminate/support": "^8.0|^9.0|^10.0|^11.0|^12.0",
                 "league/fractal": "^0.20.1|^0.20",
                 "nesbot/carbon": "^2.63|^3.0",
                 "php": "^8.0",
@@ -9641,8 +9541,8 @@
             },
             "require-dev": {
                 "ext-json": "*",
-                "orchestra/testbench": "^7.0|^8.0|^9.0",
-                "pestphp/pest": "^1.22|^2.34"
+                "orchestra/testbench": "^7.0|^8.0|^9.0|^10.0",
+                "pestphp/pest": "^1.22|^2.34|^3.0"
             },
             "type": "library",
             "extra": {
@@ -9687,7 +9587,7 @@
                 "transform"
             ],
             "support": {
-                "source": "https://github.com/spatie/laravel-fractal/tree/6.3.1"
+                "source": "https://github.com/spatie/laravel-fractal/tree/6.3.2"
             },
             "funding": [
                 {
@@ -9695,31 +9595,31 @@
                     "type": "custom"
                 }
             ],
-            "time": "2024-12-16T12:43:10+00:00"
+            "time": "2025-02-14T10:43:50+00:00"
         },
         {
             "name": "spatie/laravel-html",
-            "version": "3.11.2",
+            "version": "3.11.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-html.git",
-                "reference": "248508f3ed50e6538707fc54a4b3b23fb53e8045"
+                "reference": "b1bb159bd9845b1ff02b8f945ecd583d93353d06"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-html/zipball/248508f3ed50e6538707fc54a4b3b23fb53e8045",
-                "reference": "248508f3ed50e6538707fc54a4b3b23fb53e8045",
+                "url": "https://api.github.com/repos/spatie/laravel-html/zipball/b1bb159bd9845b1ff02b8f945ecd583d93353d06",
+                "reference": "b1bb159bd9845b1ff02b8f945ecd583d93353d06",
                 "shasum": ""
             },
             "require": {
-                "illuminate/http": "^10.0|^11.0",
-                "illuminate/support": "^10.0|^11.0",
+                "illuminate/http": "^10.0|^11.0|^12.0",
+                "illuminate/support": "^10.0|^11.0|^12.0",
                 "php": "^8.2"
             },
             "require-dev": {
                 "mockery/mockery": "^1.3",
-                "orchestra/testbench": "^8.0|^9.0",
-                "pestphp/pest": "^2.34"
+                "orchestra/testbench": "^8.0|^9.0|^10.0",
+                "pestphp/pest": "^2.34|^3.7"
             },
             "type": "library",
             "extra": {
@@ -9765,7 +9665,7 @@
                 "spatie"
             ],
             "support": {
-                "source": "https://github.com/spatie/laravel-html/tree/3.11.2"
+                "source": "https://github.com/spatie/laravel-html/tree/3.11.3"
             },
             "funding": [
                 {
@@ -9773,20 +9673,20 @@
                     "type": "custom"
                 }
             ],
-            "time": "2025-02-05T08:27:24+00:00"
+            "time": "2025-02-17T09:59:20+00:00"
         },
         {
             "name": "spatie/laravel-medialibrary",
-            "version": "11.12.4",
+            "version": "11.12.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-medialibrary.git",
-                "reference": "b80816212113f58cdf5a0bdc469b125d844e4e79"
+                "reference": "4357e6bd031008751123520602e6370b71b3bc21"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-medialibrary/zipball/b80816212113f58cdf5a0bdc469b125d844e4e79",
-                "reference": "b80816212113f58cdf5a0bdc469b125d844e4e79",
+                "url": "https://api.github.com/repos/spatie/laravel-medialibrary/zipball/4357e6bd031008751123520602e6370b71b3bc21",
+                "reference": "4357e6bd031008751123520602e6370b71b3bc21",
                 "shasum": ""
             },
             "require": {
@@ -9794,12 +9694,12 @@
                 "ext-exif": "*",
                 "ext-fileinfo": "*",
                 "ext-json": "*",
-                "illuminate/bus": "^10.0|^11.0",
-                "illuminate/conditionable": "^10.0|^11.0",
-                "illuminate/console": "^10.0|^11.0",
-                "illuminate/database": "^10.0|^11.0",
-                "illuminate/pipeline": "^10.0|^11.0",
-                "illuminate/support": "^10.0|^11.0",
+                "illuminate/bus": "^10.2|^11.0|^12.0",
+                "illuminate/conditionable": "^10.2|^11.0|^12.0",
+                "illuminate/console": "^10.2|^11.0|^12.0",
+                "illuminate/database": "^10.2|^11.0|^12.0",
+                "illuminate/pipeline": "^10.2|^11.0|^12.0",
+                "illuminate/support": "^10.2|^11.0|^12.0",
                 "maennchen/zipstream-php": "^3.1",
                 "php": "^8.2",
                 "spatie/image": "^3.3.2",
@@ -9816,11 +9716,11 @@
                 "ext-pdo_sqlite": "*",
                 "ext-zip": "*",
                 "guzzlehttp/guzzle": "^7.8.1",
-                "larastan/larastan": "^2.7",
+                "larastan/larastan": "^2.7|^3.0",
                 "league/flysystem-aws-s3-v3": "^3.22",
                 "mockery/mockery": "^1.6.7",
-                "orchestra/testbench": "^7.0|^8.17|^9.0",
-                "pestphp/pest": "^2.28",
+                "orchestra/testbench": "^7.0|^8.17|^9.0|^10.0",
+                "pestphp/pest": "^2.28|^3.5",
                 "phpstan/extension-installer": "^1.3.1",
                 "spatie/laravel-ray": "^1.33",
                 "spatie/pdf-to-image": "^2.2|^3.0",
@@ -9870,7 +9770,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/laravel-medialibrary/issues",
-                "source": "https://github.com/spatie/laravel-medialibrary/tree/11.12.4"
+                "source": "https://github.com/spatie/laravel-medialibrary/tree/11.12.6"
             },
             "funding": [
                 {
@@ -9882,7 +9782,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-02-10T09:14:17+00:00"
+            "time": "2025-02-17T09:28:14+00:00"
         },
         {
             "name": "spatie/laravel-package-tools",
@@ -10089,16 +9989,16 @@
         },
         {
             "name": "stduritemplate/stduritemplate",
-            "version": "0.0.57",
+            "version": "0.0.48",
             "source": {
                 "type": "git",
                 "url": "https://github.com/std-uritemplate/std-uritemplate-php.git",
-                "reference": "99b08e6fef7224bfa1e17963ab66f63097dc80a1"
+                "reference": "6a47ddb6094464ffa160ec5c061f181a292c43ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/std-uritemplate/std-uritemplate-php/zipball/99b08e6fef7224bfa1e17963ab66f63097dc80a1",
-                "reference": "99b08e6fef7224bfa1e17963ab66f63097dc80a1",
+                "url": "https://api.github.com/repos/std-uritemplate/std-uritemplate-php/zipball/6a47ddb6094464ffa160ec5c061f181a292c43ef",
+                "reference": "6a47ddb6094464ffa160ec5c061f181a292c43ef",
                 "shasum": ""
             },
             "require": {
@@ -10122,22 +10022,22 @@
             ],
             "description": "Std UriTemplate, RFC 6570 implementation",
             "support": {
-                "source": "https://github.com/std-uritemplate/std-uritemplate-php/tree/0.0.57"
+                "source": "https://github.com/std-uritemplate/std-uritemplate-php/tree/0.0.48"
             },
-            "time": "2024-04-18T10:51:20+00:00"
+            "time": "2023-11-29T12:45:34+00:00"
         },
         {
             "name": "swagger-api/swagger-ui",
-            "version": "v5.18.3",
+            "version": "v5.19.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swagger-api/swagger-ui.git",
-                "reference": "e322ecd6ba8a5a3ff1ebbb3692aa2334050f6196"
+                "reference": "dfa908d25a2cce32aa37f104ae8aa8a49c5157a1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/e322ecd6ba8a5a3ff1ebbb3692aa2334050f6196",
-                "reference": "e322ecd6ba8a5a3ff1ebbb3692aa2334050f6196",
+                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/dfa908d25a2cce32aa37f104ae8aa8a49c5157a1",
+                "reference": "dfa908d25a2cce32aa37f104ae8aa8a49c5157a1",
                 "shasum": ""
             },
             "type": "library",
@@ -10183,9 +10083,9 @@
             ],
             "support": {
                 "issues": "https://github.com/swagger-api/swagger-ui/issues",
-                "source": "https://github.com/swagger-api/swagger-ui/tree/v5.18.3"
+                "source": "https://github.com/swagger-api/swagger-ui/tree/v5.19.0"
             },
-            "time": "2025-01-28T12:46:44+00:00"
+            "time": "2025-02-17T16:42:44+00:00"
         },
         {
             "name": "symfony/cache",
@@ -16108,30 +16008,30 @@
         },
         {
             "name": "spatie/error-solutions",
-            "version": "1.1.2",
+            "version": "1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/error-solutions.git",
-                "reference": "d239a65235a1eb128dfa0a4e4c4ef032ea11b541"
+                "reference": "e495d7178ca524f2dd0fe6a1d99a1e608e1c9936"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/error-solutions/zipball/d239a65235a1eb128dfa0a4e4c4ef032ea11b541",
-                "reference": "d239a65235a1eb128dfa0a4e4c4ef032ea11b541",
+                "url": "https://api.github.com/repos/spatie/error-solutions/zipball/e495d7178ca524f2dd0fe6a1d99a1e608e1c9936",
+                "reference": "e495d7178ca524f2dd0fe6a1d99a1e608e1c9936",
                 "shasum": ""
             },
             "require": {
                 "php": "^8.0"
             },
             "require-dev": {
-                "illuminate/broadcasting": "^10.0|^11.0",
-                "illuminate/cache": "^10.0|^11.0",
-                "illuminate/support": "^10.0|^11.0",
-                "livewire/livewire": "^2.11|^3.3.5",
+                "illuminate/broadcasting": "^10.0|^11.0|^12.0",
+                "illuminate/cache": "^10.0|^11.0|^12.0",
+                "illuminate/support": "^10.0|^11.0|^12.0",
+                "livewire/livewire": "^2.11|^3.5.20",
                 "openai-php/client": "^0.10.1",
-                "orchestra/testbench": "^7.0|8.22.3|^9.0",
-                "pestphp/pest": "^2.20",
-                "phpstan/phpstan": "^1.11",
+                "orchestra/testbench": "8.22.3|^9.0|^10.0",
+                "pestphp/pest": "^2.20|^3.0",
+                "phpstan/phpstan": "^2.1",
                 "psr/simple-cache": "^3.0",
                 "psr/simple-cache-implementation": "^3.0",
                 "spatie/ray": "^1.28",
@@ -16170,7 +16070,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/error-solutions/issues",
-                "source": "https://github.com/spatie/error-solutions/tree/1.1.2"
+                "source": "https://github.com/spatie/error-solutions/tree/1.1.3"
             },
             "funding": [
                 {
@@ -16178,24 +16078,24 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-12-11T09:51:56+00:00"
+            "time": "2025-02-14T12:29:50+00:00"
         },
         {
             "name": "spatie/flare-client-php",
-            "version": "1.10.0",
+            "version": "1.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/flare-client-php.git",
-                "reference": "140a42b2c5d59ac4ecf8f5b493386a4f2eb28272"
+                "reference": "bf1716eb98bd689451b071548ae9e70738dce62f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/flare-client-php/zipball/140a42b2c5d59ac4ecf8f5b493386a4f2eb28272",
-                "reference": "140a42b2c5d59ac4ecf8f5b493386a4f2eb28272",
+                "url": "https://api.github.com/repos/spatie/flare-client-php/zipball/bf1716eb98bd689451b071548ae9e70738dce62f",
+                "reference": "bf1716eb98bd689451b071548ae9e70738dce62f",
                 "shasum": ""
             },
             "require": {
-                "illuminate/pipeline": "^8.0|^9.0|^10.0|^11.0",
+                "illuminate/pipeline": "^8.0|^9.0|^10.0|^11.0|^12.0",
                 "php": "^8.0",
                 "spatie/backtrace": "^1.6.1",
                 "symfony/http-foundation": "^5.2|^6.0|^7.0",
@@ -16239,7 +16139,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/flare-client-php/issues",
-                "source": "https://github.com/spatie/flare-client-php/tree/1.10.0"
+                "source": "https://github.com/spatie/flare-client-php/tree/1.10.1"
             },
             "funding": [
                 {
@@ -16247,7 +16147,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-12-02T14:30:06+00:00"
+            "time": "2025-02-14T13:42:06+00:00"
         },
         {
             "name": "spatie/ignition",
