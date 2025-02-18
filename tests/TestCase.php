@@ -2,7 +2,6 @@
 
 namespace Tests;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Artisan;
@@ -17,7 +16,6 @@ use Tests\TestSeeder;
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
-    use ArraySubsetAsserts;
     use RefreshDatabase;
 
     public $withPermissions = false;
