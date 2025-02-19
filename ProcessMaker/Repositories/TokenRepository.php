@@ -274,11 +274,11 @@ class TokenRepository implements TokenRepositoryInterface
         $taskName = $token->element_name ?? '';
         $emailData = [
             'firstname' => $user->firstname ?? '',
-            'assigned_by' => Auth::user()->fullname ?? '',
+            'assigned_by' => Auth::user()->fullname ?? __('System'),
             'element_name' => $taskName,
             'case_title' => $caseTitle, // Populate this if needed
             'due_date' => $token->due_at ?? '',
-            'link_review_task' => config('app.url') . 'tasks/' . $token->id . '/edit',
+            'link_review_task' => config('app.url') . '/' . 'tasks/' . $token->id . '/edit',
             'imgHeader' => config('app.url') . '/img/processmaker_login.png',
         ];
         // Get the screen
