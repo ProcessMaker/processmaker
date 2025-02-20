@@ -47,7 +47,7 @@ class PerformanceModelsTest extends TestCase
         $factoriesPath = app_path('Models');
         $modelFiles = glob($factoriesPath . '/*.php');
 
-        $baseTime = $this->calculateUnitTime();
+        $baseTime = self::calculateUnitTime();
 
         foreach ($modelFiles as $file) {
             $model = 'ProcessMaker\\Models\\' . basename($file, '.php');
@@ -66,7 +66,7 @@ class PerformanceModelsTest extends TestCase
      *
      * @return float
      */
-    private function calculateUnitTime($times = 100)
+    private static function calculateUnitTime($times = 100)
     {
         $model = Group::class;
         $t = microtime(true);
