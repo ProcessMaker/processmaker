@@ -164,14 +164,14 @@
     window.ProcessMaker.PMBlockList = @json($pmBlockList);
   </script>
 
-  <!-- Load the screen scripts -->
   @foreach(GlobalScripts::getScripts() as $script)
     <script src="{{$script}}"></script>
   @endforeach
-  
-  <!-- Load the modeler scripts -->
-  @foreach($managerModelerScripts as $script)
-    <script src="{{ $script }}"></script>
+
+  @foreach($managerModeler->getScripts() as $script)
+    @if (!str_contains($script, 'slideshow'))
+      <script src="{{ $script }}"></script>
+    @endif
   @endforeach
 
   @if (hasPackage('package-files'))

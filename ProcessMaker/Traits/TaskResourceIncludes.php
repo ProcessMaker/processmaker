@@ -44,9 +44,7 @@ trait TaskResourceIncludes
         $user = $this->processRequest->user;
 
         // Exclude 'active_at' to prevent ETag inconsistencies.
-        if ($user) {
-            $user->makeHidden(['active_at']);
-        }
+        $user->makeHidden(['active_at']);
 
         return ['requestor' => new Users($user)];
     }

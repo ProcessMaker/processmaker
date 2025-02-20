@@ -3,6 +3,9 @@
     class="tw-w-full tw-h-full tw-overflow-hidden tw-relative"
     data-test="body-container"
   >
+    <h4 class="tw-fixed tw-z-10 tw-p-4">
+      {{ processTitle }}
+    </h4>
     <MapLegend />
     <ProcessMapTooltip
       v-show="showTooltip"

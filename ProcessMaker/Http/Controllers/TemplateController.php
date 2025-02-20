@@ -24,13 +24,9 @@ class TemplateController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function editScreenTemplate(Request $request)
+    public function edit(string $type, Request $request)
     {
-        $screenTemplate = new $this->types['screen'][1];
-
-        $response = $screenTemplate->show($request);
-
-        return view('processes.screen-builder.showTemplate')->with('id', $response['id']);
+        new $this->types[$type][1]->edit($request);
     }
 
     /**

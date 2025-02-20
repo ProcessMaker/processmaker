@@ -5,10 +5,8 @@ namespace ProcessMaker\Repositories;
 use Carbon\Carbon;
 use ProcessMaker\Jobs\CaseStore;
 use ProcessMaker\Jobs\CaseUpdateStatus;
-use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\ParticipantInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\ExecutionInstanceRepositoryInterface;
@@ -177,7 +175,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
                 $instance->process_collaboration_id = $collaboration->id;
             }
         }
-        $instance->user_id = pmUser() ? pmUser()->getKey() : app(AnonymousUser::class)->id;
+        $instance->user_id = pmUser() ? pmUser()->getKey() : null;
         $instance->name = $definition->name;
         $instance->status = 'ACTIVE';
         $instance->initiated_at = Carbon::now();

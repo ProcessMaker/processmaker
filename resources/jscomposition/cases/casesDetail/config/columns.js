@@ -57,9 +57,7 @@ const assignedColumn = () => ({
       click: (row, column, columns) => {
         window.document.location = `/profile/${row.user?.id}`;
       },
-      formatter: (row, column, columns) => {
-        return row.user ? row.user.fullname : 'Self Service';
-      },
+      formatter: (row, column, columns) => row.user?.fullname,
       initials: (row, column, columns) => row.user?.fullname[0],
       src: (row, column, columns) => row.user?.avatar,
     },

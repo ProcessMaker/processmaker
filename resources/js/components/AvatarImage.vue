@@ -45,7 +45,7 @@
               {{ limitCharacters(value.name) }}
             </template>
           </span> 
-          <span v-else-if="usePmDefaultLabel || usePmDefaultLabelProcess">{{ $t('ProcessMaker') }}</span>
+          <span v-else-if="usePmDefaultLabel">{{ $t('ProcessMaker') }}</span>
           <span v-else><b-badge class="status-alternative-a">{{ $t('Unclaimed') }}</b-badge></span>
       </span>
       </div>
@@ -96,10 +96,6 @@ export default {
       default: '',
     },
     usePmDefaultLabel: {
-      type: Boolean,
-      default: false,
-    },
-    usePmDefaultLabelProcess: {
       type: Boolean,
       default: false,
     }

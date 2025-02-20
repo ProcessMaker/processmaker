@@ -1,4 +1,4 @@
-import * as VueFormElements from "@processmaker/vue-form-elements";
+import VueFormElements from "@processmaker/vue-form-elements";
 
 window.VueFormElements = VueFormElements;
 

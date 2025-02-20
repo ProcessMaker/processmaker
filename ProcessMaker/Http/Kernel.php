@@ -22,7 +22,6 @@ class Kernel extends HttpKernel
         Middleware\TrustProxies::class,
         Middleware\BrowserCache::class,
         ServerTimingMiddleware::class,
-        Middleware\FileSizeCheck::class,
     ];
 
     /**
@@ -87,7 +86,6 @@ class Kernel extends HttpKernel
         'no-cache' => Middleware\NoCache::class,
         'admin' => Middleware\IsAdmin::class,
         'etag' => Middleware\Etag\HandleEtag::class,
-        'file_size_check' => Middleware\FileSizeCheck::class,
     ];
 
     /**

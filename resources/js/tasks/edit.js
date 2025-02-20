@@ -14,11 +14,6 @@ Vue.component("TreeView", () => import("../components/TreeView.vue"));
 const main = new Vue({
   el: "#task",
   mixins: addons,
-  components: {
-    TaskSaveNotification,
-    TaskSavePanel,
-    TasksList,
-  },
   data: {
     // Edit data
     fieldsToUpdate: [],
@@ -396,9 +391,6 @@ const main = new Vue({
     },
     taskUpdated(task) {
       this.task = task;
-    },
-    updatePage() {
-      document.getElementById("tabContent").scrollTop = 0;
     },
     updateScreenFields(taskId) {
       return ProcessMaker.apiClient

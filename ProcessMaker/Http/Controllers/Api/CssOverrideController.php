@@ -87,7 +87,7 @@ class CssOverrideController extends Controller
         // Review the reset action
         $reset = false;
         if ($request->has('reset') && $request->input('reset')) {
-            $setting->delete();
+            Setting::destroy($setting->id);
             $reset = true;
         }
 

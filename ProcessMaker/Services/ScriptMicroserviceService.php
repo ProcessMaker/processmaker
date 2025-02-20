@@ -19,7 +19,7 @@ class ScriptMicroserviceService
         $response = $request->all();
         Log::debug('Response microservice executor: ' . print_r($response, true));
         // If the call is from preview
-        if (!empty($response['metadata']['nonce'])) {
+        if ($response['metadata']['nonce']) {
             $status = $response['status'] === 'success' ? 200 : 500;
             $output = $response['status'] === 'success'
                 ? ['output' => $response['output']]

@@ -16,7 +16,7 @@ use ProcessMaker\ImportExport\Manifest;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\ImportExport\Psudomodels\Psudomodel;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Package\Translations\Models\Language;
+use ProcessMaker\ProcessTranslations\Languages;
 use ProcessMaker\Traits\HasVersioning;
 
 abstract class ExporterBase implements ExporterInterface
@@ -355,25 +355,17 @@ abstract class ExporterBase implements ExporterInterface
     public function getExtraAttributes($model): array
     {
         $translatedLanguages = [];
-        $availableLanguages = Language::select('code', 'name')->get();
-        $languageCodes = $availableLanguages->pluck('code')->toArray();
 
         if ($model::class === Screen::class) {
             // Get the translations for the screen
             foreach ($this->getDependents('screen-translations') as $dependent) {
                 if ($dependent->type === 'screen-translations') {
-                    if (in_array($dependent->meta['language_code'], $languageCodes)) {
-                        $translatedLanguages[$dependent->meta['language_code']] = $availableLanguages->filter(function ($language) use ($dependent) {
-                            return $language->code === $dependent->meta['language_code'];
-                        })->first()->name;
-                    }
+                    $translatedLanguages[$dependent->meta['language_code']] = Languages::ALL[$dependent->meta['language_code']];
                 }
             }
         } elseif ($model->translations && $model->language_code) {
             // Get the translations for the model translatable
-            $translatedLanguages[$model->language_code] = $availableLanguages->filter(function ($language) use ($model) {
-                return $language->code === $model->language_code;
-            })->first()->name;
+            $translatedLanguages[$model->language_code] = Languages::ALL[$model->language_code];
         }
 
         return [

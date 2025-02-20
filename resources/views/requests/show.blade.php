@@ -458,6 +458,9 @@
 @endsection
 
 @section('js')
+  @foreach ($manager->getScripts() as $script)
+    <script src="{{ $script }}"></script>
+  @endforeach
   <script src="{{ mix('js/processes/modeler/initialLoad.js') }}"></script>
   <script>
     window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
@@ -468,10 +471,6 @@
       apiTimeout: {{config('app.api_timeout')}}
     };
   </script>
-
-  @foreach($managerModelerScripts as $script)
-    <script src="{{ $script }}"></script>
-  @endforeach
   @if (hasPackage('package-files'))
     <!-- TODO: Replace with script injector like we do for modeler and screen builder -->
     <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
@@ -903,7 +902,6 @@
     }) => {
       loadXML(window.ProcessMaker.modeler.xml);
     });
-    window.ProcessMaker.PMBlockList = @json($pmBlockList);
   </script>
 @endsection
 

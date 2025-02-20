@@ -26,8 +26,6 @@ class BuildSdk
 
     private $userId = null;
 
-    private $generatorCid = null;
-
     public function __construct($jsonPath, $outputPath)
     {
         $this->jsonPath = $jsonPath;
@@ -42,11 +40,11 @@ class BuildSdk
         $this->writeOptionsToTmpFile();
 
         $this->startContainer();
-        $this->cp($this->jsonPath, $this->generatorCid . ':/api-docs.json');
-        $this->cp($this->tmpfile, $this->generatorCid . ':/config.json');
+        $this->cp($this->jsonPath, 'generator:/api-docs.json');
+        $this->cp($this->tmpfile, 'generator:/config.json');
         $this->generator('validate -i /api-docs.json');
         $this->generator('generate -g ' . $this->lang . ' -i /api-docs.json -c /config.json -o /sdk');
-        $this->cp($this->generatorCid . ':/sdk', $folder);
+        $this->cp('generator:/sdk', $folder);
         $this->stopContainer();
 
         $this->fixErroneousCode($folder); // lua and python
@@ -77,19 +75,13 @@ class BuildSdk
 
     private function startContainer()
     {
-        $this->generatorCid = trim($this->runCmd(Docker::command() . " run -t --stop-timeout 10 -d --entrypoint '/bin/sh' " . $this->imageWithTag()));
-
-        // stop the container after 5 minutes just in case this script fails before stopContainer() is called
-        // Docker stop should always exit with code 0, because the container is probably already stopped
-        exec('(sleep 300 && docker stop ' . $this->generatorCid . ' && docker rm ' . $this->generatorCid . ') > /dev/null 2>&1 &');
-
-        $this->log("Started container with cid: $this->generatorCid");
+        $this->runCmd(Docker::command() . " run -t -d --entrypoint '/bin/sh' --name generator " . $this->imageWithTag());
     }
 
     private function stopContainer()
     {
-        $this->runCmd(Docker::command() . ' kill ' . $this->generatorCid . ' 2>&1 || true');
-        $this->runCmd(Docker::command() . ' rm ' . $this->generatorCid . ' 2>&1 || true');
+        $this->runCmd(Docker::command() . ' kill generator 2>&1 || true');
+        $this->runCmd(Docker::command() . ' rm generator 2>&1 || true');
     }
 
     public function setLang($value)
@@ -107,12 +99,12 @@ class BuildSdk
             throw new Exception('Language must be specified using setLang()');
         }
 
-        return $this->runCmd(Docker::command() . ' run --rm ' . $this->imageWithTag() . ' config-help -g ' . $this->lang);
+        return $this->runCmd(Docker::command() . ' run ' . $this->imageWithTag() . ' config-help -g ' . $this->lang);
     }
 
     public function getAvailableLanguages()
     {
-        $result = $this->runCmd(Docker::command() . ' run --rm ' . $this->imageWithTag() . ' list -s');
+        $result = $this->runCmd(Docker::command() . ' run ' . $this->imageWithTag() . ' list -s');
 
         return explode(',', $result);
     }
@@ -143,7 +135,7 @@ class BuildSdk
 
     private function generator($cmd)
     {
-        return $this->runCmd(Docker::command() . ' exec ' . $this->generatorCid . ' docker-entrypoint.sh ' . $cmd);
+        return $this->runCmd(Docker::command() . ' exec generator docker-entrypoint.sh ' . $cmd);
     }
 
     private function writeOptionsToTmpFile()

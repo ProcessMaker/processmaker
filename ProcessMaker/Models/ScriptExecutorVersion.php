@@ -3,16 +3,11 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Builder;
-use ProcessMaker\Enums\ScriptExecutorType;
 
 class ScriptExecutorVersion extends ProcessMakerModel
 {
     protected $fillable = [
         'title', 'description', 'language', 'config', 'draft', 'is_system', 'type',
-    ];
-
-    protected $casts = [
-        'type' => ScriptExecutorType::class,
     ];
 
     /**

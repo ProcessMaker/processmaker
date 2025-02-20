@@ -10,9 +10,6 @@
         @if (isset($microService['version']))
             <div><strong>Version:</strong> {{ $microService['version'] }}</div>
         @endif
-        @if (isset($microService['status']))
-            <div><strong>Status:</strong> {{ $microService['status'] }}</div>
-        @endif
         </small>
         @if (!empty($microService['waiting']))
         <i class="fas fa-sync fa-spin text-secondary waiting"></i>

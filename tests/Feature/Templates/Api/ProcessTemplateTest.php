@@ -331,7 +331,7 @@ class ProcessTemplateTest extends TestCase
         $response = $this->apiCall('POST', $route, $updatePageResponse);
 
         $response->assertStatus(200);
-        $this->assertEquals('2', Screen::nonSystem()->count());
+        $this->assertEquals('2', Screen::count());
         $this->assertDatabaseHas('scripts', ['title' => 'First Script 2']);
         $this->assertEquals('3', Script::count());
 

@@ -29,7 +29,6 @@ class DatabaseSeeder extends Seeder
             // ScriptExecutorSeeder::class,
             SignalSeeder::class,
             SettingsMenusSeeder::class,
-            ScreenEmailSeeder::class,
         ]);
         $this->callPluginSeeders();
     }

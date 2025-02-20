@@ -19,11 +19,9 @@
       </template>
     </nav>
     <div class="tw-flex tw-grow tw-overflow-x-hidden tw-overflow-y-auto">
-      <keep-alive :include="keepAlive">
-        <slot :name="`${tabSelected}`">
-          <component :is="content" />
-        </slot>
-      </keep-alive>
+      <slot :name="`${tabSelected}`">
+        <component :is="content" />
+      </slot>
     </div>
   </div>
 </template>
@@ -40,11 +38,6 @@ export default defineComponent({
     tabs: {
       type: Array,
       required: true,
-    },
-    keepAlive: {
-      type: Array,
-      required: false,
-      default: () => [],
     },
   },
   setup(props) {

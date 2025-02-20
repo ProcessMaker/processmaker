@@ -282,7 +282,7 @@ class TokenRepository implements TokenRepositoryInterface
             'imgHeader' => config('app.url') . '/img/processmaker_login.png',
         ];
         // Get the screen
-        $screen = Screen::getScreenByKey('default-email-task-notification');
+        $screen = Screen::where('title', 'DEFAULT_EMAIL_TASK_NOTIFICATION')->first();
         // Prepare the email configuration
         $configEmail = [
             'emailServer' => 0, // Use the default email server

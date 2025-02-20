@@ -376,10 +376,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
     private function setDefaultExecutor()
     {
         if (empty($this->script_executor_id)) {
-            $initialExecutor = ScriptExecutor::initialExecutor($this->language);
-            if ($initialExecutor) {
-                $this->script_executor_id = $initialExecutor->id;
-            }
+            $this->script_executor_id = ScriptExecutor::initialExecutor($this->language)->id;
         }
         if (empty($this->language)) {
             $this->language = $this->scriptExecutor->language;
