@@ -450,11 +450,12 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             }
             $isManualTask = $localName === 'manualTask';
             $defaultScreen = $isManualTask ? 'default-display-screen' : 'default-form-screen';
-            $screen = Screen::firstWhere('key', $defaultScreen);
+
+            $screen = Screen::getScreenByKey($defaultScreen);
 
             if (array_key_exists('implementation', $definition) && $definition['implementation'] === 'package-ai/processmaker-ai-assistant') {
                 $defaultScreen = 'default-ai-form-screen';
-                $screen = Screen::firstWhere('key', $defaultScreen);
+                $screen = Screen::getScreenByKey($defaultScreen);
             }
         }
 
@@ -995,7 +996,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                     $interstitialScreen = Screen::where('key', $definition['interstitialScreenRef'])->first();
                 }
             } else {
-                $interstitialScreen = Screen::where('key', 'interstitial')->first();
+                $interstitialScreen = Screen::getScreenByKey('interstitial');
             }
         }
 

@@ -85,7 +85,6 @@ class CaseRepository implements CaseRepositoryInterface
     public function update(ExecutionInstanceInterface $instance, TokenInterface $token): void
     {
         if (!$this->checkIfCaseStartedExist($instance->case_number)) {
-            Log::error('case started not found, method=update, instance=' . $instance->getKey());
 
             return;
         }
@@ -119,7 +118,6 @@ class CaseRepository implements CaseRepositoryInterface
     public function updateStatus(ExecutionInstanceInterface $instance): void
     {
         if (is_null($instance->case_number)) {
-            Log::error('case started not found, method=updateStatus, instance=' . $instance->getKey());
 
             return;
         }
