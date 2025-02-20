@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f31ddfa2ed25f6594ab9777b2afaa152",
+    "content-hash": "c3d37852053de27d535f3abedae5005a",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -13114,16 +13114,16 @@
         },
         {
             "name": "twilio/sdk",
-            "version": "8.3.14",
+            "version": "8.3.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twilio/twilio-php.git",
-                "reference": "cb20c1876f9a9b00f3c8b9c38dee17fcb5ae6254"
+                "reference": "3113e8a672edf5e012120fa6fafc201e013c7ba4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/cb20c1876f9a9b00f3c8b9c38dee17fcb5ae6254",
-                "reference": "cb20c1876f9a9b00f3c8b9c38dee17fcb5ae6254",
+                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/3113e8a672edf5e012120fa6fafc201e013c7ba4",
+                "reference": "3113e8a672edf5e012120fa6fafc201e013c7ba4",
                 "shasum": ""
             },
             "require": {
@@ -13161,9 +13161,9 @@
             ],
             "support": {
                 "issues": "https://github.com/twilio/twilio-php/issues",
-                "source": "https://github.com/twilio/twilio-php/tree/8.3.14"
+                "source": "https://github.com/twilio/twilio-php/tree/8.3.15"
             },
-            "time": "2025-02-11T11:18:03+00:00"
+            "time": "2025-02-20T14:18:17+00:00"
         },
         {
             "name": "typo3/class-alias-loader",
