@@ -281,8 +281,8 @@ class TokenRepository implements TokenRepositoryInterface
             'link_review_task' => config('app.url') . '/' . 'tasks/' . $token->id . '/edit',
             'imgHeader' => config('app.url') . '/img/processmaker_login.png',
         ];
-        // Get the screen
-        $screen = Screen::where('title', 'DEFAULT_EMAIL_TASK_NOTIFICATION')->first();
+        // Get the screen by key
+        $screen = Screen::getScreenByKey('default-email-task-notification');
         // Prepare the email configuration
         $configEmail = [
             'emailServer' => 0, // Use the default email server
