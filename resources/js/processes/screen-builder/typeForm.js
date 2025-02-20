@@ -1,3 +1,7 @@
+import { Multiselect } from "@processmaker/vue-multiselect";
+
+Vue.component("Multiselect", Multiselect);
+
 ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
   const { FormBuilderControls, globalProperties } = window.ScreenBuilder;
   const initialControls = FormBuilderControls;

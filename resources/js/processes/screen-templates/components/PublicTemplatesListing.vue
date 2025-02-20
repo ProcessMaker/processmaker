@@ -285,6 +285,21 @@ export default {
           console.error(error);
         });
     },
+    transform(data) {
+      // Clean up fields for meta pagination so vue table pagination can understand
+      data.meta.last_page = data.meta.total_pages;
+      data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
+      data.meta.to = data.meta.from + data.meta.count;
+      data.data = this.jsonRows(data.data);
+
+      for (let record of data.data) {
+        //format Status
+        const usePmDefaultLabel = !record['user'];
+        record["owner"] = this.formatAvatar(record["user"], usePmDefaultLabel);
+        record["category_list"] = this.formatCategory(record["categories"]);
+      }
+      return data;
+    },
   },
 };
 </script>

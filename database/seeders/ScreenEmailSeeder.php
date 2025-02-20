@@ -4,9 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\ScreenCategory;
 
-class ScreenSystemSeeder extends Seeder
+class ScreenEmailSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,6 +14,6 @@ class ScreenSystemSeeder extends Seeder
      */
     public function run()
     {
-        return Screen::getScreenByKey('interstitial');
+        return Screen::getScreenByKey('default-email-task-notification');
     }
 }

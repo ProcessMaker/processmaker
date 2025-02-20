@@ -46,8 +46,20 @@ class CasesController extends Controller
         $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, 'FORM'));
          // Load event ModelerStarting
-         $managerModeler = app(ModelerManager::class);
-         event(new ModelerStarting($managerModeler));
+        $managerModeler = app(ModelerManager::class);
+        event(new ModelerStarting($managerModeler));
+
+        // "Initialload.js" file causes an issue related to SVG in the modeler
+        // The other scripts are not needed in the case detail
+        $scriptsDisabled = ['package-slideshow','package-process-optimization','package-ab-testing','package-testing','initialLoad'];
+        $managerModelerScripts = array_filter($managerModeler->getScripts(), function($script) use ($scriptsDisabled) {
+            foreach ($scriptsDisabled as $enabledScript) {
+                if (strpos($script, $enabledScript) !== false) {
+                    return false;
+                }
+            }
+            return true;
+        });
 
         // Get all the request related to this case number
         $allRequests = ProcessRequest::where('case_number', $case_number)->get();
@@ -105,7 +117,7 @@ class CasesController extends Controller
             'canPrintScreens',
             'isProcessManager',
             'manager',
-            'managerModeler',
+            'managerModelerScripts',
             'bpmn',
             'inflightData',
             'pmBlockList'
