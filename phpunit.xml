@@ -79,5 +79,7 @@
 
       <!-- Script microservice disabled for this version -->
       <env name="SCRIPT_MICROSERVICE_ENABLED" value="false" />
+
+      <env name="REDIS_PREFIX" value="test:" />
     </php>
 </phpunit>
