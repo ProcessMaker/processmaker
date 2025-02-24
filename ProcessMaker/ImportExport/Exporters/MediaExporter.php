@@ -12,10 +12,15 @@ class MediaExporter extends ExporterBase
 {
     public function export(): void
     {
-        $requestPublic = $this->getPublicProcess();
-        if ($requestPublic->id === $this->model->process_request_id) {
-            $this->addReference(DependentType::PUBLIC_FILE, true);
-        } else {
+        try {
+            $requestPublic = $this->getPublicProcess();
+            if ($requestPublic->id === $this->model->process_request_id) {
+                $this->addReference(DependentType::PUBLIC_FILE, true);
+            } else {
+                $this->addReference(DependentType::PUBLIC_FILE, false);
+            }
+        } catch (\Exception $e) {
+            // Si no existe el proceso público, asumimos que es un archivo normal
             $this->addReference(DependentType::PUBLIC_FILE, false);
         }
 
@@ -28,9 +33,13 @@ class MediaExporter extends ExporterBase
 
     public function import(): bool
     {
-        if ($this->getReference(DependentType::PUBLIC_FILE)) {
-            $requestPublic = $this->getPublicProcess();
-            $this->model->model = $requestPublic;
+        try {
+            if ($this->getReference(DependentType::PUBLIC_FILE)) {
+                $requestPublic = $this->getPublicProcess();
+                $this->model->model = $requestPublic;
+            }
+        } catch (\Exception $e) {
+            // Si no existe el proceso público, continuamos con el modelo original
         }
 
         $ref = $this->getReference(DependentType::MEDIA);
