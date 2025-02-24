@@ -134,7 +134,7 @@ class TokenRepository implements TokenRepositoryInterface
                     $dataManager = new DataManager();
                     $tokenData = $dataManager->getData($token);
                     $feel = new FeelExpressionEvaluator();
-                    $evaluatedUsers = $selfServiceUsers ? $feel->render($selfServiceUsers, $tokenData) ?? null: [];
+                    $evaluatedUsers = $selfServiceUsers ? $feel->render($selfServiceUsers, $tokenData) ?? null : [];
                     $evaluatedGroups = $selfServiceGroups ? $feel->render($selfServiceGroups, $tokenData) ?? null : [];
 
                     // If we have single values we put it inside an array

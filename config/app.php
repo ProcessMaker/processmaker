@@ -153,6 +153,14 @@ return [
         // Path to site-wide favicon
         'favicon_path' => env('FAVICON_PATH', '/img/favicon.svg'),
 
+        // Maximum file size for images to be set as default (in bytes) (5MB)
+        'img_max_filesize_limit' => env('IMG_MAX_FILESIZE_LIMIT', '5M'),
+
+        // Maximum file size for documents to be set as default (in bytes) (10MB)
+        'doc_max_filesize_limit' => env('DOC_MAX_FILESIZE_LIMIT', '10M'),
+
+        // Maximum file size for all files to be set as default (in bytes) (10MB)
+        'max_filesize_limit' => env('MAX_FILESIZE_LIMIT', '10M'),
     ],
 
     // Turn on/off the recommendation engine
@@ -188,6 +196,7 @@ return [
         ProcessMaker\Providers\OauthMailServiceProvider::class,
         ProcessMaker\Providers\OpenAiServiceProvider::class,
         ProcessMaker\Providers\LicenseServiceProvider::class,
+        ProcessMaker\Providers\MetricsServiceProvider::class,
     ])->toArray(),
 
     'aliases' => Facade::defaultAliases()->merge([
@@ -203,6 +212,7 @@ return [
         'SkinManager' => ProcessMaker\Facades\SkinManager::class,
         'Theme' => Igaster\LaravelTheme\Facades\Theme::class,
         'WorkspaceManager' => ProcessMaker\Facades\WorkspaceManager::class,
+        'SettingCache' => ProcessMaker\Cache\Settings\SettingCacheFacade::class,
     ])->toArray(),
 
     'debug_blacklist' => [
@@ -246,7 +256,7 @@ return [
     // Process Request security log rate limit: 1 per day (86400 seconds)
     'process_request_errors_rate_limit' => env('PROCESS_REQUEST_ERRORS_RATE_LIMIT', 1),
     'process_request_errors_rate_limit_duration' => env('PROCESS_REQUEST_ERRORS_RATE_LIMIT_DURATION', 86400),
-    
+
     'default_colors' => [
         'primary' => '#2773F3',
         'secondary' => '#728092',
@@ -265,5 +275,14 @@ return [
         'vault_host' => env('ENCRYPTED_DATA_VAULT_HOST', ''),
         'vault_token' => env('ENCRYPTED_DATA_VAULT_TOKEN', ''),
         'vault_transit_key' => env('ENCRYPTED_DATA_VAULT_TRANSIT_KEY', ''),
+    ],
+
+    'custom_executors' => env('CUSTOM_EXECUTORS', false),
+
+    'prometheus_namespace' => env('PROMETHEUS_NAMESPACE', 'processmaker'),
+
+    'server_timing' => [
+        'enabled' => env('SERVER_TIMING_ENABLED', true),
+        'min_package_time' => env('SERVER_TIMING_MIN_PACKAGE_TIME', 5), // Minimum time in milliseconds
     ],
 ];

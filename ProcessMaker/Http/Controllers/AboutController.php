@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers;
 
 use Exception;
 use Illuminate\Foundation\PackageManifest;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -74,6 +75,8 @@ class AboutController extends Controller
             $microServices = [$aiMicroService];
         }
 
+        $microServices[] = $this->getScriptMicroService();
+
         $nayraMicroService = $this->getNayraMicroServiceAbout();
         if ($nayraMicroService) {
             $microServices[] = $nayraMicroService;
@@ -96,6 +99,29 @@ class AboutController extends Controller
                 'microServices'
             )
         );
+    }
+
+    private function getScriptMicroService()
+    {
+        $info = [
+            'name' => 'Script Microservice',
+            'description' => 'Execute scripts in ProcessMaker',
+            'status' => 'Disabled',
+        ];
+
+        if (config('script-runner-microservice.enabled')) {
+            $baseUrl = config('script-runner-microservice.base_url');
+            try {
+                $response = Http::timeout(3)
+                    ->get($baseUrl . '/accept-traffic')
+                    ->throw();
+                $info['status'] = $response->json()['message'] . ". Microservice is running at $baseUrl";
+            } catch (Exception $e) {
+                $info['status'] = "Error connecting to $baseUrl: " . $e->getMessage();
+            }
+        }
+
+        return $info;
     }
 
     private function getAiMicroService()

@@ -41,7 +41,14 @@ trait TaskResourceIncludes
 
     private function includeRequestor()
     {
-        return ['requestor' => new Users($this->processRequest->user)];
+        $user = $this->processRequest->user;
+
+        // Exclude 'active_at' to prevent ETag inconsistencies.
+        if ($user) {
+            $user->makeHidden(['active_at']);
+        }
+
+        return ['requestor' => new Users($user)];
     }
 
     private function includeProcessRequest()
@@ -139,7 +146,7 @@ trait TaskResourceIncludes
     {
         $interstitial = $this->getInterstitial();
 
-        if ($interstitial['interstitial_screen']) {
+        if ($interstitial['interstitial_screen'] && $interstitial['allow_interstitial']) {
             // Translate interstitials
             $screenTranslation = new ScreenTranslation();
             $translatedConf = $screenTranslation->applyTranslations($interstitial['interstitial_screen']->getLatestVersion());

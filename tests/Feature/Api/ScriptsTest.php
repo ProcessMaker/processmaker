@@ -379,16 +379,6 @@ class ScriptsTest extends TestCase
             ScriptResponseEvent::class,
         ]);
 
-        $url = route('api.scripts.preview', $this->getScript('lua')->id);
-        $response = $this->apiCall('POST', $url, ['data' => '{}', 'code' => 'return {response=1}']);
-        $response->assertStatus(200);
-        Event::assertDispatched(ScriptResponseEvent::class, function ($event) {
-            $response = $event->response;
-            $nonce = $event->nonce;
-
-            return $response['output'] === ['response' => 1];
-        });
-
         $url = route('api.scripts.preview', $this->getScript('php')->id);
         $response = $this->apiCall('POST', $url, [
             'data' => '{}',

@@ -16,6 +16,7 @@ import FilesMobile from "./components/FilesMobile.vue";
 import RequestHeaderMobile from "./components/RequestHeaderMobile.vue";
 import FilterMobile from "../Mobile/FilterMobile.vue";
 import FilterMixin from "../Mobile/FilterMixin";
+import NewOverview from "../../jscomposition/cases/casesDetail/components/NewOverview.vue";
 
 Vue.component("DataSummary", DataSummary);
 Vue.component("RequestDetail", RequestDetail);
@@ -31,6 +32,7 @@ Vue.component("SummaryMobile", SummaryMobile);
 Vue.component("FilesMobile", FilesMobile);
 Vue.component("RequestHeaderMobile", RequestHeaderMobile);
 Vue.component("FilterMobile", FilterMobile);
+Vue.component("NewOverview", NewOverview);
 Vue.mixin(FilterMixin);
 
 Vue.use("vue-form-renderer", VueFormRenderer);

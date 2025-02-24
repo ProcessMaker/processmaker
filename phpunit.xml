@@ -76,5 +76,8 @@
       <env name="PRODUCT_ANALYTICS_INTERCOM_ENABLED" value="false" />
 
       <env name="ENCRYPTED_DATA_KEY" value="base64:3/FNiukohihPSwmkzIl1csZIT6W4LYtnJzLPkNPjZgs=" />
+
+      <!-- Script microservice disabled for this version -->
+      <env name="SCRIPT_MICROSERVICE_ENABLED" value="false" />
     </php>
 </phpunit>

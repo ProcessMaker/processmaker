@@ -109,7 +109,7 @@
                   role="tabpanel" aria-labelledby="errors-tab">
                   <request-errors :errors="errorLogs"></request-errors>
                 </div>
-                <div class="tab-pane fade show card card-body border-top-0 p-0" :class="{ active: activePending }"
+                <div class="tab-pane show card card-body border-top-0 p-0" :class="{ active: activePending }"
                   id="pending" role="tabpanel" aria-labelledby="pending-tab">
                   <request-detail ref="pending" :process-request-id="requestId" status="ACTIVE"
                     :is-process-manager="{{ $isProcessManager ? 'true' : 'false' }}"
@@ -187,7 +187,7 @@
                     </div>
                   @endcan
                 @endif
-                <div class="tab-pane fade card card-body border-top-0 p-0" id="completed" role="tabpanel"
+                <div class="tab-pane card card-body border-top-0 p-0" id="completed" role="tabpanel"
                   aria-labelledby="completed-tab">
                   <request-detail ref="completed" :process-request-id="requestId" status="CLOSED"
                     :is-admin="{{ Auth::user()->is_administrator ? 'true' : 'false' }}">
@@ -195,12 +195,12 @@
                 </div>
 
                 <template v-for="{ tab, component } in packages">
-                  <div class="tab-pane fade card card-body border-top-0 p-0" :id="tab.target" role="tabpanel">
+                  <div class="tab-pane card card-body border-top-0 p-0" :id="tab.target" role="tabpanel">
                     <component :is="component" :process-request-id="requestId"></component>
                   </div>
                 </template>
 
-                <div class="tab-pane fade card card-body border-top-0 p-3" id="files" role="tabpanel"
+                <div class="tab-pane card card-body border-top-0 p-3" id="files" role="tabpanel"
                   aria-labelledby="files-tab">
                   <div class="card">
                     <div>
@@ -228,46 +228,23 @@
                     </div>
                   </div>
                 </div>
-                <div class="tab-pane fade card card-body border-top-0 p-0" id="forms" role="tabpanel"
+                <div class="tab-pane card card-body border-top-0 p-0" id="forms" role="tabpanel"
                   aria-labelledby="forms-tab" v-show="canViewPrint">
                   <request-screens :id="requestId" :information="dataSummary" ref="forms">
                   </request-screens>
                 </div>
-                <div v-if="activeTab === 'overview'" class="tab-pane fade p-0" id="overview" role="tabpanel"
+                <div v-if="activeTab === 'overview'" class="tab-pane p-0" id="overview" role="tabpanel"
                   aria-labelledby="overview-tab">
-                  <div class="card" style="border-top: none !important;">
+                  <div class="card card-height" style="border-top: none !important;">
                     <div class="card-body">
-                      <h4>
-                        {{ __(':name In-Flight Map', ['name' => $request->process->name]) }}
-                      </h4>
-                      <div v-if="isObjectLoading" class="d-flex justify-content-center">
-                        <div class="spinner-border text-primary" role="status"></div>
-                      </div>
-                      <div :class="{ 'hidden': isObjectLoading }">
-                        <object ref="processMap" class="card"
-                          data="{{ route('modeler.inflight', [
-                            'process' => $request->process->id,
-                            'request' => $request->id
-                          ]) }}"
-                          width="100%"
-                          :height="isObjectLoading ? 'auto' : '640px'"
-                          frameborder="0"
-                          type="text/html"
-                          style="border-radius: 4px;"
-                          @load="onLoadedObject">
-                          <!-- Accessible Alternative Content -->
-                          <p>
-                            {{ __('Content not available. Check settings or try a different device.') }}
-                          </p>
-                        </object>
-                      </div>
+                      <new-overview />
                     </div>
                   </div>
                 </div>
 
                 @isset($addons)
                   @foreach ($addons as $addon)
-                    <div class="tab-pane fade show" id="{{ $addon['id'] }}" role="tabpanel"
+                    <div class="tab-pane show" id="{{ $addon['id'] }}" role="tabpanel"
                       aria-labelledby="{{ $addon['id'] }}">
                       {!! $addon['content'] !!}
                     </div>
@@ -326,7 +303,7 @@
                   <div
                     v-if="showInfo"
                     id="details"
-                    v-bind:class="{ 'tab-pane':true, fade: true, show: showInfo, active: showInfo }"
+                    v-bind:class="{ 'tab-pane':true, show: showInfo, active: showInfo }"
                     role="tabpanel"
                     aria-labelledby="details-tab"
                   >
@@ -453,7 +430,7 @@
                   <div
                     v-if="!showInfo"
                     id="comments"
-                    v-bind:class="{ 'tab-pane':true, fade: true, show: !showInfo, active: !showInfo }"
+                    v-bind:class="{ 'tab-pane':true, show: !showInfo, active: !showInfo }"
                     role="tabpanel"
                     aria-labelledby="comments-tab"
                   >
@@ -481,10 +458,20 @@
 @endsection
 
 @section('js')
-  @foreach ($manager->getScripts() as $script)
+  <script src="{{ mix('js/processes/modeler/initialLoad.js') }}"></script>
+  <script>
+    window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+    window.Processmaker = {
+      csrfToken: "{{csrf_token()}}",
+      userId: "{{\Auth::user()->id}}",
+      messages: [],
+      apiTimeout: {{config('app.api_timeout')}}
+    };
+  </script>
+
+  @foreach($managerModelerScripts as $script)
     <script src="{{ $script }}"></script>
   @endforeach
-
   @if (hasPackage('package-files'))
     <!-- TODO: Replace with script injector like we do for modeler and screen builder -->
     <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
@@ -529,7 +516,7 @@
           packages: [],
           processId: @json($request->process->id),
           canViewComments: @json($canViewComments),
-          isObjectLoading: false,
+          isObjectLoading: true,
           showTree: false,
           showInfo: true,
           showMenu: true,
@@ -900,6 +887,24 @@
       },
     });
   </script>
+  <script>
+    const inflightData = @json($inflightData);
+    window.ProcessMaker.modeler = {
+      xml: @json($bpmn),
+      configurables: [],
+      requestCompletedNodes: inflightData.requestCompletedNodes,
+      requestInProgressNodes: inflightData.requestInProgressNodes,
+      requestIdleNodes: inflightData.requestIdleNodes,
+      requestId: inflightData.requestId,
+    }
+  
+    window.ProcessMaker.EventBus.$on('modeler-start', async ({
+      loadXML
+    }) => {
+      loadXML(window.ProcessMaker.modeler.xml);
+    });
+    window.ProcessMaker.PMBlockList = @json($pmBlockList);
+  </script>
 @endsection
 
 @section('css')
@@ -961,6 +966,12 @@
   }
   .menu-tab-content {
     margin-left: -16px;
+  }
+  .main-paper {
+    position: static !important;
+  }
+  .card-height {
+    height: 50vh;
   }
 </style>
 @endsection

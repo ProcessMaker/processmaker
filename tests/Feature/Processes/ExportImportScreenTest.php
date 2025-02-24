@@ -168,7 +168,7 @@ class ExportImportScreenTest extends TestCase
         $this->assertTrue($response->json('status')['screens']['success']);
 
         // Find the imported screens
-        $screens = Screen::latest()->take(2)->get();
+        $screens = Screen::nonSystem()->latest()->take(2)->get();
         $parent = $screens->where('title', 'Parent Screen')->first();
         $child = $screens->where('title', 'Child Screen')->first();
 

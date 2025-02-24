@@ -2,6 +2,7 @@
   <Tabs
     :tab-default="tabDefault"
     :tabs="tabs"
+    :keep-alive="['NewOverview']"
   />
 </template>
 
@@ -13,7 +14,7 @@ import RequestTable from "./RequestTable.vue";
 import TabHistory from "./TabHistory.vue";
 import CompletedForms from "./CompletedForms.vue";
 import TabFiles from "./TabFiles.vue";
-import Overview from "./Overview.vue";
+import Overview from "./NewOverview.vue";
 import TabSummary from "./TabSummary.vue";
 import ErrorsTab from "./ErrorsTab.vue";
 import { getRequestCount, getRequestStatus, isErrors } from "../variables/index";
@@ -67,7 +68,7 @@ const tabs = [
     name: translate.t("Summary"),
     href: "#summary",
     current: "summary",
-    show: getRequestStatus() !== 'ERROR',
+    show: getRequestStatus() !== "ERROR",
     content: TabSummary,
   },
   {
