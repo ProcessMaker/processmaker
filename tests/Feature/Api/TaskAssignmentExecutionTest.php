@@ -155,7 +155,7 @@ class TaskAssignmentExecutionTest extends TestCase
         // Verify status
         $response->assertStatus(201);
         // Get the ProcessRequest
-        $expectedDueDate = Carbon::now()->addHours(24);
+        $expectedDueDate = Carbon::now()->addHours(72);
         $task = ProcessRequestToken::where([
             'process_request_id' => $response['id'],
             'status' => 'ACTIVE',
