@@ -193,6 +193,16 @@ class DataManager
             $data['_request']['alternative'] = $request->processVersionAlternative;
         }
 
+        // Check if the request has more than one active tokens
+        $hasActiveTokens = $request->tokens->filter(function ($token) {
+            return $token->status === 'ACTIVE';
+        })->count();
+
+        // If the request has more than one active tokens and the _request variable is not already set, we add it
+        if ($hasActiveTokens > 1 && isset($data['_request']) && !array_key_exists('_request', $request->data)) {
+            $request->data = array_merge($request->data, ['_request' => $data['_request']]);
+        }
+
         return $data;
     }
 }
