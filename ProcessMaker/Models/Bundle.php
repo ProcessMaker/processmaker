@@ -26,6 +26,7 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
     protected $casts = [
         'published' => 'boolean',
+        'webhook_token' => 'encrypted:string',
     ];
 
     public function scopePublished($query)
@@ -376,21 +377,11 @@ class Bundle extends ProcessMakerModel implements HasMedia
         foreach ($payloads as $payload) {
             if (isset($payload[0]['export'])) {
                 $logger->status('Installing bundle settings on the this instance');
-                $logger->setSteps($payload[0]);
+                $logger->setSteps($payloads[0]);
                 $assets[] = DevLink::import($payload[0], $options, $logger);
             } elseif (isset($payload[0]['setting_type'])) {
                 foreach ($payload as $setting) {
                     switch ($setting['setting_type']) {
-                        case 'auth_clients':
-                            $clientRepository->create(
-                                null,
-                                $setting['name'],
-                                $setting['redirect'],
-                                $setting['provider'],
-                                $setting['personal_access_client'],
-                                $setting['password_client']
-                            );
-                            break;
                         case 'User Settings':
                         case 'Email':
                         case 'Integrations':

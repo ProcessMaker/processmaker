@@ -5,11 +5,20 @@ namespace ProcessMaker\ImportExport\Exporters;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\ImportExport\DependentType;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
 
 class MediaExporter extends ExporterBase
 {
     public function export(): void
     {
+        $requestPublic = $this->getPublicProcess();
+        if ($requestPublic->id === $this->model->process_request_id) {
+            $this->addReference(DependentType::PUBLIC_FILE, true);
+        } else {
+            $this->addReference(DependentType::PUBLIC_FILE, false);
+        }
+
         if (File::exists($this->model->getPath())) {
             $this->addReference(DependentType::MEDIA, [
                 'base64' => base64_encode(file_get_contents($this->model->getPath())),
@@ -19,6 +28,11 @@ class MediaExporter extends ExporterBase
 
     public function import(): bool
     {
+        if ($this->getReference(DependentType::PUBLIC_FILE)) {
+            $requestPublic = $this->getPublicProcess();
+            $this->model->model = $requestPublic;
+        }
+
         $ref = $this->getReference(DependentType::MEDIA);
         if ($ref && isset($ref['base64'])) {
             $this->model->model->addMediaFromBase64($ref['base64'])
@@ -31,5 +45,13 @@ class MediaExporter extends ExporterBase
         $this->model->delete();
 
         return true;
+    }
+
+    public function getPublicProcess(): ProcessRequest
+    {
+        return Process::where('package_key', 'package-files/public-files')
+            ->firstOrFail()
+            ->requests()
+            ->firstOrFail();
     }
 }
