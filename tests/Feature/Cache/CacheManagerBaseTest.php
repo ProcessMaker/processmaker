@@ -5,6 +5,7 @@ namespace Tests\Feature\Cache;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
+use Mockery;
 use ProcessMaker\Cache\CacheManagerBase;
 use ProcessMaker\Cache\CacheManagerException;
 use Tests\TestCase;
@@ -29,7 +30,7 @@ class CacheManagerBaseTest extends TestCase
 
     public function testGetKeysByPatternWithValidConnectionAndMatchingKeys()
     {
-        $this->cacheManagerBase = $this->getMockForAbstractClass(CacheManagerBase::class);
+        $this->cacheManagerBase = Mockery::mock(CacheManagerBase::class)->makePartial();
 
         $pattern = 'test-pattern';
         $prefix = config('cache.prefix');
@@ -51,7 +52,7 @@ class CacheManagerBaseTest extends TestCase
 
     public function testGetKeysByPatternWithValidConnectionAndNoMatchingKeys()
     {
-        $this->cacheManagerBase = $this->getMockForAbstractClass(CacheManagerBase::class);
+        $this->cacheManagerBase = Mockery::mock(CacheManagerBase::class)->makePartial();
 
         $pattern = 'non-matching-pattern';
         $prefix = config('cache.prefix');
@@ -74,7 +75,7 @@ class CacheManagerBaseTest extends TestCase
     {
         config()->set('cache.default', 'array');
 
-        $this->cacheManagerBase = $this->getMockForAbstractClass(CacheManagerBase::class);
+        $this->cacheManagerBase = Mockery::mock(CacheManagerBase::class)->makePartial();
 
         $this->expectException(CacheManagerException::class);
         $this->expectExceptionMessage('`getKeysByPattern` method only supports Redis connections.');
@@ -84,7 +85,7 @@ class CacheManagerBaseTest extends TestCase
 
     public function testGetKeysByPatternWithExceptionDuringKeyRetrieval()
     {
-        $this->cacheManagerBase = $this->getMockForAbstractClass(CacheManagerBase::class);
+        $this->cacheManagerBase = Mockery::mock(CacheManagerBase::class)->makePartial();
 
         $pattern = 'test-pattern';
         $prefix = config('cache.prefix');

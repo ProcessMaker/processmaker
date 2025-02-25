@@ -159,7 +159,7 @@ class TokenRepository implements TokenRepositoryInterface
 
         //Default 3 days of due date
         $due = $this->getDueVariable($activity, $token);
-        $token->due_at = $due ? Carbon::now()->addHours($due) : null;
+        $token->due_at = $due ? Carbon::now()->addHours((int) $due) : null;
         $token->initiated_at = null;
         $token->riskchanges_at = $due ? Carbon::now()->addHours($due * 0.7) : null;
         $token->updateTokenProperties();

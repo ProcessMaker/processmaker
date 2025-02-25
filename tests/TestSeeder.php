@@ -24,5 +24,10 @@ class TestSeeder extends Seeder
             ['language' => 'php-nayra'],
             ['title' => 'Test Executor Nayra']
         );
+
+        ScriptExecutor::firstOrCreate(
+            ['language' => 'php'],
+            ['title' => 'Test Executor Nayra']
+        );
     }
 }
