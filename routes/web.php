@@ -154,7 +154,7 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('cases/{case_number}/files/{file}', [CasesController::class, 'show'])
         ->where('case_number', '[0-9]+')
         ->where('file', '.*')
-        ->name('cases.show')
+        ->name('cases.show-file')
         ->middleware('no-cache');
 
     // Requests
