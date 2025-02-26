@@ -346,11 +346,14 @@
                             <li class="list-group-item">
                               <p class="section-title">{{ __('Process') }}</p>
                               {{ $request->name }}
-                              <p class="launchpad-link">
-                                <a href="{{route('process.browser.index', [$request->process_id])}}">
-                                  {{ __('Open Process Launchpad') }}
-                                </a>
-                              </p>
+                              <!-- This is the name defined in the installacion of connector-docusign 'DocuSignAuthentication' -->
+                              @if ($request->process->name !== 'DocuSignAuthentication')
+                                <p class="launchpad-link">
+                                  <a href="{{route('process.browser.index', [$request->process_id])}}">
+                                    {{ __('Open Process Launchpad') }}
+                                  </a>
+                                </p>
+                              @endif
                             </li>
                             @if ($request->user_id)
                               <li class="list-group-item">
