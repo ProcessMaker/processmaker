@@ -1,28 +1,29 @@
 <template>
   <th
-    class="tw-relative thead-resizable"
-    :style="{ width: width + 'px' }">
+    class="tw-relative thead-resizable tw-p-0"
+    :style="{ width: width }">
     <div
-      class="tw-py-4 tw-px-3 tw-text-left tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis">
+      :style="{ width: width }"
+      class="tw-py-3 tw-px-3 tw-text-left tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis">
       <slot>
         {{ $t(getValue()) }}
       </slot>
     </div>
 
-    <div class="tw-absolute tw-right-0 tw-top-0 tw-h-full tw-w-5 tw-flex tw-items-center">
+    <div class="tw-absolute tw-right-0 tw-top-0 tw-h-full tw-w-5 tw-flex tw-items-center tw-mr-1">
       <slot name="filter" />
     </div>
 
     <div
-      class="tw-absolute tw-right-0 tw-top-0 tw-w-1 tw-border-r
-        tw-h-full tw-cursor-col-resize tw-select-none tw-border-gray-400"
+      class="tw-absolute tw-right-0 tw-top-0 tw-w-1.5 tw-border-r hover:tw-border-blue-400 hover:tw-border-r-2
+        tw-h-full tw-cursor-col-resize tw-select-none tw-border-gray-300"
       @mousedown="column.resizable ? columnResize.startResize($event) : null" />
   </th>
 </template>
 
 <script>
 import { isFunction } from "lodash";
-import { defineComponent, computed } from "vue";
+import { defineComponent, computed, ref } from "vue";
 import { columnResizeComposable } from "./composables/columnComposable";
 
 export default defineComponent({
@@ -39,7 +40,14 @@ export default defineComponent({
   setup(props, { emit }) {
     const columnResize = columnResizeComposable(props.column);
 
-    const width = computed(() => props.column.width || 200);
+    const index = computed(() => props.columns.findIndex((column) => column.field === props.column.field));
+
+    const width = computed(() => {
+      if (index.value === props.columns.length - 1) {
+        return "auto";
+      }
+      return `${props.column.width || 200}px`;
+    });
 
     const getValue = () => {
       if (isFunction(props.column?.headerFormatter)) {
@@ -50,6 +58,7 @@ export default defineComponent({
     };
     return {
       getValue,
+      index,
       width,
       columnResize,
     };
