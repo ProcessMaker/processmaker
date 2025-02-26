@@ -68,7 +68,9 @@ class SettingObserver
         }
 
         $settingCache = SettingCacheFactory::getSettingsCache();
-        $settingCache->invalidate(['key' => $setting->key]);
+        // Invalidate the setting cache
+        $key = $settingCache->createKey(['key' => $setting->key]);
+        $settingCache->invalidate(['key' => $key]);
     }
 
     /**
@@ -80,7 +82,8 @@ class SettingObserver
     public function deleted(Setting $setting): void
     {
         $settingCache = SettingCacheFactory::getSettingsCache();
-        //invalidate the setting cache
-        $settingCache->invalidate(['key' => $setting->key]);
+        // Invalidate the setting cache
+        $key = $settingCache->createKey(['key' => $setting->key]);
+        $settingCache->invalidate(['key' => $key]);
     }
 }

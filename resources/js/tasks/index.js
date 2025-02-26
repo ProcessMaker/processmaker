@@ -1,9 +1,10 @@
 import TasksList from "./components/TasksList.vue";
 import TasksListCounter from "./components/TasksListCounter.vue";
 import setDefaultAdvancedFilterStatus from "../common/setDefaultAdvancedFilterStatus";
+import PmqlInput from "../components/shared/PmqlInput.vue";
 
 // Component used in the tasks list
-Vue.component("PmqlInput", () => import("../components/shared/PmqlInput.vue"));
+Vue.component("PmqlInput", PmqlInput);
 
 const main = new Vue({
   el: "#tasks",

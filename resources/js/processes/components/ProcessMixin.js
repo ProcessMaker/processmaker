@@ -9,7 +9,8 @@ export default {
 
       for (const record of data.data) {
         // format Status
-        record.owner = this.formatAvatar(record.user);
+        const usePmDefaultLabelProcess = record.user === null;
+        record.owner = this.formatAvatar(record.user, false, usePmDefaultLabelProcess);
         record.category_list = this.formatCategory(record.categories);
       }
       return data;
