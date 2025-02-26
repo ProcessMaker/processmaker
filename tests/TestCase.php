@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
@@ -70,12 +71,12 @@ abstract class TestCase extends BaseTestCase
      * and since we're using transactions for our tests, we lose any data
      * saved before the command is run. Instead, mock it out here.
      */
-    // public function setUpMockConfigCache(): void
-    // {
-    //     Bus::fake([
-    //         RefreshArtisanCaches::class,
-    //     ]);
-    // }
+    public function setUpMockConfigCache(): void
+    {
+        Bus::fake([
+            RefreshArtisanCaches::class,
+        ]);
+    }
 
     /**
      * Run additional tearDowns from traits.
@@ -94,6 +95,11 @@ abstract class TestCase extends BaseTestCase
             if (strpos($imethod, 'teardown') === 0 && $imethod !== 'teardown') {
                 $this->$method();
             }
+        }
+
+        if ($this->connectionsToTransact() === []) {
+            // Database is probably polluted, so we need to reset it when the next test starts
+            RefreshDatabaseState::$migrated = false;
         }
     }
 
@@ -156,10 +162,10 @@ abstract class TestCase extends BaseTestCase
      *
      * @return array
      */
-    protected function connectionsToTransact()
-    {
-        return ['processmaker', 'data'];
-    }
+    // protected function connectionsToTransact()
+    // {
+    //     return ['processmaker'];
+    // }
 
     final protected function assertArraySubset(array $subset, array $array)
     {
