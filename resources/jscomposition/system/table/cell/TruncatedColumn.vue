@@ -2,7 +2,7 @@
   <div class="tw-flex tw-relative tw-text-nowrap tw-whitespace-nowrap tw-p-3">
     <div class="tw-overflow-hidden tw-text-ellipsis ">
       <span>
-        {{ getValue() }}
+        {{ value }}
       </span>
     </div>
 
@@ -39,8 +39,8 @@
   </div>
 </template>
 <script>
-import { defineComponent, ref } from "vue";
-import { isFunction } from "lodash";
+import { defineComponent, ref, computed } from "vue";
+import { isFunction, get } from "lodash";
 import { AppPopover } from "../../../base/index";
 
 export default defineComponent({
@@ -69,12 +69,30 @@ export default defineComponent({
     const show = ref(false);
     const optionsModel = ref(props.row[props.column.field]);
 
-    const getValue = () => {
+    // Memoize the value calculation
+    /**
+     * Computes the display value for the first item in the truncated list
+     * @returns {string} The formatted value from either:
+     *  - The column formatter if defined
+     *  - The name property of first array element if field is an array
+     *  - Empty string if no valid value found
+     */
+    const value = computed(() => {
+      // If there's a formatter, use it
       if (isFunction(props.column?.formatter)) {
-        return props.column?.formatter(props.row, props.column, props.columns);
+        return props.column.formatter(props.row, props.column, props.columns);
       }
-      return props.row[props.column.field].length ? props.row[props.column.field][0].name : "";
-    };
+
+      // Safely access nested properties
+      const fieldValue = get(props.row, props.column.field, []);
+      
+      // Check if it's an array with at least one element
+      if (Array.isArray(fieldValue) && fieldValue.length > 0) {
+        return fieldValue[0]?.name || '';
+      }
+
+      return '';
+    });
 
     const getValueOption = (option) => {
       if (isFunction(props.formatterOptions)) {
@@ -96,7 +114,7 @@ export default defineComponent({
       optionsModel,
       onClose,
       onClick,
-      getValue,
+      value,
       getValueOption,
     };
   },
