@@ -21,15 +21,6 @@ class BundleAsset extends ProcessMakerModel
 
     const FLOW_GENIE_CLASS = 'ProcessMaker\Package\PackageAi\Models\FlowGenie';
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::deleting(function ($bundleAsset) {
-            $bundleAsset->bundle->validateEditable();
-        });
-    }
-
     public static function canExport(ProcessMakerModel $asset)
     {
         return method_exists($asset, 'export') && ExporterMap::getExporterClassForModel($asset);

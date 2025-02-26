@@ -138,14 +138,6 @@ class DevLink extends ProcessMakerModel
         $this->logger->status(__('Downloading bundle from remote instance'));
 
         $bundleInfo = $this->remoteBundle($remoteBundleId)->json();
-        $token = Str::random(60);
-
-        $addBundleInstance = $this->client()->post(
-            route('api.devlink.add-bundle-instance', ['bundle' => $remoteBundleId], false),
-            [
-                'instance_url' => env('APP_URL') . '/devlink/bundle-updated/' . $remoteBundleId . '/' . $token,
-            ]
-        );
 
         $bundleExport = $this->client()->get(
             route('api.devlink.export-local-bundle', ['bundle' => $remoteBundleId], false)
@@ -168,9 +160,21 @@ class DevLink extends ProcessMakerModel
                 'name' => $bundleInfo['name'],
                 'published' => $bundleInfo['published'],
                 'version' => $bundleInfo['version'],
-                'webhook_token' => $token,
+                'description' => $bundleInfo['description'],
             ]
         );
+        if ($bundle->wasRecentlyCreated) {
+            $token = Str::random(60);
+
+            $addBundleInstance = $this->client()->post(
+                route('api.devlink.add-bundle-instance', ['bundle' => $remoteBundleId], false),
+                [
+                    'instance_url' => env('APP_URL') . '/devlink/bundle-updated/' . $remoteBundleId . '/' . $token,
+                ]
+            );
+            $bundle->webhook_token = $token;
+            $bundle->save();
+        }
 
         $bundle->savePayloadsToFile($bundleExport['payloads'], $bundleSettingsPayloads['payloads']);
 
