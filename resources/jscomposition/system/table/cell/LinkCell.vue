@@ -16,7 +16,7 @@
   </div>
 </template>
 <script setup>
-import { defineProps,computed } from "vue";
+import { defineProps, computed } from "vue";
 import { isFunction, get } from "lodash";
 
 const props = defineProps({
