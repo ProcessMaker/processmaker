@@ -26,7 +26,7 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
     protected $casts = [
         'published' => 'boolean',
-        'webhook_token' => 'encrypted:string',
+        'webhook_token' => 'encrypted',
     ];
 
     public function scopePublished($query)
@@ -52,6 +52,11 @@ class Bundle extends ProcessMakerModel implements HasMedia
     public function settings()
     {
         return $this->hasMany(BundleSetting::class);
+    }
+
+    public function instances()
+    {
+        return $this->hasMany(BundleInstance::class);
     }
 
     public function devLink()

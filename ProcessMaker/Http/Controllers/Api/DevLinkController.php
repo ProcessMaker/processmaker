@@ -203,6 +203,7 @@ class DevLinkController extends Controller
     {
         $bundle->assets()->delete();
         $bundle->settings()->delete();
+        $bundle->instances()->delete();
         $bundle->delete();
     }
 
