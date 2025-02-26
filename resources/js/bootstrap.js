@@ -195,6 +195,16 @@ window.ProcessMaker = {
   },
 };
 
+window.ProcessMaker.setValidatorLanguage = (validator, lang) => {
+  const availableLanguages = ["ar", "az", "be", "bg", "bs", "ca", "cs", "cy", "da", "de", "el", "en", "es", "et", "eu", "fa", "fi",
+    "fr", "hr", "hu", "id", "it", "ja", "ka", "km", "ko", "lt", "lv", "mk", "mn", "ms", "nb_NO", "nl", "pl", "pt", "pt_BR", "ro", "ru",
+    "se", "sl", "sq", "sr", "sv", "tr", "ua", "uk", "uz", "vi", "zh", "zh_TW"];
+  const selectedLang = availableLanguages.includes(lang) ? lang : "en";
+  if (validator) {
+    validator.useLang(selectedLang);
+  }
+};
+
 window.ProcessMaker.i18nPromise = i18next.use(Backend).init({
   lng: document.documentElement.lang,
   fallbackLng: "en", // default language when no translations
