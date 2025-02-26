@@ -10,8 +10,6 @@ use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\ProcessTaskAssignment;
-use ProcessMaker\Models\Recommendation;
 use ProcessMaker\Models\RecommendationUser;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
@@ -884,5 +882,58 @@ class UsersTest extends TestCase
 
         // Assert the list of users now contains the admin user
         $this->assertContains($admin->id, collect($users)->pluck('id')->toArray());
+    }
+
+    /**
+     * Test save and get filters per user saved in cache
+     */
+    public function testGetDefaultUserConfiguration()
+    {
+        // Define an example of filters to save
+        $values = [
+            'filters' => [
+                [
+                    'subject' => [
+                        'type' => 'Field',
+                        'value' => 'case_number',
+                    ],
+                    'operator' => '=',
+                    'value' => '885',
+                ],
+                [
+                    'subject' => [
+                        'type' => 'Field',
+                        'value' => 'case_title',
+                    ],
+                    'operator' => '=',
+                    'value' => 'TCP4_Case_title',
+                ],
+            ],
+            'order' => [
+                'by' => 'id',
+                'dir' => 'ASC',
+            ],
+        ];
+        // Define the page filter to save
+        $pagesSaveFilters = [
+            'casesFilter',
+            'casesFilter|in_progress',
+            'casesFilter|completed',
+            'casesFilter|all',
+        ];
+        $randomKey = array_rand($pagesSaveFilters);
+        $name = $pagesSaveFilters[$randomKey];
+        // Call the api PUT
+        $response = $this->apiCall('PUT', '/users/store_filter_configuration/' . $name, $values);
+        // Validate the header status code
+        $response->assertStatus(200);
+        $this->assertNotEmpty($response);
+
+        // Call the api GET
+        $response = $this->apiCall('GET', '/users/get_filter_configuration/' . $name);
+        // Validate the header status code
+        $response->assertStatus(200);
+        $this->assertNotEmpty($response);
+        $response->assertJson(['data' => $values]);
     }
 }
