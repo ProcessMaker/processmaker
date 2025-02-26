@@ -11,7 +11,7 @@ class EtagManagerTest extends TestCase
 {
     private string $response = 'OK';
 
-    public function tearDown(): void
+    public function tearDownEtag()
     {
         EtagManager::etagGenerateUsing(null);
     }

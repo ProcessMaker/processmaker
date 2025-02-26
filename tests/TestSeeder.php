@@ -4,18 +4,20 @@ namespace Tests;
 
 use Database\Seeders\AnonymousUserSeeder;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\ScriptExecutor;
-use ProcessMaker\ScriptRunners\Base;
 
 class TestSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Seed the database once before all tests.
      *
      * @return void
      */
     public function run()
     {
+        dump('TestSeeder');
+
         $this->call([
             AnonymousUserSeeder::class,
         ]);

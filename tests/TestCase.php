@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\DB;
 use PDOException;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
@@ -26,14 +27,26 @@ abstract class TestCase extends BaseTestCase
 
     protected $seeder = TestSeeder::class;
 
+    private static $cacheCleared = false;
+
     /**
      * Run additional setUps from traits.
      */
     protected function setUp(): void
     {
+        if (!$this->populateDatabase()) {
+            RefreshDatabaseState::$migrated = true;
+        }
+
         $this->skipTeardownPDOException = false;
 
         parent::setUp();
+
+        if (!self::$cacheCleared) {
+            dump('Clearing cache');
+            Artisan::call('config:clear');
+            self::$cacheCleared = true;
+        }
 
         $this->disableSetContentMiddleware();
 
@@ -157,16 +170,6 @@ abstract class TestCase extends BaseTestCase
         return $process;
     }
 
-    /**
-     * Connections transacts
-     *
-     * @return array
-     */
-    // protected function connectionsToTransact()
-    // {
-    //     return ['processmaker'];
-    // }
-
     final protected function assertArraySubset(array $subset, array $array)
     {
         $dotSubset = Arr::dot($subset);
@@ -175,5 +178,10 @@ abstract class TestCase extends BaseTestCase
             array_intersect_assoc($dotSubset, $dotArray) === $dotSubset,
             'assertArraySubset: array_intersect_assoc failed'
         );
+    }
+
+    private function populateDatabase() : bool
+    {
+        return (bool) env('POPULATE_DATABASE', true);
     }
 }
