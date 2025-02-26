@@ -30,7 +30,7 @@
               key: config.type,
               value: $event,
               settingId: isInSettings(config)?.id,
-              type: props.type
+              type: config.type === 'ui_settings' ? config.type : props.type
             })"
           />
         </div>
