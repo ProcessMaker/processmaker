@@ -18,6 +18,7 @@ use ProcessMaker\Traits\ProcessMapTrait;
 class CasesController extends Controller
 {
     use ProcessMapTrait;
+
     /**
      * Get the list of requests.
      *
@@ -45,17 +46,20 @@ class CasesController extends Controller
         // Load event ScreenBuilderStarting
         $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, 'FORM'));
-         // Load event ModelerStarting
+        // Load event ModelerStarting
         $managerModeler = app(ModelerManager::class);
         event(new ModelerStarting($managerModeler));
 
-        $scriptsEnabled = ['package-slideshow','package-process-optimization','package-ab-testing','package-testing'];
-        $managerModelerScripts = array_filter($managerModeler->getScripts(), function($script) use ($scriptsEnabled) {
-            foreach ($scriptsEnabled as $enabledScript) {
+        // "Initialload.js" file causes an issue related to SVG in the modeler
+        // The other scripts are not needed in the case detail
+        $scriptsDisabled = ['package-slideshow', 'package-process-optimization', 'package-ab-testing', 'package-testing', 'initialLoad'];
+        $managerModelerScripts = array_filter($managerModeler->getScripts(), function ($script) use ($scriptsDisabled) {
+            foreach ($scriptsDisabled as $enabledScript) {
                 if (strpos($script, $enabledScript) !== false) {
                     return false;
                 }
             }
+
             return true;
         });
 

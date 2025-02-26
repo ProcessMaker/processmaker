@@ -5,8 +5,7 @@
       :columns="columnsConfig"
       :data="data"
       :placeholder="showPlaceholder"
-      @changeFilter="onChangeFilter"
-    >
+      @changeFilter="onChangeFilter">
       <template #placeholder>
         <TablePlaceholder
           :placeholder="placeholderType"

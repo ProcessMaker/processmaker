@@ -1,7 +1,6 @@
 <template>
   <div
-    class="tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis tw-p-3"
-  >
+    class="tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis tw-p-3">
     <a
       v-if="href !== null"
       class="hover:tw-text-blue-400 tw-text-gray-500"

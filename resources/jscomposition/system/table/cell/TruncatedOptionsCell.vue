@@ -27,6 +27,7 @@
       v-model="show"
       :hover="false"
       position="bottom"
+<<<<<<< HEAD
       class="!tw-absolute tw-right-0 tw-top-0 tw-h-full tw-flex tw-items-center"
     >
       <div
@@ -57,6 +58,38 @@
               {{ optionValues[index + 1] }}
             </span>
           </li>
+=======
+      class="!tw-absolute tw-right-0 tw-top-0  tw-h-full tw-flex tw-items-center">
+      <div
+        class="tw-self-center tw-px-2 tw-rounded-md hover:tw-cursor-pointer hover:tw-bg-gray-200 tw-bg-white "
+        @click.prevent="onClick">
+        <i class="fas fa-ellipsis-v" />
+      </div>
+      <template #content>
+        <ul
+          class="tw-bg-white tw-list-none
+            tw-overflow-hidden tw-rounded-lg tw-w-50 tw-text-sm tw-border tw-border-gray-300">
+          <template v-for="(option, index) in optionsModel">
+            <li
+              v-if="index > 0"
+              :key="index"
+              class="hover:tw-bg-gray-100">
+              <a
+                v-if="href !== null"
+                class="tw-flex tw-py-2 tw-px-4 transition duration-300
+                  hover:tw-bg-gray-200 hover:tw-text-blue-400"
+                :href="href(option)">
+                {{ getValueOption(option, index) }}
+              </a>
+              <span
+                v-else
+                class="tw-flex tw-py-2 tw-px-4 transition duration-300 hover:tw-bg-gray-200 hover:tw-cursor-pointer"
+                @click.prevent.stop="onClickOption(option, index)">
+                {{ getValueOption(option, index) }}
+              </span>
+            </li>
+          </template>
+>>>>>>> origin/release-2025-spring
         </ul>
       </template>
     </AppPopover>

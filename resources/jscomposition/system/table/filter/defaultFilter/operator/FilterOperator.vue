@@ -13,6 +13,7 @@
       :config="config"
       placeholder="Type value"
       class="tw-flex-1"
+      id="filter-value"
       @change="onChangeValue" />
   </div>
 </template>
