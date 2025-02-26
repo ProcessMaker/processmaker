@@ -2,6 +2,7 @@
   <Tabs
     :tab-default="tabDefault"
     :tabs="tabs"
+    :keep-alive="['NewOverview']"
   />
 </template>
 
