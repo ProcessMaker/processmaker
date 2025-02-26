@@ -77,7 +77,7 @@ class EncryptDevlinkTokens extends Upgrade
             }
         }
 
-        // Change the column type back to JSON
+        // Change the column type back to String
         Schema::table('dev_links', function ($table) {
             $table->string('client_secret')->change();
         });

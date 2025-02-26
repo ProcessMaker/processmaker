@@ -34,7 +34,7 @@ class EncryptBundleWebhookToken extends Upgrade
 
         $bundles = DB::table('bundles')->get();
 
-        // Encrypt the client_secret, access_token, and refresh_token columns
+        // Encrypt the webhook_token column
         foreach ($bundles as $bundle) {
             if (!$this->isEncrypted($bundle->webhook_token)) {
                 DB::table('bundles')
@@ -71,7 +71,7 @@ class EncryptBundleWebhookToken extends Upgrade
             }
         }
 
-        // Change the column type back to JSON
+        // Change the column type back to String
         Schema::table('bundles', function ($table) {
             $table->string('webhook_token')->change();
         });
