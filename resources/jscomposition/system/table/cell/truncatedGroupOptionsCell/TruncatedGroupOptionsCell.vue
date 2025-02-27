@@ -1,24 +1,24 @@
 <template>
   <div class="tw-flex tw-relative tw-text-nowrap tw-whitespace-nowrap tw-p-3">
     <div
-      v-if="optionsModel.length && optionsModel[0]?.options"
+      v-if="firstOptionValue"
       class="tw-overflow-hidden tw-text-ellipsis">
       <a
         v-if="href !== null"
         class="hover:tw-text-blue-400 tw-text-gray-500"
-        :href="href(optionsModel[0].options[0])">
-        {{ getValueOption(optionsModel[0].options[0]) }}
+        :href="firstOptionHref">
+        {{ firstOptionFormatted }}
       </a>
       <span
         v-else
-        class="hover:tw-text-blue-400 hover:tw-cursor-pointer"
-        href="#"
-        @click.prevent.stop="onClickOption(optionsModel[0].options[0])">
-        {{ getValueOption(optionsModel[0].options[0]) }}
+        class="hover:tw-text-blue-400 tw-text-gray-500 hover:tw-cursor-pointer"
+        @click.prevent.stop="onClickOption(firstOptionValue, 0)">
+        {{ firstOptionFormatted }}
       </span>
     </div>
+
     <AppPopover
-      v-if="optionsModel.length"
+      v-if="optionsModel.length > 1 || (optionsModel[0] && optionsModel[0].options.length > 1)"
       v-model="show"
       :hover="false"
       position="bottom"
@@ -39,7 +39,7 @@
             :key="indexTitle">
             <TitleOption
               :formatter-options="formatterOptions"
-              :option="optionTitle"
+              :option="optionsModel[indexTitle]"
               :columns="columns"
               :row="row"
               :column="column" />
@@ -47,10 +47,10 @@
             <ul
               class="tw-list-disc tw-list-inside">
               <BaseOption
-                v-for="(option, index) in optionTitle.options"
+                v-for="(option, index) in optionsModel[indexTitle].options"
                 :key="index"
                 :formatter-options="formatterOptions"
-                :option="option"
+                :option="optionsModel[indexTitle].options[index]"
                 :columns="columns"
                 :row="row"
                 :href="href"
@@ -63,7 +63,9 @@
   </div>
 </template>
 <script>
-import { defineComponent, ref, onMounted } from "vue";
+import {
+  defineComponent, ref, onMounted, computed,
+} from "vue";
 import { isFunction } from "lodash";
 import { AppPopover } from "../../../../base/index";
 import TitleOption from "./TitleOption.vue";
@@ -108,7 +110,17 @@ export default defineComponent({
   },
   setup(props) {
     const show = ref(false);
-    const optionsModel = ref(props.row[props.column.field]);
+
+    /**
+     * Computed array of all options, filtered if filterData prop is provided
+     * @returns {Array} Array of option objects
+     */
+    const optionsModel = computed(() => {
+      if (props.formatData) {
+        return props.formatData(props.row, props.column, props.columns);
+      }
+      return props.row[props.column.field] || [];
+    });
 
     const getValueOption = (option) => {
       if (isFunction(props.formatterOptions)) {
@@ -129,11 +141,47 @@ export default defineComponent({
       show.value = false;
     };
 
-    onMounted(() => {
-      // Filter the data before render
-      if (props.formatData) {
-        optionsModel.value = props.formatData(props.row, props.column, props.columns);
+    /**
+     * Pre-computes formatted display values for all options
+     * @returns {Object} Map of formatted option values
+     */
+    const optionValues = computed(() => {
+      if (!isFunction(props.formatterOptions)) return {};
+
+      return optionsModel.value.map((option) => props.formatterOptions(option, props.row, props.column, props.columns));
+    });
+
+    /**
+     * Gets the formatted value for the first option
+     * @returns {string} Formatted value or empty string
+     */
+    const firstOptionValue = computed(() => {
+      if (optionsModel.value[0]?.options?.[0]) {
+        return optionsModel.value[0]?.options?.[0];
       }
+      return null;
+    });
+
+    /**
+     * Gets the formatted value for the first option
+     * @returns {string} Formatted value or empty string
+     */
+    const firstOptionFormatted = computed(() => {
+      if (optionsModel.value[0]?.options?.[0]) {
+        return props.formatterOptions(optionsModel.value[0]?.options?.[0]);
+      }
+      return null;
+    });
+
+    /**
+     * Generates href for first option if href prop is provided
+     * @returns {string|null} URL for first option or null
+     */
+    const firstOptionHref = computed(() => {
+      if (props.href && firstOptionValue.value) {
+        return props.href(firstOptionValue.value);
+      }
+      return null;
     });
 
     return {
@@ -143,6 +191,10 @@ export default defineComponent({
       onClickOption,
       onClick,
       getValueOption,
+      firstOptionValue,
+      optionValues,
+      firstOptionHref,
+      firstOptionFormatted,
     };
   },
 });
