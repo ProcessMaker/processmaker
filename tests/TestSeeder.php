@@ -16,8 +16,6 @@ class TestSeeder extends Seeder
      */
     public function run()
     {
-        dump('TestSeeder');
-
         $this->call([
             AnonymousUserSeeder::class,
         ]);

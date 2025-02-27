@@ -34,6 +34,7 @@ use ProcessMaker\Managers\ScreenCompiledManager;
 use ProcessMaker\Models;
 use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
+use ProcessMaker\Repositories\SettingsConfigRepository;
 use RuntimeException;
 
 /**
@@ -203,6 +204,12 @@ class ProcessMakerServiceProvider extends ServiceProvider
             } else {
                 throw new RuntimeException('Cache configuration is missing.');
             }
+        });
+
+        $this->app->extend('config', function ($originalConfig) {
+            $config = new SettingsConfigRepository($originalConfig->all());
+
+            return $config;
         });
     }
 

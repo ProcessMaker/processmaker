@@ -4,10 +4,7 @@ namespace ProcessMaker;
 
 use Igaster\LaravelTheme\Facades\Theme;
 use Illuminate\Foundation\Application as IlluminateApplication;
-use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 use Illuminate\Support\Facades\Auth;
-use ProcessMaker\Models\Setting;
-use ProcessMaker\Providers\SettingServiceProvider;
 
 /**
  * Class Application.

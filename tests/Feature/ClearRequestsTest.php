@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
+use PHPUnit\Event\Facade as EventFacade;
 use ProcessMaker\Console\Commands\ProcessmakerClearRequests;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\CaseParticipated;

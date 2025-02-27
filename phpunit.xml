@@ -9,7 +9,6 @@
   <testsuites>
       <testsuite name="Features">
         <directory>tests/Feature</directory>
-        <!-- Temporary disabled -->
         <directory>tests/Managers</directory>
         <directory>tests/Model</directory>
         <directory>tests/Resources</directory>
@@ -45,8 +44,4 @@
         <env name="POPULATE_DATABASE" value="true" />
 
     </php>
-
-    <extensions>
-        <bootstrap class="Tests\Extensions\ProcessMaker" />
-    </extensions>
 </phpunit>

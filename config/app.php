@@ -184,7 +184,6 @@ return [
         ProcessMaker\Providers\AppServiceProvider::class,
         ProcessMaker\Providers\ProcessMakerServiceProvider::class,
         ProcessMaker\Providers\RecommendationsServiceProvider::class,
-        ProcessMaker\Providers\SettingServiceProvider::class,
         ProcessMaker\Providers\AuthServiceProvider::class,
         ProcessMaker\Providers\EventServiceProvider::class,
         ProcessMaker\Providers\HorizonServiceProvider::class,

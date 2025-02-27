@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use PDOException;
+use PHPUnit\Event\Facade as EventFacade;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Jobs\RefreshArtisanCaches;
@@ -27,6 +28,8 @@ abstract class TestCase extends BaseTestCase
 
     protected $seeder = TestSeeder::class;
 
+    private array $transactionWarnings = [];
+
     private static $cacheCleared = false;
 
     /**
@@ -43,8 +46,7 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
 
         if (!self::$cacheCleared) {
-            dump('Clearing cache');
-            Artisan::call('config:clear');
+            Artisan::call('optimize:clear');
             self::$cacheCleared = true;
         }
 
@@ -113,6 +115,12 @@ abstract class TestCase extends BaseTestCase
         if ($this->connectionsToTransact() === []) {
             // Database is probably polluted, so we need to reset it when the next test starts
             RefreshDatabaseState::$migrated = false;
+
+            $message = get_class($this) . ' does not use connectionsToTransact. This is slowing down the test suite!';
+            if (!in_array($message, $this->transactionWarnings)) {
+                EventFacade::emitter()->testRunnerTriggeredWarning($message);
+                $this->transactionWarnings[] = $message;
+            }
         }
     }
 
