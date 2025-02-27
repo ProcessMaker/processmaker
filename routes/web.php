@@ -152,6 +152,12 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
         ->name('cases.show')
         ->middleware('no-cache');
 
+    Route::get('cases/{case_number}/files/{file}', [CasesController::class, 'show'])
+        ->where('case_number', '[0-9]+')
+        ->where('file', '.*')
+        ->name('cases.show-file')
+        ->middleware('no-cache');
+
     // Requests
     Route::get('requests', [RequestController::class, 'index'])
         ->name('requests.index')

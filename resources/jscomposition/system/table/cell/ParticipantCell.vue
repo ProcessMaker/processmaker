@@ -4,7 +4,6 @@
       position="bottom"
       :hover="true">
       <AppAvatar
-        :class="`tw-bg-gray-500`"
         :initials="initials(row, column, columns) || ''"
         :src="src(row, column, columns)"
         class="tw-cursor-pointer"

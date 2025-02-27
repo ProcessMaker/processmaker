@@ -54,6 +54,15 @@ use ProcessMaker\Traits\HideSystemResources;
  */
 class ScriptExecutor extends ProcessMakerModel
 {
+    const MICROSERVICE_LANGUAGES = [
+        'php' => 'PHP Executor',
+        'javascript' => 'JavaScript Executor',
+        'python' => 'Python Executor',
+        'csharp' => 'C# Executor',
+        'java' => 'Java Executor',
+        'javascript-ssr' => 'JavaScript SSR Executor',
+    ];
+
     use HasVersioning;
     use Exportable;
     use HideSystemResources;

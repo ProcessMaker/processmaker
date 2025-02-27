@@ -391,6 +391,14 @@ export default {
       this.isSecondaryColor = false;
     },
     /**
+     * Save Launchpad Settings if this modal is open in Modeler
+     */
+    saveLaunchpadSettings(data) {
+      if (window.ProcessMaker.modeler) {
+        window.ProcessMaker.modeler.launchpad = data;
+      }
+    },
+    /**
      * Save description field in Process
      */
     saveProcessDescription() {
@@ -440,6 +448,7 @@ export default {
           ProcessMaker.EventBus.$emit("getChartId", this.selectedSavedChart.id);
           this.customModalButtons[1].disabled = false;
           this.$emit("updateMyTasksColumns", this.myTasks.currentColumns);
+          this.saveLaunchpadSettings(response.data);
           this.hideModal();
         })
         .catch((error) => {
