@@ -153,6 +153,14 @@ return [
         // Path to site-wide favicon
         'favicon_path' => env('FAVICON_PATH', '/img/favicon.svg'),
 
+        // Maximum file size for images to be set as default (in bytes) (5MB)
+        'img_max_filesize_limit' => env('IMG_MAX_FILESIZE_LIMIT', '5M'),
+
+        // Maximum file size for documents to be set as default (in bytes) (10MB)
+        'doc_max_filesize_limit' => env('DOC_MAX_FILESIZE_LIMIT', '10M'),
+
+        // Maximum file size for all files to be set as default (in bytes) (10MB)
+        'max_filesize_limit' => env('MAX_FILESIZE_LIMIT', '10M'),
     ],
 
     // Turn on/off the recommendation engine

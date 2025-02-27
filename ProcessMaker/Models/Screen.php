@@ -294,4 +294,71 @@ class Screen extends ProcessMakerModel implements ScreenInterface, PrometheusMet
     {
         return 'screen.' . $this->id;
     }
+
+    public static function getScreenByKey(string $key) : ?self
+    {
+        $screen = self::firstWhere('key', $key);
+        if (!$screen) {
+            $screen = self::createScreenByKey($key);
+        }
+
+        return $screen;
+    }
+
+    private static function createScreenByKey(string $key, bool $isSystem = true, string $path = null): self
+    {
+        // If no path is provided, use the default path
+        if (!$path) {
+            $path = database_path('processes/screens/' . "{$key}.json");
+        }
+
+        // Check if file exists
+        if (!file_exists($path)) {
+            throw new \RuntimeException("Screen configuration file not found: {$path}");
+        }
+
+        // Read and decode JSON with validation
+        $jsonContent = file_get_contents($path);
+        $json = json_decode($jsonContent, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \RuntimeException('Invalid JSON in screen configuration: ' . json_last_error_msg());
+        }
+
+        if (!isset($json['screens']) || !is_array($json['screens'])) {
+            throw new \RuntimeException("Invalid screen configuration format: 'screens' array is required");
+        }
+
+        $screen = collect($json['screens'])->first();
+        if (!$screen) {
+            throw new \RuntimeException('No screen configuration found in JSON');
+        }
+
+        // Look for existing screen by title
+        $newScreen = self::firstWhere('title', $screen['title']);
+        // Create new screen
+        unset($screen['categories']);
+        $screen['screen_category_id'] = null;
+
+        if ($newScreen) {
+            $newScreen->fill($screen);
+            $newScreen->save();
+        } else {
+            $newScreen = self::updateOrCreate(
+                ['key' => $screen['key']],
+                $screen
+            );
+        }
+
+        // Assign system category if needed
+        if ($isSystem && $newScreen) {
+            $screenCategory = ScreenCategory::firstOrCreate([
+                'name' => 'System',
+                'is_system' => 1,
+            ]);
+            $newScreen->categories()->attach([$screenCategory->id]);
+        }
+
+        return $newScreen;
+    }
 }

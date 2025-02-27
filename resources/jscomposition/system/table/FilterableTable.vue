@@ -1,20 +1,23 @@
 <template>
   <BaseTable
+    ref="baseTable"
     :columns="columns"
     :data="data"
     :placeholder="placeholder"
-    class="tw-grow"
-  >
+    :config="config"
+    class="tw-grow">
     <template
       v-for="(column, index) in columns"
       #[`theader-filter-${column.field}`]>
       <FilterColumn
         v-if="column.filter"
+        :id="column.field"
         :key="`default-${index}-${hasFilter(index,column)}`"
         :filter="column.filter"
         :value="getFilter(index, column)"
         @change="e=> onChangeFilter(column, e, index)"
-        @clear="e=> onClear(column, e, index)" />
+        @clear="e=> onClear(column, e, index)"
+        @resetTable="e=> onResetTable()" />
     </template>
     <template #placeholder>
       <slot name="placeholder" />
@@ -41,9 +44,15 @@ const props = defineProps({
     type: Boolean,
     default: () => false,
   },
+  config: {
+    type: Object,
+    default: () => {},
+  },
 });
 
 const filters = ref([]);
+
+const baseTable = ref(null);
 
 const onChangeFilter = (column, val, index) => {
   // All filter with sortable are reset to null
@@ -76,8 +85,22 @@ const onClear = (column, val, index) => {
   emit("changeFilter", filters.value);
 };
 
+const onResetTable = () => {
+  filters.value = [];
+
+  emit("resetFilters", filters.value);
+};
+
 const removeFilter = (index) => {
   filters.value.splice(index, 1);
+};
+
+const removeAllFilters = () => {
+  filters.value = [];
+};
+
+const addFilters = (filtersValue) => {
+  filters.value = filtersValue;
 };
 
 const getFilter = (index, column) => {
@@ -90,7 +113,15 @@ const hasFilter = (index, column) => {
   return filter || "";
 };
 
+const getHeightTBody = () => baseTable.value.$el.clientHeight - baseTable.value.$refs.thead.clientHeight;
+
+const getHeightThead = () => baseTable.value.$refs.thead.clientHeight;
+
 defineExpose({
   removeFilter,
+  removeAllFilters,
+  addFilters,
+  getHeightTBody,
+  getHeightThead,
 });
 </script>

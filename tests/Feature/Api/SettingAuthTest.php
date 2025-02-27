@@ -5,6 +5,7 @@ namespace Tests\Feature\Api;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ScriptExecutor;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\Package\Auth\Database\Seeds\AtlassianSeeder;
 use ProcessMaker\Package\Auth\Database\Seeds\Auth0Seeder;
 use ProcessMaker\Package\Auth\Database\Seeds\AuthSeeder;
@@ -277,5 +278,37 @@ class SettingAuthTest extends TestCase
         $this->assertDatabaseHas('settings', ['id' => $debugMode['id'], 'config' => 1]);
 
         $this->assertDatabaseCount('security_logs', 4);
+    }
+
+    public function testConfigCacheUpdatedAfterSettingEdit()
+    {
+        $setting = Setting::factory()->create([
+            'name' => 'Allow Standard Login',
+            'key' => 'standard-login.enabled',
+            'config' => true,
+            'group' => 'SSO',
+            'format' => 'boolean',
+        ]);
+
+        $this->assertDatabaseHas('settings', ['key' => $setting->key, 'config' => $setting->config]);
+
+        $this->assertTrue(config('standard-login.enabled'));
+
+        $response = $this->apiCall('GET', route('api.settings.index', ['group' => 'SSO', 'order_by' => 'name', 'order_direction' => 'ASC']));
+        $this->assertCount(1, $response['data']);
+        $standardLogin = $response['data'][0];
+        $this->assertEquals('Allow Standard Login', $standardLogin['name']);
+        $this->assertTrue($standardLogin['config']);
+
+        // Update setting config
+        $data = array_merge($standardLogin, ['config' => false]);
+        $response = $this->apiCall('PUT', route('api.settings.update', ['setting' => $standardLogin['id']]), $data);
+        // Verify the status
+        $response->assertStatus(204);
+        // Verify variables were updated
+        $this->assertDatabaseHas('settings', ['id' => $standardLogin['id'], 'config' => false]);
+
+        // Check if the config cache was updated
+        $this->assertFalse(config('standard-login.enabled'));
     }
 }
