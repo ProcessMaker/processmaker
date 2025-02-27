@@ -159,6 +159,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         'is_actionbyemail' => 'boolean',
         'created_at_ms' => MillisecondsToDateCast::class,
         'completed_at_ms' => MillisecondsToDateCast::class,
+        'is_emailsent' => 'boolean',
     ];
 
     /**

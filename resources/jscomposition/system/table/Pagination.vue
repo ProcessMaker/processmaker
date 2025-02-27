@@ -215,6 +215,17 @@ const onChangeOption = (e) => {
   emit("perPage", e.value);
 };
 
+const setPerPage = (value) => {
+  selectedOption.value = {
+    value,
+    label: `${value} ${t("Per page")}`,
+  };
+  emit("perPage", value);
+};
+
+defineExpose({
+  setPerPage,
+});
 </script>
 <style scoped>
 /* Chrome, Safari, Edge, Opera */

@@ -85,6 +85,7 @@ class User extends Authenticatable implements HasMedia
      *   @OA\Property(property="manager_id", type="string", format="id"),
      *   @OA\Property(property="meta", type="object", additionalProperties=true),
      *   @OA\Property(property="force_change_password", type="boolean"),
+     *   @OA\Property(property="email_task_notification", type="boolean"),
      * ),
      * @OA\Schema(
      *   schema="users",
@@ -128,6 +129,7 @@ class User extends Authenticatable implements HasMedia
         'password_changed_at',
         'connected_accounts',
         'preferences_2fa',
+        'email_task_notification',
     ];
 
     protected $appends = [
