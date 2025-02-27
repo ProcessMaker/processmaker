@@ -10,8 +10,8 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::table('bundles', function (Blueprint $table) {
-            $table->text('webhook_token')->nullable();
+        Schema::table('dev_links', function (Blueprint $table) {
+            $table->text('client_secret')->change();
         });
     }
 
@@ -20,8 +20,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('bundles', function (Blueprint $table) {
-            $table->dropColumn('webhook_token');
+        Schema::table('dev_links', function (Blueprint $table) {
+            $table->string('client_secret')->change();
         });
     }
 };
