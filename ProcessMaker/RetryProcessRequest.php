@@ -16,7 +16,6 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\Models\ScriptTask;
 use ProcessMaker\Nayra\Bpmn\Models\ServiceTask;
-use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Repositories\BpmnDocument;
 
 class RetryProcessRequest
