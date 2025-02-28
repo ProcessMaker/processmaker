@@ -19,7 +19,6 @@ use Tests\TestSeeder;
 
 abstract class TestCase extends BaseTestCase
 {
-    use CreatesApplication;
     use RefreshDatabase;
 
     public $withPermissions = false;
@@ -28,7 +27,7 @@ abstract class TestCase extends BaseTestCase
 
     protected $seeder = TestSeeder::class;
 
-    private array $transactionWarnings = [];
+    private static array $transactionWarnings = [];
 
     private static $cacheCleared = false;
 
@@ -116,10 +115,11 @@ abstract class TestCase extends BaseTestCase
             // Database is probably polluted, so we need to reset it when the next test starts
             RefreshDatabaseState::$migrated = false;
 
-            $message = get_class($this) . ' does not use connectionsToTransact. This is slowing down the test suite!';
-            if (!in_array($message, $this->transactionWarnings)) {
+            $className = get_class($this);
+            if (!in_array($className, self::$transactionWarnings)) {
+                $message = $className . ' does not use connectionsToTransact. This is slowing down the test suite!';
                 EventFacade::emitter()->testRunnerTriggeredWarning($message);
-                $this->transactionWarnings[] = $message;
+                self::$transactionWarnings[] = $className;
             }
         }
     }

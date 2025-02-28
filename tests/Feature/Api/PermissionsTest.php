@@ -105,7 +105,6 @@ class PermissionsTest extends TestCase
 
     public function testSetPermissionsViewProcessCatalogForUser()
     {
-        $this->markTestSkipped('laravel 11: This is related to cache handling in tests; it is omitted for now.');
         $faker = Faker::create();
         Permission::updateOrCreate([
             'name' => 'view-process-catalog',

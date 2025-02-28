@@ -43,5 +43,8 @@
         <env name="LOG_CHANNEL" value="test" />
         <env name="POPULATE_DATABASE" value="true" />
 
+        <env name="PRODUCT_ANALYTICS_ENABLED" value="false" />
+        <env name="PRODUCT_ANALYTICS_INTERCOM_ENABLED" value="false" />
+
     </php>
 </phpunit>
