@@ -181,7 +181,7 @@
                 "package-vocabularies": "2.16.0",
                 "package-webentry": "2.27.0",
                 "package-api-testing": "1.2.0",
-                "package-variable-finder": "0.0.2",
+                "package-variable-finder": "0.1.0",
                 "packages": "^0"
             },
             "docker-executors": {
