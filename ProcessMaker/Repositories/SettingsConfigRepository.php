@@ -5,6 +5,7 @@ namespace ProcessMaker\Repositories;
 use Illuminate\Config\Repository;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\Setting;
 
 class SettingsConfigRepository extends Repository
@@ -14,6 +15,10 @@ class SettingsConfigRepository extends Repository
     private bool $applicationBooted = false;
 
     private bool $redisAvailable = false;
+
+    private bool $settingsTableExists = false;
+
+    private bool $readyToUseSettingsDatabase = false;
 
     /**
      * Determine if the given configuration value exists.
@@ -92,7 +97,14 @@ class SettingsConfigRepository extends Repository
 
     private function readyToUseSettingsDatabase()
     {
-        return $this->applicationBooted() && $this->redisAvailable();
+        if (!$this->readyToUseSettingsDatabase) {
+            $this->readyToUseSettingsDatabase =
+                $this->applicationBooted() &&
+                $this->redisAvailable() &&
+                $this->settingsTableExists();
+        }
+
+        return $this->readyToUseSettingsDatabase;
     }
 
     private function applicationBooted()
@@ -117,5 +129,14 @@ class SettingsConfigRepository extends Repository
         }
 
         return $this->redisAvailable;
+    }
+
+    private function settingsTableExists()
+    {
+        if (!$this->settingsTableExists) {
+            $this->settingsTableExists = Schema::hasTable('settings');
+        }
+
+        return $this->settingsTableExists;
     }
 }
