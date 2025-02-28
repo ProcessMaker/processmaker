@@ -4,6 +4,7 @@ namespace ProcessMaker\Repositories;
 
 use Illuminate\Config\Repository;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Redis;
 use ProcessMaker\Models\Setting;
 
 class SettingsConfigRepository extends Repository
@@ -11,6 +12,8 @@ class SettingsConfigRepository extends Repository
     // private bool $hasDatabaseConnection = false;
 
     private bool $applicationBooted = false;
+
+    private bool $redisAvailable = false;
 
     /**
      * Determine if the given configuration value exists.
@@ -80,17 +83,39 @@ class SettingsConfigRepository extends Repository
 
     private function getFromSettings($key)
     {
-        if (!$this->applicationBooted()) {
-            \Log::info("Attempting to get setting '$key' before application booted");
-
+        if (!$this->readyToUseSettingsDatabase()) {
             return null;
         }
 
         return Setting::byKey($key);
     }
 
-    public function applicationBooted()
+    private function readyToUseSettingsDatabase()
+    {
+        return $this->applicationBooted() && $this->redisAvailable();
+    }
+
+    private function applicationBooted()
+    {
+        return $this->applicationBooted;
+    }
+
+    public function setApplicationBooted()
     {
         return $this->applicationBooted = true;
+    }
+
+    private function redisAvailable()
+    {
+        if (!$this->redisAvailable) {
+            try {
+                Redis::connection()->ping();
+                $this->redisAvailable = true;
+            } catch (\Exception $e) {
+                $this->redisAvailable = false;
+            }
+        }
+
+        return $this->redisAvailable;
     }
 }

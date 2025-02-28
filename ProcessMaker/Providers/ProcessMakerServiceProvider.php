@@ -59,7 +59,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         // Track the start time for service providers boot
         self::$bootStart = microtime(true);
 
-        config()->applicationBooted();
+        config()->setApplicationBooted();
 
         $this->app->singleton(Menu::class, function ($app) {
             return new MenuManager();
