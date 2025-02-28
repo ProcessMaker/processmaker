@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, getCurrentInstance, defineExpose } from 'vue';
+import { ref, computed, getCurrentInstance, defineEmits, defineExpose } from 'vue';
 import InstallProgress from './InstallProgress.vue';
 
 const vue = getCurrentInstance().proxy;
@@ -14,6 +14,8 @@ const title = computed(() => {
   }
   return 'Update Bundle';
 });
+
+const emit = defineEmits(['installation-complete']);
 
 const show = (bundle, shouldReinstall = false, type = 'update') => {
   selected.value = bundle;
@@ -55,6 +57,10 @@ const executeUpdate = (updateType) => {
     });
 };
 
+const handleInstallationComplete = () => {
+  emit('installation-complete');
+};
+
 </script>
 
 <template>
@@ -93,7 +99,7 @@ const executeUpdate = (updateType) => {
     </b-modal>
 
     <b-modal id="install-progress" size="lg" v-model="showInstallModal" :title="$t('Installation Progress')" hide-footer>
-      <install-progress />
+      <install-progress @installation-complete="handleInstallationComplete" />
     </b-modal>
   </div>
 </template>
