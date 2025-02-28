@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use ArrayAccess;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
@@ -9,6 +10,8 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Testing\Constraints\ArraySubset;
+use Illuminate\Testing\Exceptions\InvalidArgumentException;
 use PDOException;
 use PHPUnit\Event\Facade as EventFacade;
 use ProcessMaker\ImportExport\Importer;
@@ -178,14 +181,20 @@ abstract class TestCase extends BaseTestCase
         return $process;
     }
 
-    final protected function assertArraySubset(array $subset, array $array)
+    // Copied from Illuminate/Testing/Assert.php
+    public function assertArraySubset($subset, $array, bool $checkForIdentity = false, string $msg = ''): void
     {
-        $dotSubset = Arr::dot($subset);
-        $dotArray = Arr::dot($array);
-        $this->assertTrue(
-            array_intersect_assoc($dotSubset, $dotArray) === $dotSubset,
-            'assertArraySubset: array_intersect_assoc failed'
-        );
+        if (!(is_array($subset) || $subset instanceof ArrayAccess)) {
+            throw InvalidArgumentException::create(1, 'array or ArrayAccess');
+        }
+
+        if (!(is_array($array) || $array instanceof ArrayAccess)) {
+            throw InvalidArgumentException::create(2, 'array or ArrayAccess');
+        }
+
+        $constraint = new ArraySubset($subset, $checkForIdentity);
+
+        $this->assertThat($array, $constraint, $msg);
     }
 
     private function populateDatabase() : bool
