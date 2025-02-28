@@ -309,7 +309,7 @@
                       <li class="list-group-item">
                         <p class="section-title">{{__('Case')}}</p>
                         @{{ caseTitle }}
-                        <!-- This is the name defined in the installacion of connector-docusign 'DocuSignAuthentication' -->
+                        <!-- This is the name defined in the installation of connector-docusign 'DocuSignAuthentication' -->
                         @if ($task->process->name !== 'DocuSignAuthentication')
                           <p class="launchpad-link">
                             <a href="{{route('process.browser.index', [$task->process->id])}}">
