@@ -33,18 +33,21 @@
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
 
-        <env name="DB_DATABASE" value="test" />
         <env name="BROADCAST_DRIVER" value="log"/>
         <env name="CACHE_DRIVER" value="array" />
         <env name="QUEUE_DRIVER" value="sync" />
         <env name="SCRIPT_MICROSERVICE_ENABLED" value="false" />
 
-        <!-- Add other envs from the the old phpunit.xml as needed -->
         <env name="LOG_CHANNEL" value="test" />
         <env name="POPULATE_DATABASE" value="true" />
 
         <env name="PRODUCT_ANALYTICS_ENABLED" value="false" />
         <env name="PRODUCT_ANALYTICS_INTERCOM_ENABLED" value="false" />
+
+        <env name="DB_DATABASE" value="test" />
+        <env name="DATA_DB_DATABASE" value="test" />
+        <env name="DB_TIMEZONE" value="+00:00" />
+        <env name="DATA_DB_TIMEZONE" value="+00:00" />
 
     </php>
 </phpunit>
