@@ -8,6 +8,10 @@ use ProcessMaker\Models\Setting;
 
 class SettingsConfigRepository extends Repository
 {
+    // private bool $hasDatabaseConnection = false;
+
+    private bool $applicationBooted = false;
+
     /**
      * Determine if the given configuration value exists.
      *
@@ -20,7 +24,7 @@ class SettingsConfigRepository extends Repository
             return true;
         }
 
-        return Setting::byKey($key) ? true : false;
+        return $this->getFromSettings($key) ? true : false;
     }
 
     /**
@@ -40,7 +44,7 @@ class SettingsConfigRepository extends Repository
             return Arr::get($this->items, $key);
         }
 
-        $setting = Setting::byKey($key);
+        $setting = $this->getFromSettings($key);
         if ($setting) {
             return $setting->config;
         }
@@ -64,7 +68,7 @@ class SettingsConfigRepository extends Repository
 
             if (Arr::has($this->items, $key)) {
                 $config[$key] = Arr::get($this->items, $key);
-            } elseif ($setting = Setting::byKey($key)) {
+            } elseif ($setting = $this->getFromSettings($key)) {
                 $config[$key] = $setting->config;
             } else {
                 $config[$key] = $default;
@@ -72,5 +76,21 @@ class SettingsConfigRepository extends Repository
         }
 
         return $config;
+    }
+
+    private function getFromSettings($key)
+    {
+        if (!$this->applicationBooted()) {
+            \Log::info("Attempting to get setting '$key' before application booted");
+
+            return null;
+        }
+
+        return Setting::byKey($key);
+    }
+
+    public function applicationBooted()
+    {
+        return $this->applicationBooted = true;
     }
 }
