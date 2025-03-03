@@ -181,7 +181,6 @@ return [
         /**
          * ProcessMaker Service Providers
          */
-        ProcessMaker\Providers\AppServiceProvider::class,
         ProcessMaker\Providers\ProcessMakerServiceProvider::class,
         ProcessMaker\Providers\RecommendationsServiceProvider::class,
         ProcessMaker\Providers\AuthServiceProvider::class,

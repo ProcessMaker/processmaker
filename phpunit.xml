@@ -34,7 +34,7 @@
         <env name="TELESCOPE_ENABLED" value="false"/>
 
         <env name="BROADCAST_DRIVER" value="log"/>
-        <env name="CACHE_DRIVER" value="array" />
+        <env name="CACHE_DRIVER" value="redis" />
         <env name="QUEUE_DRIVER" value="sync" />
         <env name="SCRIPT_MICROSERVICE_ENABLED" value="false" />
 

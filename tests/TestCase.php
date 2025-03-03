@@ -10,6 +10,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Testing\Constraints\ArraySubset;
 use Illuminate\Testing\Exceptions\InvalidArgumentException;
 use PDOException;
@@ -49,6 +50,7 @@ abstract class TestCase extends BaseTestCase
 
         if (!self::$cacheCleared) {
             Artisan::call('optimize:clear');
+            Redis::flushDB();
             self::$cacheCleared = true;
         }
 
@@ -119,11 +121,9 @@ abstract class TestCase extends BaseTestCase
             RefreshDatabaseState::$migrated = false;
 
             $className = get_class($this);
-            if (!in_array($className, self::$transactionWarnings)) {
-                $message = $className . ' does not use connectionsToTransact. This is slowing down the test suite!';
-                EventFacade::emitter()->testRunnerTriggeredWarning($message);
-                self::$transactionWarnings[] = $className;
-            }
+            $message = $className . '::' . $this->name() . ' not using transactions. This is slowing down the test suite!';
+            EventFacade::emitter()->testRunnerTriggeredWarning($message);
+            self::$transactionWarnings[] = $className;
         }
     }
 
