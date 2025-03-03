@@ -50,7 +50,7 @@ abstract class TestCase extends BaseTestCase
 
         if (!self::$cacheCleared) {
             Artisan::call('optimize:clear');
-            Redis::flushDB();
+            Redis::flushall();
             self::$cacheCleared = true;
         }
 
