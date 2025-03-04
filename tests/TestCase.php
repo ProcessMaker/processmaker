@@ -48,9 +48,10 @@ abstract class TestCase extends BaseTestCase
 
         parent::setUp();
 
+        Redis::flushall();
+
         if (!self::$cacheCleared) {
             Artisan::call('optimize:clear');
-            Redis::flushall();
             self::$cacheCleared = true;
         }
 
@@ -114,16 +115,6 @@ abstract class TestCase extends BaseTestCase
             if (strpos($imethod, 'teardown') === 0 && $imethod !== 'teardown') {
                 $this->$method();
             }
-        }
-
-        if ($this->connectionsToTransact() === []) {
-            // Database is probably polluted, so we need to reset it when the next test starts
-            RefreshDatabaseState::$migrated = false;
-
-            $className = get_class($this);
-            $message = $className . '::' . $this->name() . ' not using transactions. This is slowing down the test suite!';
-            EventFacade::emitter()->testRunnerTriggeredWarning($message);
-            self::$transactionWarnings[] = $className;
         }
     }
 
