@@ -73,7 +73,7 @@ export default {
                             this.$t("The process was archived."),
                             "success"
                         );
-                        this.$refs.pagination.loadPage(1);
+                        this.$refs.pagination?.loadPage(1);
                       });
                 }
             );
