@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false"
+         backupStaticAttributes="false"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="false"
+         convertWarningsToExceptions="false"
+         processIsolation="false"
+         stopOnFailure="false"
+         bootstrap="tests/bootstrap.php"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+>
+
+  <coverage includeUncoveredFiles="true" processUncoveredFiles="false">
+    <report>
+      <text outputFile="php://stdout" showUncoveredFiles="true"/>
+      <xml outputDirectory="coverage" />
+      <html outputDirectory="coverage" />
+      <clover outputFile="coverage/clover.xml"/>
+    </report>
+    <include>
+      <directory suffix=".php">vendor/processmaker</directory>
+    </include>
+  </coverage>
+
+  <php>
+    <env name="APP_DEBUG" value="true" />
+    <env name="APP_ENV" value="testing" />
+    <env name="APP_URL" value="http://localhost" />
+    <env name="TESTING_VERBOSE" value="false" />
+    <env name="POPULATE_DATABASE" value="true" />
+    <env name="TELESCOPE_ENABLED" value="false" />
+    <env name="LOG_AUTH_EVENTS" value="false" />
+    <env name="BROADCAST_DRIVER" value="log"/>
+    <env name="SAVED_SEARCH_COUNT" value="false"/>
+    <env name="SAVED_SEARCH_ADD_DEFAULTS" value="false"/>
+    <env name="APP_CONFIG_CACHE" value="bootstrap/cache/config.test.php"/>
+
+    <!-- Caching config -->
+    <env name="CACHE_DRIVER" value="array" />
+    <env name="QUEUE_DRIVER" value="sync" />
+    <env name="MESSAGE_BROKER_DRIVER" value="default" />
+
+    <!-- Workflow Database -->
+    <env name="DB_ADAPTER" value="mysql" />
+    <env name="DB_DATABASE" value="test" />
+    <env name="DATA_DB_DATABASE" value="test" />
+    <env name="DB_TIMEZONE" value="+00:00" />
+    <env name="DATA_DB_TIMEZONE" value="+00:00" />
+    <env name="NAYRA_DOCKER_NETWORK" value="pm4-tools_default" />
+
+    <!-- Log config -->
+    <env name="LOG_CHANNEL" value="test" />
+
+    <!-- MS Sql server -->
+    <env name="RUN_MSSQL_TESTS" value="false" />
+    <env name="MSSQL_HOST" value="172.16.3.1" />
+    <env name="MSSQL_PORT" value="1433" />
+    <env name="MSSQL_DATABASE" value="testexternal" />
+    <env name="MSSQL_USERNAME" value="test" />
+    <env name="MSSQL_PASSWORD" value="test" />
+
+    <env name="KEYS_PATH" value="tests/storage/keys" />
+    <env name="MAILTEMPLATES_PATH" value="tests/storage/mailTemplates" />
+    <env name="SKINS_PATH" value="tests/storage/skins" />
+
+    <env name="THEMES_CACHE" value="false" />
+    <env name="SESSION_SECURE_COOKIE" value="true" />
+
+    <env name="PRODUCT_ANALYTICS_ENABLED" value="false" />
+    <env name="PRODUCT_ANALYTICS_INTERCOM_ENABLED" value="false" />
+
+    <env name="ENCRYPTED_DATA_KEY" value="base64:3/FNiukohihPSwmkzIl1csZIT6W4LYtnJzLPkNPjZgs=" />
+
+    <!-- Script microservice disabled for this version -->
+    <env name="SCRIPT_MICROSERVICE_ENABLED" value="false" />
+  </php>
+</phpunit>

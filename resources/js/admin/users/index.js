@@ -24,12 +24,17 @@ new Vue({
       submitted: false,
       disabled: false,
     },
-    configCopy: "",
+    configCopy: null,
     focusErrors: "config.addError",
   },
   mounted() {
     this.$root.$on("bv::modal::hide", () => {
-      this.config = this.configCopy;
+      if (this.configCopy) {
+        const tempConfig = _.cloneDeep(this.configCopy);
+        this.configCopy = null;
+        this.config = tempConfig;
+      }
+      this.resetForm();
     });
 
     this.$root.$on("updateErrors", (val) => {
@@ -37,6 +42,21 @@ new Vue({
     });
   },
   methods: {
+    resetForm() {
+      this.config = {
+        username: "",
+        firstname: "",
+        lastname: "",
+        title: "",
+        status: "",
+        email: "",
+        password: "",
+        confpassword: "",
+        addError: {},
+        submitted: false,
+        disabled: false,
+      };
+    },
     reload() {
       this.$refs.listing.dataManager([{
         field: "updated_at",
@@ -63,10 +83,13 @@ new Vue({
     },
     hideModal() {
       this.$refs.addUserModal.hideAddUserModal();
+      this.configCopy = null;
+      this.resetForm();
     },
     onSubmit() {
       this.config.addError = {};
       if (this.validatePassword()) {
+        this.config.submitted = true;
         this.$refs.addUserModal.onSubmit(this.config);
       }
     },
