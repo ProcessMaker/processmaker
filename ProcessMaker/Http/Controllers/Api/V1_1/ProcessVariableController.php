@@ -238,7 +238,7 @@ class ProcessVariableController extends Controller
         // and applies filtering for excluded fields.
         $query = DB::table('var_finder_variables AS vfv')
             ->join('asset_variables AS av', 'vfv.asset_variable_id', '=', 'av.id')
-            ->join('process_variables AS pv', 'av.id', '=', 'pv.asset_variable_id')
+            ->join('process_variables AS pv', 'av.process_id', '=', 'pv.process_id')
             ->whereIn('pv.process_id', $processIds)
             ->orderBy('vfv.id');
 
