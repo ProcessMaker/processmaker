@@ -25,7 +25,6 @@ export default () => {
       import("@processmaker/screen-builder/dist/vue-form-builder.css");
       import("@processmaker/screen-builder").then((ScreenBuilder) => {
         const apiClient = getGlobalPMVariable("apiClient");
-        Vue.use(ScreenBuilder.default);
 
         const { initializeScreenCache } = ScreenBuilder;
         // Configuration Global object used by ScreenBuilder
@@ -43,6 +42,8 @@ export default () => {
         initializeScreenCache(apiClient, screen);// TODO: Its a bad practice to use the apiClient here
         if (screenBuilderScripts) {
           addScriptsToDOM(screenBuilderScripts).then(() => {
+            // The order of the scripts is important, the screenBuilderScripts must be loaded before the ScreenBuilder.default
+            Vue.use(ScreenBuilder.default);
             resolve(ScreenBuilder[component]);
           });
         }

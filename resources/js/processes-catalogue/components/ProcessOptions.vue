@@ -2,7 +2,7 @@
   <div class="section-options">
     <div class="left-column">
       <process-description :process="process" />
-      <process-counter :process="process" />
+      <process-counter v-if="collapsed" :process="process" />
     </div>
     <chart-save-search class="section-chart" :process="process" />
   </div>
@@ -15,7 +15,7 @@ import ProcessDescription from "./optionsMenu/ProcessDescription.vue";
 
 export default {
   components: { ProcessCounter, ChartSaveSearch, ProcessDescription },
-  props: ["process"],
+  props: ["process", "collapsed"],
 };
 </script>
 

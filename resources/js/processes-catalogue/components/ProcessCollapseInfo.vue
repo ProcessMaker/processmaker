@@ -1,5 +1,5 @@
 <template>
-  <div id="processCollapseInfo">
+  <div id="processCollapseInfo" v-if="!isArchived">
     <div id="processData">
       <process-header-start
         :process="process"
@@ -12,6 +12,7 @@
         :hide-header-options="true"
         :icon-wizard-template="createdFromWizardTemplate"
         @goBack="goBack()"
+        @onProcessInfoCollapsed="onProcessInfoCollapsed"
       />
       <div
         id="collapseProcessInfo"
@@ -26,7 +27,10 @@
               />
             </b-col>
             <b-col class="process-options col-12">
-              <process-options :process="process" />
+              <process-options
+                :process="process"
+                :collapsed="collapsed"
+              />
             </b-col>
           </b-row>
         </div>
@@ -97,6 +101,9 @@ export default {
     createdFromWizardTemplate() {
       return !!this.process?.properties?.wizardTemplateUuid;
     },
+    isArchived() {
+      return this.process?.status === 'ARCHIVED';
+    },
     wizardTemplateUuid() {
       return this.process?.properties?.wizardTemplateUuid;
     },
@@ -109,7 +116,8 @@ export default {
   },
   data() {
     return {
-      mobileApp: window.ProcessMaker.mobileApp
+      mobileApp: window.ProcessMaker.mobileApp,
+      collapsed: true,
     };
   },
   methods: {
@@ -129,6 +137,9 @@ export default {
     },
     getHelperProcess() {
       this.$refs.wizardHelperProcessModal.getHelperProcessStartEvent();
+    },
+    onProcessInfoCollapsed(collapsed) {
+      this.collapsed = collapsed;
     },
   },
 };

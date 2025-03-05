@@ -906,7 +906,7 @@ export default {
     taskListRowButtonsShow(row, index) {
       const container = this.$refs.filterTable.$el;
       const scrolledWidth = container.scrollWidth - container.clientWidth - container.scrollLeft;
-      const widthTd = this.$refs[`taskListRowButtons-${index}`][0].$el.parentNode.offsetWidth - 24;
+      const widthTd = this.$refs[`taskListRowButtons-${index}`][0].$el.parentNode.getBoundingClientRect().width - 24;
       this.$refs[`taskListRowButtons-${index}`][0].show();
       this.$refs[`taskListRowButtons-${index}`][0].setMargin(scrolledWidth - widthTd);
     },

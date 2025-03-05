@@ -14,7 +14,7 @@ const taskNumberColumn = () => ({
   field: "id",
   header: "Tasks #",
   resizable: true,
-  width: 100,
+  width: 144,
   filter: true,
   formatter: (row, column, columns) => `#${row.id}`,
   cellRenderer: () => ({
@@ -57,7 +57,9 @@ const assignedColumn = () => ({
       click: (row, column, columns) => {
         window.document.location = `/profile/${row.user?.id}`;
       },
-      formatter: (row, column, columns) => row.user?.fullname,
+      formatter: (row, column, columns) => {
+        return row.user ? row.user.fullname : 'Self Service';
+      },
       initials: (row, column, columns) => row.user?.fullname[0],
       src: (row, column, columns) => row.user?.avatar,
     },
@@ -68,7 +70,7 @@ const dueDateColumn = () => ({
   field: "due_at",
   header: "Due Date",
   resizable: true,
-  width: 200,
+  width: "auto",
   filter: true,
   formatter: (row, column, columns) => formatDate(row.due_at, "datetime"),
 });
@@ -127,7 +129,7 @@ const startedColumn = () => ({
   header: "Started",
   filter: true,
   resizable: true,
-  width: 200,
+  width: "auto",
   formatter: (row, column, columns) => formatDate(row.initiated_at, "datetime"),
 });
 
