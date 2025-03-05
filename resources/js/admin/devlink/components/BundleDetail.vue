@@ -115,6 +115,7 @@
     />
     <UpdateBundle
       ref="reinstallBundle"
+      @installation-complete="loadAssets"
     />
 
     <BundleSettingsModal
