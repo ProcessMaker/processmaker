@@ -40,6 +40,10 @@ abstract class TestCase extends BaseTestCase
      */
     protected function setUp(): void
     {
+        if ($this->connectionsToTransact() === []) {
+            $this->markTestSkipped('Skipping for Laravel 11');
+        }
+
         if (!$this->populateDatabase()) {
             RefreshDatabaseState::$migrated = true;
         }

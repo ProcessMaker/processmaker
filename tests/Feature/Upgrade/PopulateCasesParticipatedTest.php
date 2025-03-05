@@ -42,7 +42,7 @@ class PopulateCasesParticipatedTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->markTestSkipped('Larvel 11');
+        $this->markTestSkipped('Skipping for Laravel 11');
         parent::setUp();
 
         $this->user = User::factory()->create();
