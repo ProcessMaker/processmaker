@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Laravel\Passport\Passport;
 use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Notification;
@@ -57,6 +58,8 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
+
+        Passport::authorizationView('auth.oauth2.authorize');
 
         Gate::before(function ($user) {
             if ($user->is_administrator) {

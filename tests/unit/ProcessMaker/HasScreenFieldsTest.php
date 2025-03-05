@@ -1,8 +1,8 @@
 <?php
 
-use Tests\TestCase;
 use ProcessMaker\Cache\Screens\ScreenCacheFactory;
 use ProcessMaker\Models\Screen;
+use Tests\TestCase;
 
 class HasScreenFieldsTest extends TestCase
 {

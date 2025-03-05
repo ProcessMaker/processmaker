@@ -3,12 +3,15 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Http;
 use ProcessMaker\Exception\ExporterNotSupported;
 use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Logger;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\ProcessMakerModel;
+use ProcessMaker\Models\Setting;
+use ProcessMaker\Models\SettingsMenus;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -23,6 +26,7 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
     protected $casts = [
         'published' => 'boolean',
+        'webhook_token' => 'encrypted',
     ];
 
     public function scopePublished($query)
@@ -43,6 +47,16 @@ class Bundle extends ProcessMakerModel implements HasMedia
     public function assets()
     {
         return $this->hasMany(BundleAsset::class);
+    }
+
+    public function settings()
+    {
+        return $this->hasMany(BundleSetting::class);
+    }
+
+    public function instances()
+    {
+        return $this->hasMany(BundleInstance::class);
     }
 
     public function devLink()
@@ -70,6 +84,24 @@ class Bundle extends ProcessMakerModel implements HasMedia
         }
 
         return $exports;
+    }
+
+    public function exportSettings()
+    {
+        $exports = [];
+
+        foreach ($this->settings as $setting) {
+            $exports[] = $setting;
+        }
+
+        return $exports;
+    }
+
+    public function exportSettingPayloads()
+    {
+        return $this->settings()->get()->map(function ($setting) {
+            return $setting->export();
+        });
     }
 
     public function syncAssets($assets)
@@ -126,11 +158,144 @@ class Bundle extends ProcessMakerModel implements HasMedia
         ]);
     }
 
+    public function addSettings($setting, $newId, $type = null)
+    {
+        $existingSetting = $this->settings()->where('setting', $setting)->first();
+
+        if ($this->shouldSetNullConfig($newId, $type)) {
+            return $this->handleNullConfig($existingSetting, $setting);
+        }
+
+        $decodedNewId = $this->parseNewId($newId);
+
+        if ($existingSetting) {
+            return $this->updateExistingSetting($existingSetting, $decodedNewId);
+        }
+
+        $this->createNewSetting($setting, $decodedNewId, $type);
+    }
+
+    private function shouldSetNullConfig($newId, $type)
+    {
+        return is_null($newId) && is_null($type);
+    }
+
+    private function handleNullConfig($existingSetting, $setting)
+    {
+        if ($existingSetting) {
+            $existingSetting->update(['config' => null]);
+        } else {
+            BundleSetting::create([
+                'bundle_id' => $this->id,
+                'setting' => $setting,
+                'config' => null,
+            ]);
+        }
+    }
+
+    private function parseNewId($newId)
+    {
+        $decodedNewId = json_decode($newId, true);
+
+        if (json_last_error() === JSON_ERROR_NONE) {
+            if (is_array($decodedNewId)) {
+                return $decodedNewId;
+            } elseif (isset($decodedNewId['id'])) {
+                return ['id' => [$decodedNewId['id']]];
+            }
+
+            return ['id' => [$decodedNewId]];
+        }
+
+        return ['id' => [$newId]];
+    }
+
+    private function updateExistingSetting($existingSetting, $decodedNewId)
+    {
+        if (isset($decodedNewId['id']) && $decodedNewId['id'] === []) {
+            $existingSetting->delete();
+
+            return;
+        }
+
+        $config = json_decode($existingSetting->config, true) ?: ['id' => []];
+
+        if (!isset($config['id']) || !is_array($config['id'])) {
+            $config['id'] = [];
+        }
+
+        foreach ($decodedNewId['id'] as $id) {
+            $config['id'][] = $id;
+        }
+
+        $config['id'] = array_values(array_unique($config['id']));
+        $existingSetting->update(['config' => json_encode($config)]);
+    }
+
+    private function createNewSetting($setting, $newId, $type)
+    {
+        $config = ['id' => []];
+
+        if ($type === 'settings') {
+            $config = $this->getSettingsConfig($setting);
+        } elseif ($type === 'ui_settings') {
+            $config = $this->getUiSettingsConfig();
+        } elseif ($newId && $type !== 'settings') {
+            foreach ($newId['id'] as $id) {
+                $config['id'][] = $id;
+            }
+        }
+
+        BundleSetting::create([
+            'bundle_id' => $this->id,
+            'setting' => $setting,
+            'config' => json_encode($config),
+        ]);
+    }
+
+    private function getSettingsConfig($setting)
+    {
+        $config = ['id' => []];
+        $settingsMenu = SettingsMenus::where('menu_group', $setting)->first();
+
+        if ($settingsMenu) {
+            $settingsKeys = Setting::where([
+                ['group_id', '=', $settingsMenu->id],
+                ['hidden', '=', false],
+            ])->pluck('key')->toArray();
+
+            $config['id'] = $settingsKeys;
+            $config['type'] = 'settings';
+        }
+
+        return $config;
+    }
+
+    private function getUiSettingsConfig()
+    {
+        return [
+            'id' => ['css-override', 'login-footer', 'logo-alt-text'],
+            'type' => 'ui_settings',
+        ];
+    }
+
     public function addAssetToBundles(ProcessMakerModel $asset)
     {
         $message = null;
         try {
             $this->addAsset($asset);
+        } catch (ValidationException $ve) {
+            $message = $ve->getMessage();
+        }
+
+        return $message;
+    }
+
+    public function addSettingToBundles($setting, $newId, $type = null)
+    {
+        $message = null;
+        try {
+            $this->addSettings($setting, $newId, $type);
         } catch (ValidationException $ve) {
             $message = $ve->getMessage();
         }
@@ -165,8 +330,16 @@ class Bundle extends ProcessMakerModel implements HasMedia
         return $this->filesSortedByVersion()->first();
     }
 
-    public function savePayloadsToFile(array $payloads)
+    public function savePayloadsToFile(array $payloads, array $payloadsSettings, $logger = null)
     {
+        if ($logger === null) {
+            $logger = new Logger();
+        }
+        $logger->status('Saving the bundle locally');
+        if (isset($payloadsSettings[0])) {
+            $payloads = array_merge($payloads, $payloadsSettings[0]);
+        }
+
         $this->addMediaFromString(
             gzencode(
                 json_encode($payloads)
@@ -185,14 +358,78 @@ class Bundle extends ProcessMakerModel implements HasMedia
         }
     }
 
-    public function install(array $payloads, $mode, $logger = null)
+    public function installSettings($settings)
+    {
+        $newSettingsKeys = collect($settings)->pluck('setting')->toArray();
+
+        $this->settings()
+            ->whereNotIn('setting', $newSettingsKeys)
+            ->delete();
+
+        foreach ($settings as $setting) {
+            $this->addSettings($setting['setting'], $setting['config']);
+        }
+    }
+
+    public function installSettingsPayloads(array $payloads, $mode, $logger = null)
+    {
+        $options = new Options([
+            'mode' => $mode,
+        ]);
+        $clientRepository = app('Laravel\Passport\ClientRepository');
+
+        $assets = [];
+        foreach ($payloads as $payload) {
+            if (isset($payload[0]['export'])) {
+                $logger->status('Installing bundle settings on the this instance');
+                $logger->setSteps($payloads[0]);
+                $assets[] = DevLink::import($payload[0], $options, $logger);
+            } elseif (isset($payload[0]['setting_type'])) {
+                foreach ($payload as $setting) {
+                    switch ($setting['setting_type']) {
+                        case 'User Settings':
+                        case 'Email':
+                        case 'Integrations':
+                        case 'Log-In & Auth':
+                            $settingsMenu = SettingsMenus::where('menu_group', $setting['setting_type'])->first();
+                            Setting::updateOrCreate([
+                                'key' => $setting['key'],
+                            ], [
+                                'config' => $setting['config'],
+                                'name' => $setting['name'],
+                                'helper' => $setting['helper'],
+                                'format' => $setting['format'],
+                                'hidden' => $setting['hidden'],
+                                'readonly' => $setting['readonly'],
+                                'ui' => $setting['ui'],
+                                'group_id' => $settingsMenu->id,
+                                'group' => $setting['group'],
+                            ]);
+                            break;
+                        case 'ui_settings':
+                            Setting::updateOrCreate([
+                                'key' => $setting['key'],
+                            ], [
+                                'config' => $setting['config'],
+                                'name' => $setting['name'],
+                                'helper' => $setting['helper'],
+                                'format' => $setting['format'],
+                                'hidden' => $setting['hidden'],
+                                'readonly' => $setting['readonly'],
+                                'ui' => $setting['ui'],
+                            ]);
+                            break;
+                    }
+                }
+            }
+        }
+    }
+
+    public function install(array $payloads, $mode, $logger = null, $reinstall = false)
     {
         if ($logger === null) {
             $logger = new Logger();
         }
-
-        $logger->status('Saving the bundle locally');
-        $this->savePayloadsToFile($payloads);
 
         $logger->status('Installing bundle on the this instance');
         $logger->setSteps($payloads);
@@ -205,7 +442,7 @@ class Bundle extends ProcessMakerModel implements HasMedia
             $assets[] = DevLink::import($payload, $options, $logger);
         }
 
-        if ($mode === 'update') {
+        if ($mode === 'update' && $reinstall === false) {
             $logger->status('Syncing bundle assets');
             $this->syncAssets($assets);
         }
@@ -217,9 +454,26 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
         $content = file_get_contents($media->getPath());
         $payloads = json_decode(gzdecode($content), true);
-
-        $this->install($payloads, $mode, $logger);
+        $this->install($payloads, $mode, $logger, true);
 
         $logger?->setStatus('done');
+    }
+
+    public function notifyBundleUpdated()
+    {
+        $bundleInstances = BundleInstance::where('bundle_id', $this->id)->get();
+        foreach ($bundleInstances as $bundleInstance) {
+            $url = $bundleInstance->instance_url;
+
+            try {
+                $response = Http::post($url);
+
+                if ($response->status() === 403) {
+                    \Log::error("Failed to notify bundle update for URL: $url " . $response);
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error notifying bundle update: ' . $e->getMessage());
+            }
+        }
     }
 }

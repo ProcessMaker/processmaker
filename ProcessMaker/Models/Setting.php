@@ -482,6 +482,9 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
                     case 'System': // System not related with settings menu
                         $id = null;
                         break;
+                    case 'Devlink':
+                        $id = null;
+                        break;
                     default: // The default value
                         if (preg_match('/^Email Server/', $setting->group)) {
                             $id = SettingsMenus::getId(SettingsMenus::EMAIL_MENU_GROUP);
@@ -502,7 +505,7 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
     /**
      * Get the label used in grafana reports
      *
-     * @return string 
+     * @return string
      */
     public function getPrometheusMetricLabel(): string
     {

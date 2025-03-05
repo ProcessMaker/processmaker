@@ -2,17 +2,17 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Support\Facades\App;
 use ProcessMaker\Facades\Metrics;
 use ProcessMaker\Services\MetricsService;
 use Prometheus\Storage\InMemory;
-use Illuminate\Support\Facades\App;
 use Tests\TestCase;
 
 class MetricsFacadeTest extends TestCase
 {
     /**
-     * This method is called before each test is executed. 
-     * It simulates the MetricsService with an InMemory adapter 
+     * This method is called before each test is executed.
+     * It simulates the MetricsService with an InMemory adapter
      * to facilitate testing of metrics registration and incrementing.
      */
     protected function setUp(): void

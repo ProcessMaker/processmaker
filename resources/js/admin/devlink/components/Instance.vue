@@ -162,7 +162,9 @@ const executeUpdate = (updateType) => {
       </div>
     </div>
     <b-modal id="install-progress" size="lg" v-model="showInstallModal" :title="$t('Installation Progress')" hide-footer>
-      <install-progress />
+      <install-progress
+        @installation-complete="load"
+      />
     </b-modal>
     </template></instance-tabs>
   </div>

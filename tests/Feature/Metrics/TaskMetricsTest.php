@@ -10,7 +10,6 @@ use Tests\TestCase;
 
 class TaskMetricsTest extends TestCase
 {
-
     public function test_task_metric_was_stored()
     {
         $user = User::factory()->create([

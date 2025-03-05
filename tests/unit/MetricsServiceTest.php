@@ -2,9 +2,9 @@
 
 namespace Tests\Unit;
 
+use Illuminate\Support\Facades\App;
 use ProcessMaker\Services\MetricsService;
 use Prometheus\Storage\InMemory;
-use Illuminate\Support\Facades\App;
 use Tests\TestCase;
 
 class MetricsServiceTest extends TestCase
