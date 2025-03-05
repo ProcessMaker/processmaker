@@ -2,6 +2,7 @@
   <div id="process-screen">
     <process-header-start
         :process="process"
+        :ellipsis-permission="ellipsisPermission"
         @goBack="goBack()"
         @onProcessNavigate="onProcessNavigate"
         v-if="!mobileApp"
@@ -69,7 +70,7 @@ export default {
     ProcessHeaderStart,
   },
   mixins: [ellipsisMenuMixin, processNavigationMixin, ProcessesMixin],
-  props: ["process", "currentUserId"],
+  props: ["process", "currentUserId", "ellipsisPermission"],
   data() {
     return {
       screen: {},

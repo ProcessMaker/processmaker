@@ -72,7 +72,8 @@ const ProcessHeader = {
         "view-documentation",
         "edit-documentation",
       ];
-      this.showEllipsis = this.$root.permission.some( (permission) => permissionsNeeded.includes(permission));
+      const permissions = (this.$root && this.$root.permission) ? this.$root.permission : this.ellipsisPermission || [];
+      this.showEllipsis = permissions.some((permission) => permissionsNeeded.includes(permission));
     },
     /**
      * Return a process cards from process info
