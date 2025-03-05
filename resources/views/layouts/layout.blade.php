@@ -154,6 +154,10 @@
 @if (hasPackage('package-accessibility'))
   @include('package-accessibility::userway')
 @endif
+
+@if (hasPackage('package-variable-finder'))
+  @include('package-variable-finder::index')
+@endif
     <!--javascript!-->
     @yield('js')
 </body>

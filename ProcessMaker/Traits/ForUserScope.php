@@ -21,8 +21,6 @@ trait ForUserScope
             return $query;
         }
 
-        $userParticipated = ProcessRequestToken::where('user_id', $user->id)->pluck('process_request_id')->toArray();
-
         $userHasSelfServiceTasks = ProcessRequestToken::where('is_self_service', true)
             ->whereJsonContains('self_service_groups->users', (string) $user->id)
             ->pluck('process_request_id')->toArray();
@@ -51,10 +49,24 @@ trait ForUserScope
             'method' => 'EDIT_DATA',
         ])->whereIn('processable_id', $stringGroupIds->toArray())->pluck('process_id')->toArray();
 
-        return $query->userStarted($user)
+        $filteredQuery = $query->userStarted($user)
             ->orWhereIn('id',
-                array_unique(array_merge($userParticipated, $userHasSelfServiceTasks, $userHasSelfServiceTasksGroups)))
+                array_unique(array_merge($userHasSelfServiceTasks, $userHasSelfServiceTasksGroups)))
             ->orWhereIn('process_id', array_unique(array_merge($processableUser, $processableGroups)));
+
+        // If the user has participated in a request, the request is added to the results.
+        // For the anonymous user this condition is not needed as it is a "placeholder" system account
+        if ($user->username !== '_pm4_anon_user') {
+            $mainTable = $query->getQuery()->from;
+            $filteredQuery->orWhereExists(function ($query) use ($user, $mainTable) {
+                $query->selectRaw('1')
+                    ->from('process_request_tokens')
+                    ->where('user_id', $user->id)
+                    ->whereRaw('process_request_id = ' . $mainTable . '.id');
+            });
+        }
+
+        return $filteredQuery;
     }
 
     public function scopeUserStarted($query, $user)
