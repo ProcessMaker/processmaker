@@ -86,7 +86,12 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      */
     public function get(string $key, mixed $default = null): mixed
     {
-        return $this->cacheManager->get($key, $default);
+        $value = $this->cacheManager->get($key, $default);
+        if ($value === 'null') {
+            $value = null;
+        }
+
+        return $value;
     }
 
     /**
@@ -133,6 +138,10 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      */
     public function set(string $key, mixed $value, null|int|\DateInterval $ttl = null): bool
     {
+        if ($value === null) {
+            $value = 'null';
+        }
+
         return $this->cacheManager->put($key, $value, $ttl);
     }
 

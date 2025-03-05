@@ -5,6 +5,7 @@ namespace Tests\Feature\Api;
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use ProcessMaker\Cache\Screens\ScreenCacheFactory;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
@@ -14,20 +15,26 @@ class EncryptedDataTest extends TestCase
 {
     use RequestHelper;
 
+    public function setUpClearCache()
+    {
+        $screenCache = ScreenCacheFactory::getScreenCache();
+        $screenCache->clearCompiledAssets();
+    }
+
     public function test_encrypt_text_ok()
     {
         // Initialize Faker
         $faker = Faker::create();
 
         // Prepare screen config
-        $content = file_get_contents(__DIR__ . '/screens/test encrypted field.json');
+        $content = file_get_contents(__DIR__ . '/screens/test_encrypted_field.json');
         $content = str_replace('"9999999999"', $this->user->id, $content);
         $content = str_replace('"8888888888"', '', $content);
         $config = json_decode($content, true);
 
         // Create required dummy objects
         $screen = Screen::factory()->create(['config' => $config]);
-        
+
         // Build data to send
         $data = [
             'field_name' => 'form_input_1',
@@ -49,7 +56,7 @@ class EncryptedDataTest extends TestCase
         $faker = Faker::create();
 
         // Prepare screen config
-        $content = file_get_contents(__DIR__ . '/screens/test encrypted field.json');
+        $content = file_get_contents(__DIR__ . '/screens/test_encrypted_field.json');
         $content = str_replace('"9999999999"', $this->user->id, $content);
         $content = str_replace('"8888888888"', '', $content);
         $config = json_decode($content, true);
@@ -112,7 +119,7 @@ class EncryptedDataTest extends TestCase
 
         // Create required dummy objects
         $screen = Screen::factory()->create();
-        
+
         // Build data to send
         $data = [
             'field_name' => '', // Empty
@@ -138,7 +145,7 @@ class EncryptedDataTest extends TestCase
 
         // Create required dummy objects
         $screen = Screen::factory()->create();
-        
+
         // Build data to send
         $data = [
             'field_name' => $faker->word(),
@@ -161,7 +168,7 @@ class EncryptedDataTest extends TestCase
     {
         // Initialize Faker
         $faker = Faker::create();
-        
+
         // Build data to send
         $data = [
             'field_name' => $faker->word(),

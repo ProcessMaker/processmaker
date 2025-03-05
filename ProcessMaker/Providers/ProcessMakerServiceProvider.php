@@ -34,6 +34,7 @@ use ProcessMaker\Managers\ScreenCompiledManager;
 use ProcessMaker\Models;
 use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
+use ProcessMaker\Repositories\SettingsConfigRepository;
 use RuntimeException;
 
 /**
@@ -57,6 +58,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
     {
         // Track the start time for service providers boot
         self::$bootStart = microtime(true);
+
+        config()->setApplicationBooted();
 
         $this->app->singleton(Menu::class, function ($app) {
             return new MenuManager();
@@ -203,6 +206,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
             } else {
                 throw new RuntimeException('Cache configuration is missing.');
             }
+        });
+
+        $this->app->extend('config', function ($originalConfig) {
+            return new SettingsConfigRepository($originalConfig->all());
         });
     }
 

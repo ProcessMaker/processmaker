@@ -5,6 +5,7 @@ namespace Tests\Feature\Api;
 use Database\Seeders\PermissionSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Redis;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
@@ -67,7 +68,7 @@ class UsersTest extends TestCase
             'timezone' => $faker->timezone(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
             'birthdate' => $faker->dateTimeThisCentury()->format('Y-m-d'),
-            'password' => $faker->sentence(8) . 'A_' . '1',
+            'password' => $this->makePassword(),
         ];
     }
 
@@ -106,7 +107,7 @@ class UsersTest extends TestCase
             'lastname' => 'name',
             'email' => $faker->email(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->password(8) . 'A_' . '1',
+            'password' => $this->makePassword(),
         ]);
 
         // Validate the header status code
@@ -126,7 +127,7 @@ class UsersTest extends TestCase
             'lastname' => 'name',
             'email' => $faker->email(),
             'status' => 'ACTIVE',
-            'password' => $faker->password(8) . 'A_' . '1',
+            'password' => $this->makePassword(),
         ]);
 
         // Test default value email_task_notification was enable
@@ -178,7 +179,7 @@ class UsersTest extends TestCase
             'lastname' => 'bar',
             'email' => $deletedUser->email,
             'status' => 'ACTIVE',
-            'password' => 'password123',
+            'password' => $this->makePassword(),
         ];
 
         $response = $this->apiCall('POST', $url, $params);
@@ -192,6 +193,7 @@ class UsersTest extends TestCase
 
     public function testDefaultValuesOfUser()
     {
+        Redis::flushall();
         config()->set('app.timezone', 'America/Los_Angeles');
         putenv('DATE_FORMAT=m/d/Y H:i');
         putenv('APP_LANG=en');
@@ -205,7 +207,7 @@ class UsersTest extends TestCase
             'lastname' => $faker->lastName(),
             'email' => $faker->email(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->password(8) . 'A' . '1',
+            'password' => $this->makePassword(),
         ]);
 
         // Validate that the created user has the correct default values.
@@ -229,7 +231,7 @@ class UsersTest extends TestCase
             'lastname' => $faker->lastName(),
             'email' => $faker->email(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->password(8) . 'A' . '1' . '+',
+            'password' => $this->makePassword(),
             'datetime_format' => $dateFormat,
         ]);
 
@@ -247,7 +249,7 @@ class UsersTest extends TestCase
             'lastname' => $faker->lastName(),
             'email' => $faker->email(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->password(8) . 'A' . '1' . '+',
+            'password' => $this->makePassword(),
             'timezone' => 'America/Monterrey',
         ]);
 
@@ -463,7 +465,7 @@ class UsersTest extends TestCase
             'firstname' => $faker->firstName(),
             'lastname' => $faker->lastName(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->password(8) . 'A' . '1' . '.',
+            'password' => $this->makePassword(),
             'force_change_password' => 0,
         ]);
 
@@ -732,7 +734,7 @@ class UsersTest extends TestCase
                 'lastname' => $faker->lastName(),
                 'email' => $faker->email(),
                 'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-                'password' => $faker->sentence(8) . 'A_' . '1',
+                'password' => $this->makePassword(),
             ]);
             // Validate the header status code
             $response->assertStatus(201);
@@ -982,5 +984,12 @@ class UsersTest extends TestCase
         $response->assertStatus(200);
         $this->assertNotEmpty($response);
         $response->assertJson(['data' => $values]);
+    }
+
+    private function makePassword()
+    {
+        $faker = Faker::create();
+
+        return substr($faker->password(8), 0, 20) . 'A_' . '1';
     }
 }

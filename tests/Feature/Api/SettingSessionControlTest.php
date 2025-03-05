@@ -11,9 +11,9 @@ class SettingSessionControlTest extends TestCase
 
     private function upgrade()
     {
-        $this->artisan('migrate', [
-            '--path' => 'upgrades/2023_12_06_182508_add_session_control_settings.php',
-        ])->run();
+        require_once base_path('upgrades/2023_12_06_182508_add_session_control_settings.php');
+        $upgrade = new \AddSessionControlSettings();
+        $upgrade->up();
     }
 
     public function testDefaultSessionControlSettings()

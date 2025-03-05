@@ -2,35 +2,58 @@
 
 namespace Tests;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use ArrayAccess;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
+use Illuminate\Testing\Constraints\ArraySubset;
+use Illuminate\Testing\Exceptions\InvalidArgumentException;
 use PDOException;
+use PHPUnit\Event\Facade as EventFacade;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Jobs\RefreshArtisanCaches;
 use ProcessMaker\Models\Process;
+use Tests\TestSeeder;
 
 abstract class TestCase extends BaseTestCase
 {
-    use DatabaseTransactions;
-    use CreatesApplication;
-    use ArraySubsetAsserts;
+    use RefreshDatabase;
 
     public $withPermissions = false;
 
     protected $skipTeardownPDOException = false;
+
+    protected $seeder = TestSeeder::class;
+
+    private static array $transactionWarnings = [];
+
+    private static $cacheCleared = false;
 
     /**
      * Run additional setUps from traits.
      */
     protected function setUp(): void
     {
+        if (!$this->populateDatabase()) {
+            RefreshDatabaseState::$migrated = true;
+        }
+
         $this->skipTeardownPDOException = false;
 
         parent::setUp();
+
+        Redis::flushall();
+
+        if (!self::$cacheCleared) {
+            Artisan::call('optimize:clear');
+            self::$cacheCleared = true;
+        }
 
         $this->disableSetContentMiddleware();
 
@@ -60,6 +83,7 @@ abstract class TestCase extends BaseTestCase
     {
         config()->set('script-runners.php.runner', 'MockRunner');
         config()->set('script-runners.lua.runner', 'MockRunner');
+        config()->set('script-runners.php-nayra.runner', 'MockRunner');
     }
 
     /**
@@ -100,7 +124,7 @@ abstract class TestCase extends BaseTestCase
         try {
             $clients->personalAccessClient();
         } catch (\RuntimeException $e) {
-            Artisan::call('passport:install');
+            Artisan::call('passport:install --no-interaction');
         }
     }
 
@@ -148,13 +172,24 @@ abstract class TestCase extends BaseTestCase
         return $process;
     }
 
-    /**
-     * Connections transacts
-     *
-     * @return array
-     */
-    protected function connectionsToTransact()
+    // Copied from Illuminate/Testing/Assert.php
+    public function assertArraySubset($subset, $array, bool $checkForIdentity = false, string $msg = ''): void
     {
-        return ['processmaker', 'data'];
+        if (!(is_array($subset) || $subset instanceof ArrayAccess)) {
+            throw InvalidArgumentException::create(1, 'array or ArrayAccess');
+        }
+
+        if (!(is_array($array) || $array instanceof ArrayAccess)) {
+            throw InvalidArgumentException::create(2, 'array or ArrayAccess');
+        }
+
+        $constraint = new ArraySubset($subset, $checkForIdentity);
+
+        $this->assertThat($array, $constraint, $msg);
+    }
+
+    private function populateDatabase() : bool
+    {
+        return (bool) env('POPULATE_DATABASE', true);
     }
 }

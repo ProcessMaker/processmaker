@@ -181,10 +181,8 @@ return [
         /**
          * ProcessMaker Service Providers
          */
-        ProcessMaker\Providers\AppServiceProvider::class,
         ProcessMaker\Providers\ProcessMakerServiceProvider::class,
         ProcessMaker\Providers\RecommendationsServiceProvider::class,
-        ProcessMaker\Providers\SettingServiceProvider::class,
         ProcessMaker\Providers\AuthServiceProvider::class,
         ProcessMaker\Providers\EventServiceProvider::class,
         ProcessMaker\Providers\HorizonServiceProvider::class,
@@ -283,4 +281,6 @@ return [
         'enabled' => env('SERVER_TIMING_ENABLED', true),
         'min_package_time' => env('SERVER_TIMING_MIN_PACKAGE_TIME', 5), // Minimum time in milliseconds
     ],
+
+    'editor' => null,
 ];

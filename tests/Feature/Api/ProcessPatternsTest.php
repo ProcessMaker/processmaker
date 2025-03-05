@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use Exception;
 use Illuminate\Support\Facades\Cache;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\GlobalDataStore;
 use ProcessMaker\Models\Group;
@@ -39,9 +40,8 @@ class ProcessPatternsTest extends TestCase
      * Tests the bpmn process completing all active tasks
      *
      * @param string $bpmnFile
-     *
-     * @dataProvider prepareTestCasesProvider
      */
+    #[DataProvider('prepareTestCasesProvider')]
     public function testProcessPatterns($type, $bpmnFile, $context = [])
     {
         $this->$type($bpmnFile, $context);

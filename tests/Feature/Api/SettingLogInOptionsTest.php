@@ -11,9 +11,9 @@ class SettingLogInOptionsTest extends TestCase
 
     private function upgrade()
     {
-        $this->artisan('migrate', [
-            '--path' => 'upgrades/2023_11_30_185738_add_password_policies_settings.php',
-        ])->run();
+        require_once base_path('upgrades/2023_11_30_185738_add_password_policies_settings.php');
+        $upgrade = new \AddPasswordPoliciesSettings();
+        $upgrade->up();
     }
 
     public function testDefaultLogInOptionsSettings()

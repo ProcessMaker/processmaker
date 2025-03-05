@@ -101,7 +101,7 @@
         </h5>
         <div class="form-group">
             <div class="custom-control custom-switch">
-                {!! Form::checkbox('email_task_notification', 1, false, ['id' => 'email_task_notification', 'class' => 'custom-control-input', 'v-model' => 'formData.email_task_notification']) !!}
+                {{ html()->checkbox('email_task_notification', 1, false)->id('email_task_notification')->class('custom-control-input')->attribute('v-model', 'formData.email_task_notification') }}
                 <label class="custom-control-label" for="email_task_notification">{{__('Forward notifications to my email address')}}</label>
             </div>
         </div>
