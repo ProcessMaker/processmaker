@@ -52,12 +52,7 @@ class SettingsConfigRepository extends Repository
             return Arr::get($this->items, $key);
         }
 
-        $setting = $this->getFromSettings($key);
-        if ($setting) {
-            return $setting->config;
-        }
-
-        return $default;
+        return $this->getFromSettings($key) ?? $default;
     }
 
     /**
@@ -77,7 +72,7 @@ class SettingsConfigRepository extends Repository
             if (Arr::has($this->items, $key)) {
                 $config[$key] = Arr::get($this->items, $key);
             } elseif ($setting = $this->getFromSettings($key)) {
-                $config[$key] = $setting->config;
+                $config[$key] = $setting;
             } else {
                 $config[$key] = $default;
             }
@@ -92,7 +87,7 @@ class SettingsConfigRepository extends Repository
             return null;
         }
 
-        return Setting::byKey($key);
+        return Setting::byKey($key)?->config;
     }
 
     private function readyToUseSettingsDatabase()
