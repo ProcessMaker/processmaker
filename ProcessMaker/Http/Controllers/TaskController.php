@@ -28,11 +28,13 @@ use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
+use ProcessMaker\Traits\TaskControllerIndexMethods;
 
 class TaskController extends Controller
 {
     use SearchAutocompleteTrait;
     use HasControllerAddons;
+    use TaskControllerIndexMethods;
 
     private static $dueLabels = [
         'open' => 'Due',
@@ -42,8 +44,12 @@ class TaskController extends Controller
 
     public function index()
     {
-        $title = 'To Do Tasks';
+        $routerPath = Request::route('router');
 
+        $title = 'To Do Tasks';
+        $path = Request::path() !== 'inbox';
+        $showOldTaskScreen = $path === true && $routerPath === null;
+        $selectedProcess = $routerPath === null ? 'inbox' : 'reload';
         if (Request::input('status') == 'CLOSED') {
             $title = 'Completed Tasks';
         }
@@ -58,7 +64,13 @@ class TaskController extends Controller
 
         $taskDraftsEnabled = TaskDraft::draftsEnabled();
 
-        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns', 'taskDraftsEnabled'));
+        $userConfiguration = (new UserConfigurationController())->index()['ui_configuration'] ?? [];
+
+        $currentUser = Auth::user();
+
+        $defaultSavedSearchId = $this->getDefaultSavedSearchId();
+
+        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns', 'taskDraftsEnabled', 'userConfiguration', 'showOldTaskScreen', 'currentUser', 'selectedProcess', 'defaultSavedSearchId'));
     }
 
     public function edit(ProcessRequestToken $task, string $preview = '')

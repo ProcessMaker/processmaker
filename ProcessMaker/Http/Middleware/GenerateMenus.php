@@ -28,7 +28,7 @@ class GenerateMenus
                     $request_items->add(
                         __('Home'),
                         ['route' => 'home', 'id' => 'home']
-                    )->active('home/*');
+                    )->active('home/*|inbox|inbox/*');
                 });
             }
             $menu->group(['prefix' => 'processes'], function ($request_items) {

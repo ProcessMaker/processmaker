@@ -3,7 +3,7 @@
     <button
       v-if="show(row, column, columns)"
       type="button"
-      class="tw-rounded-lg tw-bg-white tw-px-2.5 tw-py-1 tw-text-sm tw-font-semibold tw-text-gray-900
+      class="tw-rounded-lg tw-bg-white tw-px-2.5 tw-py-1 tw-text-sm tw-font-semibold
         tw-shadow-sm tw-ring-1 tw-ring-inset tw-ring-gray-300 hover:tw-bg-gray-50"
       @click="showScreen">
       <i

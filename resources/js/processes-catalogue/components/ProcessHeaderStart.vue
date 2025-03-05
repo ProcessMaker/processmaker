@@ -15,7 +15,12 @@
           </div>
         </div>
         <div class="d-flex align-items-center flex-shrink-0">
-          <div class="card-bookmark mx-2">
+          <button class="info-button mx-3" 
+            :class="showProcessInfo ? 'info-button-active' : 'info-button'"
+            @click="handleInfoClick">
+            <span>i</span>
+          </button>
+          <div class="card-bookmark mx-3">
             <bookmark :process="process" />
           </div>
           <span class="ellipsis-border">
@@ -28,7 +33,7 @@
               variant="none" 
               @navigate="ellipsisNavigate"
               :isDocumenterInstalled="$root.isDocumenterInstalled" 
-              :permission="$root.permission" />
+              :permission="$root.permission || ellipsisPermission" />
           </span>
           <buttons-start :process="process" :startEvent="singleStartEvent" :processEvents="processEvents" />
         </div>
@@ -62,6 +67,14 @@ export default {
     enableCollapse: {
       type: Boolean,
       default: true
+    },
+    ellipsisPermission: {
+      type: Array,
+      default: () => []
+    },
+    showProcessInfo: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -104,6 +117,9 @@ export default {
           ProcessMaker.alert(err, "danger");
         });
     },
+    handleInfoClick() {
+      this.$emit('toggle-info');
+    }
   }
 }
 </script>
@@ -173,7 +189,8 @@ export default {
 
 .card-bookmark {
   float: right;
-  font-size: 20px;
+  width: 20px;
+  height: 23px;
 }
 
 .card-bookmark:hover {
@@ -199,5 +216,41 @@ export default {
 
 .custom-color {
   color: #4C545C;
+}
+
+.info-button {
+  width: 20px;
+  height: 20px;
+  background-color: #6A7887;
+  border: none;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: 700;
+  position: relative;
+  
+  span {
+    color: #ffffff;
+    font-size: 14px;
+  }
+}
+
+.info-button-active {
+  background-color: #2773F3 !important;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    background-color: rgba(106, 120, 135, 0.1);
+    border-radius: 8px;
+    z-index: 0;
+    border: 1px solid #d3dbe2;
+  }
 }
 </style>

@@ -58,7 +58,7 @@ class TaskActionByEmail
             }
 
             // Send the email using emailProvider
-            $this->emailProvider->send($emailConfig);
+            $this->emailProvider->sendAsync($emailConfig);
         } catch (\Exception $e) {
             Log::error('Error sending ABE email', [
                 'to' => $to,
@@ -68,6 +68,8 @@ class TaskActionByEmail
                 'error' => $e->getMessage(),
             ]);
         }
+
+        return true;
     }
 
     private function mustache($str, $data)

@@ -180,8 +180,13 @@ export default {
     },
     adjustInputWidth() {
       const input = this.$refs.pageInput;
+      if (!input) return;
+
       const span = document.createElement("span");
-      document.body.appendChild(span);
+      const body = document.querySelector('body');
+      if (!body) return;
+
+      body.appendChild(span);
 
       span.style.font = window.getComputedStyle(input).font;
       span.style.position = "absolute";
@@ -191,7 +196,7 @@ export default {
       span.textContent = input.value || input.placeholder;
 
       const width = span.offsetWidth;
-      document.body.removeChild(span);
+      body.removeChild(span);
 
       input.style.width = `${width + 30}px`;
     },

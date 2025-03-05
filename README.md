@@ -1,3 +1,4 @@
+
 # ProcessMaker 4 Documentation
 
 # Overview
@@ -406,9 +407,9 @@ Please follow the steps:
 ```text
 npm install
 ```
-2. Add the new svg icon file in the /processmaker/resources/icons
+2. Add the new svg icon file in the /processmaker/resources/devhub/pm-font/svg
 ```text
-/processmaker/resources/icons/my-new-icon.svg
+/processmaker/resources/devhub/pm-font/svg/my-new-icon.svg
 ```
 3.Run the follow command
 ```text
@@ -535,4 +536,4 @@ Distributed under the [AGPL Version 3](https://www.gnu.org/licenses/agpl-3.0.en.
 
 ProcessMaker \(C\) 2002 - 2020 ProcessMaker Inc.
 
-For further information visit: [http://www.processmaker.com/](http://www.processmaker.com/)
+For further information visit: [http://www.processmaker.com/](http://www.processmaker.com/) 

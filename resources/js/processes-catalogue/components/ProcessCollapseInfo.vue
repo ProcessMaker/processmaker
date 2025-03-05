@@ -1,38 +1,43 @@
 <template>
-  <div id="processCollapseInfo">
+  <div id="processCollapseInfo" v-if="!isArchived">
     <div id="processData">
       <process-header-start
         :process="process"
+        :ellipsis-permission="ellipsisPermission"
+        :show-process-info="showProcessInfo"
         @goBack="goBack()"
         @onProcessNavigate="onProcessNavigate"
+        @toggle-info="toggleInfo"
         v-if="!mobileApp"
       />
-      <process-header
-        :process="process"
-        :hide-header-options="true"
-        :icon-wizard-template="createdFromWizardTemplate"
-        @goBack="goBack()"
-        @onProcessInfoCollapsed="onProcessInfoCollapsed"
-      />
-      <div
-        id="collapseProcessInfo"
-        class="collapse show custom-class"
-      >
-        <div class="info-collapse">
-          <b-row>
-            <b-col class="process-carousel col-12">
-              <processes-carousel
-                :process="process"
-                :full-carousel="{ url: null, hideLaunchpad: false }"
-              />
-            </b-col>
-            <b-col class="process-options col-12">
-              <process-options
-                :process="process"
-                :collapsed="collapsed"
-              />
-            </b-col>
-          </b-row>
+      <div v-if="showProcessInfo">
+        <process-header
+          :process="process"
+          :hide-header-options="true"
+          :icon-wizard-template="createdFromWizardTemplate"
+          @goBack="goBack()"
+          @onProcessInfoCollapsed="onProcessInfoCollapsed"
+        /> 
+         <div
+          id="collapseProcessInfo"
+          class="collapse show custom-class"
+        >
+          <div class="info-collapse">
+            <b-row>
+              <b-col class="process-carousel col-12">
+                <processes-carousel
+                  :process="process"
+                  :full-carousel="{ url: null, hideLaunchpad: false }"
+                />
+              </b-col>
+              <b-col class="process-options col-12">
+                <process-options 
+                  :process="process" 
+                  :collapsed="collapsed"
+                />
+              </b-col>
+            </b-row>
+          </div>
         </div>
       </div>
     </div>
@@ -67,6 +72,8 @@
       :options="optionsData"
       :description-settings="process.description"
       :process="process"
+      :my-tasks-columns="myTasksColumns"
+      @updateMyTasksColumns="updateMyTasksColumns"
     />
   </div>
 </template>
@@ -96,10 +103,13 @@ export default {
     ProcessHeaderStart,
   },
   mixins: [ProcessesMixin, ellipsisMenuMixin, processNavigationMixin],
-  props: ["process", "currentUserId"],
+  props: ["process", "currentUserId", "ellipsisPermission", "myTasksColumns"],
   computed: {
     createdFromWizardTemplate() {
       return !!this.process?.properties?.wizardTemplateUuid;
+    },
+    isArchived() {
+      return this.process?.status === 'ARCHIVED';
     },
     wizardTemplateUuid() {
       return this.process?.properties?.wizardTemplateUuid;
@@ -114,6 +124,7 @@ export default {
   data() {
     return {
       mobileApp: window.ProcessMaker.mobileApp,
+      showProcessInfo: false,
       collapsed: true,
     };
   },
@@ -134,6 +145,12 @@ export default {
     },
     getHelperProcess() {
       this.$refs.wizardHelperProcessModal.getHelperProcessStartEvent();
+    },
+    toggleInfo() {
+      this.showProcessInfo = !this.showProcessInfo;
+    },
+    updateMyTasksColumns(columns) {
+      this.$emit('updateMyTasksColumns', columns);
     },
     onProcessInfoCollapsed(collapsed) {
       this.collapsed = collapsed;
