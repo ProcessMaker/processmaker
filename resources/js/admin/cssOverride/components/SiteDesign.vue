@@ -457,7 +457,7 @@ export default {
           formData.append('fileIcon', '');
           formData.append('fileFavicon', '');
           formData.append('variables', JSON.stringify(this.colorDefault));
-          formData.append('sansSerifFont', JSON.stringify({id:"'Open Sans'", value:'Open Sans'}));
+          formData.append('sansSerifFont', JSON.stringify({id:"'Open Sans'", title:'Default Font'}));
           formData.append('loginFooter', '');
           formData.append('altText', 'ProcessMaker');
 

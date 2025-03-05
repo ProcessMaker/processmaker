@@ -7,7 +7,6 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Events\UserCreated;
 use ProcessMaker\Events\UserDeleted;
@@ -21,6 +20,7 @@ use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Users as UserResource;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
+use ProcessMaker\Package\Auth\Models\SsoUser;
 use ProcessMaker\RecommendationEngine;
 use ProcessMaker\TwoFactorAuthentication;
 
@@ -420,6 +420,30 @@ class UserController extends Controller
             }
         }
         if ($fields['email'] !== $original['email']) {
+            
+            if (class_exists(SsoUser::class)) {
+                // Check if the user is an SSO user (including SAML)
+                $ssoUser = SsoUser::where('user_id', $user->id)->exists();
+
+                // Check if the user is an LDAP user
+                if (isset($user->meta?->authenticationType) && $user->meta->authenticationType === 'ldap') {
+                    $ssoUser = true;
+                }
+                if ($ssoUser) {
+                    return response([
+                        'message' => __(
+                            "The email can't be edited. This action is only available for SSO-synced users."
+                        ),
+                        'errors' => [
+                            'email' => [
+                                __(
+                                    "The email can't be edited. This action is only available for SSO-synced users."
+                                ),
+                            ],
+                        ],
+                    ], 422);
+                }
+            }
             if (!isset($fields['valpassword'])) {
                 return response([
                     'message' => __(

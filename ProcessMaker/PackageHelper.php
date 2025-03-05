@@ -53,6 +53,8 @@ class PackageHelper
     const PM_PACKAGE_AB_TESTING = 'ProcessMaker\Package\PackageABTesting\PackageServiceProvider';
 
     const PM_PACKAGE_AI = 'ProcessMaker\Packages\PackageAi\AiServiceProvider';
+    
+    const PM_PACKAGE_COLLECTIONS = 'ProcessMaker\Plugins\Collections\PluginServiceProvider';
 
     public static function isPackageInstalled(string $serviceProviderClass): bool
     {

@@ -346,11 +346,14 @@
                             <li class="list-group-item">
                               <p class="section-title">{{ __('Process') }}</p>
                               {{ $request->name }}
-                              <p class="launchpad-link">
-                                <a href="{{route('process.browser.index', [$request->process_id])}}">
-                                  {{ __('Open Process Launchpad') }}
-                                </a>
-                              </p>
+                              <!-- This is the name defined in the installacion of connector-docusign 'DocuSignAuthentication' -->
+                              @if ($request->process->name !== 'DocuSignAuthentication')
+                                <p class="launchpad-link">
+                                  <a href="{{route('process.browser.index', [$request->process_id])}}">
+                                    {{ __('Open Process Launchpad') }}
+                                  </a>
+                                </p>
+                              @endif
                             </li>
                             @if ($request->user_id)
                               <li class="list-group-item">
@@ -472,6 +475,9 @@
   @foreach($managerModelerScripts as $script)
     <script src="{{ $script }}"></script>
   @endforeach
+  @foreach($manager->getScripts() as $script)
+        <script src="{{$script}}"></script>
+    @endforeach
   @if (hasPackage('package-files'))
     <!-- TODO: Replace with script injector like we do for modeler and screen builder -->
     <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>

@@ -10,7 +10,7 @@
                       @click="onClick(button)"
                       variant="light"
                       size="sm">
-              <i v-if="button.icon" 
+              <i v-if="button.icon"
                  :class="button.icon"
                  class="task-row-icon"
               />
@@ -23,11 +23,11 @@
               :title="button.title"
               custom-class="task-hover-tooltip"
               placement="bottom"
-              :delay="0"
+              :delay="1"
               boundary="viewport"
               :no-fade="true"
               />
-            <div v-if="index < buttons.length - 1 && button.show" 
+            <div v-if="index < buttons.length - 1 && button.show"
                  class="task-vertical-separator">
             </div>
           </span>
@@ -65,7 +65,7 @@
         });
       },
       setMargin(size) {
-        this.$refs.pmFloatingButtons.$el.style.marginRight = size + "px";
+        this.$refs.pmFloatingButtons.$el.style.marginRight = `${size}px`;
       },
       disableFloatingButtons(state) {
         this.$root["inbox-rule-row-button-floating-disable"] = state;
@@ -87,7 +87,8 @@
 <style scoped>
   .pm-task-row-buttons {
     position: relative;
-    display: math;
+    display: inline-block;
+    height: 30px;
   }
   .task-vertical-separator {
     display: inline;

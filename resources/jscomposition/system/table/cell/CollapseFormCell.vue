@@ -40,6 +40,10 @@ const props = defineProps({
 const viewScreen = ref(false);
 
 const showScreen = () => {
+  const requestIdNode = document.head.querySelector('meta[name="request-id"]');
+  if (requestIdNode) {
+    requestIdNode.setAttribute('content', props.row.process_request_id);
+  }
   viewScreen.value = !viewScreen.value;
   emit("collapseContainer", viewScreen.value);
 };

@@ -232,7 +232,7 @@ class ProcessController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param $process
+     * @param int $processId
      *
      * @return Response
      *
@@ -242,10 +242,10 @@ class ProcessController extends Controller
      *     operationId="getProcessById",
      *     tags={"Processes"},
      *     @OA\Parameter(
-     *         description="ID of process to return",
-     *         in="path",
      *         name="processId",
+     *         in="path",
      *         required=true,
+     *         description="ID of process to return",
      *         @OA\Schema(
      *           type="integer",
      *         )
@@ -256,10 +256,25 @@ class ProcessController extends Controller
      *         description="Successfully found the process",
      *         @OA\JsonContent(ref="#/components/schemas/Process")
      *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Process not found",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="The requested process was not found"),
+     *         )
+     *     )
      * )
      */
-    public function show(Request $request, Process $process)
+    public function show(int $processId)
     {
+        $process = Process::find($processId);
+        if ($process === null) {
+            return response()->json([
+                'message' => __('The requested process was not found'),
+            ], 404);
+        }
+
         return new Resource($process);
     }
 
