@@ -943,8 +943,12 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         }
 
         // Below is for rule_expression only
+        $instance = $this->getInstance();
+        if (!$instance) {
+            return $assignment;
+        }
 
-        $instanceData = $assignmentRules ? $this->getInstance()->getDataStore()->getData() : null;
+        $instanceData = $assignmentRules ? $instance->getDataStore()->getData() : null;
         if ($assignmentRules && $instanceData) {
             $list = json_decode($assignmentRules);
             $list = ($list === null) ? [] : $list;

@@ -16,6 +16,7 @@
           :hide-header-options="true"
           :icon-wizard-template="createdFromWizardTemplate"
           @goBack="goBack()"
+          @onProcessInfoCollapsed="onProcessInfoCollapsed"
         /> 
          <div
           id="collapseProcessInfo"
@@ -30,7 +31,10 @@
                 />
               </b-col>
               <b-col class="process-options col-12">
-                <process-options :process="process" />
+                <process-options 
+                  :process="process" 
+                  :collapsed="collapsed"
+                />
               </b-col>
             </b-row>
           </div>
@@ -121,6 +125,7 @@ export default {
     return {
       mobileApp: window.ProcessMaker.mobileApp,
       showProcessInfo: false,
+      collapsed: true,
     };
   },
   methods: {
@@ -146,7 +151,10 @@ export default {
     },
     updateMyTasksColumns(columns) {
       this.$emit('updateMyTasksColumns', columns);
-    }
+    },
+    onProcessInfoCollapsed(collapsed) {
+      this.collapsed = collapsed;
+    },
   },
 };
 </script>

@@ -15,6 +15,10 @@
   ]])
 @endsection
 
+@section('meta')
+  <meta name="request-id" content="">
+@endsection
+
 @section('content')
 <div
   id="case-detail"
