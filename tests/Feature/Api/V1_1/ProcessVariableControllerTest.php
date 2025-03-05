@@ -227,6 +227,7 @@ class ProcessVariableControllerTest extends TestCase
             $assetVariable = AssetVariable::create([
                 'uuid' => $asset['uuid'],
                 'asset_id' => 1,       // Scren id=1
+                'process_id' => $processId,
                 'asset_type' => Screen::class,
             ]);
 
