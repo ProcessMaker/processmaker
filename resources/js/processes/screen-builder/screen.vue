@@ -41,7 +41,10 @@
           id="preview"
           class="h-100 m-0"
         >
-          <b-col class="d-flex overflow-auto h-100">
+          <b-col
+            ref="preview-screen"
+            class="d-flex overflow-auto h-100"
+          >
             <vue-form-renderer
               v-if="renderComponent === 'task-screen'"
               ref="renderer"
@@ -56,6 +59,7 @@
               :show-errors="true"
               :mock-magic-variables="mockMagicVariables"
               :device-screen="deviceScreen"
+              @update-page-task="updatePage"
               @submit="previewSubmit"
               @update="onUpdate"
               @css-errors="cssErrors = $event"
@@ -77,6 +81,7 @@
                 :watchers="preview.watchers"
                 :data="previewData"
                 :type="screen.type"
+                @update-page-task="updatePage"
                 @update="onUpdate"
                 @submit="previewSubmit"
               />
@@ -711,7 +716,7 @@ export default {
     // To include another language in the Validator with variable processmaker
     this.user = window.ProcessMaker?.user;
     if (this.user?.lang) {
-      Validator.useLang(window.ProcessMaker.user.lang);
+      window.ProcessMaker.setValidatorLanguage(Validator, window.ProcessMaker.user.lang);
     }
 
     Validator.register(
@@ -1236,6 +1241,11 @@ export default {
         },
         4,
       );
+    },
+    updatePage() {
+      if (this.$refs["preview-screen"]) {
+        this.$refs["preview-screen"].scrollTop = 0;
+      }
     },
   },
 };

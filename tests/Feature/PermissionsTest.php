@@ -123,4 +123,87 @@ class PermissionsTest extends TestCase
 
         $this->assertDatabaseHas('permissions', $attributes);
     }
+
+    public function testLoadsGroupPermissions()
+    {
+        // Create group and assign permission
+        $group = Group::factory()->create();
+        $permission = Permission::factory()->create(['name' => 'test-permission']);
+        $group->permissions()->attach($permission);
+        // Assign user in the group
+        $user = User::factory()->create();
+        GroupMember::factory()->create([
+            'member_type' => get_class($user),
+            'member_id' => $user->id,
+            'group_id' => $group->id,
+        ]);
+        // Load permissions
+        $permissions = $user->loadGroupPermissions();
+        // Assert
+        $this->assertContains('test-permission', $permissions);
+    }
+
+    public function testLoadsNestedGroupPermissions()
+    {
+        // Create groups
+        $groupA = Group::factory()->create();
+        $groupB = Group::factory()->create();
+        // Create permissions
+        $permissionA = Permission::factory()->create(['name' => 'permission-a']);
+        $permissionB = Permission::factory()->create(['name' => 'permission-b']);
+        // Assign permissions to groups
+        $groupA->permissions()->attach($permissionA);
+        $groupB->permissions()->attach($permissionB);
+        // Make groupB member of groupA
+        GroupMember::factory()->create([
+            'member_type' => get_class($groupB),
+            'member_id' => $groupB->id,
+            'group_id' => $groupA->id,
+        ]);
+        // Assign user in the group
+        $user = User::factory()->create();
+        GroupMember::factory()->create([
+            'member_type' => get_class($user),
+            'member_id' => $user->id,
+            'group_id' => $groupB->id,
+        ]);
+        // Load permissions
+        $permissions = $user->loadGroupPermissions();
+        // Assert
+        $this->assertContains('permission-a', $permissions);
+        $this->assertContains('permission-b', $permissions);
+    }
+
+    public function testItHandlesCircularGroupPermissionsReferences()
+    {
+        // Create groups
+        $groupA = Group::factory()->create();
+        $groupB = Group::factory()->create();
+        // Create circular reference
+        GroupMember::factory()->create([
+            'member_type' => get_class($groupB),
+            'member_id' => $groupB->id,
+            'group_id' => $groupA->id,
+        ]);
+        GroupMember::factory()->create([
+            'member_type' => get_class($groupA),
+            'member_id' => $groupA->id,
+            'group_id' => $groupB->id,
+        ]);
+        // Create permissions
+        $permissionA = Permission::factory()->create(['name' => 'permission-a']);
+        $groupA->permissions()->attach($permissionA);
+        // Assign user in the group
+        $user = User::factory()->create();
+        GroupMember::factory()->create([
+            'member_type' => get_class($user),
+            'member_id' => $user->id,
+            'group_id' => $groupA->id,
+        ]);
+        // Load permissions
+        $permissions = $user->loadGroupPermissions();
+        // Assert
+        $this->assertContains('permission-a', $permissions);
+        $this->assertNotNull($permissions);
+    }
 }

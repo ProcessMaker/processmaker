@@ -1,14 +1,15 @@
 <template>
   <div
-    class="tw-w-full tw-relative tw-text-gray-600 tw-text-sm
-      tw-border tw-rounded-xl tw-border-gray-300 tw-overflow-hidden tw-overflow-x-auto tw-overflow-y-auto"
-  >
+    class="tw-w-full tw-relative tw-text-sm
+      tw-border tw-rounded-xl tw-border-gray-200 tw-overflow-hidden tw-overflow-x-auto tw-overflow-y-auto">
     <table
       class="tw-w-full tw-border-collapse"
       :class="{
         'tw-table-fixed':getDefaultConfig(config).tableFixed
       }">
-      <thead class="tw-border-b tw-sticky tw-top-0 tw-z-[9] tw-bg-gray-100">
+      <thead
+        ref="thead"
+        class="tw-border-b tw-sticky tw-top-0 tw-z-[9] tw-bg-gray-50 tw-text-[#5C6066] tw-border-[#EBEDEF]">
         <tr>
           <THeader
             v-for="(column, index) in columns"
@@ -26,7 +27,9 @@
       <transition
         name="fade-table"
         mode="out-in">
-        <tbody v-show="!placeholder">
+        <tbody
+          v-show="!placeholder"
+          ref="tbody">
           <template v-for="(row, indexRow) in data">
             <TRow :key="`row-${indexRow}`">
               <template #[`cell`]>
@@ -86,7 +89,7 @@ import TCell from "./TCell.vue";
 import ContainerRow from "./ContainerRow.vue";
 
 const defaultConfig = () => ({
-  tableFixed: true,
+  tableFixed: false,
 });
 
 export default defineComponent({
@@ -118,7 +121,8 @@ export default defineComponent({
     const slots = useSlots();
     const configRow = ref([]);
     const showContainer = ref(false);
-
+    const tbody = ref(null);
+    const thead = ref(null);
     const toogleContainer = (toogle, index) => {
       configRow.value.splice(index, 1, { showContainer: toogle });
     };
@@ -145,6 +149,8 @@ export default defineComponent({
       slots,
       checkContainerRow,
       checkEllipsisMenu,
+      tbody,
+      thead,
     };
   },
 });
