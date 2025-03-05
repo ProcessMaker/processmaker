@@ -1,5 +1,6 @@
 
-.# ProcessMaker 4 Documentation
+.
+# ProcessMaker 4 Documentation
 
 # Overview
 
