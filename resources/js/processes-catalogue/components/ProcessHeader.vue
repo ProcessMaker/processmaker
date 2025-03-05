@@ -169,6 +169,7 @@ export default {
     },
     toggleInfoCollapsed() {
       this.infoCollapsed = !this.infoCollapsed;
+      this.$emit("onProcessInfoCollapsed", this.infoCollapsed);
     },
     /**
      * get start events for dropdown Menu

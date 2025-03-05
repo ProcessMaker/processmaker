@@ -159,6 +159,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         'is_actionbyemail' => 'boolean',
         'created_at_ms' => MillisecondsToDateCast::class,
         'completed_at_ms' => MillisecondsToDateCast::class,
+        'is_emailsent' => 'boolean',
     ];
 
     /**
@@ -449,11 +450,12 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             }
             $isManualTask = $localName === 'manualTask';
             $defaultScreen = $isManualTask ? 'default-display-screen' : 'default-form-screen';
-            $screen = Screen::firstWhere('key', $defaultScreen);
+
+            $screen = Screen::getScreenByKey($defaultScreen);
 
             if (array_key_exists('implementation', $definition) && $definition['implementation'] === 'package-ai/processmaker-ai-assistant') {
                 $defaultScreen = 'default-ai-form-screen';
-                $screen = Screen::firstWhere('key', $defaultScreen);
+                $screen = Screen::getScreenByKey($defaultScreen);
             }
         }
 
@@ -941,8 +943,12 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         }
 
         // Below is for rule_expression only
+        $instance = $this->getInstance();
+        if (!$instance) {
+            return $assignment;
+        }
 
-        $instanceData = $assignmentRules ? $this->getInstance()->getDataStore()->getData() : null;
+        $instanceData = $assignmentRules ? $instance->getDataStore()->getData() : null;
         if ($assignmentRules && $instanceData) {
             $list = json_decode($assignmentRules);
             $list = ($list === null) ? [] : $list;
@@ -994,7 +1000,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                     $interstitialScreen = Screen::where('key', $definition['interstitialScreenRef'])->first();
                 }
             } else {
-                $interstitialScreen = Screen::where('key', 'interstitial')->first();
+                $interstitialScreen = Screen::getScreenByKey('interstitial');
             }
         }
 

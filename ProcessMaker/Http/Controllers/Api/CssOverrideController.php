@@ -65,29 +65,29 @@ class CssOverrideController extends Controller
             $setting = new Setting();
         }
         // Custom Logo
-        if ($request->has('fileLogo')) {
+        if ($request->has('fileLogo') && $request->input('fileLogo') !== 'null') {
             $this->uploadFile($setting->refresh(), $request, 'fileLogo', Setting::COLLECTION_CSS_LOGO, Setting::DISK_CSS);
             Cache::forget('css-logo');
         }
         // Custom Icon
-        if ($request->has('fileIcon')) {
+        if ($request->has('fileIcon') && $request->input('fileIcon') !== 'null') {
             $this->uploadFile($setting->refresh(), $request, 'fileIcon', Setting::COLLECTION_CSS_ICON, Setting::DISK_CSS);
             Cache::forget('css-icon');
         }
         // Custom Favicon
-        if ($request->has('fileFavicon')) {
+        if ($request->has('fileFavicon') && $request->input('fileFavicon') !== 'null') {
             $this->uploadFile($setting->refresh(), $request, 'fileFavicon', Setting::COLLECTION_CSS_FAVICON, Setting::DISK_CSS);
             Cache::forget('css-favicon');
         }
         // Custom Login Logo
-        if ($request->has('fileLogin')) {
+        if ($request->has('fileLogin') && $request->input('fileLogin') !== 'null') {
             $this->uploadFile($setting->refresh(), $request, 'fileLogin', Setting::COLLECTION_CSS_LOGIN, Setting::DISK_CSS);
             Cache::forget('css-login');
         }
         // Review the reset action
         $reset = false;
         if ($request->has('reset') && $request->input('reset')) {
-            Setting::destroy($setting->id);
+            $setting->delete();
             $reset = true;
         }
 

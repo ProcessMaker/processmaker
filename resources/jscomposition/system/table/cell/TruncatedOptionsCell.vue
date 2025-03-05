@@ -5,17 +5,15 @@
       class="tw-overflow-hidden tw-text-ellipsis">
       <a
         v-if="href !== null"
-        class="hover:tw-text-blue-400 tw-text-gray-500"
-        :href="href(optionsModel[0])"
-      >
+        class="hover:tw-text-blue-400 tw-text-inherit tw-no-underline"
+        :href="href(optionsModel[0])">
         {{ getValueOption(optionsModel[0], 0) }}
       </a>
       <span
         v-else
-        class="hover:tw-text-blue-400 tw-text-gray-500 hover:tw-cursor-pointer"
+        class="hover:tw-text-blue-400 tw-text-inherit tw-no-underline hover:tw-cursor-pointer"
         href="#"
-        @click.prevent.stop="onClickOption(optionsModel[0], 0)"
-      >
+        @click.prevent.stop="onClickOption(optionsModel[0], 0)">
         {{ getValueOption(optionsModel[0], 0) }}
       </span>
     </div>
@@ -24,37 +22,32 @@
       v-model="show"
       :hover="false"
       position="bottom"
-      class="!tw-absolute tw-right-0 tw-top-0  tw-h-full tw-flex tw-items-center"
-    >
+      class="!tw-absolute tw-right-0 tw-top-0  tw-h-full tw-flex tw-items-center">
       <div
         class="tw-self-center tw-px-2 tw-rounded-md hover:tw-cursor-pointer hover:tw-bg-gray-200 tw-bg-white "
-        @click.prevent="onClick"
-      >
+        @click.prevent="onClick">
         <i class="fas fa-ellipsis-v" />
       </div>
       <template #content>
         <ul
-          class="tw-bg-white tw-list-none tw-text-gray-600
-            tw-overflow-hidden tw-rounded-lg tw-w-50 tw-text-sm tw-border tw-border-gray-300"
-        >
+          class="tw-bg-white tw-list-none
+            tw-overflow-hidden tw-rounded-lg tw-w-50 tw-text-sm tw-border tw-border-gray-300">
           <template v-for="(option, index) in optionsModel">
             <li
               v-if="index > 0"
               :key="index"
-              class="hover:tw-bg-gray-100"
-            >
+              class="hover:tw-bg-gray-100">
               <a
                 v-if="href !== null"
-                class="tw-flex tw-py-2 tw-px-4 transition duration-300 tw-text-gray-500 hover:tw-bg-gray-200 hover:tw-text-blue-400"
-                :href="href(option)"
-              >
+                class="tw-flex tw-py-2 tw-px-4 transition duration-300
+                  hover:tw-bg-gray-200 hover:tw-text-blue-400"
+                :href="href(option)">
                 {{ getValueOption(option, index) }}
               </a>
               <span
                 v-else
                 class="tw-flex tw-py-2 tw-px-4 transition duration-300 hover:tw-bg-gray-200 hover:tw-cursor-pointer"
-                @click.prevent.stop="onClickOption(option, index)"
-              >
+                @click.prevent.stop="onClickOption(option, index)">
                 {{ getValueOption(option, index) }}
               </span>
             </li>
