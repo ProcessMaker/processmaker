@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\Exception\ConfigurationException;
 use ProcessMaker\Exception\ScriptException;
+use ProcessMaker\Facades\Metrics;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Process as Definitions;
@@ -111,6 +112,26 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling->timeout(), 1, $metadata);
 
             $this->updateData($response);
+
+            Metrics::counter(
+                'script_task_completed_total',
+                'Total number of script tasks completed',
+                [
+                    'activity_id',
+                    'activity_name',
+                    'process_id',
+                    'request_id',
+                    'script_executor',
+                ]
+            )->inc(
+                [
+                    'activity_id' => $element->getId(),
+                    'activity_name' => $element->getName(),
+                    'process_id' => $this->definitionsId,
+                    'request_id' => $this->instanceId,
+                    'script_executor' => $scriptExecutor ? $scriptExecutor->title : 'inline',
+                ]
+            );
         } catch (ConfigurationException $exception) {
             $this->unlock();
             $this->updateData(['output' => $exception->getMessageForData($token)]);
