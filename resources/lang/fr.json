@@ -1171,6 +1171,7 @@
   "Options Variable": "Options de la variable",
   "Get options from this variable. Must be an array.": "Obtenir des options de cette variable. Doit être un tableau.",
   "Option Label Shown": "Étiquette d'options affichée",
+  "option has been moved to the task destination dropdown": "l'option a été déplacée vers la liste déroulante de destination de la tâche",
   "Enter the property name from the Request data variable that displays to the user on the screen.": "Saisir le nom de la propriété relative à la variable de données de la demande qui s'affiche sur l'écran de l'utilisateur.",
   "Show Control As": "Afficher les commandes en tant que",
   "Allow Multiple Selections": "Autoriser les sélections multiples",
