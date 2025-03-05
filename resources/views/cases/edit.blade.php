@@ -15,6 +15,10 @@
   ]])
 @endsection
 
+@section('meta')
+  <meta name="request-id" content="">
+@endsection
+
 @section('content')
 <div
   id="case-detail"
@@ -164,19 +168,19 @@
     window.ProcessMaker.PMBlockList = @json($pmBlockList);
   </script>
 
+  <!-- Load the screen scripts -->
   @foreach(GlobalScripts::getScripts() as $script)
     <script src="{{$script}}"></script>
   @endforeach
-
-  @foreach($managerModeler->getScripts() as $script)
-    @if (!str_contains($script, 'slideshow'))
-      <script src="{{ $script }}"></script>
-    @endif
+  
+  <!-- Load the modeler scripts -->
+  @foreach($managerModelerScripts as $script)
+    <script src="{{ $script }}"></script>
   @endforeach
 
   @if (hasPackage('package-files'))
   <!-- TODO: Replace with script injector like we do for modeler and screen builder -->
-  <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
+  <script src="{{ mix('js/manager-cases.js', 'vendor/processmaker/packages/package-files') }}"></script>
   @endif
 
   <script src="{{mix('js/composition/cases/casesDetail/edit.js')}}"></script>

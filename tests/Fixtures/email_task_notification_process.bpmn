@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd" xmlns:tns="http://sourceforge.net/bpmn/definitions/_1530553328908" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bpmn.io/schema/bpmn" exporter="ProcessMaker Modeler" exporterVersion="1.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <bpmn:process id="ProcessId" name="ProcessName" isExecutable="true">
+    <bpmn:startEvent id="node_1" name="Start Event" pm:allowInterstitial="true" pm:interstitialScreenRef="1">
+      <bpmn:outgoing>node_24</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="node_2" name="Form Task A" pm:allowInterstitial="false" pm:assignment="requester" pm:assignmentLock="false" pm:allowReassignment="false" pm:elementDestination="{&#34;type&#34;:&#34;taskSource&#34;,&#34;value&#34;:null}">
+      <bpmn:incoming>node_24</bpmn:incoming>
+      <bpmn:outgoing>node_79</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="node_24" sourceRef="node_1" targetRef="node_2" />
+    <bpmn:task id="node_61" name="Form Task B" pm:allowInterstitial="false" pm:assignment="requester" pm:assignmentLock="false" pm:allowReassignment="false" pm:elementDestination="{&#34;type&#34;:&#34;taskSource&#34;,&#34;value&#34;:null}">
+      <bpmn:incoming>node_79</bpmn:incoming>
+      <bpmn:outgoing>node_83</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="node_71" name="End Event" pm:elementDestination="{&#34;type&#34;:&#34;summaryScreen&#34;,&#34;value&#34;:null}">
+      <bpmn:incoming>node_83</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_79" sourceRef="node_2" targetRef="node_61" />
+    <bpmn:sequenceFlow id="node_83" sourceRef="node_61" targetRef="node_71" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagramId">
+    <bpmndi:BPMNPlane id="BPMNPlaneId" bpmnElement="ProcessId">
+      <bpmndi:BPMNShape id="node_1_di" bpmnElement="node_1">
+        <dc:Bounds x="270" y="160" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_2_di" bpmnElement="node_2">
+        <dc:Bounds x="391" y="142" width="116" height="76" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_24_di" bpmnElement="node_24">
+        <di:waypoint x="288" y="178" />
+        <di:waypoint x="449" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_61_di" bpmnElement="node_61">
+        <dc:Bounds x="584" y="144" width="116" height="76" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_71_di" bpmnElement="node_71">
+        <dc:Bounds x="760" y="160" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_79_di" bpmnElement="node_79">
+        <di:waypoint x="449" y="180" />
+        <di:waypoint x="642" y="182" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_83_di" bpmnElement="node_83">
+        <di:waypoint x="642" y="182" />
+        <di:waypoint x="778" y="178" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

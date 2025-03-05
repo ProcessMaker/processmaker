@@ -2,23 +2,19 @@
   <div class="tw-text-nowrap tw-whitespace-nowrap tw-p-3">
     <a
       v-if="href !== null"
-      class="hover:tw-text-blue-400 tw-text-gray-500"
-      :href="href(row)"
-    >
+      class="hover:tw-text-blue-400 tw-text-inherit tw-no-underline"
+      :href="href(row)">
       <case-title
         :title="row.case_title_formatted"
-        :default-value="getValue()"
-      />
+        :default-value="getValue()" />
     </a>
     <span
       v-else
-      class="hover:tw-text-blue-400 tw-text-gray-500 hover:tw-cursor-pointer"
-      @click.prevent="onClick"
-    >
+      class="hover:tw-text-blue-400 text-inherit no-underline hover:tw-cursor-pointer"
+      @click.prevent="onClick">
       <case-title
         :title="row.case_title_formatted"
-        :default-value="getValue()"
-      />
+        :default-value="getValue()" />
     </span>
   </div>
 </template>
