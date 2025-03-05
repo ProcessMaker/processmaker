@@ -260,7 +260,7 @@ class RequestController extends Controller
         }
 
         $dataManager = new DataManager();
-        $data = $dataManager->getData($task);
+        $data = $dataManager->getData($task, true);
 
         $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, ($request->summary_screen) ? $request->summary_screen->type : 'FORM'));
