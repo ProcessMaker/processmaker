@@ -309,11 +309,14 @@
                       <li class="list-group-item">
                         <p class="section-title">{{__('Case')}}</p>
                         @{{ caseTitle }}
-                        <p class="launchpad-link">
-                          <a href="{{route('process.browser.index', [$task->process->id])}}">
-                            {{ __('Open Process Launchpad') }}
-                          </a>
-                        </p>
+                        <!-- This is the name defined in the installation of connector-docusign 'DocuSignAuthentication' -->
+                        @if ($task->process->name !== 'DocuSignAuthentication')
+                          <p class="launchpad-link">
+                            <a href="{{route('process.browser.index', [$task->process->id])}}">
+                              {{ __('Open Process Launchpad') }}
+                            </a>
+                          </p>
+                        @endif
                       </li>
                       <li class="list-group-item">
                         <p class="section-title">{{__('Request')}}</p>
@@ -432,7 +435,7 @@
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
     const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
     const userConfiguration = @json($userConfiguration);
-
+    let screenFields = @json($screenFields);
     window.Processmaker.user = @json($currentUser);
     window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
   </script>

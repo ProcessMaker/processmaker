@@ -1,9 +1,14 @@
 import TasksList from "./components/TasksList.vue";
 import TasksListCounter from "./components/TasksListCounter.vue";
 import setDefaultAdvancedFilterStatus from "../common/setDefaultAdvancedFilterStatus";
+import ParticipantHomeScreen from './components/ParticipantHomeScreen.vue';
+import PmqlInput from "../components/shared/PmqlInput.vue";
+
+Vue.component("TasksList", TasksList);
+Vue.component('participant-home-screen', ParticipantHomeScreen);
 
 // Component used in the tasks list
-Vue.component("PmqlInput", () => import("../components/shared/PmqlInput.vue"));
+Vue.component("PmqlInput", PmqlInput);
 
 const main = new Vue({
   el: "#tasks",
@@ -12,6 +17,10 @@ const main = new Vue({
     TasksListCounter,
   },
   data: {
+    showOldTaskScreen: window.ProcessMaker.showOldTaskScreen,
+    userConfiguration: window.ProcessMaker.userConfiguration,
+    urlConfiguration: "users/configuration",
+    showMenu: true,
     columns: window.Processmaker.defaultColumns || null,
     filter: "",
     pmql: "",
@@ -66,7 +75,9 @@ const main = new Vue({
 
     if (!window.location.search.includes("filter_user_recommendation")) {
       this.$nextTick(() => {
-        this.$refs.taskList.fetch();
+        if (this.$refs.taskList) {
+          this.$refs.taskList.fetch();
+        }
       });
     }
   },

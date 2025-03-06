@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\DevLink;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\User;
 use Tests\TestCase;
 
 class DevLinkTest extends TestCase
@@ -60,10 +61,14 @@ class DevLinkTest extends TestCase
 
         $screen1 = Screen::factory()->create(['title' => 'Screen 1']);
         $screen2 = Screen::factory()->create(['title' => 'Screen 2']);
+
+        $user1 = User::factory()->create();
+
         $bundle = Bundle::factory()->create([]);
         $bundle->syncAssets([$screen1, $screen2]);
-
+        $bundle->addSettings('users', $user1->id);
         $exports = $bundle->export();
+        $exportsSettingsPayloads = $bundle->exportSettingPayloads();
 
         $screen1->delete();
         $screen2->delete();
@@ -75,10 +80,21 @@ class DevLinkTest extends TestCase
                 'name' => 'Test Bundle',
                 'published' => true,
                 'version' => '5',
+                'description' => 'Test Bundle Description',
             ]),
             'http://remote-instance.test/api/1.0/devlink/export-local-bundle/123' => Http::response([
                 'payloads' => $exports,
             ]),
+            'http://remote-instance.test/api/1.0/devlink/export-local-bundle/123/settings' => Http::response([
+                'settings' => [[
+                    'setting' => 'users',
+                    'config' => null,
+                ]],
+            ]),
+            'http://remote-instance.test/api/1.0/devlink/export-local-bundle/123/settings-payloads' => Http::response([
+                'payloads' => [$exportsSettingsPayloads],
+            ]),
+            'http://remote-instance.test/api/1.0/devlink/local-bundles/123/add-bundle-instance' => Http::response([], 200),
         ]);
 
         $devLink = DevLink::factory()->create([
@@ -99,7 +115,7 @@ class DevLinkTest extends TestCase
         $this->assertCount(1, $media);
         $gzPath = $media[0]->getPath();
         $payloads = json_decode(gzdecode(file_get_contents($gzPath)), true);
-        $this->assertCount(2, $payloads);
+        $this->assertCount(3, $payloads);
     }
 
     public function testRemoteBundles()
@@ -141,8 +157,12 @@ class DevLinkTest extends TestCase
         // Remote Instance
         $screen = Screen::factory()->create(['title' => 'Screen Name']);
         $bundle = Bundle::factory()->create([]);
+        $user1 = User::factory()->create();
+        $bundle->addSettings('users', $user1->id);
         $bundle->syncAssets([$screen]);
         $exports = $bundle->export();
+        $exportsSettingsPayloads = $bundle->exportSettingPayloads();
+
         $screenUuid = $screen->uuid;
 
         $screen->delete();
@@ -169,30 +189,35 @@ class DevLinkTest extends TestCase
                     'name' => 'Test Bundle',
                     'published' => true,
                     'version' => '2',
+                    'description' => 'Test Bundle Description',
                 ], 200)
                 ->push([
                     'id' => 123,
                     'name' => 'Test Bundle',
                     'published' => true,
                     'version' => '3',
+                    'description' => 'Test Bundle Description',
                 ], 200)
                 ->push([
                     'id' => 123,
                     'name' => 'Test Bundle',
                     'published' => true,
                     'version' => '4',
+                    'description' => 'Test Bundle Description',
                 ], 200)
                 ->push([
                     'id' => 123,
                     'name' => 'Test Bundle',
                     'published' => true,
                     'version' => '8',
+                    'description' => 'Test Bundle Description',
                 ], 200)
                 ->push([
                     'id' => 123,
                     'name' => 'Test Bundle',
                     'published' => true,
                     'version' => '9',
+                    'description' => 'Test Bundle Description',
                 ], 200),
             'http://remote-instance.test/api/1.0/devlink/export-local-bundle/123' => Http::sequence()
                 ->push([
@@ -210,6 +235,16 @@ class DevLinkTest extends TestCase
                 ->push([
                     'payloads' => $exportsNewScreenName,
                 ], 200),
+            'http://remote-instance.test/api/1.0/devlink/export-local-bundle/123/settings' => Http::response([
+                'settings' => [[
+                    'setting' => 'users',
+                    'config' => null,
+                ]],
+            ]),
+            'http://remote-instance.test/api/1.0/devlink/export-local-bundle/123/settings-payloads' => Http::response([
+                'payloads' => [$exportsSettingsPayloads],
+            ]),
+            'http://remote-instance.test/api/1.0/devlink/local-bundles/123/add-bundle-instance' => Http::response([], 200),
         ]);
 
         $devLink->installRemoteBundle(123, 'update');

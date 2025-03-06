@@ -10,6 +10,14 @@
     <b-form-group :label="'Name'">
       <b-form-input v-model="bundle.name"></b-form-input>
     </b-form-group>
+    <b-form-group :label="'Description'">
+      <b-form-textarea
+        v-model="bundle.description"
+        autocomplete="off"
+        rows="3"
+        data-cy="devlink_description"
+      />
+    </b-form-group>
     <b-form-group v-if="canEdit(bundle)" :label="'Published'">
       <b-form-checkbox v-model="bundle.published"></b-form-checkbox>
     </b-form-group>

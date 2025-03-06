@@ -394,14 +394,24 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
         Route::get('devlink/local-bundles', [DevLinkController::class, 'localBundles'])->name('devlink.local-bundles');
         Route::get('devlink/local-bundles/{bundle}', [DevLinkController::class, 'showBundle'])->name('devlink.local-bundle');
+        Route::get('devlink/local-bundles/{bundle}/setting/{settingKey}', [DevLinkController::class, 'getBundleSetting'])->name('devlink.local-bundle-setting');
+        Route::get('devlink/local-bundles/all-settings/{settingKey}', [DevLinkController::class, 'getBundleAllSettings'])->name('devlink.local-bundle-all-settings');
+        Route::post('devlink/local-bundles/setting/refresh-ui', [DevLinkController::class, 'refreshUi'])->name('devlink.local-bundle-setting-refresh-ui');
         Route::post('devlink/local-bundles', [DevLinkController::class, 'createBundle'])->name('devlink.create-bundle');
         Route::put('devlink/local-bundles/{bundle}', [DevLinkController::class, 'updateBundle'])->name('devlink.update-bundle');
         Route::post('devlink/local-bundles/{bundle}/increase-version', [DevLinkController::class, 'increaseBundleVersion'])->name('devlink.increase-bundle-version');
+        Route::post('devlink/local-bundles/{bundle}/add-bundle-instance', [DevLinkController::class, 'addBundleInstance'])->name('devlink.add-bundle-instance');
+        Route::post('devlink/bundle-updated/{bundle}', [DevLinkController::class, 'bundleUpdated'])->name('devlink.bundle-updated');
         Route::post('devlink/local-bundles/{bundle}/add-assets', [DevLinkController::class, 'addAsset'])->name('devlink.add-asset');
+        Route::post('devlink/local-bundles/{bundle}/add-settings', [DevLinkController::class, 'addSettings'])->name('devlink.add-settings');
         Route::post('devlink/local-bundles/add-asset-to-bundles', [DevLinkController::class, 'addAssetToBundles'])->name('devlink.add-asset-to-bundles');
+        Route::post('devlink/local-bundles/add-setting-to-bundles', [DevLinkController::class, 'addSettingToBundles'])->name('devlink.add-setting-to-bundles');
         Route::delete('devlink/local-bundles/{bundle}', [DevLinkController::class, 'deleteBundle'])->name('devlink.delete-bundle');
         Route::delete('devlink/local-bundles/assets/{bundle_asset}', [DevLinkController::class, 'deleteBundleAsset'])->name('devlink.delete-bundle-asset');
+        Route::delete('devlink/local-bundles/settings/{bundle_setting}', [DevLinkController::class, 'deleteBundleSetting'])->name('devlink.delete-bundle-setting');
         Route::get('devlink/export-local-bundle/{bundle}', [DevLinkController::class, 'exportLocalBundle'])->name('devlink.export-local-bundle');
+        Route::get('devlink/export-local-bundle/{bundle}/settings', [DevLinkController::class, 'exportLocalBundleSettings'])->name('devlink.export-local-bundle-settings');
+        Route::get('devlink/export-local-bundle/{bundle}/settings-payloads', [DevLinkController::class, 'exportLocalBundleSettingPayloads'])->name('devlink.export-local-bundle-setting-payloads');
         Route::get('devlink/export-local-asset', [DevLinkController::class, 'exportLocalAsset'])->name('devlink.export-local-asset');
 
         Route::post('devlink/{devLink}/remote-bundles/{remoteBundleId}/install', [DevLinkController::class, 'installRemoteBundle'])->name('devlink.install-remote-bundle');
@@ -412,3 +422,4 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         Route::get('devlink/{devLink}', [DevLinkController::class, 'show'])->name('devlink.show');
     });
 });
+Route::post('devlink/bundle-updated/{bundle}/{token}', [DevLinkController::class, 'bundleUpdated'])->name('devlink.bundle-updated');

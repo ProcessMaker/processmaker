@@ -10,8 +10,6 @@ use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\ProcessTaskAssignment;
-use ProcessMaker\Models\Recommendation;
 use ProcessMaker\Models\RecommendationUser;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
@@ -115,6 +113,53 @@ class UsersTest extends TestCase
         $response->assertStatus(201);
     }
 
+    /**
+     * Create new user and the email task notification needs to enable per default
+     */
+    public function testFlagEmailTaskNotification()
+    {
+        $faker = Faker::create();
+        $url = self::API_TEST_URL;
+        $response = $this->apiCall('POST', $url, [
+            'username' => 'user_test_' . $faker->randomDigit(),
+            'firstname' => 'name',
+            'lastname' => 'name',
+            'email' => $faker->email(),
+            'status' => 'ACTIVE',
+            'password' => $faker->password(8) . 'A_' . '1',
+        ]);
+
+        // Test default value email_task_notification was enable
+        $response->assertStatus(201);
+        $newUser = $response->json();
+        $this->assertEquals(1, $newUser['email_task_notification']);
+        // Test updating email_task_notification is disable
+        $userId = $newUser['id'];
+        $payload = [
+            'username' => $newUser['username'],
+            'firstname' => $newUser['firstname'],
+            'lastname' => $newUser['lastname'],
+            'email' => $newUser['email'],
+            'status' => $newUser['status'],
+            'email_task_notification' => 0,
+        ];
+        $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
+        $response->assertStatus(204);
+        // Validate flag email_task_notification was disable
+        $this->assertDatabaseHas('users', [
+            'email_task_notification' => 0,
+        ]);
+
+        // Test updating email_task_notification is enable
+        $payload['email_task_notification'] = 1;
+        $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
+        $response->assertStatus(204);
+        // Validate flag email_task_notification was enable
+        $this->assertDatabaseHas('users', [
+            'email_task_notification' => 0,
+        ]);
+    }
+
     public function testCreatePreviouslyDeletedUser()
     {
         $url = self::API_TEST_URL;
@@ -160,7 +205,7 @@ class UsersTest extends TestCase
             'lastname' => $faker->lastName(),
             'email' => $faker->email(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->password(8) . 'A' . '1',
+            'password' => $faker->password(8) . 'A' . '1.',
         ]);
 
         // Validate that the created user has the correct default values.
@@ -884,5 +929,58 @@ class UsersTest extends TestCase
 
         // Assert the list of users now contains the admin user
         $this->assertContains($admin->id, collect($users)->pluck('id')->toArray());
+    }
+
+    /**
+     * Test save and get filters per user saved in cache
+     */
+    public function testGetDefaultUserConfiguration()
+    {
+        // Define an example of filters to save
+        $values = [
+            'filters' => [
+                [
+                    'subject' => [
+                        'type' => 'Field',
+                        'value' => 'case_number',
+                    ],
+                    'operator' => '=',
+                    'value' => '885',
+                ],
+                [
+                    'subject' => [
+                        'type' => 'Field',
+                        'value' => 'case_title',
+                    ],
+                    'operator' => '=',
+                    'value' => 'TCP4_Case_title',
+                ],
+            ],
+            'order' => [
+                'by' => 'id',
+                'dir' => 'ASC',
+            ],
+        ];
+        // Define the page filter to save
+        $pagesSaveFilters = [
+            'casesFilter',
+            'casesFilter|in_progress',
+            'casesFilter|completed',
+            'casesFilter|all',
+        ];
+        $randomKey = array_rand($pagesSaveFilters);
+        $name = $pagesSaveFilters[$randomKey];
+        // Call the api PUT
+        $response = $this->apiCall('PUT', '/users/store_filter_configuration/' . $name, $values);
+        // Validate the header status code
+        $response->assertStatus(200);
+        $this->assertNotEmpty($response);
+
+        // Call the api GET
+        $response = $this->apiCall('GET', '/users/get_filter_configuration/' . $name);
+        // Validate the header status code
+        $response->assertStatus(200);
+        $this->assertNotEmpty($response);
+        $response->assertJson(['data' => $values]);
     }
 }

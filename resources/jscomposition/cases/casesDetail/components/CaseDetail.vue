@@ -2,6 +2,7 @@
   <Tabs
     :tab-default="tabDefault"
     :tabs="tabs"
+    :keep-alive="['NewOverview']"
   />
 </template>
 
@@ -19,6 +20,8 @@ import ErrorsTab from "./ErrorsTab.vue";
 import { getRequestCount, getRequestStatus, isErrors } from "../variables/index";
 
 const translate = ProcessMaker.i18n;
+const Router = window.ProcessMaker.Router;
+const path = window.location.pathname;
 
 const urlTabs = [
   "errors",
@@ -34,6 +37,12 @@ const urlTabs = [
 const tabDefault = computed(() => {
   if (urlTabs.includes(window.location.hash.substring(1))) {
     return window.location.hash.substring(1);
+  }
+
+  // This section is for the package-files, the issue should be fixed in page with vue-router
+  const routeResolved = Router.resolve(path);
+  if (routeResolved.route?.name && routeResolved.route?.meta?.package === "package-files") {
+    return "file_manager";
   }
   if (isErrors()) {
     return "errors";

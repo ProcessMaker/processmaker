@@ -137,6 +137,7 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('modeler/{process}/inflight/{request?}', [ModelerController::class, 'inflight'])->name('modeler.inflight')->middleware('can:view,request');
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/inbox/{router?}', [TaskController::class, 'index'])->where(['router' => '.*'])->name('inbox')->middleware('no-cache');
     Route::get('/redirect-to-intended', [HomeController::class, 'redirectToIntended'])->name('redirect_to_intended');
 
     Route::post('/keep-alive', [LoginController::class, 'keepAlive'])->name('keep-alive');
@@ -149,6 +150,12 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('cases/{case_number}', [CasesController::class, 'show'])
         ->where('case_number', '[0-9]+')
         ->name('cases.show')
+        ->middleware('no-cache');
+
+    Route::get('cases/{case_number}/files/{file}', [CasesController::class, 'show'])
+        ->where('case_number', '[0-9]+')
+        ->where('file', '.*')
+        ->name('cases.show-file')
         ->middleware('no-cache');
 
     // Requests

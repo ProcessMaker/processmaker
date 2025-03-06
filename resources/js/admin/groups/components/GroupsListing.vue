@@ -33,6 +33,10 @@
           />
         </template>
       </vuetable>
+      <add-to-bundle
+        asset-type="groups"
+        :setting="true"
+      />
       <pagination
         :single="$t('Group')"
         :plural="$t('Groups')"
@@ -49,11 +53,12 @@
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
+import AddToBundle from "../../../components/shared/AddToBundle.vue";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  components: {EllipsisMenu},
+  components: {EllipsisMenu, AddToBundle},
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: ["filter", "permission"],
   data() {
@@ -69,6 +74,7 @@ export default {
       ],
       actions: [
         { value: "edit-item", content: "Edit Group", link: true, href: '/admin/groups/{{id}}/edit', icon: "fas fa-pen-square", permission:'edit-groups', ariaDescribedBy: 'data.id'},
+        { value: "add-to-bundle", content: "Add to Bundle", icon: "fp-add-outlined", permission: "admin", emit_on_root: 'add-to-bundle'},
         { value: "delete-item", content: "Delete Group", icon: "fas fa-trash-alt", permission: 'delete-groups',  ariaDescribedBy: 'data.id'},
       ],
       fields: [

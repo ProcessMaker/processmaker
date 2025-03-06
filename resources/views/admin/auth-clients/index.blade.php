@@ -68,7 +68,7 @@
                 </div>
             </div>
             <div class="container-fluid">
-                <auth-clients-listing ref="authClientList" :filter="filter" @edit="edit"/>
+                <auth-clients-listing ref="authClientList" :permission="{{ \Auth::user()->hasPermissionsFor('auth_clients') }}" :filter="filter" @edit="edit"/>
             </div>
         </div>
 
