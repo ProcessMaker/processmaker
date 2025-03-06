@@ -1,0 +1,115 @@
+Vue 2 and Laravel Best Practices and Guidelines
+
+Vue 2 Rules
+
+You are an expert in TypeScript, Node.js, NuxtJS, Vue 2, Shadcn Vue, Radix Vue, VueUse, and Tailwind CSS.
+
+Code Style and Structure
+	•	Write concise, technical TypeScript code with accurate examples.
+	•	Use Vue 2’s Options API for component definitions; prioritize composition patterns using plugins like vue-composition-api where necessary.
+	•	Prefer iteration and modularization over duplication.
+	•	Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
+	•	Structure files: exported component, helpers, static content, and types.
+
+Naming Conventions
+	•	Use lowercase with dashes for directories (e.g., components/auth-wizard).
+	•	Use PascalCase for component names (e.g., AuthWizard.vue).
+	•	Use camelCase for composables and helpers (e.g., useAuthState.ts).
+
+TypeScript Usage
+	•	Use TypeScript for all code; prefer types over interfaces.
+	•	Avoid enums; use const objects instead.
+	•	Use Vue 2 with TypeScript leveraging class-style components or vue-property-decorator.
+
+Syntax and Formatting
+	•	Use arrow functions for methods and computed properties.
+	•	Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements.
+	•	Use template syntax for declarative rendering.
+
+UI and Styling
+	•	Use Shadcn Vue, Radix Vue, and Tailwind for components and styling.
+	•	Implement responsive design with Tailwind CSS using a mobile-first approach.
+
+Performance Optimization
+	•	Leverage Nuxt 2’s built-in performance optimizations.
+	•	Use dynamic imports and lazy loading for routes and components.
+	•	Optimize images: use WebP format, include size data, and implement lazy loading.
+
+Key Conventions
+	•	Use VueUse for common composables and utilities.
+	•	Use Vuex for state management in Vue 2.
+	•	Optimize Web Vitals (LCP, CLS, FID).
+	•	Utilize Nuxt’s auto-imports feature for components and utilities.
+
+Nuxt-Specific Guidelines
+	•	Follow Nuxt 2 directory structure (e.g., pages/, components/, plugins/).
+	•	Use Nuxt’s built-in features:
+	•	File-based routing in the pages/ directory.
+	•	Plugins for global functionality.
+	•	Modules for third-party integration.
+	•	Use asyncData and fetch hooks for data fetching.
+	•	Implement SEO best practices using Nuxt’s head() method or vue-meta.
+
+Laravel Rules
+
+You are an expert in Laravel, PHP, and related web development technologies.
+
+Key Principles
+	•	Write concise, technical responses with accurate PHP examples.
+	•	Follow Laravel best practices and conventions.
+	•	Use object-oriented programming with a focus on SOLID principles.
+	•	Prefer iteration and modularization over duplication.
+	•	Use descriptive variable and method names.
+	•	Use lowercase with dashes for directories (e.g., app/Http/Controllers).
+	•	Favor dependency injection and service containers.
+
+PHP/Laravel Practices
+	•	Use PHP 8.1+ features when appropriate (e.g., typed properties, match expressions).
+	•	Follow PSR-12 coding standards.
+	•	Use strict typing: declare(strict_types=1);
+	•	Utilize Laravel’s built-in features and helpers.
+	•	Implement error handling with:
+	•	Laravel’s exception handling and logging.
+	•	Custom exceptions where necessary.
+	•	try-catch blocks for expected exceptions.
+	•	Use Laravel’s validation for form and request inputs.
+	•	Implement middleware for request filtering and modification.
+	•	Utilize Laravel’s Eloquent ORM for database operations.
+	•	Use Laravel’s query builder for complex queries.
+	•	Implement proper database migrations and seeders.
+
+Dependencies
+	•	Laravel (latest stable version).
+	•	Composer for dependency management.
+
+Best Practices
+	1.	Use Eloquent ORM instead of raw SQL queries where feasible.
+	2.	Implement Repository pattern for the data access layer.
+	3.	Use Laravel’s authentication and authorization features.
+	4.	Utilize caching for improved performance.
+	5.	Implement job queues for long-running tasks.
+	6.	Use Laravel’s testing tools (PHPUnit, Dusk) for unit and feature tests.
+	7.	Implement API versioning for public APIs.
+	8.	Use localization for multi-language support.
+	9.	Ensure proper CSRF protection and security measures.
+	10.	Use Laravel Mix for asset compilation.
+	11.	Index databases for improved query performance.
+	12.	Use pagination for data-heavy pages.
+
+Key Laravel Conventions
+	•	Follow MVC architecture.
+	•	Use Laravel’s routing for endpoints.
+	•	Implement request validation using FormRequest.
+	•	Use Blade templating for views.
+	•	Implement relationships using Eloquent.
+	•	Use built-in authentication scaffolding.
+	•	Apply API resource transformations.
+	•	Use event and listener systems for decoupled logic.
+	•	Implement database transactions for data integrity.
+	•	Use Laravel’s scheduling features for recurring tasks.
+
+PHP tests
+	•	Use PHPUnit for unit testing.
+	•	Use Laravel's testing tools (PHPUnit, Dusk) for unit and feature tests.
+	•	If the test requires a user, create a user using the factory ProcessMaker\Models\User and authenticate as them.
+	•	Use `Tests\Feature\Shared\RequestHelper` for common request setup, and use `apiCall($method, $url, $data)` for API requests.
