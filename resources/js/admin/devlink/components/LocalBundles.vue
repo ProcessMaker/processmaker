@@ -22,6 +22,7 @@ const bundleModal = ref(null);
 const updateBundle = ref(null);
 const deleteWarningTitle = ref(vue.$t("Delete Confirmation"));
 const updatesAvailable = reactive({});
+const refreshKey = ref(0);
 
 const actions = [
   { value: "open-item", content: "Open" },
@@ -52,6 +53,7 @@ const load = () => {
     .get(`/devlink/local-bundles?filter=${filter.value}`)
     .then((result) => {
       bundles.value = result.data.data;
+      refreshKey.value++;
     });
 };
 
@@ -85,6 +87,7 @@ const fields = [
 const bundleAttributes = {
   id: null,
   name: '',
+  description: '',
   published: false,
 };
 
@@ -202,7 +205,7 @@ const canEdit = (bundle) => {
 }
 
 const goToBundleAssets = (bundle) => {
-  router.push({ name: 'bundle-assets', params: { id: bundle.id } });
+  router.push({ name: 'bundle-detail', params: { id: bundle.id } });
 }
 
 const deleteWarning = computed(() => {
@@ -213,6 +216,10 @@ const deleteWarning = computed(() => {
 const confirmPublishNewVersionText = computed(() => {
   return vue.$t('Are you sure you increase the version of <strong>{{ selectedBundleName }}</strong>?', { selectedBundleName: selected.value?.name });
 });
+
+const handleInstallationComplete = () => {
+  load();
+};
 
 </script>
 
@@ -248,7 +255,10 @@ const confirmPublishNewVersionText = computed(() => {
       <p v-html="confirmPublishNewVersionText"></p>
     </b-modal>
 
-    <UpdateBundle ref="updateBundle"></UpdateBundle>
+    <UpdateBundle
+      ref="updateBundle"
+      @installation-complete="handleInstallationComplete"
+    ></UpdateBundle>
 
     <div class="card local-bundles-card">
       <b-table
@@ -270,7 +280,11 @@ const confirmPublishNewVersionText = computed(() => {
           <Origin :dev-link="data.item.dev_link"></Origin>
         </template>
         <template #cell(version)="data">
-          {{ data.item.version }} <VersionCheck @updateAvailable="setUpdateAvailable(data.item, $event)" :dev-link="data.item"></VersionCheck>
+          {{ data.item.version }} <VersionCheck 
+            :key="`version-check-${data.item.id}-${refreshKey}`" 
+            @updateAvailable="setUpdateAvailable(data.item, $event)" 
+            :dev-link="data.item">
+          </VersionCheck>
         </template>
         <template #cell(menu)="data">
           <EllipsisMenu

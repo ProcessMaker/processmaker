@@ -65,7 +65,7 @@ class TaskController extends Controller
         'completed_at', // Completed At
         'due_at', // Due At
         'process_request_id', // Request Id #
-        'data'
+        'data',
     ];
 
     /**

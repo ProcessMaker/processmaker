@@ -25,11 +25,13 @@
     <ProcessInfo
       v-if="!verifyScreen"
       :process="selectedProcess"
+      :ellipsis-permission="ellipsisPermission"
       @goBackCategory="goBackCategory"
     />
     <ProcessScreen
       v-if="verifyScreen"
       :process="selectedProcess"
+      :ellipsis-permission="ellipsisPermission"
       @goBackCategory="goBackCategory"
     />
   </div>
@@ -44,7 +46,7 @@ import ProcessDescription from "./optionsMenu/ProcessDescription.vue";
 import ProcessCounter from "./optionsMenu/ProcessCounter.vue";
 
 export default {
-  props: ["process", "processId"],
+  props: ["process", "processId", "ellipsisPermission"],
   components: {
     ProcessInfo, ProcessScreen, MiniPieChart, Bookmark, ProcessDescription, ProcessCounter
   },

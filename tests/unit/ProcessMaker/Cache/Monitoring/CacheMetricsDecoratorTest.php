@@ -365,21 +365,21 @@ class CacheMetricsDecoratorTest extends TestCase
     public function testSetWithPrometheusMetricLabel()
     {
         $mockMetric = new MockMetric();
-    
+
         $ttl = 3600;
-    
+
         // Setup expectations
         $this->cache->shouldReceive('set')
             ->once()
             ->with($this->testKey, $mockMetric, $ttl)
             ->andReturn(true);
-    
+
         $this->metrics->shouldReceive('recordWrite')
             ->once()
             ->withArgs(function ($key, $size, $labels) {
                 return $key === $this->testKey && is_int($size) && $size > 0 && $labels['label'] === 'prometheus_label';
             });
-    
+
         // Execute and verify
         $result = $this->decorator->set($this->testKey, $mockMetric, $ttl);
         $this->assertTrue($result);

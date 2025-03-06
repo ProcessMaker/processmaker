@@ -16,6 +16,7 @@ class ServerTimingMiddlewareTest extends TestCase
     private function getHeader($response, $header)
     {
         $headers = $response->headers->all();
+
         return $headers[$header];
     }
 
@@ -45,6 +46,7 @@ class ServerTimingMiddlewareTest extends TestCase
         // Mock a route with a query
         Route::middleware(ServerTimingMiddleware::class)->get('/query-test', function () {
             DB::select('SELECT SLEEP(0.2)');
+
             return response()->json(['message' => 'Query test']);
         });
 
@@ -56,7 +58,7 @@ class ServerTimingMiddlewareTest extends TestCase
         preg_match('/db;dur=([\d.]+)/', $serverTiming[2], $matches);
         $dbTime = $matches[1] ?? 0;
 
-        $this->assertGreaterThanOrEqual(200, (float)$dbTime);
+        $this->assertGreaterThanOrEqual(200, (float) $dbTime);
     }
 
     public function testServiceProviderTimeIsMeasured()
@@ -76,7 +78,7 @@ class ServerTimingMiddlewareTest extends TestCase
         $providersTime = $matches[1] ?? null;
 
         $this->assertNotNull($providersTime);
-        $this->assertGreaterThanOrEqual(0, (float)$providersTime);
+        $this->assertGreaterThanOrEqual(0, (float) $providersTime);
     }
 
     public function testControllerTimingIsMeasuredCorrectly()
@@ -84,6 +86,7 @@ class ServerTimingMiddlewareTest extends TestCase
         // Mock a route
         Route::middleware(ServerTimingMiddleware::class)->get('/controller-test', function () {
             usleep(300000); // Simulate 300ms delay in the controller
+
             return response()->json(['message' => 'Controller timing test']);
         });
 
@@ -96,7 +99,7 @@ class ServerTimingMiddlewareTest extends TestCase
         preg_match('/controller;dur=([\d.]+)/', $serverTiming[1], $matches);
         $controllerTime = $matches[1] ?? 0;
 
-        $this->assertGreaterThanOrEqual(300, (float)$controllerTime);
+        $this->assertGreaterThanOrEqual(300, (float) $controllerTime);
     }
 
     public function testProvidersTimingIsMeasuredCorrectly()
@@ -116,7 +119,7 @@ class ServerTimingMiddlewareTest extends TestCase
         $providersTime = $matches[1] ?? null;
 
         $this->assertNotNull($providersTime);
-        $this->assertGreaterThanOrEqual(0, (float)$providersTime);
+        $this->assertGreaterThanOrEqual(0, (float) $providersTime);
     }
 
     public function testServerTimingOnLogin()

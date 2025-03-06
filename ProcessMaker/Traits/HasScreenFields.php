@@ -41,7 +41,7 @@ trait HasScreenFields
     /**
      * Load the fields for the screen and cache them
      *
-     * @return void 
+     * @return void
      */
     private function loadScreenFields()
     {

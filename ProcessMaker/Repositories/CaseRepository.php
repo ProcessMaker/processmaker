@@ -85,7 +85,6 @@ class CaseRepository implements CaseRepositoryInterface
     public function update(ExecutionInstanceInterface $instance, TokenInterface $token): void
     {
         if (!$this->checkIfCaseStartedExist($instance->case_number)) {
-
             return;
         }
 
@@ -118,7 +117,6 @@ class CaseRepository implements CaseRepositoryInterface
     public function updateStatus(ExecutionInstanceInterface $instance): void
     {
         if (is_null($instance->case_number)) {
-
             return;
         }
 

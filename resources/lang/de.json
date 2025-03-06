@@ -1170,6 +1170,7 @@
   "Options Variable": "Optionenvariable",
   "Get options from this variable. Must be an array.": "Optionen aus dieser Variable erhalten. Muss ein Array sein.",
   "Option Label Shown": "Angezeigte Optionsbezeichnung",
+  "option has been moved to the task destination dropdown": "option wurde in die Dropdown-Liste „Aufgabenziel“ verschoben",
   "Enter the property name from the Request data variable that displays to the user on the screen.": "Geben Sie den Namen der Eigenschaft aus der Anforderungsdatenvariable ein, die dem Benutzer auf dem Bildschirm angezeigt wird.",
   "Show Control As": "Steuerung anzeigen als",
   "Allow Multiple Selections": "Mehrfachauswahl zulassen",

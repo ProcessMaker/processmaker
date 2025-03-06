@@ -58,7 +58,7 @@ trait ForUserScope
         // For the anonymous user this condition is not needed as it is a "placeholder" system account
         if ($user->username !== '_pm4_anon_user') {
             $mainTable = $query->getQuery()->from;
-            $filteredQuery->orWhereExists(function($query) use ($user, $mainTable) {
+            $filteredQuery->orWhereExists(function ($query) use ($user, $mainTable) {
                 $query->selectRaw('1')
                     ->from('process_request_tokens')
                     ->where('user_id', $user->id)

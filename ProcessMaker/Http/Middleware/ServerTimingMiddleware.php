@@ -16,6 +16,7 @@ class ServerTimingMiddleware
     {
         self::$minPackageTime = config('app.server_timing.min_package_time');
     }
+
     /**
      * Handle an incoming request.
      *

@@ -40,5 +40,7 @@ abstract class DependentType
 
     const MEDIA = 'media';
 
+    const PUBLIC_FILE = 'public_file';
+
     const EMBED = 'embed';
 }

@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Traits;
 
+use Auth;
 use DB;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Arr;
@@ -12,6 +13,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
+use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 use ProcessMaker\Query\SyntaxError;
 
 trait TaskControllerIndexMethods
@@ -23,7 +25,20 @@ trait TaskControllerIndexMethods
         // Determine if the data should be included
         $includeData = in_array('data', $includes);
 
-        $query = ProcessRequestToken::exclude(['data'])->with([
+        $query = ProcessRequestToken::exclude(['data']);
+
+        // If all_inbox is true and user has process requests, filter to only show the latest process
+        if ($request->has('all_inbox') && $request->input('all_inbox') === 'false') {
+            $latestProcessRequest = ProcessRequestToken::where('user_id', auth()->id())
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            if ($latestProcessRequest) {
+                $query->where('process_id', $latestProcessRequest->process_id);
+            }
+        }
+
+        $query = $query->with([
             'processRequest' => function ($q) use ($includeData) {
                 if (!$includeData) {
                     return $q->exclude(['data']);
@@ -338,5 +353,26 @@ trait TaskControllerIndexMethods
             $query->whereIn('process_request_tokens.process_id', array_column($ids, 'id'))
                 ->where('process_request_tokens.status', 'ACTIVE');
         });
+    }
+
+    /**
+     * Get the ID of the default saved search for tasks.
+     *
+     * @return int|null
+     */
+    private function getDefaultSavedSearchId()
+    {
+        $id = null;
+        if (class_exists(SavedSearch::class)) {
+            $savedSearch = SavedSearch::firstSystemSearchFor(
+                Auth::user(),
+                SavedSearch::KEY_TASKS,
+            );
+            if ($savedSearch) {
+                $id = $savedSearch->id;
+            }
+        }
+
+        return $id;
     }
 }

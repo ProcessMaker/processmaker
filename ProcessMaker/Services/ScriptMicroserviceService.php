@@ -20,15 +20,11 @@ class ScriptMicroserviceService
         Log::debug('Response microservice executor: ' . print_r($response, true));
         // If the call is from preview
         if (!empty($response['metadata']['nonce'])) {
-            $status = $response['status'] === 'success' ? 200 : 500;
-            $output = $response['status'] === 'success'
-                ? ['output' => $response['output']]
-                : $response;
-
+            $formattedResponse = $this->formatPreviewResponse($response);
             event(new ScriptResponseEvent(
                 User::find($response['metadata']['current_user']),
-                $status,
-                $output,
+                $formattedResponse['status'],
+                $formattedResponse['output'],
                 null,
                 $response['metadata']['nonce']));
         }
@@ -41,5 +37,67 @@ class ScriptMicroserviceService
                 CompleteActivity::dispatch($definitions, $instance, $token, $response['output'])->onQueue('bpmn');
             }
         }
+    }
+
+    /**
+     * Format preview response data
+     *
+     * @param array $response
+     * @return array{status: int, output: array}
+     */
+    private function formatPreviewResponse(array $response): array
+    {
+        // Simple status determination: success = 200, others = 500
+        $status = $response['status'] === 'success' ? 200 : 500;
+
+        return [
+            'status' => $status,
+            'output' => $this->formatPreviewOutput($response),
+        ];
+    }
+
+    /**
+     * Format preview output data
+     *
+     * @param array $response
+     * @return array
+     */
+    private function formatPreviewOutput(array $response): array
+    {
+        // For successful responses, return just the output array
+        if (($response['status'] ?? '') === 'success') {
+            return [
+                'output' => $response['output'],
+            ];
+        }
+
+        // For error responses, include error details
+        $output = $response;
+
+        if (($response['status'] ?? '') === 'error') {
+            $output['exception'] = $this->extractErrorDetails($response);
+            $output['status'] = 'error';
+        }
+
+        return $output;
+    }
+
+    /**
+     * Extract error details from response
+     *
+     * @param array $response
+     * @return string
+     */
+    private function extractErrorDetails(array $response): string
+    {
+        if (isset($response['output']['error'])) {
+            return $response['output']['error'];
+        }
+
+        if (isset($response['message'])) {
+            return $response['message'];
+        }
+
+        return 'Unknown error occurred';
     }
 }

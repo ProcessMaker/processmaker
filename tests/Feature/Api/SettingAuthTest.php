@@ -85,7 +85,7 @@ class SettingAuthTest extends TestCase
 
         $syncSchedule = $response['data'][1];
         $this->assertEquals('Synchronization Schedule', $syncSchedule['name']);
-        $this->assertEquals(['quantity' => 1, "units" => "days"], $syncSchedule['config']);
+        $this->assertEquals(['quantity' => 1, 'units' => 'days'], $syncSchedule['config']);
 
         $type = $response['data'][2];
         $this->assertEquals('Type', $type['name']);
@@ -116,10 +116,10 @@ class SettingAuthTest extends TestCase
         $response->assertStatus(204);
         $this->assertDatabaseHas('settings', ['id' => $enabled['id'], 'config' => 1]);
 
-        $data = array_merge($syncSchedule, ['config' => ['quantity' => 2, "units" => "hours"]]);
+        $data = array_merge($syncSchedule, ['config' => ['quantity' => 2, 'units' => 'hours']]);
         $response = $this->apiCall('PUT', route('api.settings.update', ['setting' => $syncSchedule['id']]), $data);
         $response->assertStatus(204);
-        $this->assertDatabaseHas('settings', ['id' => $syncSchedule['id'], 'config' => json_encode(['quantity' => 2, "units" => "hours"])]);
+        $this->assertDatabaseHas('settings', ['id' => $syncSchedule['id'], 'config' => json_encode(['quantity' => 2, 'units' => 'hours'])]);
 
         $data = array_merge($type, ['config' => 'ad']);
         $response = $this->apiCall('PUT', route('api.settings.update', ['setting' => $type['id']]), $data);

@@ -384,24 +384,85 @@ class ProcessRequestsTest extends TestCase
     }
 
     /**
-     * Check that the validation wont allow duplicate requestnames
+     * Test updating process request status through various state transitions
+     *
+     * Tests the following status transitions:
+     * - ACTIVE -> CANCELED
+     * - CANCELED -> ACTIVE
+     * - ACTIVE -> ERROR
+     * - ERROR -> ACTIVE
+     * - ACTIVE -> CANCELED
+     * - CANCELED -> ERROR
+     *
+     * Each transition should return a 204 status code indicating success
      */
-    public function testUpdateProcessRequestTitleExists()
+    public function testUpdateProcessRequestStatus()
     {
+        $process = Process::factory()->create();
         $request1 = ProcessRequest::factory()->create([
             'name' => 'MyRequestName',
+            'status' => 'ACTIVE',
+            'process_id' => $process->id,
+            'data' => ['foo' => 'baz'],
         ]);
 
-        $request2 = ProcessRequest::factory()->create();
+        // Try to update status to CANCELED
+        $url = self::API_TEST_URL . '/' . $request1->id;
+        $response = $this->apiCall('PUT', $url, [
+            'status' => 'CANCELED',
+        ]);
 
-        $url = self::API_TEST_URL . '/' . $request2->id;
+        // Verify status was updated
+        $response->assertStatus(204);
 
         $response = $this->apiCall('PUT', $url, [
+            'status' => 'ACTIVE',
             'name' => 'MyRequestName',
+            'process_id' => $process->id,
+            'data' => ['foo' => 'baz'],
         ]);
-        //Validate the header status code
-        $response->assertStatus(422);
-        $response->assertSeeText('The Name has already been taken');
+
+        // Verify status was updated
+        $response->assertStatus(204);
+
+        $response = $this->apiCall('PUT', $url, [
+            'status' => 'ERROR',
+            'name' => 'MyRequestName',
+            'process_id' => $process->id,
+            'data' => ['foo' => 'baz'],
+        ]);
+        // Verify status was updated
+        $response->assertStatus(204);
+
+        $response = $this->apiCall('PUT', $url, [
+            'status' => 'ACTIVE',
+            'name' => 'MyRequestName',
+            'process_id' => $process->id,
+            'data' => ['foo' => 'baz'],
+        ]);
+
+        // Verify status was updated
+        $response->assertStatus(204);
+
+        $response = $this->apiCall('PUT', $url, [
+            'status' => 'CANCELED',
+            'name' => 'MyRequestName',
+            'process_id' => $process->id,
+            'data' => ['foo' => 'baz'],
+        ]);
+
+        // Verify status was updated
+        $response->assertStatus(204);
+
+        $response = $this->apiCall('PUT', $url, [
+            'status' => 'ERROR',
+            'name' => 'MyRequestName',
+            'process_id' => $process->id,
+            'data' => ['foo' => 'baz'],
+        ]);
+
+        // Verify status was updated
+        $response->assertStatus(204);
     }
 
     /**

@@ -420,7 +420,6 @@ class UserController extends Controller
             }
         }
         if ($fields['email'] !== $original['email']) {
-            
             if (class_exists(SsoUser::class)) {
                 // Check if the user is an SSO user (including SAML)
                 $ssoUser = SsoUser::where('user_id', $user->id)->exists();

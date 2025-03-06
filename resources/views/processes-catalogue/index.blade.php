@@ -32,6 +32,7 @@
     window.ProcessMaker.permission = {{
       Js::from(\Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'projects', 'documentation'))
     }};
+    window.ProcessMaker.defaultSavedSearch = {{{$defaultSavedSearch ?? 'null'}}};
   </script>
   @foreach($manager->getScripts() as $script)
     <script src="{{$script}}"></script>

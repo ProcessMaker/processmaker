@@ -3,10 +3,10 @@
 namespace ProcessMaker\Services;
 
 use Exception;
+use Prometheus\CollectorRegistry;
 use Prometheus\Counter;
 use Prometheus\Gauge;
 use Prometheus\Histogram;
-use Prometheus\CollectorRegistry;
 use Prometheus\RenderTextFormat;
 use Prometheus\Storage\Redis;
 use RuntimeException;
@@ -70,12 +70,13 @@ class MetricsService
     public function counter(string $name, string $help = null, array $labels = []): Counter
     {
         $help = $help ?? $name;
+
         return $this->collectionRegistry->getOrRegisterCounter(
-                $this->namespace,
-                $name,
-                $help,
-                $labels
-            );
+            $this->namespace,
+            $name,
+            $help,
+            $labels
+        );
     }
 
     /**
@@ -89,12 +90,13 @@ class MetricsService
     public function gauge(string $name, string $help = null, array $labels = []): Gauge
     {
         $help = $help ?? $name;
+
         return $this->collectionRegistry->getOrRegisterGauge(
-                $this->namespace,
-                $name,
-                $help,
-                $labels
-            );
+            $this->namespace,
+            $name,
+            $help,
+            $labels
+        );
     }
 
     /**
@@ -109,13 +111,14 @@ class MetricsService
     public function histogram(string $name, string $help = null, array $labels = [], array $buckets = [0.1, 1, 5, 10]): Histogram
     {
         $help = $help ?? $name;
+
         return $this->collectionRegistry->getOrRegisterHistogram(
-                $this->namespace,
-                $name,
-                $help,
-                $labels,
-                $buckets
-            );
+            $this->namespace,
+            $name,
+            $help,
+            $labels,
+            $buckets
+        );
     }
 
     /**
@@ -140,6 +143,7 @@ class MetricsService
     {
         $renderer = new RenderTextFormat();
         $metrics = $this->collectionRegistry->getMetricFamilySamples();
+
         return $renderer->render($metrics);
     }
 }

@@ -2,8 +2,8 @@
 
 namespace ProcessMaker\Providers;
 
-use ProcessMaker\Services\MetricsService;
 use Illuminate\Support\ServiceProvider;
+use ProcessMaker\Services\MetricsService;
 
 class MetricsServiceProvider extends ServiceProvider
 {

@@ -74,7 +74,8 @@ class BundleTest extends TestCase
 
         // Local
         $bundle = Bundle::factory()->create();
-        $bundle->install($payloads, 'copy');
+        $bundle->install($payloads, 'update');
+        $bundle->savePayloadsToFile($payloads, [0 => []], null);
 
         $screen = Screen::where('uuid', $screenUuid)->firstOrFail();
         $screen->title = 'New Screen Name';

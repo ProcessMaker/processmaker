@@ -175,21 +175,22 @@ class RequestController extends Controller
         $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, ($request->summary_screen) ? $request->summary_screen->type : 'FORM'));
 
-         // Load event ModelerStarting
-         $managerModeler = app(ModelerManager::class);
-         event(new ModelerStarting($managerModeler));
+        // Load event ModelerStarting
+        $managerModeler = app(ModelerManager::class);
+        event(new ModelerStarting($managerModeler));
 
-         $scriptsEnabled = ['package-slideshow','package-process-optimization','package-ab-testing','package-testing'];
-         $managerModelerScripts = array_filter($managerModeler->getScripts(), function($script) use ($scriptsEnabled) {
-             foreach ($scriptsEnabled as $enabledScript) {
-                 if (strpos($script, $enabledScript) !== false) {
-                     return false;
-                 }
-             }
-             return true;
-         });
+        $scriptsEnabled = ['package-slideshow', 'package-process-optimization', 'package-ab-testing', 'package-testing'];
+        $managerModelerScripts = array_filter($managerModeler->getScripts(), function ($script) use ($scriptsEnabled) {
+            foreach ($scriptsEnabled as $enabledScript) {
+                if (strpos($script, $enabledScript) !== false) {
+                    return false;
+                }
+            }
 
-         // Get all PM-Blocks
+            return true;
+        });
+
+        // Get all PM-Blocks
         $modelerController = new ModelerController();
         $pmBlockList = $modelerController->getPmBlockList();
 
@@ -260,7 +261,7 @@ class RequestController extends Controller
         }
 
         $dataManager = new DataManager();
-        $data = $dataManager->getData($task);
+        $data = $dataManager->getData($task, true);
 
         $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, ($request->summary_screen) ? $request->summary_screen->type : 'FORM'));
