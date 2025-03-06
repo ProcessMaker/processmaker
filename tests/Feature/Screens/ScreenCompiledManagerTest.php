@@ -27,7 +27,7 @@ class ScreenCompiledManagerTest extends TestCase
      *
      * @test
      */
-    public function it_stores_compiled_content()
+    public function test_it_stores_compiled_content()
     {
         // Arrange
         $manager = new ScreenCompiledManager();
@@ -51,7 +51,7 @@ class ScreenCompiledManagerTest extends TestCase
      *
      * @test
      */
-    public function it_retrieves_compiled_content()
+    public function test_it_retrieves_compiled_content()
     {
         // Arrange content
         $manager = new ScreenCompiledManager();
@@ -74,7 +74,7 @@ class ScreenCompiledManagerTest extends TestCase
      *
      * @test
      */
-    public function it_returns_null_when_compiled_content_does_not_exist()
+    public function test_it_returns_null_when_compiled_content_does_not_exist()
     {
         // Arrange
         $manager = new ScreenCompiledManager();
@@ -92,7 +92,7 @@ class ScreenCompiledManagerTest extends TestCase
      *
      * @test
      */
-    public function it_clears_all_compiled_assets()
+    public function test_it_clears_all_compiled_assets()
     {
         // Arrange content
         $manager = new ScreenCompiledManager();
@@ -118,7 +118,7 @@ class ScreenCompiledManagerTest extends TestCase
      *
      * @test
      */
-    public function it_clears_process_screens_cache()
+    public function test_it_clears_process_screens_cache()
     {
         // Arrange
         $manager = new ScreenCompiledManager();
@@ -162,7 +162,7 @@ class ScreenCompiledManagerTest extends TestCase
      *
      * @test
      */
-    public function it_creates_a_screen_key_with_various_versions()
+    public function test_it_creates_a_screen_key_with_various_versions()
     {
         // Arrange
         $manager = new ScreenCompiledManager();
@@ -192,7 +192,7 @@ class ScreenCompiledManagerTest extends TestCase
      *
      * @test
      */
-    public function it_gets_the_last_screen_version_id()
+    public function test_it_gets_the_last_screen_version_id()
     {
         // Create the manager
         $manager = new ScreenCompiledManager();
@@ -216,7 +216,7 @@ class ScreenCompiledManagerTest extends TestCase
      *
      * @test
      */
-    public function it_stores_empty_compiled_content()
+    public function test_it_stores_empty_compiled_content()
     {
         // Arrange
         $manager = new ScreenCompiledManager();
@@ -240,7 +240,7 @@ class ScreenCompiledManagerTest extends TestCase
      *
      * @test
      */
-    public function it_handles_storage_exceptions()
+    public function test_it_handles_storage_exceptions()
     {
         // Arrange
         $manager = new ScreenCompiledManager();
@@ -263,7 +263,7 @@ class ScreenCompiledManagerTest extends TestCase
      *
      * @test
      */
-    public function it_clears_compiled_assets_when_directory_does_not_exist()
+    public function test_it_clears_compiled_assets_when_directory_does_not_exist()
     {
         // Arrange
         $manager = new ScreenCompiledManager();
@@ -283,7 +283,7 @@ class ScreenCompiledManagerTest extends TestCase
      *
      * @test
      */
-    public function it_fails_with_invalid_screen_key()
+    public function test_it_fails_with_invalid_screen_key()
     {
         // Arrange
         $manager = new ScreenCompiledManager();
@@ -313,7 +313,7 @@ class ScreenCompiledManagerTest extends TestCase
      *
      * @test
      */
-    public function it_handles_storage_limit_scenarios()
+    public function test_it_handles_storage_limit_scenarios()
     {
         // Arrange
         $manager = new ScreenCompiledManager();
@@ -337,7 +337,7 @@ class ScreenCompiledManagerTest extends TestCase
      *
      * @test
      */
-    public function it_deletes_screen_compiled_content()
+    public function test_it_deletes_screen_compiled_content()
     {
         // Arrange
         $manager = new ScreenCompiledManager();
@@ -390,7 +390,7 @@ class ScreenCompiledManagerTest extends TestCase
      *
      * @test
      */
-    public function it_returns_false_when_no_files_match_delete_pattern()
+    public function test_it_returns_false_when_no_files_match_delete_pattern()
     {
         // Arrange
         $manager = new ScreenCompiledManager();
@@ -427,7 +427,7 @@ class ScreenCompiledManagerTest extends TestCase
      *
      * @test
      */
-    public function it_handles_special_characters_in_language_code()
+    public function test_it_handles_special_characters_in_language_code()
     {
         // Arrange
         $manager = new ScreenCompiledManager();
