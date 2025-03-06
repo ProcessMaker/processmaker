@@ -2,6 +2,7 @@
   <div class="tw-flex tw-relative tw-text-nowrap tw-whitespace-nowrap tw-p-3">
     <div
       v-if="firstOptionValue"
+      data-test="truncated-group-first-option"
       class="tw-overflow-hidden tw-text-ellipsis">
       <a
         v-if="href !== null"
@@ -18,9 +19,10 @@
     </div>
 
     <AppPopover
-      v-if="optionsModel.length > 1 || (optionsModel[0] && optionsModel[0].options.length > 1)"
+      v-if="hasAdditionalOptions"
       v-model="show"
       :hover="false"
+      data-test="truncated-group-popover"
       position="bottom"
       class="!tw-absolute tw-right-0 tw-top-0 tw-h-full tw-flex tw-items-center">
       <div
@@ -184,6 +186,12 @@ export default defineComponent({
       return null;
     });
 
+    /**
+     * Checks if there are additional options to display
+     * @returns {boolean} True if there are additional options, false otherwise
+     */
+    const hasAdditionalOptions = computed(() => optionsModel.value.length > 1 || (optionsModel.value[0] && optionsModel.value[0].options.length > 1));
+
     return {
       show,
       optionsModel,
@@ -195,6 +203,7 @@ export default defineComponent({
       optionValues,
       firstOptionHref,
       firstOptionFormatted,
+      hasAdditionalOptions,
     };
   },
 });
