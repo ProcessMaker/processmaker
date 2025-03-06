@@ -240,6 +240,7 @@ class ProcessVariableController extends Controller
             ->join('asset_variables AS av', 'vfv.asset_variable_id', '=', 'av.id')
             ->join('process_variables AS pv', 'av.process_id', '=', 'pv.process_id')
             ->whereIn('pv.process_id', $processIds)
+            ->groupBy('vfv.id')
             ->orderBy('vfv.id');
 
         if (!empty($activeColumns)) {
