@@ -12,6 +12,9 @@ use ProcessMaker\Services\MetricsService;
  * @method static void setGauge(string $name, float $value, array $labelValues = [])
  * @method static string renderMetrics()
  * @method static \Prometheus\CollectorRegistry getCollectionRegistry()
+ * @method static void counterInc(string $name, string $help = null, array $labels = [])
+ * @method static void histogramObserve(string $name, string $help = null, array $labels = [], array $buckets = [0.1, 1, 5, 10], float $executionTime)
+ * @method static void clearMetrics()
  */
 class Metrics extends Facade
 {

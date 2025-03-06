@@ -113,17 +113,9 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
 
             $this->updateData($response);
 
-            Metrics::counter(
+            Metrics::counterInc(
                 'script_task_completed_total',
                 'Total number of script tasks completed',
-                [
-                    'activity_id',
-                    'activity_name',
-                    'process_id',
-                    'request_id',
-                    'script_executor',
-                ]
-            )->inc(
                 [
                     'activity_id' => $element->getId(),
                     'activity_name' => $element->getName(),

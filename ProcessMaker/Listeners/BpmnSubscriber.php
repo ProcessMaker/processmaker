@@ -149,26 +149,18 @@ class BpmnSubscriber
         $startTime = $token->created_at_ms;
         $completedTime = $token->completed_at_ms;
         $executionTime = $completedTime->diffInMilliseconds($startTime);
-        Metrics::histogram(
+        Metrics::histogramObserve(
             'activity_execution_time_seconds',
             'Activity Execution Time',
-            [
-                'activity_id',
-                'activity_name',
-                'element_type',
-                'process_id',
-                'request_id',
-            ],
-            [1, 10, 3600, 86400]
-        )->observe(
-            $executionTime,
             [
                 'activity_id' => $token->element_id,
                 'activity_name' => $token->element_name,
                 'element_type' => $token->element_type,
                 'process_id' => $token->process_id,
                 'request_id' => $token->process_request_id,
-            ]
+            ],
+            [1, 10, 3600, 86400],
+            $executionTime,
         );
 
         if ($token->element_type == 'task') {
