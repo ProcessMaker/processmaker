@@ -47,6 +47,7 @@ class TaskMetricsTest extends TestCase
         $metric = $adapter->getCounter($ns, $name);
 
         $this->assertInstanceOf(Counter::class, $metric);
+        $labels = Metrics::addSystemLabels($labels);
         $this->assertEquals($metric->getLabelNames(), array_keys($labels));
     }
 }
