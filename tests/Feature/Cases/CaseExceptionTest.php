@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Cases;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
@@ -14,8 +13,6 @@ use Tests\TestCase;
 
 class CaseExceptionTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected $user;
 
     protected $process;

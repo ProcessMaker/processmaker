@@ -177,7 +177,10 @@ class CreateDataLakeViews extends Command
      */
     protected function getTables(): array
     {
-        return DB::connection()->getDoctrineSchemaManager()->listTableNames();
+        $tables = array_map(function ($item) {
+            return $item['name'];
+        }, Schema::getTables());
+        return $tables;
     }
 
     /**
@@ -185,6 +188,9 @@ class CreateDataLakeViews extends Command
      */
     protected function getViews(): array
     {
-        return DB::connection()->getDoctrineSchemaManager()->listViews();
+        $views = array_map(function ($item) {
+            return $item['name'];
+        }, Schema::getViews());
+        return $views;
     }
 }

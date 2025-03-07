@@ -34,6 +34,7 @@ use ProcessMaker\Managers\ScreenCompiledManager;
 use ProcessMaker\Models;
 use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
+use ProcessMaker\Repositories\SettingsConfigRepository;
 use RuntimeException;
 
 /**
@@ -57,6 +58,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
     {
         // Track the start time for service providers boot
         self::$bootStart = microtime(true);
+
+        config()->setApplicationBooted();
 
         $this->app->singleton(Menu::class, function ($app) {
             return new MenuManager();
@@ -204,6 +207,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
                 throw new RuntimeException('Cache configuration is missing.');
             }
         });
+
+        $this->app->extend('config', function ($originalConfig) {
+            return new SettingsConfigRepository($originalConfig->all());
+        });
     }
 
     /**
@@ -309,9 +316,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
         Horizon::auth(function ($request) {
             return Facades\Auth::user() instanceof Models\User;
         });
-
-        // we are using custom passport migrations
-        Passport::ignoreMigrations();
     }
 
     private function setupFactories(): void

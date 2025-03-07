@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Cases;
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -12,8 +11,6 @@ use Tests\TestCase;
 
 class CaseStartedSubProcessTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected $user;
 
     protected $user2;

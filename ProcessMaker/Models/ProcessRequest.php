@@ -578,6 +578,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             'element_id' => $element ? $element->getId() : null,
             'element_name' => $element ? $element->getName() : null,
             'created_at' => Carbon::now('UTC')->format('c'),
+            'trace' => $exception->getTraceAsString(),
         ];
         $errors = $this->errors ?: [];
         $errors[] = $error;

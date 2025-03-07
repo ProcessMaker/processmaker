@@ -19,9 +19,8 @@
         <pm-modal ref="createEditAuthClient" id="createEditAuthClient" :title="title" @hidden="onClose" @ok.prevent="onSave" style="display: none;">
             <required></required>
             <div class="form-group" required>
-                {!!Form::label('name', __('Name'))!!}
-                {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'authClient.name',
-                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}', 'required', 'aria-required' => 'true'])!!}
+                {{ html()->label(__('Name'), 'name') }}
+                {{ html()->text('name')->class('form-control')->attribute('v-model', 'authClient.name')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':errors.name}')->required()->attribute('aria-required', 'true') }}
                 <small class="form-text text-muted">{{ __('Name must be unique') }}</small>
                 <div class="invalid-feedback" role="alert" v-if="errors.name">@{{ errors.name[0] }}</div>
             </div>
@@ -31,9 +30,8 @@
                 <b-form-checkbox value="authorization_code_grant">{{__('Enable Authorization Code Grant')}}</b-form-checkbox>
                 <br />
                 <template v-if="authClient['types'].includes('authorization_code_grant')">
-                  {!!Form::label('redirect', __('Redirect URL'))!!}
-                  {!!Form::text('redirect', null, ['class'=> 'form-control', 'v-model'=> 'authClient.redirect',
-                  'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.redirect}','rows'=>3])!!}
+                  {{ html()->label(__('Redirect URL'), 'redirect') }}
+                  {{ html()->text('redirect')->class('form-control')->attribute('v-model', 'authClient.redirect')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':errors.redirect}')->attribute('rows', 3) }}
                   <div class="invalid-feedback" role="alert" v-if="errors.redirect">@{{ errors.redirect[0] }}</div>
                 </template>
               </div>

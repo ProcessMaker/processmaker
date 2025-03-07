@@ -20,18 +20,14 @@ return new class extends Migration {
 
     public function __construct()
     {
-        DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', Types::STRING);
+
     }
 
     public function up()
     {
         Schema::table($this->table, function (Blueprint $table) {
-            $sm = Schema::getConnection()->getDoctrineSchemaManager();
-            $doctrineTable = $sm->listTableDetails($this->table);
-
-            if (!$doctrineTable->hasIndex($this->indexName)) {
+            if (!Schema::hasIndex($this->table, $this->indexName)) {
                 $table->index($this->column, $this->indexName);
-            } else {
             }
         });
     }
@@ -44,10 +40,7 @@ return new class extends Migration {
     public function down()
     {
         Schema::table('process_request_tokens', function (Blueprint $table) {
-            $sm = Schema::getConnection()->getDoctrineSchemaManager();
-            $doctrineTable = $sm->listTableDetails($this->table);
-
-            if ($doctrineTable->hasIndex($this->indexName)) {
+            if (Schema::hasIndex($this->table, $this->indexName)) {
                 $table->dropIndex($this->indexName);
             }
         });

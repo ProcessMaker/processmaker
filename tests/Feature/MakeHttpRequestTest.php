@@ -27,7 +27,9 @@ class MakeHttpRequestTest extends TestCase
     public function testRequestConstruction()
     {
         // Prepare the object that will use the trait
-        $testStub = $this->getObjectForTrait(MakeHttpRequests::class);
+        $testStub = new class {
+            use MakeHttpRequests;
+        };
         $testStub->endpoints = json_decode('{"create":{"url":"https://jsonplaceholder.typicode.com/users/{{userIdParam}}","body":"{\n    \"name\":\"{{nameParam}}\",\n    \"age\":\"{{ageParam}}\"\n}","view":false,"method":"PUT","params":[{"id":0,"key":"queryStringParam","value":null,"required":false}],"headers":[{"id":0,"key":"headerParam","value":null,"required":false}],"purpose":"create","updated":"2022-05-30 12:38:48","testData":"{\n    \"nameParam\":\"Dante\",\n    \"ageParam\": 12,\n    \"userIdParam\": 4\n}","body_type":"json","outboundConfig":[]}}', true);
         $testStub->credentials = ['verify_certificate' => true];
         $testStub->authtype = 'NONE';
@@ -77,7 +79,9 @@ class MakeHttpRequestTest extends TestCase
     public function testRequestConstructionWithoutCommonParams()
     {
         // Prepare the object that will use the trait
-        $testStub = $this->getObjectForTrait(MakeHttpRequests::class);
+        $testStub = new class {
+            use MakeHttpRequests;
+        };
         // Parameter endpoint url without protocol (without https://, etc.)
         $testStub->endpoints = json_decode('{"create":{"url":"/users/{{userIdParam}}?queryStringParam2={{queryStringValue2}}","body":"{\n    \"name\":\"{{nameParam}}\",\n    \"age\":\"{{ageParam}}\"\n}","view":false,"method":"PUT","params":[{"id":0,"key":"queryStringParam","value":null,"required":false}],"headers":[{"id":0,"key":"headerParam","value":null,"required":false}],"purpose":"create","updated":"2022-05-30 12:38:48","testData":"{\n    \"nameParam\":\"Dante\",\n    \"ageParam\": 12,\n    \"userIdParam\": 4\n}","body_type":"json","outboundConfig":[]}}', true);
         $testStub->credentials = ['verify_certificate' => true];
@@ -130,7 +134,9 @@ class MakeHttpRequestTest extends TestCase
     public function testResponseMapping()
     {
         // Prepare the object that will use the trait
-        $testStub = $this->getObjectForTrait(MakeHttpRequests::class);
+        $testStub = new class {
+            use MakeHttpRequests;
+        };
         $testStub->endpoints = json_decode('{"create":{"url":"https://jsonplaceholder.typicode.com/users/{{userIdParam}}","body":"{\n    \"name\":\"{{nameParam}}\",\n    \"age\":\"{{ageParam}}\"\n}","view":false,"method":"PUT","params":[{"id":0,"key":"queryStringParam","value":null,"required":false}],"headers":[{"id":0,"key":"headerParam","value":null,"required":false}],"purpose":"create","updated":"2022-05-30 12:38:48","testData":"{\n    \"nameParam\":\"Dante\",\n    \"ageParam\": 12,\n    \"userIdParam\": 4\n}","body_type":"json","outboundConfig":[]}}', true);
         $testStub->credentials = ['verify_certificate' => true];
         $testStub->authtype = 'NONE';
@@ -162,7 +168,7 @@ class MakeHttpRequestTest extends TestCase
 
         // Verify that the endpoint maps an attribute
         $stream = \GuzzleHttp\Psr7\Utils::streamFor('{"id" : "11", "name": "testName"}');
-        $response = new \GuzzleHttp\Psr7\Response(200, ['Content-Type' => 'application/json'], $stream);
+        $response = new Response(200, ['Content-Type' => 'application/json'], $stream);
         $mapped = $this->callMethod($testStub,
             'responseWithHeaderData',
             [$response, $requestData, $endpointConfig]);
@@ -174,7 +180,7 @@ class MakeHttpRequestTest extends TestCase
             ['value' => '', 'key' => 'allData', 'format' => 'dotNotation'],
         ];
         $stream = \GuzzleHttp\Psr7\Utils::streamFor('{"id" : "11", "name": "testName"}');
-        $response = new \GuzzleHttp\Psr7\Response(200, ['Content-Type' => 'application/json'], $stream);
+        $response = new Response(200, ['Content-Type' => 'application/json'], $stream);
         $mapped = $this->callMethod($testStub,
             'responseWithHeaderData',
             [$response, $requestData, $endpointConfig]);
@@ -186,7 +192,7 @@ class MakeHttpRequestTest extends TestCase
             ['value' => 'data.code', 'key' => 'responseCode', 'format' => 'dotNotation'],
         ];
         $stream = \GuzzleHttp\Psr7\Utils::streamFor('{"data": {"user": {"id" : "11", "name": "testName"}, "code":99}}');
-        $response = new \GuzzleHttp\Psr7\Response(200, ['Content-Type' => 'application/json'], $stream);
+        $response = new Response(200, ['Content-Type' => 'application/json'], $stream);
         $mapped = $this->callMethod($testStub,
             'responseWithHeaderData',
             [$response, $requestData, $endpointConfig]);
@@ -196,7 +202,9 @@ class MakeHttpRequestTest extends TestCase
     public function testCallRest()
     {
         // Prepare the object that will use the trait
-        $testStub = $this->getObjectForTrait(MakeHttpRequests::class);
+        $testStub = new class {
+            use MakeHttpRequests;
+        };
         $testStub->endpoints = json_decode('{"create":{"url":"https://fake.server.com/users/{{userIdParam}}","body":"{\n    \"name\":\"{{nameParam}}\",\n    \"age\":\"{{ageParam}}\"\n}","view":false,"method":"PUT","params":[{"id":0,"key":"queryStringParam","value":null,"required":false}],"headers":[{"id":0,"key":"headerParam","value":null,"required":false}],"purpose":"create","updated":"2022-05-30 12:38:48","testData":"{\n    \"nameParam\":\"Dante\",\n    \"ageParam\": 12,\n    \"userIdParam\": 4\n}","body_type":"json","outboundConfig":[]}}', true);
         $testStub->authtype = 'BASIC';
         $testStub->debug_mode = false;
@@ -249,7 +257,9 @@ class MakeHttpRequestTest extends TestCase
     public function testRequestCall()
     {
         // Prepare the object that will use the trait
-        $testStub = $this->getObjectForTrait(MakeHttpRequests::class);
+        $testStub = new class {
+            use MakeHttpRequests;
+        };
         $testStub->endpoints = json_decode('{"create":{"url":"https://fake.server.com/users/{{userIdParam}}","body":"{\n    \"name\":\"{{nameParam}}\",\n    \"age\":\"{{ageParam}}\"\n}","view":false,"method":"PUT","params":[{"id":0,"key":"queryStringParam","value":null,"required":false}],"headers":[{"id":0,"key":"headerParam","value":null,"required":false}],"purpose":"create","updated":"2022-05-30 12:38:48","testData":"{\n    \"nameParam\":\"Dante\",\n    \"ageParam\": 12,\n    \"userIdParam\": 4\n}","body_type":"json","outboundConfig":[]}}', true);
         $testStub->authtype = 'BASIC';
         $testStub->credentials = ['verify_certificate' => false, 'username' => 'test', 'password' => 'test'];
@@ -326,7 +336,9 @@ class MakeHttpRequestTest extends TestCase
     public function testRequestCallsWhenEndPointReturnErrors()
     {
         // Prepare the object that will use the trait
-        $testStub = $this->getObjectForTrait(MakeHttpRequests::class);
+        $testStub = new class {
+            use MakeHttpRequests;
+        };
         $testStub->endpoints = json_decode('{"create":{"url":"https://fake.server.com/users/{{userIdParam}}","body":"{\n    \"name\":\"{{nameParam}}\",\n    \"age\":\"{{ageParam}}\"\n}","view":false,"method":"PUT","params":[{"id":0,"key":"queryStringParam","value":null,"required":false}],"headers":[{"id":0,"key":"headerParam","value":null,"required":false}],"purpose":"create","updated":"2022-05-30 12:38:48","testData":"{\n    \"nameParam\":\"Dante\",\n    \"ageParam\": 12,\n    \"userIdParam\": 4\n}","body_type":"json","outboundConfig":[]}}', true);
         $testStub->authtype = 'NONE';
         $testStub->debug_mode = false;

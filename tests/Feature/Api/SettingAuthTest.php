@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Api;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\Setting;
@@ -22,7 +21,6 @@ use Tests\TestCase;
 class SettingAuthTest extends TestCase
 {
     use RequestHelper;
-    use RefreshDatabase;
 
     private function seedLDAPSettings()
     {

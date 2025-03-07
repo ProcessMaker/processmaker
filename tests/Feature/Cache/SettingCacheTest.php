@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Cache;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
@@ -16,7 +15,6 @@ use Tests\TestCase;
 class SettingCacheTest extends TestCase
 {
     use RequestHelper;
-    use RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -40,9 +38,9 @@ class SettingCacheTest extends TestCase
 
     private function upgrade()
     {
-        $this->artisan('migrate', [
-            '--path' => 'upgrades/2023_11_30_185738_add_password_policies_settings.php',
-        ])->run();
+        require_once base_path('upgrades/2023_11_30_185738_add_password_policies_settings.php');
+        $upgrade = new \AddPasswordPoliciesSettings();
+        $upgrade->up();
     }
 
     public static function trackQueries(): void
@@ -187,8 +185,8 @@ class SettingCacheTest extends TestCase
     {
         $pattern = 'test_pattern';
         $keys = [
-            'settings:test_pattern:1',
-            'settings:test_pattern:2',
+            'settingstest_pattern:1',
+            'settingstest_pattern:2',
         ];
         \SettingCache::set('test_pattern:1', 1);
         \SettingCache::set('test_pattern:2', 2);
@@ -199,7 +197,7 @@ class SettingCacheTest extends TestCase
             ->andReturnSelf();
 
         Redis::shouldReceive('keys')
-            ->with('settings:*')
+            ->with('settings*')
             ->andReturn($keys);
 
         Redis::shouldReceive('del')

@@ -13,10 +13,6 @@ return new class extends Migration {
      */
     public function up()
     {
-        $dbPlatform = DB::connection()->getDoctrineSchemaManager()->getDatabasePlatform();
-        if (!$dbPlatform->hasDoctrineTypeMappingFor('enum')) {
-            $dbPlatform->registerDoctrineTypeMapping('enum', 'string');
-        }
         Schema::table('users', function (Blueprint $table) {
             $table->unsignedInteger('delegation_user_id')->nullable();
             $table->unsignedInteger('manager_id')->nullable();

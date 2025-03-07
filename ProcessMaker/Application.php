@@ -4,19 +4,13 @@ namespace ProcessMaker;
 
 use Igaster\LaravelTheme\Facades\Theme;
 use Illuminate\Foundation\Application as IlluminateApplication;
-use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 use Illuminate\Support\Facades\Auth;
-use ProcessMaker\Models\Setting;
-use ProcessMaker\Providers\SettingServiceProvider;
 
 /**
  * Class Application.
  */
 class Application extends IlluminateApplication
 {
-    // ProcessMaker Version
-    public const VERSION = '4.0.0';
-
     /**
      * Sets the timezone for the application and for php with the specified timezone.
      *

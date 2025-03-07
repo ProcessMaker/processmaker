@@ -161,7 +161,7 @@ class TokenRepository implements TokenRepositoryInterface
 
         //Default 3 days of due date
         $due = $this->getDueVariable($activity, $token);
-        $token->due_at = $due ? Carbon::now()->addHours($due) : null;
+        $token->due_at = $due ? Carbon::now()->addHours((int) $due) : null;
         $token->initiated_at = null;
         $token->riskchanges_at = $due ? Carbon::now()->addHours($due * 0.7) : null;
         $token->updateTokenProperties();
@@ -313,10 +313,10 @@ class TokenRepository implements TokenRepositoryInterface
             $mustache = new Mustache_Engine();
             $mustacheDueVariable = $mustache->render($dueVariable, $instanceData);
 
-            return is_numeric($mustacheDueVariable) ? $mustacheDueVariable : '72';
+            return is_numeric($mustacheDueVariable) ? $mustacheDueVariable : 72;
         }
 
-        return $activity->getProperty('dueIn', '72');
+        return (int) $activity->getProperty('dueIn', '72');
     }
 
     /**
