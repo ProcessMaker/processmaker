@@ -25,6 +25,8 @@ abstract class TestCase extends BaseTestCase
 {
     use RefreshDatabase;
 
+    protected $connectionsToTransact = ['processmaker', 'data'];
+
     public $withPermissions = false;
 
     protected $skipTeardownPDOException = false;
@@ -35,13 +37,25 @@ abstract class TestCase extends BaseTestCase
 
     private static $cacheCleared = false;
 
+    private static $currentNonTransactionalTest = null;
+
+    private static $databaseSnapshotFile = null;
+
     /**
      * Run additional setUps from traits.
      */
     protected function setUp(): void
     {
+        $class = get_class($this);
+
+        if (self::$currentNonTransactionalTest && self::$currentNonTransactionalTest !== $class) {
+            // The last test to run was non-transactional, so we need to refresh the database
+            $this->restoreDatabaseFromSnapshot();
+            self::$currentNonTransactionalTest = null;
+        }
+
         if ($this->connectionsToTransact() === []) {
-            $this->markTestSkipped('Skipping for Laravel 11');
+            self::$currentNonTransactionalTest = $class;
         }
 
         if (!$this->populateDatabase()) {
@@ -66,6 +80,10 @@ abstract class TestCase extends BaseTestCase
             if (strpos($imethod, 'setup') === 0 && $imethod !== 'setup') {
                 $this->$method();
             }
+        }
+
+        if (!self::$databaseSnapshotFile) {
+            $this->takeDatabaseSnapshot();
         }
     }
 
@@ -195,5 +213,34 @@ abstract class TestCase extends BaseTestCase
     private function populateDatabase() : bool
     {
         return (bool) env('POPULATE_DATABASE', true);
+    }
+
+    private function takeDatabaseSnapshot()
+    {
+        $snapshotFile = base_path('test-db-snapshot.db');
+        $password = env('DB_PASSWORD');
+        $command = 'mysqldump --ignore-views=true --source-data --databases test -u ' . env('DB_USERNAME');
+        // $command = 'mysqldump -u ' . env('DB_USERNAME');
+        if (!empty($password)) {
+            $command .= ' -p' . $password;
+        }
+        $command .= ' > ' . $snapshotFile;
+        // $command .= ' test > ' . $snapshotFile;
+        system($command);
+        self::$databaseSnapshotFile = $snapshotFile;
+    }
+
+    private function restoreDatabaseFromSnapshot()
+    {
+        if (!file_exists(self::$databaseSnapshotFile)) {
+            throw new \Exception('Database snapshot not found');
+        }
+        $password = env('DB_PASSWORD');
+        $command = 'mysql -u ' . env('DB_USERNAME');
+        if (!empty($password)) {
+            $command .= ' -p' . $password;
+        }
+        $command .= ' test < ' . self::$databaseSnapshotFile;
+        system($command);
     }
 }
