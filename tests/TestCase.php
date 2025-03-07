@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Redis;
 use Illuminate\Testing\Constraints\ArraySubset;
 use Illuminate\Testing\Exceptions\InvalidArgumentException;
 use PDOException;
-use PHPUnit\Event\Facade as EventFacade;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Jobs\RefreshArtisanCaches;
@@ -40,6 +39,12 @@ abstract class TestCase extends BaseTestCase
     private static $currentNonTransactionalTest = null;
 
     private static $databaseSnapshotFile = null;
+
+    private $testStartTime = null;
+
+    private static $testDurations = [];
+
+    public $dropViews = true;
 
     /**
      * Run additional setUps from traits.
@@ -85,6 +90,8 @@ abstract class TestCase extends BaseTestCase
         if (!self::$databaseSnapshotFile) {
             $this->takeDatabaseSnapshot();
         }
+
+        $this->testStartTime = microtime(true);
     }
 
     /**
@@ -138,6 +145,9 @@ abstract class TestCase extends BaseTestCase
                 $this->$method();
             }
         }
+        $testDuration = microtime(true) - $this->testStartTime;
+        $test = get_class($this) . '::' . $this->name();
+        self::$testDurations[$test] = $testDuration;
     }
 
     protected function withPersonalAccessClient()
@@ -218,15 +228,11 @@ abstract class TestCase extends BaseTestCase
     private function takeDatabaseSnapshot()
     {
         $snapshotFile = base_path('test-db-snapshot.db');
-        $password = env('DB_PASSWORD');
-        $command = 'mysqldump --ignore-views=true --source-data --databases test -u ' . env('DB_USERNAME');
-        // $command = 'mysqldump -u ' . env('DB_USERNAME');
-        if (!empty($password)) {
-            $command .= ' -p' . $password;
+        $command = 'mysqldump ' . $this->mysqlConnectionString();
+        $command .= ' ' . env('DB_DATABASE') . ' > ' . $snapshotFile;
+        if (system($command) === false) {
+            dd("Failed to take database snapshot: $command");
         }
-        $command .= ' > ' . $snapshotFile;
-        // $command .= ' test > ' . $snapshotFile;
-        system($command);
         self::$databaseSnapshotFile = $snapshotFile;
     }
 
@@ -235,12 +241,31 @@ abstract class TestCase extends BaseTestCase
         if (!file_exists(self::$databaseSnapshotFile)) {
             throw new \Exception('Database snapshot not found');
         }
-        $password = env('DB_PASSWORD');
-        $command = 'mysql -u ' . env('DB_USERNAME');
-        if (!empty($password)) {
-            $command .= ' -p' . $password;
+        $command = 'mysql ' . $this->mysqlConnectionString();
+        $command .= ' ' . env('DB_DATABASE') . ' < ' . self::$databaseSnapshotFile;
+        if (system($command) === false) {
+            dd("Failed to restore database from snapshot: $command");
         }
-        $command .= ' test < ' . self::$databaseSnapshotFile;
-        system($command);
+    }
+
+    private function mysqlConnectionString()
+    {
+        $user = env('DB_USERNAME');
+        $password = env('DB_PASSWORD');
+        $host = env('DB_HOSTNAME');
+        $port = env('DB_PORT');
+
+        $command = '-u ' . $user;
+        if (!empty($password)) {
+            $command .= ' -p\'' . $password . '\'';
+        }
+        if (!empty($host)) {
+            $command .= ' -h ' . $host;
+        }
+        if (!empty($port)) {
+            $command .= ' -P ' . $port;
+        }
+
+        return $command;
     }
 }
