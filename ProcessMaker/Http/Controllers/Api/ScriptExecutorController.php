@@ -167,6 +167,7 @@ class ScriptExecutorController extends Controller
      */
     public function update(Request $request, ScriptExecutor $scriptExecutor)
     {
+        $request->request->add(['type' => 'custom']);
         $this->checkAuth($request);
         $request->validate(ScriptExecutor::rules());
 
