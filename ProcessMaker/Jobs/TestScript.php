@@ -65,13 +65,13 @@ class TestScript implements ShouldQueue
                 'nonce' => $this->nonce,
                 'current_user' => $this->current_user?->id,
             ];
-            $response = $this->script->runScript($this->data, $this->configuration, '', null, 0, $metadata);
+            $response = $this->script->runScript($this->data, $this->configuration, '', null, 1, $metadata);
             \Log::debug('Response api microservice: ' . print_r($response, true));
 
-            if (!config('script-runner-microservice.enabled') ||
-                $this->script->scriptExecutor && $this->script->scriptExecutor->type === ScriptExecutorType::Custom) {
-                $this->sendResponse(200, $response);
+            if (config('script-runner-microservice.enabled') && !empty($response['status']) && $response['status'] === 'success') {
+                $response = ['output' => $response['output']];
             }
+            $this->sendResponse(200, $response);
         } catch (Throwable $exception) {
             $this->sendResponse(500, [
                 'exception' => get_class($exception),
