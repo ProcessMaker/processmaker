@@ -2,7 +2,7 @@
   <div class="tw-flex tw-relative tw-text-nowrap tw-whitespace-nowrap tw-p-3">
     <div
       v-if="firstOptionValue"
-      data-test="truncated-group-first-option"
+      :data-test="`truncated-group-${indexRowComputed}`"
       class="tw-overflow-hidden tw-text-ellipsis">
       <a
         v-if="href !== null"
@@ -22,7 +22,7 @@
       v-if="hasAdditionalOptions"
       v-model="show"
       :hover="false"
-      data-test="truncated-group-popover"
+      :data-test="`truncated-group-popover-${indexRow}`"
       position="bottom"
       class="!tw-absolute tw-right-0 tw-top-0 tw-h-full tw-flex tw-items-center">
       <div
@@ -44,7 +44,8 @@
               :option="optionsModel[indexTitle]"
               :columns="columns"
               :row="row"
-              :column="column" />
+              :column="column"
+              :data-test="`truncated-group-popover-title-${indexTitle}`" />
 
             <ul
               class="tw-list-disc tw-list-inside">
@@ -108,6 +109,10 @@ export default defineComponent({
     formatData: {
       type: Function,
       default: null,
+    },
+    indexRow: {
+      type: Number,
+      default: 0,
     },
   },
   setup(props) {
@@ -192,6 +197,8 @@ export default defineComponent({
      */
     const hasAdditionalOptions = computed(() => optionsModel.value.length > 1 || (optionsModel.value[0] && optionsModel.value[0].options.length > 1));
 
+    const indexRowComputed = computed(() => props.indexRow);
+
     return {
       show,
       optionsModel,
@@ -204,6 +211,7 @@ export default defineComponent({
       firstOptionHref,
       firstOptionFormatted,
       hasAdditionalOptions,
+      indexRowComputed,
     };
   },
 });
