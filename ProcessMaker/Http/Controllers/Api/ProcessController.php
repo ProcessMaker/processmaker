@@ -257,7 +257,7 @@ class ProcessController extends Controller
      *         @OA\JsonContent(ref="#/components/schemas/Process")
      *     ),
      *     @OA\Response(
-     *         response=404,
+     *         response=204,
      *         description="Process not found",
      *         @OA\JsonContent(
      *             type="object",
@@ -272,7 +272,7 @@ class ProcessController extends Controller
         if ($process === null) {
             return response()->json([
                 'message' => __('The requested process was not found'),
-            ], 404);
+            ], 204);
         }
 
         return new Resource($process);
