@@ -185,8 +185,8 @@ class SettingCacheTest extends TestCase
     {
         $pattern = 'test_pattern';
         $keys = [
-            'settingstest_pattern:1',
-            'settingstest_pattern:2',
+            'settings:test_pattern:1',
+            'settings:test_pattern:2',
         ];
         \SettingCache::set('test_pattern:1', 1);
         \SettingCache::set('test_pattern:2', 2);
@@ -197,7 +197,7 @@ class SettingCacheTest extends TestCase
             ->andReturnSelf();
 
         Redis::shouldReceive('keys')
-            ->with('settings*')
+            ->with('settings:*')
             ->andReturn($keys);
 
         Redis::shouldReceive('del')
