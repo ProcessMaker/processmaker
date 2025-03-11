@@ -220,6 +220,25 @@ class SettingCacheTest extends TestCase
         \SettingCache::clearBy('pattern');
     }
 
+    public function testClearByPatternWithRedisPrefix()
+    {
+        $defaultRedisPrefix = config('database.redis.options.prefix');
+
+        config()->set('database.redis.options.prefix', 'test:');
+
+        Cache::store('cache_settings')->put('password-policies.users_can_change', 1);
+
+        $this->assertEquals(1, Cache::store('cache_settings')->get('password-policies.users_can_change'));
+
+        $pattern = 'password-policies';
+
+        \SettingCache::clearBy($pattern);
+
+        $this->assertNull(Cache::store('cache_settings')->get('password-policies.users_can_change'));
+
+        config()->set('database.redis.options.prefix', $defaultRedisPrefix);
+    }
+
     public function testClearAllSettings()
     {
         \SettingCache::set('password-policies.users_can_change', 1);
