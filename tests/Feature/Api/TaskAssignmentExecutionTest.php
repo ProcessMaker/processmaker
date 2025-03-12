@@ -104,8 +104,6 @@ class TaskAssignmentExecutionTest extends TestCase
 
     public function testUserByIdAssignment()
     {
-        $this->markTestSkipped('Skipping for Laravel 11');
-
         $user = User::factory()->create();
 
         $process = Process::factory()->create([
@@ -354,8 +352,6 @@ class TaskAssignmentExecutionTest extends TestCase
      */
     public function testProcessManagerAssignmentWithoutAManagerAssociated()
     {
-        $this->markTestSkipped('Skipping for Laravel 11');
-
         // Create a new process
         $this->process = Process::factory()->create();
 

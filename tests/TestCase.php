@@ -227,6 +227,10 @@ abstract class TestCase extends BaseTestCase
 
     private function takeDatabaseSnapshot()
     {
+        if (!$this->populateDatabase()) {
+            return;
+        }
+
         $snapshotFile = base_path('test-db-snapshot.db');
         $command = 'mysqldump ' . $this->mysqlConnectionString();
         $command .= ' ' . env('DB_DATABASE') . ' > ' . $snapshotFile;
@@ -238,6 +242,10 @@ abstract class TestCase extends BaseTestCase
 
     private function restoreDatabaseFromSnapshot()
     {
+        if (!$this->populateDatabase()) {
+            return;
+        }
+
         if (!file_exists(self::$databaseSnapshotFile)) {
             throw new \Exception('Database snapshot not found');
         }
