@@ -39,6 +39,7 @@
                   :columns="columns"
                   :column="column"
                   :row="row"
+                  :index-row="indexRow"
                   @toogleContainer="(e)=>toogleContainer(e, indexRow)">
                   <slot :name="`tcell-${indexRow}-${column.field}`" />
                 </TCell>
