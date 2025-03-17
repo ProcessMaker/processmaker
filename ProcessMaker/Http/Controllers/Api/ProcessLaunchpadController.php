@@ -180,8 +180,7 @@ class ProcessLaunchpadController extends Controller
     {
         // Get the user
         $user = Auth::user();
-        $perPage = $this->getPerPage($request);
-        // Get the processes  active
+        // Get the processes active
         $processes = Process::nonSystem()->active();
         // Filter by category
         $category = $request->input('category', null);
@@ -208,16 +207,16 @@ class ProcessLaunchpadController extends Controller
         $userId = $user->id;
 
         $processes = Process::select('processes.*')
-        ->distinct()
-        ->whereHas('requests', function($query) use ($userId) {
-            $query->where('user_id', $userId)
-                ->orWhereHas('tokens', function($query) use ($userId) {
-                    $query->where('user_id', $userId);
-                });
-        })
-        ->where('asset_type', NULL)
-        ->orderBy('processes.name', 'asc')
-        ->paginate($perPage);
+            ->distinct()
+            ->whereHas('requests', function($query) use ($userId) {
+                $query->where('user_id', $userId)
+                    ->orWhereHas('tokens', function($query) use ($userId) {
+                        $query->where('user_id', $userId);
+                    });
+            })
+            ->where('asset_type', NULL)
+            ->orderBy('processes.name', 'asc')
+            ->get();
 
         foreach ($processes as $process) {
             // Get the id bookmark related
