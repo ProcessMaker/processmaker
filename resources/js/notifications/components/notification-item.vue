@@ -5,7 +5,7 @@
     :class="{ 'clickable': url }"
     @click="click"
   >
-    <div class="px-3">
+    <div class="px-4">
       <b-row>
         <notification-user :notification="notification" />
         <notification-message
