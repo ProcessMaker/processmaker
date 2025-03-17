@@ -96,7 +96,7 @@ abstract class TestCase extends BaseTestCase
             // If it wasn't, it means there was an implicit commit, and we
             // need to reload the db on the next test.
             if (User::select('title')->where('id', 1)->first()->title === 'in transaction') {
-                dd('Test made an implicit commit. You probably need to set connectionsToTransact to [] for this test.');
+                dd($class . '::' . $this->name() . ' made an implicit commit. You probably need to set connectionsToTransact to [] for this test.');
             }
         });
 
