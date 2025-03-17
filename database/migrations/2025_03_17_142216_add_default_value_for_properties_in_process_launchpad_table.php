@@ -21,7 +21,7 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('process_launchpad', function (Blueprint $table) {
-            $table->json('properties');
+            $table->json('properties')->nullable(false)->default(null)->change();
         });
     }
 };
