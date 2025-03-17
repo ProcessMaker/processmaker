@@ -68,7 +68,7 @@ export default {
         watchers: [],
       },
       type: "form",
-      mode: "editor",
+      mode: "preview",
       deviceScreen: "desktop",
       previewData: {},
       cssErrors: "",
