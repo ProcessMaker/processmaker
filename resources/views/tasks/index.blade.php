@@ -140,12 +140,12 @@
                     'isAdministrator' => Auth::user()->is_administrator,
                     'canEditScreens' => Auth::user()->hasPermission('edit-screens'),
                 ]) }}"
-                :savedsearch-defaults-edit-route="{{ json_encode(
+                :savedsearch-defaults-edit-route="{{ Route::has('package.savedsearch.defaults.edit') ? json_encode(
                     route('package.savedsearch.defaults.edit', [
                         'type' => 'task',
                         'key' => 'tasks',
-                    ]),
-                ) }}"></participant-home-screen>
+                    ])
+                ) : 'null' }}"></participant-home-screen>
         </div>
     </div>
 @endsection

@@ -6,7 +6,8 @@
       <slot
         :columns="columns"
         :column="column"
-        :row="row">
+        :row="row"
+        :index-row="indexRow">
         <div
           :style="{ width: width }"
           class="tw-p-3 tw-text-ellipsis tw-text-nowrap tw-overflow-hidden">
@@ -22,6 +23,7 @@
       :columns="columns"
       :column="column"
       :row="row"
+      :index-row="indexRow"
       @collapseContainer="collapseContainer" />
   </td>
 </template>
@@ -43,6 +45,10 @@ export default defineComponent({
     row: {
       type: Object,
       default: () => {},
+    },
+    indexRow: {
+      type: Number,
+      default: 0,
     },
   },
   setup(props, { emit }) {
