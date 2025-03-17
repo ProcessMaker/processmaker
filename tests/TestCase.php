@@ -18,6 +18,7 @@ use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Jobs\RefreshArtisanCaches;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\User;
 use Tests\TestSeeder;
 
 abstract class TestCase extends BaseTestCase
@@ -27,8 +28,6 @@ abstract class TestCase extends BaseTestCase
     protected $connectionsToTransact = ['processmaker', 'data'];
 
     public $withPermissions = false;
-
-    protected $skipTeardownPDOException = false;
 
     protected $seeder = TestSeeder::class;
 
@@ -67,8 +66,6 @@ abstract class TestCase extends BaseTestCase
             RefreshDatabaseState::$migrated = true;
         }
 
-        $this->skipTeardownPDOException = false;
-
         parent::setUp();
 
         Redis::flushall();
@@ -88,10 +85,22 @@ abstract class TestCase extends BaseTestCase
         }
 
         if (!self::$databaseSnapshotFile) {
-            $this->takeDatabaseSnapshot();
+            self::$databaseSnapshotFile = $this->takeDatabaseSnapshot();
         }
 
-        $this->testStartTime = microtime(true);
+        // Make a change that will be rolled back at the end of the test
+        User::where('id', 1)->update(['title' => 'in transaction']);
+
+        $this->beforeApplicationDestroyed(function () use ($class) {
+            // At this point, the transaction should have been rolled back.
+            // If it wasn't, it means there was an implicit commit, and we
+            // need to reload the db on the next test.
+            if (User::select('title')->where('id', 1)->first()->title === 'in transaction') {
+                dd('Test made an implicit commit. You probably need to set connectionsToTransact to [] for this test.');
+            }
+        });
+
+        // $this->testStartTime = microtime(true);
     }
 
     /**
@@ -132,22 +141,18 @@ abstract class TestCase extends BaseTestCase
      */
     protected function tearDown(): void
     {
-        try {
-            parent::tearDown();
-        } catch (PDOException $e) {
-            if (!$this->skipTeardownPDOException) {
-                throw $e;
-            }
-        }
+        parent::tearDown();
+
         foreach (get_class_methods($this) as $method) {
             $imethod = strtolower($method);
             if (strpos($imethod, 'teardown') === 0 && $imethod !== 'teardown') {
                 $this->$method();
             }
         }
-        $testDuration = microtime(true) - $this->testStartTime;
-        $test = get_class($this) . '::' . $this->name();
-        self::$testDurations[$test] = $testDuration;
+
+        // $testDuration = microtime(true) - $this->testStartTime;
+        // $test = get_class($this) . '::' . $this->name();
+        // self::$testDurations[$test] = $testDuration;
     }
 
     protected function withPersonalAccessClient()
@@ -225,32 +230,33 @@ abstract class TestCase extends BaseTestCase
         return (bool) env('POPULATE_DATABASE', true);
     }
 
-    private function takeDatabaseSnapshot()
+    private function takeDatabaseSnapshot($filename = 'test-db-snapshot.db')
     {
         if (!$this->populateDatabase()) {
             return;
         }
 
-        $snapshotFile = base_path('test-db-snapshot.db');
+        $snapshotFile = base_path($filename);
         $command = 'mysqldump ' . $this->mysqlConnectionString();
         $command .= ' ' . env('DB_DATABASE') . ' > ' . $snapshotFile;
         if (system($command) === false) {
             dd("Failed to take database snapshot: $command");
         }
-        self::$databaseSnapshotFile = $snapshotFile;
+
+        return $snapshotFile;
     }
 
-    private function restoreDatabaseFromSnapshot()
+    private function restoreDatabaseFromSnapshot($filename = 'test-db-snapshot.db')
     {
         if (!$this->populateDatabase()) {
             return;
         }
 
-        if (!file_exists(self::$databaseSnapshotFile)) {
-            throw new \Exception('Database snapshot not found');
+        if (!file_exists(base_path($filename))) {
+            throw new \Exception("Database snapshot not found: $filename");
         }
         $command = 'mysql ' . $this->mysqlConnectionString();
-        $command .= ' ' . env('DB_DATABASE') . ' < ' . self::$databaseSnapshotFile;
+        $command .= ' ' . env('DB_DATABASE') . ' < ' . base_path($filename);
         if (system($command) === false) {
             dd("Failed to restore database from snapshot: $command");
         }
