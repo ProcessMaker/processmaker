@@ -5,7 +5,7 @@
     :class="{ 'clickable': url }"
     @click="click"
   >
-    <b-container>
+    <div class="px-4">
       <b-row>
         <notification-user :notification="notification" />
         <notification-message
@@ -13,7 +13,7 @@
           :show-time="showTime"
         />
       </b-row>
-    </b-container>
+    </div>
   </div>
 </template>
 
