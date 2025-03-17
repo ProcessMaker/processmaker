@@ -396,6 +396,16 @@ export default {
     saveLaunchpadSettings(data) {
       if (window.ProcessMaker.modeler) {
         window.ProcessMaker.modeler.launchpad = data;
+        this.saveLaunchpadSettingsAlternatives(data);
+      }
+    },
+    /**
+     * Save Launchpad Settings in all alternatives
+     */
+    saveLaunchpadSettingsAlternatives(data) {
+      if (window.parent[0]?.ProcessMaker?.modeler && window.parent[1]?.ProcessMaker?.modeler) {
+        window.parent[0].ProcessMaker.modeler.launchpad = data;
+        window.parent[1].ProcessMaker.modeler.launchpad = data;
       }
     },
     /**
