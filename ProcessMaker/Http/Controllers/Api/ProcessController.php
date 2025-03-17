@@ -944,8 +944,18 @@ class ProcessController extends Controller
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
             ->where('processes.status', 'ACTIVE')
             ->where('category.status', 'ACTIVE')
-            ->whereNull('warnings')
-            ->where($where);
+            ->whereNull('warnings');
+
+        $query = $query->where(function ($q) use ($where) {
+            foreach ($where as $condition) {
+                // Extract the condition
+                [$column, $operator, $value, $boolean] = $condition;
+                // Determine the method to use
+                $method = $boolean == 'or' ? 'orWhere' : 'where';
+                // Apply the condition
+                $q->{$method}($column, $operator, $value);
+            }
+        });
 
         // Add the order by columns
         foreach ($orderColumns as $key => $orderColumn) {
