@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\ProcessCollection;
@@ -47,8 +48,8 @@ class ProcessLaunchpadController extends Controller
         // Get the processes
         $processes = $processes
             ->select('processes.*')
-            ->orderBy('processes.name', 'asc')
-            ->paginate($perPage);
+        ->orderBy('processes.name', 'asc')
+        ->paginate($perPage);
 
         foreach ($processes as $process) {
             // Get the id bookmark related
@@ -173,5 +174,61 @@ class ProcessLaunchpadController extends Controller
         if ($embedUrl) {
             $embedUrl->delete();
         }
+    }
+
+    public function getProcessesMenu(Request $request)
+    {
+        // Get the user
+        $user = Auth::user();
+        // Get the processes active
+        $processes = Process::nonSystem()->active();
+        // Filter by category
+        $category = $request->input('category', null);
+        if ($category === 'recent') {
+            $processes->orderByRecentRequests();
+        } elseif (!empty($category)) {
+            $processes->processCategory($category);
+        }
+        // Filter pmql
+        $pmql = $request->input('pmql', '');
+        if (!empty($pmql)) {
+            try {
+                $processes->pmql($pmql);
+            } catch (\ProcessMaker\Query\SyntaxError $e) {
+                return response(['error' => 'PMQL error'], 400);
+            }
+        }
+
+        // Get with bookmark
+        $bookmark = $request->input('bookmark', false);
+        // Get with launchpad
+        $launchpad = $request->input('launchpad', false);
+
+        $userId = $user->id;
+
+        $processes = Process::select('processes.*')
+            ->distinct()
+            ->whereHas('requests', function($query) use ($userId) {
+                $query->where('user_id', $userId)
+                    ->orWhereHas('tokens', function($query) use ($userId) {
+                        $query->where('user_id', $userId);
+                    });
+            })
+            ->where('asset_type', NULL)
+            ->orderBy('processes.name', 'asc')
+            ->get();
+
+        foreach ($processes as $process) {
+            // Get the id bookmark related
+            $process->bookmark_id = Bookmark::getBookmarked($bookmark, $process->id, $user->id);
+            // Get the launchpad configuration
+            $process->launchpad = ProcessLaunchpad::getLaunchpad($launchpad, $process->id);
+        }
+
+        $process = $processes->map(function ($process) {
+            $process->counts = $process->getCounts();
+        });
+
+        return new ProcessCollection($processes);
     }
 }
