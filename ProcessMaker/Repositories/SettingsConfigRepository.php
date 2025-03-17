@@ -4,16 +4,13 @@ namespace ProcessMaker\Repositories;
 
 use Illuminate\Config\Repository;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\Setting;
 
 class SettingsConfigRepository extends Repository
 {
-    // private bool $hasDatabaseConnection = false;
-
-    private bool $applicationBooted = false;
-
     private bool $redisAvailable = false;
 
     private bool $settingsTableExists = false;
@@ -94,7 +91,7 @@ class SettingsConfigRepository extends Repository
     {
         if (!$this->readyToUseSettingsDatabase) {
             $this->readyToUseSettingsDatabase =
-                $this->applicationBooted() &&
+                $this->databaseAvailable() &&
                 $this->redisAvailable() &&
                 $this->settingsTableExists();
         }
@@ -102,14 +99,17 @@ class SettingsConfigRepository extends Repository
         return $this->readyToUseSettingsDatabase;
     }
 
-    private function applicationBooted()
+    private function databaseAvailable()
     {
-        return $this->applicationBooted;
-    }
+        try {
+            DB::connection()->getPdo();
 
-    public function setApplicationBooted()
-    {
-        return $this->applicationBooted = true;
+            return true;
+        } catch (\PDOException $e) {
+            dump(get_class($e), $e->getMessage());
+
+            return false;
+        }
     }
 
     private function redisAvailable()
