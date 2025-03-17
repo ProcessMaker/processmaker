@@ -40,9 +40,15 @@ abstract class CacheManagerBase
         try {
             // Get all keys
             $keys = Redis::connection($connection)->keys($prefix . '*');
+            // Get the Redis prefix
+            $redisPrefix = config('database.redis.options.prefix');
 
-            // Filter keys by pattern
-            return array_filter($keys, fn ($key) => preg_match('/' . $pattern . '/', $key));
+            // Filter keys by pattern and remove the REDIS_PREFIX
+            $keys = array_map(function ($key) use ($redisPrefix) {
+                return str_replace($redisPrefix, '', $key);
+            }, preg_grep('/' . $pattern . '/', $keys));
+
+            return $keys;
         } catch (Exception $e) {
             Log::info('CacheManagerBase: ' . $e->getMessage());
         }
