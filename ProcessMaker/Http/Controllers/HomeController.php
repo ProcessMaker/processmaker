@@ -28,13 +28,14 @@ class HomeController extends Controller
                     ->where('assignable_type', 'ProcessMaker\Models\User')
                     ->count() > 0;
 
-                //Check if there is at least one custom dashboard per group only first group is selected
+                //Check if there is at least one custom dashboard per group only first match is selected
                 if (!$customDashboardExists) {
-                   $firstGroupId = Arr::first($groups);
-                    $customDashboardExists = \ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::where('type', 'DASHBOARD')
-                        ->where('assignable_type', 'ProcessMaker\Models\Group')
-                        ->where('assignable_id', $firstGroupId)
-                        ->count() > 0;
+                    $customDashboardExists = collect($groups)->some(function ($groupId) {
+                        return \ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::where('type', 'DASHBOARD')
+                            ->where('assignable_type', 'ProcessMaker\Models\Group')
+                            ->where('assignable_id', $groupId)
+                            ->exists();
+                    });
                 }
 
                 if ($customDashboardExists) {
