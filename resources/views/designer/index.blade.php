@@ -16,7 +16,7 @@
 @section('content')
 
 <div id="new-designer" class="p-3 page-content mb-0 bg-white">
-    <welcome-designer></welcome-designer>
+    <welcome-designer :package-ai="{{ hasPackage('package-ai') ? '1' : '0' }}"></welcome-designer>
     <div class="card card-body border-0">
         <div class="row">
             <div class="col-6">
