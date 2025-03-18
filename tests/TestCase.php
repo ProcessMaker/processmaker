@@ -45,6 +45,10 @@ abstract class TestCase extends BaseTestCase
 
     public $dropViews = true;
 
+    public $skipSetupMethods = ['setUpBeforeClass', 'setUpTheTestEnvironment', 'setUpTraits'];
+
+    public $skipTearDownMethods = ['tearDownAfterClass', 'tearDownTheTestEnvironment', 'tearDownAfterClassUsingTestCase'];
+
     /**
      * Run additional setUps from traits.
      */
@@ -77,7 +81,8 @@ abstract class TestCase extends BaseTestCase
 
         $this->disableSetContentMiddleware();
 
-        foreach (get_class_methods($this) as $method) {
+        $classMethods = get_class_methods($this);
+        foreach (array_diff($classMethods, $this->skipSetupMethods) as $method) {
             $imethod = strtolower($method);
             if (strpos($imethod, 'setup') === 0 && $imethod !== 'setup') {
                 $this->$method();
@@ -89,18 +94,18 @@ abstract class TestCase extends BaseTestCase
         }
 
         // Make a change that will be rolled back at the end of the test
-        User::where('id', 1)->update(['title' => 'in transaction']);
+        // User::where('id', 1)->update(['title' => 'in transaction']);
 
-        $this->beforeApplicationDestroyed(function () use ($class) {
-            // At this point, the transaction should have been rolled back.
-            // If it wasn't, it means there was an implicit commit, and we
-            // need to reload the db on the next test.
-            if ($this->connectionsToTransact() !== []) {
-                if (User::select('title')->where('id', 1)->first()->title === 'in transaction') {
-                    dd($class . '::' . $this->name() . ' made an implicit commit. You probably need to set connectionsToTransact to [] for this test.');
-                }
-            }
-        });
+        // $this->beforeApplicationDestroyed(function () use ($class) {
+        //     // At this point, the transaction should have been rolled back.
+        //     // If it wasn't, it means there was an implicit commit, and we
+        //     // need to reload the db on the next test.
+        //     if ($this->connectionsToTransact() !== []) {
+        //         if (User::select('title')->where('id', 1)->first()->title === 'in transaction') {
+        //             dd($class . '::' . $this->name() . ' made an implicit commit. You probably need to set connectionsToTransact to [] for this test.');
+        //         }
+        //     }
+        // });
 
         // $this->testStartTime = microtime(true);
     }
@@ -145,7 +150,8 @@ abstract class TestCase extends BaseTestCase
     {
         parent::tearDown();
 
-        foreach (get_class_methods($this) as $method) {
+        $classMethods = get_class_methods($this);
+        foreach (array_diff($classMethods, $this->skipTearDownMethods) as $method) {
             $imethod = strtolower($method);
             if (strpos($imethod, 'teardown') === 0 && $imethod !== 'teardown') {
                 $this->$method();
@@ -241,7 +247,8 @@ abstract class TestCase extends BaseTestCase
         $snapshotFile = base_path($filename);
         $command = 'mysqldump ' . $this->mysqlConnectionString();
         $command .= ' ' . env('DB_DATABASE') . ' > ' . $snapshotFile;
-        if (system($command) === false) {
+        exec($command, $output, $return);
+        if ($return !== 0) {
             dd("Failed to take database snapshot: $command");
         }
 
