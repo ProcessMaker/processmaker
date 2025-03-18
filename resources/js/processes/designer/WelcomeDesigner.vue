@@ -17,7 +17,7 @@
       </span>
     </div>
 
-    <div class="pr-3">
+    <div class="pr-3" v-if="packageAi">
       <pm-agents-button></pm-agents-button>
     </div>
   </div>
@@ -31,6 +31,12 @@ export default {
   components: {
     AvatarImage,
     PmAgentsButton,
+  },
+  props: {
+    packageAi: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {
