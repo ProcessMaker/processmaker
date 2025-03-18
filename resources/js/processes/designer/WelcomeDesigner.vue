@@ -1,27 +1,36 @@
 <template>
-  <div class="welcome-header mb-4">
-    <avatar-image
-      id="avatarMenu"
-      ref="userMenuButton"
-      class-container="d-flex"
-      size="60"
-      class-image="m-0"
-      :input-data="information"
-      hide-name="true"
-      popover
-    />
-    <span class="welcome">
-      {{ $t("Welcome Back") }} {{ user.fullname }}
-    </span>
+  <div class="welcome-header mb-4 d-flex justify-content-between">
+    <div class="d-flex align-items-center">
+      <avatar-image
+        id="avatarMenu"
+        ref="userMenuButton"
+        class-container="d-flex"
+        class="pr-2"
+        size="60"
+        class-image="m-0"
+        :input-data="information"
+        hide-name="true"
+        popover
+      />
+      <span class="welcome">
+        {{ $t("Welcome Back") }} {{ user.fullname }}
+      </span>
+    </div>
+
+    <div class="pr-3">
+      <pm-agents-button></pm-agents-button>
+    </div>
   </div>
 </template>
 
 <script>
 import AvatarImage from "../../components/AvatarImage.vue";
+import PmAgentsButton from "./PmAgentsButton.vue";
 
 export default {
   components: {
     AvatarImage,
+    PmAgentsButton,
   },
   data() {
     return {
