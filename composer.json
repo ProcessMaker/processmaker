@@ -178,6 +178,7 @@
                 "package-webentry": "dev-release-2025-spring",
                 "package-api-testing": "dev-release-2025-spring",
                 "package-variable-finder": "dev-release-2025-spring",
+                "package-email-start-event": "1.0.0",
                 "packages": "^0"
             },
             "docker-executors": {
