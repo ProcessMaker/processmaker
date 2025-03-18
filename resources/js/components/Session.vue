@@ -84,6 +84,17 @@ export default {
         .post("/keep-alive", {}, { baseURL: "" })
         .then(() => {
           this.disabled = false;
+          // If reponse is correct, the timer is started again.
+          if (typeof window.ProcessMaker.AccountTimeoutWorker !== 'undefined') {
+            window.ProcessMaker.AccountTimeoutWorker.postMessage({
+              method: "start",
+              data: {
+                timeout: window.ProcessMaker.AccountTimeoutLength,
+                warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds,
+                enabled: window.ProcessMaker.AccountTimeoutEnabled,
+              },
+            });
+          }
           this.onClose();
         })
         .catch((error) => {
