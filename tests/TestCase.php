@@ -93,20 +93,6 @@ abstract class TestCase extends BaseTestCase
             self::$databaseSnapshotFile = $this->takeDatabaseSnapshot();
         }
 
-        // Make a change that will be rolled back at the end of the test
-        // User::where('id', 1)->update(['title' => 'in transaction']);
-
-        // $this->beforeApplicationDestroyed(function () use ($class) {
-        //     // At this point, the transaction should have been rolled back.
-        //     // If it wasn't, it means there was an implicit commit, and we
-        //     // need to reload the db on the next test.
-        //     if ($this->connectionsToTransact() !== []) {
-        //         if (User::select('title')->where('id', 1)->first()->title === 'in transaction') {
-        //             dd($class . '::' . $this->name() . ' made an implicit commit. You probably need to set connectionsToTransact to [] for this test.');
-        //         }
-        //     }
-        // });
-
         // $this->testStartTime = microtime(true);
     }
 
