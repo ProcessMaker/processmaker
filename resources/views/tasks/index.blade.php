@@ -268,7 +268,7 @@
             display: block;
         }
 
-        .menu {
+        .process-catalog-main-participant > .menu {
             left: -100%;
             height: calc(100vh - 145px);
             overflow: hidden;
