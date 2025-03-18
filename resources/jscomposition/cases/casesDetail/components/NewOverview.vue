@@ -29,6 +29,7 @@
         :request-in-progress-nodes="inflightData.requestInProgressNodes"
         :request-idle-nodes="inflightData.requestIdleNodes"
         :read-only="true"
+        :preview="true"
         @set-xml-manager="xmlManager = $event"
         @click="handleClick"
       />

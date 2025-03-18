@@ -148,7 +148,7 @@ export default {
      * Build URL for Process Cards
      */
     buildURL() {
-      return `process_bookmarks/processes?
+      return `process_bookmarks/processes/menu?
         &pmql=${encodeURIComponent(this.pmql)}
         &bookmark=true
         &launchpad=true
