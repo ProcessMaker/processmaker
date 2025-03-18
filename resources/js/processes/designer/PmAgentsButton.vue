@@ -23,7 +23,7 @@ export default {
   },
   methods: {
     handleClick() {
-      this.$emit("click");
+      window.location.href = "/designer/pm-agents";
     },
   },
 };
