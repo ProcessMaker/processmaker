@@ -103,7 +103,7 @@ return [
             'driver' => 'redis',
             'connection' => 'cache_settings',
             'lock_connection' => 'cache_settings',
-            'prefix' => env('CACHE_SETTING_PREFIX', 'settings'),
+            'prefix' => env('CACHE_SETTING_PREFIX', 'settings:'),
         ],
 
     ],
