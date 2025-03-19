@@ -53,6 +53,8 @@ window.ProcessesComponents = require("./processes/components");
 window.ScreensComponents = require("./processes/screens/components");
 window.ScriptsComponents = require("./processes/scripts/components");
 window.ProcessesCatalogueComponents = require("./processes-catalogue/components/utils");
+window.SystemComponents = require("../jscomposition/system");
+window.JsCompositionUtils = require("../jscomposition/utils");
 
 window.PMDropdownSuggest = PMDropdownSuggest;
 
