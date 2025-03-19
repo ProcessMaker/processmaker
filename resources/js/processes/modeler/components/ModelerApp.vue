@@ -69,6 +69,7 @@ import CreateTemplateModal from "../../../components/templates/CreateTemplateMod
 import CreatePmBlockModal from "../../../components/pm-blocks/CreatePmBlockModal.vue";
 import autosaveMixins from "../../../modules/autosave/mixins";
 import AssetRedirectMixin from "../../../components/shared/AssetRedirectMixin";
+import LaunchpadButton from "./toprail/launchpad/LaunchpadButton.vue";
 
 export default {
   name: "ModelerApp",
@@ -88,7 +89,10 @@ export default {
   data() {
     return {
       self: this,
-      validationBar: [],
+      validationBar: [{
+        button: LaunchpadButton,
+        props: { isTemplate: !!window.ProcessMaker.modeler.process.is_template },
+      }],
       external: [],
       externalEmit: [],
       dataXmlSvg: {},
