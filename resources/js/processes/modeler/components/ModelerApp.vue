@@ -105,6 +105,7 @@ export default {
       processName: window.ProcessMaker.modeler.process.name,
       processId: window.ProcessMaker.modeler.process.id,
       currentUserId: window.ProcessMaker.modeler.process.user_id,
+      isPublished: false,
     };
   },
   computed: {
@@ -297,7 +298,8 @@ export default {
           ProcessMaker.alert(this.$t(`The ${type} was saved.`, { type }), "success");
         }
 
-        // Set published status.
+        // Set published status
+        this.isPublished = true;
         this.setVersionIndicator(false);
         this.$set(this, "warnings", response.data.warnings || []);
         if (response.data.warnings && response.data.warnings.length > 0) {
@@ -310,6 +312,7 @@ export default {
         if (typeof onSuccess === "function") {
           onSuccess(response);
         }
+
       };
 
       const saveFailed = (err) => {
