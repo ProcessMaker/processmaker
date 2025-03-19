@@ -2630,6 +2630,7 @@
   "You have made no requests of this process.": "You have made no requests of this process.",
   "You have no tasks from this process.": "You have no tasks from this process.",
   "You have to start a Case of this process.": "You have to start a Case of this process.",
+  "You have not published your process. Please publish your process to use the Launchpad.": "You have not published your process. Please publish your process to use the Launchpad.",
   "You haven't set up any Inbox Rules yet": "You haven't set up any Inbox Rules yet",
   "You must authorize your account before configuring folders": "You must authorize your account before configuring folders",
   "You must have your database credentials available in order to continue.": "You must have your database credentials available in order to continue.",

@@ -46,8 +46,8 @@ export default {
     handleMouseLeave() {
       this.iconOpen = "fas fa-play";
     },
-    handleOpenLaunchpad(value) {
-      this.openLaunchpad = value;
+    handleOpenLaunchpad() {
+      this.openLaunchpad = window.ProcessMaker.modeler.launchpad === null;
       if (this.openLaunchpad) {
         this.showLaunchpadModal = true;
       } else {
