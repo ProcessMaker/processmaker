@@ -279,8 +279,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             return new HasMany($this->newQuery(), $this, '', '');
         }
 
-        return $this->belongsToMany(
-            'ProcessMaker\Package\Projects\Models\Project',
+        return $this->belongsToMany('ProcessMaker\Package\Projects\Models\Project',
             'project_assets',
             'asset_id',
             'project_id',
@@ -292,20 +291,15 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     // Define the relationship with the ProjectAsset model
     public function projectAssets()
     {
-        return $this->belongsToMany(
-            'ProcessMaker\Package\Projects\Models\ProjectAsset',
-            'project_assets',
-            'asset_id',
-            'project_id'
-        )
+        return $this->belongsToMany('ProcessMaker\Package\Projects\Models\ProjectAsset',
+            'project_assets', 'asset_id', 'project_id')
             ->withPivot('asset_type')
             ->wherePivot('asset_type', static::class)->withTimestamps();
     }
 
     public function projectAsset()
     {
-        return $this->belongsToMany(
-            'ProcessMaker\Package\Projects\Models\ProjectAsset',
+        return $this->belongsToMany('ProcessMaker\Package\Projects\Models\ProjectAsset',
             'project_assets',
             'asset_id',
             'project_id',
@@ -717,7 +711,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                 if ($escalateToManager) {
                     $user = WorkflowUserManager::escalateToManager($token, $user);
                 } else {
-                    $res = (new WorkflowManagerDefault())->runProcess($assignmentProcess, 'assign', [
+                    $res = (new WorkflowManagerDefault)->runProcess($assignmentProcess, 'assign', [
                         'user_id' => $user,
                         'process_id' => $this->id,
                         'request_id' => $token->getInstance()->getId(),
@@ -1662,7 +1656,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             $schemaErrors = $document->getValidationErrors();
             $schemaErrors[] = $e->getMessage();
         }
-        $rulesValidation = new BPMNValidation();
+        $rulesValidation = new BPMNValidation;
         if (!$rulesValidation->passes('document', $document)) {
             $errors = $rulesValidation->errors('document', $document)->getMessages();
             $schemaErrors[] = [
