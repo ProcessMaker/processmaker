@@ -333,7 +333,7 @@ export default {
     },
     createNewNotification() {
       let type = "task";
-      const cloneOf = this.getNotification(this.node.cloneOf);
+      const cloneOf = this.getNode(this.node.cloneOf);
       if (this.node.cloneOf && cloneOf) {
         return cloneOf.notifications;
       }
@@ -342,7 +342,7 @@ export default {
       }
       return new NotificationTemplate(type);
     },
-    getNotification(nodeId) {
+    getNode(nodeId) {
       return this.$root.$children[0].$refs.modeler.nodes.find((node) => node.definition.id === nodeId);
     },
   },
