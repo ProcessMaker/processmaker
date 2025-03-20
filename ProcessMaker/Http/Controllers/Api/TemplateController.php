@@ -288,8 +288,10 @@ class TemplateController extends Controller
                 continue;
             }
 
-            if ($payload['root'] === $asset['attributes']['uuid']
-                || Str::contains($asset['type'], 'Category')
+            $skipTypes = ['Category', 'Signal'];
+
+            if ($payload['root'] === ($asset['attributes']['uuid'] ?? null)
+                || Str::contains($asset['type'], $skipTypes)
                 || !$asset['model']::where('uuid', $key)->exists()
             ) {
                 continue;
