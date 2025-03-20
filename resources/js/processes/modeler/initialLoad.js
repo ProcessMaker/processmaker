@@ -36,6 +36,7 @@ import UserById from "./components/inspector/UserById";
 import TaskNotifications from "./components/inspector/TaskNotifications";
 import ExpressionEditor from "./components/inspector/ExpressionEditor";
 import TaskAssignment from "./components/inspector/TaskAssignment";
+import TaskAgentAssignment from "./components/inspector/TaskAgentAssignment";
 import TaskDueIn from "./components/inspector/TaskDueIn";
 import GatewayFlowVariable from "./components/inspector/GatewayFlowVariable";
 import ConfigEditor from "./components/inspector/ConfigEditor";
@@ -59,6 +60,7 @@ Vue.component("ModelerScreenSelect", ModelerScreenSelect);
 Vue.component("TaskNotifications", TaskNotifications);
 Vue.component("ExpressionEditor", ExpressionEditor);
 Vue.component("TaskAssignment", TaskAssignment);
+Vue.component("TaskAgentAssignment", TaskAgentAssignment);
 Vue.component("TaskDueIn", TaskDueIn);
 Vue.component("GatewayFlowVariable", GatewayFlowVariable);
 Vue.component("ConfigEditor", ConfigEditor);
@@ -183,6 +185,26 @@ ProcessMaker.EventBus.$on(
             label: "Assignment Type",
             helper: "",
             name: "taskAssignment",
+          },
+        },
+      ],
+    });
+    registerInspectorExtension(task, {
+      component: "FormAccordion",
+      container: true,
+      config: {
+        initiallyOpen: false,
+        label: i18next.t("AI Agent"),
+        icon: "fp-bpmn-flowgenie",
+        name: "ai-agent-accordion",
+      },
+      items: [
+        {
+          component: "TaskAgentAssignment",
+          config: {
+            label: "Agent Assignment",
+            helper: "",
+            name: "taskAgentAssignment",
           },
         },
       ],
