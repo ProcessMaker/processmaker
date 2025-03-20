@@ -371,9 +371,18 @@ abstract class ExporterBase implements ExporterInterface
             }
         } elseif ($model->translations && $model->language_code) {
             // Get the translations for the model translatable
-            $translatedLanguages[$model->language_code] = $availableLanguages->filter(function ($language) use ($model) {
-                return $language->code === $model->language_code;
-            })->first()->name;
+            \Log::info('--------------------------------');
+            \Log::info('model class', [get_class($model)]);
+            //\Log::info('model translations', [$model->translations]);
+            \Log::info('model language_code', [$model->language_code]);
+            \Log::info('--------------------------------');
+
+            if ($model::class !== \ProcessMaker\Package\Translations\Models\Translatable::class) {
+                // Get the translations for the model translatable
+                $translatedLanguages[$model->language_code] = $availableLanguages->filter(function ($language) use ($model) {
+                    return $language->code === $model->language_code;
+                })->first()->name;
+            }
         }
 
         return [
