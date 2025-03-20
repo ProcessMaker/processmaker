@@ -58,7 +58,7 @@ class TaskActionByEmail
             }
 
             // Send the email using emailProvider
-            $this->emailProvider->sendAsync($emailConfig);
+            $this->emailProvider->send($emailConfig);
         } catch (\Exception $e) {
             Log::error('Error sending ABE email', [
                 'to' => $to,
