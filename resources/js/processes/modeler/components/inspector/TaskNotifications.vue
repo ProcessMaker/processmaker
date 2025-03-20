@@ -320,13 +320,9 @@ export default {
       this.managerDue = this.notifications?.manager.due;
     },
     updateNotifications() {
-      let type = "task";
       if (this.node.notifications === undefined) {
         if (this.process.task_notifications[this.nodeId] === undefined) {
-          if (this.node.type === "processmaker-modeler-manual-task") {
-            type = "manual_task";
-          }
-          this.node.notifications = new NotificationTemplate(type);
+          this.node.notifications = this.createNewNotification();
         } else {
           this.node.notifications = this.process.task_notifications[this.nodeId];
         }
@@ -334,6 +330,20 @@ export default {
         this.node.notifications = this.process.task_notifications[this.nodeId];
       }
       this.notifications = this.node.notifications;
+    },
+    createNewNotification() {
+      let type = "task";
+      const cloneOf = this.getNotification(this.node.cloneOf);
+      if (this.node.cloneOf && cloneOf) {
+        return cloneOf.notifications;
+      }
+      if (this.node.type === "processmaker-modeler-manual-task") {
+        type = "manual_task";
+      }
+      return new NotificationTemplate(type);
+    },
+    getNotification(nodeId) {
+      return this.$root.$children[0].$refs.modeler.nodes.find((node) => node.definition.id === nodeId);
     },
   },
 };
