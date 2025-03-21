@@ -2,18 +2,6 @@
   <div>
     <div class="form-group">
       <div class="notification-settings-group">
-        <div class="custom-control custom-switch d-none">
-          <input
-            id="notify-default"
-            v-model="defaultNotification"
-            type="checkbox"
-            class="custom-control-input"
-          >
-          <label
-            class="custom-control-label"
-            for="notify-default"
-          >{{ $t('Default') }}</label>
-        </div>
         <div class="notification-settings-header">
           {{ $t('Requester') }}
         </div>
