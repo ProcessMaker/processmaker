@@ -253,7 +253,7 @@ class ProcessVariableController extends Controller
             'pv.process_id',
             'vfv.data_type AS format',
             'vfv.label',
-            'vfv.field',
+            DB::raw("CONCAT('data.', vfv.field) as field"),
             DB::raw('NULL AS `default`'),
             'vfv.created_at',
             'vfv.updated_at',
