@@ -107,14 +107,27 @@ class SettingObserver
      */
     private function updateConfigurationCache(Setting $setting): void
     {
-        if (app()->environment() === 'testing') {
-            return;
-        }
-
         if (app()->configurationIsCached() && $setting->config !== config([$setting->key])) {
             config([$setting->key => $setting->config]);
-
-            \Artisan::call('config:cache');
+            $this->updateConfigurationFile();
         }
+    }
+
+    /**
+     * Updates the configuration file with the current configuration values.
+     *
+     * This method exports the current configuration array to a PHP file that can be cached.
+     * The configuration is written to the cached config path specified by the application.
+     * The resulting file contains a PHP array with all configuration values.
+     *
+     * @return void
+     */
+    private function updateConfigurationFile(): void
+    {
+        $config = config()->all();
+        $configPath = app()->getCachedConfigPath();
+        $config = var_export($config, true);
+        $config = "<?php return {$config};";
+        file_put_contents($configPath, $config);
     }
 }
