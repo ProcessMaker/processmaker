@@ -91,6 +91,6 @@ export default (isStatusCompletedList = false) => {
         sortable: false,
         width: 180,
       });
-      console.log("Return 3N", columns);
+      
       return columns;
 };
