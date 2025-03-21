@@ -3,7 +3,6 @@
 namespace ProcessMaker\AssignmentRules;
 
 use ProcessMaker\Contracts\AssignmentRuleInterface;
-use ProcessMaker\Exception\ThereIsNoPreviousUserAssignedException;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
