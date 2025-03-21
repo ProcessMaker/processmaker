@@ -253,7 +253,7 @@ class ProcessVariableController extends Controller
 
         if (!empty($activeColumns)) {
             $activeColumns = array_map(function ($column) {
-                return str_replace('data.', '', $column);
+                return preg_replace('/^data\./', '', $column);
             }, $activeColumns);
             $query->whereNotIn('vfv.field', $activeColumns);
         }
