@@ -1,5 +1,5 @@
 <script setup>
-import { getCurrentInstance, onMounted, ref, defineProps } from 'vue';
+import { getCurrentInstance, onMounted, ref, defineProps, onBeforeUnmount } from 'vue';
 import BackendSelect from './BackendSelect.vue';
 
 const props = defineProps({
@@ -23,12 +23,20 @@ const selected = ref(null);
 const assetId = ref(null);
 const error = ref(null);
 const assetName = ref(null);
-vue.$root.$on('add-to-bundle', (data) => {
-  selected.value = null;
-  error.value = null;
-  assetId.value = data.id;
-  assetName.value = data.name || data.title;
-  modal.value.show();
+onMounted(() => {
+  vue.$root.$on('add-to-bundle', (data) => {
+    selected.value = null;
+    error.value = null;
+    assetId.value = data.id;
+    assetName.value = data.name || data.title;
+    vue.$nextTick(() => {
+      modal.value.show();
+    });
+  });
+});
+
+onBeforeUnmount(() => {
+  vue.$root.$off('add-to-bundle');
 });
 
 const save = (event) => {
