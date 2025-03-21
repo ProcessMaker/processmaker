@@ -23,7 +23,7 @@
 
 <script>
 import { isFunction } from "lodash";
-import { defineComponent, computed, ref } from "vue";
+import { defineComponent, computed } from "vue";
 import { columnResizeComposable } from "./composables/columnComposable";
 
 export default defineComponent({
@@ -38,7 +38,12 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-    const columnResize = columnResizeComposable(props.column);
+    const columnResize = columnResizeComposable({
+      column: props.column,
+      stopResize: () => {
+        emit("stopResize", props.column);
+      },
+    });
 
     const index = computed(() => props.columns.findIndex((column) => column.field === props.column.field));
 

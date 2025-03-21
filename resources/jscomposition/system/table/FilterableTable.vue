@@ -5,7 +5,8 @@
     :data="data"
     :placeholder="placeholder"
     :config="config"
-    class="tw-grow">
+    class="tw-grow"
+    @stopResize="onStopResize">
     <template
       v-for="(column, index) in columns"
       #[`theader-filter-${column.field}`]>
@@ -29,7 +30,7 @@ import { ref } from "vue";
 import { BaseTable } from "../../base";
 import { FilterColumn } from "./filter/defaultFilter/index";
 
-const emit = defineEmits(["changeFilter"]);
+const emit = defineEmits(["changeFilter", "stopResize"]);
 
 const props = defineProps({
   columns: {
@@ -116,6 +117,10 @@ const hasFilter = (index, column) => {
 const getHeightTBody = () => baseTable.value.$el.clientHeight - baseTable.value.$refs.thead.clientHeight;
 
 const getHeightThead = () => baseTable.value.$refs.thead.clientHeight;
+
+const onStopResize = (column) => {
+  emit("stopResize", column);
+};
 
 defineExpose({
   removeFilter,
