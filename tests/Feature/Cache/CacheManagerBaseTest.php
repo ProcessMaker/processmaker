@@ -106,4 +106,80 @@ class CacheManagerBaseTest extends TestCase
 
         $this->assertCount(0, $result);
     }
+
+    public function testKeyExistsWithValidKey()
+    {
+        $this->cacheManagerBase = Mockery::mock(CacheManagerBase::class)->makePartial();
+
+        $key = 'valid-key';
+        $connection = 'cache_settings';
+
+        Redis::shouldReceive('connection')
+            ->with($connection)
+            ->andReturnSelf();
+
+        Redis::shouldReceive('exists')
+            ->with('settings:' . $key)
+            ->andReturn(true);
+
+        $result = $this->cacheManagerBase->keyExists($key, $connection);
+
+        $this->assertTrue($result);
+    }
+
+    public function testKeyExistsWithInvalidKey()
+    {
+        $this->cacheManagerBase = Mockery::mock(CacheManagerBase::class)->makePartial();
+
+        $key = 'invalid-key';
+        $connection = 'cache_settings';
+
+        Redis::shouldReceive('connection')
+            ->with($connection)
+            ->andReturnSelf();
+
+        Redis::shouldReceive('exists')
+            ->with('settings:' . $key)
+            ->andReturn(false);
+
+        $result = $this->cacheManagerBase->keyExists($key, $connection);
+
+        $this->assertFalse($result);
+    }
+
+    public function testKeyExistsWithInvalidConnection()
+    {
+        $this->cacheManagerBase = Mockery::mock(CacheManagerBase::class)->makePartial();
+
+        $key = 'some-key';
+        $connection = 'invalid-connection';
+
+        $result = $this->cacheManagerBase->keyExists($key, $connection);
+
+        $this->assertFalse($result);
+    }
+
+    public function testKeyExistsWithExceptionDuringRedisCall()
+    {
+        $this->cacheManagerBase = Mockery::mock(CacheManagerBase::class)->makePartial();
+
+        $key = 'some-key';
+        $connection = 'cache_settings';
+
+        Redis::shouldReceive('connection')
+            ->with($connection)
+            ->andReturnSelf();
+
+        Redis::shouldReceive('exists')
+            ->with('settings:' . $key)
+            ->andThrow(new Exception('Redis error'));
+
+        Log::shouldReceive('info')
+            ->with('CacheManagerBase: Redis error')
+            ->once();
+
+        $result = $this->cacheManagerBase->keyExists($key, $connection);
+
+        $this->assertFalse($result);
+    }
 }

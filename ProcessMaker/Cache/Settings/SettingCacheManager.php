@@ -198,7 +198,7 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      */
     public function has(string $key): bool
     {
-        return $this->cacheManager->has($key);
+        return $this->keyExists($key);
     }
 
     /**
