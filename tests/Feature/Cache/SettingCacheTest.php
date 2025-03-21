@@ -367,4 +367,35 @@ class SettingCacheTest extends TestCase
 
         $setting->delete();
     }
+
+    public function testDoNotQueryDatabaseForNullValues()
+    {
+        $key = 'password-policies.users_can_change';
+        $cacheKey = 'setting_' . $key;
+
+        \SettingCache::set($cacheKey, null);
+
+        $this->trackQueries();
+
+        $setting = Setting::byKey($key);
+
+        $this->assertEquals(0, self::getQueryCount());
+        $this->assertNull($setting);
+    }
+
+    public function testQueryDatabaseIfKeyIsNotCached()
+    {
+        $setting = Setting::factory()->create([
+            'key' => 'key_not_cached',
+            'config' => 1,
+            'format' => 'boolean',
+        ]);
+
+        $this->trackQueries();
+
+        $settingFromCache = Setting::byKey($setting->key);
+
+        $this->assertEquals(1, self::getQueryCount());
+        $this->assertNotNull($settingFromCache);
+    }
 }
