@@ -7,7 +7,7 @@ export default {};
  * @param {*} tableName
  * @returns
  */
-export const columnResizeComposable = (column) => {
+export const columnResizeComposable = ({ column, stopResize }) => {
   const startX = ref(0);
   const startWidth = ref(0);
   const isResizing = ref(false);
@@ -24,11 +24,12 @@ export const columnResizeComposable = (column) => {
     }
   };
 
-  const stopResize = () => {
+  const stopResizeHandler = () => {
     if (isResizing.value) {
       document.removeEventListener("mousemove", doResize);
-      document.removeEventListener("mouseup", stopResize);
+      document.removeEventListener("mouseup", stopResizeHandler);
       isResizing.value = false;
+      stopResize?.();
     }
   };
 
@@ -39,15 +40,16 @@ export const columnResizeComposable = (column) => {
     startWidth.value = column.width || minWidth;
 
     document.addEventListener("mousemove", doResize);
-    document.addEventListener("mouseup", stopResize);
+    document.addEventListener("mouseup", stopResizeHandler);
   };
 
   onUnmounted(() => {
     document.removeEventListener("mousemove", doResize);
-    document.removeEventListener("mouseup", stopResize);
+    document.removeEventListener("mouseup", stopResizeHandler);
   });
 
   return {
     startResize,
+    stopResizeHandler,
   };
 };
