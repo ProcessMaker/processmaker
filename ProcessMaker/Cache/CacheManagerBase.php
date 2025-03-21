@@ -98,7 +98,7 @@ abstract class CacheManagerBase
     public function keyExists(string $key, ?string $connection = null, ?string $prefix = null): bool
     {
         if (!$connection) {
-            $connection = config('cache.default');
+            $connection = config('cache.stores.cache_settings.connection');
         }
 
         if (!$this->checkAvailableConnections($connection)) {
