@@ -150,7 +150,6 @@ export default {
     buildURL() {
       return `process_bookmarks/processes/menu?
         &pmql=${encodeURIComponent(this.pmql)}
-        &bookmark=true
         &launchpad=true
         &order_by=name&order_direction=asc
         &include=user,categories,category`;
