@@ -89,6 +89,7 @@ import Column from "./Column";
 import ColumnConfig from "./ColumnConfig";
 import DataLoadingBasic from "./DataLoadingBasic";
 import draggable from "vuedraggable";
+import defaultTaskColumns from "../../tasks/components/defaultTaskColumns";
 
 export default {
     components: {
@@ -310,6 +311,11 @@ export default {
                         this.availableColumnsDirect = this.cloneArray(this.dataColumns);
                     } else {
                         this.availableColumnsDirect = [];
+                    }
+
+                    if (!this.currentColumns) {
+                        const columns = defaultTaskColumns();
+                        this.currentColumns = columns.filter((column) => !column.hidden);
                     }
 
                     this.$emit('input', this.currentColumns);
