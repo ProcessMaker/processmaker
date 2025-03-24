@@ -86,48 +86,4 @@ class SettingObserver
         $key = $settingCache->createKey(['key' => $setting->key]);
         $settingCache->invalidate(['key' => $key]);
     }
-
-    /**
-     * Handle the setting "updated" event.
-     *
-     * @param  Setting  $setting
-     * @return void
-     */
-    public function updated(Setting $setting): void
-    {
-        $this->updateConfigurationCache($setting);
-    }
-
-    /**
-     * Updates the configuration file with the new value of the setting and then cache the updated configuration.
-     *
-     * @param Setting setting
-     *
-     * @return void
-     */
-    private function updateConfigurationCache(Setting $setting): void
-    {
-        if (app()->configurationIsCached() && $setting->config !== config([$setting->key])) {
-            config([$setting->key => $setting->config]);
-            $this->updateConfigurationFile();
-        }
-    }
-
-    /**
-     * Updates the configuration file with the current configuration values.
-     *
-     * This method exports the current configuration array to a PHP file that can be cached.
-     * The configuration is written to the cached config path specified by the application.
-     * The resulting file contains a PHP array with all configuration values.
-     *
-     * @return void
-     */
-    private function updateConfigurationFile(): void
-    {
-        $config = config()->all();
-        $configPath = app()->getCachedConfigPath();
-        $config = var_export($config, true);
-        $config = "<?php return {$config};";
-        file_put_contents($configPath, $config);
-    }
 }
