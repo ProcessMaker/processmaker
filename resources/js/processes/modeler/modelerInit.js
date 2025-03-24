@@ -1,5 +1,10 @@
+import { nextTick } from "vue";
+
 export default {};
 
+// Highlight the node when it is added
+// TODO: This is a workaround to highlight the node when it is added
+// because the highlightNode method is not working when the node is added
 export const configureTaskNotifications = ({ modeler }) => {
   modeler.$on("node-added", (node) => {
     if (node.type.includes("task") && node.notifications) {
@@ -10,6 +15,10 @@ export const configureTaskNotifications = ({ modeler }) => {
         default: false,
       };
     }
+    modeler.clearSelection();
+    nextTick(() => {
+      modeler.highlightNode(node);
+    });
   });
 };
 
