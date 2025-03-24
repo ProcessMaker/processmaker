@@ -5,9 +5,11 @@ namespace ProcessMaker\Repositories;
 use Illuminate\Config\Repository;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\Setting;
+use Throwable;
 
 class SettingsConfigRepository extends Repository
 {
@@ -133,5 +135,20 @@ class SettingsConfigRepository extends Repository
         }
 
         return $this->settingsTableExists;
+    }
+
+    public function loadSettings(): self
+    {
+        // Load settings from the database
+        try {
+            foreach (Setting::select('id', 'key', 'config', 'format')->get() as $setting) {
+                // Set the configuration value in the global app config
+                $this->set($setting->key, $setting->config);
+            }
+        } catch (Throwable $exception) {
+            Log::error('Error loading settings: ' . $exception->getMessage());
+        }
+
+        return $this;
     }
 }

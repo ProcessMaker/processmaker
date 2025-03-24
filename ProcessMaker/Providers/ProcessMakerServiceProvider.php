@@ -62,6 +62,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton(Menu::class, function ($app) {
             return new MenuManager();
         });
+        app('config')->loadSettings();
 
         static::bootObservers();
 
