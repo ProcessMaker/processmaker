@@ -168,6 +168,7 @@ const handleFilterChange = () => {
   background-position: 7px 8px;
   background-size: 15px;
   border-radius: 8px;
+  padding-left: 30px;
 }
 
 @import "styles/components/table";
