@@ -144,5 +144,6 @@
 @if (hasPackage('package-accessibility'))
   @include('package-accessibility::userway')
 @endif
+@includeWhen(hasPackage('package-variable-finder'), 'package-variable-finder::index')
 </body>
 </html>
