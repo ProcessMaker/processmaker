@@ -16,7 +16,7 @@
                     </div>                                    
                 </div>
             </div>
-            <div class="column-container d-flex flex-row align-content-stretch custom-height" ref="columnContainer">
+            <div class="column-container d-flex flex-row align-content-stretch" ref="columnContainer">
                 <div class="w-50 mr-3">
                     <draggable group="columns" class="border bg-muted px-3 draggable-list draggable-current" :list="currentColumns">
                         <column v-for="(element, index) in currentColumns" 
