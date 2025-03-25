@@ -107,7 +107,7 @@
             "build": "ed3710ab",
             "cicd-enabled": true,
             "custom": {
-                "package-ellucian-ethos": "1.18.0",
+                "package-ellucian-ethos": "1.19.0",
                 "package-plaid": "1.6.0",
                 "paypal-package": "dev-fall",
                 "pps-adsync": "dev-fall",
@@ -177,7 +177,7 @@
                 "package-vocabularies": "2.17.0",
                 "package-webentry": "2.29.0",
                 "package-api-testing": "1.3.0",
-                "package-variable-finder": "1.0.0",
+                "package-variable-finder": "1.0.1",
                 "packages": "^0"
             },
             "docker-executors": {
