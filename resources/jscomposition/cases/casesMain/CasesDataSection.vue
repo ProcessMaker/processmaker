@@ -222,7 +222,7 @@ const onStopResize = (column) => {
 };
 
 const updateColumnWithUserConfiguration = (columnsDefault) => {
-  const casesColumns = store.getters["core:cases/getCasesColumns"];
+  const casesColumns = store.getters["core:cases/getCasesColumns"] || {};
 
   columnsDefault.forEach((column) => {
     if (casesColumns[column.field]) {
