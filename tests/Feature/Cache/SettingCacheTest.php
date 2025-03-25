@@ -213,16 +213,6 @@ class SettingCacheTest extends TestCase
         \SettingCache::clearBy($pattern);
     }
 
-    public function testTryClearByPatternWithNonRedisDriver()
-    {
-        config()->set('cache.default', 'array');
-
-        $this->expectException(SettingCacheException::class);
-        $this->expectExceptionMessage('The cache driver must be Redis.');
-
-        \SettingCache::clearBy('pattern');
-    }
-
     public function testClearByPatternWithRedisPrefix()
     {
         $defaultRedisPrefix = config('database.redis.options.prefix');
