@@ -168,14 +168,11 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      */
     public function clearBy(string $pattern): void
     {
-        $defaultDriver = $this->manager->getDefaultDriver();
-
-        if ($defaultDriver !== 'cache_settings') {
-            throw new SettingCacheException('The cache driver must be Redis.');
-        }
-
+        //get the default driver
+        $defaultDriver = config('cache.stores.cache_settings.connection') ?? 'redis';
         try {
-            $prefix = $this->manager->getPrefix();
+            //get the prefix
+            $prefix = config('cache.stores.cache_settings.prefix', 'settings:');
             // Filter keys by pattern
             $matchedKeys = $this->getKeysByPattern($pattern, $defaultDriver, $prefix);
 
