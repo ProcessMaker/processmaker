@@ -13,6 +13,8 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
 {
     const DEFAULT_CACHE_DRIVER = 'cache_settings';
 
+    const DEFAULT_CACHE_PREFIX = 'settings:';
+
     protected CacheManager $manager;
 
     protected Repository $cacheManager;
@@ -169,10 +171,10 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
     public function clearBy(string $pattern): void
     {
         //get the default driver
-        $defaultDriver = config('cache.stores.cache_settings.connection') ?? 'redis';
+        $defaultDriver = config('cache.stores.cache_settings.connection') ?? self::DEFAULT_CACHE_DRIVER;
         try {
             //get the prefix
-            $prefix = config('cache.stores.cache_settings.prefix', 'settings:');
+            $prefix = config('cache.stores.cache_settings.prefix', self::DEFAULT_CACHE_PREFIX);
             // Filter keys by pattern
             $matchedKeys = $this->getKeysByPattern($pattern, $defaultDriver, $prefix);
 
