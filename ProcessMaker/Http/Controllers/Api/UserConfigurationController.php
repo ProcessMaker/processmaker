@@ -47,7 +47,7 @@ class UserConfigurationController extends Controller
             $configuration = array_replace_recursive(self::DEFAULT_USER_CONFIGURATION, $uiConfiguration);
             $response->ui_configuration = json_encode($configuration);
         }
-        
+
         return new ApiResource($response);
     }
 
