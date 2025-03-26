@@ -106,8 +106,7 @@ class SettingsConfigRepository extends Repository
 
             return true;
         } catch (\PDOException $e) {
-            dump(get_class($e), $e->getMessage());
-
+            
             return false;
         }
     }
