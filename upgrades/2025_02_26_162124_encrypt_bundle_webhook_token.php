@@ -27,11 +27,6 @@ class EncryptBundleWebhookToken extends Upgrade
      */
     public function up()
     {
-        // Change the column type to TEXT
-        Schema::table('bundles', function ($table) {
-            $table->text('webhook_token')->change();
-        });
-
         $bundles = DB::table('bundles')->get();
 
         // Encrypt the webhook_token column
@@ -70,11 +65,6 @@ class EncryptBundleWebhookToken extends Upgrade
                 continue;
             }
         }
-
-        // Change the column type back to String
-        Schema::table('bundles', function ($table) {
-            $table->string('webhook_token')->change();
-        });
     }
 
     /**
