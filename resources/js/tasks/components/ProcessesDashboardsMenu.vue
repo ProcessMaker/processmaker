@@ -173,6 +173,11 @@ export default {
       const url = this.buildURLDashboardsScreen(id);
 
       ProcessMaker.apiClient.get(url).then((response) => {
+        if (!response.data.dashboard) {
+          this.clearSelection();
+          this.$emit('get-all-tasks');
+          return;
+        }
         this.screen = response.data.screen;
         this.formData = response.data.formData;
 
