@@ -14,6 +14,7 @@ use ProcessMaker\Helpers\DefaultColumns;
 use ProcessMaker\Helpers\MobileHelper;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
 use ProcessMaker\Http\Controllers\Api\UserConfigurationController;
+use ProcessMaker\Http\Resources\TaskEditResource;
 use ProcessMaker\Jobs\MarkNotificationAsRead;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
@@ -148,8 +149,12 @@ class TaskController extends Controller
             ]);
             $userConfiguration = (new UserConfigurationController())->index();
 
+            $taskResource = new TaskEditResource($task);
+            $taskJson = $taskResource->toArray(request());
+
             return view('tasks.edit', [
                 'task' => $task,
+                'taskJson' => $taskJson,
                 'dueLabels' => self::$dueLabels,
                 'manager' => $manager,
                 'submitUrl' => $submitUrl,

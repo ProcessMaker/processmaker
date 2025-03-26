@@ -77,9 +77,10 @@
                     role="tab"
                     aria-controls="tab-data"
                     aria-selected="false"
-                    @click="resizeMonaco"
+                    @click="loadDataTab"
                     class="nav-link">
                     {{__('Data')}}
+                    <span v-if="isLoadingData" class="spinner-border spinner-border-sm" role="status"></span>
                   </a>
                 </li>
               </ul>
@@ -429,7 +430,7 @@
       '{{ route('requests.show', ['request' => $task->process_request_id]) }}'
     );
 
-    const task = @json($task);
+    const task = @json($taskJson);
     let draftTask = task.draft;
     const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};

@@ -12,6 +12,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\V1_1\TaskInterstitialResource;
 use ProcessMaker\Http\Resources\V1_1\TaskResource;
 use ProcessMaker\Http\Resources\V1_1\TaskScreen;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\ProcessTranslations\TranslationManager;
@@ -150,5 +151,13 @@ class TaskController extends Controller
         $response = response($response->toArray(request())['screen'], 200);
 
         return $response;
+    }
+
+    public function getRequestData($taskId)
+    {
+        $task = ProcessRequestToken::findOrFail($taskId);
+        $dataManager = new DataManager();
+
+        return response()->json($dataManager->getData($task));
     }
 }
