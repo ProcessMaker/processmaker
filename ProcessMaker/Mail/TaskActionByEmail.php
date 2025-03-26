@@ -51,7 +51,8 @@ class TaskActionByEmail
             if (!empty($emailScreenRef)) {
                 // Retrieve and render custom screen if specified
                 $customScreen = Screen::findOrFail($emailScreenRef);
-                $emailConfig['body'] = $this->emailProvider->screenRenderer($customScreen->config, $data);
+                $infoRenderer = $this->emailProvider->screenRenderer($customScreen->config, $data);
+                $emailConfig['body'] = $infoRenderer['body'] ?? __('No body configured');
             } else {
                 // Default message if no custom screen is configured
                 $emailConfig['body'] = __('No screen configured');

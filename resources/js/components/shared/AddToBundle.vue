@@ -1,5 +1,5 @@
 <script setup>
-import { getCurrentInstance, onMounted, ref, defineProps } from 'vue';
+import { getCurrentInstance, onMounted, ref, defineProps, onBeforeUnmount } from 'vue';
 import BackendSelect from './BackendSelect.vue';
 
 const props = defineProps({
@@ -23,12 +23,20 @@ const selected = ref(null);
 const assetId = ref(null);
 const error = ref(null);
 const assetName = ref(null);
-vue.$root.$on('add-to-bundle', (data) => {
-  selected.value = null;
-  error.value = null;
-  assetId.value = data.id;
-  assetName.value = data.name || data.title;
-  modal.value.show();
+onMounted(() => {
+  vue.$root.$on('add-to-bundle', (data) => {
+    selected.value = null;
+    error.value = null;
+    assetId.value = data.id;
+    assetName.value = data.name || data.title;
+    vue.$nextTick(() => {
+      modal.value.show();
+    });
+  });
+});
+
+onBeforeUnmount(() => {
+  vue.$root.$off('add-to-bundle');
 });
 
 const save = (event) => {
@@ -41,7 +49,7 @@ const save = (event) => {
         type: props.settingType || null
       })
         .then(() => {
-          window.ProcessMaker.alert(vue.$t('Setting added to bundle'), 'success');
+          window.ProcessMaker.alert(vue.$t('Added successfully to bundle'), 'success');
         });
     } else {
       const asset = {
@@ -50,7 +58,7 @@ const save = (event) => {
       };
       window.ProcessMaker.apiClient.post(`devlink/local-bundles/${selected.value.id}/add-assets`, asset).then(() => {
         modal.value.hide();
-        window.ProcessMaker.alert(vue.$t('Asset added to bundle'), 'success');
+        window.ProcessMaker.alert(vue.$t('Added successfully to bundle'), 'success');
       }).catch(e => {
         error.value = e.response?.data?.error?.message || e.message;
       })
@@ -70,7 +78,7 @@ const save = (event) => {
       };
       window.ProcessMaker.apiClient.post(`devlink/local-bundles/add-setting-to-bundles`, setting).then(() => {
         modal.value.hide();
-        window.ProcessMaker.alert(vue.$t('Setting added to bundle'), 'success');
+        window.ProcessMaker.alert(vue.$t('Added successfully to bundle'), 'success');
       }).catch(e => {
         error.value = e.response?.data?.error?.message || e.message;
       });
@@ -82,7 +90,7 @@ const save = (event) => {
       };
       window.ProcessMaker.apiClient.post(`devlink/local-bundles/add-asset-to-bundles`, asset).then(() => {
         modal.value.hide();
-        window.ProcessMaker.alert(vue.$t('Asset added to bundle'), 'success');
+        window.ProcessMaker.alert(vue.$t('Added successfully to bundle'), 'success');
       }).catch(e => {
         error.value = e.response?.data?.error?.message || e.message;
       });

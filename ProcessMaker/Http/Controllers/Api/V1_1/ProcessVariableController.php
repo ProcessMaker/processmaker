@@ -234,30 +234,29 @@ class ProcessVariableController extends Controller
             return $paginator;
         }
 
-        // Build a single query that joins process_variables, asset_variables, and var_finder_variables
+        // Build a single query that joins asset_variables, and var_finder_variables
         // and applies filtering for excluded fields.
-        $query = DB::table('var_finder_variables AS vfv')
-            ->join('asset_variables AS av', 'vfv.asset_variable_id', '=', 'av.id')
-            ->join('process_variables AS pv', 'av.process_id', '=', 'pv.process_id')
-            ->whereIn('pv.process_id', $processIds)
-            ->groupBy('vfv.id')
-            ->orderBy('vfv.id');
+        $query = DB::table('asset_variables as av')
+            ->join('var_finder_variables as vfv', 'av.id', '=', 'vfv.asset_variable_id')
+            ->whereIn('av.process_id', $processIds)
+            ->groupBy('vfv.field', 'vfv.label')
+            ->select([
+                DB::raw('MAX(vfv.id) as id'),
+                DB::raw("CONCAT('data.', vfv.field) as field"),
+                'vfv.label',
+                DB::raw('MAX(vfv.data_type) as format'),
+                DB::raw('MAX(vfv.created_at) as created_at'),
+                DB::raw('MAX(vfv.updated_at) as updated_at'),
+                DB::raw('MAX(av.process_id) as process_id'),
+                DB::raw('NULL AS `default`')
+            ]);
 
         if (!empty($activeColumns)) {
+            $activeColumns = array_map(function ($column) {
+                return preg_replace('/^data\./', '', $column);
+            }, $activeColumns);
             $query->whereNotIn('vfv.field', $activeColumns);
         }
-
-        // Paginate the query result directly
-        $query->select(
-            'vfv.id',
-            'pv.process_id',
-            'vfv.data_type AS format',
-            'vfv.label',
-            'vfv.field',
-            DB::raw('NULL AS `default`'),
-            'vfv.created_at',
-            'vfv.updated_at',
-        );
 
         // Return the paginated result
         $paginator = $query->paginate($perPage, ['*'], 'page', $page);

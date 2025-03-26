@@ -182,13 +182,7 @@ class ProcessLaunchpadController extends Controller
         $user = Auth::user();
         // Get the processes active
         $processes = Process::nonSystem()->active();
-        // Filter by category
-        $category = $request->input('category', null);
-        if ($category === 'recent') {
-            $processes->orderByRecentRequests();
-        } elseif (!empty($category)) {
-            $processes->processCategory($category);
-        }
+
         // Filter pmql
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {
@@ -199,8 +193,6 @@ class ProcessLaunchpadController extends Controller
             }
         }
 
-        // Get with bookmark
-        $bookmark = $request->input('bookmark', false);
         // Get with launchpad
         $launchpad = $request->input('launchpad', false);
 
@@ -215,19 +207,13 @@ class ProcessLaunchpadController extends Controller
                     });
             })
             ->where('asset_type', NULL)
+            ->where('package_key', '=', NULL)
             ->orderBy('processes.name', 'asc')
             ->get();
 
         foreach ($processes as $process) {
-            // Get the id bookmark related
-            $process->bookmark_id = Bookmark::getBookmarked($bookmark, $process->id, $user->id);
-            // Get the launchpad configuration
             $process->launchpad = ProcessLaunchpad::getLaunchpad($launchpad, $process->id);
         }
-
-        $process = $processes->map(function ($process) {
-            $process->counts = $process->getCounts();
-        });
 
         return new ProcessCollection($processes);
     }

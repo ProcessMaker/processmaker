@@ -106,7 +106,6 @@ class SettingsConfigRepository extends Repository
 
             return true;
         } catch (\PDOException $e) {
-            
             return false;
         }
     }

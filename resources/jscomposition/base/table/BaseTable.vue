@@ -15,7 +15,8 @@
             v-for="(column, index) in columns"
             :key="index"
             :columns="columns"
-            :column="column">
+            :column="column"
+            @stopResize="onStopResize">
             <slot :name="`theader-${column.field}`" />
             <template #filter>
               <slot :name="`theader-filter-${column.field}`" />
@@ -118,7 +119,7 @@ export default defineComponent({
       default: () => false,
     },
   },
-  setup(props) {
+  setup(props, { emit }) {
     const slots = useSlots();
     const configRow = ref([]);
     const showContainer = ref(false);
@@ -141,6 +142,10 @@ export default defineComponent({
 
     const getShowContainer = (index) => configRow.value[index]?.showContainer;
 
+    const onStopResize = (column) => {
+      emit("stopResize", column);
+    };
+
     return {
       configRow,
       showContainer,
@@ -148,6 +153,7 @@ export default defineComponent({
       getShowContainer,
       getDefaultConfig,
       slots,
+      onStopResize,
       checkContainerRow,
       checkEllipsisMenu,
       tbody,
