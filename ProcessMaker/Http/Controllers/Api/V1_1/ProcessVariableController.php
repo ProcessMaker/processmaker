@@ -280,9 +280,7 @@ class ProcessVariableController extends Controller
     /**
      * Merge available columns with collection items
      *
-     * @param LengthAwarePaginator $paginator
      * @param SavedSearch|null $savedSearch
-     * @return LengthAwarePaginator
      */
     private function mergeAvailableColumns(?SavedSearch $savedSearch = null)
     {
@@ -302,7 +300,6 @@ class ProcessVariableController extends Controller
      *
      * @param Collection $availableColumns
      * @param array $activeColumns
-     * @return Collection
      */
     private function filterActiveColumns($availableColumns, $activeColumns)
     {
