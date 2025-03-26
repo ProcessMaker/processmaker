@@ -21,6 +21,8 @@ class BundleAsset extends ProcessMakerModel
 
     const FLOW_GENIE_CLASS = 'ProcessMaker\Package\PackageAi\Models\FlowGenie';
 
+    const PM_BLOCK_CLASS = 'ProcessMaker\Package\PackagePmBlocks\Models\PmBlock';
+
     public static function canExport(ProcessMakerModel $asset)
     {
         return method_exists($asset, 'export') && ExporterMap::getExporterClassForModel($asset);
@@ -75,6 +77,8 @@ class BundleAsset extends ProcessMakerModel
                 return "/designer/decision-tables/table-builder/{$this->asset_id}/edit";
             case self::FLOW_GENIE_CLASS:
                 return "/designer/flow-genies/{$this->asset_id}/edit";
+            case self::PM_BLOCK_CLASS:
+                return "/designer/pm-blocks/{$this->asset_id}/edit";
             default:
                 return null;
         }
@@ -97,6 +101,8 @@ class BundleAsset extends ProcessMakerModel
                 return 'decision_table';
             case self::FLOW_GENIE_CLASS:
                 return 'flow_genie';
+            case self::PM_BLOCK_CLASS:
+                return 'pm_block';
             default:
                 return null;
         }
