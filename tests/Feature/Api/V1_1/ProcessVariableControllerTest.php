@@ -355,7 +355,7 @@ class ProcessVariableControllerTest extends TestCase
 
         $responseData = $response->json();
 
-        // Check that the filtered variables include the fields from the saved search
+        // Check that the filtered variables do not include the fields from the saved search
         $filteredFields = collect($responseData['data'])->pluck('field');
 
         $this->assertTrue($filteredFields->contains('data.var_1_1'));

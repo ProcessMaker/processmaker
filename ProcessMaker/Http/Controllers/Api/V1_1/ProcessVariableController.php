@@ -225,7 +225,13 @@ class ProcessVariableController extends Controller
         ) {
             $paginator = $this->getProcessesVariablesFrom($processIds);
             if ($request->has('onlyAvailable')) {
-                return $this->mergeAvailableColumns($paginator, $savedSearch);
+                $availableColumns = $this->mergeAvailableColumns($savedSearch);
+                $availableColumns = $this->filterActiveColumns($availableColumns, $activeColumns);
+                $paginator->setCollection(
+                    $availableColumns->merge($paginator->items())
+                );
+
+                return $paginator;
             }
 
             return $paginator;
@@ -259,7 +265,13 @@ class ProcessVariableController extends Controller
         $paginator = $query->paginate($perPage, ['*'], 'page', $page);
 
         if ($request->has('onlyAvailable')) {
-            return $this->mergeAvailableColumns($paginator, $savedSearch);
+            $availableColumns = $this->mergeAvailableColumns($savedSearch);
+            $availableColumns = $this->filterActiveColumns($availableColumns, $activeColumns);
+            $paginator->setCollection(
+                $availableColumns->merge($paginator->items())
+            );
+
+            return $paginator;
         }
 
         return $query->paginate($perPage, ['*'], 'page', $page);
@@ -272,7 +284,7 @@ class ProcessVariableController extends Controller
      * @param SavedSearch|null $savedSearch
      * @return LengthAwarePaginator
      */
-    private function mergeAvailableColumns(LengthAwarePaginator $paginator, ?SavedSearch $savedSearch = null): LengthAwarePaginator
+    private function mergeAvailableColumns(?SavedSearch $savedSearch = null)
     {
         $availableColumns = collect();
 
@@ -282,11 +294,21 @@ class ProcessVariableController extends Controller
             );
         }
 
-        $paginator->setCollection(
-            $availableColumns->merge($paginator->items())
-        );
+        return $availableColumns;
+    }
 
-        return $paginator;
+    /**
+     * Filter out columns that are already active in the saved search
+     *
+     * @param Collection $availableColumns
+     * @param array $activeColumns
+     * @return Collection
+     */
+    private function filterActiveColumns($availableColumns, $activeColumns)
+    {
+        return $availableColumns->reject(function ($column) use ($activeColumns) {
+            return in_array($column->field, $activeColumns);
+        });
     }
 
     /**
