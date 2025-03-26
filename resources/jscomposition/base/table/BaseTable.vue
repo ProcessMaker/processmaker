@@ -74,7 +74,7 @@
       <div
         v-show="placeholder"
         class="tw-flex tw-grow tw-w-full tw-h-full tw-pointer-events-none
-          tw-absolute tw-left-0 tw-top-0 tw-z-10 tw-justify-center tw-items-center">
+          tw-absolute tw-left-0 tw-top-0 tw-z-[3] tw-justify-center tw-items-center">
         <slot name="placeholder" />
       </div>
     </transition>
