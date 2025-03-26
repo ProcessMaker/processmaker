@@ -1283,7 +1283,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                     $user = auth()->user();
                     $elementDestination = \ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::getHomePage($user);
                 } else {
-                    $elementDestination = route('home');
+                    $elementDestination = route('inbox');
                 }
                 break;
             case 'processLaunchpad':
