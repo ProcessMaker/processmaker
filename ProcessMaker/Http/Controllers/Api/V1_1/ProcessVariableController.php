@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace ProcessMaker\Http\Controllers\Api\V1_1;
 
-use ProcessMaker\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
@@ -18,9 +18,10 @@ use ProcessMaker\Package\VariableFinder\Models\ProcessVariable;
 
 class ProcessVariableController extends Controller
 {
-
     const CACHE_TTL = 60;
+
     private static bool $mockData = false;
+
     private static bool $useVarFinder = true;
 
     /**
@@ -73,9 +74,9 @@ class ProcessVariableController extends Controller
      *     @OA\Parameter(
      *         name="processIds",
      *         in="query",
-     *         required=true,
+     *         required=false,
      *         description="Comma-separated list of process IDs",
-     *         @OA\Schema(type="string", example="1,2,3")
+     *         @OA\Schema(type="string", example="1,2,3", nullable=true)
      *     ),
      *     @OA\Parameter(
      *         name="page",
@@ -108,14 +109,16 @@ class ProcessVariableController extends Controller
     {
         // Validate request
         $validated = $request->validate([
-            'processIds' => 'required|string',
+            'processIds' => 'sometimes|string|nullable',
             'page' => 'sometimes|integer|min:1',
             'per_page' => 'sometimes|integer|min:1|max:100',
             'savedSearchId' => 'sometimes|string',
         ]);
 
         // Parse process IDs
-        $processIds = array_map('intval', explode(',', $validated['processIds']));
+        $processIds = !empty($validated['processIds'])
+            ? array_map('intval', explode(',', $validated['processIds']))
+            : [];
         $perPage = $validated['per_page'] ?? 20;
         $page = $validated['page'] ?? 1;
         $excludeSavedSearch = $validated['savedSearchId'] ?? 0;
@@ -142,8 +145,8 @@ class ProcessVariableController extends Controller
                     'last' => $paginator->url($paginator->lastPage()),
                     'prev' => $paginator->previousPageUrl(),
                     'next' => $paginator->nextPageUrl(),
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 
@@ -154,7 +157,7 @@ class ProcessVariableController extends Controller
      * @param bool $excludeSavedSearch Flag to determine whether to exclude saved searches.
      * @param int $page The page number for pagination.
      * @param int $perPage The number of items per page for pagination.
-     * @param \Illuminate\Http\Request $request The HTTP request instance.
+     * @param Request $request The HTTP request instance.
      *
      * @return array The list of process variables.
      */
@@ -171,6 +174,7 @@ class ProcessVariableController extends Controller
             }
 
             $savedSearch = SavedSearch::find($excludeSavedSearch);
+
             return collect(array_values($savedSearch->data_columns->toArray()));
         });
 
@@ -199,7 +203,7 @@ class ProcessVariableController extends Controller
      * @param bool $excludeSavedSearch Flag to exclude saved searches.
      * @param int $page The page number for pagination.
      * @param int $perPage The number of items per page for pagination.
-     * @param \Illuminate\Http\Request $request The HTTP request instance.
+     * @param Request $request The HTTP request instance.
      * @return \Illuminate\Http\JsonResponse JSON response containing the process variables.
      */
     public function getProcessesVariables(array $processIds, $excludeSavedSearch, $page, $perPage, $request)
@@ -221,14 +225,7 @@ class ProcessVariableController extends Controller
         ) {
             $paginator = $this->getProcessesVariablesFrom($processIds);
             if ($request->has('onlyAvailable')) {
-                // Get the available columns from the saved search
-                $availableColumns = $savedSearch->available_columns;
-                // Merge the available columns with the paginated items
-                $availableColumns = $availableColumns->merge($paginator->items());
-                // Set the collection to the merged collection
-                $paginator->setCollection($availableColumns);
-
-                return $paginator;
+                return $this->mergeAvailableColumns($paginator, $savedSearch);
             }
 
             return $paginator;
@@ -248,7 +245,7 @@ class ProcessVariableController extends Controller
                 DB::raw('MAX(vfv.created_at) as created_at'),
                 DB::raw('MAX(vfv.updated_at) as updated_at'),
                 DB::raw('MAX(av.process_id) as process_id'),
-                DB::raw('NULL AS `default`')
+                DB::raw('NULL AS `default`'),
             ]);
 
         if (!empty($activeColumns)) {
@@ -262,17 +259,34 @@ class ProcessVariableController extends Controller
         $paginator = $query->paginate($perPage, ['*'], 'page', $page);
 
         if ($request->has('onlyAvailable')) {
-            // Get the available columns from the saved search
-            $availableColumns = $savedSearch->available_columns;
-            // Merge the available columns with the paginated items
-            $availableColumns = $availableColumns->merge($paginator->items());
-            // Set the collection to the merged collection
-            $paginator->setCollection($availableColumns);
-
-            return $paginator;
+            return $this->mergeAvailableColumns($paginator, $savedSearch);
         }
 
         return $query->paginate($perPage, ['*'], 'page', $page);
+    }
+
+    /**
+     * Merge available columns with collection items
+     *
+     * @param LengthAwarePaginator $paginator
+     * @param SavedSearch|null $savedSearch
+     * @return LengthAwarePaginator
+     */
+    private function mergeAvailableColumns(LengthAwarePaginator $paginator, ?SavedSearch $savedSearch = null): LengthAwarePaginator
+    {
+        $availableColumns = collect();
+
+        if ($savedSearch?->available_columns) {
+            $availableColumns = $savedSearch->available_columns->merge(
+                $savedSearch->getDataColumnsAttribute() ?? collect()
+            );
+        }
+
+        $paginator->setCollection(
+            $availableColumns->merge($paginator->items())
+        );
+
+        return $paginator;
     }
 
     /**
