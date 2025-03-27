@@ -90,7 +90,8 @@ class ScriptMicroserviceRunner
 
         Log::debug('Payload: ' . print_r($payload, true));
 
-        $response = Http::withToken($this->getAccessToken())
+        $response = Http::timeout($timeout)
+            ->withToken($this->getAccessToken())
             ->post(config('script-runner-microservice.base_url') . '/requests/create', $payload);
 
         $response->throw();
