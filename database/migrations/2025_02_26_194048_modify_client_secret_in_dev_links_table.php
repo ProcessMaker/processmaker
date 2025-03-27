@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('dev_links', function (Blueprint $table) {
-            $table->text('client_secret')->change();
+            $table->text('client_secret')->nullable()->change();
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('dev_links', function (Blueprint $table) {
-            $table->string('client_secret')->change();
+            $table->string('client_secret')->nullable()->change();
         });
     }
 };
