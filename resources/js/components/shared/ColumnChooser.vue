@@ -224,11 +224,12 @@ export default {
             return;
           }
           
+          let adjustHeight = 10;
           let containerHeight = tabContent.offsetHeight;
           let beforeHeight = this.$refs.columnBefore.offsetHeight;
           let afterHeight = this.$refs.columnAfter.offsetHeight;
           
-          let height = (containerHeight - (beforeHeight + afterHeight));
+          let height = (containerHeight - (beforeHeight + afterHeight) - adjustHeight);
           this.$refs.columnContainer.style.height = `${height}px`;
           this.$refs.columnContainer.style.maxHeight = `${height}px`;
         },
@@ -361,6 +362,6 @@ export default {
 
 <style lang="scss">
     .column-container {
-        min-height: 100px;
+        min-height: 150px;
     }
 </style>

@@ -11,6 +11,7 @@
     "prefer-stable": true,
     "require": {
         "php": "^8.3",
+        "aws/aws-sdk-php": "3.337.3",
         "babenkoivan/elastic-scout-driver": "^4.0",
         "bacon/bacon-qr-code": "^2.0",
         "codegreencreative/laravel-samlidp": "^5.2",
@@ -50,7 +51,7 @@
         "processmaker/nayra": "1.12.0",
         "processmaker/pmql": "1.13.1",
         "promphp/prometheus_client_php": "^2.12",
-        "psr/http-message": "^2.0",
+        "psr/http-message": "^1.1",
         "psr/log": "^3.0",
         "psr/simple-cache": "^3.0",
         "pusher/pusher-php-server": "^7.2",
