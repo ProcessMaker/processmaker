@@ -4,22 +4,17 @@ namespace ProcessMaker\Http\Middleware;
 
 use Illuminate\Http\Middleware\TrustHosts as Middleware;
 use Closure;
+use Illuminate\Http\Request;
 
 class TrustHosts extends Middleware
 {
-
-    /**
-     * Get the host patterns that should be trusted.
-     *
-     * @return array<int, string|null>
-     */
     public function hosts(): array
     {
         $trustedHost = $this->allSubdomainsOfApplicationUrl();
         return [$trustedHost];
     }
 
-    public function handle(\Illuminate\Http\Request $request, $next)
+    public function handle(Request $request, $next)
     {
         if ($request->hasHeader('X-Forwarded-Host')) {
             $forwardedHost = $request->header('X-Forwarded-Host');
