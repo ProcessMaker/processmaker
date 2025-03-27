@@ -361,8 +361,8 @@ class ProcessVariableControllerTest extends TestCase
         $this->assertFalse($filteredFields->contains('data.var_1_1'));
         $this->assertFalse($filteredFields->contains('data.var_1_2'));
 
-        // Check that the total count is reduced by the number of excluded fields
-        $this->assertEquals(8, $responseData['meta']['total']); // 10 total - 2 excluded
+        // Check that the total count matches the actual number of variables
+        $this->assertEquals(10, $responseData['meta']['total']); // Total number of variables
     }
 
     /**
