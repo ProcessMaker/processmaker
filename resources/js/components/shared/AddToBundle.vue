@@ -29,11 +29,6 @@ onMounted(() => {
     error.value = null;
     assetId.value = data.id;
     assetName.value = data.title || data.name;
-    console.log({
-      assetName: assetName.value,
-      data: data,
-      id: data.id
-    });
     vue.$nextTick(() => {
       modal.value.show();
     });
