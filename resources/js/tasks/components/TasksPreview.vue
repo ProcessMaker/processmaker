@@ -1,75 +1,81 @@
 <template>
   <div>
     <div v-if="tooltipButton === 'inboxRules' && showPreview">
-      <splitpane-container  :size="50" :class-inbox="true">
+      <splitpane-container
+        :size="50"
+        :class-inbox="true">
         <div
-        ref="tasks-preview"
-        class="tasks-preview h-100 p-3"
-        >
+          ref="tasks-preview"
+          class="tasks-preview h-100 p-3">
           <div class="d-flex w-100 mb-3">
-             <slot name="header" v-bind:close="onClose" v-bind:screenFilteredTaskData="formData" v-bind:taskReady="taskReady"></slot>
+            <slot
+              name="header"
+              :close="onClose"
+              :screen-filtered-task-data="formData"
+              :task-ready="taskReady" />
           </div>
-          <div :class="{
-            'frame-container': tooltipButton === 'previewTask' || tooltipButton === '',
-            'frame-container-full': tooltipButton === 'fullTask',
-            'frame-container-inbox': tooltipButton === 'inboxRules'
+          <div
+            :class="{
+              'frame-container': tooltipButton === 'previewTask' || tooltipButton === '',
+              'frame-container-full': tooltipButton === 'fullTask',
+              'frame-container-inbox': tooltipButton === 'inboxRules'
             }"
             class="iframe-container">
             <iframe
               v-if="showFrame1"
-              :title="$t('Preview')"
               ref="tasksFrame1"
+              :title="$t('Preview')"
               width="100%"
               :class="showFrame2 ? 'loadingFrame' : ''"
               class="iframe"
               :src="linkTasks1"
-              @load="frameLoaded('tasksFrame1')"
               :event-parent-id="_uid"
-            />
+              @load="frameLoaded('tasksFrame1')" />
             <iframe
               v-if="showFrame2"
-              :title="$t('Preview')"
               ref="tasksFrame2"
+              :title="$t('Preview')"
               width="100%"
               :class="showFrame1 ? 'loadingFrame' : ''"
               class="iframe"
               :src="linkTasks2"
-              @load="frameLoaded('tasksFrame2')"
               :event-parent-id="_uid"
-            />
+              @load="frameLoaded('tasksFrame2')" />
 
             <task-loading
               v-show="stopFrame"
-              class="load-frame"
-            />
+              class="load-frame" />
           </div>
-      </div>
-          </splitpane-container>
+        </div>
+      </splitpane-container>
     </div>
 
     <div v-else>
-    <splitpane-container v-if="showPreview" :size="splitpaneSize">
-      <div
-        ref="tasks-preview"
-        class="tasks-preview h-100 p-3 position-relative"
-      >
+      <splitpane-container
+        v-if="showPreview"
+        :size="splitpaneSize">
+        <div
+          ref="tasks-preview"
+          class="tasks-preview h-100 p-3 position-relative">
           <div class="d-flex w-100 mb-3">
-            <slot name="header" v-bind:close="onClose" v-bind:screenFilteredTaskData="formData" v-bind:taskReady="taskReady">
+            <slot
+              name="header"
+              :close="onClose"
+              :screen-filtered-task-data="formData"
+              :task-ready="taskReady">
               <b-button-group>
                 <b-button
                   class="arrow-button"
                   variant="outline-secondary"
                   :disabled="!existPrev || disableNavigation"
-                  @click="goPrevNext('Prev')"
-                >
+                  @click="goPrevNext('Prev')">
                   <i class="fas fa-chevron-left" />
                 </b-button>
                 <b-button
                   class="arrow-button"
                   variant="outline-secondary"
                   :disabled="!existNext || disableNavigation"
-                  @click="goPrevNext('Next')"
-                >
+                  @click="goPrevNext('Next')">
                   <i class="fas fa-chevron-right" />
                 </b-button>
               </b-button-group>
@@ -79,8 +85,7 @@
                 :date="lastAutosave"
                 :error="errorAutosave"
                 :form-data="formData"
-                :size="headerResponsive()"
-              />
+                :size="headerResponsive()" />
               <div class="ml-auto mr-0 text-right">
                 <ellipsis-menu
                   v-if="ellipsisButton"
@@ -88,96 +93,87 @@
                   :data="task"
                   :divider="false"
                   style="float:none; color: #566877;"
-                  @navigate="onProcessNavigate"
-                />
+                  @navigate="onProcessNavigate" />
                 <b-button-group
                   v-if="!ellipsisButton"
-                  class="preview-group-button"
-                >
+                  class="preview-group-button">
                   <b-button
+                    v-if="taskDraftsEnabled"
+                    v-b-tooltip.hover
                     class="icon-button"
                     :aria-label="$t('Clear Draft')"
                     variant="light"
-                    v-b-tooltip.hover 
                     :title="$t('Clear Draft')"
-                    @click="eraseDraft()"
-                    v-if="taskDraftsEnabled"
-                  >
-                    <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
+                    @click="eraseDraft()">
+                    <img
+                      src="/img/smartinbox-images/eraser.svg"
+                      :alt="$t('No Image')">
                   </b-button>
                   <b-button
                     v-if="showQuickFillPreview === false"
+                    v-b-tooltip.hover
                     class="icon-button"
                     :aria-label="$t('Quick fill')"
-                    v-b-tooltip.hover 
                     :title="$t('Quick fill')"
                     variant="light"
-                    @click="showQuickFillPreview = true"
-                  >
+                    @click="showQuickFillPreview = true">
                     <img
                       src="/img/smartinbox-images/fill.svg"
-                      :alt="$t('No Image')"
-                    >
+                      :alt="$t('No Image')">
                   </b-button>
                 </b-button-group>
                 <b-button-group
                   v-if="!ellipsisButton"
-                  class="preview-group-button"
-                >
+                  class="preview-group-button">
                   <b-button
+                    v-b-tooltip.hover
                     class="icon-button"
                     variant="light"
                     :aria-label="$t('Priority')"
-                    v-b-tooltip.hover 
                     :title="$t('Priority')"
                     :class="{ 'button-priority': isPriority }"
-                    @click="addPriority()"
-                  >
+                    @click="addPriority()">
                     <img
                       :src="
                         isPriority
                           ? '/img/priority.svg'
                           : '/img/priority-header.svg'
                       "
-                      :alt="$t('No Image')"
-                    >
+                      :alt="$t('No Image')">
                   </b-button>
                   <b-button
                     v-if="allowReassignment"
+                    v-b-tooltip.hover
                     class="btn text-secondary icon-button"
                     variant="light"
                     :aria-label="$t('Reassign')"
-                    v-b-tooltip.hover 
                     :title="$t('Reassign')"
-                    @click="openReassignment()"
-                  >
+                    @click="openReassignment()">
                     <i class="fas fa-user-friends" />
                   </b-button>
                   <b-button
+                    v-b-tooltip.hover
                     class="btn text-secondary icon-button"
                     variant="light"
                     :aria-label="$t('Open Task')"
-                    v-b-tooltip.hover 
                     :title="$t('Open Task')"
-                    @click="openTask()"
-                  >
+                    @click="openTask()">
                     <i class="fas fa-external-link-alt" />
                   </b-button>
                 </b-button-group>
 
                 <b-button
+                  v-b-tooltip.hover
                   class="btn-light text-secondary"
                   :aria-label="$t('Close')"
-                    v-b-tooltip.hover 
-                    :title="$t('Close')"
-                  @click="onClose();showReassignment=false;"
-                >
+                  :title="$t('Close')"
+                  @click="onClose();showReassignment=false;">
                   <i class="fas fa-times" />
                 </b-button>
               </div>
             </slot>
           </div>
-          <div
+          <!-- <div
             id="reassign-container"
             class="d-flex align-items-center overlay-div position-absolute top-0 start-0 w-100 bg-white shadow-lg p-2 pr-4"
             v-if="showReassignment"
@@ -201,54 +197,58 @@
             <button type="button" class="btn btn-outline-secondary btn-sm ml-2" @click="cancelReassign">
               {{ $t('Cancel') }}
             </button>
-          </div>
-          <div :class="{
-            'frame-container': tooltipButton === 'previewTask' || tooltipButton === '',
-            'frame-container-full': tooltipButton === 'fullTask',
-            'frame-container-inbox': tooltipButton === 'inboxRules'
-          }"
-          class="iframe-container">
+          </div> -->
+
+          <TaskPreviewAssignment
+            v-if="showReassignment"
+            :task="task"
+            @on-reassign-user="e=> reassignUser(e,false)" />
+          <div
+            :class="{
+              'frame-container': tooltipButton === 'previewTask' || tooltipButton === '',
+              'frame-container-full': tooltipButton === 'fullTask',
+              'frame-container-inbox': tooltipButton === 'inboxRules'
+            }"
+            class="iframe-container">
             <iframe
               v-if="showFrame1"
-              :title="$t('Preview')"
               ref="tasksFrame1"
+              :title="$t('Preview')"
               width="100%"
               :class="showFrame2 ? 'loadingFrame' : ''"
               class="iframe"
               :src="linkTasks1"
               :event-parent-id="_uid"
-              @load="frameLoaded('tasksFrame1')"
-            />
+              @load="frameLoaded('tasksFrame1')" />
             <iframe
               v-if="showFrame2"
-              :title="$t('Preview')"
               ref="tasksFrame2"
+              :title="$t('Preview')"
               width="100%"
               :class="showFrame1 ? 'loadingFrame' : ''"
               class="iframe"
               :src="linkTasks2"
               :event-parent-id="_uid"
-              @load="frameLoaded('tasksFrame2')"
-            />
+              @load="frameLoaded('tasksFrame2')" />
 
             <task-loading
               v-show="stopFrame"
-              class="load-frame"
-            />
+              class="load-frame" />
+          </div>
+          <splitpane-container
+            v-if="showQuickFillPreview"
+            :size="93">
+            <quick-fill-preview
+              class="quick-fill-preview"
+              :task="task"
+              :prop-from-button="'previewTask'"
+              :prop-columns="propColumns"
+              :prop-filters="propFilters"
+              @quick-fill-data="fillWithQuickFillData"
+              @close="showQuickFillPreview = false" />
+          </splitpane-container>
         </div>
-        <splitpane-container v-if="showQuickFillPreview" :size="93">
-          <quick-fill-preview
-            class="quick-fill-preview"
-            :task="task"
-            :prop-from-button ="'previewTask'"
-            :prop-columns="propColumns"
-            :prop-filters="propFilters"
-            @quick-fill-data="fillWithQuickFillData"
-            @close="showQuickFillPreview = false"
-          ></quick-fill-preview>
-        </splitpane-container>
-      </div>
-    </splitpane-container>
+      </splitpane-container>
     </div>
   </div>
 </template>
@@ -260,15 +260,24 @@ import TaskSaveNotification from "./TaskSaveNotification.vue";
 import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 import QuickFillPreview from "./QuickFillPreview.vue";
 import PreviewMixin from "./PreviewMixin";
-import autosaveMixins from "../../modules/autosave/autosaveMixin.js"
-import PMDropdownSuggest from "../../components/PMDropdownSuggest.vue";
+import autosaveMixins from "../../modules/autosave/autosaveMixin.js";
+// import PMDropdownSuggest from "../../components/PMDropdownSuggest.vue";
 import reassignMixin from "../../common/reassignMixin";
+import TaskPreviewAssignment from "./taskPreview/TaskPreviewAssignment.vue";
 
 export default {
-  components: { SplitpaneContainer, TaskLoading, QuickFillPreview, TaskSaveNotification, EllipsisMenu, PMDropdownSuggest },
+  components: {
+    SplitpaneContainer,
+    TaskLoading,
+    QuickFillPreview,
+    TaskSaveNotification,
+    EllipsisMenu,
+    // PMDropdownSuggest,
+    TaskPreviewAssignment,
+  },
   mixins: [PreviewMixin, autosaveMixins, reassignMixin],
   props: ["tooltipButton", "propPreview"],
-  data(){
+  data() {
     return {
     };
   },
@@ -282,9 +291,9 @@ export default {
           this.lastAutosave = "-";
         }
         this.isPriority = task.is_priority;
-        const priorityAction = this.actions.find(action => action.value === 'mark-priority');
+        const priorityAction = this.actions.find((action) => action.value === "mark-priority");
         if (priorityAction) {
-          priorityAction.content = this.isPriority ? 'Unmark Priority' : 'Mark as Priority';
+          priorityAction.content = this.isPriority ? "Unmark Priority" : "Mark as Priority";
         }
         if (this.task.id) {
           this.getTaskDefinitionForReassignmentPermission();
@@ -293,19 +302,19 @@ export default {
         if (task?.id !== previousTask?.id) {
           this.userHasInteracted = false;
           this.setAllowReassignment();
-        } 
+        }
       },
     },
     showPreview(value) {
       this.$emit("onWatchShowPreview", value);
-    }
+    },
   },
   mounted() {
-    if(this.propPreview){
+    if (this.propPreview) {
       this.showPreview = true;
     }
-    
-    this.receiveEvent('taskReady', (taskId) => {
+
+    this.receiveEvent("taskReady", (taskId) => {
       this.taskReady = true;
     });
 
@@ -317,42 +326,36 @@ export default {
       }
     });
 
-    this.receiveEvent('userHasInteracted', () => {
+    this.receiveEvent("userHasInteracted", () => {
       this.userHasInteracted = true;
     });
 
-    this.$root.$on('pane-size', (value) => {
+    this.$root.$on("pane-size", (value) => {
       this.size = value;
     });
     this.screenWidthPx = window.innerWidth;
-    window.addEventListener('resize', this.updateScreenWidthPx);
+    window.addEventListener("resize", this.updateScreenWidthPx);
     this.getUser();
     this.setAllowReassignment();
   },
-  computed: {
-    disabled() {
-      return this.selectedUser ? false : true;
-    },
-  },
   methods: {
     fillWithQuickFillData(data) {
-      const message = this.$t('Task Filled succesfully');
+      const message = this.$t("Task Filled succesfully");
       this.sendEvent("fillData", data);
       this.showUseThisTask = false;
-      ProcessMaker.alert(message, 'success');
+      ProcessMaker.alert(message, "success");
       this.handleAutosave();
       this.disableNavigation = false;
     },
-    sendEvent(name, data)
-    {
+    sendEvent(name, data) {
       const event = new CustomEvent(name, {
-        detail: data
+        detail: data,
       });
-      if(this.showFrame1) {
-        this.$refs["tasksFrame1"].contentWindow.dispatchEvent(event);
+      if (this.showFrame1) {
+        this.$refs.tasksFrame1.contentWindow.dispatchEvent(event);
       }
-      if(this.showFrame2) {
-        this.$refs["tasksFrame2"].contentWindow.dispatchEvent(event);
+      if (this.showFrame2) {
+        this.$refs.tasksFrame2.contentWindow.dispatchEvent(event);
       }
     },
     receiveEvent(name, callback) {
@@ -370,12 +373,12 @@ export default {
       this.options.is_loading = true;
       const draftData = _.omitBy(this.formData, (value, key) => key.startsWith("_"));
       return ProcessMaker.apiClient
-        .put("drafts/" + this.task.id, draftData)
+        .put(`drafts/${this.task.id}`, draftData)
         .then((response) => {
           this.task.draft = _.merge(
             {},
             this.task.draft,
-            response.data
+            response.data,
           );
         })
         .catch(() => {
@@ -389,8 +392,8 @@ export default {
     },
     eraseDraft() {
       ProcessMaker.apiClient
-        .delete("drafts/" + this.task.id)
-        .then(response => {
+        .delete(`drafts/${this.task.id}`)
+        .then((response) => {
           // No need to run resetRequestFiles here
           // because the iframe gets reloaded after
           // the draft is cleared
@@ -402,10 +405,6 @@ export default {
           this.task.draft = null;
           this.userHasInteracted = false;
         });
-    },
-    cancelReassign() {
-      this.showReassignment = false;
-      this.selectedUser = null;
     },
     openReassignment() {
       this.showReassignment = !this.showReassignment;
@@ -425,7 +424,18 @@ export default {
           this.user = response.data;
         });
     },
-  }
+    reassignUser(selectedUser, redirect = false) {
+      console.log("REASSIGN USER task preview", selectedUser);
+      this.$emit("on-reassign-user", selectedUser);
+      this.showReassignment = false;
+      if (redirect) {
+        this.redirect("/tasks");
+      }
+      if (this.showPreview) {
+        this.showPreview = false;
+      }
+    },
+  },
 };
 </script>
 
@@ -514,7 +524,6 @@ export default {
   background-color: #FEF2F3;
   color: #C56363;
 }
-
 
 .iframe-container {
   display: flex;
