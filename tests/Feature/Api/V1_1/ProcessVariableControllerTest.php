@@ -335,12 +335,12 @@ class ProcessVariableControllerTest extends TestCase
                 'columns' => [
                     [
                         'label' => 'Variable 1',
-                        'field' => 'data.data.var_1_1',
+                        'field' => 'data.var_1_1',
                         'default' => null,
                     ],
                     [
                         'label' => 'Variable 2',
-                        'field' => 'data.data.var_1_2',
+                        'field' => 'data.var_1_2',
                         'default' => null,
                     ],
                 ],
@@ -358,11 +358,11 @@ class ProcessVariableControllerTest extends TestCase
         // Check that the filtered variables do not include the fields from the saved search
         $filteredFields = collect($responseData['data'])->pluck('field');
 
-        $this->assertTrue($filteredFields->contains('data.var_1_1'));
-        $this->assertTrue($filteredFields->contains('data.var_1_2'));
+        $this->assertFalse($filteredFields->contains('data.var_1_1'));
+        $this->assertFalse($filteredFields->contains('data.var_1_2'));
 
         // Check that the total count is reduced by the number of excluded fields
-        $this->assertEquals(10, $responseData['meta']['total']); // 10 total - 2 excluded
+        $this->assertEquals(8, $responseData['meta']['total']); // 10 total - 2 excluded
     }
 
     /**
