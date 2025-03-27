@@ -1,11 +1,9 @@
 <template>
   <div
     id="reassign-container"
-    class="d-flex align-items-center overlay-div position-absolute top-0 start-0 w-100 bg-white shadow-lg p-2 pr-4">
-    <div class="mr-3">
-      <label for="user">Assign to:</label>
-    </div>
-    <div class="flex-grow-1">
+    class="tw-flex tw-flex-col tw-space-y-3 tw-items-center overlay-div tw-absolute top-0 start-0 tw-w-full bg-white shadow-lg tw-p-2">
+    <div class="tw-flex tw-flex-col tw-space-x-2 tw-p-2 tw-w-full">
+      <label>{{ $t('Assign to') }}:</label>
       <PMDropdownSuggest
         v-model="selectedUser"
         :options="reassignUsers"
@@ -20,19 +18,29 @@
         </template>
       </PMDropdownSuggest>
     </div>
-    <button
-      type="button"
-      class="btn btn-primary btn-sm ml-2"
-      :disabled="disabled"
-      @click="reassignUser">
-      {{ $t('Assign') }}
-    </button>
-    <button
-      type="button"
-      class="btn btn-outline-secondary btn-sm ml-2"
-      @click="cancelReassign">
-      {{ $t('Cancel') }}
-    </button>
+
+    <div class="tw-flex tw-flex-col tw-space-x-2 tw-p-2 tw-w-full">
+      <label>{{ $t('Comments') }}</label>
+      <textarea
+        v-model="comments"
+        class="tw-w-full tw-border tw-border-gray-300 tw-rounded-md " />
+    </div>
+
+    <div class="tw-flex tw-flex-row tw-space-x-2 tw-w-full tw-justify-end">
+      <button
+        type="button"
+        class="btn btn-primary btn-sm ml-2"
+        :disabled="disabled"
+        @click="reassignUser">
+        {{ $t('Assign') }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-secondary btn-sm ml-2"
+        @click="cancelReassign">
+        {{ $t('Cancel') }}
+      </button>
+    </div>
   </div>
 </template>
 
@@ -54,11 +62,13 @@ const props = defineProps({
 
 const emit = defineEmits(["on-reassign-user"]);
 
+// Refs
 const selectedUser = ref(null);
+const comments = ref(null);
 const reassignUsers = ref([]);
 
+// Computed properties
 const disabled = computed(() => !selectedUser.value);
-
 const currentTaskUserId = computed(() => props.task.user_id);
 
 // Load the reassign users
@@ -78,14 +88,19 @@ const loadReassignUsers = async () => {
   });
 };
 
+/**
+ * Load the reassign users
+ */
 const onReassignInput = _.debounce(async (filter) => {
   await loadReassignUsers(filter);
 }, 300);
 
+/**
+ * Reassign the user
+ */
 const reassignUser = async () => {
   if (selectedUser.value) {
-    const response = await updateReassignUser(props.task.id, selectedUser.value);
-    console.log("REASSIGN USER RESPONSE", response);
+    const response = await updateReassignUser(props.task.id, selectedUser.value, comments.value);
     if (response) {
       emit("on-reassign-user", selectedUser.value);
     }
@@ -95,8 +110,13 @@ const reassignUser = async () => {
     });
   }
 };
+
+/**
+ * Cancel the reassign
+ */
 const cancelReassign = () => {
   selectedUser.value = null;
+  emit("on-cancel-reassign");
 };
 
 onMounted(async () => {

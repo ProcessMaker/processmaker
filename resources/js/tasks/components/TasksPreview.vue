@@ -56,8 +56,8 @@
         :size="splitpaneSize">
         <div
           ref="tasks-preview"
-          class="tasks-preview h-100 p-3 position-relative">
-          <div class="d-flex w-100 mb-3">
+          class="tasks-preview h-100 position-relative">
+          <div class="d-flex w-100 p-3">
             <slot
               name="header"
               :close="onClose"
@@ -173,35 +173,10 @@
               </div>
             </slot>
           </div>
-          <!-- <div
-            id="reassign-container"
-            class="d-flex align-items-center overlay-div position-absolute top-0 start-0 w-100 bg-white shadow-lg p-2 pr-4"
-            v-if="showReassignment"
-          >
-            <div class="mr-3">
-              <label for="user">Assign to:</label>
-            </div>
-            <div class="flex-grow-1">
-              <PMDropdownSuggest v-model="selectedUser"
-                                 :options="reassignUsers"
-                                 @onInput="onReassignInput"
-                                 :placeholder="$t('Type here to search')">
-                <template v-slot:pre-text="{ option }">
-                  <b-badge variant="secondary" class="mr-2 custom-badges pl-2 pr-2 rounded-lg">{{ option.active_tasks_count }}</b-badge>
-                </template>
-              </PMDropdownSuggest>
-            </div>
-            <button type="button" class="btn btn-primary btn-sm ml-2" @click="reassignUser(false)" :disabled="disabled">
-              {{ $t('Assign') }}
-            </button>
-            <button type="button" class="btn btn-outline-secondary btn-sm ml-2" @click="cancelReassign">
-              {{ $t('Cancel') }}
-            </button>
-          </div> -->
-
           <TaskPreviewAssignment
             v-if="showReassignment"
             :task="task"
+            @on-cancel-reassign="showReassignment = false"
             @on-reassign-user="e=> reassignUser(e,false)" />
           <div
             :class="{
@@ -261,7 +236,6 @@ import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 import QuickFillPreview from "./QuickFillPreview.vue";
 import PreviewMixin from "./PreviewMixin";
 import autosaveMixins from "../../modules/autosave/autosaveMixin.js";
-// import PMDropdownSuggest from "../../components/PMDropdownSuggest.vue";
 import reassignMixin from "../../common/reassignMixin";
 import TaskPreviewAssignment from "./taskPreview/TaskPreviewAssignment.vue";
 
@@ -272,7 +246,6 @@ export default {
     QuickFillPreview,
     TaskSaveNotification,
     EllipsisMenu,
-    // PMDropdownSuggest,
     TaskPreviewAssignment,
   },
   mixins: [PreviewMixin, autosaveMixins, reassignMixin],
@@ -425,7 +398,6 @@ export default {
         });
     },
     reassignUser(selectedUser, redirect = false) {
-      console.log("REASSIGN USER task preview", selectedUser);
       this.$emit("on-reassign-user", selectedUser);
       this.showReassignment = false;
       if (redirect) {
