@@ -16,12 +16,6 @@ class TrustHosts extends Middleware
     public function hosts(): array
     {
         $trustedHost = $this->allSubdomainsOfApplicationUrl();
-        
-        \Log::debug('TrustHosts middleware validating host', [
-            'host' => request()->getHost(),
-            'trusted_pattern' => $trustedHost
-        ]);
-
         return [$trustedHost];
     }
 
