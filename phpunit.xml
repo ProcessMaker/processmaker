@@ -39,7 +39,6 @@
       <env name="CACHE_DRIVER" value="array" />
       <env name="QUEUE_DRIVER" value="sync" />
       <env name="MESSAGE_BROKER_DRIVER" value="default" />
-      <env name="REDIS_PREFIX" value="test:" />
 
       <!-- Workflow Database -->
       <env name="DB_ADAPTER" value="mysql" />
