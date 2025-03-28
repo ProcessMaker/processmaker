@@ -75,7 +75,7 @@ if (!function_exists('color')) {
      */
     function color($key)
     {
-        if ($colors = Arr::get(config('css-override'), 'variables')) {
+        if ($colors = config('css-override.variables')) {
             $colors = json_decode($colors);
             foreach ($colors as $color) {
                 if ($color->id === '$' . $key) {
@@ -96,7 +96,7 @@ if (!function_exists('sidebar_class')) {
      */
     function sidebar_class()
     {
-        if (Arr::get(config('css-override'), 'variables')) {
+        if (config('css-override.variables')) {
             $defaults = ['#0872C2', '#2773F3'];
             if (!in_array(color('primary'), $defaults)) {
                 return 'sidebar-custom';
