@@ -72,6 +72,11 @@ abstract class TestCase extends BaseTestCase
 
         parent::setUp();
 
+        // Clear Redis cache before running tests
+        foreach (['default', 'cache', 'cache_settings'] as $connection) {
+            Redis::connection($connection)->flushDb();
+        }
+
         if (!self::$cacheCleared) {
             Artisan::call('optimize:clear');
             self::$cacheCleared = true;
