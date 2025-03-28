@@ -72,7 +72,9 @@ abstract class TestCase extends BaseTestCase
 
         parent::setUp();
 
-        Redis::flushall();
+        // Clear Redis cache before running tests
+        $prefix = config('database.redis.options.prefix');
+        Redis::del(Redis::keys($prefix . '*'));
 
         if (!self::$cacheCleared) {
             Artisan::call('optimize:clear');
