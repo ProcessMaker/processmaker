@@ -35,6 +35,13 @@ const placeholders = {
       subtitle: t("No new tasks at this moment"),
     },
   },
+  "empty-agents": {
+    component: EmptyPlaceholder,
+    options: {
+      title: t("All clear"),
+      subtitle: t("No new agents at this moment"),
+    },
+  },
 };
 
 const getComponent = computed(() => placeholders[props.placeholder].component);
