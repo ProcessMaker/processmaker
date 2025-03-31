@@ -49,7 +49,7 @@ import {
   ref, onMounted, nextTick, computed,
 } from "vue";
 import PMDropdownSuggest from "../../../components/PMDropdownSuggest.vue";
-import { getReassignUsers, updateReassignUser } from "../../api";
+import { getReassignUsers, updateReassignUser, updateComment } from "../../api";
 
 const { _ } = window;
 
@@ -96,12 +96,32 @@ const onReassignInput = _.debounce(async (filter) => {
 }, 300);
 
 /**
+ * Prepare the comment (data and parameters) to be updated
+ */
+const prepareToUpdateComment = async () => {
+  const comment = {
+    body: comments.value,
+    commentableId: props.task.id,
+    commentableType: "ProcessMaker\\Models\\ProcessRequestToken",
+    type: "COMMENT",
+    parent_id: 0,
+    subject: "Commented on Reassigned Task",
+  };
+
+  const response = await updateComment(comment);
+
+  return response;
+};
+
+/**
  * Reassign the user
  */
 const reassignUser = async () => {
   if (selectedUser.value) {
     const response = await updateReassignUser(props.task.id, selectedUser.value, comments.value);
-    if (response) {
+    const commentResponse = await prepareToUpdateComment();
+
+    if (response && commentResponse) {
       emit("on-reassign-user", selectedUser.value);
     }
 
