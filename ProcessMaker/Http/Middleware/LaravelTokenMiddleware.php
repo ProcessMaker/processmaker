@@ -10,7 +10,9 @@ use Laravel\Passport\Passport;
 class LaravelTokenMiddleware
 {
     /**
-     * Handle an incoming request.
+     * Laravel Passport enables cookie authentication (JWT)
+     * therefore, the request is validated when the cookie and
+     * X-CSRF-TOKEN are present, so that its cache permissions are also configured.
      *
      * @param  Request  $request
      * @param  Closure  $next
