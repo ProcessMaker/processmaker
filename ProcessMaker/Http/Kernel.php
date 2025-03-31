@@ -49,6 +49,7 @@ class Kernel extends HttpKernel
         'api' => [
             // API Middleware is defined with routeMiddleware below.
             // See routes/api.php
+            Middleware\LaravelTokenMiddleware::class,
         ],
         'engine' => [
             'auth:api',
@@ -88,7 +89,6 @@ class Kernel extends HttpKernel
         'admin' => Middleware\IsAdmin::class,
         'etag' => Middleware\Etag\HandleEtag::class,
         'file_size_check' => Middleware\FileSizeCheck::class,
-        'laravel_token' => Middleware\LaravelTokenMiddleware::class,
     ];
 
     /**
