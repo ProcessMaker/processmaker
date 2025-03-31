@@ -267,8 +267,8 @@ class ScreenTest extends TestCase
         $response = $this->apiCall('PUT', $url, [
             'title' => 'ScreenTitleTest',
             'description' => $faker->sentence(5),
-            'config' => '{"foo":"bar"}',
-            'computed' => '[{"id": 2, "name": "test", "type": "expression", "formula": "test", "property": "test"}]',
+            'config' => [['items' => [['config' => ['foo' => 'bar']]]]],
+            'computed' => [['id' => 2, 'name' => 'test', 'type' => 'expression', 'formula' => 'test', 'property' => 'test']],
             'custom_css' => '.class { font-size: large; }',
             'watchers' => '[{"input_data":"{}","script_configuration":"{}","synchronous":false,"show_async_loading":false,"run_onload":false,"name":"Watchers","watching":"form_input_1","script":{"id":"script-4","uuid":"98a4376e-efb8-4c10-83fd-01199398eddc","key":null,"title":"Autosave","description":"Autosave","language":"php","code":"","timeout":60,"run_as_user_id":1,"status":"ACTIVE","script_category_id":"1","script_executor_id":3},"script_id":"4","script_key":null,"uid":"16794186944621"}]',
             'type' => $screen->type,
@@ -281,8 +281,8 @@ class ScreenTest extends TestCase
         // assert it creates a published screen version.
         $screen->refresh();
         $draft = $screen->versions()->draft()->first();
-        $this->assertEquals($draft->config, '{"foo":"bar"}');
-        $this->assertEquals($draft->computed, '[{"id": 2, "name": "test", "type": "expression", "formula": "test", "property": "test"}]');
+        $this->assertEquals($draft->config, [['items' => [['config' => ['foo' => 'bar']]]]]);
+        $this->assertEquals($draft->computed, [['id' => 2, 'name' => 'test', 'type' => 'expression', 'formula' => 'test', 'property' => 'test']]);
         $this->assertEquals($draft->custom_css, '.class { font-size: large; }');
         $this->assertEquals($draft->watchers, '[{"input_data":"{}","script_configuration":"{}","synchronous":false,"show_async_loading":false,"run_onload":false,"name":"Watchers","watching":"form_input_1","script":{"id":"script-4","uuid":"98a4376e-efb8-4c10-83fd-01199398eddc","key":null,"title":"Autosave","description":"Autosave","language":"php","code":"","timeout":60,"run_as_user_id":1,"status":"ACTIVE","script_category_id":"1","script_executor_id":3},"script_id":"4","script_key":null,"uid":"16794186944621"}]');
         $this->assertLessThan(3, $draft->updated_at->diffInSeconds($screen->updated_at));
@@ -335,7 +335,7 @@ class ScreenTest extends TestCase
     public function testDuplicateScreen()
     {
         $faker = Faker::create();
-        $config = '{"foo":"bar"}';
+        $config = [['items' => [['config' => ['foo' => 'bar']]]]];
         $screen = Screen::factory()->create([
             'config' => $config,
         ]);

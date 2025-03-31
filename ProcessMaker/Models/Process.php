@@ -226,6 +226,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         'assigned',
         'completed',
         'due',
+        'default'
     ];
 
     protected $appends = [

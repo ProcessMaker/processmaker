@@ -26,6 +26,7 @@
       class="tw-text-[#4F5154]"
       :placeholder="showPlaceholder"
       @changeFilter="onChangeFilter"
+      @stopResize="onStopResize"
       @resetFilters="onChangeFilter">
       <template #placeholder>
         <TablePlaceholder
@@ -53,10 +54,10 @@ import { useRouter, useRoute } from "vue-router/composables";
 import CaseFilter from "./components/CaseFilter.vue";
 import BadgesSection from "./components/BadgesSection.vue";
 import { Pagination } from "../../base";
-import { getColumns } from "./config/columns";
+import columns, { getColumns } from "./config/columns";
 import { FilterableTable, TablePlaceholder } from "../../system";
 import * as api from "./api";
-import { user } from "./variables";
+import { user, useStore } from "./variables";
 import {
   formatFilters, formatFilterBadges, formattedFilter, formatFilterSaved,
 } from "./utils";
@@ -79,6 +80,7 @@ const showPlaceholder = ref(false);
 const placeholderType = ref("loading");
 const route = useRoute();
 const defaultSort = ref("case_number:desc");
+const store = useStore();
 
 const dataPagination = ref({
   total: 0,
@@ -204,9 +206,36 @@ const autoPagination = () => {
   paginator.value.setPerPage(appropriateSize);
 };
 
+const updateUserConfiguration = async () => {
+  const userConf = store.getters["core:cases/getUserConfiguration"];
+
+  const response = await api.updateUserConfiguration(userConf);
+  return response;
+};
+
+const onStopResize = (column) => {
+  store.commit("core:cases/updateColumnWidth", {
+    column: column.field,
+    width: column.width,
+  });
+  updateUserConfiguration();
+};
+
+const updateColumnWithUserConfiguration = (columnsDefault) => {
+  const casesColumns = store.getters["core:cases/getCasesColumns"] || {};
+
+  columnsDefault.forEach((column) => {
+    if (casesColumns[column.field]) {
+      column.width = casesColumns[column.field].width;
+    }
+  });
+
+  return columnsDefault;
+};
+
 onMounted(() => {
   columnsConfig.value = getColumns(props.listId);
-
+  columnsConfig.value = updateColumnWithUserConfiguration(columnsConfig.value);
   getFilters().then((response) => {
     const filtersSaved = formatFilterSaved(response.data.filters);
     filters.value = filtersSaved;

@@ -4,12 +4,14 @@ import TaskSavePanel from "./components/TaskSavePanel.vue";
 import autosaveMixins from "../modules/autosave/autosaveMixin";
 import draftFileUploadMixin from "../modules/autosave/draftFileUploadMixin";
 import reassignMixin from "../common/reassignMixin";
+import translator from "../modules/lang.js";
 
 Vue.mixin(autosaveMixins);
 Vue.mixin(draftFileUploadMixin);
 Vue.mixin(reassignMixin);
 Vue.component("DataTreeToggle", () => import("../components/common/data-tree-toggle.vue"));
 Vue.component("TreeView", () => import("../components/TreeView.vue"));
+window.__ = translator;
 
 const main = new Vue({
   el: "#task",

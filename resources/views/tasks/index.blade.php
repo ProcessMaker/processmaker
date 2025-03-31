@@ -162,6 +162,9 @@
         window.Processmaker.selectedProcess = @json($selectedProcess);
         window.Processmaker.defaultSavedSearchId = @json($defaultSavedSearchId);
     </script>
+    @foreach($manager->getScripts() as $script)
+        <script src="{{$script}}"></script>
+    @endforeach
     <script>
         window.ProcessMaker.ellipsisPermission = {{
           Js::from(\Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'projects', 'documentation'))

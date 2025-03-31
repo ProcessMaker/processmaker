@@ -337,12 +337,12 @@ class ProcessVariableControllerTest extends TestCase
                 'columns' => [
                     [
                         'label' => 'Variable 1',
-                        'field' => 'data.var_1_1',
+                        'field' => 'data.data.var_1_1',
                         'default' => null,
                     ],
                     [
                         'label' => 'Variable 2',
-                        'field' => 'data.var_1_2',
+                        'field' => 'data.data.var_1_2',
                         'default' => null,
                     ],
                 ],
