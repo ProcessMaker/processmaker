@@ -88,6 +88,7 @@ class Kernel extends HttpKernel
         'admin' => Middleware\IsAdmin::class,
         'etag' => Middleware\Etag\HandleEtag::class,
         'file_size_check' => Middleware\FileSizeCheck::class,
+        'laravel_token' => Middleware\LaravelTokenMiddleware::class,
     ];
 
     /**
