@@ -1,0 +1,145 @@
+<template>
+  <div
+    id="reassign-container"
+    class="tw-flex tw-flex-col tw-space-y-3 tw-items-center overlay-div tw-absolute top-0 start-0 tw-w-full bg-white shadow-lg tw-p-2">
+    <div class="tw-flex tw-flex-col tw-space-x-2 tw-p-2 tw-w-full">
+      <label>{{ $t('Assign to') }}:</label>
+      <PMDropdownSuggest
+        v-model="selectedUser"
+        :options="reassignUsers"
+        :placeholder="$t('Type here to search')"
+        @onInput="onReassignInput">
+        <template #pre-text="{ option }">
+          <b-badge
+            variant="secondary"
+            class="mr-2 custom-badges pl-2 pr-2 rounded-lg">
+            {{ option.active_tasks_count }}
+          </b-badge>
+        </template>
+      </PMDropdownSuggest>
+    </div>
+
+    <div class="tw-flex tw-flex-col tw-space-x-2 tw-p-2 tw-w-full">
+      <label>{{ $t('Comments') }}</label>
+      <textarea
+        v-model="comments"
+        class="tw-w-full tw-border tw-border-gray-300 tw-rounded-md " />
+    </div>
+
+    <div class="tw-flex tw-flex-row tw-space-x-2 tw-w-full tw-justify-end">
+      <button
+        type="button"
+        class="btn btn-primary btn-sm ml-2"
+        :disabled="disabled"
+        @click="reassignUser">
+        {{ $t('Assign') }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-secondary btn-sm ml-2"
+        @click="cancelReassign">
+        {{ $t('Cancel') }}
+      </button>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import {
+  ref, onMounted, nextTick, computed,
+} from "vue";
+import PMDropdownSuggest from "../../../components/PMDropdownSuggest.vue";
+import { getReassignUsers, updateReassignUser, updateComment } from "../../api";
+
+const { _ } = window;
+
+const props = defineProps({
+  task: {
+    type: Object,
+    required: true,
+  },
+});
+
+const emit = defineEmits(["on-reassign-user"]);
+
+// Refs
+const selectedUser = ref(null);
+const comments = ref(null);
+const reassignUsers = ref([]);
+
+// Computed properties
+const disabled = computed(() => !selectedUser.value);
+const currentTaskUserId = computed(() => props.task.user_id);
+
+// Load the reassign users
+const loadReassignUsers = async () => {
+  const response = await getReassignUsers();
+
+  reassignUsers.value = [];
+  response.data.forEach((user) => {
+    if (currentTaskUserId.value === user.id) {
+      return;
+    }
+    reassignUsers.value.push({
+      text: user.fullname,
+      value: user.id,
+      active_tasks_count: user.active_tasks_count,
+    });
+  });
+};
+
+/**
+ * Load the reassign users
+ */
+const onReassignInput = _.debounce(async (filter) => {
+  await loadReassignUsers(filter);
+}, 300);
+
+/**
+ * Prepare the comment (data and parameters) to be updated
+ */
+const prepareToUpdateComment = async () => {
+  const comment = {
+    body: comments.value,
+    commentableId: props.task.id,
+    commentableType: "ProcessMaker\\Models\\ProcessRequestToken",
+    type: "COMMENT",
+    parent_id: 0,
+    subject: "Commented on Reassigned Task",
+  };
+
+  const response = await updateComment(comment);
+
+  return response;
+};
+
+/**
+ * Reassign the user
+ */
+const reassignUser = async () => {
+  if (selectedUser.value) {
+    const response = await updateReassignUser(props.task.id, selectedUser.value, comments.value);
+    const commentResponse = await prepareToUpdateComment();
+
+    if (response && commentResponse) {
+      emit("on-reassign-user", selectedUser.value);
+    }
+
+    nextTick(() => {
+      selectedUser.value = null;
+    });
+  }
+};
+
+/**
+ * Cancel the reassign
+ */
+const cancelReassign = () => {
+  selectedUser.value = null;
+  emit("on-cancel-reassign");
+};
+
+onMounted(async () => {
+  await loadReassignUsers();
+});
+</script>
