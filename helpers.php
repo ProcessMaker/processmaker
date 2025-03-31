@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Horizon\Repositories\RedisJobRepository;
 use ProcessMaker\Events\MarkArtisanCachesAsInvalid;
