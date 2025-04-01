@@ -114,6 +114,21 @@
 	<script src="{{mix('js/admin/profile/edit.js')}}"></script>
 
 <script>
+        const DEFAULT_ACCOUNTS = {
+            connectorSlack: {
+                name: 'Slack',
+                description: 'Send ProcessMaker notifications to Slack',
+                icon: 'https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg',
+                defaultSettings: {
+                    enabled: false,
+                    channel_id: null,
+                    ui_options: {
+                        show_toggle: true,
+                        show_edit_modal: false
+                    }
+                }
+            }
+        };
         let formVueInstance = new Vue({
             el: '#editProfile',
             mixins:addons,
@@ -147,16 +162,6 @@
                     }
                 ],
                 focusErrors: 'errors',
-                // TODO: If the slack connector is installed then by default we should show the slack
-                accounts: @json($currentUser['connected_accounts']) === null ? [{
-                  'name': 'Slack',
-                  'description': 'Send ProcessMaker notifications to Slack',
-                  'icon': 'https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg',
-                  'enabled': false, // TODO: This is going to conflict with any PLG connected accounts, currently functionality is that the connected accounds show here when enabled
-                  'channel_id': null,
-                  "show_toggle": true,
-				          "show_edit_modal": false
-                }]  : @json(json_decode($currentUser['connected_accounts'], true)),
             },
             created() {
               if (this.meta) {
@@ -296,6 +301,19 @@
                       this.$delete(this.formData.meta, 'disableRecommendations');
                     }
                   }
+                },
+                accounts() {
+                  let accounts = this.formData.connected_accounts
+                    ? JSON.parse(this.formData.connected_accounts) 
+                    : [];
+
+                  if (window.ProcessMaker.packages.includes('connector-slack')) {
+                    if (!accounts.some(account => account.name === 'Slack')) {
+                      accounts.push(DEFAULT_ACCOUNTS.connectorSlack);
+                    }
+                  }
+
+                  return accounts;
                 }
             }
         });
