@@ -147,7 +147,13 @@
                     }
                 ],
                 focusErrors: 'errors',
-                accounts: @json($currentUser['connected_accounts']) === null ? []  : @json(json_decode($currentUser['connected_accounts'], true)),
+                // TODO: If the slack connector is installed then by default we should show the slack
+                accounts: @json($currentUser['connected_accounts']) === null ? [{
+                  'name': 'Slack',
+                  'description': 'Send ProcessMaker notifications to Slack',
+                  'icon': 'https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg',
+                  'enabled': false, // TODO: This is going to conflict with any PLG connected accounts, currently functionality is that the connected accounds show here when enabled
+                }]  : @json(json_decode($currentUser['connected_accounts'], true)),
             },
             created() {
               if (this.meta) {
