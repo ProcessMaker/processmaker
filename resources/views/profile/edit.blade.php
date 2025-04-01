@@ -153,6 +153,7 @@
                   'description': 'Send ProcessMaker notifications to Slack',
                   'icon': 'https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg',
                   'enabled': false, // TODO: This is going to conflict with any PLG connected accounts, currently functionality is that the connected accounds show here when enabled
+                  'channel_id': null,
                 }]  : @json(json_decode($currentUser['connected_accounts'], true)),
             },
             created() {
