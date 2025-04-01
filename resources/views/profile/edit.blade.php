@@ -281,6 +281,13 @@
                 checkEmailChange() {
                   this.emailHasChanged = this.formData.email !== this.originalEmail;
                 },
+                handleConnectedAccountToggle(account, $event) {
+                  const accounts = JSON.parse(this.formData.connected_accounts)
+                      .map(acc => acc.name === account.name ? { ...acc, enabled: $event } : acc);
+                  
+                  this.formData.connected_accounts = JSON.stringify(accounts);
+                  this.saveProfileChanges();
+                }
             },
             computed: {
                 state2FA() {

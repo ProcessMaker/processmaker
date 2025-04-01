@@ -14,11 +14,12 @@
               <p class="account-description mb-0">@{{account.description}}</p>
             </div>
               <div class="d-flex align-items-center">
-              <button class="edit-btn" @click="showAccountsModal()">{{__('Edit')}}</button>
-              <b-badge pill variant="success" class="ml-3 connection-status">
+              <button v-if="!account.ui_options || account.ui_options.show_edit_modal" class="edit-btn" @click="showAccountsModal()">{{__('Edit')}}</button>
+              <b-badge v-if="!account.ui_options || !account.ui_options.show_toggle" pill variant="success" class="ml-3 connection-status">
                 <i class="fa fa-check"></i>
                 {{__('Connected')}}
               </b-badge>
+              <b-form-checkbox v-if="account?.ui_options?.show_toggle" @input="handleConnectedAccountToggle(account, $event)" v-model="account.enabled" switch></b-form-checkbox>
             </div>
           </div>
         </div>
