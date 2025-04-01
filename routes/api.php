@@ -1,5 +1,6 @@
 <?php
 
+use Box\Spout\Common\Entity\Row;
 use Illuminate\Support\Facades\Route;
 use ProcessMaker\Http\Controllers\Api\BookmarkController;
 use ProcessMaker\Http\Controllers\Api\ChangePasswordController;
@@ -321,6 +322,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         ->name('settings.menu_groups')->middleware($viewSettings);
     Route::post('settings/import', [SettingController::class, 'import'])
         ->name('settings.import')->middleware($updateSettings);
+    Route::post('settings', [SettingController::class, 'store'])
+        ->name('settings.store')->middleware($updateSettings);
     Route::delete('settings/{setting}', [SettingController::class, 'destroy'])
         ->name('settings.destroy')->middleware($updateSettings);
     Route::put('settings/{setting}', [SettingController::class, 'update'])

@@ -265,6 +265,16 @@ class SettingController extends Controller
         return response([], 204);
     }
 
+    public function store(Request $request)
+    {
+        $setting = new Setting();
+
+        $setting->fill($request->json()->all());
+        $setting->saveOrFail();
+
+        return response([], 201);
+    }
+
     public function destroy(Setting $setting)
     {
         $setting->delete();
