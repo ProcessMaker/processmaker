@@ -20,9 +20,8 @@ class LaravelTokenMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $response = $next($request);
-        $userId = auth()->id();
-
+        $user = pmUser();
+        $userId = $user ? $user->id : null;
         $permissions = Cache::get("user_{$userId}_permissions");
 
         if ($request->hasCookie(Passport::cookie()) && $request->hasHeader('X-CSRF-TOKEN') && !$permissions) {
@@ -31,6 +30,6 @@ class LaravelTokenMiddleware
             return response()->json(['error' => 'Unauthenticated.'], 401);
         }
 
-        return $response;
+        return $next($request);
     }
 }
