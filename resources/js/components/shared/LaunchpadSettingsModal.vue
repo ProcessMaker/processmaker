@@ -578,33 +578,19 @@ export default {
     },
     async getMyTasksColumns() {
       this.myTasks.currentColumns = this.myTasksColumns;
-      let defaultSavedSearch =
-        window.ProcessMaker?.defaultSavedSearch ||
-        window.Processmaker?.defaultSavedSearchId ||
-        null;
 
-      // If there is no defaultSavedSearch, initialize empty arrays and exit
-      if (!defaultSavedSearch) {
-        this.myTasks.defaultColumns = [];
-        this.myTasks.availableColumns = [];
-        this.myTasks.dataColumns = [];
-        return;
-      }
-
-      if (defaultSavedSearch) {
-        await ProcessMaker.apiClient
-          .get(`saved-searches/${defaultSavedSearch}/columns?include=default`)
+      await ProcessMaker.apiClient
+          .get(`saved-searches/columns`)
           .then((response) => {
             if (response.data && response.data.default) {
               this.myTasks.defaultColumns = response.data.default;
+              this.myTasks.defaultColumns.push({
+                  field: "options",
+                  label: "",
+                  sortable: false,
+                  width: 180
+              });
             }
-          });
-
-        await ProcessMaker.apiClient
-          .get(
-            `saved-searches/${defaultSavedSearch}/columns?include=available,data`
-          )
-          .then((response) => {
             if (response.data) {
               if (response.data.available) {
                 this.myTasks.availableColumns = response.data.available;
@@ -613,11 +599,15 @@ export default {
                   ...this.myTasks.defaultColumns,
                   ...this.myTasks.availableColumns,
                 ];
-                const difference = columns.filter(
+                let difference = columns.filter(
                   (column) =>
                     !this.myTasks.currentColumns.some(
                       (currentColumn) => currentColumn.field === column.field
                     )
+                );
+                difference = difference.filter(
+                  (obj, index, self) =>
+                    index === self.findIndex((el) => el.field === obj.field)
                 );
                 this.myTasks.availableColumns = difference;
               }
@@ -626,7 +616,6 @@ export default {
               }
             }
           });
-      }
     },
   },
 };
