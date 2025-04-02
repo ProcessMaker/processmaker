@@ -594,22 +594,19 @@ export default {
             if (response.data) {
               if (response.data.available) {
                 this.myTasks.availableColumns = response.data.available;
-                // Update availableColumns with the fields that are not in currentColumns.
-                let columns = [
-                  ...this.myTasks.defaultColumns,
-                  ...this.myTasks.availableColumns,
-                ];
-                let difference = columns.filter(
-                  (column) =>
-                    !this.myTasks.currentColumns.some(
-                      (currentColumn) => currentColumn.field === column.field
-                    )
+
+                //Merge all available and default columns; we use map to avoid duplicates.
+                const allColumns = new Map([
+                  ...this.myTasks.defaultColumns.map(col => [col.field, col]),
+                  ...this.myTasks.availableColumns.map(col => [col.field, col])
+                ]);
+
+                //Filter only those that are not in `currentColumns`.
+                this.myTasks.availableColumns = [...allColumns.values()].filter(
+                  column => !this.myTasks.currentColumns.some(
+                    currentColumn => currentColumn.field === column.field
+                  )
                 );
-                difference = difference.filter(
-                  (obj, index, self) =>
-                    index === self.findIndex((el) => el.field === obj.field)
-                );
-                this.myTasks.availableColumns = difference;
               }
               if (response.data.data) {
                 this.myTasks.dataColumns = response.data.data;
