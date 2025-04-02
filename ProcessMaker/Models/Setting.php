@@ -403,7 +403,6 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
             ->groupBy('group')
             ->where('group_id', $menuId)
             ->orderBy('group', 'ASC')
-            ->notHidden()
             ->pluck('group');
         $response = $query->toArray();
         $result = [];
