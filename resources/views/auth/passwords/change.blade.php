@@ -40,9 +40,7 @@
                             <label for="password">{{ __('New Password') }}</label>
                             <vue-password v-model="formData.password" :disable-toggle=true ref="passwordStrength">
                                 <div slot="password-input" slot-scope="props">
-                                    {!! Form::password('password', ['id' => 'password', 'rows' => 4, 'class'=> 'form-control', 'v-model'
-                                    => 'formData.password', 'autocomplete' => 'new-password', '@input' => 'props.updatePassword($event.target.value)',
-                                    'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
+                                    {{ html()->password('password')->id('password')->attribute('rows', 4)->class('form-control')->attribute('v-model', 'formData.password')->attribute('autocomplete', 'new-password')->attribute('@input', 'props.updatePassword($event.target.value)')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':errors.password}') }}
                                 </div>
                             </vue-password>
                             <small v-for="(error, index) in errors.password" v-cloak class="text-danger">
@@ -50,9 +48,8 @@
                             </small>
                         </div>
                         <div class="form-group">
-                            {!!Form::label('confpassword', __('Confirm Password'))!!}<small class="ml-1">*</small>
-                            {!!Form::password('confpassword', ['class'=> 'form-control', 'v-model'=> 'formData.confpassword',
-                            'v-bind:class' => '{\'form-control\':true}', 'autocomplete' => 'new-password'])!!}
+                            {{ html()->label(__('Confirm Password'), 'confpassword') }}<small class="ml-1">*</small>
+                            {{ html()->password('confpassword')->class('form-control')->attribute('v-model', 'formData.confpassword')->attribute('v-bind:class', '{\'form-control\':true}')->attribute('autocomplete', 'new-password') }}
                         </div>
                         <div class="form-group pt-3 pb-2">
                             <button type="button" @click.prevent="submit" name="changepassword" class="btn btn-primary btn-block text-uppercase" dusk="changepassword">{{ __('Change Password') }}</button>
@@ -67,7 +64,10 @@
 
 @section('js')
 <script src="{{ mix('js/manifest.js') }}"></script>
-<script src="{{ mix('js/vendor.js') }}"></script>
+<script src="{{ mix('js/vue-vendor.js') }}"></script>
+<script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
+<script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
+<script src="{{ mix('js/modeler-vendor.js') }}"></script>
 <script src="{{ mix('js/app.js') }}"></script>
 <script src="{{ mix('js/admin/auth/passwords/change.js') }}"></script>
 <script>

@@ -36,7 +36,7 @@
                 </nav>
                 <div class="card card-body card-body-nav-tabs">
                     <div class="tab-content" id="nav-tabContent">
-                        <div class="tab-pane fade show active" id="nav-config" role="tabpanel"
+                        <div class="tab-pane show active" id="nav-config" role="tabpanel"
                              aria-labelledby="nav-config-tab">
                              <required></required>
                             @if ($type === 'process')
@@ -59,7 +59,7 @@
                         </div>
                         @isset($addons)
                             @foreach ($addons as $addon)
-                                <div class="tab-pane fade show" id="{{$addon['id']}}" role="tabpanel"
+                                <div class="tab-pane show" id="{{$addon['id']}}" role="tabpanel"
                                      aria-labelledby="nav-notifications-tab">
                                     {!! $addon['content'] !!}
                                 </div>
@@ -67,19 +67,8 @@
                         @endisset
                     </div>
                     <div class="d-flex justify-content-end mt-2">
-                        {!! Form::button(__('Cancel'),
-                            [
-                                'class'=>'btn btn-outline-secondary',
-                                '@click' => 'onClose'
-                            ])
-                        !!}
-                        {!! Form::button(__('Save'),
-                            [
-                                ':disabled' => 'isDefaultProcessmakerTemplate',
-                                'class'=>'btn btn-secondary ml-2',
-                                '@click' => 'onUpdate'
-                            ])
-                        !!}
+                        {{ html()->button(__('Cancel'), 'button')->class('btn btn-outline-secondary')->attribute('@click', 'onClose') }}
+                        {{ html()->button(__('Save'), 'button')->attribute(':disabled', 'isDefaultProcessmakerTemplate')->class('btn btn-secondary ml-2')->attribute('@click', 'onUpdate') }}
                     </div>
                 </div>
             </div>

@@ -29,6 +29,7 @@ use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\Bookmark;
 use ProcessMaker\Models\Embed;
 use ProcessMaker\Models\Group;
+use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessLaunchpad;
 use ProcessMaker\Models\ProcessPermission;
@@ -231,7 +232,7 @@ class ProcessController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param $process
+     * @param int $processId
      *
      * @return Response
      *
@@ -241,10 +242,10 @@ class ProcessController extends Controller
      *     operationId="getProcessById",
      *     tags={"Processes"},
      *     @OA\Parameter(
-     *         description="ID of process to return",
-     *         in="path",
      *         name="processId",
+     *         in="path",
      *         required=true,
+     *         description="ID of process to return",
      *         @OA\Schema(
      *           type="integer",
      *         )
@@ -255,10 +256,25 @@ class ProcessController extends Controller
      *         description="Successfully found the process",
      *         @OA\JsonContent(ref="#/components/schemas/Process")
      *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="Process not found",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="The requested process was not found"),
+     *         )
+     *     )
      * )
      */
-    public function show(Request $request, Process $process)
+    public function show(int $processId)
     {
+        $process = Process::find($processId);
+        if ($process === null) {
+            return response()->json([
+                'message' => __('The requested process was not found'),
+            ], 204);
+        }
+
         return new Resource($process);
     }
 
@@ -928,8 +944,18 @@ class ProcessController extends Controller
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
             ->where('processes.status', 'ACTIVE')
             ->where('category.status', 'ACTIVE')
-            ->whereNull('warnings')
-            ->where($where);
+            ->whereNull('warnings');
+
+        $query = $query->where(function ($q) use ($where) {
+            foreach ($where as $condition) {
+                // Extract the condition
+                [$column, $operator, $value, $boolean] = $condition;
+                // Determine the method to use
+                $method = $boolean == 'or' ? 'orWhere' : 'where';
+                // Apply the condition
+                $q->{$method}($column, $operator, $value);
+            }
+        });
 
         // Add the order by columns
         foreach ($orderColumns as $key => $orderColumn) {
@@ -1633,36 +1659,37 @@ class ProcessController extends Controller
     {
         $currentUser = Auth::user()->id;
         $group = Group::find($groupId);
-        $response = false;
-        if (isset($group)) {
-            try {
-                $responseUsers = (new GroupController(new Group()))->users($group, $request);
-                $users = $responseUsers->all();
 
-                foreach ($users as $user) {
-                    if ($user->resource->member_id === $currentUser) {
-                        $response = true;
-                    }
-                }
-            } catch (\Exception $error) {
-                return ['error' => $error->getMessage()];
-            }
-
-            try {
-                $responseGroups = (new GroupController(new Group()))->groups($group, $request);
-                $groups = $responseGroups->all();
-
-                foreach ($groups as $group) {
-                    if ($this->checkUsersGroup($group->resource->member_id, $request)) {
-                        $response = true;
-                    }
-                }
-            } catch (\Exception $error) {
-                return ['error' => $error->getMessage()];
-            }
+        // If the group does not exist return false
+        if (!$group) {
+            return false;
         }
 
-        return $response;
+        try {
+            // Check is the user is group member
+            $isMember = GroupMember::where('group_id', $group->id)
+                ->where('member_id', $currentUser)
+                ->exists();
+
+            if ($isMember) {
+                return true;
+            }
+
+            // Get other groups
+            $responseGroups = (new GroupController(new Group()))->groups($group, $request);
+            $groups = $responseGroups->all();
+
+            // Check Groups
+            foreach ($groups as $nestedGroup) {
+                if ($this->checkUsersGroup($nestedGroup->resource->member_id, $request)) {
+                    return true;
+                }
+            }
+        } catch (\Exception $error) {
+            return ['error' => $error->getMessage()];
+        }
+
+        return false;
     }
 
     /**

@@ -80,6 +80,8 @@ class ProcessTemplate implements TemplateInterface
         // this ensures any updates to the template manifest will be reflected
         // in the editing process being shown in modeler.
         if ($process) {
+            // We need to remove the relations with other tables first
+            $process->notification_settings()->delete();
             $process->forceDelete();
         }
         // Otherwise we need to import the template and create a new process

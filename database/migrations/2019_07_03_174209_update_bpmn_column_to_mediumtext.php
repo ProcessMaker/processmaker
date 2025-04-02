@@ -8,9 +8,7 @@ use ProcessMaker\Models\Process;
 return new class extends Migration {
     public function __construct()
     {
-        // I guess this is still a bug in laravel 5.7 and doctrine
-        // https://stackoverflow.com/questions/33140860/laravel-5-1-unknown-database-type-enum-requested
-        DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
+
     }
 
     /**

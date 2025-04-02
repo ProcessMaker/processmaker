@@ -39,7 +39,7 @@ export default {
       this.perPage = value;
       this.fetch();
     },
-    formatAvatar(user, $usePmDefaultLabel = false) {
+    formatAvatar(user, $usePmDefaultLabel = false, $usePmDefaultLabelProcess = false) {
       return {
         component: "AvatarImage",
         props: {
@@ -47,15 +47,22 @@ export default {
           "input-data": user,
           "hide-name": false,
           "name-clickable": true,
-          'use-pm-default-label': $usePmDefaultLabel
+          'use-pm-default-label': $usePmDefaultLabel,
+          'use-pm-default-label-process': $usePmDefaultLabelProcess
         },
       };
     },
     formatCategory(categories) {
-      return categories.map(item => item.name).join(', ');
+      return categories?.map(item => item.name).join(', ');
     },
     getNestedPropertyValue(obj, header) {
-      return this.format(get(obj, header.field), header);
+      const value = get(obj, header.field);
+
+      if (typeof header.cb === 'function') {
+        return header.cb(value, obj);
+      }
+
+      return this.format(value, header);
     },
     format(value, header) {
       let config = "";

@@ -211,19 +211,25 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     }
 
     /**
-     * Validation rules.
+     * Get the validation rules for process requests.
      *
-     * @param null $existing
+     * @param mixed|null $existing ID of existing process request
      *
-     * @return array
+     * @return array Array of validation rules for the process request fields:
+     *               - name: Required string, max 100 chars, alpha spaces only
+     *               - data: Required field
+     *               - status: Must be one of: ACTIVE, COMPLETED, ERROR, CANCELED
+     *               - process_id: Required and must exist in processes table
+     *               - process_collaboration_id: Optional but must exist in process_collaborations table if provided
+     *               - user_id: Optional but must exist in users table if provided
      */
     public static function rules($existing = null)
     {
         $self = new self();
-        $unique = Rule::unique($self->getConnectionName() . '.process_requests')->ignore($existing);
+        $nameRules = ['required', 'string', 'max:100', 'alpha_spaces'];
 
         return [
-            'name' => ['required', 'string', 'max:100', $unique, 'alpha_spaces'],
+            'name' => $nameRules,
             'data' => 'required',
             'status' => 'in:ACTIVE,COMPLETED,ERROR,CANCELED',
             'process_id' => 'required|exists:processes,id',
@@ -572,6 +578,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             'element_id' => $element ? $element->getId() : null,
             'element_name' => $element ? $element->getName() : null,
             'created_at' => Carbon::now('UTC')->format('c'),
+            'trace' => $exception->getTraceAsString(),
         ];
         $errors = $this->errors ?: [];
         $errors[] = $error;
@@ -986,6 +993,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     {
         $array = $this->toArray();
         unset($array['process_version']['svg']);
+
         return $array;
     }
 

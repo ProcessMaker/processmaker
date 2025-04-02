@@ -53,10 +53,23 @@
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
               </b-btn>
+              <b-btn
+                variant="link"
+                @click="onAddToBundle(props.rowData)"
+                v-b-tooltip.hover
+                :title="$t('Add to Bundle')"
+                v-uni-aria-describedby="props.rowData.id.toString()"
+              >
+                <i class="fas fa-folder-plus fa-lg fa-fw"></i>
+              </b-btn>
             </div>
           </div>
         </template>
       </vuetable>
+      <add-to-bundle
+        asset-type="script_executors"
+        :setting="true"
+      />
       <pagination
         :single="$t('Script Executor')"
         :plural="$t('Script Executors')"
@@ -221,11 +234,13 @@
 <script>
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
+import AddToBundle from "../../components/shared/AddToBundle.vue";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
+  components: { AddToBundle },
   props: ["filter", "permission"],
   data() {
     return {
@@ -507,6 +522,9 @@ export default {
           this.data = this.transform(response.data);
           this.loading = false;
         });
+    },
+    onAddToBundle(data) {
+      this.$root.$emit('add-to-bundle', data);
     },
   },
 };

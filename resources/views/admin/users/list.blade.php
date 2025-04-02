@@ -39,9 +39,8 @@
             <template v-slot:default>
                 <required></required>
                 <div class="form-group">
-                    {!!Form::label('username', __('Username'))!!}<small class="ml-1">*</small>
-                    {!!Form::text('username', null, ['class'=> 'form-control', 'v-model'=> 'config.username', 'v-bind:class'
-                    => '{\'form-control\':true, \'is-invalid\':config.addError.username}', 'autocomplete' => 'off', 'required', 'aria-required' => 'true']) !!}
+                    {{ html()->label(__('Username'), 'username') }}<small class="ml-1">*</small>
+                    {{ html()->text('username')->class('form-control')->attribute('v-model', 'config.username')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':config.addError.username}')->attribute('autocomplete', 'off')->required()->attribute('aria-required', 'true') }}
                     <div class="invalid-feedback" role="alert" v-for="username in config.addError.username">
                         <div v-if="username !== 'userExists'">
                             @{{username}}
@@ -49,35 +48,28 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    {!!Form::label('firstname', __('First Name'))!!}<small class="ml-1">*</small>
-                    {!!Form::text('firstname', null, ['class'=> 'form-control', 'v-model'=> 'config.firstname', 'v-bind:class'
-                    => '{\'form-control\':true, \'is-invalid\':config.addError.firstname}', 'required', 'aria-required' => 'true'])!!}
+                    {{ html()->label(__('First Name'), 'firstname') }}<small class="ml-1">*</small>
+                    {{ html()->text('firstname')->class('form-control')->attribute('v-model', 'config.firstname')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':config.addError.firstname}')->required()->attribute('aria-required', 'true') }}
                     <div class="invalid-feedback" role="alert" v-for="firstname in config.addError.firstname">@{{firstname}}</div>
                 </div>
                 <div class="form-group">
-                    {!!Form::label('lastname', __('Last Name'))!!}<small class="ml-1">*</small>
-                    {!!Form::text('lastname', null, ['class'=> 'form-control', 'v-model'=> 'config.lastname', 'v-bind:class'
-                    => '{\'form-control\':true, \'is-invalid\':config.addError.lastname}', 'required', 'aria-required' => 'true'])!!}
+                    {{ html()->label(__('Last Name'), 'lastname') }}<small class="ml-1">*</small>
+                    {{ html()->text('lastname')->class('form-control')->attribute('v-model', 'config.lastname')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':config.addError.lastname}')->required()->attribute('aria-required', 'true') }}
                     <div class="invalid-feedback" role="alert" v-for="lastname in config.addError.lastname">@{{lastname}}</div>
                 </div>
                 <div class="form-group">
-                    {!!Form::label('title', __('Job Title'))!!}
-                    {!!Form::text('title', null, ['class'=> 'form-control', 'v-model'=> 'config.title', 'v-bind:class'
-                    => '{\'form-control\':true, \'is-invalid\':config.addError.title}'])!!}
+                    {{ html()->label(__('Job Title'), 'title') }}
+                    {{ html()->text('title')->class('form-control')->attribute('v-model', 'config.title')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':config.addError.title}') }}
                     <div class="invalid-feedback" role="alert" v-for="title in config.addError.title">@{{title}}</div>
                 </div>
                 <div class="form-group">
-                    {!!Form::label('status', __('Status'));!!}<small class="ml-1">*</small>
-                    {!!Form::select('status',[null => __('Select')]+['ACTIVE' => __('Active'), 'INACTIVE' => __('Inactive')], 'Active',
-                    [
-                    'class'=> 'form-control', 'v-model'=> 'config.status',
-                    'v-bind:class' => '{\'form-control\':true, \'is-invalid\':config.addError.status}', 'required', 'aria-required' => 'true']);!!}
+                    {{ html()->label(__('Status'), 'status') }}<small class="ml-1">*</small>
+                    {{ html()->select('status', [null => __('Select')] + ['ACTIVE' => __('Active'), 'INACTIVE' => __('Inactive')], 'Active')->class('form-control')->attribute('v-model', 'config.status')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':config.addError.status}')->required()->attribute('aria-required', 'true') }}
                     <div class="invalid-feedback" role="alert" v-for="status in config.addError.status">@{{status}}</div>
                 </div>
                 <div class="form-group">
-                    {!!Form::label('email', __('Email'))!!}<small class="ml-1">*</small>
-                    {!!Form::email('email', null, ['class'=> 'form-control', 'v-model'=> 'config.email', 'v-bind:class' =>
-                    '{\'form-control\':true, \'is-invalid\':config.addError.email}', 'autocomplete' => 'off', 'required', 'aria-required' => 'true'])!!}
+                    {{ html()->label(__('Email'), 'email') }}<small class="ml-1">*</small>
+                    {{ html()->email('email')->class('form-control')->attribute('v-model', 'config.email')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':config.addError.email}')->attribute('autocomplete', 'off')->attribute('required', )->attribute('aria-required', 'true') }}
                     <div class="invalid-feedback" role="alert" v-for="email in config.addError.email">
                         <div v-if="email !== 'userExists'">
                             @{{email}}
@@ -85,19 +77,16 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    {!!Form::label('password', __('Password'))!!}<small class="ml-1">*</small>
+                    {{ html()->label(__('Password'), 'password') }}<small class="ml-1">*</small>
                     <vue-password v-model="config.password" :disable-toggle=true ref="passwordStrength">
                         <div slot="password-input" slot-scope="props">
-                            {!!Form::password('password', ['class'=> 'form-control', 'v-model'=> 'config.password',
-                            '@input' => 'props.updatePassword($event.target.value)', 'autocomplete' => 'new-password',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':config.addError.password}', 'required', 'aria-required' => 'true'])!!}
+                            {{ html()->password('password')->class('form-control')->attribute('v-model', 'config.password')->attribute('@input', 'props.updatePassword($event.target.value)')->attribute('autocomplete', 'new-password')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':config.addError.password}')->attribute('required', )->attribute('aria-required', 'true') }}
                         </div>
                     </vue-password>
                 </div>
                 <div class="form-group">
-                    {!!Form::label('confpassword', __('Confirm Password'))!!}<small class="ml-1">*</small>
-                    {!!Form::password('confpassword', ['class'=> 'form-control', 'v-model'=> 'config.confpassword',
-                    'v-bind:class' => '{\'form-control\':true, \'is-invalid\':config.addError.password}', 'autocomplete' => 'new-password', 'required', 'aria-required' => 'true'])!!}
+                    {{ html()->label(__('Confirm Password'), 'confpassword') }}<small class="ml-1">*</small>
+                    {{ html()->password('confpassword')->class('form-control')->attribute('v-model', 'config.confpassword')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':config.addError.password}')->attribute('autocomplete', 'new-password')->attribute('required', )->attribute('aria-required', 'true') }}
                     <div class="invalid-feedback" role="alert" v-for="password in config.addError.password">@{{password}}</div>
                 </div>
             </template>

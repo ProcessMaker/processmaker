@@ -141,8 +141,11 @@
       
       <br>
       <div class="d-flex group-button">
-          <b-button variant="outline-danger" :disabled="isLoading" @click="onReset">
+          <b-button variant="outline-danger" class="mr-3" :disabled="isLoading" @click="onReset">
               <i class="fas fa-undo"></i> {{ $t('Reset') }}
+          </b-button>
+          <b-button variant="outline-secondary" :disabled="isLoading" @click="onAddToBundle">
+              <i class="fp-add-outlined"></i> {{ $t('Add to Bundle') }}
           </b-button>
           
           <b-button variant="outline-secondary" class="ml-auto" @click="onClose">
@@ -153,6 +156,11 @@
               {{ $t('Save') }}
           </b-button>
       </div>
+      <add-to-bundle
+        asset-type="ui_settings"
+        :setting="true"
+        setting-type="settings"
+      />
       <b-modal id="modalLoading"
              ref="modalLoading"
              v-bind:hide-header="true"
@@ -184,7 +192,12 @@
 </template>
 
 <script>
+import AddToBundle from '../../../components/shared/AddToBundle.vue';
+
 export default {
+  components: {
+    AddToBundle
+  },
   data() {
     return {
       isLoading: false,
@@ -457,7 +470,7 @@ export default {
           formData.append('fileIcon', '');
           formData.append('fileFavicon', '');
           formData.append('variables', JSON.stringify(this.colorDefault));
-          formData.append('sansSerifFont', JSON.stringify({id:"'Open Sans'", value:'Open Sans'}));
+          formData.append('sansSerifFont', JSON.stringify({id:"'Open Sans'", title:'Default Font'}));
           formData.append('loginFooter', '');
           formData.append('altText', 'ProcessMaker');
 
@@ -494,6 +507,9 @@ export default {
             this.errors = error.response.data.errors;
           }
         });
+    },
+    onAddToBundle(data) {
+      this.$root.$emit('add-to-bundle', data);
     },
     font(value) {
       return 'font-family:' + value;

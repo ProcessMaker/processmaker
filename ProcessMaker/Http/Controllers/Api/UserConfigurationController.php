@@ -25,6 +25,9 @@ class UserConfigurationController extends Controller
         'tasks' => [
             'isMenuCollapse' => true,
         ],
+        'tasks_inbox' => [
+            'isMenuCollapse' => false,
+        ],
     ];
 
     public function index()
@@ -39,6 +42,10 @@ class UserConfigurationController extends Controller
                 'user_id' => $user->id,
                 'ui_configuration' => json_encode(self::DEFAULT_USER_CONFIGURATION),
             ]; // return default
+        } else {
+            $uiConfiguration = json_decode($response->ui_configuration, true);
+            $configuration = array_replace_recursive(self::DEFAULT_USER_CONFIGURATION, $uiConfiguration);
+            $response->ui_configuration = json_encode($configuration);
         }
 
         return new ApiResource($response);
@@ -54,6 +61,7 @@ class UserConfigurationController extends Controller
             'ui_configuration.cases' => 'required|array',
             'ui_configuration.requests' => 'required|array',
             'ui_configuration.tasks' => 'required|array',
+            'ui_configuration.tasks_inbox' => 'required|array',
         ]);
         $uiConfiguration = json_encode($request->input('ui_configuration'));
 

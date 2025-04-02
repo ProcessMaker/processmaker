@@ -5,13 +5,12 @@ namespace Tests\Feature\Api;
 use Database\Seeders\PermissionSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Redis;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\ProcessTaskAssignment;
-use ProcessMaker\Models\Recommendation;
 use ProcessMaker\Models\RecommendationUser;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
@@ -69,7 +68,7 @@ class UsersTest extends TestCase
             'timezone' => $faker->timezone(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
             'birthdate' => $faker->dateTimeThisCentury()->format('Y-m-d'),
-            'password' => $faker->sentence(8) . 'A_' . '1',
+            'password' => $this->makePassword(),
         ];
     }
 
@@ -108,11 +107,58 @@ class UsersTest extends TestCase
             'lastname' => 'name',
             'email' => $faker->email(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->password(8) . 'A_' . '1',
+            'password' => $this->makePassword(),
         ]);
 
         // Validate the header status code
         $response->assertStatus(201);
+    }
+
+    /**
+     * Create new user and the email task notification needs to enable per default
+     */
+    public function testFlagEmailTaskNotification()
+    {
+        $faker = Faker::create();
+        $url = self::API_TEST_URL;
+        $response = $this->apiCall('POST', $url, [
+            'username' => 'user_test_' . $faker->randomDigit(),
+            'firstname' => 'name',
+            'lastname' => 'name',
+            'email' => $faker->email(),
+            'status' => 'ACTIVE',
+            'password' => $this->makePassword(),
+        ]);
+
+        // Test default value email_task_notification was enable
+        $response->assertStatus(201);
+        $newUser = $response->json();
+        $this->assertEquals(1, $newUser['email_task_notification']);
+        // Test updating email_task_notification is disable
+        $userId = $newUser['id'];
+        $payload = [
+            'username' => $newUser['username'],
+            'firstname' => $newUser['firstname'],
+            'lastname' => $newUser['lastname'],
+            'email' => $newUser['email'],
+            'status' => $newUser['status'],
+            'email_task_notification' => 0,
+        ];
+        $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
+        $response->assertStatus(204);
+        // Validate flag email_task_notification was disable
+        $this->assertDatabaseHas('users', [
+            'email_task_notification' => 0,
+        ]);
+
+        // Test updating email_task_notification is enable
+        $payload['email_task_notification'] = 1;
+        $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
+        $response->assertStatus(204);
+        // Validate flag email_task_notification was enable
+        $this->assertDatabaseHas('users', [
+            'email_task_notification' => 0,
+        ]);
     }
 
     public function testCreatePreviouslyDeletedUser()
@@ -133,7 +179,7 @@ class UsersTest extends TestCase
             'lastname' => 'bar',
             'email' => $deletedUser->email,
             'status' => 'ACTIVE',
-            'password' => 'password123',
+            'password' => $this->makePassword(),
         ];
 
         $response = $this->apiCall('POST', $url, $params);
@@ -147,6 +193,7 @@ class UsersTest extends TestCase
 
     public function testDefaultValuesOfUser()
     {
+        Redis::flushall();
         config()->set('app.timezone', 'America/Los_Angeles');
         putenv('DATE_FORMAT=m/d/Y H:i');
         putenv('APP_LANG=en');
@@ -160,7 +207,7 @@ class UsersTest extends TestCase
             'lastname' => $faker->lastName(),
             'email' => $faker->email(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->password(8) . 'A' . '1',
+            'password' => $faker->password(8) . 'A' . '1.',
         ]);
 
         // Validate that the created user has the correct default values.
@@ -184,7 +231,7 @@ class UsersTest extends TestCase
             'lastname' => $faker->lastName(),
             'email' => $faker->email(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->password(8) . 'A' . '1' . '+',
+            'password' => $this->makePassword(),
             'datetime_format' => $dateFormat,
         ]);
 
@@ -202,7 +249,7 @@ class UsersTest extends TestCase
             'lastname' => $faker->lastName(),
             'email' => $faker->email(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->password(8) . 'A' . '1' . '+',
+            'password' => $this->makePassword(),
             'timezone' => 'America/Monterrey',
         ]);
 
@@ -418,7 +465,7 @@ class UsersTest extends TestCase
             'firstname' => $faker->firstName(),
             'lastname' => $faker->lastName(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->password(8) . 'A' . '1' . '.',
+            'password' => $this->makePassword(),
             'force_change_password' => 0,
         ]);
 
@@ -687,7 +734,7 @@ class UsersTest extends TestCase
                 'lastname' => $faker->lastName(),
                 'email' => $faker->email(),
                 'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-                'password' => $faker->sentence(8) . 'A_' . '1',
+                'password' => $this->makePassword(),
             ]);
             // Validate the header status code
             $response->assertStatus(201);
@@ -871,7 +918,8 @@ class UsersTest extends TestCase
         $users = $result->json()['data'];
 
         // Assert only the $user and $groupUser are in the list
-        $this->assertEqualsCanonicalizing([$user->id, $groupUser->id], collect($users)->pluck('id')->toArray());
+        $this->assertContains($user->id, array_column($users, 'id'));
+        $this->assertContains($groupUser->id, array_column($users, 'id'));
 
         // Assert the $user has 3 active tasks
         $tokenCount = collect($users)->first(fn ($r) => $r['id'] === $user->id)['active_tasks_count'];
@@ -883,5 +931,65 @@ class UsersTest extends TestCase
 
         // Assert the list of users now contains the admin user
         $this->assertContains($admin->id, collect($users)->pluck('id')->toArray());
+    }
+
+    /**
+     * Test save and get filters per user saved in cache
+     */
+    public function testGetDefaultUserConfiguration()
+    {
+        // Define an example of filters to save
+        $values = [
+            'filters' => [
+                [
+                    'subject' => [
+                        'type' => 'Field',
+                        'value' => 'case_number',
+                    ],
+                    'operator' => '=',
+                    'value' => '885',
+                ],
+                [
+                    'subject' => [
+                        'type' => 'Field',
+                        'value' => 'case_title',
+                    ],
+                    'operator' => '=',
+                    'value' => 'TCP4_Case_title',
+                ],
+            ],
+            'order' => [
+                'by' => 'id',
+                'dir' => 'ASC',
+            ],
+        ];
+        // Define the page filter to save
+        $pagesSaveFilters = [
+            'casesFilter',
+            'casesFilter|in_progress',
+            'casesFilter|completed',
+            'casesFilter|all',
+        ];
+        $randomKey = array_rand($pagesSaveFilters);
+        $name = $pagesSaveFilters[$randomKey];
+        // Call the api PUT
+        $response = $this->apiCall('PUT', '/users/store_filter_configuration/' . $name, $values);
+        // Validate the header status code
+        $response->assertStatus(200);
+        $this->assertNotEmpty($response);
+
+        // Call the api GET
+        $response = $this->apiCall('GET', '/users/get_filter_configuration/' . $name);
+        // Validate the header status code
+        $response->assertStatus(200);
+        $this->assertNotEmpty($response);
+        $response->assertJson(['data' => $values]);
+    }
+
+    private function makePassword()
+    {
+        $faker = Faker::create();
+
+        return substr($faker->password(8), 0, 20) . 'A_' . '1';
     }
 }

@@ -65,6 +65,7 @@ class TaskController extends Controller
         'completed_at', // Completed At
         'due_at', // Due At
         'process_request_id', // Request Id #
+        'data',
     ];
 
     /**
@@ -88,6 +89,15 @@ class TaskController extends Controller
      *         required=false,
      *         @OA\Schema(
      *           type="integer",
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         description="Return all task types. Not just user tasks.",
+     *         in="query",
+     *         name="all_tasks",
+     *         required=false,
+     *         @OA\Schema(
+     *           type="boolean",
      *         )
      *     ),
      *     @OA\Parameter(ref="#/components/parameters/filter"),

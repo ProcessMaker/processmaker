@@ -51,6 +51,9 @@ return [
                 'debug' => env('PUSHER_DEBUG', false),
                 'useTLS' => env('PUSHER_TLS', true),
             ], $soketi_settings),
+            'client_options' => [
+                'verify' => env('PUSHER_SSL_VERIFY', true),
+            ],
         ],
 
         'ably' => [

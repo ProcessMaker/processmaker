@@ -323,19 +323,21 @@ export default {
     getRedirectUrlForAi(processId) {
       let redirectUrl = `/modeler/${processId}`;
 
-      if (this.isAiGenerated) {
-        redirectUrl += "?ai=true";
-      }
-
-      return redirectUrl;
+      return this.redirectUrlWithAi(redirectUrl);
     },
     handleRedirection(url, data) {
       if (this.callFromAiModeler) {
-        const redirectUrl = `/package-ai/processes/create/${data.id}`;
+        const redirectUrl = this.redirectUrlWithAi(`/package-ai/processes/create/${data.id}`);
         this.$emit("process-created-from-modeler", redirectUrl, data.id, data.name);
       } else {
-        window.location.href = url;
+        window.location.href = this.redirectUrlWithAi(url);
       }
+    },
+    redirectUrlWithAi(url) {
+      if (this.isAiGenerated) {
+        url += "?ai=true";
+      }
+      return url;
     },
   },
 };

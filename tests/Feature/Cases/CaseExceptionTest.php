@@ -2,8 +2,9 @@
 
 namespace Tests\Feature\Cases;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
@@ -12,8 +13,6 @@ use Tests\TestCase;
 
 class CaseExceptionTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected $user;
 
     protected $process;
@@ -123,13 +122,31 @@ class CaseExceptionTest extends TestCase
 
         $this->assertDatabaseCount('cases_started', 0);
 
-        try {
-            $repo->update($this->instance, $this->token);
-        } catch (\Exception $e) {
-            $this->assertEquals(
-                'case started not found, method=update, instance=' . $this->instance->getKey(), $e->getMessage()
-            );
-        }
+        $repo->update($this->instance, $this->token);
+    }
+
+    public function test_update_case_system_process(): void
+    {
+        $this->withoutExceptionHandling();
+        $process = Process::factory()->create([
+            'process_category_id' => ProcessCategory::factory()->create(['is_system' => true])->id,
+        ]);
+        $instance = ProcessRequest::factory()->create([
+            'user_id' => $this->user->id,
+            'process_id' => $process->id,
+        ]);
+
+        $instance->case_title = null;
+        $repo = new CaseRepository();
+        $repo->create($instance);
+
+        $this->assertDatabaseCount('cases_started', 0);
+
+        Log::shouldReceive('error')->never()->withAnyArgs();
+        $repo->update($instance, $this->token);
+
+        Log::shouldReceive('error')->never()->withAnyArgs();
+        $repo->updateStatus($instance, $this->token);
     }
 
     public function test_artisan_sync_command_missing_ids(): void

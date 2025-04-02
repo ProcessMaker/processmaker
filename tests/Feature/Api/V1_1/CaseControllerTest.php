@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Api\V1_1;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Constants\CaseStatusConstants;
 use ProcessMaker\Models\CaseParticipated;
@@ -15,7 +14,7 @@ use Tests\TestCase;
 
 class CaseControllerTest extends TestCase
 {
-    use RequestHelper, RefreshDatabase;
+    use RequestHelper;
 
     public static function createUser(string $username, string $password = 'secret', string $status = 'ACTIVE'): User
     {

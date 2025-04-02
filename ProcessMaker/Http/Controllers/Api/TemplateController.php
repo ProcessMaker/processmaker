@@ -288,8 +288,10 @@ class TemplateController extends Controller
                 continue;
             }
 
-            if ($payload['root'] === $asset['attributes']['uuid']
-                || Str::contains($asset['type'], 'Category')
+            $skipTypes = ['Category', 'Signal'];
+
+            if ($payload['root'] === ($asset['attributes']['uuid'] ?? null)
+                || Str::contains($asset['type'], $skipTypes)
                 || !$asset['model']::where('uuid', $key)->exists()
             ) {
                 continue;
@@ -311,7 +313,7 @@ class TemplateController extends Controller
 
     protected function createProcess(Request $request)
     {
-        $request->validate(Process::rules($request->id));
+        $request->validate(Template::rules($request->id, $this->types['process'][4]));
         $postOptions = $this->checkIfAssetsExist($request);
 
         if (!empty($postOptions)) {

@@ -160,15 +160,11 @@ export default {
     this.setDefaults();
   },
   mounted() {
-    const unparseProperties = this.process.launchpad?.properties || null;
-    if (unparseProperties !== null) {
-      this.chartId = JSON.parse(unparseProperties)?.saved_chart_id || null;
-    }
-    this.fetchChart();
     ProcessMaker.EventBus.$on("getChartId", (newChartId) => {
       this.chartId = newChartId;
       this.fetchChart();
     });
+    this.fetchProcessConfigLaunchpad();
   },
   methods: {
     /**
@@ -282,6 +278,23 @@ export default {
         this.error = this.chart.chart_error;
         this.hint = this.chart.chart_hint;
       }
+    },
+    fetchProcessConfigLaunchpad() {
+      ProcessMaker.apiClient
+        .get(`process_launchpad/${this.process.id}`)
+        .then((response) => {
+          const firstResponse = response.data.shift();
+          const unparseProperties = firstResponse?.launchpad?.properties;
+          const launchpadProperties = unparseProperties
+            ? JSON.parse(unparseProperties)
+            : "";
+          this.chartId = launchpadProperties.saved_chart_id;
+          this.fetchChart();
+        })
+        .catch((error) => {
+          this.getDefaultData();
+          console.error("Error: ", error);
+        });
     },
   },
 };

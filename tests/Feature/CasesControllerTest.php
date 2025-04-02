@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -13,7 +12,6 @@ use Tests\TestCase;
 
 class CasesControllerTest extends TestCase
 {
-    use RefreshDatabase;
     use RequestHelper;
 
     const URL_CASES = '/cases/';
@@ -83,6 +81,49 @@ class CasesControllerTest extends TestCase
 
         // Check the status
         $response->assertStatus(200);
+    }
+
+    public function testShowCaseWithProcessVersion()
+    {
+        // Create user admin
+        $user = User::factory()->create([
+            'is_administrator' => true,
+        ]);
+        $this->actingAs($user);
+
+        // Create a process
+        $bpmnTemplate = Process::getProcessTemplate('OnlyStartElement.bpmn');
+        $process = Process::factory()->create([
+            'bpmn' => $bpmnTemplate,
+        ]);
+        $request1 = ProcessRequest::factory()->create([
+            'parent_request_id' => null,
+            'process_id' => $process->id,
+        ]);
+        // Update the process
+        $newBpmn = trim(Process::getProcessTemplate('SingleTask.bpmn'));
+        $route = route('api.' . 'processes' . '.update', [$process->id]);
+        $response = $this->apiCall('PUT', $route, [
+            'name' => 'test name',
+            'description' => 'test description',
+            'bpmn' => $newBpmn,
+        ]);
+        $response->assertStatus(200);
+        // Create a request with the new process
+        $request2 = ProcessRequest::factory()->create([
+            'parent_request_id' => null,
+            'process_id' => $process->id,
+        ]);
+        // Validate the request1
+        $response = $this->get(route('cases.show', ['case_number' => $request1->case_number]));
+        $response->assertStatus(200);
+        $response->assertViewHas('bpmn');
+        $this->assertEquals($bpmnTemplate, $response->viewData('bpmn'));
+        // Validaet the request2
+        $response = $this->get(route('cases.show', ['case_number' => $request2->case_number]));
+        $response->assertStatus(200);
+        $response->assertViewHas('bpmn');
+        $this->assertEquals($newBpmn, $response->viewData('bpmn'));
     }
 
     public function testShowCaseWithParticipateUser()

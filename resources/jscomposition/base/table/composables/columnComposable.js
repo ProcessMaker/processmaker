@@ -7,27 +7,29 @@ export default {};
  * @param {*} tableName
  * @returns
  */
-export const columnResizeComposable = (column) => {
+export const columnResizeComposable = ({ column, stopResize }) => {
   const startX = ref(0);
   const startWidth = ref(0);
   const isResizing = ref(false);
 
-  //Resize the column value
+  const minWidth = 144;
+
+  // Resize the column value
   const doResize = (event) => {
     if (isResizing.value) {
       const diff = event.pageX - startX.value;
-      const min = 30;
+      const min = minWidth;
       const currentWidth = Math.max(min, startWidth.value + diff);
-
       column.width = currentWidth;
     }
   };
 
-  const stopResize = () => {
+  const stopResizeHandler = () => {
     if (isResizing.value) {
       document.removeEventListener("mousemove", doResize);
-      document.removeEventListener("mouseup", stopResize);
+      document.removeEventListener("mouseup", stopResizeHandler);
       isResizing.value = false;
+      stopResize?.();
     }
   };
 
@@ -35,18 +37,19 @@ export const columnResizeComposable = (column) => {
   const startResize = (event, index) => {
     isResizing.value = true;
     startX.value = event.pageX;
-    startWidth.value = column.width || 200;
+    startWidth.value = column.width || minWidth;
 
     document.addEventListener("mousemove", doResize);
-    document.addEventListener("mouseup", stopResize);
+    document.addEventListener("mouseup", stopResizeHandler);
   };
 
   onUnmounted(() => {
     document.removeEventListener("mousemove", doResize);
-    document.removeEventListener("mouseup", stopResize);
+    document.removeEventListener("mouseup", stopResizeHandler);
   });
 
   return {
     startResize,
+    stopResizeHandler,
   };
 };

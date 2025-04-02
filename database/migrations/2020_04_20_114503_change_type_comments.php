@@ -15,9 +15,7 @@ return new class extends Migration {
     {
         $model = new Comment();
         $schema = Schema::connection($model->getConnectionName());
-        $schema->getConnection()->getDoctrineSchemaManager()
-            ->getDatabasePlatform()
-            ->registerDoctrineTypeMapping('enum', 'string');
+
         $schema->table('comments', function (Blueprint $table) {
             $table->string('type')->default('LOG')->change();
         });

@@ -28,6 +28,12 @@ class DevLink extends ProcessMakerModel
 
     protected $appends = ['redirect_uri'];
 
+    protected $casts = [
+        'client_secret' => 'encrypted',
+        'access_token' => 'encrypted',
+        'refresh_token' => 'encrypted',
+    ];
+
     public static function boot()
     {
         parent::boot();
@@ -143,6 +149,14 @@ class DevLink extends ProcessMakerModel
             route('api.devlink.export-local-bundle', ['bundle' => $remoteBundleId], false)
         )->json();
 
+        $bundleSettingsExport = $this->client()->get(
+            route('api.devlink.export-local-bundle-settings', ['bundle' => $remoteBundleId], false)
+        )->json();
+
+        $bundleSettingsPayloads = $this->client()->get(
+            route('api.devlink.export-local-bundle-setting-payloads', ['bundle' => $remoteBundleId], false)
+        )->json();
+
         $bundle = Bundle::updateOrCreate(
             [
                 'remote_id' => $remoteBundleId,
@@ -152,10 +166,27 @@ class DevLink extends ProcessMakerModel
                 'name' => $bundleInfo['name'],
                 'published' => $bundleInfo['published'],
                 'version' => $bundleInfo['version'],
+                'description' => $bundleInfo['description'],
             ]
         );
+        if ($bundle->wasRecentlyCreated) {
+            $token = Str::random(60);
+
+            $addBundleInstance = $this->client()->post(
+                route('api.devlink.add-bundle-instance', ['bundle' => $remoteBundleId], false),
+                [
+                    'instance_url' => env('APP_URL') . '/devlink/bundle-updated/' . $remoteBundleId . '/' . $token,
+                ]
+            );
+            $bundle->webhook_token = $token;
+            $bundle->save();
+        }
+
+        $bundle->savePayloadsToFile($bundleExport['payloads'], $bundleSettingsPayloads['payloads']);
 
         $bundle->install($bundleExport['payloads'], $updateType, $this->logger);
+        $bundle->installSettingsPayloads($bundleSettingsPayloads['payloads'], $updateType, $this->logger);
+        $bundle->installSettings($bundleSettingsExport['settings']);
 
         $this->logger->setStatus('done');
     }

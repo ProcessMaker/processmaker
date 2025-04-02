@@ -8,13 +8,16 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use ProcessMaker\Cache\CacheRemember;
 use ProcessMaker\Events\FilesDownloaded;
+use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Filters\SaveSession;
 use ProcessMaker\Helpers\DefaultColumns;
 use ProcessMaker\Helpers\MobileHelper;
 use ProcessMaker\Http\Controllers\Api\UserConfigurationController;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Http\Controllers\Process\ModelerController;
 use ProcessMaker\Managers\DataManager;
+use ProcessMaker\Managers\ModelerManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Media as MediaModel;
@@ -28,6 +31,7 @@ use ProcessMaker\Package\PackageComments\PackageServiceProvider;
 use ProcessMaker\ProcessTranslations\ScreenTranslation;
 use ProcessMaker\RetryProcessRequest;
 use ProcessMaker\Traits\HasControllerAddons;
+use ProcessMaker\Traits\ProcessMapTrait;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -35,6 +39,7 @@ class RequestController extends Controller
 {
     use SearchAutocompleteTrait;
     use HasControllerAddons;
+    use ProcessMapTrait;
 
     /**
      * Get the list of requests.
@@ -170,6 +175,25 @@ class RequestController extends Controller
         $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, ($request->summary_screen) ? $request->summary_screen->type : 'FORM'));
 
+        // Load event ModelerStarting
+        $managerModeler = app(ModelerManager::class);
+        event(new ModelerStarting($managerModeler));
+
+        $scriptsEnabled = ['package-slideshow', 'package-process-optimization', 'package-ab-testing', 'package-testing'];
+        $managerModelerScripts = array_filter($managerModeler->getScripts(), function ($script) use ($scriptsEnabled) {
+            foreach ($scriptsEnabled as $enabledScript) {
+                if (strpos($script, $enabledScript) !== false) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+        // Get all PM-Blocks
+        $modelerController = new ModelerController();
+        $pmBlockList = $modelerController->getPmBlockList();
+
         $addons = $this->getPluginAddons('edit', compact(['request']));
         $dataActionsAddons = $this->getPluginAddons('edit.dataActions', []);
 
@@ -181,6 +205,10 @@ class RequestController extends Controller
             $eligibleRollbackTask = RollbackProcessRequest::eligibleRollbackTask($errorTask);
         }
         $this->summaryScreenTranslation($request);
+
+        //Load the process map
+        $inflightData = $this->loadProcessMap($request);
+        $bpmn = $inflightData['bpmn'];
 
         if (isset($_SERVER['HTTP_USER_AGENT']) && MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])) {
             return view('requests.showMobile', compact(
@@ -217,6 +245,10 @@ class RequestController extends Controller
             'eligibleRollbackTask',
             'errorTask',
             'userConfiguration',
+            'bpmn',
+            'inflightData',
+            'managerModelerScripts',
+            'pmBlockList',
         ));
     }
 
@@ -229,7 +261,7 @@ class RequestController extends Controller
         }
 
         $dataManager = new DataManager();
-        $data = $dataManager->getData($task);
+        $data = $dataManager->getData($task, true);
 
         $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, ($request->summary_screen) ? $request->summary_screen->type : 'FORM'));

@@ -5,8 +5,7 @@
     :data="data"
     :config="config"
     :placeholder="placeholder"
-    class="tw-grow"
-  >
+    class="tw-grow">
     <template
       v-for="(column, index) in columns"
       #[`theader-filter-${column.field}`]>

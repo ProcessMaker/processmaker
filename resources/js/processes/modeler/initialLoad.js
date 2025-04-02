@@ -43,6 +43,7 @@ import SignalPayload from "./components/inspector/SignalPayload";
 import ScriptSelect from "./components/inspector/ScriptSelect";
 import StartPermission from "./components/inspector/StartPermission";
 import Interstitial from "./components/inspector/Interstitial";
+import TaskInterstitial from "./components/inspector/TaskInterstitial";
 import SelectUserGroup from "../../components/SelectUserGroup";
 import validateScreenRef from "./validateScreenRef";
 import validateFlowGenieRef from "./validateFlowGenieRef";
@@ -65,6 +66,7 @@ Vue.component("SignalPayload", SignalPayload);
 Vue.component("ScriptSelect", ScriptSelect);
 Vue.component("StartPermission", StartPermission);
 Vue.component("Interstitial", Interstitial);
+Vue.component("TaskInterstitial", TaskInterstitial);
 Vue.component("SelectUserGroup", SelectUserGroup);
 Vue.component("NodeIdentifierInput", NodeIdentifierInput);
 Vue.component("ErrorHandlingTimeout", ErrorHandlingTimeout);
@@ -205,11 +207,11 @@ ProcessMaker.EventBus.$on(
     });
 
     registerInspectorExtension(task, {
-      component: "Interstitial",
+      component: "TaskInterstitial",
       config: {
         label: "Display Next Assigned Task to Task Assignee",
         helper: "Directs Task assignee to the next assigned Task",
-        name: "interstitial",
+        name: "taskInterstitial",
       },
     });
 
@@ -357,11 +359,11 @@ ProcessMaker.EventBus.$on(
       ],
     });
     registerInspectorExtension(manualTask, {
-      component: "Interstitial",
+      component: "TaskInterstitial",
       config: {
         label: "Enable Interstitial",
         helper: "redirected to my next assigned task",
-        name: "interstitial",
+        name: "TaskInterstitial",
       },
     });
 

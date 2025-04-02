@@ -9,8 +9,6 @@ class BuildSdkTest extends TestCase
 {
     public function setUpSuppressOutput() : void
     {
-        $this->setOutputCallback(function () {
-        });
     }
 
     private function jsonFile()

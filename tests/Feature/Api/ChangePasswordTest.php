@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Api;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
@@ -10,7 +9,7 @@ use Tests\TestCase;
 
 class ChangePasswordTest extends TestCase
 {
-    use RequestHelper, RefreshDatabase;
+    use RequestHelper;
 
     const API_TEST_URL = '/password/change';
 

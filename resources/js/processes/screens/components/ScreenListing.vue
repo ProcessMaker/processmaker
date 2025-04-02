@@ -1,7 +1,7 @@
 <template>
   <div class="data-table">
     <data-loading
-            :for="/screens/"
+            :for="/\/screens\?page/"
             v-show="shouldShowLoader"
             :empty="$t('No Data Available')"
             :empty-desc="$t('')"
@@ -66,7 +66,7 @@
                 </template>
                 <template v-if="header.field === 'actions'">
                   <ellipsis-menu
-                    :actions="screenActions"
+                    :actions="screenActionsWithAddToBundle"
                     :permission="permission"
                     :data="row"
                     :divider="true"
@@ -145,6 +145,7 @@
       footerClass="border-0"
       modal-size="lg"
     />
+    <add-to-bundle asset-type="ProcessMaker\Models\Screen" />
   </div>
 </template>
 
@@ -157,13 +158,14 @@ import CreateTemplateModal from "../../../components/templates/CreateTemplateMod
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 import PaginationTable from "../../../components/shared/PaginationTable.vue";
 import { ellipsisSortClick } from "../../../components/shared/UtilsTable";
+import AddToBundle from "../../../components/shared/AddToBundle.vue";
 
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import AddToProjectModal from "../../../components/shared/AddToProjectModal.vue";
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  components: { EllipsisMenu, AddToProjectModal, CreateTemplateModal, PaginationTable },
+  components: { EllipsisMenu, AddToProjectModal, CreateTemplateModal, PaginationTable, AddToBundle },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ellipsisMenuMixin, screenNavigationMixin],
   props: ["filter", "id", "permission", "currentUserId", "types"],
   data() {
@@ -208,14 +210,12 @@ export default {
           title: () => this.$t("Category"),
           name: "categories",
           label: this.$t("Category"),
-          field: "category.name",
+          field: "categories",
           sortable: true,
           direction: "none",
           width: 150,
           sortField: "category.name",
-          callback(categories) {
-            return categories.map(item => item.name).join(', ');
-          },
+          cb: (categories) => this.formatCategory(categories),
         },
         {
           title: () => this.$t("Type"),
@@ -260,6 +260,17 @@ export default {
         }
       ]
     };
+  },
+  computed: {
+    screenActionsWithAddToBundle() {
+      return this.screenActions.toSpliced(3, 0, {
+        value: "add-to-bundle",
+        content: "Add to Bundle",
+        icon: "fp-add-outlined",
+        permission: "admin",
+        emit_on_root: 'add-to-bundle',
+      });
+    }
   },
   created () {
     ProcessMaker.EventBus.$on("api-data-process", () => {
@@ -340,7 +351,6 @@ export default {
 
   },
 
-  computed: {}
 };
 </script>
 

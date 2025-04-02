@@ -28,11 +28,13 @@ use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
+use ProcessMaker\Traits\TaskControllerIndexMethods;
 
 class TaskController extends Controller
 {
     use SearchAutocompleteTrait;
     use HasControllerAddons;
+    use TaskControllerIndexMethods;
 
     private static $dueLabels = [
         'open' => 'Due',
@@ -42,8 +44,12 @@ class TaskController extends Controller
 
     public function index()
     {
-        $title = 'To Do Tasks';
+        $routerPath = Request::route('router');
 
+        $title = 'To Do Tasks';
+        $path = Request::path() !== 'inbox';
+        $showOldTaskScreen = $path === true && $routerPath === null;
+        $selectedProcess = $routerPath === null ? 'inbox' : 'reload';
         if (Request::input('status') == 'CLOSED') {
             $title = 'Completed Tasks';
         }
@@ -52,13 +58,23 @@ class TaskController extends Controller
             return view('tasks.mobile', compact('title'));
         }
 
+        $manager = new ScreenBuilderManager();
+        event(new ScreenBuilderStarting($manager, 'FORM'));
+        event(new ScreenBuilderStarting($manager, 'DISPLAY'));
+
         $userFilter = SaveSession::getConfigFilter('taskFilter', Auth::user());
 
         $defaultColumns = DefaultColumns::get('tasks');
 
         $taskDraftsEnabled = TaskDraft::draftsEnabled();
 
-        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns', 'taskDraftsEnabled'));
+        $userConfiguration = (new UserConfigurationController())->index()['ui_configuration'] ?? [];
+
+        $currentUser = Auth::user();
+
+        $defaultSavedSearchId = $this->getDefaultSavedSearchId();
+
+        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns', 'taskDraftsEnabled', 'userConfiguration', 'showOldTaskScreen', 'currentUser', 'selectedProcess', 'defaultSavedSearchId', 'manager'));
     }
 
     public function edit(ProcessRequestToken $task, string $preview = '')
@@ -78,12 +94,12 @@ class TaskController extends Controller
         MarkNotificationAsRead::dispatch([['url', '=', '/' . Request::path()]], ['read_at' => Carbon::now()]);
 
         $manager = app(ScreenBuilderManager::class);
-        event(new ScreenBuilderStarting($manager, $task->getScreenVersion() ? $task->getScreenVersion()->type : 'FORM'));
+        $screenVersion = $task->getScreenVersion();
+        event(new ScreenBuilderStarting($manager, $screenVersion ? $screenVersion->type : 'FORM'));
 
         $submitUrl = route('api.tasks.update', $task->id);
         $task->processRequest;
         $task->user;
-        $screenVersion = $task->getScreenVersion();
         $task->component = $screenVersion ? $screenVersion->parent->renderComponent() : null;
         $task->screen = $screenVersion ? $screenVersion->toArray() : null;
         $task->request_data = $dataManager->getData($task);
@@ -97,6 +113,11 @@ class TaskController extends Controller
         $element = $task->getDefinition(true);
         $screenFields = $screenVersion ? $screenVersion->screenFilteredFields() : [];
         $taskDraftsEnabled = TaskDraft::draftsEnabled();
+
+        // Remove screen parent to reduce the size of the response
+        $screen = $task->screen;
+        $screen['parent'] = null;
+        $task->screen = $screen;
 
         if ($element instanceof ScriptTaskInterface) {
             return redirect(route('requests.show', ['request' => $task->processRequest->getKey()]));

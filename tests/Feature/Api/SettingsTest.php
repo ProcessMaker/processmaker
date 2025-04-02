@@ -3,7 +3,6 @@
 namespace Tests\Feature\Api;
 
 use DB;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\SettingsMenus;

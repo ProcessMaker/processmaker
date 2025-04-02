@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Upgrade;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
@@ -11,8 +10,6 @@ use Tests\TestCase;
 
 class PopulateCommentsCaseNumberTest extends TestCase
 {
-    use RefreshDatabase;
-
     /**
      * Test populateCommentsCaseNumber method.
      *

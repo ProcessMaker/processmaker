@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use ProcessMaker\Http\Controllers\Api\V1_1\CaseController;
 use ProcessMaker\Http\Controllers\Api\V1_1\ClipboardController;
+use ProcessMaker\Http\Controllers\Api\V1_1\ProcessVariableController;
 use ProcessMaker\Http\Controllers\Api\V1_1\TaskController;
 
 // Define the prefix and name for version 1.1 of the API routes
@@ -22,6 +23,7 @@ Route::prefix('api/1.1')
 
             // Route to show the screen of a task
             Route::get('/{taskId}/screen', [TaskController::class, 'showScreen'])
+                ->defaults('etag_tables', 'screens,screen_versions')
                 ->name('show.screen');
 
             // Route to show the interstitial screen of a task
@@ -59,5 +61,12 @@ Route::prefix('api/1.1')
 
             Route::post('/create_or_update', [ClipboardController::class, 'createOrUpdateForUser'])
                 ->name('clipboard.createOrUpdateForUser');
+        });
+
+        // Process Variables Endpoints
+        Route::name('process_variables.')->prefix('processes/variables')->group(function () {
+            // Route to list process variables
+            Route::get('/', [ProcessVariableController::class, 'index'])
+                ->name('index');
         });
     });

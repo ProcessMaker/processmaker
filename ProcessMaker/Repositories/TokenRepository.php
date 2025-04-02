@@ -12,9 +12,11 @@ use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\FeelExpressionEvaluator;
 use ProcessMaker\Models\ProcessAbeRequestToken;
 use ProcessMaker\Models\ProcessCollaboration;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessRequestToken as Token;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\Collection;
 use ProcessMaker\Nayra\Bpmn\Models\EndEvent;
@@ -134,7 +136,7 @@ class TokenRepository implements TokenRepositoryInterface
                     $dataManager = new DataManager();
                     $tokenData = $dataManager->getData($token);
                     $feel = new FeelExpressionEvaluator();
-                    $evaluatedUsers = $selfServiceUsers ? $feel->render($selfServiceUsers, $tokenData) ?? null: [];
+                    $evaluatedUsers = $selfServiceUsers ? $feel->render($selfServiceUsers, $tokenData) ?? null : [];
                     $evaluatedGroups = $selfServiceGroups ? $feel->render($selfServiceGroups, $tokenData) ?? null : [];
 
                     // If we have single values we put it inside an array
@@ -159,7 +161,7 @@ class TokenRepository implements TokenRepositoryInterface
 
         //Default 3 days of due date
         $due = $this->getDueVariable($activity, $token);
-        $token->due_at = $due ? Carbon::now()->addHours($due) : null;
+        $token->due_at = $due ? Carbon::now()->addHours((int) $due) : null;
         $token->initiated_at = null;
         $token->riskchanges_at = $due ? Carbon::now()->addHours($due * 0.7) : null;
         $token->updateTokenProperties();
@@ -172,7 +174,12 @@ class TokenRepository implements TokenRepositoryInterface
         CaseUpdate::dispatchSync($request, $token);
 
         if (!is_null($user)) {
+            // Review if the task has enable the action by email
             $this->validateAndSendActionByEmail($activity, $token, $user->email);
+            // Review if the user has enable the email notification
+            $isEmailTaskValid = $this->validateEmailUserNotification($token, $user);
+            // Define the flag if the email needs to sent
+            $token->is_emailsent = $isEmailTaskValid ? 1 : 0;
         }
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
     }
@@ -183,7 +190,6 @@ class TokenRepository implements TokenRepositoryInterface
      * @param ActivityInterface $activity
      * @param TokenInterface $token
      * @param string $to
-     * @param array $data
      *
      * @return void
      */
@@ -226,6 +232,71 @@ class TokenRepository implements TokenRepositoryInterface
     }
 
     /**
+     * Validates the user's email notification settings and sends an email if enabled.
+     *
+     * @param TokenInterface $token The token containing task information.
+     * @param User $user The user to whom the email notification will be sent.
+     * @return mixed|null Returns the result of the email sending operation or null if not sent.
+     */
+    private function validateEmailUserNotification(TokenInterface $token, User $user)
+    {
+        try {
+            Log::Info('User isEmailTaskEnable: ' . $user->email_task_notification);
+            // Return if email task notification is not enabled or email is empty
+            if ($user->email_task_notification === 0 || empty($user->email)) {
+                return null;
+            }
+            // Prepare data for the email
+            $data = $this->prepareEmailData($token, $user);
+
+            // Send Email
+            return (new TaskActionByEmail())->sendAbeEmail($data['configEmail'], $user->email, $data['emailData']);
+        } catch (\Exception $e) {
+            // Catch and log the error
+            Log::error('Failed to validate and send email task notification', [
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Prepares the email data and configuration for sending an email notification.
+     *
+     * @param TokenInterface $token The token containing task information.
+     * @param User $user The user for whom the email data is being prepared.
+     * @return array An associative array containing 'emailData' and 'configEmail'.
+     */
+    private function prepareEmailData(TokenInterface $token, User $user)
+    {
+        // Get the case
+        $caseTitle = ProcessRequest::where('id', $token->process_request_id)->value('case_title');
+        // Prepare the email data
+        $taskName = $token->element_name ?? '';
+        $emailData = [
+            'firstname' => $user->firstname ?? '',
+            'assigned_by' => Auth::user()->fullname ?? __('System'),
+            'element_name' => $taskName,
+            'case_title' => $caseTitle, // Populate this if needed
+            'due_date' => $token->due_at ?? '',
+            'link_review_task' => config('app.url') . '/' . 'tasks/' . $token->id . '/edit',
+            'imgHeader' => config('app.url') . '/img/processmaker_login.png',
+        ];
+        // Get the screen by key
+        $screen = Screen::getScreenByKey('default-email-task-notification');
+        // Prepare the email configuration
+        $configEmail = [
+            'emailServer' => 0, // Use the default email server
+            'subject' => "{$user->firstname} assigned you in '{$taskName}'",
+            'screenEmailRef' => $screen->id ?? 0, // Define here the screen to use
+        ];
+
+        return [
+            'emailData' => $emailData,
+            'configEmail' => $configEmail,
+        ];
+    }
+
+    /**
      * Get due Variable
      *
      * @param ActivityInterface $activity
@@ -242,10 +313,10 @@ class TokenRepository implements TokenRepositoryInterface
             $mustache = new Mustache_Engine();
             $mustacheDueVariable = $mustache->render($dueVariable, $instanceData);
 
-            return is_numeric($mustacheDueVariable) ? $mustacheDueVariable : '72';
+            return is_numeric($mustacheDueVariable) ? $mustacheDueVariable : 72;
         }
 
-        return $activity->getProperty('dueIn', '72');
+        return (int) $activity->getProperty('dueIn', '72');
     }
 
     /**

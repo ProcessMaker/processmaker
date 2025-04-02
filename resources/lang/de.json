@@ -1170,6 +1170,7 @@
   "Options Variable": "Optionenvariable",
   "Get options from this variable. Must be an array.": "Optionen aus dieser Variable erhalten. Muss ein Array sein.",
   "Option Label Shown": "Angezeigte Optionsbezeichnung",
+  "option has been moved to the task destination dropdown": "option wurde in die Dropdown-Liste „Aufgabenziel“ verschoben",
   "Enter the property name from the Request data variable that displays to the user on the screen.": "Geben Sie den Namen der Eigenschaft aus der Anforderungsdatenvariable ein, die dem Benutzer auf dem Bildschirm angezeigt wird.",
   "Show Control As": "Steuerung anzeigen als",
   "Allow Multiple Selections": "Mehrfachauswahl zulassen",
@@ -2434,5 +2435,15 @@
   "Create a bundle to easily share assets and settings between ProcessMaker instances.": "Erstellen Sie ein Bundle, um Assets und Einstellungen einfach zwischen ProcessMaker-Instanzen zu teilen.",
   "In addition to the process manager, these users and groups will have permission to reassign any task in this process, regardless of the \"Allow Reassignment\" task setting.": "Zusätzlich zum Prozessmanager haben diese Benutzer und Gruppen die Berechtigung, jede Aufgabe in diesem Prozess neu zuzuweisen, unabhängig von der Einstellung \"Neuzuweisung zulassen\" der Aufgabe.",
   "Reassignment Permission": "Neuzuweisungserlaubnis",
-  "This task can not be reassigned": "Diese Aufgabe kann nicht neu zugewiesen werden"
+  "This task can not be reassigned": "Diese Aufgabe kann nicht neu zugewiesen werden",
+  "Start New Case": "Neuen Fall starten",
+  "No Case to Start": "Kein Fall zu starten",
+  "No Cases to Show": "Keine Fälle anzuzeigen",
+  "Drafts": "Entwürfe",
+  "An error ocurred, please check the PI process file and try again.": "Ein Fehler ist aufgetreten, bitte überprüfen Sie die PI-Prozessdatei und versuchen Sie es erneut.",
+  "New": "Neu",
+  "New Genie": "Neuer Genie",
+  "View All Genies": "Alle Genies anzeigen",
+  "View All Collections": "Alle Kollektionen anzeigen",
+  "Collapse sidebar": "Seitenleiste einklappen"
 }

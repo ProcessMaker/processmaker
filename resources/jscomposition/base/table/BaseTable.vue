@@ -1,20 +1,22 @@
 <template>
   <div
-    class="tw-w-full tw-relative tw-text-gray-600 tw-text-sm
-      tw-border tw-rounded-xl tw-border-gray-300 tw-overflow-hidden tw-overflow-x-auto tw-overflow-y-auto"
-  >
+    class="tw-w-full tw-relative tw-text-sm
+      tw-border tw-rounded-xl tw-border-gray-200 tw-overflow-hidden tw-overflow-x-auto tw-overflow-y-auto">
     <table
       class="tw-w-full tw-border-collapse"
       :class="{
         'tw-table-fixed':getDefaultConfig(config).tableFixed
       }">
-      <thead class="tw-border-b tw-sticky tw-top-0 tw-z-[9] tw-bg-gray-100">
+      <thead
+        ref="thead"
+        class="tw-border-b tw-sticky tw-top-0 tw-z-[9] tw-bg-gray-50 tw-text-[#5C6066] tw-border-[#EBEDEF]">
         <tr>
           <THeader
             v-for="(column, index) in columns"
             :key="index"
             :columns="columns"
-            :column="column">
+            :column="column"
+            @stopResize="onStopResize">
             <slot :name="`theader-${column.field}`" />
             <template #filter>
               <slot :name="`theader-filter-${column.field}`" />
@@ -26,7 +28,9 @@
       <transition
         name="fade-table"
         mode="out-in">
-        <tbody v-show="!placeholder">
+        <tbody
+          v-show="!placeholder"
+          ref="tbody">
           <template v-for="(row, indexRow) in data">
             <TRow :key="`row-${indexRow}`">
               <template #[`cell`]>
@@ -36,6 +40,7 @@
                   :columns="columns"
                   :column="column"
                   :row="row"
+                  :index-row="indexRow"
                   @toogleContainer="(e)=>toogleContainer(e, indexRow)">
                   <slot :name="`tcell-${indexRow}-${column.field}`" />
                 </TCell>
@@ -69,7 +74,7 @@
       <div
         v-show="placeholder"
         class="tw-flex tw-grow tw-w-full tw-h-full tw-pointer-events-none
-          tw-absolute tw-left-0 tw-top-0 tw-z-10 tw-justify-center tw-items-center">
+          tw-absolute tw-left-0 tw-top-0 tw-z-[3] tw-justify-center tw-items-center">
         <slot name="placeholder" />
       </div>
     </transition>
@@ -86,7 +91,7 @@ import TCell from "./TCell.vue";
 import ContainerRow from "./ContainerRow.vue";
 
 const defaultConfig = () => ({
-  tableFixed: true,
+  tableFixed: false,
 });
 
 export default defineComponent({
@@ -114,11 +119,12 @@ export default defineComponent({
       default: () => false,
     },
   },
-  setup(props) {
+  setup(props, { emit }) {
     const slots = useSlots();
     const configRow = ref([]);
     const showContainer = ref(false);
-
+    const tbody = ref(null);
+    const thead = ref(null);
     const toogleContainer = (toogle, index) => {
       configRow.value.splice(index, 1, { showContainer: toogle });
     };
@@ -136,6 +142,10 @@ export default defineComponent({
 
     const getShowContainer = (index) => configRow.value[index]?.showContainer;
 
+    const onStopResize = (column) => {
+      emit("stopResize", column);
+    };
+
     return {
       configRow,
       showContainer,
@@ -143,8 +153,11 @@ export default defineComponent({
       getShowContainer,
       getDefaultConfig,
       slots,
+      onStopResize,
       checkContainerRow,
       checkEllipsisMenu,
+      tbody,
+      thead,
     };
   },
 });

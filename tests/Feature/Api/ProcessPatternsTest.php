@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use Exception;
 use Illuminate\Support\Facades\Cache;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\GlobalDataStore;
 use ProcessMaker\Models\Group;
@@ -25,7 +26,7 @@ class ProcessPatternsTest extends TestCase
     use RequestHelper;
     use ProcessTestingTrait;
 
-    private $basePath = __DIR__ . '/bpmnPatterns/';
+    public static $basePath = __DIR__ . '/bpmnPatterns/';
 
     /**
      * Make sure we have a personal access client set up
@@ -39,9 +40,8 @@ class ProcessPatternsTest extends TestCase
      * Tests the bpmn process completing all active tasks
      *
      * @param string $bpmnFile
-     *
-     * @dataProvider prepareTestCasesProvider
      */
+    #[DataProvider('prepareTestCasesProvider')]
     public function testProcessPatterns($type, $bpmnFile, $context = [])
     {
         $this->$type($bpmnFile, $context);
@@ -52,14 +52,14 @@ class ProcessPatternsTest extends TestCase
      *
      * @return array
      */
-    public function prepareTestCasesProvider()
+    public static function prepareTestCasesProvider()
     {
         $tests = [];
-        $tests = $this->prepareTestCases('Conditional_StartEvent.bpmn', $tests);
-        $tests = $this->prepareTestCases('Conditional_IntermediateEvent.bpmn', $tests);
-        $tests = $this->prepareTestCases('MultiInstance_SequentialCallActivity.bpmn', $tests);
-        $tests = $this->prepareTestCases('Loop_Task.bpmn', $tests);
-        $tests = $this->prepareTestCases('SignalWithCustomPayload.bpmn', $tests);
+        $tests = self::prepareTestCases('Conditional_StartEvent.bpmn', $tests);
+        $tests = self::prepareTestCases('Conditional_IntermediateEvent.bpmn', $tests);
+        $tests = self::prepareTestCases('MultiInstance_SequentialCallActivity.bpmn', $tests);
+        $tests = self::prepareTestCases('Loop_Task.bpmn', $tests);
+        $tests = self::prepareTestCases('SignalWithCustomPayload.bpmn', $tests);
 
         return $tests;
     }
@@ -72,9 +72,9 @@ class ProcessPatternsTest extends TestCase
      *
      * @return array
      */
-    private function prepareTestCases($bpmnFile, array $tests)
+    private static function prepareTestCases($bpmnFile, array $tests)
     {
-        $file = "{$this->basePath}{$bpmnFile}";
+        $file = self::$basePath . $bpmnFile;
         $name = basename($bpmnFile, '.bpmn');
         $jsonFile = substr($file, 0, -4) . 'json';
         if (file_exists($jsonFile)) {
@@ -107,7 +107,7 @@ class ProcessPatternsTest extends TestCase
     private function runProcessWithoutContext($bpmnFile)
     {
         $bpmnRepository = new BpmnDocument();
-        $bpmnRepository->load("{$this->basePath}{$bpmnFile}");
+        $bpmnRepository->load(self::$basePath . $bpmnFile);
         $startEvents = $bpmnRepository->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'startEvent');
         foreach ($startEvents as $startEvent) {
             $data = [];
@@ -132,7 +132,7 @@ class ProcessPatternsTest extends TestCase
             foreach ($context['requires'] as $index => $process) {
                 $this->createProcess([
                     'id' => $index + 1,
-                    'bpmn' => file_get_contents("{$this->basePath}{$process}"),
+                    'bpmn' => file_get_contents(self::$basePath . $process),
                 ]);
             }
         }
@@ -153,7 +153,7 @@ class ProcessPatternsTest extends TestCase
     private function runProcess($bpmnFile, $data, $startEvent, $expectedResult, $events, $output, $context)
     {
         Cache::store('global_variables')->flush();
-        $process = $this->createProcess(file_get_contents("{$this->basePath}{$bpmnFile}"));
+        $process = $this->createProcess(file_get_contents(self::$basePath . $bpmnFile));
         $definitions = $process->getDefinitions();
         $start = $definitions->getStartEvent($startEvent);
         if ($start->getEventDefinitions()->count() > 0) {

@@ -99,6 +99,7 @@ a {
     abPublish: @json($abPublish),
     alternative: @json($alternative),
     draftAlternative: @json($draftAlternative),
+    launchpad: @json($launchpad),
   }
   const warnings = @json($process->warnings);
 

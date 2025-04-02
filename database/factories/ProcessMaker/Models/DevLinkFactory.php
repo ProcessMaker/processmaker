@@ -19,6 +19,7 @@ class DevLinkFactory extends Factory
         return [
             'name' => $this->faker->name(),
             'url' => $this->faker->url(),
+            'client_secret' => $this->faker->uuid(),
         ];
     }
 }

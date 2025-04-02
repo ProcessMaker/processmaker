@@ -24,9 +24,9 @@ class RecommendationEngineTest extends TestCase
 
     private SyncRecommendations $syncRecommendations;
 
-    public function __construct()
+    public function setUp(): void
     {
-        parent::__construct();
+        parent::setUp();
 
         $this->syncRecommendations = app(SyncRecommendations::class);
     }
@@ -179,8 +179,6 @@ class RecommendationEngineTest extends TestCase
     /**
      * Use a factory to generate a Recommendation model's data
      * without persisting it to use as mock JSON responses
-     *
-     * @return array
      */
     protected function generateModelData(): array
     {

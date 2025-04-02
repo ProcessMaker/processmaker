@@ -125,425 +125,79 @@
 <script src="{{config('broadcasting.connections.redis.host')}}/socket.io/socket.io.js"></script>
 @endif
 <script src="{{ mix('js/manifest.js') }}"></script>
-<script src="{{ mix('js/vendor.js') }}"></script>
-<script src="{{ mix('js/app.js') }}"></script>
+<script src="{{ mix('js/vue-vendor.js') }}"></script>
+<script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
+<script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
 <script>
-  window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+  window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+  const screenBuilderScripts = @json($manager->getScripts());
+  const task = @json($task);
+  const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
+  const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
+  const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
+  const screenFields = @json($screenFields);
 </script>
-<script src="{{ mix('js/app-layout.js') }}"></script>
-  <script>
-    window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
-      if (screen.watchers_config) {
-        screen.watchers_config.api.execute = @json(route('api.scripts.execute', ['script_id' => 'script_id', 'script_key' => 'script_key']));
-        screen.watchers_config.api.execution = @json(route('api.scripts.execution', ['key' => 'execution_key']));
-      } else {
-        console.warn('Screen builder version does not have watchers');
-      }
-    });
+<script src="{{ mix('js/tasks/loaderPreview.js')}}"></script>
+<script>
+  window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
+    if (screen.watchers_config) {
+      screen.watchers_config.api.execute = @json(route('api.scripts.execute', ['script_id' => 'script_id', 'script_key' => 'script_key']));
+      screen.watchers_config.api.execution = @json(route('api.scripts.execution', ['key' => 'execution_key']));
+    } else {
+      console.warn('Screen builder version does not have watchers');
+    }
+  });
 
-    window.PM4ConfigOverrides = {
-      requestFiles: @json($files),
-      getScreenEndpoint: 'tasks/{{ $task->id }}/screens',
-      postScriptEndpoint: '/scripts/execute/{id}?task_id={{ $task->id }}',
-    };
+  window.PM4ConfigOverrides = {
+    requestFiles: @json($files),
+    getScreenEndpoint: 'tasks/{{ $task->id }}/screens',
+    postScriptEndpoint: '/scripts/execute/{id}?task_id={{ $task->id }}',
+  };
+</script>
 
-    const task = @json($task);
-    const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
-    const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
-    const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
-    const screenFields = @json($screenFields);
+<script src="{{mix('js/tasks/preview.js')}}"></script>
 
-  </script>
-    @foreach($manager->getScripts() as $script)
-        <script src="{{$script}}"></script>
-    @endforeach
-    <script src="{{mix('js/tasks/show.js')}}"></script>
-    <script>
-      const store = new Vuex.Store();
-      const main = new Vue({
-        mixins:addons,
-        store: store,
-        el: "#task",
-        data: {
-          //Edit data
-          fieldsToUpdate: [],
-          jsonData: "",
-          monacoLargeOptions: {
-            automaticLayout: true,
-          },
-          showJSONEditor: false,
-          windowParent: window.parent.ProcessMaker,
-          // Reassignment
-          selected: null,
-          selectedIndex: -1,
-          usersList: [],
-          filter: "",
-          showReassignment: false,
-          task,
-          userHasAccessToTask,
-          statusCard: "card-header text-capitalize text-white bg-success",
-          selectedUser: [],
-          hasErrors: false,
-          redirectInProcess: false,
-          formData: {},
-          submitting: false,
-          userIsAdmin,
-          userIsProcessManager,
-          is_loading: false,
-          autoSaveDelay: 5000,
-          userHasInteracted: false,
-          initialFormDataSet: false,
-          alwaysAllowEditing: window.location.search.includes('alwaysAllowEditing=1'),
-          disableInterstitial: window.location.search.includes('disableInterstitial=1'),
-          validateForm: true
-        },
-        watch: {
-          task: {
-            deep: true,
-            handler(task, oldTask) {
-              window.ProcessMaker.breadcrumbs.taskTitle = task.element_name;
-              if (task && oldTask && task.id !== oldTask.id) {
-                history.replaceState(null, null, `/tasks/${task.id}/edit/preview`);
-              }
-            }
-          },
-          screenFilteredData: {
-            deep: true,
-            handler() {
-              this.sendEvent('dataUpdated', this.screenFilteredData);
-            }
-          },
-        },
-        computed: {
-          screenFilteredData () {
-            return this.filterScreenFields(this.formData);
-          },
-          taskDefinitionConfig () {
-            let config = {};
-            if (this.task.definition && this.task.definition.config) {
-              return JSON.parse(this.task.definition.config);
-            }
-            return {};
-          },
-          dueLabel() {
-            const dueLabels = {
-              'open': 'Due',
-              'completed': 'Completed',
-              'overdue': 'Due',
-            };
-            return dueLabels[this.task.advanceStatus] || '';
-          },
-          isSelfService() {
-            return this.task.process_request.status === 'ACTIVE' && this.task.is_self_service;
-          },
-          dateDueAt () {
-            return this.task.due_at;
-          },
-          createdAt () {
-            return this.task.created_at;
-          },
-          completedAt () {
-            return this.task.completed_at;
-          },
-          showDueAtDates () {
-            return this.task.status !== "CLOSED";
-          },
-          disabled () {
-            return this.selectedUser ? this.selectedUser.length === 0 : true;
-          },
-          styleDataMonaco () {
-            let height = window.innerHeight * 0.55;
-            return "height: " + height + "px; border:1px solid gray;";
-          }
-        },
-        methods: {
-          afterSubmit(event) {
-            event.validation = this.validateForm;
-          },
-          filterScreenFields(taskData) {
-            const filteredData = {};
-            screenFields.forEach(field => {
-              _.set(filteredData, field, _.get(taskData, field, null));
-            });
-            return filteredData;
-          },
-          sendEvent(name, data) {
-              const event = new CustomEvent(name, {
-                detail: {
-                  event_parent_id: Number(window.frameElement.getAttribute('event-parent-id')),
-                  data: data
-                },
-              });
-              window.parent.dispatchEvent(event);
-          },
-          sendUserHasInteracted() {
-            if (!this.userHasInteracted) {
-              this.userHasInteracted = true;
-              this.sendEvent('userHasInteracted', true);
-            }
-          },
-          completed(processRequestId) {
-            // avoid redirection if using a customized renderer
-            if(this.task.component && this.task.component === 'AdvancedScreenFrame') {
-              return;
-            }
-            setTimeout(() => {
-              parent.location.reload();
-            }, 200);
-          },
-          error(processRequestId) {
-            this.$refs.task.showSimpleErrorMessage();
-          },
-          redirectToTask(task, force = false) {
-            this.redirect(`/tasks/${task}/edit/preview`, force);
-          },
-          closed(taskId) {
-            // avoid redirection if using a customized renderer
-            if (this.task.component && this.task.component === 'AdvancedScreenFrame') {
-              return;
-            }
-            this.redirect("/tasks");
-          },
-          claimTask() {
-            ProcessMaker.apiClient
-              .put("tasks/" + this.task.id, {
-                user_id: window.ProcessMaker.user.id,
-                is_self_service: 0,
-              })
-              .then(response => {
-                this.windowParent.alert(this.$t('The task was successfully claimed'), 'primary', 5, true);
-                parent.location.reload();
-              });
-          },
-          // Data editor
-          updateRequestData () {
-            const data = JSON.parse(this.jsonData);
-            ProcessMaker.apiClient
-              .put("requests/" + this.task.process_request_id, {
-                data: data,
-                task_element_id: this.task.element_id,
-              })
-              .then(response => {
-                this.fieldsToUpdate.splice(0);
-                this.windowParent.alert(this.$t('The request data was saved.'), "success");
-              });
-          },
-          saveJsonData () {
-            try {
-              const value = JSON.parse(this.jsonData);
-              this.updateRequestData();
-            } catch (e) {
-              // Invalid data
-            }
-          },
-          editJsonData () {
-            this.jsonData = JSON.stringify(this.task.request_data, null, 4);
-          },
-          // Reassign methods
-          show () {
-            this.showReassignment = true;
-          },
-          cancelReassign () {
-            this.showReassignment = false;
-            this.selectedUser = [];
-          },
-          reassignUser () {
-            if (this.selectedUser) {
-              ProcessMaker.apiClient
-                .put("tasks/" + this.task.id, {
-                  user_id: this.selectedUser.id
-                })
-                .then(response => {
-                  this.showReassignment = false;
-                  this.selectedUser = [];
-                  this.redirect('/tasks');
-                });
-            }
-          },
-          redirect(to, forceRedirect = false) {
-            if (this.redirectInProcess && !forceRedirect) {
-              return;
-            }
-            this.redirectInProcess = true;
-            window.location.href = to;
-          },
-          assignedUserAvatar (user) {
-            return [{
-              src: user.avatar,
-              name: user.fullname
-            }];
-          },
-          resizeMonaco () {
-            let editor = this.$refs.monaco.getMonaco();
-            editor.layout({height: window.innerHeight * 0.65});
-          },
-          prepareData() {
-              this.updateRequestData = debounce(this.updateRequestData, 1000);
-              this.editJsonData();
-          },
-          updateTask(val) {
-            this.$set(this, 'task', val);
-          },
-          submit(task, loading, buttonInfo) {
-            if (window.location.search.includes('dispatchSubmit=1')) {
-              this.sendEvent('formSubmit', buttonInfo);
+<style>
+  .inline-input {
+      margin-right: 6px;
+  }
 
-            } else if (this.isSelfService) {
-              this.windowParent.alert(this.$t('Claim the Task to continue.'), 'warning');
+  .inline-button {
+      background-color: rgb(109, 124, 136);
+      font-weight: 100;
+  }
 
-            } else {
-              if (this.submitting) {
-                return;
-              }
+  .input-and-select {
+      width: 212px;
+  }
 
-              let message = this.$t('Task Completed Successfully');
-              const taskId = task.id;
-              this.submitting = true;
-              ProcessMaker.apiClient
-              .put("tasks/" + taskId, {status:"COMPLETED", data: this.formData})
-              .then(() => {
-                this.windowParent.alert(message, 'success', 5, true);
-              })
-              .catch(error => {
-                // If there are errors, the user will be redirected to the request page
-                // to view error details. This is done in loadTask in Task.vue
-                if (error.response?.status && error.response?.status === 422) {
-                  // Validation error
-                  Object.entries(error.response.data.errors).forEach(([key, value]) => {
-                    this.windowParent.alert(`${key}: ${value[0]}`, 'danger', 0);
-                  });
-                }
-              }).finally(() => {
-                this.submitting = false;
-                setTimeout(() => {
-                  parent.location.reload();
-                }, 200);
-              })
-            }
+  .multiselect__element span img {
+      border-radius: 50%;
+      height: 20px;
+  }
 
-          },
-          taskUpdated(task) {
-            this.task = task;
-            this.formData = _.cloneDeep(this.$refs.task.requestData);
-            this.$nextTick(() => {
-              this.sendEvent('taskReady', this.task?.id);
-            });
-          },
-          validateBase64(field) {
-            const regex = /^data:image\/\w+;base64,/;
-            return regex.test(field);
-          },
-        },
-        mounted() {
-          this.prepareData();
+  .multiselect__tags-wrap img {
+      height: 15px;
+      border-radius: 50%;
+  }
 
-          window.addEventListener('sendValidateForm', event => {
-            this.validateForm = event.detail;
-          });
+  .multiselect__tag-icon:after {
+      color: white !important;
+  }
 
-          window.addEventListener('fillData', event => {
-            const newData = {};
-            screenFields.forEach((field) => {
+  .multiselect__option--highlight {
+      background: #00bf9c !important;
+  }
 
-              const existingValue = _.get(this.formData, field, null);
+  .multiselect__option--selected.multiselect__option--highlight {
+      background: #00bf9c !important;
+  }
 
-              let quickFillValue;
+  .multiselect__tag {
+      background: #788793 !important;
+  }
 
-              if (existingValue) {
-                // If the value exists in the task data, don't overwrite it
-                quickFillValue = existingValue;
-              } else {
-                // use the value from the quick fill(event.detail)
-                quickFillValue = _.get(event.detail, field, null);
-              }
-
-              if(this.validateBase64(quickFillValue)) {
-                _.set(newData, field, existingValue);
-                return;
-              }
-              // Set the value. This handles nested values using dot notation in 'field' string
-              _.set(newData, field, quickFillValue);
-              
-            });
-
-            this.formData = newData;
-          });
-          
-          // Used by inbox rules new/edit interface. With inbox rules, we always
-          // want to use all data saved in the inbox rule db record, regardless
-          // if the field exists or not.
-          window.addEventListener('fillDataOverwriteExistingFields', event => {
-            for (let key in event.detail) {
-              if (event.detail.hasOwnProperty(key)) {
-                let value = event.detail[key];
-                if (this.validateBase64(value)) {
-                  delete event.detail[key];
-                }
-              }
-            }
-            this.formData = _.merge(_.cloneDeep(this.formData), event.detail);
-          });
-
-          window.addEventListener('eraseData', event => {
-            this.formData = {};
-          });
-
-          // listen for keydown on element with id interactionListener
-          const interactionListener = document.getElementById('interactionListener');
-          interactionListener.addEventListener('mousedown', (event) => {
-            this.sendUserHasInteracted();
-          });
-          interactionListener.addEventListener('keydown', (event) => {
-            this.sendUserHasInteracted();
-          });
-        }
-      });
-      window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name)
-    
-    </script>
-
-
-    <style>
-        .inline-input {
-            margin-right: 6px;
-        }
-
-        .inline-button {
-            background-color: rgb(109, 124, 136);
-            font-weight: 100;
-        }
-
-        .input-and-select {
-            width: 212px;
-        }
-
-        .multiselect__element span img {
-            border-radius: 50%;
-            height: 20px;
-        }
-
-        .multiselect__tags-wrap img {
-            height: 15px;
-            border-radius: 50%;
-        }
-
-        .multiselect__tag-icon:after {
-            color: white !important;
-        }
-
-        .multiselect__option--highlight {
-            background: #00bf9c !important;
-        }
-
-        .multiselect__option--selected.multiselect__option--highlight {
-            background: #00bf9c !important;
-        }
-
-        .multiselect__tag {
-            background: #788793 !important;
-        }
-
-        .multiselect__tag-icon:after {
-            color: white !important;
-        }
-    </style>
+  .multiselect__tag-icon:after {
+      color: white !important;
+  }
+</style>

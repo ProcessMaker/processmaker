@@ -5,8 +5,10 @@ namespace ProcessMaker\Jobs;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\Exception\ConfigurationException;
 use ProcessMaker\Exception\ScriptException;
+use ProcessMaker\Facades\Metrics;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Process as Definitions;
@@ -32,9 +34,9 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param \ProcessMaker\Models\Process $definitions
-     * @param \ProcessMaker\Models\ProcessRequest $instance
-     * @param \ProcessMaker\Models\ProcessRequestToken $token
+     * @param Definitions $definitions
+     * @param ProcessRequest $instance
+     * @param ProcessRequestToken $token
      * @param array $data
      */
     public function __construct(Definitions $definitions, ProcessRequest $instance, ProcessRequestToken $token, array $data, $attemptNum = 1)
@@ -68,6 +70,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
         }
 
         $errorHandling = null;
+        $scriptExecutor = null;
         try {
             if (empty($scriptRef)) {
                 $code = $element->getScript();
@@ -86,6 +89,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
                 if (!$script) {
                     throw new ConfigurationException(__('Script ":id" not found', ['id' => $scriptRef]));
                 }
+                $scriptExecutor = $script->scriptExecutor;
                 $script = $script->versionFor($instance);
             }
 
@@ -95,9 +99,31 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             $this->unlock();
             $dataManager = new DataManager();
             $data = $dataManager->getData($token);
-            $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling->timeout());
+            $metadata = [
+                'script_task' => [
+                    'script_id' => $scriptRef,
+                    'definition_id' => $this->definitionsId,
+                    'instance_id' => $this->instanceId,
+                    'token_id' => $this->tokenId,
+                    'data' => $data,
+                    'attempts' => $this->attemptNum,
+                ],
+            ];
+            $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling->timeout(), 1, $metadata);
 
             $this->updateData($response);
+
+            Metrics::counterInc(
+                'script_task_completed_total',
+                'Total number of script tasks completed',
+                [
+                    'activity_id' => $element->getId(),
+                    'activity_name' => $element->getName(),
+                    'process_id' => $this->definitionsId,
+                    'request_id' => $this->instanceId,
+                    'script_executor' => $scriptExecutor ? $scriptExecutor->title : 'inline',
+                ]
+            );
         } catch (ConfigurationException $exception) {
             $this->unlock();
             $this->updateData(['output' => $exception->getMessageForData($token)]);

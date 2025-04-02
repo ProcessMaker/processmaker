@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Log;
+use ProcessMaker\Cache\Settings\SettingCacheFactory;
+use ProcessMaker\Contracts\PrometheusMetricInterface;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia;
@@ -47,7 +49,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  *   },
  * )
  */
-class Setting extends ProcessMakerModel implements HasMedia
+class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInterface
 {
     use ExtendedPMQL;
     use InteractsWithMedia;
@@ -143,12 +145,26 @@ class Setting extends ProcessMakerModel implements HasMedia
      *
      * @param  string  $key
      *
-     * @return \ProcessMaker\Models\Setting|null
+     * @return Setting|null
      * @throws \Exception
      */
     public static function byKey(string $key)
     {
-        return (new self)->where('key', $key)->first();
+        $settingCache = SettingCacheFactory::getSettingsCache();
+        $settingKey = $settingCache->createKey([
+            'key' => $key,
+        ]);
+        $exists = $settingCache->has($settingKey);
+
+        // if the setting is not in the cache, get it from the database and store it in the cache
+        if ($exists) {
+            $setting = $settingCache->get($settingKey);
+        } else {
+            $setting = (new self)->where('key', $key)->first();
+            $settingCache->set($settingKey, $setting);
+        }
+
+        return $setting;
     }
 
     /**
@@ -382,7 +398,7 @@ class Setting extends ProcessMakerModel implements HasMedia
      */
     public static function groupsByMenu($menuId)
     {
-        $query = Setting::query()
+        $query = self::query()
             ->select('group')
             ->groupBy('group')
             ->where('group_id', $menuId)
@@ -409,7 +425,7 @@ class Setting extends ProcessMakerModel implements HasMedia
      */
     public static function updateSettingsGroup($settingsGroup, $id)
     {
-        Setting::where('group', $settingsGroup)->whereNull('group_id')->chunk(
+        self::where('group', $settingsGroup)->whereNull('group_id')->chunk(
             50,
             function ($settings) use ($id) {
                 foreach ($settings as $setting) {
@@ -429,7 +445,7 @@ class Setting extends ProcessMakerModel implements HasMedia
      */
     public static function updateAllSettingsGroupId()
     {
-        Setting::whereNull('group_id')->chunk(100, function ($settings) {
+        self::whereNull('group_id')->chunk(100, function ($settings) {
             $defaultId = SettingsMenus::EMAIL_MENU_GROUP;
             foreach ($settings as $setting) {
                 // Define the value of 'menu_group' based on 'group'
@@ -466,6 +482,9 @@ class Setting extends ProcessMakerModel implements HasMedia
                     case 'System': // System not related with settings menu
                         $id = null;
                         break;
+                    case 'Devlink':
+                        $id = null;
+                        break;
                     default: // The default value
                         if (preg_match('/^Email Server/', $setting->group)) {
                             $id = SettingsMenus::getId(SettingsMenus::EMAIL_MENU_GROUP);
@@ -481,5 +500,15 @@ class Setting extends ProcessMakerModel implements HasMedia
                 }
             }
         });
+    }
+
+    /**
+     * Get the label used in grafana reports
+     *
+     * @return string
+     */
+    public function getPrometheusMetricLabel(): string
+    {
+        return 'settings.' . $this->key;
     }
 }

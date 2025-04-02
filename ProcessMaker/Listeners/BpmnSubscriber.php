@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Notification;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityCompleted;
 use ProcessMaker\Events\ProcessCompleted;
+use ProcessMaker\Facades\Metrics;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Jobs\TerminateRequestEndEvent;
 use ProcessMaker\Models\Comment;
@@ -143,6 +144,24 @@ class BpmnSubscriber
             return;
         }
         Log::info('Activity completed: ' . json_encode($token->getProperties()));
+
+        // Prometheus Metric: Activity Execution Time
+        $startTime = $token->created_at_ms;
+        $completedTime = $token->completed_at_ms;
+        $executionTime = $completedTime->diffInMilliseconds($startTime);
+        Metrics::histogramObserve(
+            'activity_execution_time_seconds',
+            'Activity Execution Time',
+            [
+                'activity_id' => $token->element_id,
+                'activity_name' => $token->element_name,
+                'element_type' => $token->element_type,
+                'process_id' => $token->process_id,
+                'request_id' => $token->process_request_id,
+            ],
+            [1, 10, 3600, 86400],
+            $executionTime,
+        );
 
         if ($token->element_type == 'task') {
             $notifiables = $token->getNotifiables('completed');

@@ -67,7 +67,7 @@
                 </template>
                 <template v-if="header.field === 'actions'">
                   <ellipsis-menu
-                    :actions="scriptActions"
+                    :actions="scriptActionsWithAddToBundle"
                     :permission="permission"
                     :data="row"
                     :divider="true"
@@ -126,6 +126,7 @@
         <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">{{$t('Save')}}</button>
       </div>
     </b-modal>
+    <add-to-bundle asset-type="ProcessMaker\Models\Script" />
   </div>
 </template>
 
@@ -137,12 +138,13 @@ import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 import ellipsisMenuMixin from "../../../components/shared/ellipsisMenuActions";
 import scriptNavigationMixin from "../../../components/shared/scriptNavigation";
 import AddToProjectModal from "../../../components/shared/AddToProjectModal.vue";
+import AddToBundle from "../../../components/shared/AddToBundle.vue";
 import { FilterTableBodyMixin, ellipsisSortClick } from "../../../components/shared";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  components: { EllipsisMenu, AddToProjectModal },
+  components: { EllipsisMenu, AddToProjectModal, AddToBundle },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ellipsisMenuMixin, scriptNavigationMixin, FilterTableBodyMixin],
   props: ["filter", "id", "permission", "scriptExecutors"],
   data() {
@@ -185,13 +187,11 @@ export default {
           name: "categories",
           sortField: "category.name",
           label: this.$t("Category"),
-          field: "category.name",
+          field: "categories",
           sortable: true,
           direction: "none",
           width: 150,
-          callback(categories) {
-            return categories.map(item => item.name).join(', ');
-          },
+          cb: (categories) => this.formatCategory(categories),
         },
         {
           title: () => this.$t("Language"),
@@ -237,7 +237,17 @@ export default {
       ]
     };
   },
-
+  computed: {
+    scriptActionsWithAddToBundle() {
+      return this.scriptActions.toSpliced(3, 0, {
+        value: "add-to-bundle",
+        content: "Add to Bundle",
+        icon: "fp-add-outlined",
+        permission: "admin",
+        emit_on_root: 'add-to-bundle',
+      });
+    }
+  },
   methods: {
     showModal() {
       this.$refs.myModalRef.show();
@@ -295,7 +305,6 @@ export default {
     },
   },
 
-  computed: {}
 };
 </script>
 

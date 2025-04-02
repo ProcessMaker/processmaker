@@ -4,7 +4,7 @@
     <bpmn:startEvent id="node_1" name="Start Event" pm:allowInterstitial="true" pm:interstitialScreenRef="46" pm:config="{&#34;web_entry&#34;:null}">
       <bpmn:outgoing>node_29</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:task id="node_2" name="Form Task" pm:allowInterstitial="false" pm:dueInVariable="{{var_due_date}}" pm:isDueInVariable="true" pm:assignment="requester" pm:assignmentLock="false" pm:allowReassignment="false" pm:config="{&#34;web_entry&#34;:null,&#34;email_notifications&#34;:{&#34;notifications&#34;:[]}}">
+    <bpmn:task id="node_2" name="Form Task" pm:allowInterstitial="false" pm:dueInVariable="var_due_date" pm:isDueInVariable="true" pm:assignment="requester" pm:assignmentLock="false" pm:allowReassignment="false" pm:config="{&#34;web_entry&#34;:null,&#34;email_notifications&#34;:{&#34;notifications&#34;:[]}}">
       <bpmn:incoming>node_29</bpmn:incoming>
       <bpmn:outgoing>node_38</bpmn:outgoing>
     </bpmn:task>

@@ -1171,6 +1171,7 @@
   "Options Variable": "Options de la variable",
   "Get options from this variable. Must be an array.": "Obtenir des options de cette variable. Doit être un tableau.",
   "Option Label Shown": "Étiquette d'options affichée",
+  "option has been moved to the task destination dropdown": "l'option a été déplacée vers la liste déroulante de destination de la tâche",
   "Enter the property name from the Request data variable that displays to the user on the screen.": "Saisir le nom de la propriété relative à la variable de données de la demande qui s'affiche sur l'écran de l'utilisateur.",
   "Show Control As": "Afficher les commandes en tant que",
   "Allow Multiple Selections": "Autoriser les sélections multiples",
@@ -2433,5 +2434,15 @@
   "Create a bundle to easily share assets and settings between ProcessMaker instances.": "Créez un bundle pour partager facilement des actifs et des paramètres entre les instances de ProcessMaker.",
   "In addition to the process manager, these users and groups will have permission to reassign any task in this process, regardless of the \"Allow Reassignment\" task setting.": "En plus du gestionnaire de processus, ces utilisateurs et groupes auront la permission de réaffecter toute tâche dans ce processus, indépendamment du paramètre de tâche \"Allow Reassignment\".",
   "Reassignment Permission": "Autorisation de réaffectation",
-  "This task can not be reassigned": "Cette tâche ne peut pas être réaffectée"
+  "This task can not be reassigned": "Cette tâche ne peut pas être réaffectée",
+  "Start New Case": "Démarrer un nouveau cas",
+  "No Case to Start": "Aucune affaire à commencer",
+  "No Cases to Show": "Aucun cas à afficher",
+  "Drafts": "Brouillons",
+  "An error ocurred, please check the PI process file and try again.": "Une erreur s'est produite, veuillez vérifier le fichier de processus PI et réessayer.",
+  "New": "Nouveau",
+  "New Genie": "New Genie",
+  "View All Genies": "Voir tous les Genies",
+  "View All Collections": "Voir toutes les collections",
+  "Collapse sidebar": "Réduire la barre latérale"
 }
