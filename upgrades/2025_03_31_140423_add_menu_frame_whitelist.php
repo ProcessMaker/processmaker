@@ -1,6 +1,7 @@
 <?php
 
 use ProcessMaker\Models\Setting;
+use ProcessMaker\Models\SettingsMenus;
 use ProcessMaker\Upgrades\UpgradeMigration as Upgrade;
 
 class AddMenuFrameWhitelist extends Upgrade
