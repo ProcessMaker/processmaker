@@ -12,13 +12,14 @@ class AddMenuFrameWhitelist extends Upgrade
      */
     public function up()
     {
+        $group_id = SettingsMenus::getId(SettingsMenus::LOG_IN_AUTH_MENU_GROUP);
         $whiteListKey = [
             'key' => 'white_list_frame',
         ];
         $whiteListOption = [
             'format' => 'button',
             'group' => 'IFrame Whitelist Config',
-            'group_id' => 3,
+            'group_id' => $group_id,
             'helper' => null,
             'config' => false,
             'name' => 'Add URL',

@@ -81,6 +81,14 @@ export default {
       this.url = "";
     },
     addWhiteListURL() {
+      if (!this.siteName) {
+        this.stateSiteName = false;
+        return;
+      }
+      if (!this.url) {
+        this.stateURL = false;
+        return;
+      }
       const site = this.siteName.toLocaleLowerCase().trim().replaceAll(" ", "_");
       const data = {
         key: `whiteList.${site}`,
