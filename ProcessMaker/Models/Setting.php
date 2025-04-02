@@ -451,6 +451,7 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
                 // Define the value of 'menu_group' based on 'group'
                 switch ($setting->group) {
                     case 'Actions By Email':
+                    case 'Email Start Event':
                     case 'Email Default Settings':
                         $id = SettingsMenus::getId(SettingsMenus::EMAIL_MENU_GROUP);
                         break;
