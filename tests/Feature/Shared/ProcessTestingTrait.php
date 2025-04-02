@@ -150,6 +150,10 @@ trait ProcessTestingTrait
         ///
         $events = collect($schedule->events());
         $events->each(function (Event $event) {
+            // Only run bpmn:timer events
+            if (!str_contains($event->command, 'bpmn:timer')) {
+                return;
+            }
             $event->isDue(app()) && $event->filtersPass(app()) ? $event->run(app()) : null;
         });
     }

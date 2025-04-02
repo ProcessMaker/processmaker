@@ -22,7 +22,7 @@ class CallActivityMultilevelTest extends TestCase
     public function testCallActivity()
     {
         // Script task requires passport installed (oauth token)
-        Artisan::call('passport:install', ['-vvv' => true]);
+        // Artisan::call('passport:install', ['-vvv' => true]);
 
         // Create the processes
         $parent = $this->createProcess([

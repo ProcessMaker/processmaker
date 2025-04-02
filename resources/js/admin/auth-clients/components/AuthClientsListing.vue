@@ -29,6 +29,7 @@
             @navigate="onNavigate"
             :actions="actions"
             :data="props.rowData"
+            :permission="permission"
             :divider="true"
           />
         </template>
@@ -69,7 +70,7 @@ const uniqIdsMixin = createUniqIdsMixin();
 export default {
   components: {EllipsisMenu},
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
-  props: ["filter"],
+  props: ["filter", "permission"],
   data() {
     return {
       copytext: "",

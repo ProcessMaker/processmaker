@@ -37,8 +37,8 @@
                     </div>
                 </div>
                 <div class="d-flex justify-content-end mt-3">
-                    {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                    {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'profileUpdate']) !!}
+                    {{ html()->button(__('Cancel'), 'button')->class('btn btn-outline-secondary')->attribute('@click', 'onClose') }}
+                    {{ html()->button(__('Save'), 'button')->class('btn btn-secondary ml-3')->attribute('@click', 'profileUpdate') }}
                 </div>
               </div>
             </div>
@@ -85,29 +85,20 @@
         @onSubmit="onSubmit"
     >
       <div class="form-group">
-        {!! Form::label('url', __('URL')) !!}
-        {!! Form::text('url', null, ['id' => 'url','class'=> 'form-control', 'v-model' =>
-        'formData.url', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.url}',
-        'v-bind:placeholder' => '$t("Placeholder")',
-        'required', 'aria-required' => 'true']) !!}
+        {{ html()->label(__('URL'), 'url') }}
+        {{ html()->text('url')->id('url')->class('form-control')->attribute('v-model', 'formData.url')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':errors.url}')->attribute('v-bind:placeholder', '$t("Placeholder")')->required()->attribute('aria-required', 'true') }}
         <div class="invalid-feedback" role="alert" v-for="url in errors.url">@{{url}}</div>
       </div>
       <div class="form-group">
-        {!! Form::label('user', __('User')) !!}
-        {!! Form::text('user', null, ['id' => 'user', 'rows' => 4, 'class'=>
-        'form-control', 'v-model' => 'formData.user',
-        'v-bind:placeholder' => '$t("Placeholder")',
-        'v-bind:class' => '{\'form-control\':true,\'is-invalid\':errors.user}']) !!}
+        {{ html()->label(__('User'), 'user') }}
+        {{ html()->text('user')->id('user')->attribute('rows', 4)->class('form-control')->attribute('v-model', 'formData.user')->attribute('v-bind:placeholder', '$t("Placeholder")')->attribute('v-bind:class', '{\'form-control\':true,\'is-invalid\':errors.user}') }}
         <div class="invalid-feedback" role="alert" v-for="user in errors.user">
           @{{user}}
         </div>
       </div>
       <div class="form-group">
-        {!! Form::label('accessKey', __('Access Key')) !!}
-        {!! Form::text('accessKey', null, ['id' => 'accessKey', 'rows' => 4, 'class'=>
-        'form-control', 'v-model' => 'formData.accessKey',
-        'v-bind:placeholder' => '$t("Placeholder")',
-        'v-bind:class' => '{\'form-control\':true,\'is-invalid\':errors.accessKey}']) !!}
+        {{ html()->label(__('Access Key'), 'accessKey') }}
+        {{ html()->text('accessKey')->id('accessKey')->attribute('rows', 4)->class('form-control')->attribute('v-model', 'formData.accessKey')->attribute('v-bind:placeholder', '$t("Placeholder")')->attribute('v-bind:class', '{\'form-control\':true,\'is-invalid\':errors.accessKey}') }}
         <div class="invalid-feedback" role="alert" v-for="accessKey in errors.accessKey">
           @{{accessKey}}
         </div>

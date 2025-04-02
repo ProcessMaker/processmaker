@@ -561,3 +561,29 @@ export const getCounters = async (data) => {
 
   return response.data;
 };
+
+export const saveCaseFilters = async (data, status = "") => {
+  const type = status !== "" ? `|$${status}` : "";
+  const response = await api.put(`/users/store_filter_configuration/casesFilter${type}`, data);
+
+  return response.data;
+};
+
+export const getCaseFilters = async (status = "") => {
+  const type = status !== "" ? `|$${status}` : "";
+  const response = await api.get(`/users/get_filter_configuration/casesFilter${type}`);
+
+  return response.data;
+};
+
+export const getUserConfiguration = async () => {
+  const response = await api.get("users/configuration");
+
+  return response.data;
+};
+
+export const updateUserConfiguration = async (data) => {
+  const response = await api.put("users/configuration", data);
+
+  return response.data;
+};

@@ -38,49 +38,28 @@
                          aria-labelledby="nav-home-tab">
                         <required></required>
                         <div class="form-group">
-                            {!! Form::label('name', __('Name') . '<small class="ml-1">*</small>', [], false) !!}
-                            {!! Form::text('name', null, [
-                            'id' => 'name',
-                            'class'=> 'form-control',
-                            'maxlength' => '255',
-                            'v-model' => 'formData.name',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}', 'required', 'aria-required' => 'true']) !!}
+                            {{ html()->label(__('Name') . '<small class="ml-1">*</small>', 'name') }}
+                            {{ html()->text('name')->id('name')->class('form-control')->maxlength('255')->attribute('v-model', 'formData.name')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':errors.name}')->required()->attribute('aria-required', 'true') }}
                             <small class="form-text text-muted">{{__('Group name must be unique')}}</small>
                             <div class="invalid-feedback" role="alert" v-if="errors.name">@{{errors.name[0]}}</div>
                         </div>
                         <div class="form-group mt-3">
-                            {!! Form::label('description', __('Description')) !!}
-                            {!! Form::textarea('description', null, [
-                            'id' => 'description',
-                            'rows' => 4,
-                            'class'=> 'form-control',
-                            'v-model' => 'formData.description',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}']) !!}
+                            {{ html()->label(__('Description'), 'description') }}
+                            {{ html()->textarea('description')->id('description')->rows(4)->class('form-control')->attribute('v-model', 'formData.description')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':errors.description}') }}
                             <div class="invalid-feedback" role="alert" v-if="errors.description">@{{errors.description[0]}}</div>
                         </div>
                         <div class="form-group mt-3">
-                            {!! Form::label('status', __('Status')) !!}
-                            {!! Form::select('status', ['ACTIVE' => __('Active'), 'INACTIVE' => __('Inactive')], null, [
-                            'id' => 'status',
-                            'class' => 'form-control',
-                            'v-model' => 'formData.status',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}']) !!}
+                            {{ html()->label(__('Status'), 'status') }}
+                            {{ html()->select('status', ['ACTIVE' => __('Active'), 'INACTIVE' => __('Inactive')])->id('status')->class('form-control')->attribute('v-model', 'formData.status')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':errors.status}') }}
                             <div class="invalid-feedback" role="alert" v-if="errors.status">@{{errors.status[0]}}</div>
                         </div>
 
                         @if ($settings['2fa_enabled'])
                             <div class="form-group mt-3">
                                 <div class="custom-control custom-switch">
-                                    {!! Form::checkbox('enabled_2fa', 1, null, [
-                                        'id' => 'enabled_2fa',
-                                        'class' => 'custom-control-input',
-                                        'v-model' => 'formData.enabled_2fa',
-                                    ]) !!}
+                                    {{ html()->checkbox('enabled_2fa', null, 1)->id('enabled_2fa')->class('custom-control-input')->attribute('v-model', 'formData.enabled_2fa') }}
 
-                                    {!! Form::label('enabled_2fa', __('Two Factor Authentication'), [
-                                        'class' => 'custom-control-label',
-                                        'for' => 'enabled_2fa',
-                                    ]) !!}
+                                    {{ html()->label(__('Two Factor Authentication'), 'enabled_2fa')->class('custom-control-label')->for('enabled_2fa') }}
                                 </div>
                             </div>
                         @endif
@@ -92,8 +71,8 @@
                         @endisset
                         <br>
                         <div class="d-flex justify-content-end mt-3">
-                            {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                            {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'onUpdate', 'id'=>'saveGroup']) !!}
+                            {{ html()->button(__('Cancel'), 'button')->class('btn btn-outline-secondary')->attribute('@click', 'onClose') }}
+                            {{ html()->button(__('Save'), 'button')->class('btn btn-secondary ml-3')->attribute('@click', 'onUpdate')->id('saveGroup') }}
                         </div>
                     </div>
                     <div class="card card-body border-top-0 tab-pane p-3" id="nav-users" role="tabpanel" aria-labelledby="nav-profile-tab">
@@ -150,8 +129,8 @@
                             </div>
                             @include('admin.shared.permissions')
                             <div class="d-flex justify-content-end mt-3">
-                                {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose'])!!}
-                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'permissionUpdate','id'=>'savePermissions'])!!}
+                                {{ html()->button(__('Cancel'), 'button')->class('btn btn-outline-secondary')->attribute('@click', 'onClose') }}
+                                {{ html()->button(__('Save'), 'button')->class('btn btn-secondary ml-3')->attribute('@click', 'permissionUpdate')->id('savePermissions') }}
                             </div>
                         </div>
                     </div>
@@ -161,7 +140,7 @@
             <pm-modal ref="addUser" id="addUser" title="{{__('Add Users')}}" @hidden="onCloseAddUser" @ok.prevent="onSave" style="display: none;">
                 <div class="form-user">
                     <required></required>
-                    {!!Form::label('users', __('Users') . '<small class="ml-1">*</small>', [], false)!!}
+                    {{ html()->label(__('Users') . '<small class="ml-1">*</small>', 'users') }}
                     <multiselect id="users"
                                  v-model="selectedUsers"
                                  placeholder="{{__('Select user or type here to search users')}}"
@@ -206,7 +185,7 @@
             <pm-modal ref="addGroup" id="addGroup" title="{{__('Add Groups')}}" @hidden="onCloseAddGroup" @ok.prevent="onSaveGroups" style="display: none;">
                 <div class="form-user">
                     <required></required>
-                    {!!Form::label('groups', __('Groups') . '<small class="ml-1">*</small>', [], false)!!}
+                    {{ html()->label(__('Groups') . '<small class="ml-1">*</small>', 'groups') }}
                     <multiselect id="groups"
                                  v-model="selectedGroups"
                                  placeholder="{{__('Select group or type here to search groups')}}"

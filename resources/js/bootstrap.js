@@ -32,7 +32,7 @@ import DataTreeToggle from "./components/common/data-tree-toggle.vue";
 import TreeView from "./components/TreeView.vue";
 import FilterTable from "./components/shared/FilterTable.vue";
 import PaginationTable from "./components/shared/PaginationTable.vue";
-import PMDropdownSuggest from './components/PMDropdownSuggest';
+import PMDropdownSuggest from "./components/PMDropdownSuggest";
 import "@processmaker/screen-builder/dist/vue-form-builder.css";
 
 window.__ = translator;
@@ -195,6 +195,16 @@ window.ProcessMaker = {
   },
 };
 
+window.ProcessMaker.setValidatorLanguage = (validator, lang) => {
+  const availableLanguages = ["ar", "az", "be", "bg", "bs", "ca", "cs", "cy", "da", "de", "el", "en", "es", "et", "eu", "fa", "fi",
+    "fr", "hr", "hu", "id", "it", "ja", "ka", "km", "ko", "lt", "lv", "mk", "mn", "ms", "nb_NO", "nl", "pl", "pt", "pt_BR", "ro", "ru",
+    "se", "sl", "sq", "sr", "sv", "tr", "ua", "uk", "uz", "vi", "zh", "zh_TW"];
+  const selectedLang = availableLanguages.includes(lang) ? lang : "en";
+  if (validator) {
+    validator.useLang(selectedLang);
+  }
+};
+
 window.ProcessMaker.i18nPromise = i18next.use(Backend).init({
   lng: document.documentElement.lang,
   fallbackLng: "en", // default language when no translations
@@ -345,7 +355,14 @@ if (userID) {
   window.ProcessMaker.AccountTimeoutWarnSeconds = parseInt(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]")?.content);
   window.ProcessMaker.AccountTimeoutEnabled = document.head.querySelector("meta[name=\"timeout-enabled\"]") ? parseInt(document.head.querySelector("meta[name=\"timeout-enabled\"]")?.content) : 1;
   window.ProcessMaker.AccountTimeoutWorker = new Worker(timeoutScript);
-  window.ProcessMaker.AccountTimeoutWorker.addEventListener("message", (e) => {
+
+  const payloadAccountTimeoutWorker = {
+    timeout: window.ProcessMaker.AccountTimeoutLength,
+    warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds,
+    enabled: window.ProcessMaker.AccountTimeoutEnabled,
+  };
+
+  window.ProcessMaker.AccountTimeoutWorker.onmessage = (e) => {
     if (e.data.method === "countdown") {
       window.ProcessMaker.sessionModal(
         "Session Warning",
@@ -357,17 +374,26 @@ if (userID) {
     if (e.data.method === "timedOut") {
       window.location = "/logout?timeout=true";
     }
-  });
+  };
 
   // in some cases it's necessary to start manually
   window.ProcessMaker.AccountTimeoutWorker.postMessage({
     method: "start",
-    data: {
-      timeout: window.ProcessMaker.AccountTimeoutLength,
-      warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds,
-      enabled: window.ProcessMaker.AccountTimeoutEnabled,
-    },
+    data: payloadAccountTimeoutWorker,
   });
+
+  // Restart the timeout worker (when the user interacts with the page)
+  const eventsTimeoutWorker = ["click", "keypress"];
+
+  eventsTimeoutWorker.forEach((event) => {
+    document.addEventListener(event, () => {
+      window.ProcessMaker.AccountTimeoutWorker.postMessage({
+        method: "restart",
+      });
+    });
+  });
+
+  // End -> Restart the timeout worker (when the user interacts with the page)
 
   const isSameDevice = (e) => {
     const localDeviceId = Vue.$cookies.get(e.device_variable);

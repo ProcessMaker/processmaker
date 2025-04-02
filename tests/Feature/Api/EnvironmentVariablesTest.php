@@ -16,7 +16,7 @@ class EnvironmentVariablesTest extends TestCase
     const API_TEST_VARIABLES = '/environment_variables';
 
     /** @test */
-    public function it_should_create_an_environment_variable()
+    public function test_it_should_create_an_environment_variable()
     {
         $data = [
             'name' => 'testvariable',
@@ -37,7 +37,7 @@ class EnvironmentVariablesTest extends TestCase
     }
 
     /** @test */
-    public function it_should_store_values_as_encrypted()
+    public function test_it_should_store_values_as_encrypted()
     {
         $variable = EnvironmentVariable::factory()->create([
             'value' => 'testvalue',
@@ -49,7 +49,7 @@ class EnvironmentVariablesTest extends TestCase
     }
 
     /** @test */
-    public function it_should_have_validation_errors_on_name_uniqueness_during_create()
+    public function test_it_should_have_validation_errors_on_name_uniqueness_during_create()
     {
         // Create an environment variable with a set name
         EnvironmentVariable::factory()->create([
@@ -72,7 +72,7 @@ class EnvironmentVariablesTest extends TestCase
     }
 
     /** @test */
-    public function it_should_not_allow_whitespace_in_variable_name()
+    public function test_it_should_not_allow_whitespace_in_variable_name()
     {
         // Data with a name with a space
         $data = [
@@ -87,7 +87,7 @@ class EnvironmentVariablesTest extends TestCase
     }
 
     /** @test */
-    public function it_should_successfully_return_an_environment_variable()
+    public function test_it_should_successfully_return_an_environment_variable()
     {
         // Create an environment variable with a set name
         $variable = EnvironmentVariable::factory()->create([
@@ -109,7 +109,7 @@ class EnvironmentVariablesTest extends TestCase
     }
 
     /** @test */
-    public function it_should_have_validation_errors_on_name_uniqueness_during_update()
+    public function test_it_should_have_validation_errors_on_name_uniqueness_during_update()
     {
         // Create an environment variable with a set name for the update
         $variable = EnvironmentVariable::factory()->create([
@@ -135,7 +135,7 @@ class EnvironmentVariablesTest extends TestCase
     }
 
     /** @test */
-    public function it_should_successfully_update_an_environment_variable()
+    public function test_it_should_successfully_update_an_environment_variable()
     {
         // Create an environment variable with a set name
         $variable = EnvironmentVariable::factory()->create([
@@ -161,7 +161,7 @@ class EnvironmentVariablesTest extends TestCase
     }
 
     /** @test */
-    public function it_should_return_paginated_environment_variables_during_index()
+    public function test_it_should_return_paginated_environment_variables_during_index()
     {
         // Can't truncate because of DatabaseTransactions
         EnvironmentVariable::whereNotNull('id')->delete();
@@ -180,7 +180,7 @@ class EnvironmentVariablesTest extends TestCase
     }
 
     /** @test */
-    public function it_should_return_filtered_environment_variables()
+    public function test_it_should_return_filtered_environment_variables()
     {
         EnvironmentVariable::factory()->count(50)->create();
         // Put in a match
@@ -198,7 +198,7 @@ class EnvironmentVariablesTest extends TestCase
     }
 
     /** @test */
-    public function it_should_successfully_remove_environment_variable()
+    public function test_it_should_successfully_remove_environment_variable()
     {
         // Create an environment variable with a set name
         $variable = EnvironmentVariable::factory()->create([
@@ -217,7 +217,7 @@ class EnvironmentVariablesTest extends TestCase
     }
 
     /** @test */
-    public function it_value_does_not_change_if_value_is_null()
+    public function test_it_value_does_not_change_if_value_is_null()
     {
         // Create an environment variable with a set name
         $variable = EnvironmentVariable::factory()->create([

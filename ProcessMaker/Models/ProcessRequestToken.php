@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Scout\Searchable;
 use Log;
+use ProcessMaker\Casts\MillisecondsToDateCast;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityReassignment;
 use ProcessMaker\Facades\WorkflowUserManager;
@@ -45,6 +46,8 @@ use Throwable;
  * @property Carbon $riskchanges_at
  * @property Carbon $updated_at
  * @property Carbon $created_at
+ * @property Carbon $created_at_ms
+ * @property Carbon $completed_at_ms
  * @property ProcessRequest $processRequest
  *
  * @OA\Schema(
@@ -154,6 +157,9 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         'token_properties' => 'array',
         'is_priority' => 'boolean',
         'is_actionbyemail' => 'boolean',
+        'created_at_ms' => MillisecondsToDateCast::class,
+        'completed_at_ms' => MillisecondsToDateCast::class,
+        'is_emailsent' => 'boolean',
     ];
 
     /**
@@ -444,11 +450,12 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             }
             $isManualTask = $localName === 'manualTask';
             $defaultScreen = $isManualTask ? 'default-display-screen' : 'default-form-screen';
-            $screen = Screen::firstWhere('key', $defaultScreen);
+
+            $screen = Screen::getScreenByKey($defaultScreen);
 
             if (array_key_exists('implementation', $definition) && $definition['implementation'] === 'package-ai/processmaker-ai-assistant') {
                 $defaultScreen = 'default-ai-form-screen';
-                $screen = Screen::firstWhere('key', $defaultScreen);
+                $screen = Screen::getScreenByKey($defaultScreen);
             }
         }
 
@@ -938,8 +945,12 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         }
 
         // Below is for rule_expression only
+        $instance = $this->getInstance();
+        if (!$instance) {
+            return $assignment;
+        }
 
-        $instanceData = $assignmentRules ? $this->getInstance()->getDataStore()->getData() : null;
+        $instanceData = $assignmentRules ? $instance->getDataStore()->getData() : null;
         if ($assignmentRules && $instanceData) {
             $list = json_decode($assignmentRules);
             $list = ($list === null) ? [] : $list;
@@ -991,7 +1002,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                     $interstitialScreen = Screen::where('key', $definition['interstitialScreenRef'])->first();
                 }
             } else {
-                $interstitialScreen = Screen::where('key', 'interstitial')->first();
+                $interstitialScreen = Screen::getScreenByKey('interstitial');
             }
         }
 

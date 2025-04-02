@@ -1,13 +1,26 @@
-import Vue from "vue";
-import TasksList from "./components/TasksList";
+import TasksList from "./components/TasksList.vue";
 import TasksListCounter from "./components/TasksListCounter.vue";
 import setDefaultAdvancedFilterStatus from "../common/setDefaultAdvancedFilterStatus";
+import ParticipantHomeScreen from './components/ParticipantHomeScreen.vue';
+import PmqlInput from "../components/shared/PmqlInput.vue";
 
 Vue.component("TasksList", TasksList);
+Vue.component('participant-home-screen', ParticipantHomeScreen);
 
-new Vue({
+// Component used in the tasks list
+Vue.component("PmqlInput", PmqlInput);
+
+const main = new Vue({
   el: "#tasks",
+  components: {
+    TasksList,
+    TasksListCounter,
+  },
   data: {
+    showOldTaskScreen: window.ProcessMaker.showOldTaskScreen,
+    userConfiguration: window.ProcessMaker.userConfiguration,
+    urlConfiguration: "users/configuration",
+    showMenu: true,
     columns: window.Processmaker.defaultColumns || null,
     filter: "",
     pmql: "",
@@ -29,47 +42,49 @@ new Vue({
     priorityCount: null,
     priorityFilter: [
       {
-        "subject": {
-          "type": "Field",
-          "value": "is_priority"
+        subject: {
+          type: "Field",
+          value: "is_priority",
         },
-        "operator": "=",
-        "value": true,
-        "_column_field": "is_priority",
-        "_column_label": "Priority",
-        "_hide_badge": true
-      }
+        operator: "=",
+        value: true,
+        _column_field: "is_priority",
+        _column_label: "Priority",
+        _hide_badge: true,
+      },
     ],
     draftFilter: [
       {
-        "subject": {
-          "type": "Relationship",
-          "value": "draft.id"
+        subject: {
+          type: "Relationship",
+          value: "draft.id",
         },
-        "operator": ">",
-        "value": 0,
-        "_column_field": "draft",
-        "_column_label": "Draft",
-        "_hide_badge": true
-      }
+        operator: ">",
+        value: 0,
+        _column_field: "draft",
+        _column_label: "Draft",
+        _hide_badge: true,
+      },
     ],
     taskDraftsEnabled: window.ProcessMaker.taskDraftsEnabled,
   },
   mounted() {
-    ProcessMaker.EventBus.$on('advanced-search-addition', (component) => {
+    ProcessMaker.EventBus.$on("advanced-search-addition", (component) => {
       this.additions.push(component);
     });
-    
+
     if (!window.location.search.includes("filter_user_recommendation")) {
       this.$nextTick(() => {
-        this.$refs.taskList.fetch();
+        if (this.$refs.taskList) {
+          this.$refs.taskList.fetch();
+        }
       });
     }
   },
   created() {
     const params = new URL(document.location).searchParams;
     const statusParam = params.get("status");
-    this.urlPmql = params.get('pmql');
+    this.urlPmql = params.get("pmql");
 
     let status = "";
 
@@ -98,10 +113,10 @@ new Vue({
       taskListComponent.advancedFilter[this.draftField] = [];
       switch (tab) {
         case "priority":
-          taskListComponent.advancedFilter["is_priority"] = this.priorityFilter;
+          taskListComponent.advancedFilter.is_priority = this.priorityFilter;
           break;
         case "draft":
-          taskListComponent.advancedFilter["draft"] = this.draftFilter;
+          taskListComponent.advancedFilter.draft = this.draftFilter;
           break;
       }
       taskListComponent.markStyleWhenColumnSetAFilter();
@@ -161,10 +176,10 @@ new Vue({
       window.location.href = "/tasks/rules";
     },
     setInOverdueMessage(inOverdue) {
-      let inOverdueMessage = '';
+      let inOverdueMessage = "";
       if (inOverdue) {
         const taskText = (inOverdue > 1) ? this.$t("Tasks").toLowerCase() : this.$t("Task").toLowerCase();
-        inOverdueMessage = this.$t("You have {{ inOverDue }} overdue {{ taskText }} pending", {inOverDue: inOverdue, taskText});
+        inOverdueMessage = this.$t("You have {{ inOverDue }} overdue {{ taskText }} pending", { inOverDue: inOverdue, taskText });
       }
       this.inOverdueMessage = inOverdueMessage;
     },
@@ -184,6 +199,6 @@ new Vue({
       }
 
       return fullPmqlString;
-    }
-  }
+    },
+  },
 });

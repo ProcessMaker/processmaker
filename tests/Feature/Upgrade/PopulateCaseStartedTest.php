@@ -2,7 +2,6 @@
 
 namespace Tests\Upgrades;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use PopulateCaseStarted;
 use ProcessMaker\Models\Process;
@@ -13,8 +12,6 @@ use Tests\TestCase;
 
 class PopulateCaseStartedTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected function setUp(): void
     {
         require_once base_path('upgrades/2024_10_09_032151_populate_case_started.php');

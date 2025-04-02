@@ -3,7 +3,6 @@
 namespace Tests\Feature\Api;
 
 use Illuminate\Support\Facades\Auth;
-use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
@@ -252,5 +251,58 @@ class TaskControllerTest extends TestCase
         $response = $this->apiCall('GET', '/tasks', $params);
         $this->assertCount(1, $response->json()['data']);
         $this->assertEquals($selfServiceTask->id, $response->json()['data'][0]['id']);
+    }
+    
+    /**
+     * Test verify the corresponding data for each task
+     *
+     * @return void
+     */
+    public function testTasksByCaseReturnsCorrectData()
+    {
+        // Simulate an authenticated user
+        $user = User::factory()->create();
+        Auth::login($user);
+
+        // Create a ProcessRequestToken associated with a specific case_number
+        $processRequest = ProcessRequest::factory()->create();
+        $data1 = ['form_input_1' => 'value a', 'form_text_area_1' => 'value a'];
+        $token1 = ProcessRequestToken::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'CLOSED',
+            'process_request_id' => $processRequest->id,
+            'data' => $data1,
+        ]);
+        $data2 = ['form_input_1' => 'value b', 'form_text_area_1' => 'value b'];
+        $token2 = ProcessRequestToken::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'CLOSED',
+            'process_request_id' => $processRequest->id,
+            'data' => $data2,
+        ]);
+
+        // Call the endpoint with the 'case_number' parameter
+        $filter = "?case_number=$processRequest->case_number&status=CLOSED&includeScreen=" . true;
+        $response = $this->apiCall('GET', self::API_TASK_BY_CASE . $filter);
+
+        // Check if the response is successful and contains the expected tasks
+        $response->assertStatus(200);
+        $this->assertCount(2, $response->json('data'));
+        $response->assertJsonStructure([
+            'data' => ['*' => array_merge(self::TASK_BY_CASE_STRUCTURE, ['taskData'])],
+            'meta',
+        ]);
+        // Validate the data returned in the response
+        $responseData = $response->json('data');
+
+        // Validate the first token's data
+        $this->assertEquals($token1->id, $responseData[0]['id']);
+        $this->assertEquals($data1['form_input_1'], $responseData[0]['taskData']['form_input_1']);
+        $this->assertEquals($data1['form_text_area_1'], $responseData[0]['taskData']['form_text_area_1']);
+
+        // Validate the second token's data
+        $this->assertEquals($token2->id, $responseData[1]['id']);
+        $this->assertEquals($data2['form_input_1'], $responseData[1]['taskData']['form_input_1']);
+        $this->assertEquals($data2['form_text_area_1'], $responseData[1]['taskData']['form_text_area_1']);
     }
 }

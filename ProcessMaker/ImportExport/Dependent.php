@@ -56,7 +56,7 @@ class Dependent
                 'attributes' => $this->fallbackMatches,
             ];
 
-            list($_, $model) = Manifest::getModel($this->uuid, $assetInfo, 'discard', $this->exporterClass);
+            list($_, $model) = Manifest::getModel($this->uuid, $assetInfo, 'discard', $this->exporterClass, false);
 
             // Only return the model if it is persisted in the database
             if ($model && $model->exists) {

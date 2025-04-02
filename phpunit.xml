@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false"
-         backupStaticAttributes="false"
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
          colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="false"
-         convertWarningsToExceptions="false"
-         processIsolation="false"
-         stopOnFailure="false"
-         bootstrap="tests/bootstrap.php"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+         testdox="true"
+         extensionsDirectory="tests/Extensions"
 >
-    <testsuites>
+  <testsuites>
       <testsuite name="Features">
         <directory>tests/Feature</directory>
         <directory>tests/Managers</directory>
@@ -21,13 +17,11 @@
         <directory>tests/unit</directory>
       </testsuite>
   </testsuites>
-
-  <coverage includeUncoveredFiles="true" processUncoveredFiles="false">
-    <include>
-      <directory suffix=".php">./ProcessMaker</directory>
-    </include>
-  </coverage>
-
+    <source>
+        <include>
+            <directory>ProcessMaker</directory>
+        </include>
+    </source>
     <php>
       <env name="APP_DEBUG" value="true" />
       <env name="APP_ENV" value="testing" />
@@ -76,5 +70,9 @@
       <env name="PRODUCT_ANALYTICS_INTERCOM_ENABLED" value="false" />
 
       <env name="ENCRYPTED_DATA_KEY" value="base64:3/FNiukohihPSwmkzIl1csZIT6W4LYtnJzLPkNPjZgs=" />
+
+      <!-- Script microservice disabled for this version -->
+      <env name="SCRIPT_MICROSERVICE_ENABLED" value="false" />
+
     </php>
 </phpunit>

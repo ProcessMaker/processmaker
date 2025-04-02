@@ -1,125 +1,175 @@
 <template>
-  <modal
-    id="launchpadSettingsModal"
-    ref="my-modal-save"
-    size="lg"
-    class="modal-dialog modal-dialog-centered"
-    :title="$t('Launchpad Settings')"
-    :set-custom-buttons="true"
-    :custom-buttons="customModalButtons"
-    @saveModal="saveModal"
-    @closeModal="closeModal"
-  >
-    <div class="modal-content-custom">
-      <p class="text-info-custom">
-        {{ $t('Here you can personalize how your process will be shown in the process browser') }}
-      </p>
-      <div class="row">
-        <div class="col-sm-12 col-lg-6">
-          <div
-            md="12"
-            class="no-padding"
-          >
-            <label>{{ $t("Launchpad Carousel") }}</label>
-            <input-image-carousel ref="image-carousel" />
+  <div>
+    <modal
+      id="launchpadSettingsModal"
+      ref="my-modal-save"
+      size="lg"
+      class="modal-dialog modal-dialog-centered"
+      :title="$t('Launchpad Settings')"
+      :set-custom-buttons="true"
+      :custom-buttons="customModalButtons"
+      @saveModal="saveModal"
+      @closeModal="closeModal"
+    >
+      <div class="modal-content-custom">
+        <p class="text-info-custom">
+          {{
+            $t(
+              "Here you can personalize how your process will be shown in the process browser"
+            )
+          }}
+        </p>
+        <div class="row">
+          <div class="col-sm-12 col-lg-6">
+            <div md="12" class="no-padding">
+              <label>{{ $t("Launchpad Carousel") }}</label>
+              <input-image-carousel ref="image-carousel" />
+            </div>
+          </div>
+          <div class="col-sm-12 col-lg-6 options-launchpad">
+            <label>{{ $t("Launch Screen") }}</label>
+            <div class="multiselect-screen custom-multiselect">
+              <b-input-group>
+                <multiselect
+                  v-model="selectedScreen"
+                  :placeholder="$t('Type to search Screen')"
+                  :options="dropdownSavedScreen"
+                  :multiple="false"
+                  track-by="id"
+                  label="title"
+                  :show-labels="false"
+                  :searchable="true"
+                  :internal-search="true"
+                  :allow-empty="false"
+                  @open="retrieveDisplayScreen"
+                  @search-change="retrieveDisplayScreen"
+                >
+                  <template slot="noResult">
+                    {{
+                      $t(
+                        "No elements found. Consider changing the search query."
+                      )
+                    }}
+                  </template>
+                  <template slot="noOptions">
+                    {{ $t("No Data Available") }}
+                  </template>
+                </multiselect>
+              </b-input-group>
+            </div>
+            <label>
+              {{ $t("Launchpad Icon") }}
+            </label>
+            <icon-dropdown ref="icon-dropdown" />
+            <label>{{ $t("Chart") }}</label>
+            <div class="multiselect-chart custom-multiselect">
+              <b-input-group>
+                <multiselect
+                  v-model="selectedSavedChart"
+                  :placeholder="$t('Type to search Chart')"
+                  :options="dropdownSavedCharts"
+                  :multiple="false"
+                  track-by="id"
+                  label="title"
+                  :show-labels="false"
+                  :searchable="true"
+                  :internal-search="true"
+                  :allow-empty="false"
+                  @open="retrieveSavedSearchCharts"
+                  @search-change="retrieveSavedSearchCharts"
+                >
+                  <template slot="noResult">
+                    {{
+                      $t(
+                        "No elements found. Consider changing the search query."
+                      )
+                    }}
+                  </template>
+                  <template slot="noOptions">
+                    {{ $t("No Data Available") }}
+                  </template>
+                </multiselect>
+              </b-input-group>
+            </div>
+            <label></label>
+            <div>
+              <a href="#" @click.prevent="showEditTaskColumn"
+                >{{ $t("Edit Task Column") }} <i class="fp-box-arrow-up-right"
+              /></a>
+            </div>
           </div>
         </div>
-        <div class="col-sm-12 col-lg-6 options-launchpad">
-          <label>{{ $t("Launch Screen") }}</label>
-          <div class="multiselect-screen custom-multiselect">
-            <b-input-group>
-              <multiselect
-                v-model="selectedScreen"
-                :placeholder="$t('Type to search Screen')"
-                :options="dropdownSavedScreen"
-                :multiple="false"
-                track-by="id"
-                label="title"
-                :show-labels="false"
-                :searchable="true"
-                :internal-search="true"
-                :allow-empty="false"
-                @open="retrieveDisplayScreen"
-                @search-change="retrieveDisplayScreen"
-              >
-                <template slot="noResult">
-                  {{ $t("No elements found. Consider changing the search query.") }}
-                </template>
-                <template slot="noOptions">
-                  {{ $t("No Data Available") }}
-                </template>
-              </multiselect>
-            </b-input-group>
-          </div>
-          <label>
-            {{ $t("Launchpad Icon") }}
-          </label>
-          <icon-dropdown ref="icon-dropdown" />
-          <label>{{ $t("Chart") }}</label>
-          <div class="multiselect-chart custom-multiselect">
-            <b-input-group>
-              <multiselect
-                v-model="selectedSavedChart"
-                :placeholder="$t('Type to search Chart')"
-                :options="dropdownSavedCharts"
-                :multiple="false"
-                track-by="id"
-                label="title"
-                :show-labels="false"
-                :searchable="true"
-                :internal-search="true"
-                :allow-empty="false"
-                @open="retrieveSavedSearchCharts"
-                @search-change="retrieveSavedSearchCharts"
-              >
-                <template slot="noResult">
-                  {{ $t("No elements found. Consider changing the search query.") }}
-                </template>
-                <template slot="noOptions">
-                  {{ $t("No Data Available") }}
-                </template>
-              </multiselect>
-            </b-input-group>
-          </div>
-        </div>
+        <label>
+          {{ $t("Description") }}
+        </label>
+        <textarea
+          id="additional-details"
+          v-model="processDescription"
+          class="form-control input-custom mb-0"
+          type="text"
+          rows="5"
+          :aria-label="$t('Description')"
+          disabled
+        />
       </div>
-      <label>
-        {{ $t("Description") }}
-      </label>
-      <textarea
-        id="additional-details"
-        v-model="processDescription"
-        class="form-control input-custom mb-0"
-        type="text"
-        rows="5"
-        :aria-label="$t('Description')"
-        disabled
-      />
-    </div>
-    <template #modal-footer>
-      <b-button
-        variant="outline-secondary"
-        @click="hideModal"
-      >
-        Cancel 2
-      </b-button>
-      <b-button
-        variant="secondary"
-        @click="saveModal"
-      >
-        Save 1
-      </b-button>
-    </template>
-  </modal>
+      <template #modal-footer>
+        <b-button variant="outline-secondary" @click="hideModal">
+          Cancel 2
+        </b-button>
+        <b-button variant="secondary" @click="saveModal"> Save 1 </b-button>
+      </template>
+    </modal>
+    <b-modal
+      ref="editTaskColumn"
+      size="lg"
+      class="modal-dialog modal-dialog-centered"
+      hide-footer
+      :title="$t('Edit Task Column')"
+    >
+      <div class="modal-content-custom">
+        <column-chooser
+          v-model="myTasks.currentColumns"
+          :available-columns="myTasks.availableColumns"
+          :default-columns="myTasks.defaultColumns"
+          :data-columns="myTasks.dataColumns"
+        >
+          <template #title1>
+            <small class="form-text text-muted">
+              <a href="#" @click.prevent="$refs['editTaskColumn'].hide()">
+                <i class="fp-arrow-left" />
+                {{ $t("Go back to Launchpad Settings") }}
+              </a>
+            </small>
+          </template>
+          <template #footer>
+            <b-button
+              variant="outline-secondary"
+              @click="$refs['editTaskColumn'].hide()"
+              class="mr-1"
+            >
+              {{ $t("Cancel and go back") }}
+            </b-button>
+            <b-button
+              variant="secondary"
+              @click="$refs['editTaskColumn'].hide()"
+            >
+              {{ $t("Save columns") }}
+            </b-button>
+          </template>
+        </column-chooser>
+      </div>
+    </b-modal>
+  </div>
 </template>
 
 <script>
 import Modal from "./Modal.vue";
 import IconDropdown from "./IconDropdown.vue";
 import InputImageCarousel from "./InputImageCarousel.vue";
+import ColumnChooser from "./ColumnChooser.vue";
 
 export default {
-  components: { Modal, IconDropdown, InputImageCarousel },
+  components: { Modal, IconDropdown, InputImageCarousel, ColumnChooser },
   props: {
     options: {
       type: Object,
@@ -143,6 +193,10 @@ export default {
     process: {
       type: Object,
       default: () => ({}),
+    },
+    myTasksColumns: {
+      type: Array,
+      default: () => [],
     },
   },
   data() {
@@ -192,7 +246,13 @@ export default {
           disabled: false,
         },
       ],
-      tabs: []
+      tabs: [],
+      myTasks: {
+        currentColumns: [],
+        availableColumns: [],
+        defaultColumns: [],
+        dataColumns: [],
+      },
     };
   },
   mounted() {
@@ -214,19 +274,44 @@ export default {
         .then((response) => {
           const firstResponse = response.data.shift();
           const unparseProperties = firstResponse?.launchpad?.properties;
-          const launchpadProperties = unparseProperties ? JSON.parse(unparseProperties) : "";
+          const launchpadProperties = unparseProperties
+            ? JSON.parse(unparseProperties)
+            : "";
           if (launchpadProperties !== "" && "tabs" in launchpadProperties) {
             this.tabs = launchpadProperties.tabs;
           }
-          if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
-            this.selectedSavedChart = this.getSelectedSavedChartJSONFromResult(launchpadProperties);
-            this.selectedLaunchpadIcon = this.verifyProperty(launchpadProperties.icon) ? this.defaultIcon : launchpadProperties.icon;
-            this.selectedLaunchpadIconLabel = this.verifyProperty(launchpadProperties.icon_label) ? this.defaultIcon : launchpadProperties.icon_label;
-            this.selectedScreen = this.getSelectedScreenJSONFromResult(launchpadProperties);
+          if (
+            launchpadProperties !== "" &&
+            "my_tasks_columns" in launchpadProperties
+          ) {
+            this.myTasks.currentColumns = launchpadProperties.my_tasks_columns;
+          }
+          if (
+            launchpadProperties &&
+            Object.keys(launchpadProperties).length > 0
+          ) {
+            this.selectedSavedChart =
+              this.getSelectedSavedChartJSONFromResult(launchpadProperties);
+            this.selectedLaunchpadIcon = this.verifyProperty(
+              launchpadProperties.icon
+            )
+              ? this.defaultIcon
+              : launchpadProperties.icon;
+            this.selectedLaunchpadIconLabel = this.verifyProperty(
+              launchpadProperties.icon_label
+            )
+              ? this.defaultIcon
+              : launchpadProperties.icon_label;
+            this.selectedScreen =
+              this.getSelectedScreenJSONFromResult(launchpadProperties);
             this.$refs["icon-dropdown"].setIcon(this.selectedLaunchpadIcon);
           } else {
-            this.selectedSavedChart = this.getSelectedSavedChartJSON(this.defaultChart);
-            this.selectedScreen = this.getSelectedScreenJSON(this.defaultScreen);
+            this.selectedSavedChart = this.getSelectedSavedChartJSON(
+              this.defaultChart
+            );
+            this.selectedScreen = this.getSelectedScreenJSON(
+              this.defaultScreen
+            );
           }
           this.oldScreen = this.selectedScreen.id;
           // Load media into Carousel Container
@@ -243,28 +328,38 @@ export default {
     },
     getSelectedSavedChartJSONFromResult(launchpadProperties) {
       return {
-        id: this.verifyProperty(launchpadProperties.saved_chart_id) ? this.defaultChart.id : launchpadProperties.saved_chart_id,
-        title: this.verifyProperty(launchpadProperties.saved_chart_title) ? this.defaultChart.title : launchpadProperties.saved_chart_title,
+        id: this.verifyProperty(launchpadProperties.saved_chart_id)
+          ? this.defaultChart.id
+          : launchpadProperties.saved_chart_id,
+        title: this.verifyProperty(launchpadProperties.saved_chart_title)
+          ? this.defaultChart.title
+          : launchpadProperties.saved_chart_title,
       };
     },
     getSelectedScreenJSONFromResult(launchpadProperties) {
       return {
-        id: this.verifyProperty(launchpadProperties.screen_id) ? this.defaultScreen.id : launchpadProperties.screen_id,
-        uuid: this.verifyProperty(launchpadProperties.screen_uuid) ? this.defaultScreen.uuid : launchpadProperties.screen_uuid,
-        title: this.verifyProperty(launchpadProperties.screen_title) ? this.defaultScreen.title : launchpadProperties.screen_title,
+        id: this.verifyProperty(launchpadProperties.screen_id)
+          ? this.defaultScreen.id
+          : launchpadProperties.screen_id,
+        uuid: this.verifyProperty(launchpadProperties.screen_uuid)
+          ? this.defaultScreen.uuid
+          : launchpadProperties.screen_uuid,
+        title: this.verifyProperty(launchpadProperties.screen_title)
+          ? this.defaultScreen.title
+          : launchpadProperties.screen_title,
       };
     },
     getSelectedSavedChartJSON(defaultChart) {
       return {
         id: defaultChart.id,
-        title: defaultChart.title
+        title: defaultChart.title,
       };
     },
     getSelectedScreenJSON(defaultScreen) {
       return {
         id: defaultScreen.id,
         uuid: defaultScreen.uuid,
-        title: defaultScreen.title
+        title: defaultScreen.title,
       };
     },
     /**
@@ -296,21 +391,45 @@ export default {
       this.isSecondaryColor = false;
     },
     /**
+     * Save Launchpad Settings if this modal is open in Modeler
+     */
+    saveLaunchpadSettings(data) {
+      if (window.ProcessMaker.modeler) {
+        window.ProcessMaker.modeler.launchpad = data;
+        this.saveLaunchpadSettingsAlternatives(data);
+      }
+    },
+    /**
+     * Save Launchpad Settings in all alternatives
+     */
+    saveLaunchpadSettingsAlternatives(data) {
+      if (window.parent[0]?.ProcessMaker?.modeler && window.parent[1]?.ProcessMaker?.modeler) {
+        window.parent[0].ProcessMaker.modeler.launchpad = data;
+        window.parent[1].ProcessMaker.modeler.launchpad = data;
+      }
+    },
+    /**
      * Save description field in Process
      */
     saveProcessDescription() {
       if (!this.$refs["image-carousel"].checkImages()) return;
-      this.dataProcess.imagesCarousel = this.$refs["image-carousel"].getImages();
-      this.dataProcess.properties = JSON.stringify({
-        saved_chart_id: this.selectedSavedChart.id,
-        saved_chart_title: this.selectedSavedChart.title,
-        screen_id: this.selectedScreen.id,
-        screen_uuid: this.selectedScreen.uuid,
-        screen_title: this.selectedScreen.title,
-        icon: this.selectedLaunchpadIcon,
-        icon_label: this.selectedLaunchpadIconLabel,
-        tabs: this.tabs
-      }, null, 1);
+      this.dataProcess.imagesCarousel =
+        this.$refs["image-carousel"].getImages();
+      this.dataProcess.properties = JSON.stringify(
+        {
+          saved_chart_id: this.selectedSavedChart.id,
+          saved_chart_title: this.selectedSavedChart.title,
+          screen_id: this.selectedScreen.id,
+          screen_uuid: this.selectedScreen.uuid,
+          screen_title: this.selectedScreen.title,
+          icon: this.selectedLaunchpadIcon,
+          icon_label: this.selectedLaunchpadIconLabel,
+          tabs: this.tabs,
+          my_tasks_columns: this.myTasks.currentColumns,
+        },
+        null,
+        1
+      );
 
       ProcessMaker.apiClient
         .put(`process_launchpad/${this.options.id}`, {
@@ -319,17 +438,27 @@ export default {
           properties: this.dataProcess.properties,
         })
         .then((response) => {
-          ProcessMaker.alert(this.$t("The launchpad settings were saved."), "success", 5, true);
+          ProcessMaker.alert(
+            this.$t("The launchpad settings were saved."),
+            "success",
+            5,
+            true
+          );
           const params = {
             indexImage: null,
             type: "add",
           };
           if (this.oldScreen !== this.selectedScreen.id) {
-            ProcessMaker.EventBus.$emit("reloadByNewScreen", this.selectedScreenId);
+            ProcessMaker.EventBus.$emit(
+              "reloadByNewScreen",
+              this.selectedScreenId
+            );
           }
           ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
           ProcessMaker.EventBus.$emit("getChartId", this.selectedSavedChart.id);
           this.customModalButtons[1].disabled = false;
+          this.$emit("updateMyTasksColumns", this.myTasks.currentColumns);
+          this.saveLaunchpadSettings(response.data);
           this.hideModal();
         })
         .catch((error) => {
@@ -351,11 +480,13 @@ export default {
      */
     retrieveSavedSearchCharts(query = "") {
       if (!ProcessMaker.packages.includes("package-collections")) return;
-      const filter = (query === "" || query === null) ? "" : `&filter=${query}`;
+      const filter = query === "" || query === null ? "" : `&filter=${query}`;
       ProcessMaker.apiClient
-        .get("saved-searches?page=1&per_page=10&order_by=title&order_direction=asc"
-          + "&has=charts&include=charts&get=id,title,charts.id,charts.title,charts.saved_search_id,type"
-          + `${filter}`)
+        .get(
+          "saved-searches?page=1&per_page=10&order_by=title&order_direction=asc" +
+            "&has=charts&include=charts&get=id,title,charts.id,charts.title,charts.saved_search_id,type" +
+            `${filter}`
+        )
         .then((response) => {
           if (response.data.data[0].charts) {
             const resultArray = response.data.data.flatMap((item) => {
@@ -379,11 +510,10 @@ export default {
      * Initial method to retrieve Screens and populate dropdown
      */
     retrieveDisplayScreen(query = "") {
-      const filter = (query === "" || query === null) ? "" : `&filter=${query}`;
+      const filter = query === "" || query === null ? "" : `&filter=${query}`;
       ProcessMaker.apiClient
         .get(
-          `screens?page=1&per_page=10&order_by=title&order_direction=asc&include=categories,category&exclude=config&type=DISPLAY${
-            filter}`,
+          `screens?page=1&per_page=10&order_by=title&order_direction=asc&include=categories,category&exclude=config&type=DISPLAY${filter}`
         )
         .then((response) => {
           if (response.data.data) {
@@ -405,7 +535,8 @@ export default {
     getDescriptionInitial() {
       if (this.origin !== "core") {
         if (ProcessMaker.modeler?.process) {
-          this.processDescriptionInitial = ProcessMaker.modeler.process.description;
+          this.processDescriptionInitial =
+            ProcessMaker.modeler.process.description;
         }
       } else {
         this.processDescriptionInitial = this.descriptionSettings;
@@ -435,6 +566,68 @@ export default {
       this.selectedLaunchpadIcon = iconData.value;
       this.selectedLaunchpadIconLabel = iconData.label;
     },
+    /**
+     * This method shows a modal window to edit the columns of the My Tasks list.
+     * If you don't use the nextTick method, the modal will not be displayed correctly.
+     */
+    showEditTaskColumn() {
+      this.$refs["editTaskColumn"].show();
+      this.$nextTick(() => {
+        this.getMyTasksColumns();
+      });
+    },
+    async getMyTasksColumns() {
+      this.myTasks.currentColumns = this.myTasksColumns;
+      let defaultSavedSearch =
+        window.ProcessMaker?.defaultSavedSearch ||
+        window.Processmaker?.defaultSavedSearchId ||
+        null;
+
+      // If there is no defaultSavedSearch, initialize empty arrays and exit
+      if (!defaultSavedSearch) {
+        this.myTasks.defaultColumns = [];
+        this.myTasks.availableColumns = [];
+        this.myTasks.dataColumns = [];
+        return;
+      }
+
+      if (defaultSavedSearch) {
+        await ProcessMaker.apiClient
+          .get(`saved-searches/${defaultSavedSearch}/columns?include=default`)
+          .then((response) => {
+            if (response.data && response.data.default) {
+              this.myTasks.defaultColumns = response.data.default;
+            }
+          });
+
+        await ProcessMaker.apiClient
+          .get(
+            `saved-searches/${defaultSavedSearch}/columns?include=available,data`
+          )
+          .then((response) => {
+            if (response.data) {
+              if (response.data.available) {
+                this.myTasks.availableColumns = response.data.available;
+                // Update availableColumns with the fields that are not in currentColumns.
+                let columns = [
+                  ...this.myTasks.defaultColumns,
+                  ...this.myTasks.availableColumns,
+                ];
+                const difference = columns.filter(
+                  (column) =>
+                    !this.myTasks.currentColumns.some(
+                      (currentColumn) => currentColumn.field === column.field
+                    )
+                );
+                this.myTasks.availableColumns = difference;
+              }
+              if (response.data.data) {
+                this.myTasks.dataColumns = response.data.data;
+              }
+            }
+          });
+      }
+    },
   },
 };
 </script>
@@ -444,7 +637,7 @@ label {
   color: #556271;
   margin-top: 16px;
   margin-bottom: 4px;
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 22px;
@@ -453,7 +646,7 @@ label {
 }
 .modal-title div {
   color: #556271;
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: 21px;
   font-weight: 400;
   line-height: 29px;
@@ -473,7 +666,7 @@ label {
   margin: 0px;
   width: 90px;
   height: 40px;
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: 16px;
   font-weight: 600;
   line-height: 24px;
@@ -491,7 +684,7 @@ label {
   height: 40px;
   margin: 0px;
   margin-left: 7px;
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: 16px;
   font-weight: 600;
   line-height: 24px;
@@ -504,7 +697,7 @@ label {
 .text-info-custom {
   color: #556271;
   margin-bottom: 17px;
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 22px;
@@ -520,14 +713,15 @@ label {
   background: white;
   border-radius: 4px;
   border: 1px solid #cdddee;
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 21.79px;
   letter-spacing: -0.02em;
   gap: 6px;
 }
-.modal-dialog, .modal-content {
+.modal-dialog,
+.modal-content {
   min-width: 800px;
 }
 .options-launchpad {
@@ -561,7 +755,7 @@ label {
     overflow: hidden;
     text-align: left;
     text-overflow: ellipsis;
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 16px;
     font-weight: 400;
     line-height: 21.79px;
@@ -585,7 +779,7 @@ label {
   .multiselect__input {
     max-width: 239px;
     height: 20px;
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 16px;
     font-weight: 400;
     line-height: 21.79px;
@@ -605,12 +799,15 @@ label {
   .multiselect__option {
     color: #556271;
     padding: 12px;
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 16px;
     font-weight: 400;
     line-height: 21.79px;
     letter-spacing: -0.02em;
     text-align: left;
   }
+}
+.modal-content-custom .column-container {
+  overflow-y: auto;
 }
 </style>

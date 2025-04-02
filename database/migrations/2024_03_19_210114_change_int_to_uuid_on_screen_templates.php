@@ -11,7 +11,8 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('screen_templates', function (Blueprint $table) {
-            $table->uuid('editing_screen_uuid')->change();
+            //In Laravel 11, you must explicitly specify if a value is nullable.
+            $table->uuid('editing_screen_uuid')->nullable()->change();
         });
     }
 

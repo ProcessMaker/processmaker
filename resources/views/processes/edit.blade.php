@@ -46,7 +46,7 @@
 
                         {{-- Configuration --}}
                         <div
-                            class="tab-pane fade show"
+                            class="tab-pane show"
                             :class="{'active': activeTab === '' || activeTab === 'nav-config'}"
                             id="nav-config"
                             role="tabpanel"
@@ -79,19 +79,9 @@
                                         <b-row>
                                             <b-col>
                                                 <div class="form-group">
-                                                    {!!Form::label('name',
-                                                        __('Name') . '
-                                                        <small class="ml-1 required-text-color">*</small>',
-                                                        [],
-                                                        false)
-                                                    !!}
-                                                    {!!Form::text('name', null,
-                                                        [ 'id'=> 'name',
-                                                            'class'=> 'form-control',
-                                                            'v-model'=> 'formData.name',
-                                                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'
-                                                        ])
-                                                    !!}
+                                                    {{ html()->label(__('Name') . '
+                                                        <small class="ml-1 required-text-color">*</small>', 'name') }}
+                                                    {{ html()->text('name')->id('name')->class('form-control')->attribute('v-model', 'formData.name')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':errors.name}') }}
                                                     <small class="form-text text-muted"
                                                         v-if="! errors.name">{{ __('The process name must be unique.') }}</small>
                                                     <div
@@ -112,20 +102,8 @@
                                             </b-col>
                                             <b-col>
                                                 <div class="form-group">
-                                                    {!! Form::label('description',
-                                                        __('Description')  .
-                                                        '<small class="ml-1 required-text-color">*</small>',
-                                                        [],
-                                                        false)
-                                                    !!}
-                                                    {!! Form::textarea('description', null,
-                                                        ['id' => 'description',
-                                                            'rows' => 4,
-                                                            'class'=> 'form-control',
-                                                            'v-model' => 'formData.description',
-                                                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}'
-                                                        ])
-                                                    !!}
+                                                    {{ html()->label(__('Description') . '<small class="ml-1 required-text-color">*</small>', 'description') }}
+                                                    {{ html()->textarea('description')->id('description')->rows(4)->class('form-control')->attribute('v-model', 'formData.description')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':errors.description}') }}
                                                     <div
                                                         class="invalid-feedback"
                                                         role="alert"
@@ -219,14 +197,8 @@
                                         <b-row>
                                             <b-col>
                                                 <div class="form-group">
-                                                    {!! Form::label('case_title', __('Case Title')) !!}
-                                                    {!!Form::text('case_title', null,
-                                                        [ 'id'=> 'case_title',
-                                                            'class'=> 'form-control',
-                                                            'v-model'=> 'formData.case_title',
-                                                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.case_title}'
-                                                        ])
-                                                    !!}
+                                                    {{ html()->label(__('Case Title'), 'case_title') }}
+                                                    {{ html()->text('case_title')->id('case_title')->class('form-control')->attribute('v-model', 'formData.case_title')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':errors.case_title}') }}
                                                     <div
                                                         v-if="errors.case_title"
                                                         class="invalid-feedback"
@@ -239,7 +211,7 @@
                                                     </small>
                                                 </div>
                                                 <div class="form-group">
-                                                    {!! Form::label('cancelScreen', __('Cancel Screen')) !!}
+                                                    {{ html()->label(__('Cancel Screen'), 'cancelScreen') }}
                                                     <multiselect
                                                         aria-label="{{ __('Cancel Screen') }}"
                                                         v-model="screenCancel"
@@ -268,9 +240,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
-                                                    {!! Form::label('requestDetailScreen',
-                                                        __('Request Detail Screen'))
-                                                    !!}
+                                                    {{ html()->label(__('Request Detail Screen'), 'requestDetailScreen') }}
                                                     <multiselect
                                                         aria-label="{{ __('Request Detail Screen') }}"
                                                         v-model="screenRequestDetail"
@@ -302,7 +272,7 @@
                                             </b-col>
                                             <b-col>
                                                 <div class="form-group p-0">
-                                                    {!! Form::label('cancelRequest', __('Cancel Case')) !!}
+                                                    {{ html()->label(__('Cancel Case'), 'cancelRequest') }}
                                                     <multiselect
                                                         id="cancelRequest"
                                                         v-model="canCancel"
@@ -326,7 +296,7 @@
                                                     </multiselect>
                                                 </div>
                                                 <div class="form-group p-0">
-                                                    {!! Form::label('editData', __('Edit Data')) !!}
+                                                    {{ html()->label(__('Edit Data'), 'editData') }}
                                                     <multiselect
                                                         id="editData"
                                                         v-model="canEditData"
@@ -350,7 +320,7 @@
                                                     </multiselect>
                                                 </div>
                                                 <div class="form-group">
-                                                    {!! Form::label('status', __('Status')) !!}
+                                                    {{ html()->label(__('Status'), 'status') }}
                                                     <select-status
                                                         v-model="formData.status"
                                                         :multiple="false"
@@ -363,19 +333,13 @@
                             </div>
 
                             <div class="d-flex justify-content-end mt-2">
-                                {!! Form::button(__('Cancel'),
-                                    ['class'=>'btn btn-outline-secondary button-custom',
-                                    '@click' => 'onClose'])
-                                !!}
-                                {!! Form::button(__('Save'),
-                                    ['class'=>'btn btn-secondary ml-3 button-custom',
-                                    '@click' => 'onUpdate'])
-                                !!}
+                                {{ html()->button(__('Cancel'), 'button')->class('btn btn-outline-secondary button-custom')->attribute('@click', 'onClose') }}
+                                {{ html()->button(__('Save'), 'button')->class('btn btn-secondary ml-3 button-custom')->attribute('@click', 'onUpdate') }}
                             </div>
                         </div>
 
                         {{-- Notifications --}}
-                        <div class="tab-pane fade show p-3" id="nav-notifications" role="tabpanel"
+                        <div class="tab-pane show p-3" id="nav-notifications" role="tabpanel"
                              aria-labelledby="nav-notifications-tab">
                             <div class="form-group p-0">
 
@@ -519,18 +483,15 @@
                                 </table>
                             </div>
                             <div class="d-flex justify-content-end mt-2">
-                                {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                                {!! Form::button(__('Save'), [
-                                    'class' => 'btn btn-secondary ml-2',
-                                    '@click' => 'onUpdate'
-                                ]) !!}
+                                {{ html()->button(__('Cancel'), 'button')->class('btn btn-outline-secondary')->attribute('@click', 'onClose') }}
+                                {{ html()->button(__('Save'), 'button')->class('btn btn-secondary ml-2')->attribute('@click', 'onUpdate') }}
                             </div>
                         </div>
 
                         {{-- Addons --}}
                         @isset($addons)
                             @foreach ($addons as $addon)
-                                <div class="tab-pane fade show" id="{{$addon['id']}}" role="tabpanel"
+                                <div class="tab-pane show" id="{{$addon['id']}}" role="tabpanel"
                                      aria-labelledby="nav-notifications-tab">
                                     {!! $addon['content'] !!}
                                 </div>

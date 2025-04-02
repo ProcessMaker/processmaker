@@ -6,6 +6,7 @@ use DB;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Jobs\ImportProcess;
@@ -174,7 +175,6 @@ class ExportImportTest extends TestCase
 
     /**
      * @group agustin
-     * @dataProvider importType
      * There are some assets that are not tested because we are not exporting for now:
      * - Users
      * - Groups
@@ -183,6 +183,7 @@ class ExportImportTest extends TestCase
      * Not yet implemented
      * - Collections
      */
+    #[DataProvider('importType')]
     public function testExportImportFull($importType)
     {
         $classes = [
@@ -237,7 +238,7 @@ class ExportImportTest extends TestCase
         $this->assertAssetsWasImported($scenario);
     }
 
-    public function importType()
+    public static function importType()
     {
         return [
             ['update'],

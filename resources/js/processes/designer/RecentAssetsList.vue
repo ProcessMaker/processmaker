@@ -304,7 +304,7 @@ export default {
      * open modal to create template
      */
     showCreateTemplateModal(name, id) {
-      this.processId = id;
+      this.assetId = id;
       this.processTemplateName = name;
       this.$refs["create-template-modal"].show();
     },

@@ -5,6 +5,7 @@
             <div ref="columnBefore">
                 <div class="pb-4">
                     <small class="form-text text-muted">{{ $t('Drag any columns you want to view in your table from right to left. You may also sort, configure, and remove columns.') }}</small>
+                    <slot name="title1"></slot>
                 </div>
                 <div class="title-container  d-flex flex-row align-content-stretch">
                     <div class="w-50 mr-3">
@@ -88,6 +89,7 @@ import Column from "./Column";
 import ColumnConfig from "./ColumnConfig";
 import DataLoadingBasic from "./DataLoadingBasic";
 import draggable from "vuedraggable";
+import defaultTaskColumns from "../../tasks/components/defaultTaskColumns";
 
 export default {
     components: {
@@ -211,14 +213,23 @@ export default {
           let windowHeight = window.innerHeight;
           
           let height = (windowHeight - top);
-          document.querySelector('.tab-content-columns').style.height = `${height}px`;
+          if(document.querySelector('.tab-content-columns')) {
+            document.querySelector('.tab-content-columns').style.height = `${height}px`;
+          }
         },
         resizeColumnContainer() {
-          let containerHeight = document.querySelector('.tab-content').offsetHeight;
+          const tabContent = document.querySelector('.tab-content');
+
+          if (!tabContent || !this.$refs.columnBefore || !this.$refs.columnAfter || !this.$refs.columnContainer) {
+            return;
+          }
+          
+          let adjustHeight = 10;
+          let containerHeight = tabContent.offsetHeight;
           let beforeHeight = this.$refs.columnBefore.offsetHeight;
           let afterHeight = this.$refs.columnAfter.offsetHeight;
           
-          let height = (containerHeight - (beforeHeight + afterHeight));
+          let height = (containerHeight - (beforeHeight + afterHeight) - adjustHeight);
           this.$refs.columnContainer.style.height = `${height}px`;
           this.$refs.columnContainer.style.maxHeight = `${height}px`;
         },
@@ -303,6 +314,11 @@ export default {
                         this.availableColumnsDirect = [];
                     }
 
+                    if (!this.currentColumns) {
+                        const columns = defaultTaskColumns();
+                        this.currentColumns = columns.filter((column) => !column.hidden);
+                    }
+
                     this.$emit('input', this.currentColumns);
                 }
             );
@@ -346,6 +362,6 @@ export default {
 
 <style lang="scss">
     .column-container {
-        min-height: 100px;
+        min-height: 150px;
     }
 </style>

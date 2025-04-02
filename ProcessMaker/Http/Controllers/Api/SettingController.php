@@ -6,6 +6,7 @@ use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Cache\Settings\SettingCacheFactory;
 use ProcessMaker\Events\SettingsUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
@@ -251,6 +252,15 @@ class SettingController extends Controller
 
         // Register the Event
         SettingsUpdated::dispatch($setting, $setting->getChanges(), $original);
+
+        // Store the setting in the cache
+        $settingCache = SettingCacheFactory::getSettingsCache();
+        //create key
+        $key = $settingCache->createKey([
+            'key' => $setting->key,
+        ]);
+        // set to cache with key and setting
+        $settingCache->set($key, $setting->refresh());
 
         return response([], 204);
     }

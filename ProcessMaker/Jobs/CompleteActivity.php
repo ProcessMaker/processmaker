@@ -3,7 +3,7 @@
 namespace ProcessMaker\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Database\DatabaseManager;
+use ProcessMaker\Facades\Metrics;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -46,5 +46,16 @@ class CompleteActivity extends BpmnAction implements ShouldQueue
         $manager->updateData($token, $data);
         $this->engine->runToNextState();
         $element->complete($token);
+
+        Metrics::counterInc(
+            'activity_completed_total',
+            'Total number of activities completed',
+            [
+                'activity_id' => $element->getId(),
+                'activity_name' => $element->getName(),
+                'process_id' => $this->definitionsId,
+                'request_id' => $this->instanceId,
+            ]
+        );
     }
 }

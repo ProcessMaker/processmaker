@@ -5,6 +5,7 @@ namespace Tests\Feature\Shared;
 use Database\Seeders\PermissionSeeder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use PHPUnit\Framework\TestStatus\Failure;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\User;
 use ProcessMaker\Providers\AuthServiceProvider;
@@ -78,7 +79,7 @@ trait RequestHelper
             return;
         }
 
-        if ($this->hasFailed() && isset($this->_debug_response)) {
+        if (!$this->status()->isSuccess() && isset($this->_debug_response)) {
             try {
                 $json = $this->_debug_response->json();
             } catch (\Exception $e) {

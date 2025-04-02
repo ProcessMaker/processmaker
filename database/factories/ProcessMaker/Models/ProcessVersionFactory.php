@@ -43,7 +43,7 @@ class ProcessVersionFactory extends Factory
             'start_events' => function () use ($process) {
                 $process->save();
 
-                return json_encode($process->start_events);
+                return $process->start_events;
             },
         ];
     }

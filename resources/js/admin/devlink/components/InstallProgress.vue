@@ -25,7 +25,7 @@
       <pre class="error-message">{{ error }}</pre>
     </div>
     <div v-if="done">
-      <b-button @click="vue.$bvModal.hide('install-progress')">
+      <b-button @click="handleClose">
         {{ $t('Close') }}
       </b-button>
     </div>
@@ -43,6 +43,7 @@ const currentMessage = ref('');
 const warnings = ref([]);
 const showSpinner = ref(true);
 const error = ref('');
+const emit = defineEmits(['installation-complete']);
 
 onMounted(() => {
   currentMessage.value = vue.$t('Initializing') + '...';
@@ -79,6 +80,11 @@ onMounted(() => {
 onUnmounted(() => {
   window.Echo.leave(`ProcessMaker.Models.User.${userId}`);
 });
+
+const handleClose = () => {
+  vue.$bvModal.hide('install-progress');
+  emit('installation-complete');
+};
 </script>
 
 <style scoped>

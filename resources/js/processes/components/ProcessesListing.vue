@@ -274,7 +274,7 @@ export default {
       return this.processActions.toSpliced(7, 0, {
         value: "add-to-bundle",
         content: "Add to Bundle",
-        icon: "fas fa-folder-plus",
+        icon: "fp-add-outlined",
         permission: "admin",
         emit_on_root: 'add-to-bundle',
       });
