@@ -244,7 +244,7 @@ abstract class TestCase extends BaseTestCase
         return $snapshotFile;
     }
 
-    private function restoreDatabaseFromSnapshot($filename = 'test-db-snapshot.db')
+    public function restoreDatabaseFromSnapshot($filename = 'test-db-snapshot.db')
     {
         if (!$this->populateDatabase()) {
             return;
