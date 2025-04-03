@@ -31,11 +31,11 @@ class HandleRedirectListener
             $params['activeTokens'] = ProcessRequest::getActiveTokens($processRequest);
             $event = new RedirectToEvent($processRequest, $method, $params);
             event($event);
-        }
 
-        // Clean params to prevent sending the same redirect multiple times
-        self::$redirectionParams = [];
-        self::$redirectionMethod = '';
-        self::$processRequest = null;
+            // Clean params to prevent sending the same redirect multiple times
+            self::$redirectionParams = [];
+            self::$redirectionMethod = '';
+            self::$processRequest = null;
+        }
     }
 }
