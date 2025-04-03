@@ -25,6 +25,7 @@ class HandleRedirectListener
         $method = self::$redirectionMethod;
         $params = self::$redirectionParams;
         $processRequest = self::$processRequest;
+        $params['activeTokens'] = ProcessRequest::getActiveTokens($processRequest);
 
         if ($processRequest !== null) {
             $event = new RedirectToEvent($processRequest, $method, $params);
@@ -35,4 +36,5 @@ class HandleRedirectListener
             self::$processRequest = null;
         }
     }
+
 }
