@@ -43,8 +43,9 @@
       <env name="REDIS_DB" value="10" />
       <env name="REDIS_CACHE_DB" value="11" />
       <env name="REDIS_CACHE_SETTING_DB" value="12" />
+      <env name="REDIS_PREFIX" value="test:" />
       <env name="CACHE_SETTING_PREFIX" value="phpunit-settings:" />
-
+      
       <!-- Workflow Database -->
       <env name="DB_ADAPTER" value="mysql" />
       <env name="DB_DATABASE" value="test" />

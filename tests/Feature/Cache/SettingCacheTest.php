@@ -23,17 +23,6 @@ class SettingCacheTest extends TestCase
         $this->user = User::factory()->create([
             'is_administrator' => true,
         ]);
-
-        config()->set('cache.default', 'cache_settings');
-    }
-
-    protected function tearDown(): void
-    {
-        \SettingCache::clear();
-
-        config()->set('cache.default', 'array');
-
-        parent::tearDown();
     }
 
     private function upgrade()
@@ -197,7 +186,7 @@ class SettingCacheTest extends TestCase
             ->andReturnSelf();
 
         Redis::shouldReceive('keys')
-            ->with('settings:*')
+            ->with('phpunit-settings:*')
             ->andReturn($keys);
 
         Redis::shouldReceive('del')
@@ -212,10 +201,6 @@ class SettingCacheTest extends TestCase
 
     public function testClearByPatternWithRedisPrefix()
     {
-        $defaultRedisPrefix = config('database.redis.options.prefix');
-
-        config()->set('database.redis.options.prefix', 'test:');
-
         Cache::store('cache_settings')->put('password-policies.users_can_change', 1);
 
         $this->assertEquals(1, Cache::store('cache_settings')->get('password-policies.users_can_change'));
@@ -225,8 +210,6 @@ class SettingCacheTest extends TestCase
         \SettingCache::clearBy($pattern);
 
         $this->assertNull(Cache::store('cache_settings')->get('password-policies.users_can_change'));
-
-        config()->set('database.redis.options.prefix', $defaultRedisPrefix);
     }
 
     public function testClearAllSettings()
@@ -344,9 +327,6 @@ class SettingCacheTest extends TestCase
             ->with(['key' => $setting->key])
             ->andThrow(new SettingCacheException('Failed to invalidate cache KEY:' . $setting->key))
             ->once();
-        \SettingCache::shouldReceive('clear')
-            ->once()
-            ->andReturn(true);
 
         $this->expectException(SettingCacheException::class);
         $this->expectExceptionMessage('Failed to invalidate cache KEY:' . $setting->key);
