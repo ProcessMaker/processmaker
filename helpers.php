@@ -39,8 +39,8 @@ if (!function_exists('settings')) {
      *
      * @param $key
      *
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws Psr\Container\ContainerExceptionInterface
+     * @throws Psr\Container\NotFoundExceptionInterface
      *
      * @return array|mixed
      */
@@ -82,7 +82,7 @@ if (!function_exists('color')) {
                 }
             }
         }
-        
+
         return default_color($key);
     }
 }
@@ -91,17 +91,17 @@ if (!function_exists('sidebar_class')) {
     /**
      * Returns the class for the sidebar based on admin settings.
      *
-     * @return boolean
+     * @return bool
      */
     function sidebar_class()
     {
         if (config('css-override.variables')) {
             $defaults = ['#0872C2', '#2773F3'];
-            if (! in_array(color('primary'), $defaults)) {
+            if (!in_array(color('primary'), $defaults)) {
                 return 'sidebar-custom';
             }
         }
-        
+
         return 'sidebar-default';
     }
 }
@@ -120,7 +120,7 @@ if (!function_exists('lavaryMenuArray')) {
     /**
      * Convert the Laravy menu into associative array.
      *
-     * @param \Lavary\Menu\Item $menu
+     * @param Lavary\Menu\Item $menu
      * @param mixed             $includeSubMenus
      *
      * @return array
@@ -150,7 +150,7 @@ if (!function_exists('lavaryMenuJson')) {
     /**
      * Convert the Laravy menu into json string.
      *
-     * @param \Lavary\Menu\Item $menu
+     * @param Lavary\Menu\Item $menu
      *
      * @return false|string
      */
@@ -166,7 +166,7 @@ if (!function_exists('hasPackage')) {
      *
      * @param $name
      *
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @throws Illuminate\Contracts\Container\BindingResolutionException
      *
      * @return bool
      */
@@ -182,7 +182,7 @@ if (!function_exists('pmUser')) {
     /**
      * Check both the web and api middleware for an existing user.
      *
-     * @return null|\ProcessMaker\Models\User
+     * @return null|ProcessMaker\Models\User
      */
     function pmUser()
     {

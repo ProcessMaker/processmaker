@@ -58,6 +58,10 @@ class TaskController extends Controller
             return view('tasks.mobile', compact('title'));
         }
 
+        $manager = new ScreenBuilderManager();
+        event(new ScreenBuilderStarting($manager, 'FORM'));
+        event(new ScreenBuilderStarting($manager, 'DISPLAY'));
+
         $userFilter = SaveSession::getConfigFilter('taskFilter', Auth::user());
 
         $defaultColumns = DefaultColumns::get('tasks');
@@ -70,7 +74,7 @@ class TaskController extends Controller
 
         $defaultSavedSearchId = $this->getDefaultSavedSearchId();
 
-        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns', 'taskDraftsEnabled', 'userConfiguration', 'showOldTaskScreen', 'currentUser', 'selectedProcess', 'defaultSavedSearchId'));
+        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns', 'taskDraftsEnabled', 'userConfiguration', 'showOldTaskScreen', 'currentUser', 'selectedProcess', 'defaultSavedSearchId', 'manager'));
     }
 
     public function edit(ProcessRequestToken $task, string $preview = '')
