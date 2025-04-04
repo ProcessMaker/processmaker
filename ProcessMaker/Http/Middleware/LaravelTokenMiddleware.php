@@ -54,7 +54,11 @@ class LaravelTokenMiddleware extends \Illuminate\Cookie\Middleware\EncryptCookie
      */
     public function handle($request, Closure $next)
     {
-        if ($request->header('Authorization') && !$request->header('X-CSRF-TOKEN') && !$request->header('Cookie')) {
+        if (!($request->hasHeader('X-CSRF-TOKEN') && $request->hasHeader('Cookie'))) {
+            return $next($request);
+        }
+
+        if ($request->hasHeader('Authorization') && !($request->hasHeader('X-CSRF-TOKEN') || $request->hasHeader('Cookie'))) {
             return $next($request);
         }
 
