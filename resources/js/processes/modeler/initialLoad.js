@@ -51,6 +51,7 @@ import ErrorHandlingTimeout from "./components/inspector/ErrorHandlingTimeout";
 import ErrorHandlingRetryAttempts from "./components/inspector/ErrorHandlingRetryAttempts";
 import ErrorHandlingRetryWaitTime from "./components/inspector/ErrorHandlingRetryWaitTime";
 import NotifyProcessManager from "./components/inspector/NotifyProcessManager";
+import { onModelerInit } from "./modelerInit";
 
 Vue.component("UserSelect", UserSelect);
 Vue.component("UserById", UserById);
@@ -105,6 +106,10 @@ ProcessMaker.modelerExtensions = {
   loopCharacteristicsData,
   NodeIdentifierInput,
 };
+
+ProcessMaker.EventBus.$on("modeler-init", (options) => {
+  onModelerInit(options);
+});
 
 ProcessMaker.EventBus.$on("modeler-init", registerNodes);
 
@@ -472,24 +477,25 @@ ProcessMaker.EventBus.$on(
   "modeler-init",
   (event) => {
     event.registerPreview({
-      url: '/designer/screens/preview',
-      assetUrl: (nodeData) => nodeData.screenRef ? `/designer/screen-builder/${nodeData.screenRef}/edit` : null,
-      receivingParams: ['screenRef'],
-      matcher: (nodeData) => nodeData?.$type === 'bpmn:Task',
+      url: "/designer/screens/preview",
+      assetUrl: (nodeData) => (nodeData.screenRef ? `/designer/screen-builder/${nodeData.screenRef}/edit` : null),
+      receivingParams: ["screenRef"],
+      matcher: (nodeData) => nodeData?.$type === "bpmn:Task",
     });
     event.registerPreview({
-      url: '/designer/screens/preview',
-      assetUrl: (nodeData) => nodeData.screenRef ? `/designer/screen-builder/${nodeData.screenRef}/edit` : null,
-      receivingParams: ['screenRef'],
-      matcher: (nodeData) => nodeData?.$type === 'bpmn:ManualTask',
+      url: "/designer/screens/preview",
+      assetUrl: (nodeData) => (nodeData.screenRef ? `/designer/screen-builder/${nodeData.screenRef}/edit` : null),
+      receivingParams: ["screenRef"],
+      matcher: (nodeData) => nodeData?.$type === "bpmn:ManualTask",
     });
     event.registerPreview({
-      url: '/designer/scripts/preview',
-      assetUrl: (nodeData) => nodeData.scriptRef ? `/designer/scripts/${nodeData.scriptRef}/builder` : null,
-      receivingParams: ['scriptRef'],
-      matcher: (nodeData) => nodeData?.$type === 'bpmn:ScriptTask',
+      url: "/designer/scripts/preview",
+      assetUrl: (nodeData) => (nodeData.scriptRef ? `/designer/scripts/${nodeData.scriptRef}/builder` : null),
+      receivingParams: ["scriptRef"],
+      matcher: (nodeData) => nodeData?.$type === "bpmn:ScriptTask",
     });
-  });
+  },
+);
 
 validateScreenRef();
 validateFlowGenieRef();
