@@ -91,7 +91,7 @@ export default {
       }
       const site = this.siteName.toLocaleLowerCase().trim().replaceAll(" ", "_");
       const data = {
-        key: `whiteList.${site}`,
+        key: `white_list.${site}`,
         format: "text",
         config: this.url,
         name: this.siteName,
