@@ -172,17 +172,16 @@
 <script>
 
 class NotificationTemplate {
-  constructor(type) {
+  constructor() {
     this.requester = {
       assigned: false,
       completed: false,
       due: false,
     };
     this.assignee = {
-      assigned: type === "task",
+      assigned: false,
       completed: false,
-      due: type === "task",
-      default: false,
+      due: false,
     };
     this.participants = {
       assigned: false,
@@ -216,7 +215,6 @@ export default {
       managerAssigned: false,
       managerCompleted: false,
       managerDue: false,
-      defaultNotification: false,
     };
   },
   computed: {
@@ -241,73 +239,61 @@ export default {
     requesterAssigned(value) {
       if (this.notifications) {
         this.notifications.requester.assigned = value;
-        this.verifyNotifications();
       }
     },
     requesterCompleted(value) {
       if (this.notifications) {
         this.notifications.requester.completed = value;
-        this.verifyNotifications();
       }
     },
     requesterDue(value) {
       if (this.notifications) {
         this.notifications.requester.due = value;
-        this.verifyNotifications();
       }
     },
     assigneeAssigned(value) {
       if (this.notifications) {
         this.notifications.assignee.assigned = value;
-        this.verifyNotifications();
       }
     },
     assigneeCompleted(value) {
       if (this.notifications) {
         this.notifications.assignee.completed = value;
-        this.verifyNotifications();
       }
     },
     assigneeDue(value) {
       if (this.notifications) {
         this.notifications.assignee.due = value;
-        this.verifyNotifications();
       }
     },
     participantsAssigned(value) {
       if (this.notifications) {
         this.notifications.participants.assigned = value;
-        this.verifyNotifications();
       }
     },
     participantsCompleted(value) {
       if (this.notifications) {
         this.notifications.participants.completed = value;
-        this.verifyNotifications();
       }
     },
     participantsDue(value) {
       if (this.notifications) {
         this.notifications.participants.due = value;
-        this.verifyNotifications();
       }
     },
     managerAssigned(value) {
       if (this.notifications) {
         this.notifications.manager.assigned = value;
-        this.verifyNotifications();
       }
     },
     managerCompleted(value) {
       if (this.notifications) {
         this.notifications.manager.completed = value;
-        this.verifyNotifications();
       }
     },
     managerDue(value) {
       if (this.notifications) {
         this.notifications.manager.due = value;
-        this.verifyNotifications();
       }
     },
     modelerId() {
@@ -332,7 +318,6 @@ export default {
       this.managerAssigned = this.notifications?.manager.assigned;
       this.managerCompleted = this.notifications?.manager.completed;
       this.managerDue = this.notifications?.manager.due;
-      this.defaultNotification = this.notifications?.assignee.default;
     },
     updateNotifications() {
       if (this.process.task_notifications[this.nodeId]) {
@@ -344,33 +329,14 @@ export default {
       this.notifications = this.node.notifications;
     },
     createNewNotification() {
-      let type = "task";
       const cloneOf = this.getNode(this.node.cloneOf);
       if (this.node.cloneOf && cloneOf) {
         return structuredClone(cloneOf.notifications);
       }
-      if (this.node.type === "processmaker-modeler-manual-task") {
-        type = "manual_task";
-      }
-      return new NotificationTemplate(type);
+      return new NotificationTemplate();
     },
     getNode(nodeId) {
       return this.$root.$children[0].$refs.modeler.nodes.find((node) => node.definition.id === nodeId);
-    },
-    /**
-     * Verify if there are any notifications enabled to set a default value in true
-     */
-    verifyNotifications() {
-      let flag = false;
-
-      for (const prop in this.notifications) {
-        if (this.notifications[prop].assigned || this.notifications[prop].completed || this.notifications[prop].due) {
-          flag = true;
-          break;
-        }
-      }
-
-      this.notifications.assignee.default = !flag;
     },
   },
 };

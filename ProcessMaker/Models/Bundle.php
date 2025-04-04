@@ -336,8 +336,19 @@ class Bundle extends ProcessMakerModel implements HasMedia
             $logger = new Logger();
         }
         $logger->status('Saving the bundle locally');
-        if (isset($payloadsSettings[0])) {
-            $payloads = array_merge($payloads, $payloadsSettings[0]);
+
+        // Filter and extract export payloads from nested array
+        $exportPayloads = array_filter($payloadsSettings, function ($payload) {
+            return !empty($payload[0]) && isset($payload[0]['export']);
+        });
+
+        // Extract payloads from nested array structure
+        $flattenedExportPayloads = array_map(function ($payload) {
+            return $payload[0];  // Tomar solo el primer elemento del array anidado
+        }, array_values($exportPayloads));
+
+        if (!empty($flattenedExportPayloads)) {
+            $payloads = array_merge($payloads, $flattenedExportPayloads);
         }
 
         $this->addMediaFromString(
@@ -376,51 +387,63 @@ class Bundle extends ProcessMakerModel implements HasMedia
         $options = new Options([
             'mode' => $mode,
         ]);
-        $clientRepository = app('Laravel\Passport\ClientRepository');
 
         $assets = [];
         foreach ($payloads as $payload) {
-            if (isset($payload[0]['export'])) {
-                $logger->status('Installing bundle settings on the this instance');
-                $logger->setSteps($payloads[0]);
-                $assets[] = DevLink::import($payload[0], $options, $logger);
-            } elseif (isset($payload[0]['setting_type'])) {
-                foreach ($payload as $setting) {
-                    switch ($setting['setting_type']) {
-                        case 'User Settings':
-                        case 'Email':
-                        case 'Integrations':
-                        case 'Log-In & Auth':
-                            $settingsMenu = SettingsMenus::where('menu_group', $setting['setting_type'])->first();
-                            Setting::updateOrCreate([
-                                'key' => $setting['key'],
-                            ], [
-                                'config' => $setting['config'],
-                                'name' => $setting['name'],
-                                'helper' => $setting['helper'],
-                                'format' => $setting['format'],
-                                'hidden' => $setting['hidden'],
-                                'readonly' => $setting['readonly'],
-                                'ui' => $setting['ui'],
-                                'group_id' => $settingsMenu->id,
-                                'group' => $setting['group'],
-                            ]);
-                            break;
-                        case 'ui_settings':
-                            Setting::updateOrCreate([
-                                'key' => $setting['key'],
-                            ], [
-                                'config' => $setting['config'],
-                                'name' => $setting['name'],
-                                'helper' => $setting['helper'],
-                                'format' => $setting['format'],
-                                'hidden' => $setting['hidden'],
-                                'readonly' => $setting['readonly'],
-                                'ui' => $setting['ui'],
-                            ]);
-                            break;
-                    }
+            // Verify the type of payload without considering the order
+            if (!empty($payload) && is_array($payload[0])) {
+                // If it is a settings payload
+                if (isset($payload[0]['setting_type'])) {
+                    $this->processSettingsPayload($payload);
                 }
+
+                // If it is an export payload (it can be the same or another element)
+                if (isset($payload[0]['export'])) {
+                    $logger->status('Installing bundle settings on the this instance');
+                    $logger->setSteps($payload);
+                    $assets[] = DevLink::import($payload[0], $options, $logger);
+                }
+            }
+        }
+    }
+
+    // Auxiliary method to process the settings
+    private function processSettingsPayload($payload)
+    {
+        foreach ($payload as $setting) {
+            switch ($setting['setting_type']) {
+                case 'User Settings':
+                case 'Email':
+                case 'Integrations':
+                case 'Log-In & Auth':
+                    $settingsMenu = SettingsMenus::where('menu_group', $setting['setting_type'])->first();
+                    Setting::updateOrCreate([
+                        'key' => $setting['key'],
+                    ], [
+                        'config' => $setting['config'],
+                        'name' => $setting['name'],
+                        'helper' => $setting['helper'],
+                        'format' => $setting['format'],
+                        'hidden' => $setting['hidden'],
+                        'readonly' => $setting['readonly'],
+                        'ui' => $setting['ui'],
+                        'group_id' => $settingsMenu->id,
+                        'group' => $setting['group'],
+                    ]);
+                    break;
+                case 'ui_settings':
+                    Setting::updateOrCreate([
+                        'key' => $setting['key'],
+                    ], [
+                        'config' => $setting['config'],
+                        'name' => $setting['name'],
+                        'helper' => $setting['helper'],
+                        'format' => $setting['format'],
+                        'hidden' => $setting['hidden'],
+                        'readonly' => $setting['readonly'],
+                        'ui' => $setting['ui'],
+                    ]);
+                    break;
             }
         }
     }
