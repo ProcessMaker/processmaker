@@ -16,6 +16,7 @@
       <ProcessesDashboardsMenu
         ref="processesDashboardsMenu"
         @processDashboardSelected="processDashboardSelected"
+        @get-all-tasks="getAllTasks"
       />
     </div>
 
