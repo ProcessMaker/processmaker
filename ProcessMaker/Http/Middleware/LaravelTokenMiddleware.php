@@ -7,6 +7,7 @@ use Illuminate\Contracts\Encryption\Encrypter as EncrypterContract;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use Illuminate\Session\SessionManager;
+use Illuminate\Support\Facades\Log;
 
 class LaravelTokenMiddleware extends \Illuminate\Cookie\Middleware\EncryptCookies
 {
@@ -54,11 +55,14 @@ class LaravelTokenMiddleware extends \Illuminate\Cookie\Middleware\EncryptCookie
      */
     public function handle($request, Closure $next)
     {
-        if (!($request->hasHeader('X-CSRF-TOKEN') && $request->hasHeader('Cookie'))) {
+        // Skip CSRF validation for requests without CSRF token and cookie
+        if (!$request->hasHeader('X-CSRF-TOKEN') || !$request->hasHeader('Cookie')) {
             return $next($request);
         }
 
-        if ($request->hasHeader('Authorization') && !($request->hasHeader('X-CSRF-TOKEN') || $request->hasHeader('Cookie'))) {
+        // Skip CSRF validation for requests with Authorization header but without CSRF token or cookie
+        if ($request->hasHeader('Authorization') &&
+            (!$request->hasHeader('X-CSRF-TOKEN') || !$request->hasHeader('Cookie'))) {
             return $next($request);
         }
 
@@ -67,22 +71,32 @@ class LaravelTokenMiddleware extends \Illuminate\Cookie\Middleware\EncryptCookie
             return $next($request);
         }
 
-        // Load session by id
-        $session = $this->loadSessionId($request);
+        try {
+            // Load session by id
+            $session = $this->loadSessionId($request);
 
-        // Start session with session id
-        $session = $this->startSession($request, $session);
+            // Start session with session id
+            $session = $this->startSession($request, $session);
 
-        // Get CSRF token from session
-        $token = $session->get('_token');
+            // Get CSRF token from session
+            $token = $session->get('_token');
 
-        // Check if CSRF token belongs to the current session
-        if ($token !== $request->header('X-CSRF-TOKEN')) {
-            // Session was invalidated, 401
-            return response()->json(['message' => 'Unauthorized'], 401);
+            // Check if CSRF token belongs to the current session
+            if ($token !== $request->header('X-CSRF-TOKEN')) {
+                // Session was invalidated, 401
+                return response()->json(['message' => 'Unauthorized'], 401);
+            }
+
+            return $next($request);
+        } catch (\Exception $e) {
+            // Log the exception for debugging
+            Log::error('CSRF validation error: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'Authentication error',
+                'error' => 'unauthorized',
+            ], 401);
         }
-
-        return $next($request);
     }
 
     /**
