@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Models\ProcessRequest;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
@@ -21,31 +22,45 @@ class MediaConfigTest extends TestCase
         $processRequest = ProcessRequest::factory()->create();
         $user = $processRequest->user;
 
+        // Ensure storage disk is available
+        Storage::fake('local');
+
         // Test file within size limit (500KB)
-        $validFile = UploadedFile::fake()->create('valid.txt', 500);
-        file_put_contents($validFile->getPathname(), str_repeat('a', 500 * 1024));
+        $validFilePath = storage_path('app/test_valid.txt');
+        file_put_contents($validFilePath, str_repeat('a', 500 * 1024)); // 500KB
+
+        $validFile = new UploadedFile(
+            $validFilePath,
+            'valid.txt',
+            null,
+            null,
+            true // Test mode
+        );
 
         $response = $this->actingAs($user)->apiCall('POST', '/requests/' . $processRequest->id . '/files', [
             'file' => $validFile,
             'data_name' => 'test_file',
         ]);
         $response->assertStatus(200);
-        $this->assertEquals(1, $processRequest->getMedia()->count());
+        $this->assertEquals(1, $processRequest->fresh()->getMedia()->count());
 
         // Test file exceeding size limit (2MB)
-        $oversizedFile = UploadedFile::fake()->create('oversized.txt', 2048);
-        file_put_contents($oversizedFile->getPathname(), str_repeat('a', 2048 * 1024));
+        $oversizedFilePath = storage_path('app/test_oversized.txt');
+        file_put_contents($oversizedFilePath, str_repeat('a', 2048 * 1024)); // 2MB
+
+        $oversizedFile = new UploadedFile(
+            $oversizedFilePath,
+            'oversized.txt',
+            null,
+            null,
+            true
+        );
 
         $response = $this->apiCall('POST', '/requests/' . $processRequest->id . '/files', [
             'file' => $oversizedFile,
             'data_name' => 'test_file_2',
         ]);
-        $fileSize = filesize($oversizedFile->getPathname());
-        $this->assertEquals(
-            'fileSize',
-            'media-library.max_file_size=' . config('media-library.max_file_size') .
-            ' fileSize ' . $fileSize . ' ' . $response->getContent()
-        );
+
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['file']);
 
@@ -56,7 +71,7 @@ class MediaConfigTest extends TestCase
         );
 
         // Verify no new media was added
-        $this->assertEquals(1, $processRequest->getMedia()->count());
+        $this->assertEquals(1, $processRequest->fresh()->getMedia()->count());
     }
 
     public function testMediaMaxFileSizeFromEnv()
