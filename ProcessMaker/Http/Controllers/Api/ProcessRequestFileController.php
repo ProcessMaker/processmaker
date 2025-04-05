@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Exception;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -291,6 +292,12 @@ class ProcessRequestFileController extends Controller
                         'file' => ['file may not be greater than ' . (config('media-library.max_file_size') / 1024) . ' kilobytes']
                     ]
                 ], 422);
+            } catch (Exception $e) {
+                return response()->json([
+                    'errors' => [
+                        'message' => $e->getMessage()
+                    ]
+                ], 500);
             }
         }
     }
