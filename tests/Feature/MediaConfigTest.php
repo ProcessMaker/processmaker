@@ -40,7 +40,9 @@ class MediaConfigTest extends TestCase
             'file' => $oversizedFile,
             'data_name' => 'test_file_2',
         ]);
-        $response->assertStatus(422, $response->getContent());
+        $fileSize = filesize($oversizedFile->getPathname());
+        $this->assertEquals('fileSize', $fileSize . ' ' . $response->getContent());
+        $response->assertStatus(422);
         $response->assertJsonValidationErrors(['file']);
 
         // Verify the error message mentions file size
