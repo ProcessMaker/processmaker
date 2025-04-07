@@ -84,7 +84,26 @@ class SettingsConfigRepository extends Repository
             return null;
         }
 
-        return Setting::byKey($key)?->config;
+        $setting = Setting::byKey($key);
+
+        if ($setting !== null) {
+            return $setting->config;
+        }
+
+        // If the key is a dot notation, we can try to get the first part
+        // and then use the dot notation to get the value if it's an array.
+        $parts = explode('.', $key);
+        if (count($parts) > 1) {
+            $firstKey = array_shift($parts);
+            $setting = Setting::byKey($firstKey);
+            if ($setting && $setting->format === 'array') {
+                $subPath = implode('.', $parts);
+
+                return Arr::get($setting->config, $subPath);
+            }
+        }
+
+        return null;
     }
 
     private function readyToUseSettingsDatabase()
