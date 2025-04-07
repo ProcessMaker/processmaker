@@ -49,7 +49,6 @@
           ref="taskList"
           class="custom-table-class"
           :columns="columns"
-          :fetch-on-created="false"
           :selected-row-quick="selectedRowQuick"
           :table-name="tasksListName"
           @selected="selected"
@@ -175,6 +174,9 @@
 </template>
 <script>
 export default {
+  components: {
+    TasksList: () => import('./TasksList.vue'),
+  },
   props: ["task", "propColumns", "propFilters", "propFromButton", "screenFields"],
   data() {
     return {

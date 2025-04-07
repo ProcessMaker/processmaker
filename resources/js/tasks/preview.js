@@ -1,3 +1,4 @@
+import { submitCollectionData } from "./utils/index";
 // const store = new Vuex.Store();
 const main = new Vue({
   // store: store,
@@ -293,6 +294,10 @@ const main = new Vue({
         if (this.submitting) {
           return;
         }
+
+        // Save collection data
+        // This code is copied from tasks/edit.js, we should improve it
+        submitCollectionData(task, this.formData);
 
         const message = this.$t("Task Completed Successfully");
         const taskId = task.id;

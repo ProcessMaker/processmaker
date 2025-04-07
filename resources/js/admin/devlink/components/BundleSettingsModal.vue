@@ -7,6 +7,7 @@
     @ok="onOk"
     ok-title="Save"
     :cancel-title="'Cancel'"
+    :ok-disabled="!editable"
   >
     <p>
       {{ $t("These settings will be saved as they are now in the platform. Future changes to the platform's settings won't affect them, as this is a snapshot of the current configuration.") }}
@@ -37,7 +38,7 @@
       </b-table>
     </div>
     <button
-      v-if="settingKey === 'ui_settings'"
+      v-if="settingKey === 'ui_settings' && !editable"
       class="btn btn-primary"
       @click="refreshUi"
     >
@@ -62,7 +63,13 @@ const computedFields = computed(() => [
   { 
     key: 'name', 
     label: 'Name',
-    formatter: (value, key, item) => settingKey.value === 'ui_settings' ? item.key : value
+    formatter: (value, key, item) => {
+      if (settingKey.value === 'ui_settings') {
+        return item.key;
+      }
+      // Concatena el nombre con el grupo si existe
+      return item.group ? `${value} (${item.group})` : value;
+    }
   },
   { key: 'toggle', label: '', class: 'text-center' },
 ]);
@@ -109,7 +116,6 @@ const hide = () => {
 const loadSettings = async () => {
   const response = await window.ProcessMaker.apiClient.get(`devlink/local-bundles/${bundleId}/setting/${settingKey.value}`);
   const settingsResponse = await window.ProcessMaker.apiClient.get(`devlink/local-bundles/all-settings/${settingKey.value}`);
-
   // Check if response.data.config is not empty before parsing
   const configData = response.data.config ? JSON.parse(response.data.config) : { id: [] };
   selectedIds.value = configData.id || [];

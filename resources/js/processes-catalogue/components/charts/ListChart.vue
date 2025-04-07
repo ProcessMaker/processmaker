@@ -1,13 +1,13 @@
 <template>
   <div
-    class="list-chart w-100 h-100"
     v-if="rendered"
+    class="list-chart w-100 h-100"
   >
     <div
-      class="list-chart-preview d-flex align-items-center justify-content-center w-100 h-100 rounded-sm text-center"
       v-if="preview"
+      class="list-chart-preview d-flex align-items-center justify-content-center w-100 h-100 rounded-sm text-center"
     >
-      <i class="fas fa-fw fa-list"></i>
+      <i class="fas fa-fw fa-list" />
     </div>
     <div
       v-else
@@ -15,7 +15,7 @@
       :style="{ backgroundColor: backgroundColor }"
     >
       <div
-        v-if="!config.display.pivot && config.display.searchable"
+        v-if="!config?.display?.pivot && config?.display?.searchable"
         :class="textVariant"
         class="list-chart-search-container d-flex flex-column flex-md-row"
         :style="{ height: pmqlInputHeight + 3 + 'px' }"
@@ -29,11 +29,11 @@
             :styles="pmqlInputStyles"
             @submit="onNLQConversion"
             @inputresize="onInputResize"
-          >
-          </pmql-input>
+          />
         </div>
       </div>
       <b-table
+        ref="table"
         class="list-chart-table m-0 h-100 w-100"
         :class="textVariant"
         :head-variant="headVariant"
@@ -51,25 +51,24 @@
         :fields="fields"
         :sort-by="orderBy"
         :sort-desc="orderDesc"
-        ref="table"
-        @row-clicked="onRowClicked"
-        @row-middle-clicked="onRowMiddleClicked"
         :filter="filter"
         show-empty
+        @row-clicked="onRowClicked"
+        @row-middle-clicked="onRowMiddleClicked"
       >
-        <template v-slot:cell(actions)="row">
+        <template #cell(actions)="row">
           <b-link
-            v-if="!config.display.pivot && config.display.linkButton"
+            v-if="!config?.display?.pivot && config?.display?.linkButton"
+            v-b-tooltip.hover.left
             v-bind="{ href: row.item.ProcessMaker__url }"
             class="p-2"
             :class="linkVariant"
-            v-b-tooltip.hover.left
             :title="$t('Open Record')"
           >
-            <i class="fas fa-caret-square-right fa-lg fa-fw"></i>
+            <i class="fas fa-caret-square-right fa-lg fa-fw" />
           </b-link>
         </template>
-        <template v-slot:emptyfiltered>
+        <template #emptyfiltered>
           <div class="list-chart-empty h-100 w-100 text-center">
             No Data Available
           </div>
@@ -95,32 +94,32 @@
           </span>
         </div>
         <b-pagination
-          class="m-0"
           v-model="currentPage"
+          class="m-0"
           :total-rows="totalRows"
           :per-page="perPage"
           :aria-label="$t('Pagination')"
           hide-ellipsis
           limit="3"
         >
-          <template v-slot:first-text
-            ><i class="fas fa-step-backward fa-sm"></i
-          ></template>
-          <template v-slot:last-text
-            ><i class="fas fa-step-forward fa-sm"></i
-          ></template>
-          <template v-slot:prev-text
-            ><i
+          <template #first-text>
+            <i class="fas fa-step-backward fa-sm" />
+          </template>
+          <template #last-text>
+            <i class="fas fa-step-forward fa-sm" />
+          </template>
+          <template #prev-text>
+            <i
               class="fas fa-caret-left fa-lg"
               style="padding-top: 9px"
-            ></i
-          ></template>
-          <template v-slot:next-text
-            ><i
+            />
+          </template>
+          <template #next-text>
+            <i
               class="fas fa-caret-right fa-lg"
               style="padding-top: 9px"
-            ></i
-          ></template>
+            />
+          </template>
         </b-pagination>
       </div>
     </div>
@@ -128,12 +127,12 @@
 </template>
 
 <script>
-import ChartDataMixin from "../mixins/ChartData.js";
 import { PmqlInput } from "SharedComponents";
+import ChartDataMixin from "../mixins/ChartData.js";
 
 export default {
-  mixins: [ChartDataMixin],
   components: { PmqlInput },
+  mixins: [ChartDataMixin],
   props: [
     "data",
     "options",
@@ -142,7 +141,7 @@ export default {
     "additionalPmql",
     "savedSearchType",
   ],
-  data: function () {
+  data() {
     return {
       originalData: null,
       rendered: false,
@@ -169,11 +168,11 @@ export default {
     };
   },
   computed: {
-    stickyHeaderHeight: function () {
-      let height = 38 + this.pmqlInputHeight;
-      return "calc(0 - " + height + "px)";
+    stickyHeaderHeight() {
+      const height = 38 + this.pmqlInputHeight;
+      return `calc(0 - ${height}px)`;
     },
-    pmqlInputStyles: function () {
+    pmqlInputStyles() {
       return {
         container: {
           backgroundColor: this.searchInputBackgroundColor,
@@ -193,68 +192,66 @@ export default {
         },
       };
     },
-    orderDesc: function () {
+    orderDesc() {
       return this.orderDirection.toLowerCase() === "desc";
     },
-    backgroundColor: function () {
-      return this.config.colorScheme.colors[0];
+    backgroundColor() {
+      return this.config?.colorScheme?.colors?.[0] || "";
     },
-    searchInputBackgroundColor: function () {
+    searchInputBackgroundColor() {
       if (this.backgroundColor !== "#fff") {
         return "rgba(0, 0, 0, .3)";
       }
       return null;
     },
-    searchInputBorderColor: function () {
+    searchInputBorderColor() {
       if (this.backgroundColor !== "#fff") {
         return this.backgroundColor;
       }
       return null;
     },
-    searchInputTextColor: function () {
+    searchInputTextColor() {
       if (this.backgroundColor !== "#fff") {
         return "#fff";
       }
       return null;
     },
-    searchButtonBackgroundColor: function () {
+    searchButtonBackgroundColor() {
       if (this.backgroundColor !== "#fff") {
         return this.backgroundColor;
       }
       return null;
     },
-    headVariant: function () {
+    headVariant() {
       if (this.backgroundColor === "#fff") {
         return "light";
-      } else {
-        return "dark";
       }
+      return "dark";
     },
-    textVariant: function () {
-      let classes = [];
+    textVariant() {
+      const classes = [];
       if (this.backgroundColor === "#fff") {
         classes.push("list-chart-dark");
       } else {
         classes.push("list-chart-white");
       }
 
-      if (!this.config.display.pivot && this.config.display.searchable) {
+      if (!this.config?.display?.pivot && this.config?.display?.searchable) {
         classes.push("list-chart-searchable");
       }
 
       return classes.join(" ");
     },
-    linkVariant: function () {
+    linkVariant() {
       if (this.backgroundColor === "#fff") {
         return "text-primary";
-      } else {
-        return "text-white";
       }
+      return "text-white";
     },
-    striped: function () {
+    striped() {
       return this.backgroundColor !== "#fff";
     },
-    previewData: function () {
+    previewData() {
       return {
         datasets: [
           {
@@ -265,11 +262,25 @@ export default {
         ],
       };
     },
-    previewOptions: function () {
+    previewOptions() {
       return {};
     },
-    isClickable: function () {
-      return !this.config.display.pivot && this.config.display.linkRow;
+    isClickable() {
+      return !this.config?.display?.pivot && this.config?.display?.linkRow;
+    },
+  },
+  watch: {
+    data: {
+      handler(value) {
+        if (JSON.stringify(value) !== this.originalData) {
+          this.clear();
+          this.render();
+        }
+      },
+      deep: true,
+    },
+    filter(filter) {
+      this.currentPage = 1;
     },
   },
   mounted() {
@@ -278,7 +289,7 @@ export default {
   },
   methods: {
     uid(page, filter) {
-      return page + "::" + encodeURIComponent(filter);
+      return `${page}::${encodeURIComponent(filter)}`;
     },
     pageFromUid(uid) {
       return parseInt(uid.split("::")[0]);
@@ -290,9 +301,9 @@ export default {
       const uid = this.uid(context.currentPage, context.filter);
 
       if (
-        context.filter &&
-        typeof context.filter === "string" &&
-        context.filter.isPMQL()
+        context.filter
+        && typeof context.filter === "string"
+        && context.filter.isPMQL()
       ) {
         this.dataPmql = context.filter;
         this.dataFilter = "";
@@ -328,13 +339,13 @@ export default {
       }
     },
     setOrder(context) {
-      let prevOrderBy = this.orderBy;
-      let prevOrderDirection = this.orderDirection;
+      const prevOrderBy = this.orderBy;
+      const prevOrderDirection = this.orderDirection;
       this.orderBy = context.sortBy;
       this.orderDirection = context.sortDesc ? "DESC" : "ASC";
       if (
-        prevOrderBy != this.orderBy ||
-        prevOrderDirection != this.orderDirection
+        prevOrderBy != this.orderBy
+        || prevOrderDirection != this.orderDirection
       ) {
         this.clear();
       }
@@ -363,9 +374,8 @@ export default {
               resolve(this.pages[uid]);
             });
           });
-        } else {
-          return this.preloads[uid];
         }
+        return this.preloads[uid];
       }
     },
     preload(uid) {
@@ -381,7 +391,7 @@ export default {
     },
     onRowClicked(record, index, event) {
       if (record.ProcessMaker__url) {
-        if (!this.config.display.pivot && this.config.display.linkRow) {
+        if (!this.config?.display?.pivot && this.config?.display?.linkRow) {
           let target = "_self";
           if (event.metaKey || event.ctrlKey) {
             target = "_blank";
@@ -392,20 +402,19 @@ export default {
     },
     onRowMiddleClicked(record, index, event) {
       if (record.ProcessMaker__url) {
-        if (!this.config.display.pivot && this.config.display.linkRow) {
+        if (!this.config?.display?.pivot && this.config?.display?.linkRow) {
           window.open(record.ProcessMaker__url, "_blank");
         }
       }
     },
     pageUrl(page) {
-      let url =
-        `${this.url}?` +
-        `data_page=${page}&` +
-        `data_per_page=${this.perPage}&` +
-        `data_order_by=${encodeURIComponent(this.orderBy)}&` +
-        `data_order_direction=${this.orderDirection}&` +
-        `data_filter=${this.dataFilter}&` +
-        `data_pmql=${this.dataPmql}`;
+      let url = `${this.url}?`
+        + `data_page=${page}&`
+        + `data_per_page=${this.perPage}&`
+        + `data_order_by=${encodeURIComponent(this.orderBy)}&`
+        + `data_order_direction=${this.orderDirection}&`
+        + `data_filter=${this.dataFilter}&`
+        + `data_pmql=${this.dataPmql}`;
 
       if (this.additionalPmql?.length) {
         url += `&additional_pmql=${this.additionalPmql}`;
@@ -449,20 +458,6 @@ export default {
     },
     runSearch() {
       this.filter = this.query;
-    },
-  },
-  watch: {
-    data: {
-      handler: function (value) {
-        if (JSON.stringify(value) !== this.originalData) {
-          this.clear();
-          this.render();
-        }
-      },
-      deep: true,
-    },
-    filter(filter) {
-      this.currentPage = 1;
     },
   },
 };
