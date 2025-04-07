@@ -49,6 +49,7 @@ class Kernel extends HttpKernel
         'api' => [
             // API Middleware is defined with routeMiddleware below.
             // See routes/api.php
+            Middleware\LaravelTokenMiddleware::class,
         ],
         'engine' => [
             'auth:api',
