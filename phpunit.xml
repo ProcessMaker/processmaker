@@ -36,10 +36,16 @@
       <env name="APP_CONFIG_CACHE" value="bootstrap/cache/config.test.php"/>
 
       <!-- Caching config -->
-      <env name="CACHE_DRIVER" value="array" />
+      <env name="CACHE_DRIVER" value="redis" />
       <env name="QUEUE_DRIVER" value="sync" />
       <env name="MESSAGE_BROKER_DRIVER" value="default" />
-
+      <env name="REDIS_DRIVER" value="phpredis" />
+      <env name="REDIS_DB" value="10" />
+      <env name="REDIS_CACHE_DB" value="11" />
+      <env name="REDIS_CACHE_SETTING_DB" value="12" />
+      <env name="REDIS_PREFIX" value="test:" />
+      <env name="CACHE_SETTING_PREFIX" value="phpunit-settings:" />
+      
       <!-- Workflow Database -->
       <env name="DB_ADAPTER" value="mysql" />
       <env name="DB_DATABASE" value="test" />

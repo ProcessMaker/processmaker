@@ -298,6 +298,7 @@ export default {
         validateProcessFile(formData) {
             ProcessMaker.apiClient.post('/processes/import/validation', formData,
                 {
+                    timeout: 120000,
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }

@@ -22,6 +22,8 @@ class SettingObserver
         if ($config === 'null' || $config === null) {
             $setting->config = null;
 
+            $this->invalidateSettingCache($setting);
+
             return;
         }
 
@@ -67,10 +69,7 @@ class SettingObserver
                 break;
         }
 
-        $settingCache = SettingCacheFactory::getSettingsCache();
-        // Invalidate the setting cache
-        $key = $settingCache->createKey(['key' => $setting->key]);
-        $settingCache->invalidate(['key' => $key]);
+        $this->invalidateSettingCache($setting);
     }
 
     /**
@@ -80,6 +79,11 @@ class SettingObserver
      * @return void
      */
     public function deleted(Setting $setting): void
+    {
+        $this->invalidateSettingCache($setting);
+    }
+
+    private function invalidateSettingCache(Setting $setting)
     {
         $settingCache = SettingCacheFactory::getSettingsCache();
         // Invalidate the setting cache
