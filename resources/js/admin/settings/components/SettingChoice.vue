@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import _ from "lodash";
 import settingMixin from "../mixins/setting";
 
 export default {

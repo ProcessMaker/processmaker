@@ -399,19 +399,22 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
     public static function groupsByMenu($menuId)
     {
         $query = self::query()
-            ->select('group')
+            ->select([
+                \DB::raw('MAX(id) as id'),
+                'group',
+            ])
             ->groupBy('group')
             ->where('group_id', $menuId)
             ->orderBy('group', 'ASC')
             ->notHidden()
-            ->pluck('group');
-        $response = $query->toArray();
+            ->get();
+
         $result = [];
-        foreach ($response as &$value) {
-            // Technical debts: we need to add int key to identify a group, currently this is a label
+        foreach ($query as $setting) {
             $result[] = [
-                'id' => $value,
-                'name' => $value,
+                'id' => $setting->group,
+                'name' => $setting->group,
+                'setting_id' => $setting->id,
             ];
         }
 
