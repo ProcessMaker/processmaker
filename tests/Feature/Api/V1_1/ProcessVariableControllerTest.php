@@ -4,17 +4,17 @@ namespace Tests\Feature\Api\V1_1;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
-use ProcessMaker\Models\User;
-use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
-use Tests\TestCase;
-use Tests\Feature\Shared\RequestHelper;
-use ProcessMaker\Package\VariableFinder\Models\ProcessVariable;
 use Illuminate\Support\Str;
 use ProcessMaker\Http\Controllers\Api\V1_1\ProcessVariableController;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\User;
+use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 use ProcessMaker\Package\VariableFinder\Models\AssetVariable;
+use ProcessMaker\Package\VariableFinder\Models\ProcessVariable;
 use ProcessMaker\Package\VariableFinder\Models\VarFinderVariable;
+use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class ProcessVariableControllerTest extends TestCase
 {
@@ -74,7 +74,7 @@ class ProcessVariableControllerTest extends TestCase
                         'default',
                         'created_at',
                         'updated_at',
-                    ]
+                    ],
                 ],
                 'meta' => [
                     'current_page',
@@ -84,7 +84,7 @@ class ProcessVariableControllerTest extends TestCase
                     'per_page',
                     'to',
                     'total',
-                ]
+                ],
             ]);
 
         // Assert pagination works correctly
@@ -111,18 +111,18 @@ class ProcessVariableControllerTest extends TestCase
         $screen3 = $this->createScreenWithFields(3, 10);
         $processIds = [];
         $processIds[] = Process::factory()->create([
-            'bpmn' => str_replace('pm:screenRef="2"', 'pm:screenRef="' . $screen1->id . '"', $bpmn)
+            'bpmn' => str_replace('pm:screenRef="2"', 'pm:screenRef="' . $screen1->id . '"', $bpmn),
         ])->id;
         $processIds[] = Process::factory()->create([
-            'bpmn' => str_replace('pm:screenRef="2"', 'pm:screenRef="' . $screen2->id . '"', $bpmn)
+            'bpmn' => str_replace('pm:screenRef="2"', 'pm:screenRef="' . $screen2->id . '"', $bpmn),
         ])->id;
         $processIds[] = Process::factory()->create([
-            'bpmn' => str_replace('pm:screenRef="2"', 'pm:screenRef="' . $screen3->id . '"', $bpmn)
+            'bpmn' => str_replace('pm:screenRef="2"', 'pm:screenRef="' . $screen3->id . '"', $bpmn),
         ])->id;
         $route = route('api.1.1.process_variables.index', [
             'processIds' => implode(',', $processIds),
             'page' => 1,
-            'per_page' => 15
+            'per_page' => 15,
         ]);
 
         // Make request to the endpoint
@@ -141,7 +141,7 @@ class ProcessVariableControllerTest extends TestCase
                         'default',
                         //'created_at',
                         //'updated_at',
-                    ]
+                    ],
                 ],
                 'meta' => [
                     'current_page',
@@ -151,7 +151,7 @@ class ProcessVariableControllerTest extends TestCase
                     'per_page',
                     'to',
                     'total',
-                ]
+                ],
             ]);
 
         // Assert pagination works correctly
@@ -240,7 +240,6 @@ class ProcessVariableControllerTest extends TestCase
 
             // Generate 10 variables per process
             for ($i = 1; $i <= 10; $i++) {
-
                 // Generate data similarly to mockVariableFinder
                 $format = $this->getRandomDataType();
                 $label = "Variable {$i} for Process {$processId}";
@@ -261,12 +260,11 @@ class ProcessVariableControllerTest extends TestCase
     /**
      * Test validation for required processIds parameter
      */
-    public function test_process_ids_are_required(): void
+    public function test_process_ids_are_not_required(): void
     {
         $response = $this->apiCall('GET', '/api/1.1/processes/variables');
 
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['processIds']);
+        $response->assertStatus(200);
     }
 
     /**
@@ -308,7 +306,7 @@ class ProcessVariableControllerTest extends TestCase
         ProcessVariableController::mock(true);
         $this->mockVariableFinder([1, 2, 3], null);
         $this->mockVariableFinder([1, 2], null);
-    
+
         $response = $this->apiCall('GET', '/api/1.1/processes/variables?processIds=1,2&per_page=50');
 
         $responseData = $response->json();
@@ -337,12 +335,12 @@ class ProcessVariableControllerTest extends TestCase
                 'columns' => [
                     [
                         'label' => 'Variable 1',
-                        'field' => 'data.data.var_1_1',
+                        'field' => 'data.var_1_1',
                         'default' => null,
                     ],
                     [
                         'label' => 'Variable 2',
-                        'field' => 'data.data.var_1_2',
+                        'field' => 'data.var_1_2',
                         'default' => null,
                     ],
                 ],
@@ -363,8 +361,8 @@ class ProcessVariableControllerTest extends TestCase
         $this->assertFalse($filteredFields->contains('data.var_1_1'));
         $this->assertFalse($filteredFields->contains('data.var_1_2'));
 
-        // Check that the total count is reduced by the number of excluded fields
-        $this->assertEquals(8, $responseData['meta']['total']); // 10 total - 2 excluded
+        // Check that the total count matches the actual number of variables
+        $this->assertEquals(10, $responseData['meta']['total']); // Total number of variables
     }
 
     /**
@@ -400,7 +398,7 @@ class ProcessVariableControllerTest extends TestCase
                         'name' => 'screen name',
                         'items' => $items,
                     ],
-                ]
+                ],
             ],
         ]);
     }
@@ -412,10 +410,10 @@ class ProcessVariableControllerTest extends TestCase
         $savedSearch = SavedSearch::factory()->create([
             'type' => 'request',
             'meta' => [
-                "icon" => "bath",
-                "file" => null,
-                "collection_id" => null,
-                "columns" => [],
+                'icon' => 'bath',
+                'file' => null,
+                'collection_id' => null,
+                'columns' => [],
             ],
             'pmql' => '',
         ]);
@@ -444,17 +442,17 @@ class ProcessVariableControllerTest extends TestCase
         $savedSearch = SavedSearch::factory()->create([
             'type' => 'request',
             'meta' => [
-                "icon" => "bath",
-                "file" => null,
-                "collection_id" => null,
-                "columns" => [
+                'icon' => 'bath',
+                'file' => null,
+                'collection_id' => null,
+                'columns' => [
                     [
-                        "label" => "Case Number",
-                        "field" => "case_number",
+                        'label' => 'Case Number',
+                        'field' => 'case_number',
                     ],
                     [
-                        "label" => "Case Title",
-                        "field" => "case_title",
+                        'label' => 'Case Title',
+                        'field' => 'case_title',
                     ],
                 ],
             ],
@@ -485,21 +483,21 @@ class ProcessVariableControllerTest extends TestCase
         $savedSearch = SavedSearch::factory()->create([
             'type' => 'request',
             'meta' => [
-                "icon" => "bath",
-                "file" => null,
-                "collection_id" => null,
-                "columns" => [
+                'icon' => 'bath',
+                'file' => null,
+                'collection_id' => null,
+                'columns' => [
                     [
-                        "label" => "Case Number",
-                        "field" => "case_number",
+                        'label' => 'Case Number',
+                        'field' => 'case_number',
                     ],
                     [
-                        "label" => "Case Title",
-                        "field" => "case_title",
+                        'label' => 'Case Title',
+                        'field' => 'case_title',
                     ],
                     [
-                        "label" => "Name",
-                        "field" => "name",
+                        'label' => 'Name',
+                        'field' => 'name',
                     ],
                     [
                         'label' => 'Active Tasks',

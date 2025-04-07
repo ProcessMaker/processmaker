@@ -26,10 +26,13 @@ class HandleRedirectListener
         $params = self::$redirectionParams;
         $processRequest = self::$processRequest;
 
+        // Only get active tokens if there is a valid process request
         if ($processRequest !== null) {
+            $params['activeTokens'] = ProcessRequest::getActiveTokens($processRequest);
             $event = new RedirectToEvent($processRequest, $method, $params);
             event($event);
-            // clean params to prevent send the same redirect multiple times
+
+            // Clean params to prevent sending the same redirect multiple times
             self::$redirectionParams = [];
             self::$redirectionMethod = '';
             self::$processRequest = null;

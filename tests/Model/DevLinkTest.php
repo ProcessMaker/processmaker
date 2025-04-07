@@ -92,7 +92,7 @@ class DevLinkTest extends TestCase
                 ]],
             ]),
             'http://remote-instance.test/api/1.0/devlink/export-local-bundle/123/settings-payloads' => Http::response([
-                'payloads' => [$exportsSettingsPayloads],
+                'payloads' => $exportsSettingsPayloads,
             ]),
             'http://remote-instance.test/api/1.0/devlink/local-bundles/123/add-bundle-instance' => Http::response([], 200),
         ]);
