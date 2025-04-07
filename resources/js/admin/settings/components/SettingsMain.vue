@@ -11,12 +11,17 @@
     </div>
     <div class="setting-info pl-3">
       <settings-listing
-        v-if="selectedItem"
+        v-if="selectedItem && !emailListenerConfigurationComponent"
         :key="setListingKey"
         ref="listings"
         :group="group"
         @refresh="refresh"
         @refresh-all="refreshAll"
+      />
+      <component
+        :is="emailListenerConfigurationComponent"
+        ref="emailListenerConfiguration"
+        :setting-id="settingId"
       />
     </div>
   </div>
@@ -31,14 +36,28 @@ export default {
   data() {
     return {
       currentTab: 0,
+      settingId: null,
       group: "",
       setListingKey: 0,
       selectedItem: false,
     };
   },
+  computed: {
+    isEmailStartEventInstalled() {
+      return !!window.ProcessMaker.EmailStartEvent;
+    },
+    emailListenerConfigurationComponent() {
+      if (this.isEmailStartEventInstalled && this.group.startsWith('Email Listener')) {
+        return window.ProcessMaker.EmailStartEvent.EmailListenerConfiguration;
+      }
+
+      return null;
+    },
+  },
   methods: {
     selectGroup(item) {
       this.group = item.name;
+      this.settingId = item.setting_id;
       this.selectedItem = true;
       this.reRender();
     },
