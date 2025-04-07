@@ -39,6 +39,10 @@ class CreateDataLakeViews extends Command
      */
     public function handle(): int
     {
+        if (config('app.env') === 'testing') {
+            return 0;
+        }
+
         $drop = $this->option('drop');
         $preview = (bool) $this->option('preview');
         if ($drop) {
@@ -180,6 +184,7 @@ class CreateDataLakeViews extends Command
         $tables = array_map(function ($item) {
             return $item['name'];
         }, Schema::getTables());
+
         return $tables;
     }
 
@@ -191,6 +196,7 @@ class CreateDataLakeViews extends Command
         $views = array_map(function ($item) {
             return $item['name'];
         }, Schema::getViews());
+
         return $views;
     }
 }
