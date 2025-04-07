@@ -39,10 +39,6 @@ abstract class TestCase extends BaseTestCase
 
     private static $databaseSnapshotFile = null;
 
-    private $testStartTime = null;
-
-    private static $testDurations = [];
-
     public $dropViews = true;
 
     public $skipSetupMethods = ['setUpBeforeClass', 'setUpTheTestEnvironment', 'setUpTraits'];
@@ -95,8 +91,6 @@ abstract class TestCase extends BaseTestCase
         if (!self::$databaseSnapshotFile) {
             self::$databaseSnapshotFile = $this->takeDatabaseSnapshot();
         }
-
-        // $this->testStartTime = microtime(true);
     }
 
     /**
@@ -146,10 +140,6 @@ abstract class TestCase extends BaseTestCase
                 $this->$method();
             }
         }
-
-        // $testDuration = microtime(true) - $this->testStartTime;
-        // $test = get_class($this) . '::' . $this->name();
-        // self::$testDurations[$test] = $testDuration;
     }
 
     protected function withPersonalAccessClient()
