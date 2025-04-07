@@ -26,7 +26,12 @@
 @endsection
 
 @section('js')
+    @if (hasPackage('package-email-start-event'))
+    <script src="{{ mix('js/email-listener.js', 'vendor/processmaker/packages/package-email-start-event') }}"></script>
+    @endif
+
     <script src="{{mix('js/admin/settings/index.js')}}"></script>
+
     @if($errors->has('error'))
         <script>
             window.ProcessMaker.alert("{{ $errors->first('error') }}", 'danger');
