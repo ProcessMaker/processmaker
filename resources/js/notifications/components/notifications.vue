@@ -117,6 +117,7 @@
               :key="index"
               :notification="item"
               :show-time="true"
+              :notification-messages="notificationMessages"
             />
           </template>
         </div>
@@ -203,11 +204,13 @@
             <b-button variant="primary" href="/notifications">{{ $t('View All Notifications') }}</b-button>
           </div>
           <div class="items" v-else>
+          item {{ notificationMessages }}
             <notification-item
               v-for="(item, index) in filteredMessages"
               :key="index"
               :notification="item"
               :show-time="true"
+              :notification-messages="notificationMessages"
             />
           </div>
         </div>
@@ -228,6 +231,7 @@ export default {
   mixins: [notificationsMixin],
   props: {
     messages: Array,
+    notificationMessages: Object,
   },
   data() {
     return {
@@ -282,6 +286,7 @@ export default {
     },
   },
   mounted() {
+    console.log('notificationMessages', this.notificationMessages);
     this.checkScreenWidth();
     window.addEventListener("resize", this.checkScreenWidth);
 

@@ -65,6 +65,9 @@
       @endif
     @endif
   </script>
+  <script type="text/javascript">
+    window.Processmaker.notificationMessages = @json(config('notification-messages'));
+  </script>
     @isset($addons)
         <script>
             var addons = [];
