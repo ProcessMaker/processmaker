@@ -59,6 +59,8 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
+        Passport::enablePasswordGrant();
+
         Passport::authorizationView('auth.oauth2.authorize');
 
         Gate::before(function ($user) {

@@ -90,7 +90,13 @@ class ScriptMicroserviceRunner
 
         Log::debug('Payload: ' . print_r($payload, true));
 
-        $response = Http::withToken($this->getAccessToken())
+        // Set a theoretical maximum timeout of 1 day (86400 seconds)
+        // since the laravel client must have a timeout set.
+        // The actual script timeout will be handled by the microservice.
+        $clientTimeout = 86400;
+
+        $response = Http::timeout($clientTimeout)
+            ->withToken($this->getAccessToken())
             ->post(config('script-runner-microservice.base_url') . '/requests/create', $payload);
 
         $response->throw();

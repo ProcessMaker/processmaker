@@ -1132,4 +1132,19 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
 
         return $query->where('case_number', $caseNumber);
     }
+
+    /**
+     * Get the IDs of the active tokens for a process request
+     *
+     * @param ProcessRequest $processRequest
+     * @return array Array of active tokens IDs
+     */
+    public static function getActiveTokens(self $processRequest)
+    {
+        return $processRequest->tokens()
+            ->select('id')
+            ->where('status', 'ACTIVE')
+            ->pluck('id')
+            ->toArray();
+    }
 }

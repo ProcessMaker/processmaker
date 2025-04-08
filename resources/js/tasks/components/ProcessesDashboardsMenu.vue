@@ -150,7 +150,6 @@ export default {
     buildURL() {
       return `process_bookmarks/processes/menu?
         &pmql=${encodeURIComponent(this.pmql)}
-        &bookmark=true
         &launchpad=true
         &order_by=name&order_direction=asc
         &include=user,categories,category`;
@@ -174,6 +173,11 @@ export default {
       const url = this.buildURLDashboardsScreen(id);
 
       ProcessMaker.apiClient.get(url).then((response) => {
+        if (!response.data.dashboard) {
+          this.clearSelection();
+          this.$emit('get-all-tasks');
+          return;
+        }
         this.screen = response.data.screen;
         this.formData = response.data.formData;
 

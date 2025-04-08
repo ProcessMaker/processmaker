@@ -22,6 +22,8 @@ class SettingObserver
         if ($config === 'null' || $config === null) {
             $setting->config = null;
 
+            $this->invalidateSettingCache($setting);
+
             return;
         }
 
@@ -67,10 +69,7 @@ class SettingObserver
                 break;
         }
 
-        $settingCache = SettingCacheFactory::getSettingsCache();
-        // Invalidate the setting cache
-        $key = $settingCache->createKey(['key' => $setting->key]);
-        $settingCache->invalidate(['key' => $key]);
+        $this->invalidateSettingCache($setting);
     }
 
     /**
@@ -81,40 +80,14 @@ class SettingObserver
      */
     public function deleted(Setting $setting): void
     {
+        $this->invalidateSettingCache($setting);
+    }
+
+    private function invalidateSettingCache(Setting $setting)
+    {
         $settingCache = SettingCacheFactory::getSettingsCache();
         // Invalidate the setting cache
         $key = $settingCache->createKey(['key' => $setting->key]);
         $settingCache->invalidate(['key' => $key]);
-    }
-
-    /**
-     * Handle the setting "updated" event.
-     *
-     * @param  Setting  $setting
-     * @return void
-     */
-    public function updated(Setting $setting): void
-    {
-        $this->updateConfigurationCache($setting);
-    }
-
-    /**
-     * Updates the configuration file with the new value of the setting and then cache the updated configuration.
-     *
-     * @param Setting setting
-     *
-     * @return void
-     */
-    private function updateConfigurationCache(Setting $setting): void
-    {
-        if (app()->environment() === 'testing') {
-            return;
-        }
-
-        if (app()->configurationIsCached() && $setting->config !== config([$setting->key])) {
-            config([$setting->key => $setting->config]);
-
-            \Artisan::call('config:cache');
-        }
     }
 }

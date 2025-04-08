@@ -14,20 +14,20 @@ use Illuminate\Support\Facades\Redis;
 use Illuminate\Testing\Constraints\ArraySubset;
 use Illuminate\Testing\Exceptions\InvalidArgumentException;
 use PDOException;
-use PHPUnit\Event\Facade as EventFacade;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Jobs\RefreshArtisanCaches;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\User;
 use Tests\TestSeeder;
 
 abstract class TestCase extends BaseTestCase
 {
     use RefreshDatabase;
 
-    public $withPermissions = false;
+    protected $connectionsToTransact = ['processmaker', 'data'];
 
-    protected $skipTeardownPDOException = false;
+    public $withPermissions = false;
 
     protected $seeder = TestSeeder::class;
 
@@ -35,24 +35,43 @@ abstract class TestCase extends BaseTestCase
 
     private static $cacheCleared = false;
 
+    private static $currentNonTransactionalTest = null;
+
+    private static $databaseSnapshotFile = null;
+
+    public $dropViews = true;
+
+    public $skipSetupMethods = ['setUpBeforeClass', 'setUpTheTestEnvironment', 'setUpTraits'];
+
+    public $skipTearDownMethods = ['tearDownAfterClass', 'tearDownTheTestEnvironment', 'tearDownAfterClassUsingTestCase'];
+
     /**
      * Run additional setUps from traits.
      */
     protected function setUp(): void
     {
+        $class = get_class($this);
+
+        if (self::$currentNonTransactionalTest && self::$currentNonTransactionalTest !== $class) {
+            // The last test to run was non-transactional, so we need to refresh the database
+            $this->restoreDatabaseFromSnapshot();
+            self::$currentNonTransactionalTest = null;
+        }
+
         if ($this->connectionsToTransact() === []) {
-            $this->markTestSkipped('Skipping for Laravel 11');
+            self::$currentNonTransactionalTest = $class;
         }
 
         if (!$this->populateDatabase()) {
             RefreshDatabaseState::$migrated = true;
         }
 
-        $this->skipTeardownPDOException = false;
-
         parent::setUp();
 
-        Redis::flushall();
+        // Clear Redis cache before running tests
+        foreach (['default', 'cache', 'cache_settings'] as $connection) {
+            Redis::connection($connection)->flushDb();
+        }
 
         if (!self::$cacheCleared) {
             Artisan::call('optimize:clear');
@@ -61,11 +80,16 @@ abstract class TestCase extends BaseTestCase
 
         $this->disableSetContentMiddleware();
 
-        foreach (get_class_methods($this) as $method) {
+        $classMethods = get_class_methods($this);
+        foreach (array_diff($classMethods, $this->skipSetupMethods) as $method) {
             $imethod = strtolower($method);
             if (strpos($imethod, 'setup') === 0 && $imethod !== 'setup') {
                 $this->$method();
             }
+        }
+
+        if (!self::$databaseSnapshotFile) {
+            self::$databaseSnapshotFile = $this->takeDatabaseSnapshot();
         }
     }
 
@@ -107,14 +131,10 @@ abstract class TestCase extends BaseTestCase
      */
     protected function tearDown(): void
     {
-        try {
-            parent::tearDown();
-        } catch (PDOException $e) {
-            if (!$this->skipTeardownPDOException) {
-                throw $e;
-            }
-        }
-        foreach (get_class_methods($this) as $method) {
+        parent::tearDown();
+
+        $classMethods = get_class_methods($this);
+        foreach (array_diff($classMethods, $this->skipTearDownMethods) as $method) {
             $imethod = strtolower($method);
             if (strpos($imethod, 'teardown') === 0 && $imethod !== 'teardown') {
                 $this->$method();
@@ -195,5 +215,59 @@ abstract class TestCase extends BaseTestCase
     private function populateDatabase() : bool
     {
         return (bool) env('POPULATE_DATABASE', true);
+    }
+
+    private function takeDatabaseSnapshot($filename = 'test-db-snapshot.db')
+    {
+        if (!$this->populateDatabase()) {
+            return;
+        }
+
+        $snapshotFile = base_path($filename);
+        $command = 'mysqldump ' . $this->mysqlConnectionString();
+        $command .= ' ' . env('DB_DATABASE') . ' > ' . $snapshotFile;
+        exec($command, $output, $return);
+        if ($return !== 0) {
+            dd("Failed to take database snapshot: $command");
+        }
+
+        return $snapshotFile;
+    }
+
+    public function restoreDatabaseFromSnapshot($filename = 'test-db-snapshot.db')
+    {
+        if (!$this->populateDatabase()) {
+            return;
+        }
+
+        if (!file_exists(base_path($filename))) {
+            throw new \Exception("Database snapshot not found: $filename");
+        }
+        $command = 'mysql ' . $this->mysqlConnectionString();
+        $command .= ' ' . env('DB_DATABASE') . ' < ' . base_path($filename);
+        if (system($command) === false) {
+            dd("Failed to restore database from snapshot: $command");
+        }
+    }
+
+    private function mysqlConnectionString()
+    {
+        $user = env('DB_USERNAME');
+        $password = env('DB_PASSWORD');
+        $host = env('DB_HOSTNAME');
+        $port = env('DB_PORT');
+
+        $command = '-u ' . $user;
+        if (!empty($password)) {
+            $command .= ' -p\'' . $password . '\'';
+        }
+        if (!empty($host)) {
+            $command .= ' -h ' . $host;
+        }
+        if (!empty($port)) {
+            $command .= ' -P ' . $port;
+        }
+
+        return $command;
     }
 }

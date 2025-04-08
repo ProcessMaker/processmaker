@@ -42,7 +42,6 @@ class PopulateCasesParticipatedTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->markTestSkipped('Skipping for Laravel 11');
         parent::setUp();
 
         $this->user = User::factory()->create();
@@ -77,6 +76,11 @@ class PopulateCasesParticipatedTest extends TestCase
         $this->artisan('migrate', [
             '--path' => 'upgrades/2024_10_09_152947_populate_cases_participated.php',
         ])->run();
+
+        // This upgrade creates a table so we need to restore the database whenever this is run.
+        $this->beforeApplicationDestroyed(function () {
+            $this->restoreDatabaseFromSnapshot();
+        });
     }
 
     private function getCaseStartedData($tokens)

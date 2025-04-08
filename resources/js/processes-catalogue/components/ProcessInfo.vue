@@ -84,6 +84,7 @@ export default {
       this.$root.$emit("clickCarouselImage", false);
     },
     updateMyTasksColumns(columns) {
+      this.myTasksColumns = columns;
       this.$refs['processTab'].updateColumnsByType('myTasks', columns);
     },
     getMyTasksColumns() {
