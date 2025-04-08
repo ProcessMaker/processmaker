@@ -14,12 +14,6 @@ class BoundaryEventsTest extends TestCase
     use RequestHelper;
     use ProcessTestingTrait;
 
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->markTestSkipped('Skipping for Laravel 11');
-    }
-
     /**
      * Tests the a process with a signal boundary event
      */

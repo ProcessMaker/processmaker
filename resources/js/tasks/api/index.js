@@ -31,3 +31,10 @@ export const updateComment = async ({
   });
   return response.data;
 };
+
+export const updateCollection = async ({ collectionId, recordId, data }) => {
+  const api = getApi();
+  const response = await api.put(`collections/${collectionId}/records/${recordId}`, data);
+
+  return response.data;
+};
