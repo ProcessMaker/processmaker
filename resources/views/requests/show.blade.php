@@ -471,9 +471,6 @@
       apiTimeout: {{config('app.api_timeout')}}
     };
   </script>
-  <script type="text/javascript">
-    window.Processmaker.notificationMessages = @json(config('notification-messages'));
-  </script>
 
   @foreach($managerModelerScripts as $script)
     <script src="{{ $script }}"></script>
