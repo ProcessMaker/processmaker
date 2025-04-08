@@ -285,7 +285,6 @@ export default {
     },
   },
   mounted() {
-    console.log('notificationMessages', this.notificationMessages);
     this.checkScreenWidth();
     window.addEventListener("resize", this.checkScreenWidth);
 
