@@ -22,6 +22,7 @@
               <notification-message
                 :notification="notification"
                 :show-time="showTime"
+                :notification-messages="notificationMessages"
               />
             </h5>
             <h6 class="card-subtitle mb-2 text-muted">
@@ -91,6 +92,7 @@
                 <notification-message
                   :notification="props.rowData"
                   :style="{ fontSize: '14px' }"
+                  :notification-messages="notificationMessages"
                 />
               </span>
             </a>
@@ -129,7 +131,7 @@ export default {
     AvatarImage,
   },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
-  props: ["filter", "filterComments", "type", "showTime"],
+  props: ["filter", "filterComments", "type", "showTime", "notificationMessages"],
   data() {
     return {
       response: null,

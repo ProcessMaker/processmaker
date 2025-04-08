@@ -40,7 +40,13 @@
             </div>
           </div>
         </div>
-        <notifications-list :type="null" :filter="filter" :filter-comments="filterComments" style="margin: 16px;" />
+        <notifications-list 
+          :type="null" 
+          :filter="filter" 
+          :filter-comments="filterComments" 
+          style="margin: 16px;" 
+          :notification-messages='@json(config("notifications.messages"))'
+        />
       </div>
     </div>
 </div>
