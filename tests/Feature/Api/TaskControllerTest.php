@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api;
 
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
@@ -252,7 +253,7 @@ class TaskControllerTest extends TestCase
         $this->assertCount(1, $response->json()['data']);
         $this->assertEquals($selfServiceTask->id, $response->json()['data'][0]['id']);
     }
-    
+
     /**
      * Test verify the corresponding data for each task
      *
