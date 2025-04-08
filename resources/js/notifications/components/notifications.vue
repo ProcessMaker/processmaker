@@ -204,7 +204,6 @@
             <b-button variant="primary" href="/notifications">{{ $t('View All Notifications') }}</b-button>
           </div>
           <div class="items" v-else>
-          item {{ notificationMessages }}
             <notification-item
               v-for="(item, index) in filteredMessages"
               :key="index"
