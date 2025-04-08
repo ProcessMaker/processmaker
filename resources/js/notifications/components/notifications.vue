@@ -117,7 +117,6 @@
               :key="index"
               :notification="item"
               :show-time="true"
-              :notification-messages="notificationMessages"
             />
           </template>
         </div>
@@ -209,7 +208,6 @@
               :key="index"
               :notification="item"
               :show-time="true"
-              :notification-messages="notificationMessages"
             />
           </div>
         </div>
@@ -230,7 +228,6 @@ export default {
   mixins: [notificationsMixin],
   props: {
     messages: Array,
-    notificationMessages: Object,
   },
   data() {
     return {

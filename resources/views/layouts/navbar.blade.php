@@ -137,7 +137,6 @@
                 id="navbar-notifications-button" 
                 v-bind:is="'notifications'" 
                 v-bind:messages="messages"
-                :notification-messages='@json(config("notifications.messages"))'>
             >
             </notifications>
             <ol class="separator-ol"><li class="separator d-none d-lg-block"></li></ol>

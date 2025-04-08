@@ -9,8 +9,7 @@
         <notification-user :notification="notification" />
         <notification-message
           :notification="notification"
-          :show-time="showTime"
-          :notification-messages="notificationMessages"
+          :show-time="showTime" 
         />
       </b-row>
     </b-container>
@@ -36,10 +35,6 @@ export default {
     showTime: {
       type: Boolean,
       default: false,
-    },
-    notificationMessages: {
-      type: Object,
-      required: true,
     },
   },
   data() {
