@@ -19,6 +19,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        Middleware\TrustHosts::class,
         Middleware\TrustProxies::class,
         Middleware\BrowserCache::class,
         ServerTimingMiddleware::class,
@@ -49,6 +50,7 @@ class Kernel extends HttpKernel
         'api' => [
             // API Middleware is defined with routeMiddleware below.
             // See routes/api.php
+            Middleware\LaravelTokenMiddleware::class,
         ],
         'engine' => [
             'auth:api',
@@ -87,8 +89,7 @@ class Kernel extends HttpKernel
         'no-cache' => Middleware\NoCache::class,
         'admin' => Middleware\IsAdmin::class,
         'etag' => Middleware\Etag\HandleEtag::class,
-        'file_size_check' => Middleware\FileSizeCheck::class,
-        'laravel_token' => Middleware\LaravelTokenMiddleware::class,
+        'file_size_check' => Middleware\FileSizeCheck::class
     ];
 
     /**
