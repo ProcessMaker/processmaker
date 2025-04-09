@@ -6,10 +6,10 @@
   >
     <template #modal-title>
       <div class="tw-self-stretch tw-text-base tw-font-medium tw-text-[#20242A]">
-        {{ $t("URL Creation") }}
+        {{ $t("Configure URL Parents for Embedding") }}
       </div>
       <div class="tw-self-stretch tw-text-sm tw-text-[#596372]">
-        {{ $t("Please provide your information to create an account.") }}
+        {{ $t("Please provide a valid URL (e.g., https://example.com ) to specify the allowed origin(s) permitted to embed ProcessMaker.") }}
       </div>
     </template>
     <div class="tw-block">
@@ -31,16 +31,19 @@
       <div class="form-group col-md-12">
         <div class="d-flex flex-column">
           <label for="url">
-            {{ $t("Site Name") }}
+            {{ $t("Url") }}
           </label>
           <b-form-input
             id="url"
             v-model="url"
             type="text"
             required
-            placeholder="http://www.sample.org/head"
+            placeholder="https://www.sample.org/head"
             :state="stateURL"
           />
+          <div v-if="urlError" class="text-danger mt-1">
+            {{ urlError }}
+          </div>
         </div>
       </div>
     </div>
@@ -68,6 +71,7 @@ export default {
       stateURL: null,
       groupName: "",
       group_id: 3,
+      urlError: "",
     };
   },
   methods: {
@@ -79,6 +83,11 @@ export default {
     clear() {
       this.siteName = "";
       this.url = "";
+      this.urlError = "";
+    },
+    validateURL(url) {
+      const pattern = /^(https?:\/\/)?(\*\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?(\/.*)?$/;
+      return pattern.test(url);
     },
     addWhiteListURL() {
       if (!this.siteName) {
@@ -88,6 +97,14 @@ export default {
       if (!this.url) {
         this.stateURL = false;
         return;
+      }
+      // Validate the URL using the regex pattern
+      if (!this.validateURL(this.url)) {
+        this.stateURL = false;
+        this.urlError = __("Please enter a valid URL.");
+        return;
+      } else {
+        this.urlError = "";
       }
       const site = this.siteName.toLocaleLowerCase().trim().replaceAll(" ", "_");
       const data = {
