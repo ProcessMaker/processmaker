@@ -26,15 +26,15 @@ class AddMenuFrameWhitelist extends Upgrade
             'name' => 'Add URL',
             'hidden' => true,
             'ui' => [
-                "props" => [
-                    "variant" => "primary",
-                    "position" => "top",
-                    "order" => "100",
-                    "icon" => "fas fa-plus"
+                'props' => [
+                    'variant' => 'primary',
+                    'position' => 'top',
+                    'order' => '100',
+                    'icon' => 'fas fa-plus',
                 ],
-                "handler" => "addWhiteListURL"
-            ]
-            ];
+                'handler' => 'addWhiteListURL',
+            ],
+        ];
 
         Setting::firstOrCreate($whiteListKey, $whiteListOption);
     }
@@ -46,6 +46,9 @@ class AddMenuFrameWhitelist extends Upgrade
      */
     public function down()
     {
-        //
+        $whiteListKey = [
+            'key' => 'white_list_frame',
+        ];
+        Setting::where($whiteListKey)->delete();
     }
 }
