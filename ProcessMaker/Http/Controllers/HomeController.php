@@ -22,7 +22,7 @@ class HomeController extends Controller
                 }
 
                 // Check if there is at least one custom dashboard per user
-                $customDashboardExists = \ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::where('type', 'DASHBOARD')
+                $customDashboardExists = \ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::whereIn('type', ['DASHBOARD', 'URL'])
                     ->where('assignable_id', $user->id)
                     ->where('assignable_type', 'ProcessMaker\Models\User')
                     ->count() > 0;
@@ -30,7 +30,7 @@ class HomeController extends Controller
                 // Check if there is at least one custom dashboard per group only first match is selected
                 if (!$customDashboardExists) {
                     $customDashboardExists = collect($groups)->some(function ($groupId) {
-                        return \ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::where('type', 'DASHBOARD')
+                        return \ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::whereIn('type', ['DASHBOARD', 'URL'])
                             ->where('assignable_type', 'ProcessMaker\Models\Group')
                             ->where('assignable_id', $groupId)
                             ->exists();

@@ -9,6 +9,15 @@ export default [
     nameField: 'name',
   },
   {
+    type: 'pm_block',
+    name: 'PM Blocks',
+    url: 'api.pm-blocks.index',
+    listingUrl: '/designer/pm-blocks',
+    class: 'ProcessMaker\\Package\\PackagePmBlocks\\Models\\PmBlock',
+    icon: 'fp-pm-block',
+    nameField: 'name',
+  },
+  {
     type: 'screen',
     name: 'Screens',
     url: 'api.screens.index',

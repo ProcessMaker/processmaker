@@ -193,7 +193,6 @@ class UsersTest extends TestCase
 
     public function testDefaultValuesOfUser()
     {
-        Redis::flushall();
         config()->set('app.timezone', 'America/Los_Angeles');
         putenv('DATE_FORMAT=m/d/Y H:i');
         putenv('APP_LANG=en');
