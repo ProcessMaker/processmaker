@@ -273,13 +273,7 @@ class TaskController extends Controller
      */
     public function show(ProcessRequestToken $task)
     {
-        // Obtener el modelo con los datos
-        $taskData = $task->toArray();
-        
-        // Asegúrate de que el campo comments esté presente
-        $taskData['comments'] = $task->comments ?? ''; // Aquí puedes ajustar la lógica para obtener los comentarios
-        
-        return new Resource($taskData);
+        return new Resource($task);
     }
 
     /**
