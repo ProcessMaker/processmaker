@@ -22,6 +22,14 @@ Vue.component("LanguageSelectorButton", (resolve) => {
   }
 });
 
+Vue.component("AgentChatButton", (resolve) => {
+  if (window.ProcessMaker.agentChatButtonComponent) {
+    resolve(window.ProcessMaker.agentChatButtonComponent);
+  } else {
+    window.ProcessMaker.agentChatButtonComponentResolve = resolve;
+  }
+});
+
 // Variables
 const browser = navigator.userAgent;
 const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(browser);

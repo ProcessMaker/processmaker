@@ -114,6 +114,13 @@ window.ProcessMaker.navbar = new Vue({
         window.ProcessMaker.globalSearchComponentResolve = resolve;
       }
     },
+    AgentChatButton: (resolve) => {
+      if (window.ProcessMaker.agentChatButtonComponent) {
+        resolve(window.ProcessMaker.agentChatButtonComponent);
+      } else {
+        window.ProcessMaker.agentChatButtonComponentResolve = resolve;
+      }
+    },
   },
   data() {
     return {

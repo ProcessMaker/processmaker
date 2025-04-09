@@ -136,6 +136,7 @@
             <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages">
             </notifications>
             <ol class="separator-ol"><li class="separator d-none d-lg-block"></li></ol>
+            <agent-chat-button></agent-chat-button>
             <ol class="separator-ol">
                 <li class="d-lg-block">
                     @php
