@@ -401,6 +401,7 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
         $query = self::query()
             ->select([
                 \DB::raw('MAX(id) as id'),
+                \DB::raw('MAX(`key`) as setting_key'),
                 'group',
             ])
             ->groupBy('group')
@@ -415,6 +416,7 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
                 'id' => $setting->group,
                 'name' => $setting->group,
                 'setting_id' => $setting->id,
+                'setting_key' => $setting->setting_key,
             ];
         }
 
