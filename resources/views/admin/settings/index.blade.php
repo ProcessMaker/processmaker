@@ -27,7 +27,7 @@
 
 @section('js')
     @if (hasPackage('package-email-start-event'))
-    <script src="{{ mix('js/email-listener.js', 'vendor/processmaker/packages/package-email-start-event') }}"></script>
+    <script type="module" src="{{ mix('js/email-listener.js', 'vendor/processmaker/packages/package-email-start-event') }}"></script>
     @endif
 
     <script src="{{mix('js/admin/settings/index.js')}}"></script>

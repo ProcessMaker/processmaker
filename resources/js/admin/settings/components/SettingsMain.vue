@@ -37,17 +37,16 @@ export default {
     return {
       currentTab: 0,
       settingId: null,
+      settingKey: null,
       group: "",
       setListingKey: 0,
       selectedItem: false,
+      isEmailStartEventInstalled: false,
     };
   },
   computed: {
-    isEmailStartEventInstalled() {
-      return !!window.ProcessMaker.EmailStartEvent;
-    },
     emailListenerConfigurationComponent() {
-      if (this.isEmailStartEventInstalled && this.group.startsWith('Email Listener')) {
+      if (this.isEmailStartEventInstalled && this.settingKey.includes('email_start_event')) {
         return window.ProcessMaker.EmailStartEvent.EmailListenerConfiguration;
       }
 
@@ -56,8 +55,11 @@ export default {
   },
   methods: {
     selectGroup(item) {
+      this.isEmailStartEventInstalled = !!window.ProcessMaker.EmailStartEvent;
+
       this.group = item.name;
       this.settingId = item.setting_id;
+      this.settingKey = item.setting_key;
       this.selectedItem = true;
       this.reRender();
     },
