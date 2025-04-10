@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use DB;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -269,10 +270,22 @@ class SettingController extends Controller
     {
         $setting = new Setting();
 
-        $setting->fill($request->json()->all());
-        $setting->saveOrFail();
+        try {
+            $setting->fill($request->json()->all());
+            $setting->saveOrFail();
 
-        return response([], 201);
+            return response([], 201);
+        } catch (QueryException $e) {
+            // Check for duplicate entry error code
+            if ($e->errorInfo[1] == 1062) {
+                return response()->json([
+                    'message' => 'The "Site Name" you\'re trying to add already exists. Please select a different name or review the existing entries to avoid duplication.',
+                ], 409);
+            }
+
+            // Handle other query exceptions
+            return response()->json(['message' => 'An error occurred while saving the setting.'], 500);
+        }
     }
 
     public function destroy(Setting $setting)
