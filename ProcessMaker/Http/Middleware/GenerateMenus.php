@@ -127,6 +127,13 @@ class GenerateMenus
                     'route' => 'devlink.index',
                     'file' => "data:image/svg+xml;base64,{$devlinkIcon}",
                 ]);
+
+                if ($this->userHasPermission('view-admin-email-log')) {
+                    $submenu->add(__('Logs'), [
+                        'route' => 'admin-email-logs.index',
+                        'icon' => 'fa-file-signature',
+                    ]);
+                }
             }
         });
         Menu::make('sidebar_task', function ($menu) {
