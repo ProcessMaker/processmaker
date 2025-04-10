@@ -103,8 +103,6 @@ export default {
         this.stateURL = false;
         this.urlError = __("Please enter a valid URL.");
         return;
-      } else {
-        this.urlError = "";
       }
       const site = this.siteName.toLocaleLowerCase().trim().replaceAll(" ", "_");
       const data = {
