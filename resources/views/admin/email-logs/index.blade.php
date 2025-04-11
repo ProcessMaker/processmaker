@@ -16,7 +16,7 @@
 @endsection
 @section('content')
     <div class="px-3" id="emailLogs">
-    {{ __('Email Logs') }}
+        {{ __('Email Logs') }}
     </div>
 @endsection
 
