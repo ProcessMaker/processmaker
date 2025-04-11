@@ -73,6 +73,7 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
         Route::middleware('admin')->group(function () {
             Route::get('email-logs', [EmailLogsController::class, 'index'])->name('admin-email-logs.index')->middleware('can:view-admin-email-log');
         });
+        Route::get('email-logs/export/{format}', [EmailLogsController::class, 'export'])->name('admin-email-logs.export')->middleware('can:view-admin-email-log');
 
         // temporary, should be removed
         Route::get('security-logs/download/all', [ProcessMaker\Http\Controllers\Api\SecurityLogController::class, 'downloadForAllUsers'])->middleware('can:view-security-logs');
