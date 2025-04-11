@@ -133,7 +133,11 @@
             <component v-bind:is="'request-modal'" url="{{ route('processes.index') }}" v-bind:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"></component>
             @endif
 
-            <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages">
+            <notifications 
+                id="navbar-notifications-button" 
+                v-bind:is="'notifications'" 
+                v-bind:messages="messages"
+            >
             </notifications>
             <ol class="separator-ol"><li class="separator d-none d-lg-block"></li></ol>
             <ol class="separator-ol">
