@@ -350,6 +350,8 @@
   "Export Processes": "Exporter des processus",
   "Export Screen": "Exporter l'écran",
   "Export": "Exporter",
+  "Export to PDF": "Exporter en PDF",
+  "Export to CSV": "Exporter en CSV",
   "Expression": "Expression",
   "F": "Ve",
   "Failed to connect to MySQL database. Ensure the database exists. Check your credentials and try again.": "Échec de la connexion à la base de données MySQL. Assurez-vous que la base de données existe. Vérifiez vos informations d'identification et réessayez.",
