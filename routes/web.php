@@ -6,6 +6,7 @@ use ProcessMaker\Http\Controllers\AboutController;
 use ProcessMaker\Http\Controllers\Admin\AuthClientController;
 use ProcessMaker\Http\Controllers\Admin\CssOverrideController;
 use ProcessMaker\Http\Controllers\Admin\DevLinkController;
+use ProcessMaker\Http\Controllers\Admin\EmailLogsController;
 use ProcessMaker\Http\Controllers\Admin\GroupController;
 use ProcessMaker\Http\Controllers\Admin\LdapLogsController;
 use ProcessMaker\Http\Controllers\Admin\QueuesController;
@@ -66,6 +67,11 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
         Route::middleware('admin')->group(function () {
             Route::get('devlink/oauth-client', [DevLinkController::class, 'getOauthClient'])->name('devlink.oauth-client');
             Route::get('devlink/{router?}', [DevLinkController::class, 'index'])->where(['router' => '.*'])->name('devlink.index');
+        });
+
+        // Email Logs
+        Route::middleware('admin')->group(function () {
+            Route::get('email-logs', [EmailLogsController::class, 'index'])->name('admin-email-logs.index')->middleware('can:view-admin-email-log');
         });
 
         // temporary, should be removed
