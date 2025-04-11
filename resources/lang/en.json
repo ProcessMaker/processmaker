@@ -914,6 +914,8 @@
   "Export Template": "Export Template",
   "Export": "Export",
   "export": "export",
+  "Export to PDF": "Export to PDF",
+  "Export to CSV": "Export to CSV",
   "Expression to evaluate condition": "Expression to evaluate condition",
   "Expression to evaluate. Mustache syntax supported.": "Expression to evaluate. Mustache syntax supported.",
   "Expression": "Expression",

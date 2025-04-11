@@ -892,6 +892,8 @@
   "Export Template": "Exportar plantilla",
   "Export": "Exportar",
   "export": "exportar",
+  "Export to PDF": "Exportar a PDF",
+  "Export to CSV": "Exportar a CSV",
   "Expression to evaluate condition": "Expresión para evaluar condición",
   "Expression to evaluate. Mustache syntax supported.": "Expresión para evaluar. Sintaxis de llave doble compatible.",
   "Expression": "Expresión",
