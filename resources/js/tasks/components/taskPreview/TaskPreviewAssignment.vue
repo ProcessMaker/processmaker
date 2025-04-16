@@ -72,14 +72,11 @@ const disabled = computed(() => !selectedUser.value);
 const currentTaskUserId = computed(() => props.task.user_id);
 
 // Load the reassign users
-const loadReassignUsers = async () => {
-  const response = await getReassignUsers();
+const loadReassignUsers = async (filter) => {
+  const response = await getReassignUsers(filter, props.task.id);
 
   reassignUsers.value = [];
   response.data.forEach((user) => {
-    if (currentTaskUserId.value === user.id) {
-      return;
-    }
     reassignUsers.value.push({
       text: user.fullname,
       value: user.id,
