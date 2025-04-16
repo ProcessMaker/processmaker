@@ -230,6 +230,9 @@ export default {
           let afterHeight = this.$refs.columnAfter.offsetHeight;
           
           let height = (containerHeight - (beforeHeight + afterHeight) - adjustHeight);
+          if (height < 0) {
+            height = 378;
+          }
           this.$refs.columnContainer.style.height = `${height}px`;
           this.$refs.columnContainer.style.maxHeight = `${height}px`;
         },
