@@ -16,8 +16,8 @@
                     </div>                                    
                 </div>
             </div>
-            <div class="column-container d-flex flex-row align-content-stretch" ref="columnContainer">
-                <div class="w-50 mr-3">
+            <div class="d-flex flex-row align-content-stretch" ref="columnContainer">
+                <div class="column-container w-50 mr-3">
                     <draggable group="columns" class="border bg-muted px-3 draggable-list draggable-current" :list="currentColumns">
                         <column v-for="(element, index) in currentColumns" 
                                 :column="element"
@@ -26,7 +26,7 @@
                                 @remove="removeColumn(index)"></column>
                     </draggable>
                 </div>
-                <div class="w-50">
+                <div class="column-container w-50">
                     <div v-if="availableColumnsDirect === false" class="d-flex align-items-center justify-content-center border bg-muted h-100 w-100 text-center px-3 draggable-list draggable-available">
                         <data-loading-basic
                         desc="Finding available columns..."
