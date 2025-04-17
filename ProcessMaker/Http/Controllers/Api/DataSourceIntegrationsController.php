@@ -14,24 +14,28 @@ class DataSourceIntegrationsController extends Controller
 {
     public function store(Request $request)
     {
-        $request->validate(DataSourceIntegrations::rules());
-        try {
-            $dataSourceIntegration = DataSourceIntegrations::create($request->all());
+        $validatedData = $request->validate(DataSourceIntegrations::rules());
 
-            return response()->json(['message' => 'Integration created successfully'], 201);
-        } catch (ValidationException $e) {
+        try {
+            $integration = DataSourceIntegrations::create($validatedData);
+
             return response()->json([
-                'error' => 'Validation failed',
-                'details' => $e->errors(),
-            ], 422);
+                'message' => 'Integration created successfully',
+            ], 201);
         } catch (QueryException $e) {
-            Log::error('Database error creating integration: ' . $e->getMessage());
+            Log::error('Database error while creating integration', [
+                'message' => $e->getMessage(),
+                'input' => $request->only(['name', 'key', 'auth_type']),
+            ]);
 
             return response()->json([
                 'error' => 'Failed to save integration to the database',
             ], 500);
         } catch (Exception $e) {
-            Log::error('Unexpected error creating integration: ' . $e->getMessage());
+            Log::error('Unexpected error while creating integration', [
+                'message' => $e->getMessage(),
+                'input' => $request->only(['name', 'key', 'auth_type']),
+            ]);
 
             return response()->json([
                 'error' => 'An unexpected error occurred',
