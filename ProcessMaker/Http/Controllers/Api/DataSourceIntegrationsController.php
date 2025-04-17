@@ -17,7 +17,7 @@ class DataSourceIntegrationsController extends Controller
         $validatedData = $request->validate(DataSourceIntegrations::rules());
 
         try {
-            $integration = DataSourceIntegrations::create($validatedData);
+            DataSourceIntegrations::create($validatedData);
 
             return response()->json([
                 'message' => 'Integration created successfully',
