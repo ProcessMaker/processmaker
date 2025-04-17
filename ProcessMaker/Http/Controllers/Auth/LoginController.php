@@ -288,6 +288,10 @@ class LoginController extends Controller
 
     public function loggedOut(Request $request)
     {
+        if ($request->has('redirectTo')) {
+            return redirect($request->get('redirectTo'));
+        }
+
         $response = redirect(route('login'));
         if ($request->has('timeout')) {
             $response->with('timeout', true);
