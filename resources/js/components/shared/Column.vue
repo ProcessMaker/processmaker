@@ -86,6 +86,7 @@ export default {
 
   .column-label {
     padding-left: 181px;
+    word-break: break-all;
   }
 
   .column-card a {
