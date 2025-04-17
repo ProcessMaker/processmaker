@@ -283,7 +283,12 @@ class DevLinkController extends Controller
 
     public function addSettings(Request $request, Bundle $bundle)
     {
-        $bundle->addSettings($request->input('setting'), $request->input('config'), $request->input('type'));
+        $bundle->addSettings(
+            $request->input('setting'),
+            $request->input('config'),
+            $request->input('type'),
+            $request->input('replaceIds', false)
+        );
     }
 
     public function addAssetToBundles(Request $request)

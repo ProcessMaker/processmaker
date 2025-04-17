@@ -158,7 +158,7 @@ class Bundle extends ProcessMakerModel implements HasMedia
         ]);
     }
 
-    public function addSettings($setting, $newId, $type = null)
+    public function addSettings($setting, $newId, $type = null, $replaceIds = false)
     {
         $existingSetting = $this->settings()->where('setting', $setting)->first();
 
@@ -169,7 +169,7 @@ class Bundle extends ProcessMakerModel implements HasMedia
         $decodedNewId = $this->parseNewId($newId);
 
         if ($existingSetting) {
-            return $this->updateExistingSetting($existingSetting, $decodedNewId);
+            return $this->updateExistingSetting($existingSetting, $decodedNewId, $replaceIds);
         }
 
         $this->createNewSetting($setting, $decodedNewId, $type);
@@ -210,7 +210,7 @@ class Bundle extends ProcessMakerModel implements HasMedia
         return ['id' => [$newId]];
     }
 
-    private function updateExistingSetting($existingSetting, $decodedNewId)
+    private function updateExistingSetting($existingSetting, $decodedNewId, $replaceIds = false)
     {
         if (isset($decodedNewId['id']) && $decodedNewId['id'] === []) {
             $existingSetting->delete();
@@ -224,8 +224,12 @@ class Bundle extends ProcessMakerModel implements HasMedia
             $config['id'] = [];
         }
 
-        foreach ($decodedNewId['id'] as $id) {
-            $config['id'][] = $id;
+        if ($replaceIds) {
+            $config['id'] = $decodedNewId['id'];
+        } else {
+            foreach ($decodedNewId['id'] as $id) {
+                $config['id'][] = $id;
+            }
         }
 
         $config['id'] = array_values(array_unique($config['id']));
