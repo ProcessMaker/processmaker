@@ -60,6 +60,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('users/update_language', [UserController::class, 'updateLanguage'])->name('users.updateLanguage');
     Route::get('users_task_count', [UserController::class, 'getUsersTaskCount'])->name('users.users_task_count')
         ->middleware('can:view-users');
+    Route::get('users/current', [UserController::class, 'current'])->name('users.current');
+    Route::post('users/logout', [UserController::class, 'logout'])->name('users.logout');
 
     // User Groups
     Route::put('users/{user}/groups', [UserController::class, 'updateGroups'])->name('users.groups.update')->middleware('can:edit-users');
