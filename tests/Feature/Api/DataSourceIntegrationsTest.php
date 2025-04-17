@@ -38,4 +38,12 @@ class DataSourceIntegrationsTest extends TestCase
             'key' => 'test_key',
         ]);
     }
+
+    public function testItFailsValidationWithMissingRequiredFields()
+    {
+        $response = $this->apiCall('POST', route('api.data-source-integrations.store', []));
+
+        $response->assertStatus(422)
+        ->assertJsonValidationErrors(['name', 'key', 'auth_type', 'base_url', 'credentials']);
+    }
 }
