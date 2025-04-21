@@ -79,14 +79,25 @@ class DataSourceIntegrationsController extends Controller
 
     public function fetchCompanyDetails($source, $companyId)
     {
-        // Validate parameters
         if (empty($source) || empty($companyId)) {
             return response()->json([
                 'error' => 'Invalid parameters',
-                'message' => 'Source and companyId cannot be empty',
+                'message' => 'Source and/or companyId cannot be empty',
             ], 422);
         }
 
-        return $this->service->fetchCompanyDetails($source, $companyId);
+        try {
+            return $this->service->fetchCompanyDetails($source, $companyId);
+        } catch (UnsupportedDataSourceException $e) {
+            return response()->json([
+                'error' => 'Unsupported data source',
+                'message' => $e->getMessage(),
+            ], 400);
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => 'An unexpected error occurred',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

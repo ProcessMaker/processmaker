@@ -98,7 +98,6 @@ class DataSourceIntegrationsControllerTest extends TestCase
         // Create a test double with the same methods
         $mockService = Mockery::mock($originalService);
 
-        // Set expectations only for the methods you need
         $mockService->shouldReceive('setSource')
             ->with('invalid-source')
             ->once()
@@ -111,13 +110,11 @@ class DataSourceIntegrationsControllerTest extends TestCase
         // Replace the service just for this test
         app()->instance(DataSourceIntegrationsService::class, $mockService);
 
-        // Make the request
         $response = $this->apiCall('GET',
             route('api.data-source-integrations.parameters'),
             ['source' => 'invalid-source']
         );
 
-        // Assert the response
         $response->assertStatus(400);
         $response->assertJsonStructure(['error', 'message']);
     }
