@@ -63,13 +63,38 @@ class DataSourceIntegrationsService
 
     public function getCompanies(array $params = []): array
     {
-        if (!$this->currentSource) {
-            return [];
+        // If a specific source is set, only return companies for that source
+        if ($this->currentSource) {
+            try {
+                $integration = $this->factory->create($this->currentSource);
+
+                return $integration->getCompanies($params);
+            } catch (DataSourceIntegrationException $e) {
+                // Log the error but continue with other sources
+                Log::error($e->getMessage(), [
+                    'source' => $this->currentSource,
+                    'exception' => get_class($e),
+                ]);
+            }
         }
 
-        $integration = $this->factory->create($this->currentSource);
+        // Otherwise, get all companies from all available sources
+        $allCompanies = [];
+        foreach ($this->factory->getSources() as $source) {
+            try {
+                $integration = $this->factory->create($source);
+                $allCompanies[$source] = $integration->getCompanies($params);
+            } catch (DataSourceIntegrationException $e) {
+                // Log the error but continue with other sources
+                Log::error($e->getMessage(), [
+                    'source' => $source,
+                    'exception' => get_class($e),
+                ]);
+                $allCompanies[$source] = ['error' => $e->getMessage()];
+            }
+        }
 
-        return $integration->getCompanies($params);
+        return $allCompanies;
     }
 
     public function fetchCompanyDetails(string $source, string $companyId): array

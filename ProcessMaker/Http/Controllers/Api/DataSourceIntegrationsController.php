@@ -62,7 +62,11 @@ class DataSourceIntegrationsController extends Controller
 
     public function getCompanies(Request $request)
     {
-        return $this->service->setSource($request->input('source'))->getCompanies();
+        if ($request->input('source')) {
+            return $this->service->setSource($request->input('source'))->getParameters();
+        }
+
+        return $this->service->getCompanies();
     }
 
     public function fetchCompanyDetails(Request $request)
