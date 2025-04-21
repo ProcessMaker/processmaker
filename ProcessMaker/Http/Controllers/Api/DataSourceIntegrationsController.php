@@ -53,6 +53,10 @@ class DataSourceIntegrationsController extends Controller
 
     public function getParameters(Request $request)
     {
+        if ($request->input('source')) {
+            return $this->service->setSource($request->input('source'))->getParameters();
+        }
+
         return $this->service->getParameters();
     }
 

@@ -4,6 +4,7 @@ namespace ProcessMaker\Services\DataSourceIntegrations;
 
 use Exception;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Exception\DataSourceIntegrationException;
 use ProcessMaker\Services\DataSourceIntegrations\IntegrationsFactory;
 
 class DataSourceIntegrationsService
@@ -19,7 +20,6 @@ class DataSourceIntegrationsService
 
     public function setSource(string $source): self
     {
-        dd('set source');
         $this->currentSource = $source;
 
         return $this;
@@ -29,9 +29,17 @@ class DataSourceIntegrationsService
     {
         // If a specific source is set, only return parameters for that source
         if ($this->currentSource) {
-            $integration = $this->factory->create($this->currentSource);
+            try {
+                $integration = $this->factory->create($this->currentSource);
 
-            return [$this->currentSource => $integration->getParameters()];
+                return [$this->currentSource => $integration->getParameters()];
+            } catch (DataSourceIntegrationException $e) {
+                // Log the error but continue with other sources
+                Log::error($e->getMessage(), [
+                    'source' => $this->currentSource,
+                    'exception' => get_class($e),
+                ]);
+            }
         }
 
         // Otherwise, get all parameters from all available sources
@@ -40,10 +48,11 @@ class DataSourceIntegrationsService
             try {
                 $integration = $this->factory->create($source);
                 $allParameters[$source] = $integration->getParameters();
-            } catch (Exception $e) {
+            } catch (DataSourceIntegrationException $e) {
                 // Log the error but continue with other sources
-                Log::error("Error getting parameters for source: {$source}", [
-                    'message' => $e->getMessage(),
+                Log::error($e->getMessage(), [
+                    'source' => $source,
+                    'exception' => get_class($e),
                 ]);
                 $allParameters[$source] = ['error' => $e->getMessage()];
             }
