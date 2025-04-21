@@ -9,10 +9,7 @@ class CrunchbaseService implements IntegrationsInterface
     public function getParameters() : array
     {
         // TODO: Implement getParameters() method with real data from Crunchbase
-        return [
-            'name' => 'name',
-            'source' => 'crunchbase',
-        ];
+        return ['apiKey' => ['type' => 'string']];
     }
 
     public function getCompanies(array $params = []) : array

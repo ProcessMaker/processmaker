@@ -7,6 +7,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use ProcessMaker\Exception\DataSourceIntegrationException\UnsupportedDataSourceException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\DataSourceIntegrations;
 use ProcessMaker\Services\DataSourceIntegrations\DataSourceIntegrationsService;
@@ -53,17 +54,24 @@ class DataSourceIntegrationsController extends Controller
 
     public function getParameters(Request $request)
     {
-        if ($request->input('source')) {
-            return $this->service->setSource($request->input('source'))->getParameters();
-        }
+        try {
+            if ($request->input('source')) {
+                return $this->service->setSource($request->input('source'))->getParameters();
+            }
 
-        return $this->service->getParameters();
+            return $this->service->getParameters();
+        } catch (UnsupportedDataSourceException $e) {
+            return response()->json([
+                'error' => 'Unsupported data source',
+                'message' => $e->getMessage(),
+            ], 400);
+        }
     }
 
     public function getCompanies(Request $request)
     {
         if ($request->input('source')) {
-            return $this->service->setSource($request->input('source'))->getParameters();
+            return $this->service->setSource($request->input('source'))->getCompanies();
         }
 
         return $this->service->getCompanies();
