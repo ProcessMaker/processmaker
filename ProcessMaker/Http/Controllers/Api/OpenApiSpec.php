@@ -74,6 +74,13 @@ namespace ProcessMaker\Http\Controllers\Api;
  *             in="query",
  *             @OA\Schema(type="string", default=""),
  *         ),
+ *         @OA\Parameter(
+ *             parameter="pmql",
+ *             name="pmql",
+ *             in="query",
+ *             description="PMQL query to filter results",
+ *             @OA\Schema(type="string"),
+ *         ),
  *         @OA\Schema(
  *           schema="DateTime",
  *           @OA\Property(property="date", type="string"),

@@ -66,6 +66,7 @@ class ProcessVariableController extends Controller
      * )
      * @OA\Get(
      *     path="/processes/variables",
+     *     operationId="getProcessesVariables",
      *     summary="Get variables for multiple processes with pagination",
      *     servers={
      *         @OA\Server(url=L5_SWAGGER_API_V1_1, description="API v1.1 Server")

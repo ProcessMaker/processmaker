@@ -18,1327 +18,6 @@
         }
     ],
     "paths": {
-        "/analytics-reporting": {
-            "get": {
-                "tags": [
-                    "AnalyticsReporting"
-                ],
-                "summary": "Returns all analytics reporting that the user has access to",
-                "description": "Get a list of Analytics Reporting.",
-                "operationId": "getAnalyticsReporting",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/filter"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_by"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_direction"
-                    },
-                    {
-                        "$ref": "#/components/parameters/per_page"
-                    },
-                    {
-                        "$ref": "#/components/parameters/include"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "list of analytics reporting",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/analyticsReporting"
-                                            }
-                                        },
-                                        "meta": {
-                                            "$ref": "#/components/schemas/metadata"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "AnalyticsReporting"
-                ],
-                "summary": "Save a new Analytics Reporting",
-                "description": "Create a new Analytics Reporting.",
-                "operationId": "createAnalyticsReporting",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/analyticsReportingEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/analyticsReporting"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/analytics-reporting/{analytic_reporting_id}": {
-            "get": {
-                "tags": [
-                    "AnalyticsReporting"
-                ],
-                "summary": "Get single analytic reporting by ID",
-                "description": "Get a single Analytic Reporting.",
-                "operationId": "getAnalyticReportingById",
-                "parameters": [
-                    {
-                        "name": "analytic_reporting_id",
-                        "in": "path",
-                        "description": "ID of analytic reporting to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully found the analytics reporting",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/analyticsReporting"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "AnalyticsReporting"
-                ],
-                "summary": "Update a analytic reporting",
-                "description": "Update a Analytics Reporting.",
-                "operationId": "updateAnalyticReporting",
-                "parameters": [
-                    {
-                        "name": "analytic_reporting_id",
-                        "in": "path",
-                        "description": "ID of analytic reporting to update",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/analyticsReportingEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "204": {
-                        "description": "success"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "AnalyticsReporting"
-                ],
-                "summary": "Delete an analytic reporting",
-                "description": "Delete a Analytics Reporting.",
-                "operationId": "deleteAnalyticReporting",
-                "parameters": [
-                    {
-                        "name": "analytic_reporting_id",
-                        "in": "path",
-                        "description": "ID of analytic reporting to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "success"
-                    }
-                }
-            }
-        },
-        "/collections": {
-            "get": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Returns all collections that the user has access to",
-                "description": "Get a list of Collections.",
-                "operationId": "getCollections",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/filter"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_by"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_direction"
-                    },
-                    {
-                        "$ref": "#/components/parameters/per_page"
-                    },
-                    {
-                        "$ref": "#/components/parameters/include"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "list of collections",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/collections"
-                                            }
-                                        },
-                                        "meta": {
-                                            "$ref": "#/components/schemas/metadata"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Save a new collections",
-                "description": "Create a new Collection.",
-                "operationId": "createCollection",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/collectionsEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/collections"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/collections/{collection_id}": {
-            "get": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Get single collections by ID",
-                "description": "Get a single Collection.",
-                "operationId": "getCollectionById",
-                "parameters": [
-                    {
-                        "name": "collection_id",
-                        "in": "path",
-                        "description": "ID of collection to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully found the collections",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/collections"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Update a collection",
-                "description": "Update a Collection.",
-                "operationId": "updateCollection",
-                "parameters": [
-                    {
-                        "name": "collection_id",
-                        "in": "path",
-                        "description": "ID of collection to update",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/collectionsEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "204": {
-                        "description": "success"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Delete a collection",
-                "description": "Delete a Collection.",
-                "operationId": "deleteCollection",
-                "parameters": [
-                    {
-                        "name": "collection_id",
-                        "in": "path",
-                        "description": "ID of collection to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "success"
-                    }
-                }
-            }
-        },
-        "/collections/{collection_id}/export": {
-            "post": {
-                "tags": [
-                    "Screens"
-                ],
-                "summary": "Trigger export collections job",
-                "description": "Export the specified collection.",
-                "operationId": "exportCollection",
-                "parameters": [
-                    {
-                        "name": "collection_id",
-                        "in": "path",
-                        "description": "ID of the collection to export",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "202": {
-                        "description": "success"
-                    }
-                }
-            }
-        },
-        "/collections/import": {
-            "post": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Import a new collection",
-                "description": "Import the specified collection.",
-                "operationId": "importCollection",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "required": [
-                                    "file"
-                                ],
-                                "properties": {
-                                    "file": {
-                                        "description": "file to upload",
-                                        "type": "file",
-                                        "format": "file"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/collections"
-                                }
-                            }
-                        }
-                    },
-                    "200": {
-                        "description": "success"
-                    }
-                }
-            }
-        },
-        "/collections/{collection_id}/truncate": {
-            "delete": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Deletes all records in a collection",
-                "description": "Truncate a Collection.",
-                "operationId": "truncateCollection",
-                "parameters": [
-                    {
-                        "name": "collection_id",
-                        "in": "path",
-                        "description": "ID of collection to truncate",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "success"
-                    }
-                }
-            }
-        },
-        "/collections/{collection_id}/records": {
-            "get": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Returns all records",
-                "description": "Get the list of records of a collection.",
-                "operationId": "getRecords",
-                "parameters": [
-                    {
-                        "name": "collection_id",
-                        "in": "path",
-                        "description": "ID of collection to get records for",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "pmql",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "$ref": "#/components/parameters/per_page"
-                    },
-                    {
-                        "$ref": "#/components/parameters/filter"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_by"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_direction"
-                    },
-                    {
-                        "$ref": "#/components/parameters/include"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "list of records of a collection",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/records"
-                                            }
-                                        },
-                                        "meta": {
-                                            "$ref": "#/components/schemas/metadata"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Save a new record in a collection",
-                "description": "Create a new record in a Collection.",
-                "operationId": "createRecord",
-                "parameters": [
-                    {
-                        "name": "collection_id",
-                        "in": "path",
-                        "description": "ID of the collection",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/recordsEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/records"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/collections/{collection_id}/records/{record_id}": {
-            "get": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Get single record of a collection",
-                "description": "Get a single record of a Collection.",
-                "operationId": "getRecordById",
-                "parameters": [
-                    {
-                        "name": "collection_id",
-                        "in": "path",
-                        "description": "ID of the collection",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "record_id",
-                        "in": "path",
-                        "description": "ID of the record to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully found the record",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/records"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Update a record",
-                "description": "Update a record in a Collection.",
-                "operationId": "updateRecord",
-                "parameters": [
-                    {
-                        "name": "collection_id",
-                        "in": "path",
-                        "description": "ID of collection",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "record_id",
-                        "in": "path",
-                        "description": "ID of the record ",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/recordsEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "204": {
-                        "description": "success"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Delete a collection record",
-                "description": "Delete a record of a Collection.",
-                "operationId": "deleteRecord",
-                "parameters": [
-                    {
-                        "name": "collection_id",
-                        "in": "path",
-                        "description": "ID of collection",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "record_id",
-                        "in": "path",
-                        "description": "ID of record in collection",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "success"
-                    }
-                }
-            },
-            "patch": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Partial update of a record",
-                "description": "Implements a partial update of a record in a Collection.",
-                "operationId": "patchRecord",
-                "parameters": [
-                    {
-                        "name": "collection_id",
-                        "in": "path",
-                        "description": "ID of collection ",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "record_id",
-                        "in": "path",
-                        "description": "ID of the record ",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/collectionsEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "success"
-                    }
-                }
-            }
-        },
-        "/comments/tasks": {
-            "get": {
-                "tags": [
-                    "Comments"
-                ],
-                "summary": "Returns all the tasks that are active.",
-                "description": "Display a listing of the resource.",
-                "operationId": "getCommentTasks",
-                "parameters": [
-                    {
-                        "name": "process_request_id",
-                        "in": "query",
-                        "description": "Process request id",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "$ref": "#/components/parameters/filter"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_by"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_direction"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "list all tasks taht are active",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/processRequestToken"
-                                            }
-                                        },
-                                        "meta": {
-                                            "$ref": "#/components/schemas/metadata"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/data_source_categories": {
-            "get": {
-                "tags": [
-                    "DataSourcesCategories"
-                ],
-                "summary": "Returns all Data Connectors categories that the user has access to",
-                "description": "Display a listing of the Data Connector Categories.",
-                "operationId": "getDataSourceCategories",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/filter"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_by"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_direction"
-                    },
-                    {
-                        "$ref": "#/components/parameters/per_page"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "list of Data Connectors categories",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/DataSourceCategory"
-                                            }
-                                        },
-                                        "meta": {
-                                            "type": "object",
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/metadata"
-                                                }
-                                            ]
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "DataSourcesCategories"
-                ],
-                "summary": "Save a new Data Connector Category",
-                "description": "Store a newly created Data Connector Category in storage",
-                "operationId": "createDataSourceCategory",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/dataSourceCategoryEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/DataSourceCategory"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/data_source_categories/{data_source_category_id}": {
-            "get": {
-                "tags": [
-                    "DataSourcesCategories"
-                ],
-                "summary": "Get single Data Connector category by ID",
-                "description": "Display the specified data Source category.",
-                "operationId": "getDatasourceCategoryById",
-                "parameters": [
-                    {
-                        "name": "data_source_category_id",
-                        "in": "path",
-                        "description": "ID of Data Connector category to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully found the Data Connector",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/DataSourceCategory"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "DataSourcesCategories"
-                ],
-                "summary": "Update a Data Connector Category",
-                "description": "Updates the current element",
-                "operationId": "updateDatasourceCategory",
-                "parameters": [
-                    {
-                        "name": "data_source_category_id",
-                        "in": "path",
-                        "description": "ID of Data Connector category to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/dataSourceCategoryEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/DataSourceCategory"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "DataSourcesCategories"
-                ],
-                "summary": "Delete a Data Connector category",
-                "description": "Remove the specified resource from storage.",
-                "operationId": "deleteDataSourceCategory",
-                "parameters": [
-                    {
-                        "name": "data_source_category_id",
-                        "in": "path",
-                        "description": "ID of Data Connector category to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "success"
-                    }
-                }
-            }
-        },
-        "/data_sources": {
-            "get": {
-                "tags": [
-                    "DataSources"
-                ],
-                "summary": "Returns all Data Connectors that the user has access to",
-                "description": "Get the list of records of a Data Connector",
-                "operationId": "getDataSources",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/filter"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_by"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_direction"
-                    },
-                    {
-                        "$ref": "#/components/parameters/per_page"
-                    },
-                    {
-                        "$ref": "#/components/parameters/include"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "list of Data Connectors",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/dataSource"
-                                            }
-                                        },
-                                        "meta": {
-                                            "type": "object",
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/metadata"
-                                                }
-                                            ]
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "DataSources"
-                ],
-                "summary": "Save a new Data Connector",
-                "description": "Create a new Data Connector.",
-                "operationId": "createDataSource",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/dataSourceEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/dataSource"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/data_sources/{data_source_id}": {
-            "get": {
-                "tags": [
-                    "DataSources"
-                ],
-                "summary": "Get single Data Connector by ID",
-                "description": "Get a single Data Connector.",
-                "operationId": "getDataSourceById",
-                "parameters": [
-                    {
-                        "name": "data_source_id",
-                        "in": "path",
-                        "description": "ID of Data Connector to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully found the Data Connector",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/dataSource"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "DataSources"
-                ],
-                "summary": "Update a Data Connector",
-                "description": "Update a Data Connector.",
-                "operationId": "updateDataSource",
-                "parameters": [
-                    {
-                        "name": "data_source_id",
-                        "in": "path",
-                        "description": "ID of Data Connector to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/dataSourceEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "204": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/dataSource"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "DataSources"
-                ],
-                "summary": "Delete a Data Connector",
-                "description": "Delete a Data Connector.",
-                "operationId": "deleteDataSource",
-                "parameters": [
-                    {
-                        "name": "data_source_id",
-                        "in": "path",
-                        "description": "ID of Data Connector to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/dataSource"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/data_sources/{data_source_id}/test": {
-            "post": {
-                "tags": [
-                    "DataSources"
-                ],
-                "summary": "Send a Data Connector request",
-                "description": "Send a Data Connector request.",
-                "operationId": "sendDataSource",
-                "parameters": [
-                    {
-                        "name": "data_source_id",
-                        "in": "path",
-                        "description": "ID of Data Connector to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/dataSourceEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "204": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/dataSource"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/requests/{request_id}/data_sources/{data_source_id}": {
-            "post": {
-                "tags": [
-                    "DataSources"
-                ],
-                "summary": "execute Data Source",
-                "description": "Execute a data Source endpoint",
-                "operationId": "executeDataSourceForRequest",
-                "parameters": [
-                    {
-                        "name": "request_id",
-                        "in": "path",
-                        "description": "ID of the request in whose context the datasource will be executed",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "data_source_id",
-                        "in": "path",
-                        "description": "ID of DataSource to be run",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "config": {
-                                        "$ref": "#/components/schemas/DataSourceCallParameters"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/DataSourceResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/requests/data_sources/{data_source_id}": {
-            "post": {
-                "tags": [
-                    "DataSources"
-                ],
-                "summary": "execute Data Source",
-                "operationId": "executeDataSource",
-                "parameters": [
-                    {
-                        "name": "data_source_id",
-                        "in": "path",
-                        "description": "ID of DataSource to be run",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "config": {
-                                        "$ref": "#/components/schemas/DataSourceCallParameters"
-                                    },
-                                    "data": {
-                                        "type": "object"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/DataSourceResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/requests/data_sources/{data_source_id}/resources/{endpoint}/data": {
-            "post": {
-                "tags": [
-                    "DataSources"
-                ],
-                "summary": "Get Data from Data Source",
-                "operationId": "getDataFromDataSource",
-                "parameters": [
-                    {
-                        "name": "data_source_id",
-                        "in": "path",
-                        "description": "ID of DataSource to be run",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "endpoint",
-                        "in": "path",
-                        "description": "Endpoint of the data source",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/DataSourceResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/decision_table_categories": {
             "get": {
                 "tags": [
@@ -2710,228 +1389,6 @@
                 }
             }
         },
-        "/version_histories": {
-            "get": {
-                "tags": [
-                    "Version History"
-                ],
-                "summary": "Return all version History according to the model",
-                "description": "Get the list of records of Version History",
-                "operationId": "getVersionHistories",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/filter"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_by"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_direction"
-                    },
-                    {
-                        "$ref": "#/components/parameters/per_page"
-                    },
-                    {
-                        "$ref": "#/components/parameters/include"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "list of Version History",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/versionHistory"
-                                            }
-                                        },
-                                        "meta": {
-                                            "type": "object",
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/metadata"
-                                                }
-                                            ]
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "Version History"
-                ],
-                "summary": "Save a new Version History",
-                "description": "Create a new Version History.",
-                "operationId": "createVersion",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/versionHistoryEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/versionHistory"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/version_histories/{version_history_id}": {
-            "get": {
-                "tags": [
-                    "Version History"
-                ],
-                "summary": "Get single Version History by ID",
-                "description": "Get a single Version History.",
-                "operationId": "getVersionHistoryById",
-                "parameters": [
-                    {
-                        "name": "version_history_id",
-                        "in": "path",
-                        "description": "ID of Version History to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully found the Version History",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/versionHistory"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "Version History"
-                ],
-                "summary": "Update a Version History",
-                "description": "Update a Version History.",
-                "operationId": "updateVersion",
-                "parameters": [
-                    {
-                        "name": "version_history_id",
-                        "in": "path",
-                        "description": "ID of Version History to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/versionHistoryEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "204": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/versionHistory"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Version History"
-                ],
-                "summary": "Delete a Version History",
-                "description": "Delete a Version History.",
-                "operationId": "deleteVersion",
-                "parameters": [
-                    {
-                        "name": "version_history_id",
-                        "in": "path",
-                        "description": "ID of Version History to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/versionHistory"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/version_histories/clone": {
-            "post": {
-                "tags": [
-                    "Version History"
-                ],
-                "summary": "Clone a new Version History",
-                "description": "Clone a new Version History.",
-                "operationId": "cloneVersion",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/versionHistoryEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/versionHistory"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/customize-ui": {
             "post": {
                 "tags": [
@@ -4239,7 +2696,7 @@
                 ],
                 "summary": "Update the permissions of a user",
                 "description": "Update permissions",
-                "operationId": "51b3555fb753f44324bf5c3880e01454",
+                "operationId": "updatePermissions",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -4491,6 +2948,9 @@
                     },
                     {
                         "$ref": "#/components/parameters/include"
+                    },
+                    {
+                        "$ref": "#/components/parameters/pmql"
                     },
                     {
                         "name": "simplified_data_for_selector",
@@ -5017,7 +3477,7 @@
                 ],
                 "summary": "Check if the import is ready",
                 "description": "Check if the import is ready",
-                "operationId": "6a131993b7c879ddcd3d3a291dd8380f",
+                "operationId": "importReady",
                 "parameters": [
                     {
                         "name": "code",
@@ -8309,7 +6769,7 @@
                     "Processes Variables"
                 ],
                 "summary": "Get variables for multiple processes with pagination",
-                "operationId": "660c9459febd17c58400be4b4d49a152",
+                "operationId": "getProcessesVariables",
                 "parameters": [
                     {
                         "name": "processIds",
@@ -8368,10 +6828,1553 @@
                 },
                 "servers": [
                     {
-                        "url": "https://nolans-laptop.tail0babd.ts.net/api/1.1",
+                        "url": "https://pm4.local:8092/api/1.1",
                         "description": "API v1.1 Server"
                     }
                 ]
+            }
+        },
+        "/analytics-reporting": {
+            "get": {
+                "tags": [
+                    "AnalyticsReporting"
+                ],
+                "summary": "Returns all analytics reporting that the user has access to",
+                "description": "Get a list of Analytics Reporting.",
+                "operationId": "getAnalyticsReporting",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of analytics reporting",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/analyticsReporting"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/metadata"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "AnalyticsReporting"
+                ],
+                "summary": "Save a new Analytics Reporting",
+                "description": "Create a new Analytics Reporting.",
+                "operationId": "createAnalyticsReporting",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/analyticsReportingEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/analyticsReporting"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/analytics-reporting/{analytic_reporting_id}": {
+            "get": {
+                "tags": [
+                    "AnalyticsReporting"
+                ],
+                "summary": "Get single analytic reporting by ID",
+                "description": "Get a single Analytic Reporting.",
+                "operationId": "getAnalyticReportingById",
+                "parameters": [
+                    {
+                        "name": "analytic_reporting_id",
+                        "in": "path",
+                        "description": "ID of analytic reporting to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the analytics reporting",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/analyticsReporting"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "AnalyticsReporting"
+                ],
+                "summary": "Update a analytic reporting",
+                "description": "Update a Analytics Reporting.",
+                "operationId": "updateAnalyticReporting",
+                "parameters": [
+                    {
+                        "name": "analytic_reporting_id",
+                        "in": "path",
+                        "description": "ID of analytic reporting to update",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/analyticsReportingEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "AnalyticsReporting"
+                ],
+                "summary": "Delete an analytic reporting",
+                "description": "Delete a Analytics Reporting.",
+                "operationId": "deleteAnalyticReporting",
+                "parameters": [
+                    {
+                        "name": "analytic_reporting_id",
+                        "in": "path",
+                        "description": "ID of analytic reporting to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
+        "/collections": {
+            "get": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Returns all collections that the user has access to",
+                "description": "Get a list of Collections.",
+                "operationId": "getCollections",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of collections",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/collections"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/metadata"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Save a new collections",
+                "description": "Create a new Collection.",
+                "operationId": "createCollection",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/collectionsEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/collections"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/collections/{collection_id}": {
+            "get": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Get single collections by ID",
+                "description": "Get a single Collection.",
+                "operationId": "getCollectionById",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of collection to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the collections",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/collections"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Update a collection",
+                "description": "Update a Collection.",
+                "operationId": "updateCollection",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of collection to update",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/collectionsEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Delete a collection",
+                "description": "Delete a Collection.",
+                "operationId": "deleteCollection",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of collection to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
+        "/collections/{collection_id}/export": {
+            "post": {
+                "tags": [
+                    "Screens"
+                ],
+                "summary": "Trigger export collections job",
+                "description": "Export the specified collection.",
+                "operationId": "exportCollection",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of the collection to export",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
+        "/collections/import": {
+            "post": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Import a new collection",
+                "description": "Import the specified collection.",
+                "operationId": "importCollection",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "file"
+                                ],
+                                "properties": {
+                                    "file": {
+                                        "description": "file to upload",
+                                        "type": "file",
+                                        "format": "file"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/collections"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
+        "/collections/{collection_id}/truncate": {
+            "delete": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Deletes all records in a collection",
+                "description": "Truncate a Collection.",
+                "operationId": "truncateCollection",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of collection to truncate",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
+        "/collections/{collection_id}/records": {
+            "get": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Returns all records",
+                "description": "Get the list of records of a collection.",
+                "operationId": "getRecords",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of collection to get records for",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "pmql",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of records of a collection",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/records"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/metadata"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Save a new record in a collection",
+                "description": "Create a new record in a Collection.",
+                "operationId": "createRecord",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of the collection",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/recordsEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/records"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/collections/{collection_id}/records/{record_id}": {
+            "get": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Get single record of a collection",
+                "description": "Get a single record of a Collection.",
+                "operationId": "getRecordById",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of the collection",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "record_id",
+                        "in": "path",
+                        "description": "ID of the record to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the record",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/records"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Update a record",
+                "description": "Update a record in a Collection.",
+                "operationId": "updateRecord",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of collection",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "record_id",
+                        "in": "path",
+                        "description": "ID of the record ",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/recordsEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Delete a collection record",
+                "description": "Delete a record of a Collection.",
+                "operationId": "deleteRecord",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of collection",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "record_id",
+                        "in": "path",
+                        "description": "ID of record in collection",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Partial update of a record",
+                "description": "Implements a partial update of a record in a Collection.",
+                "operationId": "patchRecord",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of collection ",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "record_id",
+                        "in": "path",
+                        "description": "ID of the record ",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/collectionsEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
+        "/comments/tasks": {
+            "get": {
+                "tags": [
+                    "Comments"
+                ],
+                "summary": "Returns all the tasks that are active.",
+                "description": "Display a listing of the resource.",
+                "operationId": "getCommentTasks",
+                "parameters": [
+                    {
+                        "name": "process_request_id",
+                        "in": "query",
+                        "description": "Process request id",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list all tasks taht are active",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/processRequestToken"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/metadata"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/data_source_categories": {
+            "get": {
+                "tags": [
+                    "DataSourcesCategories"
+                ],
+                "summary": "Returns all Data Connectors categories that the user has access to",
+                "description": "Display a listing of the Data Connector Categories.",
+                "operationId": "getDataSourceCategories",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of Data Connectors categories",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/DataSourceCategory"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "DataSourcesCategories"
+                ],
+                "summary": "Save a new Data Connector Category",
+                "description": "Store a newly created Data Connector Category in storage",
+                "operationId": "createDataSourceCategory",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/dataSourceCategoryEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DataSourceCategory"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/data_source_categories/{data_source_category_id}": {
+            "get": {
+                "tags": [
+                    "DataSourcesCategories"
+                ],
+                "summary": "Get single Data Connector category by ID",
+                "description": "Display the specified data Source category.",
+                "operationId": "getDatasourceCategoryById",
+                "parameters": [
+                    {
+                        "name": "data_source_category_id",
+                        "in": "path",
+                        "description": "ID of Data Connector category to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the Data Connector",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DataSourceCategory"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "DataSourcesCategories"
+                ],
+                "summary": "Update a Data Connector Category",
+                "description": "Updates the current element",
+                "operationId": "updateDatasourceCategory",
+                "parameters": [
+                    {
+                        "name": "data_source_category_id",
+                        "in": "path",
+                        "description": "ID of Data Connector category to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/dataSourceCategoryEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DataSourceCategory"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "DataSourcesCategories"
+                ],
+                "summary": "Delete a Data Connector category",
+                "description": "Remove the specified resource from storage.",
+                "operationId": "deleteDataSourceCategory",
+                "parameters": [
+                    {
+                        "name": "data_source_category_id",
+                        "in": "path",
+                        "description": "ID of Data Connector category to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
+        "/data_sources": {
+            "get": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "Returns all Data Connectors that the user has access to",
+                "description": "Get the list of records of a Data Connector",
+                "operationId": "getDataSources",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of Data Connectors",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/dataSource"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "Save a new Data Connector",
+                "description": "Create a new Data Connector.",
+                "operationId": "createDataSource",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/dataSourceEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/dataSource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/data_sources/{data_source_id}": {
+            "get": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "Get single Data Connector by ID",
+                "description": "Get a single Data Connector.",
+                "operationId": "getDataSourceById",
+                "parameters": [
+                    {
+                        "name": "data_source_id",
+                        "in": "path",
+                        "description": "ID of Data Connector to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the Data Connector",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/dataSource"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "Update a Data Connector",
+                "description": "Update a Data Connector.",
+                "operationId": "updateDataSource",
+                "parameters": [
+                    {
+                        "name": "data_source_id",
+                        "in": "path",
+                        "description": "ID of Data Connector to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/dataSourceEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/dataSource"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "Delete a Data Connector",
+                "description": "Delete a Data Connector.",
+                "operationId": "deleteDataSource",
+                "parameters": [
+                    {
+                        "name": "data_source_id",
+                        "in": "path",
+                        "description": "ID of Data Connector to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/dataSource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/data_sources/{data_source_id}/test": {
+            "post": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "Send a Data Connector request",
+                "description": "Send a Data Connector request.",
+                "operationId": "sendDataSource",
+                "parameters": [
+                    {
+                        "name": "data_source_id",
+                        "in": "path",
+                        "description": "ID of Data Connector to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/dataSourceEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/dataSource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/requests/{request_id}/data_sources/{data_source_id}": {
+            "post": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "execute Data Source",
+                "description": "Execute a data Source endpoint",
+                "operationId": "executeDataSourceForRequest",
+                "parameters": [
+                    {
+                        "name": "request_id",
+                        "in": "path",
+                        "description": "ID of the request in whose context the datasource will be executed",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "data_source_id",
+                        "in": "path",
+                        "description": "ID of DataSource to be run",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "config": {
+                                        "$ref": "#/components/schemas/DataSourceCallParameters"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DataSourceResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/requests/data_sources/{data_source_id}": {
+            "post": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "execute Data Source",
+                "operationId": "executeDataSource",
+                "parameters": [
+                    {
+                        "name": "data_source_id",
+                        "in": "path",
+                        "description": "ID of DataSource to be run",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "config": {
+                                        "$ref": "#/components/schemas/DataSourceCallParameters"
+                                    },
+                                    "data": {
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DataSourceResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/requests/data_sources/{data_source_id}/resources/{endpoint}/data": {
+            "post": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "Get Data from Data Source",
+                "operationId": "getDataFromDataSource",
+                "parameters": [
+                    {
+                        "name": "data_source_id",
+                        "in": "path",
+                        "description": "ID of DataSource to be run",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "endpoint",
+                        "in": "path",
+                        "description": "Endpoint of the data source",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DataSourceResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/version_histories": {
+            "get": {
+                "tags": [
+                    "Version History"
+                ],
+                "summary": "Return all version History according to the model",
+                "description": "Get the list of records of Version History",
+                "operationId": "getVersionHistories",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of Version History",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/versionHistory"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Version History"
+                ],
+                "summary": "Save a new Version History",
+                "description": "Create a new Version History.",
+                "operationId": "createVersion",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/versionHistoryEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/versionHistory"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/version_histories/{version_history_id}": {
+            "get": {
+                "tags": [
+                    "Version History"
+                ],
+                "summary": "Get single Version History by ID",
+                "description": "Get a single Version History.",
+                "operationId": "getVersionHistoryById",
+                "parameters": [
+                    {
+                        "name": "version_history_id",
+                        "in": "path",
+                        "description": "ID of Version History to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the Version History",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/versionHistory"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Version History"
+                ],
+                "summary": "Update a Version History",
+                "description": "Update a Version History.",
+                "operationId": "updateVersion",
+                "parameters": [
+                    {
+                        "name": "version_history_id",
+                        "in": "path",
+                        "description": "ID of Version History to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/versionHistoryEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/versionHistory"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Version History"
+                ],
+                "summary": "Delete a Version History",
+                "description": "Delete a Version History.",
+                "operationId": "deleteVersion",
+                "parameters": [
+                    {
+                        "name": "version_history_id",
+                        "in": "path",
+                        "description": "ID of Version History to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/versionHistory"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/version_histories/clone": {
+            "post": {
+                "tags": [
+                    "Version History"
+                ],
+                "summary": "Clone a new Version History",
+                "description": "Clone a new Version History.",
+                "operationId": "cloneVersion",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/versionHistoryEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/versionHistory"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     },
@@ -8384,293 +8387,6 @@
                     }
                 },
                 "type": "object"
-            },
-            "analyticsReportingEditable": {
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "description": {
-                        "type": "string"
-                    },
-                    "link": {
-                        "type": "string"
-                    }
-                },
-                "type": "object"
-            },
-            "analyticsReporting": {
-                "allOf": [
-                    {
-                        "$ref": "#/components/schemas/analyticsReportingEditable"
-                    },
-                    {
-                        "properties": {
-                            "id": {
-                                "type": "integer"
-                            },
-                            "created_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            },
-                            "updated_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            },
-                            "created_by_id": {
-                                "type": "string",
-                                "format": "id"
-                            },
-                            "updated_by_id": {
-                                "type": "string",
-                                "format": "id"
-                            }
-                        },
-                        "type": "object"
-                    }
-                ]
-            },
-            "collectionsEditable": {
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "description": {
-                        "type": "string"
-                    },
-                    "custom_title": {
-                        "type": "string"
-                    },
-                    "create_screen_id": {
-                        "type": "string",
-                        "format": "id"
-                    },
-                    "read_screen_id": {
-                        "type": "string",
-                        "format": "id"
-                    },
-                    "update_screen_id": {
-                        "type": "string",
-                        "format": "id"
-                    },
-                    "signal_create": {
-                        "type": "boolean"
-                    },
-                    "signal_update": {
-                        "type": "boolean"
-                    },
-                    "signal_delete": {
-                        "type": "boolean"
-                    }
-                },
-                "type": "object"
-            },
-            "collections": {
-                "allOf": [
-                    {
-                        "$ref": "#/components/schemas/collectionsEditable"
-                    },
-                    {
-                        "properties": {
-                            "id": {
-                                "type": "integer"
-                            },
-                            "created_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            },
-                            "updated_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            },
-                            "created_by_id": {
-                                "type": "string",
-                                "format": "id"
-                            },
-                            "updated_by_id": {
-                                "type": "string",
-                                "format": "id"
-                            },
-                            "columns": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object"
-                                }
-                            }
-                        },
-                        "type": "object"
-                    }
-                ]
-            },
-            "recordsEditable": {
-                "properties": {
-                    "data": {
-                        "type": "object"
-                    }
-                },
-                "type": "object"
-            },
-            "records": {
-                "allOf": [
-                    {
-                        "$ref": "#/components/schemas/recordsEditable"
-                    },
-                    {
-                        "properties": {
-                            "id": {
-                                "type": "integer"
-                            },
-                            "collection_id": {
-                                "type": "string",
-                                "format": "id"
-                            }
-                        },
-                        "type": "object"
-                    }
-                ]
-            },
-            "DataSourceCallParameters": {
-                "properties": {
-                    "endpoint": {
-                        "type": "string"
-                    },
-                    "dataMapping": {
-                        "type": "array",
-                        "items": {
-                            "properties": {
-                                "key": {
-                                    "type": "string"
-                                },
-                                "value": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    },
-                    "outboundConfig": {
-                        "type": "array",
-                        "items": {
-                            "properties": {
-                                "key": {
-                                    "type": "string"
-                                },
-                                "value": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    }
-                },
-                "type": "object"
-            },
-            "DataSourceResponse": {
-                "properties": {
-                    "status": {
-                        "type": "integer"
-                    },
-                    "response": {
-                        "type": "object"
-                    }
-                },
-                "type": "object"
-            },
-            "dataSourceEditable": {
-                "properties": {
-                    "id": {
-                        "description": "Class DataSource",
-                        "type": "string",
-                        "format": "id"
-                    },
-                    "name": {
-                        "type": "string"
-                    },
-                    "description": {
-                        "type": "string"
-                    },
-                    "endpoints": {
-                        "type": "string"
-                    },
-                    "mappings": {
-                        "type": "string"
-                    },
-                    "authtype": {
-                        "type": "string"
-                    },
-                    "credentials": {
-                        "type": "string"
-                    },
-                    "status": {
-                        "type": "string"
-                    },
-                    "data_source_category_id": {
-                        "type": "string"
-                    }
-                },
-                "type": "object"
-            },
-            "dataSource": {
-                "type": "object",
-                "allOf": [
-                    {
-                        "$ref": "#/components/schemas/dataSourceEditable"
-                    },
-                    {
-                        "properties": {
-                            "created_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            },
-                            "updated_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            }
-                        },
-                        "type": "object"
-                    }
-                ]
-            },
-            "dataSourceCategoryEditable": {
-                "properties": {
-                    "name": {
-                        "description": "Represents a business data Source category definition.",
-                        "type": "string"
-                    },
-                    "status": {
-                        "type": "string",
-                        "enum": [
-                            "ACTIVE",
-                            "INACTIVE"
-                        ]
-                    }
-                },
-                "type": "object"
-            },
-            "DataSourceCategory": {
-                "type": "object",
-                "allOf": [
-                    {
-                        "$ref": "#/components/schemas/dataSourceCategoryEditable"
-                    },
-                    {
-                        "properties": {
-                            "id": {
-                                "type": "string",
-                                "format": "id"
-                            },
-                            "created_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            },
-                            "updated_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            }
-                        },
-                        "type": "object"
-                    }
-                ]
             },
             "decisionTableEditable": {
                 "properties": {
@@ -8955,55 +8671,6 @@
                     },
                     {
                         "$ref": "#/components/schemas/SavedSearchEditable"
-                    }
-                ]
-            },
-            "versionHistoryEditable": {
-                "properties": {
-                    "versionable_id": {
-                        "description": "Class VersionHistoryCollection",
-                        "type": "integer"
-                    },
-                    "versionable_type": {
-                        "type": "string"
-                    },
-                    "name": {
-                        "type": "string"
-                    },
-                    "subject": {
-                        "type": "string"
-                    },
-                    "description": {
-                        "type": "string"
-                    },
-                    "status": {
-                        "type": "string",
-                        "enum": [
-                            "ACTIVE",
-                            "INACTIVE"
-                        ]
-                    }
-                },
-                "type": "object"
-            },
-            "versionHistory": {
-                "type": "object",
-                "allOf": [
-                    {
-                        "$ref": "#/components/schemas/versionHistoryEditable"
-                    },
-                    {
-                        "properties": {
-                            "created_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            },
-                            "updated_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            }
-                        },
-                        "type": "object"
                     }
                 ]
             },
@@ -10933,6 +10600,342 @@
                     }
                 },
                 "type": "object"
+            },
+            "analyticsReportingEditable": {
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "link": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "analyticsReporting": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/analyticsReportingEditable"
+                    },
+                    {
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "created_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "created_by_id": {
+                                "type": "string",
+                                "format": "id"
+                            },
+                            "updated_by_id": {
+                                "type": "string",
+                                "format": "id"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "collectionsEditable": {
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "custom_title": {
+                        "type": "string"
+                    },
+                    "create_screen_id": {
+                        "type": "string",
+                        "format": "id"
+                    },
+                    "read_screen_id": {
+                        "type": "string",
+                        "format": "id"
+                    },
+                    "update_screen_id": {
+                        "type": "string",
+                        "format": "id"
+                    },
+                    "signal_create": {
+                        "type": "boolean"
+                    },
+                    "signal_update": {
+                        "type": "boolean"
+                    },
+                    "signal_delete": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "collections": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/collectionsEditable"
+                    },
+                    {
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "created_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "created_by_id": {
+                                "type": "string",
+                                "format": "id"
+                            },
+                            "updated_by_id": {
+                                "type": "string",
+                                "format": "id"
+                            },
+                            "columns": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "recordsEditable": {
+                "properties": {
+                    "data": {
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "records": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/recordsEditable"
+                    },
+                    {
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "collection_id": {
+                                "type": "string",
+                                "format": "id"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "DataSourceCallParameters": {
+                "properties": {
+                    "endpoint": {
+                        "type": "string"
+                    },
+                    "dataMapping": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "key": {
+                                    "type": "string"
+                                },
+                                "value": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "outboundConfig": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "key": {
+                                    "type": "string"
+                                },
+                                "value": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "DataSourceResponse": {
+                "properties": {
+                    "status": {
+                        "type": "integer"
+                    },
+                    "response": {
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "dataSourceEditable": {
+                "properties": {
+                    "id": {
+                        "description": "Class DataSource",
+                        "type": "string",
+                        "format": "id"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "endpoints": {
+                        "type": "string"
+                    },
+                    "mappings": {
+                        "type": "string"
+                    },
+                    "authtype": {
+                        "type": "string"
+                    },
+                    "credentials": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "data_source_category_id": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "dataSource": {
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/dataSourceEditable"
+                    },
+                    {
+                        "properties": {
+                            "created_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "dataSourceCategoryEditable": {
+                "properties": {
+                    "name": {
+                        "description": "Represents a business data Source category definition.",
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "INACTIVE"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "DataSourceCategory": {
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/dataSourceCategoryEditable"
+                    },
+                    {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "format": "id"
+                            },
+                            "created_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "versionHistoryEditable": {
+                "properties": {
+                    "versionable_id": {
+                        "description": "Class VersionHistoryCollection",
+                        "type": "integer"
+                    },
+                    "versionable_type": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "subject": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "INACTIVE"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "versionHistory": {
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/versionHistoryEditable"
+                    },
+                    {
+                        "properties": {
+                            "created_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
             }
         },
         "responses": {
@@ -11049,6 +11052,14 @@
                     "type": "string",
                     "default": ""
                 }
+            },
+            "pmql": {
+                "name": "pmql",
+                "in": "query",
+                "description": "PMQL query to filter results",
+                "schema": {
+                    "type": "string"
+                }
             }
         },
         "securitySchemes": {
@@ -11057,9 +11068,9 @@
                 "description": "Laravel passport oauth2 security.",
                 "flows": {
                     "authorizationCode": {
-                        "authorizationUrl": "https://nolans-laptop.tail0babd.ts.net/oauth/authorize",
-                        "tokenUrl": "https://nolans-laptop.tail0babd.ts.net/oauth/token",
-                        "refreshUrl": "https://nolans-laptop.tail0babd.ts.net/token/refresh",
+                        "authorizationUrl": "https://pm4.local:8092/oauth/authorize",
+                        "tokenUrl": "https://pm4.local:8092/oauth/token",
+                        "refreshUrl": "https://pm4.local:8092/token/refresh",
                         "scopes": {}
                     }
                 }
@@ -11072,30 +11083,6 @@
         }
     },
     "tags": [
-        {
-            "name": "AnalyticsReporting",
-            "description": "AnalyticsReporting"
-        },
-        {
-            "name": "Collections",
-            "description": "Collections"
-        },
-        {
-            "name": "Screens",
-            "description": "Screens"
-        },
-        {
-            "name": "Comments",
-            "description": "Comments"
-        },
-        {
-            "name": "DataSourcesCategories",
-            "description": "DataSourcesCategories"
-        },
-        {
-            "name": "DataSources",
-            "description": "DataSources"
-        },
         {
             "name": "DecisionTableCategories",
             "description": "DecisionTableCategories"
@@ -11123,10 +11110,6 @@
         {
             "name": "Groups",
             "description": "Groups"
-        },
-        {
-            "name": "Version History",
-            "description": "Version History"
         },
         {
             "name": "CssSettings",
@@ -11173,6 +11156,10 @@
             "description": "Screen Categories"
         },
         {
+            "name": "Screens",
+            "description": "Screens"
+        },
+        {
             "name": "Script Categories",
             "description": "Script Categories"
         },
@@ -11211,6 +11198,30 @@
         {
             "name": "Processes Variables",
             "description": "Processes Variables"
+        },
+        {
+            "name": "AnalyticsReporting",
+            "description": "AnalyticsReporting"
+        },
+        {
+            "name": "Collections",
+            "description": "Collections"
+        },
+        {
+            "name": "Comments",
+            "description": "Comments"
+        },
+        {
+            "name": "DataSourcesCategories",
+            "description": "DataSourcesCategories"
+        },
+        {
+            "name": "DataSources",
+            "description": "DataSources"
+        },
+        {
+            "name": "Version History",
+            "description": "Version History"
         }
     ],
     "security": [
