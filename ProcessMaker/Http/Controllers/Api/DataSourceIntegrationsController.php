@@ -69,15 +69,15 @@ class DataSourceIntegrationsController extends Controller
         return $this->service->getCompanies();
     }
 
-    public function fetchCompanyDetails(Request $request)
+    public function fetchCompanyDetails($source, $companyId)
     {
-        $request->validate([
-            'source' => 'required|string',
-            'company_id' => 'required|string',
-        ]);
-
-        $source = $request->input('source');
-        $companyId = $request->input('company_id');
+        // Validate parameters
+        if (empty($source) || empty($companyId)) {
+            return response()->json([
+                'error' => 'Invalid parameters',
+                'message' => 'Source and companyId cannot be empty',
+            ], 422);
+        }
 
         return $this->service->fetchCompanyDetails($source, $companyId);
     }
