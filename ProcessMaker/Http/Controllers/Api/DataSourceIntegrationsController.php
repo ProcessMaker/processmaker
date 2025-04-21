@@ -71,6 +71,14 @@ class DataSourceIntegrationsController extends Controller
 
     public function fetchCompanyDetails(Request $request)
     {
-        return $this->service->fetchCompanyDetails();
+        $request->validate([
+            'source' => 'required|string',
+            'company_id' => 'required|string',
+        ]);
+
+        $source = $request->input('source');
+        $companyId = $request->input('company_id');
+
+        return $this->service->fetchCompanyDetails($source, $companyId);
     }
 }

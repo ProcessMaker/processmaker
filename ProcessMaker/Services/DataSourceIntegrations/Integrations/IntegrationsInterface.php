@@ -8,5 +8,5 @@ interface IntegrationsInterface
 
     public function getCompanies(array $params = []): array;
 
-    public function fetchCompanyDetails(string $source, string $companyId): array;
+    public function fetchCompanyDetails(string $companyId): array;
 }
