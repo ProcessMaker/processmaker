@@ -883,6 +883,7 @@ class UsersTest extends TestCase
 
         $process = Process::factory()->create([
             'user_id' => $admin->id,
+            'manager_id' => $admin->id,
         ]);
 
         $bpmn = file_get_contents(__DIR__ . '/../../Fixtures/task_with_user_group_assignment.bpmn');
