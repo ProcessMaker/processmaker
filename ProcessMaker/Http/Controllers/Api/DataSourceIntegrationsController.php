@@ -9,9 +9,17 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\DataSourceIntegrations;
+use ProcessMaker\Services\DataSourceIntegrations\DataSourceIntegrationsService;
 
 class DataSourceIntegrationsController extends Controller
 {
+    protected DataSourceIntegrationsService $service;
+
+    public function __construct(DataSourceIntegrationsService $service)
+    {
+        $this->service = $service;
+    }
+
     public function store(Request $request)
     {
         $validatedData = $request->validate(DataSourceIntegrations::rules());
@@ -41,5 +49,20 @@ class DataSourceIntegrationsController extends Controller
                 'error' => 'An unexpected error occurred',
             ], 500);
         }
+    }
+
+    public function getParameters(Request $request)
+    {
+        return $this->service->getParameters();
+    }
+
+    public function getCompanies(Request $request)
+    {
+        return $this->service->setSource($request->input('source'))->getCompanies();
+    }
+
+    public function fetchCompanyDetails(Request $request)
+    {
+        return $this->service->fetchCompanyDetails();
     }
 }
