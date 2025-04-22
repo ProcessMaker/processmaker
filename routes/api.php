@@ -429,5 +429,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     // Data Source Integrations
     Route::post('data-source-integrations', [DataSourceIntegrationsController::class, 'store'])->name('data-source-integrations.store');
+    Route::get('data-source-integrations/parameters', [DataSourceIntegrationsController::class, 'getParameters'])->name('data-source-integrations.parameters');
+    Route::get('data-source-integrations/companies', [DataSourceIntegrationsController::class, 'getCompanies'])->name('data-source-integrations.companies');
+    Route::get('data-source-integrations/{source}/{companyId}/company-details', [DataSourceIntegrationsController::class, 'fetchCompanyDetails'])->name('data-source-integrations.company-details');
 });
 Route::post('devlink/bundle-updated/{bundle}/{token}', [DevLinkController::class, 'bundleUpdated'])->name('devlink.bundle-updated');

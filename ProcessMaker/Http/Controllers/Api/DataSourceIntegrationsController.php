@@ -7,11 +7,20 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use ProcessMaker\Exception\DataSourceIntegrationException\UnsupportedDataSourceException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\DataSourceIntegrations;
+use ProcessMaker\Services\DataSourceIntegrations\DataSourceIntegrationsService;
 
 class DataSourceIntegrationsController extends Controller
 {
+    protected DataSourceIntegrationsService $service;
+
+    public function __construct(DataSourceIntegrationsService $service)
+    {
+        $this->service = $service;
+    }
+
     public function store(Request $request)
     {
         $validatedData = $request->validate(DataSourceIntegrations::rules());
@@ -39,6 +48,55 @@ class DataSourceIntegrationsController extends Controller
 
             return response()->json([
                 'error' => 'An unexpected error occurred',
+            ], 500);
+        }
+    }
+
+    public function getParameters(Request $request)
+    {
+        try {
+            if ($request->input('source')) {
+                return $this->service->setSource($request->input('source'))->getParameters();
+            }
+
+            return $this->service->getParameters();
+        } catch (UnsupportedDataSourceException $e) {
+            return response()->json([
+                'error' => 'Unsupported data source',
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
+
+    public function getCompanies(Request $request)
+    {
+        if ($request->input('source')) {
+            return $this->service->setSource($request->input('source'))->getCompanies();
+        }
+
+        return $this->service->getCompanies();
+    }
+
+    public function fetchCompanyDetails($source, $companyId)
+    {
+        if (empty($source) || empty($companyId)) {
+            return response()->json([
+                'error' => 'Invalid parameters',
+                'message' => 'Source and/or companyId cannot be empty',
+            ], 422);
+        }
+
+        try {
+            return $this->service->fetchCompanyDetails($source, $companyId);
+        } catch (UnsupportedDataSourceException $e) {
+            return response()->json([
+                'error' => 'Unsupported data source',
+                'message' => $e->getMessage(),
+            ], 400);
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => 'An unexpected error occurred',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
