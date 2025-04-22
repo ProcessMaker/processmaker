@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Services\DataSourceIntegrations\Integrations;
 
+use Illuminate\Support\LazyCollection;
 use ProcessMaker\Services\DataSourceIntegrations\Integrations\IntegrationsInterface;
 
 class PitchbookService implements IntegrationsInterface
@@ -15,7 +16,7 @@ class PitchbookService implements IntegrationsInterface
     public function getCompanies(array $params = []) : array
     {
         // TODO: Implement getCompanies() method with real data from Pitchbook
-        return [
+        $response = [
             'stats' => [
                 'total' => 864,
                 'perPage' => 25,
@@ -150,12 +151,38 @@ class PitchbookService implements IntegrationsInterface
                 ],
             ],
         ];
+
+        // Take the response and format it to a unified format
+        $companies = LazyCollection::make($response['items'])
+            ->map(function ($item) {
+                return [
+                    'id' => $item['companyId'] ?? null,
+                    'company_name' => $item['companyName'] ?? null,
+                    'company_logo' => $item['companyLogo'] ?? null,
+                    'industry' => $item['sicCodes'] ?? null,
+                    'location' => [
+                        'state' => $item['hqLocation']['stateProvince'] ?? null,
+                        'city' => $item['hqLocation']['city'] ?? null,
+                        'country' => $item['hqLocation']['country'] ?? null,
+                    ],
+                    'revenue' => $item['revenue'] ?? null,
+                    'employee_size' => $item['employees'] ?? null,
+                    'net_profit_margin' => $item['netProfitMargin'] ?? null,
+                    'revenue_growth' => $item['revenueGrowth'] ?? null,
+                    'contact_email' => $item['contactEmail'] ?? null,
+                    'source' => 'pitchbook',
+                ];
+            })
+            ->values()
+            ->all();
+
+        return $companies;
     }
 
     public function fetchCompanyDetails(string $companyId) : array
     {
         // TODO: Implement fetchCompanyDetails() method with real data from Pitchbook
-        return [
+        $response = [
             'companyId' => '10618-03',
             'companyName' => [
                 'formalName' => 'Jaguar Land Rover Automotive',
@@ -326,5 +353,25 @@ class PitchbookService implements IntegrationsInterface
             'pitchBookProfileLink' => 'https://my.pitchbook.com/profile/10618-03/company/profile',
 
         ];
+        // Map the response to a unified format
+        $mapCompanyDetails = [
+            'id' => $response['companyId'] ?? null,
+            'company_name' => $response['companyName']['formalName'] ?? null,
+            'company_logo' => $response['companyLogo'] ?? null,
+            'industry' => $response['sicCodes'] ?? null,
+            'location' => [
+                'state' => $response['hqLocation']['stateProvince'] ?? null,
+                'city' => $response['hqLocation']['city'] ?? null,
+                'country' => $response['hqLocation']['country'] ?? null,
+            ],
+            'revenue' => $response['revenue'] ?? null,
+            'employee_size' => $response['employees'] ?? null,
+            'net_profit_margin' => $response['netProfitMargin'] ?? null,
+            'revenue_growth' => $response['revenueGrowth'] ?? null,
+            'contact_email' => $response['contactEmail'] ?? null,
+            'source' => 'pitchbook',
+        ];
+
+        return $mapCompanyDetails;
     }
 }
