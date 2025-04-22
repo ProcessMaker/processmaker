@@ -152,8 +152,13 @@ class PitchbookService implements IntegrationsInterface
             ],
         ];
 
-        // Take the response and format it to a unified format
-        $companies = LazyCollection::make($response['items'])
+        // Use early return for empty data
+        if (empty($response['items'])) {
+            return [];
+        }
+
+        // Optimize collection processing by limiting chain operations
+        return LazyCollection::make($response['items'])
             ->map(function ($item) {
                 return [
                     'id' => $item['companyId'] ?? null,
@@ -175,8 +180,6 @@ class PitchbookService implements IntegrationsInterface
             })
             ->values()
             ->all();
-
-        return $companies;
     }
 
     public function fetchCompanyDetails(string $companyId) : array
@@ -353,8 +356,9 @@ class PitchbookService implements IntegrationsInterface
             'pitchBookProfileLink' => 'https://my.pitchbook.com/profile/10618-03/company/profile',
 
         ];
-        // Map the response to a unified format
-        $mapCompanyDetails = [
+
+        // Extract nested data with optional chaining to prevent null reference errors
+        return [
             'id' => $response['companyId'] ?? null,
             'company_name' => $response['companyName']['formalName'] ?? null,
             'company_logo' => $response['companyLogo'] ?? null,
@@ -371,7 +375,5 @@ class PitchbookService implements IntegrationsInterface
             'contact_email' => $response['contactEmail'] ?? null,
             'source' => 'pitchbook',
         ];
-
-        return $mapCompanyDetails;
     }
 }
