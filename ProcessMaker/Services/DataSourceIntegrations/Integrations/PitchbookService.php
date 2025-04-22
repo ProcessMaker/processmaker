@@ -15,8 +15,25 @@ class PitchbookService implements IntegrationsInterface
 
     public function getCompanies(array $params = []) : array
     {
-        // TODO: Implement getCompanies() method with real data from Pitchbook
-        $response = [
+        $response = $this->fetchCompaniesFromApi($params);
+
+        if (empty($response['items'])) {
+            return [];
+        }
+
+        return $this->transformCompaniesData($response['items']);
+    }
+
+    /**
+     * Fetch companies data from Pitchbook API
+     *
+     * @param array $params The query parameters
+     * @return array The raw API response
+     */
+    private function fetchCompaniesFromApi(array $params = []) : array
+    {
+        // TODO: Implement real API call to Pitchbook
+        return [
             'stats' => [
                 'total' => 864,
                 'perPage' => 25,
@@ -151,41 +168,71 @@ class PitchbookService implements IntegrationsInterface
                 ],
             ],
         ];
+    }
 
-        // Use early return for empty data
-        if (empty($response['items'])) {
-            return [];
-        }
-
-        // Optimize collection processing by limiting chain operations
-        return LazyCollection::make($response['items'])
+    /**
+     * Transform companies data to unified format
+     *
+     * @param array $companies The raw companies data
+     * @return array The transformed companies data
+     */
+    private function transformCompaniesData(array $companies) : array
+    {
+        return LazyCollection::make($companies)
             ->map(function ($item) {
-                return [
-                    'id' => $item['companyId'] ?? null,
-                    'company_name' => $item['companyName'] ?? null,
-                    'company_logo' => $item['companyLogo'] ?? null,
-                    'industry' => $item['sicCodes'] ?? null,
-                    'location' => [
-                        'state' => $item['hqLocation']['stateProvince'] ?? null,
-                        'city' => $item['hqLocation']['city'] ?? null,
-                        'country' => $item['hqLocation']['country'] ?? null,
-                    ],
-                    'revenue' => $item['revenue'] ?? null,
-                    'employee_size' => $item['employees'] ?? null,
-                    'net_profit_margin' => $item['netProfitMargin'] ?? null,
-                    'revenue_growth' => $item['revenueGrowth'] ?? null,
-                    'contact_email' => $item['contactEmail'] ?? null,
-                    'source' => 'pitchbook',
-                ];
+                return $this->mapCompanyData($item);
             })
             ->values()
             ->all();
     }
 
+    /**
+     * Map a single company item to unified format
+     *
+     * @param array $item The company data
+     * @return array The mapped company data
+     */
+    private function mapCompanyData(array $item) : array
+    {
+        return [
+            'id' => $item['companyId'] ?? null,
+            'company_name' => isset($item['companyName']) && is_array($item['companyName'])
+                ? ($item['companyName']['formalName'] ?? null)
+                : ($item['companyName'] ?? null),
+            'company_logo' => $item['companyLogo'] ?? null,
+            'industry' => $item['sicCodes'] ?? null,
+            'location' => [
+                'state' => $item['hqLocation']['stateProvince'] ?? null,
+                'city' => $item['hqLocation']['city'] ?? null,
+                'postCode' => $item['hqLocation']['postCode'] ?? null,
+                'country' => $item['hqLocation']['country'] ?? null,
+            ],
+            'revenue' => $item['revenue'] ?? null,
+            'employee_size' => $item['employees'] ?? null,
+            'net_profit_margin' => $item['netProfitMargin'] ?? null,
+            'revenue_growth' => $item['revenueGrowth'] ?? null,
+            'contact_email' => $item['contactEmail'] ?? null,
+            'source' => 'pitchbook',
+        ];
+    }
+
     public function fetchCompanyDetails(string $companyId) : array
     {
-        // TODO: Implement fetchCompanyDetails() method with real data from Pitchbook
-        $response = [
+        $response = $this->fetchCompanyDetailsFromApi($companyId);
+
+        return $this->mapCompanyData($response);
+    }
+
+    /**
+     * Fetch company details from Pitchbook API
+     *
+     * @param string $companyId The company ID
+     * @return array The raw API response
+     */
+    private function fetchCompanyDetailsFromApi(string $companyId) : array
+    {
+        // TODO: Implement real API call to Pitchbook
+        return [
             'companyId' => '10618-03',
             'companyName' => [
                 'formalName' => 'Jaguar Land Rover Automotive',
@@ -354,26 +401,6 @@ class PitchbookService implements IntegrationsInterface
                 ],
             ],
             'pitchBookProfileLink' => 'https://my.pitchbook.com/profile/10618-03/company/profile',
-
-        ];
-
-        // Extract nested data with optional chaining to prevent null reference errors
-        return [
-            'id' => $response['companyId'] ?? null,
-            'company_name' => $response['companyName']['formalName'] ?? null,
-            'company_logo' => $response['companyLogo'] ?? null,
-            'industry' => $response['sicCodes'] ?? null,
-            'location' => [
-                'state' => $response['hqLocation']['stateProvince'] ?? null,
-                'city' => $response['hqLocation']['city'] ?? null,
-                'country' => $response['hqLocation']['country'] ?? null,
-            ],
-            'revenue' => $response['revenue'] ?? null,
-            'employee_size' => $response['employees'] ?? null,
-            'net_profit_margin' => $response['netProfitMargin'] ?? null,
-            'revenue_growth' => $response['revenueGrowth'] ?? null,
-            'contact_email' => $response['contactEmail'] ?? null,
-            'source' => 'pitchbook',
         ];
     }
 }
