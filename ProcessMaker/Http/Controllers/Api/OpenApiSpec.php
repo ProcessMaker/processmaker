@@ -44,6 +44,12 @@ namespace ProcessMaker\Http\Controllers\Api;
  *             @OA\Schema(type="string", enum={"asc", "desc"}, default="asc"),
  *         ),
  *         @OA\Parameter(
+ *             parameter="page",
+ *             name="page",
+ *             in="query",
+ *             @OA\Schema(type="integer", default="1"),
+ *         ),
+ *         @OA\Parameter(
  *             parameter="per_page",
  *             name="per_page",
  *             in="query",

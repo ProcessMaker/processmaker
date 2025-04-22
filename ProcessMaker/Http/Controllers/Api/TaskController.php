@@ -104,6 +104,8 @@ class TaskController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/include"),
+     *     @OA\Parameter(ref="#/components/parameters/page"),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
      *
      *     @OA\Response(
      *         response=200,
