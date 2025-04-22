@@ -3,9 +3,10 @@
 namespace ProcessMaker\Services\DataSourceIntegrations\Integrations;
 
 use Illuminate\Support\LazyCollection;
+use ProcessMaker\Services\DataSourceIntegrations\Integrations\BaseIntegrationService;
 use ProcessMaker\Services\DataSourceIntegrations\Integrations\IntegrationsInterface;
 
-class PitchbookService implements IntegrationsInterface
+class PitchbookService extends BaseIntegrationService implements IntegrationsInterface
 {
     public function getParameters() : array
     {
@@ -205,52 +206,6 @@ class PitchbookService implements IntegrationsInterface
         ];
     }
 
-    /**
-     * Transform companies data to unified format
-     *
-     * @param array $companies The raw companies data
-     * @return array The transformed companies data
-     */
-    private function transformCompaniesData(array $companies) : array
-    {
-        return LazyCollection::make($companies)
-            ->map(function ($item) {
-                return $this->mapCompanyData($item);
-            })
-            ->values()
-            ->all();
-    }
-
-    /**
-     * Map a single company item to unified format
-     *
-     * @param array $item The company data
-     * @return array The mapped company data
-     */
-    private function mapCompanyData(array $item) : array
-    {
-        return [
-            'id' => $item['companyId'] ?? null,
-            'company_name' => isset($item['companyName']) && is_array($item['companyName'])
-                ? ($item['companyName']['formalName'] ?? null)
-                : ($item['companyName'] ?? null),
-            'company_logo' => $item['companyLogo'] ?? null,
-            'industry' => $item['sicCodes'] ?? null,
-            'location' => [
-                'stateProvince' => $item['hqLocation']['stateProvince'] ?? null,
-                'city' => $item['hqLocation']['city'] ?? null,
-                'postCode' => $item['hqLocation']['postCode'] ?? null,
-                'country' => $item['hqLocation']['country'] ?? null,
-            ],
-            'revenue' => $item['revenue'] ?? null,
-            'employee_size' => $item['employees'] ?? null,
-            'net_profit_margin' => $item['netProfitMargin'] ?? null,
-            'revenue_growth' => $item['revenueGrowth'] ?? null,
-            'contact_email' => $item['contactEmail'] ?? null,
-            'source' => 'pitchbook',
-        ];
-    }
-
     public function fetchCompanyDetails(string $companyId) : array
     {
         $response = $this->fetchCompanyDetailsFromApi($companyId);
@@ -437,5 +392,132 @@ class PitchbookService implements IntegrationsInterface
             ],
             'pitchBookProfileLink' => 'https://my.pitchbook.com/profile/10618-03/company/profile',
         ];
+    }
+
+    /**
+     * Get the name of the data source
+     *
+     * @return string The source name
+     */
+    protected function getSourceName() : string
+    {
+        return 'pitchbook';
+    }
+
+    /**
+     * Extract company ID from raw data
+     *
+     * @param array $item Raw company data
+     * @return string|null Company ID
+     */
+    protected function extractId(array $item) : ?string
+    {
+        return $item['companyId'] ?? null;
+    }
+
+    /**
+     * Extract company name from raw data
+     *
+     * @param array $item Raw company data
+     * @return string|null Company name
+     */
+    protected function extractCompanyName(array $item) : ?string
+    {
+        return isset($item['companyName']) && is_array($item['companyName'])
+            ? ($item['companyName']['formalName'] ?? null)
+            : ($item['companyName'] ?? null);
+    }
+
+    /**
+     * Extract company logo from raw data
+     *
+     * @param array $item Raw company data
+     * @return string|null Company logo URL/ID
+     */
+    protected function extractCompanyLogo(array $item) : ?string
+    {
+        return $item['companyLogo'] ?? null;
+    }
+
+    /**
+     * Extract industry information from raw data
+     *
+     * @param array $item Raw company data
+     * @return array|null Industry information
+     */
+    protected function extractIndustry(array $item) : ?array
+    {
+        return $item['sicCodes'] ?? null;
+    }
+
+    /**
+     * Extract location information from raw data
+     *
+     * @param array $item Raw company data
+     * @return array Location information with state, city, postCode and country
+     */
+    protected function extractLocation(array $item) : array
+    {
+        return [
+            'stateProvince' => $item['hqLocation']['stateProvince'] ?? null,
+            'city' => $item['hqLocation']['city'] ?? null,
+            'postCode' => $item['hqLocation']['postCode'] ?? null,
+            'country' => $item['hqLocation']['country'] ?? null,
+        ];
+    }
+
+    /**
+     * Extract revenue information from raw data
+     *
+     * @param array $item Raw company data
+     * @return mixed|null Revenue information
+     */
+    protected function extractRevenue(array $item)
+    {
+        return $item['revenue'] ?? null;
+    }
+
+    /**
+     * Extract employee size information from raw data
+     *
+     * @param array $item Raw company data
+     * @return mixed|null Employee size information
+     */
+    protected function extractEmployeeSize(array $item)
+    {
+        return $item['employees'] ?? null;
+    }
+
+    /**
+     * Extract net profit margin from raw data
+     *
+     * @param array $item Raw company data
+     * @return mixed|null Net profit margin
+     */
+    protected function extractNetProfitMargin(array $item)
+    {
+        return $item['netProfitMargin'] ?? null;
+    }
+
+    /**
+     * Extract revenue growth from raw data
+     *
+     * @param array $item Raw company data
+     * @return mixed|null Revenue growth
+     */
+    protected function extractRevenueGrowth(array $item)
+    {
+        return $item['revenueGrowth'] ?? null;
+    }
+
+    /**
+     * Extract contact email from raw data
+     *
+     * @param array $item Raw company data
+     * @return string|null Contact email
+     */
+    protected function extractContactEmail(array $item) : ?string
+    {
+        return $item['contactEmail'] ?? null;
     }
 }

@@ -3,9 +3,10 @@
 namespace ProcessMaker\Services\DataSourceIntegrations\Integrations;
 
 use Illuminate\Support\LazyCollection;
+use ProcessMaker\Services\DataSourceIntegrations\Integrations\BaseIntegrationService;
 use ProcessMaker\Services\DataSourceIntegrations\Integrations\IntegrationsInterface;
 
-class CrunchbaseService implements IntegrationsInterface
+class CrunchbaseService extends BaseIntegrationService implements IntegrationsInterface
 {
     public function getParameters() : array
     {
@@ -190,52 +191,6 @@ class CrunchbaseService implements IntegrationsInterface
         ];
     }
 
-    /**
-     * Transform companies data to unified format
-     *
-     * @param array $companies The raw companies data
-     * @return array The transformed companies data
-     */
-    private function transformCompaniesData(array $companies) : array
-    {
-        return LazyCollection::make($companies)
-            ->map(function ($item) {
-                return $this->mapCompanyData($item);
-            })
-            ->values()
-            ->all();
-    }
-
-    /**
-     * Map a single company item to unified format
-     *
-     * @param array $item The company data
-     * @return array The mapped company data
-     */
-    private function mapCompanyData(array $item) : array
-    {
-        return [
-            'id' => $item['uuid'] ?? null,
-            'company_name' => isset($item['properties']['identifier']['value'])
-                ? $item['properties']['identifier']['value']
-                : null,
-            'company_logo' => $item['properties']['identifier']['image_id'] ?? null,
-            'industry' => $item['properties']['categories'] ?? null,
-            'location' => [
-                'stateProvince' => $item['cards']['headquarters_address']['location_identifiers'][1]['value'] ?? null,
-                'city' => $item['cards']['headquarters_address']['location_identifiers'][0]['value'] ?? null,
-                'postCode' => $item['cards']['headquarters_address']['postal_code'] ?? null,
-                'country' => $item['cards']['headquarters_address']['location_identifiers'][3]['value'] ?? null,
-            ],
-            'revenue' => $item['properties']['revenue_range'] ?? null,
-            'employee_size' => $item['properties']['num_employees_enum'] ?? null,
-            'net_profit_margin' => $item['properties']['net_profit_margin'] ?? null,
-            'revenue_growth' => $item['properties']['revenue_growth'] ?? null,
-            'contact_email' => $item['properties']['contact_email'] ?? null,
-            'source' => 'crunchbase',
-        ];
-    }
-
     public function fetchCompanyDetails(string $companyId) : array
     {
         $response = $this->fetchCompanyDetailsFromApi($companyId);
@@ -298,7 +253,7 @@ class CrunchbaseService implements IntegrationsInterface
                         'author'=> 'Dave Baldwin',
                         'identifier'=> [
                             'uuid'=> '234383e5-2f1d-43dc-8b56-2ab389429ace',
-                            'value'=> '7 Apps to Save Mad Money on Toys, Kids’ Clothes, and Baby Gear',
+                            'value'=> "7 Apps to Save Mad Money on Toys, Kids' Clothes, and Baby Gear",
                             'entity_def_id'=> 'press_reference',
                         ],
                         'url'=> [
@@ -665,7 +620,7 @@ class CrunchbaseService implements IntegrationsInterface
                             'entity_def_id'=> 'person',
                         ],
                     ],
-                    'description'=> "goBaby, the Airbnb for Baby-Gear-on-the-Go, is a peer-to-peer rental marketplace and on-demand app that helps families reduce the stress of traveling by leaving their cumbersome strollers, baby seats, and Pack ’n Plays at home.\n\nHow? By renting from goBaby’s trusted community of local parents!\n",
+                    'description'=> "goBaby, the Airbnb for Baby-Gear-on-the-Go, is a peer-to-peer rental marketplace and on-demand app that helps families reduce the stress of traveling by leaving their cumbersome strollers, baby seats, and Pack 'n Plays at home.\n\nHow? By renting from goBaby's trusted community of local parents!\n",
                     'category_groups'=> [
                         [
                             'uuid'=> '26833aa6-0585-2aa7-8c69-63b4b14727c5',
@@ -809,5 +764,132 @@ class CrunchbaseService implements IntegrationsInterface
             'acquiree_acquisitions'=> [],
             'participated_funding_rounds'=> [],
         ];
+    }
+
+    /**
+     * Get the name of the data source
+     *
+     * @return string The source name
+     */
+    protected function getSourceName() : string
+    {
+        return 'crunchbase';
+    }
+
+    /**
+     * Extract company ID from raw data
+     *
+     * @param array $item Raw company data
+     * @return string|null Company ID
+     */
+    protected function extractId(array $item) : ?string
+    {
+        return $item['uuid'] ?? null;
+    }
+
+    /**
+     * Extract company name from raw data
+     *
+     * @param array $item Raw company data
+     * @return string|null Company name
+     */
+    protected function extractCompanyName(array $item) : ?string
+    {
+        return isset($item['properties']['identifier']['value'])
+            ? $item['properties']['identifier']['value']
+            : null;
+    }
+
+    /**
+     * Extract company logo from raw data
+     *
+     * @param array $item Raw company data
+     * @return string|null Company logo URL/ID
+     */
+    protected function extractCompanyLogo(array $item) : ?string
+    {
+        return $item['properties']['identifier']['image_id'] ?? null;
+    }
+
+    /**
+     * Extract industry information from raw data
+     *
+     * @param array $item Raw company data
+     * @return array|null Industry information
+     */
+    protected function extractIndustry(array $item) : ?array
+    {
+        return $item['properties']['categories'] ?? null;
+    }
+
+    /**
+     * Extract location information from raw data
+     *
+     * @param array $item Raw company data
+     * @return array Location information with state, city, postCode and country
+     */
+    protected function extractLocation(array $item) : array
+    {
+        return [
+            'stateProvince' => $item['cards']['headquarters_address']['location_identifiers'][1]['value'] ?? null,
+            'city' => $item['cards']['headquarters_address']['location_identifiers'][0]['value'] ?? null,
+            'postCode' => $item['cards']['headquarters_address']['postal_code'] ?? null,
+            'country' => $item['cards']['headquarters_address']['location_identifiers'][3]['value'] ?? null,
+        ];
+    }
+
+    /**
+     * Extract revenue information from raw data
+     *
+     * @param array $item Raw company data
+     * @return mixed|null Revenue information
+     */
+    protected function extractRevenue(array $item)
+    {
+        return $item['properties']['revenue_range'] ?? null;
+    }
+
+    /**
+     * Extract employee size information from raw data
+     *
+     * @param array $item Raw company data
+     * @return mixed|null Employee size information
+     */
+    protected function extractEmployeeSize(array $item)
+    {
+        return $item['properties']['num_employees_enum'] ?? null;
+    }
+
+    /**
+     * Extract net profit margin from raw data
+     *
+     * @param array $item Raw company data
+     * @return mixed|null Net profit margin
+     */
+    protected function extractNetProfitMargin(array $item)
+    {
+        return $item['properties']['net_profit_margin'] ?? null;
+    }
+
+    /**
+     * Extract revenue growth from raw data
+     *
+     * @param array $item Raw company data
+     * @return mixed|null Revenue growth
+     */
+    protected function extractRevenueGrowth(array $item)
+    {
+        return $item['properties']['revenue_growth'] ?? null;
+    }
+
+    /**
+     * Extract contact email from raw data
+     *
+     * @param array $item Raw company data
+     * @return string|null Contact email
+     */
+    protected function extractContactEmail(array $item) : ?string
+    {
+        return $item['properties']['contact_email'] ?? null;
     }
 }
