@@ -2,9 +2,12 @@
 
 namespace ProcessMaker\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
+use ProcessMaker\Exception\DataSourceIntegrationException\AuthenticationException;
 
 class DataSourceIntegrations extends Model
 {
@@ -35,10 +38,19 @@ class DataSourceIntegrations extends Model
             $decrypted = Crypt::decryptString($value);
 
             return json_decode($decrypted, true) ?? $decrypted;
-        } catch (\Exception $e) {
-            \Log::debug('======== DECRYPTION ERROR ====== ', ['$error' => $e->getMessage()]);
+        } catch (Exception $e) {
+            Log::error('Decryption error in data source integration', [
+                'integration_id' => $this->id,
+                'integration_name' => $this->name,
+                'error' => $e->getMessage(),
+            ]);
 
-            return null;
+            throw new AuthenticationException(
+                $this->key ?? 'unknown',
+                'Failed to decrypt credentials',
+                0,
+                $e
+            );
         }
     }
 
@@ -51,8 +63,19 @@ class DataSourceIntegrations extends Model
         try {
             $encrypted = Crypt::encryptString($value);
             $this->attributes['credentials'] = $encrypted;
-        } catch (\Exception $e) {
-            \Log::debug('======== ENCRYPTION ERROR ====== ', ['$error' => $e->getMessage()]);
+        } catch (Exception $e) {
+            Log::error('Encryption error in data source integration', [
+                'integration_id' => $this->id,
+                'integration_name' => $this->name,
+                'error' => $e->getMessage(),
+            ]);
+
+            throw new AuthenticationException(
+                $this->key ?? 'unknown',
+                'Failed to encrypt credentials',
+                0,
+                $e
+            );
         }
     }
 }

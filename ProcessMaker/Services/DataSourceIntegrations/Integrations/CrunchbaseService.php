@@ -1,0 +1,118 @@
+<?php
+
+namespace ProcessMaker\Services\DataSourceIntegrations\Integrations;
+
+use ProcessMaker\Services\DataSourceIntegrations\Integrations\IntegrationsInterface;
+
+class CrunchbaseService implements IntegrationsInterface
+{
+    public function getParameters() : array
+    {
+        // TODO: Implement getParameters() method with real data from Crunchbase
+        return ['apiKey' => ['type' => 'string']];
+    }
+
+    public function getCompanies(array $params = []) : array
+    {
+        // TODO: Implement getCompanies() method with real data from Crunchbase
+        return [
+            [
+                'permalink' => 1,
+                'api_path' => '',
+                'web_path' => '',
+                'name' => 'Amazon',
+                'short_description' => 'Amazon is a platform for building process automation solutions.',
+                'description' => 'Amazon is a platform for building process automation solutions.',
+                'also_known_as' => 'Amazon',
+                'profile_image_url' => 'https://processmaker.com/logo.png',
+                'primary_role' => 'Company',
+                'role_company' => 'Company',
+                'role_investor' => 'Investor',
+                'role_group' => 'Group',
+                'role_school' => 'School',
+                'founded_on' => '2010-01-01',
+                'founded_on_trust_code' => '2010-01-01',
+                'is_closed' => false,
+                'closed_on' => '',
+                'closed_on_trust_code' => '',
+                'num_employees_min' => 100,
+                'num_employees_max' => 100,
+                'total_funding_usd' => 1000000,
+                'stock_exchange' => 'NASDAQ',
+                'stock_symbol' => 'AMZN',
+                'number_of_investments' => 100,
+                'homepage_url' => 'https://www.amazon.com',
+                'created_at' => '2021-01-01',
+                'updated_at' => '2021-01-01',
+                'permalink_aliases' => 'amazon',
+                'api_url' => '',
+                'investor_type' => 'Venture Capital',
+                'contact_email' => 'contact@amazon.com',
+                'phone_number' => '+1234567890',
+                'rank' => 1,
+            ],
+            [
+                'permalink' => 2,
+                'api_path' => '',
+                'web_path' => '',
+                'name' => 'Telsa',
+                'short_description' => 'Telsa is a platform for building process automation solutions.',
+                'description' => 'Telsa is a platform for building process automation solutions.',
+                'also_known_as' => 'Telsa',
+                'profile_image_url' => 'https://google.com/logo.png',
+                'primary_role' => 'Company',
+                'role_company' => 'Company',
+                'role_investor' => 'Investor',
+                'role_group' => 'Group',
+                'role_school' => 'School',
+                'founded_on' => '2010-01-01',
+                'founded_on_trust_code' => '2010-01-01',
+                'is_closed' => false,
+                'closed_on' => '',
+                'closed_on_trust_code' => '',
+                'num_employees_min' => 100,
+                'num_employees_max' => 100,
+                'total_funding_usd' => 1000000,
+                'stock_exchange' => 'NASDAQ',
+                'stock_symbol' => 'AMZN',
+                'number_of_investments' => 100,
+                'homepage_url' => 'https://www.amazon.com',
+                'created_at' => '2021-01-01',
+                'updated_at' => '2021-01-01',
+                'permalink_aliases' => 'amazon',
+                'api_url' => '',
+                'investor_type' => 'Venture Capital',
+                'contact_email' => 'contact@amazon.com',
+                'phone_number' => '+1234567890',
+                'rank' => 1,
+            ],
+        ];
+    }
+
+    public function fetchCompanyDetails(string $companyId) : array
+    {
+        // TODO: Implement fetchCompanyDetails() method with real data from Crunchbase
+        return [
+            'permalink' => 2,
+            'api_path' => '',
+            'web_path' => '',
+            'name' => 'Telsa',
+            'primary_role' => 'Company',
+            'short_description' => 'Telsa is a platform for building process automation solutions.',
+            'profile_image_url' => 'https://google.com/logo.png',
+            'domain' => 'telsa.com',
+            'homepage_url' => 'https://www.amazon.com',
+            'facebook_url' => 'https://www.facebook.com/telsa',
+            'twitter_url' => 'https://www.twitter.com/telsa',
+            'linkedin_url' => 'https://www.linkedin.com/telsa',
+            'city_name' => 'San Francisco',
+            'region_name' => 'California',
+            'country_code' => 'US',
+            'created_at' => '2021-01-01',
+            'updated_at' => '2021-01-01',
+            'api_url' => '',
+            'stock_exchange' => 'NASDAQ',
+            'stock_symbol' => 'AMZN',
+        ];
+    }
+}
