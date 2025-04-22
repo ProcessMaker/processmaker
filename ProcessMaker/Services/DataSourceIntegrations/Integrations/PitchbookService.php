@@ -9,8 +9,43 @@ class PitchbookService implements IntegrationsInterface
 {
     public function getParameters() : array
     {
-        // TODO: Implement getParameters() method with real data from Pitchbook
-        return ['apiKey' => ['type' => 'string']];
+        return [
+            'companyName',
+            'ownerShipStatus',
+            'backingStatus',
+            'businessStatus',
+            'city',
+            'stateProvince',
+            'country',
+            'postCode',
+            'locationType',
+            'dateFounded',
+            'keywords',
+            'industry',
+            'verticals',
+            'industryAndVertical',
+            'emergingSpaces',
+            'dealType',
+            'dealStatus',
+            'dealSize',
+            'includeDealsWithoutDealSize',
+            'excludeDealsWithoutDealSize',
+            'dealData',
+            'totalRaised',
+            'investorNames',
+            'partialExit',
+            'fullExit',
+            'exitType',
+            'exitStatus',
+            'exitSize',
+            'exitData',
+            'revenue',
+            'onlyMostRecentTransaction',
+            'employeeCount',
+            'currency',
+            'page',
+            'perPage',
+        ];
     }
 
     public function getCompanies(array $params = []) : array
