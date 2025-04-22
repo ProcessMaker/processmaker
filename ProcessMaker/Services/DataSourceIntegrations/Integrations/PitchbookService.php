@@ -237,7 +237,7 @@ class PitchbookService implements IntegrationsInterface
             'company_logo' => $item['companyLogo'] ?? null,
             'industry' => $item['sicCodes'] ?? null,
             'location' => [
-                'state' => $item['hqLocation']['stateProvince'] ?? null,
+                'stateProvince' => $item['hqLocation']['stateProvince'] ?? null,
                 'city' => $item['hqLocation']['city'] ?? null,
                 'postCode' => $item['hqLocation']['postCode'] ?? null,
                 'country' => $item['hqLocation']['country'] ?? null,
