@@ -143,7 +143,7 @@ trait ScriptDockerCopyingFilesTrait
 
         $line = exec($cmd, $output, $returnCode);
         if ($returnCode) {
-            if ($returnCode == 137) {
+            if ($returnCode == 137 || $returnCode == 124) {
                 Log::error('Script timed out');
                 throw new ScriptTimeoutException(implode("\n", $output));
             }
