@@ -1,6 +1,6 @@
 <template>
   <div :class="`tw-flex tw-relative tw-w-full`">
-    <div class="tw-bg-white tw-flex tw-flex-col tw-w-full">
+    <div class=" tw-flex tw-flex-col tw-w-full">
       <div class="tw-flex tw-flex-col tw-justify-start tw-px-6 tw-py-3">
         <slot name="header">
           <div class="tw-text-xl tw-font-bold">
@@ -15,7 +15,7 @@
       </div>
     </div>
     <div
-      :class="`tw-h-ful tw-bg-white tw-w-[20px] tw-absolute tw-bg-inherit
+      :class="`tw-h-full tw-w-[20px] tw-absolute tw-bg-inherit
           tw-right-[-20px] clip-path-triangle-right tw-z-10`">
         &nbsp;
     </div>
