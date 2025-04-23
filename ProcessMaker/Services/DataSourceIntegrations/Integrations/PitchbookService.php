@@ -5,48 +5,13 @@ namespace ProcessMaker\Services\DataSourceIntegrations\Integrations;
 use Illuminate\Support\LazyCollection;
 use ProcessMaker\Services\DataSourceIntegrations\Integrations\BaseIntegrationService;
 use ProcessMaker\Services\DataSourceIntegrations\Integrations\IntegrationsInterface;
+use ProcessMaker\Services\DataSourceIntegrations\Schemas\PitchbookApiSchema;
 
 class PitchbookService extends BaseIntegrationService implements IntegrationsInterface
 {
     public function getParameters() : array
     {
-        return [
-            'companyName',
-            'ownerShipStatus',
-            'backingStatus',
-            'businessStatus',
-            'city',
-            'stateProvince',
-            'country',
-            'postCode',
-            'locationType',
-            'dateFounded',
-            'keywords',
-            'industry',
-            'verticals',
-            'industryAndVertical',
-            'emergingSpaces',
-            'dealType',
-            'dealStatus',
-            'dealSize',
-            'includeDealsWithoutDealSize',
-            'excludeDealsWithoutDealSize',
-            'dealData',
-            'totalRaised',
-            'investorNames',
-            'partialExit',
-            'fullExit',
-            'exitType',
-            'exitStatus',
-            'exitSize',
-            'exitData',
-            'revenue',
-            'onlyMostRecentTransaction',
-            'employeeCount',
-            'currency',
-            'page',
-            'perPage',
-        ];
+        return PitchbookApiSchema::getSchema();
     }
 
     public function getCompanies(array $params = []) : array
