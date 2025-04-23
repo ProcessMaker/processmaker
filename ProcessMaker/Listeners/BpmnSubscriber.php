@@ -279,6 +279,12 @@ class BpmnSubscriber
 
         // Exit if no variable or expression is set
         $config = json_decode($flow->getProperties()['config'], true);
+        // Check if stage is configured to update the intance
+        if (!empty($config['stageName'])) {
+            $instance->setProperty('state_name', $config['stageName']);
+            $instance->setProperty('state_id', $config['stageId'] ?? null);
+        }
+        // Check if update_data is empty
         if (empty($config['update_data'])
             || empty($config['update_data']['variable'])
             || empty($config['update_data']['expression'])
@@ -324,6 +330,7 @@ class BpmnSubscriber
     public function subscribe($events)
     {
         $events->listen(TransitionInterface::EVENT_CONDITIONED_TRANSITION, static::class . '@updateDataWithFlowTransition');
+        $events->listen(TransitionInterface::EVENT_AFTER_TRANSIT, static::class . '@updateDataWithFlowTransition');
 
         $events->listen(ProcessInterface::EVENT_PROCESS_INSTANCE_CREATED, static::class . '@onProcessCreated');
         $events->listen(ProcessInterface::EVENT_PROCESS_INSTANCE_COMPLETED, static::class . '@onProcessCompleted');

@@ -246,6 +246,10 @@ class TokenRepository implements TokenRepositoryInterface
             if ($user->email_task_notification === 0 || empty($user->email)) {
                 return null;
             }
+            // Check if the required class exists
+            if (!class_exists('ProcessMaker\Packages\Connectors\ActionsByEmail\EmailProvider')) {
+                return null;
+            }
             // Prepare data for the email
             $data = $this->prepareEmailData($token, $user);
 
@@ -354,10 +358,6 @@ class TokenRepository implements TokenRepositoryInterface
         $token->setId($token->getKey());
         $request = $token->getInstance();
         $request->notifyProcessUpdated('START_EVENT_TRIGGERED', $token);
-    }
-
-    private function assignTaskUser(ActivityInterface $activity, TokenInterface $token, Instance $instance)
-    {
     }
 
     /**

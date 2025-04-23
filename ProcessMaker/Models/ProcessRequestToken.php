@@ -1045,6 +1045,10 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             },
             ARRAY_FILTER_USE_KEY
         );
+
+        // Set stage properties in record
+        $this->stage_id = $this->getInstance()->getProperty('state_id', null);
+        $this->stage_name = $this->getInstance()->getProperty('state_name', null);
     }
 
     public function loadTokenProperties()
