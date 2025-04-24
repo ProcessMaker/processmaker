@@ -479,10 +479,131 @@ class PitchbookService extends BaseIntegrationService implements IntegrationsInt
      * Extract contact email from raw data
      *
      * @param array $item Raw company data
-     * @return string|null Contact email
+     * @return string|null Recipient email
      */
-    protected function extractContactEmail(array $item) : ?string
+    protected function extractRecipientEmail(array $item) : ?string
     {
         return $item['contactEmail'] ?? null;
+    }
+
+    /**
+     * Extract EBITDA information from raw data
+     *
+     * @param array $item Raw company data
+     * @return mixed|null EBITDA information
+     */
+    protected function extractEbitda(array $item)
+    {
+        return $item['properties']['ebitda'] ?? null;
+    }
+
+    /**
+     * Extract FCFF information from raw data
+     *
+     * @param array $item Raw company data
+     * @return mixed|null FCFF information
+     */
+    protected function extractFcff(array $item)
+    {
+        return $item['properties']['fcff'] ?? null;
+    }
+
+    /**
+     * Extract DE information from raw data
+     *
+     * @param array $item Raw company data
+     * @return mixed|null DE information
+     */
+    protected function extractDe(array $item)
+    {
+        return $item['properties']['de'] ?? null;
+    }
+
+    /**
+     * Extract current ratio information from raw data
+     *
+     * @param array $item Raw company data
+     * @return mixed|null Current ratio information
+     */
+    protected function extractCurrentRatio(array $item)
+    {
+        return $item['properties']['current_ratio'] ?? null;
+    }
+
+    /**
+     * Extract earning per share information from raw data
+     *
+     * @param array $item Raw company data
+     * @return mixed|null Earning per share information
+     */
+    protected function extractEarningPerShare(array $item)
+    {
+        return $item['properties']['earning_per_share'] ?? null;
+    }
+
+    /**
+     * Extract status information from raw data
+     *
+     * @param array $item Raw company data
+     * @return mixed|null Status information
+     */
+    protected function extractStatus(array $item)
+    {
+        return $item['properties']['status'] ?? null;
+    }
+
+    /**
+     * Extract website URL from raw data
+     *
+     * @param array $item Raw company data
+     * @return string|null Website URL
+     */
+    protected function extractWebsiteUrl(array $item) : ?string
+    {
+        return $item['properties']['website_url'] ?? null;
+    }
+
+    /**
+     * Extract currency information from raw data
+     *
+     * @param array $item Raw company data
+     * @return string|null Currency
+     */
+    protected function extractCurrency(array $item) : ?string
+    {
+        return $item['properties']['currency'] ?? null;
+    }
+
+    /**
+     * Extract net profit information from raw data
+     *
+     * @param array $item Raw company data
+     * @return mixed|null Net profit
+     */
+    protected function extractNetProfit(array $item)
+    {
+        return $item['properties']['net_profit'] ?? null;
+    }
+
+    /**
+     * Extract recipient name information from raw data
+     *
+     * @param array $item Raw company data
+     * @return string|null Recipient name
+     */
+    protected function extractRecipientName(array $item) : ?string
+    {
+        return $item['properties']['recipient_name'] ?? null;
+    }
+
+    /**
+     * Extract last updated information from raw data
+     *
+     * @param array $item Raw company data
+     * @return string|null Last updated
+     */
+    protected function extractLastUpdated(array $item) : ?string
+    {
+        return $item['properties']['last_updated'] ?? null;
     }
 }
