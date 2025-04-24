@@ -11,6 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('processes', function (Blueprint $table) {
+            // Add a 'stages' column to store the stages related to the process
             $table->json('stages')->nullable();
         });
         Schema::table('process_versions', function (Blueprint $table) {
