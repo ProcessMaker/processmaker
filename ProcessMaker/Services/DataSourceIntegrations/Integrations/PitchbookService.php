@@ -494,7 +494,7 @@ class PitchbookService extends BaseIntegrationService implements IntegrationsInt
      */
     protected function extractEbitda(array $item)
     {
-        return $item['properties']['ebitda'] ?? null;
+        return $item['ebitda'] ?? null;
     }
 
     /**
@@ -505,7 +505,7 @@ class PitchbookService extends BaseIntegrationService implements IntegrationsInt
      */
     protected function extractFcff(array $item)
     {
-        return $item['properties']['fcff'] ?? null;
+        return $item['fcff'] ?? null;
     }
 
     /**
@@ -516,7 +516,7 @@ class PitchbookService extends BaseIntegrationService implements IntegrationsInt
      */
     protected function extractDe(array $item)
     {
-        return $item['properties']['de'] ?? null;
+        return $item['de'] ?? null;
     }
 
     /**
@@ -527,7 +527,7 @@ class PitchbookService extends BaseIntegrationService implements IntegrationsInt
      */
     protected function extractCurrentRatio(array $item)
     {
-        return $item['properties']['current_ratio'] ?? null;
+        return $item['current_ratio'] ?? null;
     }
 
     /**
@@ -538,7 +538,7 @@ class PitchbookService extends BaseIntegrationService implements IntegrationsInt
      */
     protected function extractEarningPerShare(array $item)
     {
-        return $item['properties']['earning_per_share'] ?? null;
+        return $item['earning_per_share'] ?? null;
     }
 
     /**
@@ -549,7 +549,7 @@ class PitchbookService extends BaseIntegrationService implements IntegrationsInt
      */
     protected function extractStatus(array $item)
     {
-        return $item['properties']['status'] ?? null;
+        return $item['financingStatus'] ?? null;
     }
 
     /**
@@ -560,7 +560,7 @@ class PitchbookService extends BaseIntegrationService implements IntegrationsInt
      */
     protected function extractWebsiteUrl(array $item) : ?string
     {
-        return $item['properties']['website_url'] ?? null;
+        return $item['website'] ?? null;
     }
 
     /**
@@ -571,7 +571,7 @@ class PitchbookService extends BaseIntegrationService implements IntegrationsInt
      */
     protected function extractCurrency(array $item) : ?string
     {
-        return $item['properties']['currency'] ?? null;
+        return $item['currency'] ?? null;
     }
 
     /**
@@ -582,7 +582,7 @@ class PitchbookService extends BaseIntegrationService implements IntegrationsInt
      */
     protected function extractNetProfit(array $item)
     {
-        return $item['properties']['net_profit'] ?? null;
+        return $item['net_profit'] ?? null;
     }
 
     /**
@@ -593,7 +593,7 @@ class PitchbookService extends BaseIntegrationService implements IntegrationsInt
      */
     protected function extractRecipientName(array $item) : ?string
     {
-        return $item['properties']['recipient_name'] ?? null;
+        return $item['recipient_name'] ?? null;
     }
 
     /**
@@ -604,6 +604,6 @@ class PitchbookService extends BaseIntegrationService implements IntegrationsInt
      */
     protected function extractLastUpdated(array $item) : ?string
     {
-        return $item['properties']['last_updated'] ?? null;
+        return $item['last_updated'] ?? null;
     }
 }
