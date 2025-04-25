@@ -1,6 +1,7 @@
 <template>
   <div
-    class="tw-w-auto tw-flex tw-flex-row">
+    class="tw-w-auto tw-flex tw-flex-row"
+  >
     <ArrowButton
       v-for="(item, index) in data"
       :id="item.id"
@@ -9,14 +10,12 @@
       :body="item.body"
       :color="item.color"
       :style="{'opacity': item.opacity}"
-      :class="[
-        `tw-bg-${item.color}-${(index+1) * 100}`,
-        {
-          'tw-rounded-l-xl': index === 0,
-          'tw-rounded-r-xl tw-overflow-hidden': index === data.length - 1
-        }
-      ]"
-      @click="onClick(item, index)" />
+      :class="{
+        [`tw-bg-${item.color}-${(index+1) * 100}`]: true,
+        'first:tw-rounded-l-xl last:tw-rounded-r-xl last:tw-overflow-hidden': true
+      }"
+      @click="onClick(item, index)"
+    />
   </div>
 </template>
 
@@ -48,7 +47,7 @@ const onClick = (counter, idxCounter) => {
 
 onMounted(() => {
   if (props.color) {
-    props.data.forEach((item, index) => {
+    props.data.forEach((item) => {
       item.color = props.color;
     });
   }
