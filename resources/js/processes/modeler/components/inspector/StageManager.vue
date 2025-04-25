@@ -1,8 +1,8 @@
 <template>
   <div class="p-4 bg-white rounded shadow-md max-w-md">
-    <b class="text-lg font-bold mb-2">Order of stages</b>
+    <b class="text-lg font-bold mb-2">{{ $t("Order of stages") }}</b>
     <p class="text-sm mb-4">
-      Here you have all the stages already set in this process. Define the order you prefer:
+      {{ $t("Here you have all the stages already set in this process. Define the order you prefer:") }}
     </p>
     <StageList :initialStages="defaultStages" />
   </div>
