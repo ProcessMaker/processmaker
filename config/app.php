@@ -170,6 +170,7 @@ return [
     'login_view' => env('LOGIN_VIEW', 'auth.newLogin'),
 
     'providers' => ServiceProvider::defaultProviders()->merge([
+        Spatie\Multitenancy\MultitenancyServiceProvider::class,
         /**
          * Package Service Providers
          */
