@@ -60,6 +60,7 @@
         "spatie/laravel-fractal": "^6.3",
         "spatie/laravel-html": "^3.11",
         "spatie/laravel-medialibrary": "^11.11",
+        "spatie/laravel-multitenancy": "dev-main",
         "spomky-labs/otphp": "^11.3",
         "symfony/expression-language": "^7.2",
         "teamtnt/laravel-scout-tntsearch-driver": "^14.0",
