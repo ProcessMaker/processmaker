@@ -8,10 +8,12 @@ import {
 
 export class {{ $className }} {
   constructor(private apiClient: {
+    head: <T>(endpoint: string) => Promise<T>;
     get: <T>(endpoint: string) => Promise<T>;
     post: <T>(endpoint: string, data: Record<string, unknown>) => Promise<T>;
     put: <T>(endpoint: string, data: Record<string, unknown>) => Promise<T>;
     delete: <T>(endpoint: string) => Promise<T>;
+    patch: <T>(endpoint: string, data: Record<string, unknown>) => Promise<T>;
   }) {}
 
 @foreach ($methods as $method)
@@ -26,10 +28,20 @@ export class {{ $className }} {
 @foreach ($method['queryParams'] as $param)
 @php
 $paramName = Illuminate\Support\Str::camel($param['name']);
-$paramType = $param['schema']['type'] ?? 'string';
-$paramValue = ($paramType === 'integer' || $paramType === 'number') ? "params.{$paramName}.toString()" : "params.{$paramName}";
+$paramType = $helper->getTypescriptType($param);
+if ($paramType === 'boolean') {
+    $paramValue = "params.{$paramName} ? '1' : '0'";
+} elseif ($paramType === 'integer' || $paramType === 'number') {
+    $paramValue = "String(params.{$paramName})";
+} elseif ($paramType === 'array' || $paramType === 'string[]') {
+    $paramValue = "params.{$paramName}.join(',')";
+} elseif ($paramType === 'string') {
+    $paramValue = "params.{$paramName}";
+} else {
+    $paramValue = "JSON.stringify(params.{$paramName})";
+}
 @endphp
-      if (params.{{ $paramName }}) queryParams.append('{{ $param['name'] }}', {{ $paramValue }});
+      if (params.{{ $paramName }}) queryParams.append('{{ $param['name'] }}', {!! $paramValue !!}); // {{ $paramType }}
 @endforeach
     }
 
@@ -38,21 +50,15 @@ $paramValue = ($paramType === 'integer' || $paramType === 'number') ? "params.{$
 
 @if ($method['httpMethod'] === 'get' || $method['httpMethod'] === 'head')
 @if (!empty($method['queryParams']))
-    return this.apiClient.get<{!! $method['returnType'] ?: 'void' !!}>(`{{ $method['apiPath'] }}${queryString}`);
+    return this.apiClient.{{ $method['httpMethod'] }}<{!! $method['returnType'] ?: 'void' !!}>(`{{ $method['apiPath'] }}${queryString}`);
 @else
-    return this.apiClient.get<{!! $method['returnType'] ?: 'void' !!}>(`{{ $method['apiPath'] }}`);
+    return this.apiClient.{{ $method['httpMethod'] }}<{!! $method['returnType'] ?: 'void' !!}>(`{{ $method['apiPath'] }}`);
 @endif
-@elseif ($method['httpMethod'] === 'post')
+@elseif ($method['httpMethod'] === 'post' ||$method['httpMethod'] === 'put' || $method['httpMethod'] === 'patch')
 @if (!empty($method['queryParams']))
-    return this.apiClient.post<{!! $method['returnType'] ?: 'void' !!}>(`{{ $method['apiPath'] }}${queryString}`, data as unknown as Record<string, unknown>);
+    return this.apiClient.{{$method['httpMethod']}}<{!! $method['returnType'] ?: 'void' !!}>(`{{ $method['apiPath'] }}${queryString}`, data as unknown as Record<string, unknown>);
 @else
-    return this.apiClient.post<{!! $method['returnType'] ?: 'void' !!}>(`{{ $method['apiPath'] }}`, data as unknown as Record<string, unknown>);
-@endif
-@elseif ($method['httpMethod'] === 'put')
-@if (!empty($method['queryParams']))
-    return this.apiClient.put<{!! $method['returnType'] ?: 'void' !!}>(`{{ $method['apiPath'] }}${queryString}`, data as unknown as Record<string, unknown>);
-@else
-    return this.apiClient.put<{!! $method['returnType'] ?: 'void' !!}>(`{{ $method['apiPath'] }}`, data as unknown as Record<string, unknown>);
+    return this.apiClient.{{$method['httpMethod']}}<{!! $method['returnType'] ?: 'void' !!}>(`{{ $method['apiPath'] }}`, data as unknown as Record<string, unknown>);
 @endif
 @elseif ($method['httpMethod'] === 'delete')
     return this.apiClient.delete<{!! $method['returnType'] ?: 'void' !!}>(`{{ $method['apiPath'] }}`);

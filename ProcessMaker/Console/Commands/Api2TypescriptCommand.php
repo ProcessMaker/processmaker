@@ -2,8 +2,10 @@
 
 namespace ProcessMaker\Console\Commands;
 
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Str;
@@ -31,6 +33,8 @@ class Api2TypescriptCommand extends Command
      * @var \Illuminate\Filesystem\Filesystem
      */
     protected $files;
+
+    protected array $openapi;
 
     /**
      * Create a new command instance.
@@ -63,6 +67,7 @@ class Api2TypescriptCommand extends Command
             $this->error("Failed to parse OpenAPI JSON file.");
             return 1;
         }
+        $this->openapi = $openapi;
 
         // Create output directory if it doesn't exist
         if (!$this->files->exists($outputDirectory)) {
@@ -283,11 +288,121 @@ class Api2TypescriptCommand extends Command
             'tagLower' => $tagLower,
             'className' => $className,
             'imports' => array_unique($imports),
-            'methods' => $methods
+            'methods' => $methods,
+            'helper' => $this,
         ];
 
+        // Generate the api.ts file
         $content = Blade::render($this->getStub('api'), $data);
         $this->files->put("$outputDir/$tagLower.api.ts", $content);
+
+        // Generate the api.spec.ts file
+        $content = Blade::render($this->getStub('api-spec'), $data);
+        $this->files->put("$outputDir/$tagLower.api.spec.ts", $content);
+    }
+
+    public function mockResponse(array $method)
+    {
+        return $method['responseExample'];
+    }
+
+    public function mockParamsArray(array $method, bool $camelCase): array
+    {
+        $params = [];
+        // Add path parameters
+        foreach ($method['pathParams'] as $param) {
+            $key = Str::camel($param['name']);
+            $params[$key] = $this->mockValue($param);
+        }
+        // Add request body parameter for POST/PUT methods
+        if (!empty($method['requestBody'])) {
+            if (isset($method['requestBody']['content']['multipart/form-data']['schema'])) {
+                $params['$body'] = $this->mockFromSchema($method['requestBody']['content']['multipart/form-data']['schema']);
+            } elseif (isset($method['requestBody']['content']['application/json']['schema'])) {
+                $schema = $method['requestBody']['content']['application/json']['schema'];
+                $params['$body'] = $this->mockFromSchema($schema);
+            } else {
+                throw new Exception("Failed to mock request body for " . $method['operationId']);
+            }
+        } elseif ($method['httpMethod'] === 'post' || $method['httpMethod'] === 'put' || $method['httpMethod'] === 'patch') {
+            $params['$body'] = (object) [];
+        }
+        $queryParams = [];
+        foreach ($method['queryParams'] as $param) {
+            $key = $camelCase ? Str::camel($param['name']) : $param['name'];
+            if (isset($param['$ref'])) {
+                $queryParams[$key] = $this->mockValue($this->getSchemaByRef($param['$ref']));
+            } else {
+                $queryParams[$key] = $this->mockValue($param);
+            }
+        }
+        if (!empty($queryParams)) {
+            $params['$queryParams'] = $queryParams;
+        }
+        return $params;
+    }
+
+    public function mockParams(array $method)
+    {
+        $params = $this->mockParamsArray($method, true);
+        foreach ($params as $key => $value) {
+            $params[$key] = $this->json($value, 6);
+        }
+        return implode(', ', $params);
+    }
+
+    private function getSchemaByRef(string $ref)
+    {
+        $refs = str_replace('/', '.', substr($ref, 2));
+        return Arr::get($this->openapi, $refs, null);
+    }
+
+    public function mockUrl(array $method)
+    {
+        $params = $this->mockParamsArray($method, false);
+        // replace ${param} with the value
+        $path = $method['apiPath'];
+        foreach ($params as $key => $value) {
+            if (is_array($value) || is_object($value)) {
+                continue;
+            }
+            $path = str_replace('${' . $key . '}', urlencode($value), $path);
+        }
+        // Add the query params to the path from $queryParams
+        if (isset($params['$queryParams'])) {
+            $first = true;
+            foreach ($params['$queryParams'] as $key => $value) {
+                if (is_array($value)) {
+                    $value = implode(',', $value);
+                }
+                $path .= ($first ? '?' : '&') . urlencode($key) . '=' . urlencode($value);
+                $first = false;
+            }
+        }
+        $arguments = "'{$path}'";
+        if (isset($params['$body'])) {
+            $arguments .= ", " . $this->json($params['$body'], 6);
+        }
+        return $arguments;
+    }
+
+    public function json($value, int $leftMargin = 0)
+    {
+        if ($leftMargin > 0) {
+            $json = json_encode($value, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+            // change the indent to 2 spaces
+            $json = preg_replace_callback(
+                '/^(?: {4})+/m',
+                function($m) {
+                    return str_repeat(' ', 2 * (strlen($m[0]) / 4));
+                },
+                $json
+            );
+            // add the left margin
+            $json = str_replace("\n", "\n" . str_repeat(' ', $leftMargin), $json);
+            return $json;
+        }
+        return json_encode($value, JSON_UNESCAPED_SLASHES);
     }
 
     private function getResponseReference(string $operationId, array $responses)
@@ -309,6 +424,105 @@ class Api2TypescriptCommand extends Command
         }
 
         throw new \Exception("Failed to find response schema for $operationId");
+    }
+
+    private function getResponseExample(string $operationId, array $responses)
+    {
+        $responseSchema = $responses['200']['content']['application/json']['schema'] ??
+            $responses['201']['content']['application/json']['schema'] ??
+            $responses['202']['content']['application/json']['schema'] ?? null;
+
+        if (empty($responseSchema)) {
+            return (object) [];
+        }
+
+        return $this->mockFromSchema($responseSchema);
+    }
+
+    private function mockFromSchema(array $responseSchema)
+    {
+        $response = [];
+        if (isset($responseSchema['properties'])) {
+            foreach ($responseSchema['properties'] as $key => $value) {
+                if (empty($value)) {
+                    throw new Exception("Empty value for " . $key);
+                }
+                $response[$key] = $this->mockValue($value);
+            }
+        } elseif (isset($responseSchema['$ref'])) {
+            return $this->mockFromSchema($this->getSchemaByRef($responseSchema['$ref']));
+        }
+        return (object) $response;
+    }
+
+    private function mockValue(array $value)
+    {
+        if (!isset($value['type']) && isset($value['schema'])) {
+            $value = $value['schema'];
+        }
+        if (!isset($value['type']) && isset($value['allOf'])) {
+            return $this->mockValueFromObject($value);
+        }
+        if (!isset($value['type']) && isset($value['$ref'])) {
+            return $this->mockValueFromObject($value);
+        }
+        if (!isset($value['type'])) {
+            throw new \Exception("Failed to mock value for " . json_encode($value));
+        }
+        switch ($value['type']) {
+            case 'string':
+                switch ($value['format'] ?? null) {
+                    case 'id':
+                        return '1';
+                    case 'date-time':
+                        return '2025-04-23T00:00:00Z';
+                    default:
+                        return 'foo';
+                }
+            case 'integer':
+            case 'number':
+                    return 1;
+            case 'boolean':
+                return true;
+            case 'array':
+                if (isset($value['items']['$ref'])) {
+                    return [$this->mockValue($this->getSchemaByRef($value['items']['$ref']))];
+                    $ref = explode('/', $value['items']['$ref']);
+                    $ref = end($ref);
+                    return [$this->mockValue($this->openapi['components']['schemas'][$ref])];
+                }
+                return [1, 2, 3];
+            case 'object':
+                return $this->mockValueFromObject($value);
+            default:
+                return $value;
+        }
+    }
+
+    private function mockValueFromObject(array $value)
+    {
+        $withProperties = $this->findItemWithKeyInArray($value['allOf'] ?? [], 'properties');
+        $withRef = $this->findItemWithKeyInArray($value['allOf'] ?? [], '$ref');
+        if (isset($value['allOf']) && $withProperties) {
+            return $this->mockFromSchema($withProperties);
+        } elseif (isset($value['allOf']) && $withRef) {
+            $ref = explode('/', $withRef['$ref']);
+            $ref = end($ref);
+            return $this->mockValue($this->openapi['components']['schemas'][$ref]);
+        } elseif (isset($value['properties'])) {
+            return $this->mockFromSchema($value);
+        }
+        return (object) ['foo' => $value];
+    }
+
+    private function findItemWithKeyInArray(array $array, string $key)
+    {
+        foreach ($array as $item) {
+            if (isset($item[$key])) {
+                return $item;
+            }
+        }
+        return null;
     }
 
     private function findResponseSchema(string $operationId, array $responseSchema, array $imports)
@@ -373,11 +587,10 @@ class Api2TypescriptCommand extends Command
         }
 
         // Add request body parameter for POST/PUT methods
-        if (($httpMethod === 'post' || $httpMethod === 'put')/* && $requestBody*/) {
+        if (($httpMethod === 'post' || $httpMethod === 'put' || $httpMethod === 'patch')) {
             if (isset($requestBody['content']['application/json']['schema']['$ref'])) {
                 $schemaRef = $requestBody['content']['application/json']['schema']['$ref'];
                 $schemaName = $this->getSchemaNameFromRef($schemaRef);
-                // $this->generateInterface($schemaName, $requestBody['content']['application/json']['schema']);
                 $imports[] = $schemaName;
                 $paramList[] = "data: " . $schemaName;
             } else {
@@ -417,6 +630,7 @@ class Api2TypescriptCommand extends Command
         }*/
 
         $returnType = $this->getResponseReference($operationId, $responses);
+        $responseExample = $this->getResponseExample($operationId, $responses);
 
 
         // Build path with parameters
@@ -431,9 +645,11 @@ class Api2TypescriptCommand extends Command
             'httpMethod' => $httpMethod,
             'paramList' => $paramList,
             'returnType' => $returnType,
+            'responseExample' => $responseExample,
             'apiPath' => $apiPath,
             'queryParams' => $queryParams,
-            'pathParams' => $pathParams
+            'pathParams' => $pathParams,
+            'requestBody' => $requestBody,
         ];
     }
 
@@ -579,12 +795,25 @@ class Api2TypescriptCommand extends Command
         $interface = "export interface " . $interfaceName . " {\n";
 
         foreach ($queryParams as $param) {
-            $interface .= "  " . $this->camelCase($param['name']) . "?: " . $this->mapSwaggerTypeToTypescript($param['schema']['type'] ?? 'string') . ";\n";
+            $refType = $this->getTypeOf($param);
+            $interface .= "  " . $this->camelCase($param['name']) . "?: " . $this->mapSwaggerTypeToTypescript($refType) . ";\n";
         }
 
         $interface .= "}";
 
         return $interface;
+    }
+
+    private function getTypeOf(array $definition)
+    {
+        if (isset($definition['schema']['type'])) {
+            return $definition['schema']['type'];
+        }
+        if (isset($definition['$ref'])) {
+            return $this->getTypeOf($this->getSchemaByRef($definition['$ref']));
+        }
+
+        throw new Exception("Failed to get type of " . json_encode($definition));
     }
 
     private function generateResponseType($operationId, $responseSchema, $outputDir)
@@ -616,13 +845,25 @@ class Api2TypescriptCommand extends Command
     /**
      * Convert swagger type to TypeScript type
      */
-    protected function getTypescriptType($property)
+    public function getTypescriptType($property)
     {
+        if ($property === 'true' || $property === true) {
+            return 'any';
+        }
         if (isset($property['$ref'])) {
+            $schema = $this->getSchemaByRef($property['$ref']);
+            if (isset($schema['schema'])) {
+                return $this->getTypescriptType($schema['schema']);
+            }
             return $this->getSchemaNameFromRef($property['$ref']);
         }
-
-        $type = $property['type'] ?? 'string';
+        if (!isset($property['type']) && isset($property['schema']['type'])) {
+            return $this->getTypescriptType($property['schema']);
+        }
+        if (!isset($property['type'])) {
+            throw new Exception("Failed to get type of " . json_encode($property));
+        }
+        $type = $property['type'];
 
         switch ($type) {
             case 'integer':

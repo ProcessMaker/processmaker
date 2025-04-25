@@ -176,10 +176,6 @@ class TaskAssignmentController extends Controller
      *           type="integer",
      *         )
      *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/taskAssignmentsEditable")
-     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="success",
