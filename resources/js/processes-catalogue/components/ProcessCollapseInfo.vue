@@ -1,69 +1,63 @@
 <template>
-  <div id="processCollapseInfo" v-if="!isArchived">
+  <div
+    v-if="!isArchived"
+    id="processCollapseInfo">
     <div id="processData">
       <process-header-start
+        v-if="!mobileApp"
         :process="process"
         :ellipsis-permission="ellipsisPermission"
         :show-process-info="showProcessInfo"
         @goBack="goBack()"
         @onProcessNavigate="onProcessNavigate"
-        @toggle-info="toggleInfo"
-        v-if="!mobileApp"
-      />
+        @toggle-info="toggleInfo" />
       <div v-if="showProcessInfo">
         <process-header
           :process="process"
           :hide-header-options="true"
           :icon-wizard-template="createdFromWizardTemplate"
           @goBack="goBack()"
-          @onProcessInfoCollapsed="onProcessInfoCollapsed"
-        /> 
-         <div
+          @onProcessInfoCollapsed="onProcessInfoCollapsed" />
+        <div
           id="collapseProcessInfo"
-          class="collapse show custom-class"
-        >
+          class="collapse show custom-class">
           <div class="info-collapse">
             <b-row>
               <b-col class="process-carousel col-12">
                 <processes-carousel
                   :process="process"
-                  :full-carousel="{ url: null, hideLaunchpad: false }"
-                />
+                  :full-carousel="{ url: null, hideLaunchpad: false }" />
               </b-col>
               <b-col class="process-options col-12">
-                <process-options 
-                  :process="process" 
-                  :collapsed="collapsed"
-                />
+                <process-options
+                  :process="process"
+                  :collapsed="collapsed" />
               </b-col>
             </b-row>
           </div>
         </div>
       </div>
     </div>
-    
+    <Home />
     <create-template-modal
       id="create-template-modal"
       ref="create-template-modal"
       asset-type="process"
       :current-user-id="currentUserId"
       :asset-name="processTemplateName"
-      :asset-id="processId"
-    />
+      :asset-id="processId" />
     <create-pm-block-modal
       id="create-pm-block-modal"
       ref="create-pm-block-modal"
       :current-user-id="currentUserId"
       :asset-name="pmBlockName"
-      :asset-id="processId"
-    />
+      :asset-id="processId" />
     <add-to-project-modal
       id="add-to-project-modal"
       ref="add-to-project-modal"
       asset-type="process"
       :asset-id="processId"
-      :asset-name="assetName"
-    />
+      :asset-name="assetName" />
     <launchpad-settings-modal
       id="launchpad-settings-modal"
       ref="launchpad-settings-modal"
@@ -73,8 +67,7 @@
       :description-settings="process.description"
       :process="process"
       :my-tasks-columns="myTasksColumns"
-      @updateMyTasksColumns="updateMyTasksColumns"
-    />
+      @updateMyTasksColumns="updateMyTasksColumns" />
   </div>
 </template>
 
@@ -91,6 +84,8 @@ import ProcessesMixin from "./mixins/ProcessesMixin";
 import ProcessHeader from "./ProcessHeader.vue";
 import ProcessHeaderStart from "./ProcessHeaderStart.vue";
 
+import Home from "./home/Home.vue";
+
 export default {
   components: {
     CreateTemplateModal,
@@ -101,15 +96,23 @@ export default {
     ProcessesCarousel,
     ProcessHeader,
     ProcessHeaderStart,
+    Home,
   },
   mixins: [ProcessesMixin, ellipsisMenuMixin, processNavigationMixin],
   props: ["process", "currentUserId", "ellipsisPermission", "myTasksColumns"],
+  data() {
+    return {
+      mobileApp: window.ProcessMaker.mobileApp,
+      showProcessInfo: false,
+      collapsed: true,
+    };
+  },
   computed: {
     createdFromWizardTemplate() {
       return !!this.process?.properties?.wizardTemplateUuid;
     },
     isArchived() {
-      return this.process?.status === 'ARCHIVED';
+      return this.process?.status === "ARCHIVED";
     },
     wizardTemplateUuid() {
       return this.process?.properties?.wizardTemplateUuid;
@@ -120,13 +123,6 @@ export default {
     ProcessMaker.EventBus.$on("reloadByNewScreen", (newScreen) => {
       window.location.reload();
     });
-  },
-  data() {
-    return {
-      mobileApp: window.ProcessMaker.mobileApp,
-      showProcessInfo: false,
-      collapsed: true,
-    };
   },
   methods: {
     /**
@@ -150,7 +146,7 @@ export default {
       this.showProcessInfo = !this.showProcessInfo;
     },
     updateMyTasksColumns(columns) {
-      this.$emit('updateMyTasksColumns', columns);
+      this.$emit("updateMyTasksColumns", columns);
     },
     onProcessInfoCollapsed(collapsed) {
       this.collapsed = collapsed;

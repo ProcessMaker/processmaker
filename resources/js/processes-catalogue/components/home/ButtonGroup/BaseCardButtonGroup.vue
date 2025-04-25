@@ -1,0 +1,48 @@
+<template>
+  <div
+    class="tw-w-auto tw-flex tw-flex-col sm:tw-flex-row tw-space-y-2 sm:tw-space-y-0 sm:tw-space-x-4 sm:tw-py-0">
+    <BaseCardButton
+      v-for="(item, index) in data"
+      :id="item.id"
+      :key="index"
+      :header="item.header"
+      :body="item.body"
+      :active="index === active"
+      class="tw-w-full"
+      :color="item.color"
+      :icon="item.icon"
+      :content="item.content"
+      @click="onClick(item, index)" />
+  </div>
+</template>
+
+<script setup>
+import { onMounted } from "vue";
+import BaseCardButton from "./BaseCardButton.vue";
+
+const props = defineProps({
+  data: {
+    type: Array({
+      id: String,
+      header: String,
+      body: String,
+      color: String,
+      icon: String,
+    }),
+    default: () => [],
+  },
+  active: {
+    type: Number,
+    default: () => 0,
+  },
+});
+
+const emit = defineEmits(["change"]);
+
+const onClick = (counter, idxCounter) => {
+  emit("change", counter, idxCounter);
+};
+
+onMounted(() => {});
+
+</script>
