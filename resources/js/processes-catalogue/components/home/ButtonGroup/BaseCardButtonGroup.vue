@@ -22,14 +22,15 @@ import BaseCardButton from "./BaseCardButton.vue";
 
 const props = defineProps({
   data: {
-    type: Array({
+    type: Array,
+    default: () => [],
+    props: {
       id: String,
       header: String,
       body: String,
       color: String,
       icon: String,
-    }),
-    default: () => [],
+    },
   },
   active: {
     type: Number,

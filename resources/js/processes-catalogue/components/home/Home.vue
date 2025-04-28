@@ -2,9 +2,27 @@
   <div class="tw-flex tw-flex-col tw-gap-4">
     <BaseCardButtonGroup :data="data" />
     <PercentageCardButtonGroup :data="percentageData" />
+    <PercentageCardButtonGroup :data="subpercentageData" />
     <ArrowButtonGroup
       :data="arrowData"
       color="emerald" />
+
+    <div class="tw-w-full tw-flex tw-flex-row tw-space-x-4">
+      <ArrowButtonHome
+        class="tw-w-60 tw-bg-emerald-200"
+        header="200"
+        body="Cases" />
+
+      <ArrowButtonGroup
+        class="tw-w-full"
+        :data="arrowData"
+        color="orange" />
+
+      <ArrowButtonHome
+        class="tw-w-60 tw-bg-blue-200"
+        header="5"
+        body="Completed" />
+    </div>
   </div>
 </template>
 
@@ -13,6 +31,7 @@ import { ref } from "vue";
 import BaseCardButtonGroup from "./ButtonGroup/BaseCardButtonGroup.vue";
 import PercentageCardButtonGroup from "./PercentageButtonGroup/PercentageCardButtonGroup.vue";
 import ArrowButtonGroup from "./ArrowButtonGroup/ArrowButtonGroup.vue";
+import ArrowButtonHome from "./ArrowButtonGroup/ArrowButtonHome.vue";
 
 const data = ref([
   {
@@ -78,7 +97,7 @@ const percentageData = ref([
   },
 ]);
 
-const arrowData = ref([
+const subpercentageData = ref([
   {
     id: "1",
     header: "Grants",
@@ -86,6 +105,7 @@ const arrowData = ref([
     percentage: 40,
     content: "28,678",
     color: "amber",
+    subpercentage: 20,
   },
   {
     id: "2",
@@ -94,6 +114,7 @@ const arrowData = ref([
     percentage: 20,
     content: "4,678",
     color: "green",
+    subpercentage: 70,
   },
   {
     id: "3",
@@ -102,6 +123,7 @@ const arrowData = ref([
     percentage: 15,
     content: "11,678",
     color: "blue",
+    subpercentage: 20,
   },
   {
     id: "4",
@@ -110,19 +132,60 @@ const arrowData = ref([
     percentage: 25,
     content: "17,649",
     color: "red",
+    subpercentage: 50,
+  },
+]);
+const arrowData = ref([
+  {
+    id: "1",
+    body: "Grants",
+    header: "40%",
+    float: "28K",
+    percentage: 40,
+    content: "28,678",
+    color: "amber",
+  },
+  {
+    id: "2",
+    body: "Scholarships",
+    header: "20%",
+    float: "4K",
+    percentage: 20,
+    content: "4,678",
+    color: "green",
+  },
+  {
+    id: "3",
+    body: "Loans",
+    header: "15%",
+    float: "11K",
+    percentage: 15,
+    content: "11,678",
+    color: "blue",
   },
   {
     id: "4",
-    header: "Out of pocket remaining",
-    body: "25%",
+    body: "Out of pocket remaining",
+    header: "25%",
+    float: "17K",
     percentage: 25,
     content: "17,649",
     color: "red",
   },
   {
     id: "4",
-    header: "Out of pocket remaining",
-    body: "25%",
+    body: "Out of pocket remaining",
+    header: "25%",
+    float: "17K",
+    percentage: 25,
+    content: "17,649",
+    color: "red",
+  },
+  {
+    id: "4",
+    body: "Out of pocket remaining",
+    header: "25%",
+    float: "17K",
     percentage: 25,
     content: "17,649",
     color: "red",
