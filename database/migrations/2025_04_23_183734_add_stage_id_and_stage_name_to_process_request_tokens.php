@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->string('stage_name')->nullable();
             // This column will be used to display the percentage of advancement of the token through the stages.
             $table->float('progress')->default(0);
+            $table->decimal('amount', 10, 2)->nullable();
         });
     }
 
