@@ -83,7 +83,8 @@ class DataSourceIntegrationsService
         foreach ($this->factory->getSources() as $source) {
             try {
                 $integration = $this->factory->create($source);
-                $allCompanies[$source] = $integration->getCompanies($params);
+                $allSourcesCompanies = $integration->getCompanies($params);
+                $allCompanies = array_merge($allCompanies, $allSourcesCompanies);
             } catch (DataSourceIntegrationException $e) {
                 // Log the error but continue with other sources
                 Log::error($e->getMessage(), [
