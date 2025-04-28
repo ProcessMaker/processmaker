@@ -44,6 +44,9 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('cache:metrics --format=json > storage/logs/processmaker-cache-metrics.json')
                  ->daily();
+
+        $schedule->command('datasource:sync-aldrich-integration --queue')
+                 ->daily();
     }
 
     /**
