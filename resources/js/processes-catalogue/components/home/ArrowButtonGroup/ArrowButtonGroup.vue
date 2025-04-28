@@ -7,6 +7,7 @@
       :key="index"
       :header="item.header"
       :body="item.body"
+      :float="item.float"
       :color="`${[`tw-bg-${item.color}-${(index+1) * 100}`]}`"
       :style="{ width: `${100 / data.length}%` }"
       :class="`first:tw-rounded-l-xl
@@ -29,6 +30,7 @@ const props = defineProps({
       header: String,
       body: String,
       color: String,
+      float: String,
     },
   },
   color: {

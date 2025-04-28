@@ -14,7 +14,7 @@
         </slot>
         <slot name="float">
           <div class="tw-absolute tw-text-xs tw-right-1 tw-top-2 tw-rounded-full tw-bg-white tw-px-2 tw-py-1">
-            10K
+            {{ float }}
           </div>
         </slot>
       </div>
@@ -39,6 +39,10 @@ const props = defineProps({
   body: {
     type: String,
     required: true,
+  },
+  float: {
+    type: String,
+    required: false,
   },
   color: {
     type: String,
