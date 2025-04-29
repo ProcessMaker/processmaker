@@ -5,6 +5,8 @@ namespace ProcessMaker\Services\DataSourceIntegrations\Integrations;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\LazyCollection;
 use ProcessMaker\Models\DataSourceIntegrations;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\User;
 use ProcessMaker\Plugins\Collections\Models\Collection;
 use ProcessMaker\Plugins\Collections\Models\Record;
 use ProcessMaker\Services\DataSourceIntegrations\Integrations\BaseIntegrationService;
@@ -19,6 +21,8 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
 
     protected $collection;
 
+    protected $admin_user_id;
+
     public function __construct()
     {
         try {
@@ -30,6 +34,7 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
             }
             $this->credentials = $integration->credentials;
             $this->base_url = $integration->base_url;
+            $this->admin_user_id = User::where('is_system', true)->first()->id;
 
             $this->ensureCollectionExists();
         } catch (\Exception $e) {
@@ -43,8 +48,42 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
     protected function ensureCollectionExists()
     {
         try {
+            $createScreen = Screen::firstOrCreate([
+                'title' => 'Aldrich Integration - Create Screen',
+                'description' => 'Aldrich Integration - Create Screen',
+                'asset_type'=> 'DATA_SOURCE_INTEGRATION',
+            ]);
+            if ($createScreen) {
+                $createScreenId = $createScreen->id;
+            }
+
+            $editScreen = Screen::firstOrCreate([
+                'title' => 'Aldrich Integration - Edit Screen',
+                'description' => 'Aldrich Integration - Edit Screen',
+                'asset_type'=> 'DATA_SOURCE_INTEGRATION',
+            ]);
+            if ($editScreen) {
+                $editScreenId = $editScreen->id;
+            }
+
+            $viewScreen = Screen::firstOrCreate([
+                'title' => 'Aldrich Integration - View Screen',
+                'description' => 'Aldrich Integration - View Screen',
+                'asset_type'=> 'DATA_SOURCE_INTEGRATION',
+            ]);
+            if ($viewScreen) {
+                $viewScreenId = $viewScreen->id;
+            }
+
             $this->collection = Collection::firstOrCreate([
-                'name' => 'aldrich',
+                'name' => 'Aldrich Data Collection',
+                'description' => 'Aldrich Integration',
+                'create_screen_id' => $createScreenId,
+                'update_screen_id' => $editScreenId,
+                'read_screen_id' => $viewScreenId,
+                'created_by_id' => $this->admin_user_id,
+                'updated_by_id' => $this->admin_user_id,
+                'asset_type' => 'DATA_SOURCE_INTEGRATION',
             ]);
         } catch (\Exception $e) {
             Log::error('Error ensuring collection exists: ' . $e->getMessage());
@@ -69,6 +108,7 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
     protected function queryCollectionRecords(array $params = []) : array
     {
         //TODO: Maybe call collection endpoint to query records?
+        dd('queryCollectionRecords');
 
         // $query = CollectionRecord::where('collection_id', $this->collection->id);
 
@@ -91,7 +131,6 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
 
     public function syncData(): array
     {
-        //TODO: Implement sync data from Aldrich API
         $stats = [
             'fetched' => 0,
             'stored' => 0,
@@ -104,19 +143,10 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
             $companiesData = $this->fetchCompaniesFromApi();
             $stats['fetched'] += count($companiesData);
 
+            $this->ensureCollectionExists();
             // Store each company in the collection
             foreach ($companiesData as $company) {
                 $this->storeOrUpdateRecord($company);
-                $stats['stored']++;
-            }
-
-            // Fetch additional data from other endpoints
-            $additionalData = $this->fetchAdditionalDataFromApi();
-            $stats['fetched'] += count($additionalData);
-
-            // Process and store the additional data
-            foreach ($additionalData as $item) {
-                $this->storeOrUpdateRecord($item);
                 $stats['stored']++;
             }
 
@@ -131,18 +161,26 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
     // Store or update record in the collection
     protected function storeOrUpdateRecord(array $data): void
     {
-        // Use a unique identifier from the data as the external_id
-        $externalId = $data['id'] ?? md5(json_encode($data));
+        try {
+            // Use a unique identifier from the data as the external_id
+            $externalId = $data['id'] ?? md5(json_encode($data));
 
-        // Try to find existing record
-        $record = Record::where('id', $externalId)->first();
+            // Try to find existing record
+            $record = Record::fromCollection($this->collection)->where('id', $externalId)->first();
 
-        if ($record) {
-            // Update existing record
-            $record->update($data);
-        } else {
-            // Create new record
-            $record = Record::create($data);
+            if ($record) {
+                // Update existing record
+                $record->update($data);
+            } else {
+                // Create new record
+                $record = $this->collection->createRecord([
+                    'data' => $data,
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Error storing or updating record: ' . $e->getMessage());
+
+            return;
         }
     }
 

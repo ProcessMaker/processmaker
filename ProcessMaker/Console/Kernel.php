@@ -47,6 +47,9 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('datasource:sync-aldrich-integration --queue')
                  ->daily();
+
+        // $schedule->command('package-private-equity:sync-aldrich-integration --queue')
+        //          ->daily();
     }
 
     /**
