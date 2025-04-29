@@ -193,307 +193,14 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
     private function fetchCompaniesFromApi(array $params = []) : array
     {
         // TODO: Implement real API call to Aldrich
-        return [
-            [
-                'revenue_range' => '$4.8M - $7.2M',
-                'employee_count' => 58,
-                'country' => 'United States',
-                'company_id' => 781354,
-                'city' => 'Seattle',
-                'company_domain' => 'alphatech.com',
-                'company_name' => 'AlphaTech Solutions',
-                'company_website' => 'https://www.alphatech.com',
-                'thesis_name' => 'Artificial Intelligence',
-                'state' => 'WA',
-                'last_update_on' => '15-05-2025',
-            ],
-            [
-                'revenue_range' => '$7.5M - $9.8M',
-                'employee_count' => 87,
-                'country' => 'United States',
-                'company_id' => 623571,
-                'city' => 'Boston',
-                'company_domain' => 'nexusknowledge.com',
-                'company_name' => 'Nexus Knowledge Systems',
-                'company_website' => 'https://nexusknowledge.com',
-                'thesis_name' => 'Artificial Intelligence',
-                'state' => 'MA',
-                'last_update_on' => '12-05-2025',
-            ],
-            [
-                'revenue_range' => '$3.9M - $5.7M',
-                'employee_count' => 48,
-                'country' => 'United States',
-                'company_id' => 432198,
-                'city' => 'Portland',
-                'company_domain' => 'digitaldocs.com',
-                'company_name' => 'Digital Documentation Inc.',
-                'company_website' => 'https://digitaldocs.com',
-                'thesis_name' => 'Accounting Solution',
-                'state' => 'OR',
-                'last_update_on' => '18-05-2025',
-            ],
-            [
-                'revenue_range' => '$5.3M - $8.1M',
-                'employee_count' => 42,
-                'country' => 'United States',
-                'company_id' => 197643,
-                'city' => 'Denver',
-                'company_domain' => 'dataflow.io',
-                'company_name' => 'DataFlow Systems',
-                'company_website' => 'https://www.dataflow.io',
-                'thesis_name' => 'Accounting Solution',
-                'state' => 'CO',
-                'last_update_on' => '22-05-2025',
-            ],
-            [
-                'revenue_range' => '$2.9M - $4.3M',
-                'employee_count' => 31,
-                'country' => 'United States',
-                'company_id' => 365824,
-                'city' => 'Austin',
-                'company_domain' => 'cyberlogic.net',
-                'company_name' => 'CyberLogic Solutions',
-                'company_website' => 'http://www.cyberlogic.net',
-                'thesis_name' => 'Artificial Intelligence',
-                'state' => 'TX',
-                'last_update_on' => '14-05-2025',
-            ],
-            [
-                'revenue_range' => '$10.5M - $14.2M',
-                'employee_count' => 126,
-                'country' => 'United States',
-                'company_id' => 728945,
-                'city' => 'San Francisco',
-                'company_domain' => 'futuresight.ai',
-                'company_name' => 'FutureSight Analytics',
-                'company_website' => 'http://www.futuresight.ai',
-                'thesis_name' => 'Artificial Intelligence',
-                'state' => 'CA',
-                'last_update_on' => '10-05-2025',
-            ],
-            [
-                'revenue_range' => '$5.8M - $7.6M',
-                'employee_count' => 67,
-                'country' => 'United States',
-                'company_id' => 492587,
-                'city' => 'Chicago',
-                'company_domain' => 'apexfinance.com',
-                'company_name' => 'Apex Financial Services',
-                'company_website' => 'http://www.apexfinance.com',
-                'thesis_name' => 'Accounting Solution',
-                'state' => 'IL',
-                'last_update_on' => '19-05-2025',
-            ],
-            [
-                'revenue_range' => '$1.8M - $3.2M',
-                'employee_count' => 23,
-                'country' => 'United States',
-                'company_id' => 612478,
-                'city' => 'Atlanta',
-                'company_domain' => 'clearbooks.com',
-                'company_name' => 'ClearBooks Accounting',
-                'company_website' => 'https://www.clearbooks.com',
-                'thesis_name' => 'Accounting Solution',
-                'state' => 'GA',
-                'last_update_on' => '16-05-2025',
-            ],
-            [
-                'revenue_range' => '$4.5M - $6.3M',
-                'employee_count' => 51,
-                'country' => 'United States',
-                'company_id' => 347921,
-                'city' => 'San Diego',
-                'company_domain' => 'culinarysync.io',
-                'company_name' => 'CulinarySync',
-                'company_website' => 'https://culinarysync.io',
-                'thesis_name' => 'Accounting Solution',
-                'state' => 'CA',
-                'last_update_on' => '20-05-2025',
-            ],
-            [
-                'revenue_range' => '$4.1M - $6.1M',
-                'employee_count' => 49,
-                'country' => 'United States',
-                'company_id' => 531976,
-                'city' => 'Dallas',
-                'company_domain' => 'swiftpay.tech',
-                'company_name' => 'SwiftPay Technologies',
-                'company_website' => 'https://www.swiftpay.tech',
-                'thesis_name' => 'Accounting Solution',
-                'state' => 'TX',
-                'last_update_on' => '11-05-2025',
-            ],
-            [
-                'revenue_range' => '$3.6M - $5.7M',
-                'employee_count' => 45,
-                'country' => 'United States',
-                'company_id' => 268349,
-                'city' => 'Miami',
-                'company_domain' => 'quantumanalytics.co',
-                'company_name' => 'Quantum Analytics Systems',
-                'company_website' => 'https://www.quantumanalytics.co',
-                'thesis_name' => 'Accounting Solution',
-                'state' => 'FL',
-                'last_update_on' => '17-05-2025',
-            ],
-            [
-                'revenue_range' => '$2.1M - $3.8M',
-                'employee_count' => 29,
-                'country' => 'United States',
-                'company_id' => 875421,
-                'city' => 'Phoenix',
-                'company_domain' => 'precisionbooks.com',
-                'company_name' => 'Precision Bookkeeping',
-                'company_website' => 'https://precisionbooks.com',
-                'thesis_name' => 'Accounting Solution',
-                'state' => 'AZ',
-                'last_update_on' => '13-05-2025',
-            ],
-            [
-                'revenue_range' => '$3.7M - $5.3M',
-                'employee_count' => 41,
-                'country' => 'United States',
-                'company_id' => 396524,
-                'city' => 'Minneapolis',
-                'company_domain' => 'intellibrain.ai',
-                'company_name' => 'IntelliBrain',
-                'company_website' => 'https://intellibrain.ai',
-                'thesis_name' => 'Artificial Intelligence',
-                'state' => 'MN',
-                'last_update_on' => '21-05-2025',
-            ],
-            [
-                'revenue_range' => '$4.7M - $6.5M',
-                'employee_count' => 55,
-                'country' => 'United States',
-                'company_id' => 765823,
-                'city' => 'Nashville',
-                'company_domain' => 'fiscaledge.com',
-                'company_name' => 'FiscalEdge',
-                'company_website' => 'https://www.fiscaledge.com',
-                'thesis_name' => 'Accounting Solution',
-                'state' => 'TN',
-                'last_update_on' => '12-05-2025',
-            ],
-            [
-                'revenue_range' => '$3.2M - $5.1M',
-                'employee_count' => 38,
-                'country' => 'United States',
-                'company_id' => 428731,
-                'city' => 'Raleigh',
-                'company_domain' => 'cognitivesphere.com',
-                'company_name' => 'CognitiveSphere',
-                'company_website' => 'https://cognitivesphere.com',
-                'thesis_name' => 'Artificial Intelligence',
-                'state' => 'NC',
-                'last_update_on' => '19-05-2025',
-            ],
-            [
-                'revenue_range' => '$5.5M - $7.8M',
-                'employee_count' => 63,
-                'country' => 'United States',
-                'company_id' => 215897,
-                'city' => 'Detroit',
-                'company_domain' => 'ledgerpoint.com',
-                'company_name' => 'LedgerPoint Solutions',
-                'company_website' => 'https://ledgerpoint.com',
-                'thesis_name' => 'Accounting Solution',
-                'state' => 'MI',
-                'last_update_on' => '15-05-2025',
-            ],
-            [
-                'revenue_range' => '$4.1M - $6.2M',
-                'employee_count' => 49,
-                'country' => 'United States',
-                'company_id' => 618534,
-                'city' => 'Charlotte',
-                'company_domain' => 'halpern-associates.com',
-                'company_name' => 'Halpern & Associates',
-                'company_website' => 'https://www.halpern-associates.com',
-                'thesis_name' => 'Accounting Solution',
-                'state' => 'NC',
-                'last_update_on' => '20-05-2025',
-            ],
-            [
-                'revenue_range' => '$5.4M - $7.9M',
-                'employee_count' => 62,
-                'country' => 'United States',
-                'company_id' => 753916,
-                'city' => 'Cambridge',
-                'company_domain' => 'neuralflow.com',
-                'company_name' => 'NeuralFlow Tech',
-                'company_website' => 'https://www.neuralflow.com',
-                'thesis_name' => 'Artificial Intelligence',
-                'state' => 'MA',
-                'last_update_on' => '14-05-2025',
-            ],
-            [
-                'revenue_range' => '$5.2M - $7.3M',
-                'employee_count' => 61,
-                'country' => 'United States',
-                'company_id' => 382654,
-                'city' => 'Newark',
-                'company_domain' => 'smartbridge.io',
-                'company_name' => 'SmartBridge Financial',
-                'company_website' => 'https://smartbridge.io',
-                'thesis_name' => 'Accounting Solution',
-                'state' => 'NJ',
-                'last_update_on' => '17-05-2025',
-            ],
-            [
-                'revenue_range' => '$7.9M - $11.3M',
-                'employee_count' => 98,
-                'country' => 'United States',
-                'company_id' => 591726,
-                'city' => 'Houston',
-                'company_domain' => 'bluestream.tech',
-                'company_name' => 'BlueStream Solutions',
-                'company_website' => 'https://bluestream.tech',
-                'thesis_name' => 'Accounting Solution',
-                'state' => 'TX',
-                'last_update_on' => '11-05-2025',
-            ],
-            [
-                'revenue_range' => '$5.8M - $7.9M',
-                'employee_count' => 76,
-                'country' => 'United States',
-                'company_id' => 639871,
-                'city' => 'Austin',
-                'company_domain' => 'visionscope.com',
-                'company_name' => 'VisionScope Technologies',
-                'company_website' => 'http://www.visionscope.com',
-                'thesis_name' => 'Accounting Solution',
-                'state' => 'TX',
-                'last_update_on' => '18-05-2025',
-            ],
-            [
-                'revenue_range' => '$1.5M - $3.1M',
-                'employee_count' => 24,
-                'country' => 'United States',
-                'company_id' => 472583,
-                'city' => 'Durham',
-                'company_domain' => 'numbercrunchers.net',
-                'company_name' => 'NumberCrunchers Analytics',
-                'company_website' => 'https://www.numbercrunchers.net',
-                'thesis_name' => 'Accounting Solution',
-                'state' => 'NC',
-                'last_update_on' => '16-05-2025',
-            ],
-            [
-                'revenue_range' => '$3.9M - $5.8M',
-                'employee_count' => 48,
-                'country' => 'United States',
-                'company_id' => 826537,
-                'city' => 'Irvine',
-                'company_domain' => 'techmatrix.com',
-                'company_name' => 'TechMatrix Solutions',
-                'company_website' => 'https://www.techmatrix.com',
-                'thesis_name' => 'Accounting Solution',
-                'state' => 'CA',
-                'last_update_on' => '13-05-2025',
-            ],
-        ];
+        $jsonPath = database_path('factories/sample_companies.json');
+        if (file_exists($jsonPath)) {
+            $companiesData = json_decode(file_get_contents($jsonPath), true);
+
+            return $companiesData; // Return all companies instead of filtering
+        }
+
+        return [];
     }
 
     public function fetchCompanyDetails(string $companyId) : array
@@ -577,7 +284,7 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      * @param array $item Raw company data
      * @return array|null Industry information
      */
-    protected function extractIndustry(array $item) : array|string
+    protected function extractIndustry(array $item) : array|string|null
     {
         if (isset($item['keywords'])) {
             $keywords = explode(',', $item['keywords']);
@@ -594,7 +301,7 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      * @param array $item Raw company data
      * @return array Location information with state, city, postCode and country
      */
-    protected function extractLocation(array $item) : array
+    protected function extractLocation(array $item) : array|null
     {
         return [
             'stateProvince' => $item['state'] ?? null,
@@ -673,7 +380,7 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      * @param array $item Raw company data
      * @return string|null Recipient email
      */
-    protected function extractRecipientEmail(array $item) : array|string
+    protected function extractRecipientEmail(array $item) : array|string|null
     {
         return $item['decision_makers'] ?? null;
     }
@@ -783,7 +490,7 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      * @param array $item Raw company data
      * @return string|null Recipient name
      */
-    protected function extractRecipientName(array $item) : array|string
+    protected function extractRecipientName(array $item) : array|string|null
     {
         return $item['decision_makers'] ?? null;
     }
