@@ -29,7 +29,7 @@ class CaseResource extends ApiResource
         'participants',
         'initiated_at',
         'completed_at',
-        'stage_name',
+        'stages',
     ];
 
     public function toArray($request): array

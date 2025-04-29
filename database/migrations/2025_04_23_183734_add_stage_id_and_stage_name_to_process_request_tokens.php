@@ -32,6 +32,7 @@ return new class extends Migration {
             $table->dropColumn('stage_id');
             $table->dropColumn('stage_name');
             $table->dropColumn('progress');
+            $table->dropColumn('amount');
         });
     }
 };
