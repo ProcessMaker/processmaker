@@ -1,18 +1,18 @@
 <template>
   <div
-    class="tw-w-auto tw-flex tw-flex-row">
+    class="tw-flex tw-flex-row">
     <ArrowButton
       v-for="(item, index) in data"
       :id="item.id"
       :key="index"
       :header="item.header"
       :body="item.body"
-      :color="item.color"
-      :style="{'opacity': item.opacity}"
+      :float="item.float"
+      :color="`${[`tw-bg-${item.color}-${(index+1) * 100}`]}`"
+      :style="{ width: `${100 / data.length}%` }"
       :class="`first:tw-rounded-l-xl
         last:tw-rounded-r-xl
-        last:tw-overflow-hidden
-        ${[`tw-bg-${item.color}-${(index+1) * 100}`]}`"
+        last:tw-overflow-hidden`"
       @click="onClick(item, index)" />
   </div>
 </template>
@@ -23,13 +23,15 @@ import ArrowButton from "./ArrowButton.vue";
 
 const props = defineProps({
   data: {
-    type: Array({
+    type: Array,
+    default: () => [],
+    props: {
       id: String,
       header: String,
       body: String,
       color: String,
-    }),
-    default: () => [],
+      float: String,
+    },
   },
   color: {
     type: String,
