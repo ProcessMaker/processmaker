@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use ProcessMaker\Http\Controllers\CasesController;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -324,5 +325,42 @@ class CasesControllerTest extends TestCase
         $response->assertViewIs('cases.edit');
         // Check custom detail screen is displayed instead default summary
         $response->assertSee('TEST WITH CUSTOM REQUEST DETAIL SCREEN');
+    }
+
+    /**
+     * Test the getProgressStage method.
+     *
+     * @return void
+     */
+    public function testGetProgressStage()
+    {
+        // Sample data for all stages
+        $allStages = [
+            ['id' => 1, 'name' => 'Stage 1'],
+            ['id' => 2, 'name' => 'Stage 2'],
+            ['id' => 3, 'name' => 'Stage 3'],
+        ];
+
+        // Test case 1: All stages completed
+        $currentStages1 = [
+            ['id' => 1, 'name' => 'Stage 1'],
+            ['id' => 2, 'name' => 'Stage 2'],
+            ['id' => 3, 'name' => 'Stage 3'],
+        ];
+        $this->assertEquals(100.0, CasesController::getProgressStage($allStages, $currentStages1));
+
+        // Test case 2: Some stages completed
+        $currentStages2 = [
+            ['id' => 1, 'name' => 'Stage 1'],
+            ['id' => 2, 'name' => 'Stage 2'],
+        ];
+        $this->assertEquals(66.67, CasesController::getProgressStage($allStages, $currentStages2), '', 0.01);
+
+        // Test case 3: No stages completed
+        $currentStages3 = [];
+        $this->assertEquals(0.0, CasesController::getProgressStage($allStages, $currentStages3));
+
+        // Test case 4: No stages at all
+        $this->assertEquals(0.0, CasesController::getProgressStage([], $currentStages2));
     }
 }
