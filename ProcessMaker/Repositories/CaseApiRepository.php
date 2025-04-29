@@ -32,7 +32,7 @@ class CaseApiRepository implements CaseApiRepositoryInterface
         'participants',
         'initiated_at',
         'completed_at',
-        'stage_name',
+        'stages',
     ];
 
     protected $sortableFields = [

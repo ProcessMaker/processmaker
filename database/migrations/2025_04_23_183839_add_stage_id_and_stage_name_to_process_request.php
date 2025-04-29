@@ -24,8 +24,7 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('process_requests', function (Blueprint $table) {
-            $table->dropColumn('stage_id');
-            $table->dropColumn('stage_name');
+            $table->dropColumn('stages');
             $table->dropColumn('progress');
         });
     }

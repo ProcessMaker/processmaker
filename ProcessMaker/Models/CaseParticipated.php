@@ -30,8 +30,7 @@ class CaseParticipated extends ProcessMakerModel
         'initiated_at',
         'completed_at',
         'keywords',
-        'stage_id',
-        'stage_name',
+        'stages',
     ];
 
     protected $casts = [
