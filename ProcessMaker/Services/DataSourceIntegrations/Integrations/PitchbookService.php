@@ -410,7 +410,7 @@ class PitchbookService extends BaseIntegrationService implements IntegrationsInt
      * @param array $item Raw company data
      * @return array|null Industry information
      */
-    protected function extractIndustry(array $item) : array|string
+    protected function extractIndustry(array $item) : array|string|null
     {
         return $item['sicCodes'] ?? null;
     }
@@ -421,7 +421,7 @@ class PitchbookService extends BaseIntegrationService implements IntegrationsInt
      * @param array $item Raw company data
      * @return array Location information with state, city, postCode and country
      */
-    protected function extractLocation(array $item) : array
+    protected function extractLocation(array $item) : array|null
     {
         return [
             'stateProvince' => $item['hqLocation']['stateProvince'] ?? null,
@@ -438,6 +438,16 @@ class PitchbookService extends BaseIntegrationService implements IntegrationsInt
      * @return mixed|null Revenue information
      */
     protected function extractRevenueRange(array $item)
+    {
+        return $item['revenue'] ?? null;
+    }
+
+    protected function extractMinRevenue(array $item)
+    {
+        return $item['revenue'] ?? null;
+    }
+
+    protected function extractMaxRevenue(array $item)
     {
         return $item['revenue'] ?? null;
     }
@@ -481,7 +491,7 @@ class PitchbookService extends BaseIntegrationService implements IntegrationsInt
      * @param array $item Raw company data
      * @return string|null Recipient email
      */
-    protected function extractRecipientEmail(array $item) : array|string
+    protected function extractRecipientEmail(array $item) : array|string|null
     {
         return $item['contactEmail'] ?? null;
     }
@@ -591,7 +601,7 @@ class PitchbookService extends BaseIntegrationService implements IntegrationsInt
      * @param array $item Raw company data
      * @return string|null Recipient name
      */
-    protected function extractRecipientName(array $item) : array|string
+    protected function extractRecipientName(array $item) : array|string|null
     {
         return $item['recipient_name'] ?? null;
     }

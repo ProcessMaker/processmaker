@@ -21,8 +21,10 @@ class CrunchbaseService extends BaseIntegrationService implements IntegrationsIn
     public function __construct()
     {
         $integration = DataSourceIntegrations::select(['credentials', 'base_url'])->where('key', 'crunchbase')->first();
-        $this->credentials = $integration->credentials;
-        $this->base_url = $integration->base_url;
+        if ($integration) {
+            $this->credentials = $integration->credentials;
+            $this->base_url = $integration->base_url;
+        }
     }
 
     public function getParameters() : array
@@ -194,7 +196,7 @@ class CrunchbaseService extends BaseIntegrationService implements IntegrationsIn
      * @param array $item Raw company data
      * @return array|null Industry information
      */
-    protected function extractIndustry(array $item) : array|string
+    protected function extractIndustry(array $item) : array|string|null
     {
         return $item['properties']['categories'] ?? null;
     }
@@ -205,7 +207,7 @@ class CrunchbaseService extends BaseIntegrationService implements IntegrationsIn
      * @param array $item Raw company data
      * @return array Location information with state, city, postCode and country
      */
-    protected function extractLocation(array $item) : array
+    protected function extractLocation(array $item) : array|null
     {
         return [
             'city' => $item['properties']['location_identifiers'][0]['value'] ?? null,
@@ -224,6 +226,16 @@ class CrunchbaseService extends BaseIntegrationService implements IntegrationsIn
     protected function extractRevenueRange(array $item)
     {
         return $item['properties']['revenue_range'] ?? null;
+    }
+
+    protected function extractMinRevenue(array $item)
+    {
+        return $item['revenue'] ?? null;
+    }
+
+    protected function extractMaxRevenue(array $item)
+    {
+        return $item['revenue'] ?? null;
     }
 
     /**
@@ -265,7 +277,7 @@ class CrunchbaseService extends BaseIntegrationService implements IntegrationsIn
      * @param array $item Raw company data
      * @return string|null Recipient email
      */
-    protected function extractRecipientEmail(array $item) : array|string
+    protected function extractRecipientEmail(array $item) : array|string|null
     {
         return $item['properties']['contact_email'] ?? null;
     }
@@ -375,7 +387,7 @@ class CrunchbaseService extends BaseIntegrationService implements IntegrationsIn
      * @param array $item Raw company data
      * @return string|null Recipient name
      */
-    protected function extractRecipientName(array $item) : array|string
+    protected function extractRecipientName(array $item) : array|string|null
     {
         return $item['properties']['recipient_name'] ?? null;
     }

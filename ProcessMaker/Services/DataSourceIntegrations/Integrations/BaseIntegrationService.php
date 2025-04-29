@@ -95,7 +95,7 @@ abstract class BaseIntegrationService implements IntegrationsInterface
      * @param array $item Raw company data
      * @return array|null Industry information
      */
-    abstract protected function extractIndustry(array $item) : array|string;
+    abstract protected function extractIndustry(array $item) : array|string|null;
 
     /**
      * Extract location information from raw data
@@ -103,7 +103,7 @@ abstract class BaseIntegrationService implements IntegrationsInterface
      * @param array $item Raw company data
      * @return array Location information with state, city, postCode and country
      */
-    abstract protected function extractLocation(array $item) : array;
+    abstract protected function extractLocation(array $item) : array|null;
 
     /**
      * Extract revenue information from raw data
@@ -215,7 +215,7 @@ abstract class BaseIntegrationService implements IntegrationsInterface
      * @param array $item Raw company data
      * @return string|null Recipient name
      */
-    abstract protected function extractRecipientName(array $item) : array|string;
+    abstract protected function extractRecipientName(array $item) : array|string|null;
 
     /**
      * Extract last updated information from raw data
@@ -247,5 +247,5 @@ abstract class BaseIntegrationService implements IntegrationsInterface
      * @param array $item Raw company data
      * @return string|null Recipient email
      */
-    abstract protected function extractRecipientEmail(array $item) : array|string;
+    abstract protected function extractRecipientEmail(array $item) : array|string|null;
 }
