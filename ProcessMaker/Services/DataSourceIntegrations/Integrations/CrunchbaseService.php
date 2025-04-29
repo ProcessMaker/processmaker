@@ -194,7 +194,7 @@ class CrunchbaseService extends BaseIntegrationService implements IntegrationsIn
      * @param array $item Raw company data
      * @return array|null Industry information
      */
-    protected function extractIndustry(array $item) : ?array
+    protected function extractIndustry(array $item) : array|string
     {
         return $item['properties']['categories'] ?? null;
     }
@@ -221,7 +221,7 @@ class CrunchbaseService extends BaseIntegrationService implements IntegrationsIn
      * @param array $item Raw company data
      * @return mixed|null Revenue information
      */
-    protected function extractRevenue(array $item)
+    protected function extractRevenueRange(array $item)
     {
         return $item['properties']['revenue_range'] ?? null;
     }
@@ -265,7 +265,7 @@ class CrunchbaseService extends BaseIntegrationService implements IntegrationsIn
      * @param array $item Raw company data
      * @return string|null Recipient email
      */
-    protected function extractRecipientEmail(array $item) : ?string
+    protected function extractRecipientEmail(array $item) : array|string
     {
         return $item['properties']['contact_email'] ?? null;
     }
@@ -375,7 +375,7 @@ class CrunchbaseService extends BaseIntegrationService implements IntegrationsIn
      * @param array $item Raw company data
      * @return string|null Recipient name
      */
-    protected function extractRecipientName(array $item) : ?string
+    protected function extractRecipientName(array $item) : array|string
     {
         return $item['properties']['recipient_name'] ?? null;
     }

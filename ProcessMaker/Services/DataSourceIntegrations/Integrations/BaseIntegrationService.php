@@ -36,7 +36,9 @@ abstract class BaseIntegrationService implements IntegrationsInterface
             'logo_url' => $this->extractCompanyLogo($item),
             'industry' => $this->extractIndustry($item),
             'location' => $this->extractLocation($item),
-            'revenue' => $this->extractRevenue($item),
+            'revenue_range' => $this->extractRevenueRange($item),
+            'revenue_min' => $this->extractMinRevenue($item),
+            'revenue_max' => $this->extractMaxRevenue($item),
             'employee_size' => $this->extractEmployeeSize($item),
             'ebitda' => $this->extractEbitda($item),
             'fcff' => $this->extractFcff($item),
@@ -93,7 +95,7 @@ abstract class BaseIntegrationService implements IntegrationsInterface
      * @param array $item Raw company data
      * @return array|null Industry information
      */
-    abstract protected function extractIndustry(array $item) : ?array;
+    abstract protected function extractIndustry(array $item) : array|string;
 
     /**
      * Extract location information from raw data
@@ -109,7 +111,23 @@ abstract class BaseIntegrationService implements IntegrationsInterface
      * @param array $item Raw company data
      * @return mixed|null Revenue information
      */
-    abstract protected function extractRevenue(array $item);
+    abstract protected function extractRevenueRange(array $item);
+
+    /**
+     * Extract min revenue information from raw data
+     *
+     * @param array $item Raw company data
+     * @return mixed|null Revenue information
+     */
+    abstract protected function extractMinRevenue(array $item);
+
+    /**
+     * Extract max revenue information from raw data
+     *
+     * @param array $item Raw company data
+     * @return mixed|null Revenue information
+     */
+    abstract protected function extractMaxRevenue(array $item);
 
     /**
      * Extract employee size information from raw data
@@ -197,7 +215,7 @@ abstract class BaseIntegrationService implements IntegrationsInterface
      * @param array $item Raw company data
      * @return string|null Recipient name
      */
-    abstract protected function extractRecipientName(array $item) : ?string;
+    abstract protected function extractRecipientName(array $item) : array|string;
 
     /**
      * Extract last updated information from raw data
@@ -229,5 +247,5 @@ abstract class BaseIntegrationService implements IntegrationsInterface
      * @param array $item Raw company data
      * @return string|null Recipient email
      */
-    abstract protected function extractRecipientEmail(array $item) : ?string;
+    abstract protected function extractRecipientEmail(array $item) : array|string;
 }

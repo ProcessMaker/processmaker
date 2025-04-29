@@ -410,7 +410,7 @@ class PitchbookService extends BaseIntegrationService implements IntegrationsInt
      * @param array $item Raw company data
      * @return array|null Industry information
      */
-    protected function extractIndustry(array $item) : ?array
+    protected function extractIndustry(array $item) : array|string
     {
         return $item['sicCodes'] ?? null;
     }
@@ -437,7 +437,7 @@ class PitchbookService extends BaseIntegrationService implements IntegrationsInt
      * @param array $item Raw company data
      * @return mixed|null Revenue information
      */
-    protected function extractRevenue(array $item)
+    protected function extractRevenueRange(array $item)
     {
         return $item['revenue'] ?? null;
     }
@@ -481,7 +481,7 @@ class PitchbookService extends BaseIntegrationService implements IntegrationsInt
      * @param array $item Raw company data
      * @return string|null Recipient email
      */
-    protected function extractRecipientEmail(array $item) : ?string
+    protected function extractRecipientEmail(array $item) : array|string
     {
         return $item['contactEmail'] ?? null;
     }
@@ -591,7 +591,7 @@ class PitchbookService extends BaseIntegrationService implements IntegrationsInt
      * @param array $item Raw company data
      * @return string|null Recipient name
      */
-    protected function extractRecipientName(array $item) : ?string
+    protected function extractRecipientName(array $item) : array|string
     {
         return $item['recipient_name'] ?? null;
     }
