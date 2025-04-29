@@ -29,7 +29,6 @@ class SyncAldrichIntegrationData extends Command
 
         try {
             $service = new AldrichIntegrationService();
-            dd($service);
             if (!$service) {
                 $this->error('Failed to initialize Aldrich integration service');
 

@@ -511,73 +511,21 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      */
     private function fetchCompanyDetailsFromApi(string $companyId) : array
     {
-        // TODO: Implement real API call to Aldrich
-        return
-            [
-                'country' => 'United States',
-                'short_description' => 'Digital Documentation Inc. provides innovative document management solutions with AI-powered data extraction for businesses of all sizes.',
-                'company_score' => 87.42,
-                'keywords' => 'Document Management,Digital Transformation,Accounting Solution,Cloud Storage,Data Extraction,OCR Technology,Process Automation,Records Management,Business Intelligence,Data Security,Compliance,Paperless Office,Workflow Automation,API Integration',
-                'city' => 'Portland',
-                'company_website' => 'https://digitaldocs.com',
-                'salesforce_account_id' => '0011U00001LM7RPQA1',
-                'description' => 'Digital Documentation Inc. offers comprehensive document management solutions that streamline business processes and reduce operational costs. Our services include secure document scanning, intelligent data extraction, cloud storage, workflow automation, and system integration. We serve industries including healthcare, financial services, legal, and manufacturing with tailored solutions for regulatory compliance and operational efficiency. Our flagship products include SmartScan Pro, DataVault Cloud, and WorkflowIQ for enterprise document management.',
-                'revenue_range' => '$3.9M - $5.7M',
-                'last_funding_date' => '2023-08-15',
-                'onshore_employees' => '94.7%',
-                'emp_2y_growth' => '27%',
-                'company_domain' => 'digitaldocs.com',
-                'founded_year' => 2015,
-                'state' => 'OR',
-                'twitter_url' => 'https://x.com/digitaldocsinc',
-                'crunchbase_url' => 'https://www.crunchbase.com/organization/digital-documentation-inc',
-                'emp_1y_growth' => '12%',
-                'pitchbook_url' => 'https://pitchbook.com/profiles/company/digital-documentation-inc',
-                'employee_count' => 48,
-                'company_id' => 432198,
-                'thesis_name' => 'Accounting Solution',
-                'total_funding' => '$5.2M',
-                'engagement_score' => 42.87,
-                'decision_makers' => [
-                    [
-                        'full_name' => 'Jason Reynolds',
-                        'phone' => '503-892-5555',
-                        'linkedin_url' => 'https://www.linkedin.com/in/jason-reynolds-digitaldocs/',
-                        'contact_id' => '0031U00001K8LMbQAN',
-                        'title' => 'Founder & CEO',
-                        'email' => 'jason.reynolds@digitaldocs.com',
-                    ],
-                    [
-                        'full_name' => 'Sarah Chen',
-                        'phone' => '503-892-5555',
-                        'linkedin_url' => 'https://www.linkedin.com/in/sarah-chen-product/',
-                        'contact_id' => '0031U00001K8LMgQAN',
-                        'title' => 'CTO',
-                        'email' => 'sarah.chen@digitaldocs.com',
-                    ],
-                    [
-                        'full_name' => 'Michael Donnelly',
-                        'phone' => '503-892-5555',
-                        'linkedin_url' => 'https://www.linkedin.com/in/michael-donnelly-finance/',
-                        'contact_id' => '0031U00001K8LMhQAN',
-                        'title' => 'CFO',
-                        'email' => 'michael.donnelly@digitaldocs.com',
-                    ],
-                    [
-                        'full_name' => 'Anita Patel',
-                        'phone' => '503-892-5555',
-                        'linkedin_url' => 'https://www.linkedin.com/in/anita-patel-sales/',
-                        'contact_id' => '0031U00001K8LMiQAN',
-                        'title' => 'VP of Sales',
-                        'email' => 'anita.patel@digitaldocs.com',
-                    ],
-                ],
-                'last_funding_type' => 'Series A',
-                'company_name' => 'Digital Documentation Inc.',
-                'emp_6m_growth' => '5%',
-                'linkedin_url' => 'https://www.linkedin.com/company/digital-documentation-inc/',
-                'business_model' => 'SaaS',
-            ];
+        // Read the sample data from JSON file
+        $jsonPath = database_path('factories/sample_company_details.json');
+        if (file_exists($jsonPath)) {
+            $companiesData = json_decode(file_get_contents($jsonPath), true);
+
+            // Find the company that matches the companyId
+            foreach ($companiesData as $company) {
+                if (isset($company['company_id']) && (string) $company['company_id'] === $companyId) {
+                    return $company;
+                }
+            }
+        }
+
+        // Return empty array if company not found or file doesn't exist
+        return [];
     }
 
     /**
@@ -609,9 +557,7 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      */
     protected function extractCompanyName(array $item) : ?string
     {
-        return isset($item['properties']['identifier']['value'])
-            ? $item['properties']['identifier']['value']
-            : null;
+        return $item['company_name'] ?? null;
     }
 
     /**
@@ -622,7 +568,7 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      */
     protected function extractCompanyLogo(array $item) : ?string
     {
-        return $item['properties']['image_url'] ?? null;
+        return $item['logo_url'] ?? null;
     }
 
     /**
@@ -631,9 +577,15 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      * @param array $item Raw company data
      * @return array|null Industry information
      */
-    protected function extractIndustry(array $item) : ?array
+    protected function extractIndustry(array $item) : array|string
     {
-        return $item['properties']['categories'] ?? null;
+        if (isset($item['keywords'])) {
+            $keywords = explode(',', $item['keywords']);
+
+            return $keywords;
+        }
+
+        return null;
     }
 
     /**
@@ -645,10 +597,10 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
     protected function extractLocation(array $item) : array
     {
         return [
-            'stateProvince' => $item['cards']['headquarters_address']['location_identifiers'][1]['value'] ?? null,
-            'city' => $item['cards']['headquarters_address']['location_identifiers'][0]['value'] ?? null,
-            'postCode' => $item['cards']['headquarters_address']['postal_code'] ?? null,
-            'country' => $item['cards']['headquarters_address']['location_identifiers'][3]['value'] ?? null,
+            'stateProvince' => $item['state'] ?? null,
+            'city' => $item['city'] ?? null,
+            'postCode' => $item['post_code'] ?? null,
+            'country' => $item['country'] ?? null,
         ];
     }
 
@@ -658,9 +610,28 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      * @param array $item Raw company data
      * @return mixed|null Revenue information
      */
-    protected function extractRevenue(array $item)
+    protected function extractRevenueRange(array $item)
     {
-        return $item['properties']['revenue_range'] ?? null;
+        return $item['revenue_range'] ?? null;
+    }
+
+    protected function extractMinRevenue(array $item)
+    {
+        $revenueRange = $item['revenue_range'];
+        $minRevenue = explode('M', $revenueRange)[0];
+        $minRevenue = str_replace('$', '', $minRevenue);
+
+        return $minRevenue;
+    }
+
+    protected function extractMaxRevenue(array $item)
+    {
+        $revenueRange = $item['revenue_range'];
+        $maxRevenue = explode('M', $revenueRange)[1];
+        $maxRevenue = str_replace('-', '', $maxRevenue);
+        $maxRevenue = str_replace('$', '', $maxRevenue);
+
+        return $maxRevenue;
     }
 
     /**
@@ -671,7 +642,7 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      */
     protected function extractEmployeeSize(array $item)
     {
-        return $item['properties']['num_employees_enum'] ?? null;
+        return $item['employee_count'] ?? null;
     }
 
     /**
@@ -682,7 +653,7 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      */
     protected function extractNetProfitMargin(array $item)
     {
-        return $item['properties']['net_profit_margin'] ?? null;
+        return $item['net_profit_margin'] ?? null;
     }
 
     /**
@@ -693,7 +664,7 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      */
     protected function extractRevenueGrowth(array $item)
     {
-        return $item['properties']['revenue_growth'] ?? null;
+        return $item['revenue_growth'] ?? null;
     }
 
     /**
@@ -702,9 +673,9 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      * @param array $item Raw company data
      * @return string|null Recipient email
      */
-    protected function extractRecipientEmail(array $item) : ?string
+    protected function extractRecipientEmail(array $item) : array|string
     {
-        return $item['properties']['contact_email'] ?? null;
+        return $item['decision_makers'] ?? null;
     }
 
     /**
@@ -715,7 +686,7 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      */
     protected function extractEbitda(array $item)
     {
-        return $item['properties']['ebitda'] ?? null;
+        return $item['ebitda'] ?? null;
     }
 
     /**
@@ -726,7 +697,7 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      */
     protected function extractFcff(array $item)
     {
-        return $item['properties']['fcff'] ?? null;
+        return $item['fcff'] ?? null;
     }
 
     /**
@@ -737,7 +708,7 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      */
     protected function extractDe(array $item)
     {
-        return $item['properties']['de'] ?? null;
+        return $item['de'] ?? null;
     }
 
     /**
@@ -748,7 +719,7 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      */
     protected function extractCurrentRatio(array $item)
     {
-        return $item['properties']['current_ratio'] ?? null;
+        return $item['current_ratio'] ?? null;
     }
 
     /**
@@ -759,7 +730,7 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      */
     protected function extractEarningPerShare(array $item)
     {
-        return $item['properties']['earning_per_share'] ?? null;
+        return $item['earning_per_share'] ?? null;
     }
 
     /**
@@ -770,7 +741,7 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      */
     protected function extractStatus(array $item)
     {
-        return $item['properties']['status'] ?? null;
+        return $item['status'] ?? null;
     }
 
     /**
@@ -781,7 +752,7 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      */
     protected function extractWebsiteUrl(array $item) : ?string
     {
-        return $item['properties']['website_url'] ?? null;
+        return $item['company_website'] ?? null;
     }
 
     /**
@@ -792,7 +763,7 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      */
     protected function extractCurrency(array $item) : ?string
     {
-        return $item['properties']['currency'] ?? null;
+        return $item['currency'] ?? null;
     }
 
     /**
@@ -803,7 +774,7 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      */
     protected function extractNetProfit(array $item)
     {
-        return $item['properties']['net_profit'] ?? null;
+        return $item['net_profit'] ?? null;
     }
 
     /**
@@ -812,9 +783,9 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      * @param array $item Raw company data
      * @return string|null Recipient name
      */
-    protected function extractRecipientName(array $item) : ?string
+    protected function extractRecipientName(array $item) : array|string
     {
-        return $item['properties']['recipient_name'] ?? null;
+        return $item['decision_makers'] ?? null;
     }
 
     /**
@@ -825,6 +796,6 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
      */
     protected function extractLastUpdated(array $item) : ?string
     {
-        return $item['properties']['last_updated'] ?? null;
+        return $item['last_updated'] ?? null;
     }
 }
