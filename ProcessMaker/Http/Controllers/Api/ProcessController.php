@@ -607,7 +607,7 @@ class ProcessController extends Controller
             }
 
             // Additional validation for data types
-            if (!is_int($stage['id']) || !is_string($stage['names']) || !is_int($stage['order'])) {
+            if (!is_int($stage['id']) || !is_string($stage['name']) || !is_int($stage['order'])) {
                 return false;
             }
         }
