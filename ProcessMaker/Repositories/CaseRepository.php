@@ -68,8 +68,7 @@ class CaseRepository implements CaseRepositoryInterface
                 'initiated_at' => $instance->initiated_at,
                 'completed_at' => null,
                 'keywords' => CaseUtils::getKeywords($dataKeywords),
-                // TO_DO: Define if we will save the last stage or all stages
-                'stages' => [],
+                // TO_DO: save all stages $this->case->stages = CaseUtils::storeStages($this->case->tasks, $taskData);
             ]);
         } catch (\Exception $e) {
             Log::error('CaseException: ' . $e->getMessage());
@@ -100,8 +99,7 @@ class CaseRepository implements CaseRepositoryInterface
             $this->case->request_tokens = CaseUtils::storeRequestTokens($this->case->request_tokens, $token->getKey());
             $this->case->tasks = CaseUtils::storeTasks($this->case->tasks, $taskData);
             $this->case->keywords = CaseUtils::getKeywords($dataKeywords);
-            // TO_DO: Define if we will save the last stage or all stages
-            $this->case->stages = []; //CaseUtils::storeStages($this->case->tasks, $taskData);
+            // TO_DO: save all stages $this->case->stages = CaseUtils::storeStages($this->case->tasks, $taskData);
 
             $this->updateParticipants($token);
 

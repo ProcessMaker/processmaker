@@ -54,6 +54,12 @@ class ProcessController extends Controller
         'EMBED' => 'embed',
     ];
 
+    const STAGES_STRUCTURE = [
+        'id',
+        'name',
+        'order',
+    ];
+
     /**
      * A whitelist of attributes that should not be
      * sanitized by our SanitizeInput middleware.
@@ -498,6 +504,15 @@ class ProcessController extends Controller
             $process->warnings = null;
         }
 
+        // Validate stages
+        $stages = $request->input('stages', null);
+        if (!empty($stages)) {
+            $stages = json_decode($stages, true);
+            if (!$this->validateStagesStructure($stages)) {
+                return ['error' => 'Invalid stages structure. Each stage must have id, name, and order.'];
+            }
+        }
+
         $process->fill($request->except('notifications', 'task_notifications', 'notification_settings', 'cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id', 'projects'));
         if ($request->has('manager_id')) {
             $process->manager_id = $request->input('manager_id', null);
@@ -573,6 +588,31 @@ class ProcessController extends Controller
         ProcessPublished::dispatch($process->refresh(), $changes, $original);
 
         return new Resource($process->refresh());
+    }
+
+    /**
+     * Validate the structure of stages.
+     *
+     * @param array $stages
+     * @return bool
+     */
+    private function validateStagesStructure(array $stages): bool
+    {
+        foreach ($stages as $stage) {
+            // Check if all required keys are present
+            foreach (self::STAGES_STRUCTURE as $key) {
+                if (!array_key_exists($key, $stage)) {
+                    return false; // Missing required key
+                }
+            }
+
+            // Additional validation for data types
+            if (!is_int($stage['id']) || !is_string($stage['names']) || !is_int($stage['order'])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function updateBpmn(Request $request, Process $process)
