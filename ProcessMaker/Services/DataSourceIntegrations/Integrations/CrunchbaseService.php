@@ -34,6 +34,11 @@ class CrunchbaseService extends BaseIntegrationService implements IntegrationsIn
 
     public function getCompanies(array $params = []) : array
     {
+        if (empty($this->credentials)) {
+            Log::error('Crunchbase API request failed: No credentials found');
+
+            return [];
+        }
         $response = $this->fetchCompaniesFromApi($params);
 
         if (empty($response['entities'])) {
