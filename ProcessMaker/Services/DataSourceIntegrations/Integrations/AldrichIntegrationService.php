@@ -107,26 +107,9 @@ class AldrichIntegrationService extends BaseIntegrationService implements Integr
     // Query collection records based on parameters
     protected function queryCollectionRecords(array $params = []) : array
     {
-        //TODO: Maybe call collection endpoint to query records?
-        dd('queryCollectionRecords');
-
-        // $query = CollectionRecord::where('collection_id', $this->collection->id);
-
-        // // Apply filters based on params
-        // if (!empty($params)) {
-        //     // Add query filters based on params
-        //     // This will depend on your specific requirements
-        //     if (isset($params['identifier'])) {
-
-        //     }
-
-        //     // Add more filters as needed
-        // }
-
-        // // Return the records as an array of data
-        // return $query->get()->map(function ($record) {
-        //     return $record->data;
-        // })->toArray();
+        return array_map(function ($item) {
+            return (array) $item;
+        }, Record::select('data')->fromCollection($this->collection)->get()->pluck('data')->toArray());
     }
 
     public function syncData(): array
