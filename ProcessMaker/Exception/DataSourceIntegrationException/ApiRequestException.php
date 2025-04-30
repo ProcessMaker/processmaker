@@ -9,9 +9,9 @@ use Exception;
  */
 class ApiRequestException extends DataSourceIntegrationException
 {
-    public function __construct(string $source, string $endpoint, string $error = '', int $code = 0, ?Exception $previous = null)
+    public function __construct(string $source, string $error = '', int $code = 0, ?Exception $previous = null)
     {
-        $message = "API request failed for '{$source}' at endpoint '{$endpoint}'";
+        $message = "API request failed for '{$source}'";
         if ($error) {
             $message .= " - {$error}";
         }
