@@ -73,7 +73,8 @@ class SyncDefaultTemplates implements ShouldQueue
                     continue;
                 }
 
-                $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/' . $template['relative_path'];
+                $relativePath = ltrim($template['relative_path'], './');
+                $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/' . $relativePath;
                 $response = Http::get($url);
                 if (!$response->successful()) {
                     throw new Exception("Unable to fetch default template {$template['name']}.");
