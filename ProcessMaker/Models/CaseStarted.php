@@ -30,6 +30,7 @@ class CaseStarted extends ProcessMakerModel
         'initiated_at',
         'completed_at',
         'keywords',
+        'stages',
     ];
 
     protected $casts = [

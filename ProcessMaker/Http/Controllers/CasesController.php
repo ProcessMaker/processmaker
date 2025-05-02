@@ -84,6 +84,9 @@ class CasesController extends Controller
         } else {
             $request->summary_screen = $request->getSummaryScreen();
         }
+        $currentStages = $this->getCurrentStage($request->stages);
+        $allStages = $this->getStagesByProcessId($request->process_id);
+        $progressStage = $this->getProgressStage($allStages, $currentStages);
         // Load the screen configured in "Request Detail Screen"
         $request->request_detail_screen = Screen::find($request->process->request_detail_screen_id);
         // The user canCancel if has the processPermission and the case has only one request
@@ -122,7 +125,8 @@ class CasesController extends Controller
             'managerModelerScripts',
             'bpmn',
             'inflightData',
-            'pmBlockList'
+            'pmBlockList',
+            'progressStage',
         ));
     }
 
@@ -170,5 +174,75 @@ class CasesController extends Controller
                 $request->summary_screen['config'] = $screenTranslation->applyTranslations($request->summary_screen);
             }
         }
+    }
+
+    /**
+     * Get the current stages from a JSON string.
+     *
+     * This method decodes a JSON string representing stages into an associative array.
+     * If the input is null or not a valid JSON string, it returns an empty array.
+     *
+     * @param string|null $stages A JSON string representing the stages.
+     *                            It can be null or a valid JSON string.
+     * @return array An associative array of stages if the JSON is valid;
+     *               otherwise, an empty array.
+     */
+    public static function getCurrentStage($stages)
+    {
+        // Initialize currentStages as an empty array
+        $currentStages = [];
+
+        // Check if $stages is not null and is a valid JSON string
+        if (!is_null($stages) && is_string($stages)) {
+            $decodedStages = json_decode($stages, true);
+
+            // Check if json_decode was successful and returned an array
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decodedStages)) {
+                $currentStages = $decodedStages;
+            }
+        }
+
+        return $currentStages; // Return the current stages (empty array if none)
+    }
+
+    /**
+     * Calculate the progress of stages.
+     *
+     * @param array $allStages An array of all stages.
+     * @param array $currentStages An array of current stages.
+     * @return float The progress percentage (0 to 100).
+     */
+    public static function getProgressStage(array $allStages, array $currentStages): float
+    {
+        // Total number of stages
+        $totalStages = count($allStages);
+
+        // If there are no stages, return 0% progress
+        if ($totalStages === 0) {
+            return 0.0;
+        }
+
+        // Total number of current stages
+        $totalCurrentStages = count($currentStages);
+
+        // If there are no stages, return 0% progress
+        if ($totalCurrentStages === 0) {
+            return 0.0;
+        }
+
+        // Count the number of completed stages
+        $completedStages = 0;
+
+        foreach ($currentStages as $currentStage) {
+            // Check if the current stage is completed
+            if (in_array($currentStage['id'], array_column($allStages, 'id'))) {
+                $completedStages++;
+            }
+        }
+
+        // Calculate progress percentage
+        $progressPercentage = ($completedStages / $totalStages) * 100;
+
+        return round($progressPercentage, 2);
     }
 }

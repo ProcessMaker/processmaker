@@ -143,4 +143,49 @@ class ProcessControllerTest extends TestCase
         $response->assertJsonCount(1, 'data');
         $response->assertJsonFragment(['name' => 'CProcess']);
     }
+
+    /**
+     * Test saving and retrieving stages in the Process model.
+     *
+     * @return void
+     */
+    public function testSaveAndRetrieveStages()
+    {
+        // Sample stages data
+        $stagesData = [
+            [
+                'id' => 1,
+                'name' => 'Request Send',
+                'order' => 1,
+            ],
+            [
+                'id' => 3,
+                'name' => 'Request Reviewed',
+                'order' => 2,
+            ],
+            [
+                'id' => 2,
+                'name' => 'Manager Reviewed',
+                'order' => 3,
+            ],
+        ];
+
+        // Create a new process and save stages as JSON
+        $process = Process::factory()->create([
+            'name' => 'Sample Stage Process',
+            'status' => 'ACTIVE',
+            'stages' => json_encode($stagesData),
+        ]);
+
+        // Retrieve the process from the database
+        $retrievedProcess = Process::find($process->id);
+
+        // Assert that the stages are correctly retrieved
+        $this->assertNotNull($retrievedProcess);
+        $this->assertIsString($retrievedProcess->stages);
+        $retrievedStages = json_decode($retrievedProcess->stages, true);
+
+        // Assert the content of the stages
+        $this->assertEquals($stagesData, $retrievedStages);
+    }
 }
