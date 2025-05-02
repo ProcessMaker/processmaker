@@ -22,6 +22,11 @@ class ScreenBuilderController extends Controller
      */
     public function edit(ScreenBuilderManager $manager, Screen $screen, $processId = null)
     {
+        // Check if the screen is external url
+        if ($screen->config[0]['url'] ?? null) {
+            return redirect($screen->config[0]['url']);
+        }
+
         /**
          * Emit the ModelerStarting event, passing in our ModelerManager instance. This will
          * allow packages to add additional javascript for modeler initialization which

@@ -101,6 +101,7 @@ class TaskController extends Controller
      *         )
      *     ),
      *     @OA\Parameter(ref="#/components/parameters/filter"),
+     *     @OA\Parameter(ref="#/components/parameters/pmql"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/include"),
