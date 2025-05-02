@@ -436,7 +436,8 @@ trait MakeHttpRequests
     {
         $client = $this->client ?? app()->make(Client::class, [
             'config' => [
-                'verify' => $this->verifySsl,
+                // Disable SSL verification in local development environment
+                'verify' => $this->verifySsl && (config('app.env') !== 'local'),
                 'timeout' => $this->timeout,
             ],
         ]);
