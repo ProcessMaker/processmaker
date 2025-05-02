@@ -4,7 +4,9 @@
     <p class="text-sm mb-4">
       {{ $t("Here you have all the stages already set in this process. Define the order you prefer:") }}
     </p>
-    <StageList :initialStages="defaultStages" />
+    <StageList :initialStages="defaultStages" 
+               @change="changeStage"
+    ></StageList>
   </div>
 </template>
 
@@ -16,4 +18,9 @@ const defaultStages = [
   { id: 2, label: 'Request Reviewed', selected: true },
   { id: 3, label: 'Manager Reviewed', selected: false },
 ];
+
+const changeStage = (stages) => {
+    //trigger when stages change.
+
+};
 </script>
