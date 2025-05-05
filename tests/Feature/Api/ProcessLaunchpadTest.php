@@ -132,16 +132,8 @@ class ProcessLaunchpadTest extends TestCase
 
         $stageSummary = $process->getStagesSummary(json_encode($stages));
         $expectedStagesSummary = [
-            [
-                'id' => 1,
-                'name' => 'Stage A',
-                'count' => 0, // No requests for this stage
-            ],
-            [
-                'id' => 2,
-                'name' => 'Stage B',
-                'count' => 0, // No requests for this stage
-            ],
+            ['id' => 1, 'name' => 'Stage A', 'count' => 0, 'percentage' => 0],
+            ['id' => 2, 'name' => 'Stage B', 'count' => 0, 'percentage' => 0],
         ];
         // Check if the stagesSummary matches the expected output
         $this->assertEquals($expectedStagesSummary, $stageSummary);
@@ -191,9 +183,9 @@ class ProcessLaunchpadTest extends TestCase
 
         // Validate the stagesSummary in the response
         $expectedStagesSummary = [
-            ['id' => 1, 'name' => 'Stage 1', 'count' => 2], // 2 requests with last_stage_id 1
-            ['id' => 2, 'name' => 'Stage 2', 'count' => 3], // 1 request with last_stage_id 2
-            ['id' => 3, 'name' => 'Stage 3', 'count' => 5], // No requests with last_stage_id 3
+            ['id' => 1, 'name' => 'Stage 1', 'count' => 2, 'percentage' => 20],
+            ['id' => 2, 'name' => 'Stage 2', 'count' => 3, 'percentage' => 30],
+            ['id' => 3, 'name' => 'Stage 3', 'count' => 5, 'percentage' => 50],
         ];
         // Check if the stagesSummary matches the expected output
         $this->assertEquals($expectedStagesSummary, $stageSummary);

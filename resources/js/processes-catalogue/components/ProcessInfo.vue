@@ -50,7 +50,7 @@
           :process="process"
           :collapsed="collapsed" />
 
-        <progress-bar-section />
+        <progress-bar-section :stages-summary="process.stagesSummary"/>
       </div>
     </slide-process-info>
   </div>

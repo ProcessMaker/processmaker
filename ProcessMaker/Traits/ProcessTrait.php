@@ -255,6 +255,7 @@ trait ProcessTrait
                 'id' => $stage['id'],
                 'name' => $stage['name'],
                 'count' => 0, // Initialize count to 0 for each stage
+                'percentage' => 0, // Initialize percentaje to 0 for each stage
             ];
         }
 
@@ -263,6 +264,16 @@ trait ProcessTrait
                 if ($countData['id'] == $stage->last_stage_id) {
                     $countData['count'] = $stage->count; // Update the count
                 }
+            }
+        }
+
+        // Calculate the total count of all stages
+        $totalCount = array_sum(array_column($stageCounts, 'count'));
+
+        // Calculate the percentage for each stage
+        foreach ($stageCounts as &$countData) {
+            if ($totalCount > 0) {
+                $countData['percentage'] = ($countData['count'] / $totalCount) * 100;
             }
         }
 
