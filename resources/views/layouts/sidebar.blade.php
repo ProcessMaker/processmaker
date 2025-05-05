@@ -26,32 +26,29 @@
       @endif
     </ul>
   <div class="w-100" v-cloak>
-    <div
-      v-if="expanded"
-      @click="expanded = !expanded"
-      role="button"
-      :aria-label="$t('Collapse sidebar')"
-      class="nav-item filter-bar justify-content-between py-2 sidebar-expansion"
-    >
-      <div class="nav-link">
-        <i class="fas fa-angle-double-left nav-icon" v-if="expanded"></i>
-        <i class="fas fa-angle-double-right nav-icon" v-else></i>
-        <span class="nav-text" v-if="expanded" v-cloak >
-          {{ __('Collapse sidebar') }}
-        </span>
-</div>
-    </div>
-    <div
-      v-else
-      @click="expanded = !expanded"
-      role="button"
-      :aria-label="$t('Expand sidebar')"
-      class="nav-item filter-bar justify-content-between py-2 sidebar-expansion"
-      v-b-tooltip.hover.right="{ title: $t('Expand sidebar'), animation: false, boundary: 'viewport', delay: { show: 0, hide: 0 } }"
-    >
+    <button
+        v-if="expanded"
+        @click="expanded = !expanded"
+        role="button" :aria-label="$t('Collapse sidebar')"
+        class="nav-item filter-bar justify-content-between py-2 sidebar-expansion">
+        <div class="nav-link">
+            <i class="fas fa-angle-double-left nav-icon" v-if="expanded"></i>
+            <i class="fas fa-angle-double-right nav-icon" v-else></i>
+            <span class="nav-text" v-if="expanded" v-cloak >
+              {{ __('Collapse Sidebar') }}
+            </span>
+        </div>
+    </button>
+    <button
+        v-else @click="expanded = !expanded"
+        role="button"
+        :aria-label="$t('Expand sidebar')"
+        class="nav-item filter-bar justify-content-between py-2 sidebar-expansion"
+        v-b-tooltip.hover.right="{ title: $t('Expand Sidebar'), animation: false, boundary: 'viewport', delay: { show: 0, hide: 0 } }"
+        tabindex="0">
       <div class="nav-link">
         <i class="fas fa-angle-double-right nav-icon"></i>
       </div>
-    </div>
+    </button>
   </div>
 </nav>
