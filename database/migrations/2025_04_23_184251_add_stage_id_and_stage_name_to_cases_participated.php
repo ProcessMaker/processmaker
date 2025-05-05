@@ -11,8 +11,9 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('cases_participated', function (Blueprint $table) {
-            // This column will store information about the stages: stage_id, stage_name
-            $table->json('stages')->nullable();
+            // Those columns will store the last stage information related to stage_id, stage_name
+            $table->integer('last_stage_id')->nullable();
+            $table->string('last_stage_name')->nullable();
             // This column will be used to display the percentage of advancement of the case through the stages.
             $table->float('progress')->default(0);
         });
@@ -24,7 +25,8 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('cases_participated', function (Blueprint $table) {
-            $table->dropColumn('stages');
+            $table->dropColumn('last_stage_id');
+            $table->dropColumn('last_stage_name');
             $table->dropColumn('progress');
         });
     }

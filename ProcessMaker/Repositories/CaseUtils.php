@@ -38,13 +38,6 @@ class CaseUtils
         'case_title' => 'case_title',
     ];
 
-    const STAGE_FIELDS = [
-        'id' => 'stage_id',
-        'name' => 'stage_name',
-        'process_id' => 'process_id',
-        'task_id' => 'task_id',
-    ];
-
     /**
      * Get the case number split into keywords.
      * @param int $caseNumber
@@ -165,34 +158,6 @@ class CaseUtils
         }
 
         return $tasks->unique('id')->values();
-    }
-
-    /**
-     * Store stages.
-     *
-     * @param Collection $stages
-     * @param array|null $stageData
-     *     An optional array of additional stage data. Each element in the array should have the following structure:
-     *     [
-     *         'id' => int,         // The unique identifier of the stage
-     *         'name' => string,    // The name of the stage
-     *         'process_id' => int, // The unique identifier of the process
-     *         'task_id' => int     // The unique identifier of the task
-     *     ]
-     * @return Collection
-     */
-    public static function storeStages(Collection $stages, ?array $stageData = []): Collection
-    {
-        if (
-            !empty($stageData) && !array_diff(array_keys(self::STAGE_FIELDS), array_keys($stageData))
-        ) {
-            // Convert the 'id' to string for consistency
-            $stageData['id'] = (string) $stageData['id'];
-            // Prepend the stage data to the collection
-            $stages->prepend($stageData);
-        }
-
-        return $stages->unique('id')->values();
     }
 
     /**

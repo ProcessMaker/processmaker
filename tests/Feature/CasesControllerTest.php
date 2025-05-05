@@ -342,19 +342,12 @@ class CasesControllerTest extends TestCase
         ];
 
         // Test case 1: All stages completed
-        $currentStages1 = [
-            ['id' => 1, 'name' => 'Stage 1'],
-            ['id' => 2, 'name' => 'Stage 2'],
-            ['id' => 3, 'name' => 'Stage 3'],
-        ];
+        $currentStages1 = CasesController::getCurrentStage(3, 'Stage 3');
         $this->assertEquals(100.0, CasesController::getProgressStage($allStages, $currentStages1));
 
         // Test case 2: Some stages completed
-        $currentStages2 = [
-            ['id' => 1, 'name' => 'Stage 1'],
-            ['id' => 2, 'name' => 'Stage 2'],
-        ];
-        $this->assertEquals(66.67, CasesController::getProgressStage($allStages, $currentStages2), '', 0.01);
+        $currentStages2 = CasesController::getCurrentStage(2, 'Stage 2');
+        $this->assertEquals(66.67, CasesController::getProgressStage($allStages, $currentStages2));
 
         // Test case 3: No stages completed
         $currentStages3 = [];

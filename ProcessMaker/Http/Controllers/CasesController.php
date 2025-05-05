@@ -84,7 +84,7 @@ class CasesController extends Controller
         } else {
             $request->summary_screen = $request->getSummaryScreen();
         }
-        $currentStages = $this->getCurrentStage($request->stages);
+        $currentStages = $this->getCurrentStage($request->last_stage_id, $request->last_stage_name);
         $allStages = $this->getStagesByProcessId($request->process_id);
         $progressStage = $this->getProgressStage($allStages, $currentStages);
         // Load the screen configured in "Request Detail Screen"
@@ -182,27 +182,25 @@ class CasesController extends Controller
      * This method decodes a JSON string representing stages into an associative array.
      * If the input is null or not a valid JSON string, it returns an empty array.
      *
-     * @param string|null $stages A JSON string representing the stages.
-     *                            It can be null or a valid JSON string.
+     * @param int|null $id The ID of the stage.
+     * @param string|null $name The name of the stage.
      * @return array An associative array of stages if the JSON is valid;
      *               otherwise, an empty array.
      */
-    public static function getCurrentStage($stages)
+    public static function getCurrentStage(?int $id, ?string $name): array
     {
         // Initialize currentStages as an empty array
         $currentStages = [];
 
-        // Check if $stages is not null and is a valid JSON string
-        if (!is_null($stages) && is_string($stages)) {
-            $decodedStages = json_decode($stages, true);
-
-            // Check if json_decode was successful and returned an array
-            if (json_last_error() === JSON_ERROR_NONE && is_array($decodedStages)) {
-                $currentStages = $decodedStages;
-            }
+        // Check if $id is not null and $name is a valid string
+        if (!is_null($id) && is_string($name)) {
+            $currentStages = [
+                'stage_id' => $id,
+                'stage_name' => $name,
+            ];
         }
 
-        return $currentStages; // Return the current stages (empty array if none)
+        return $currentStages;
     }
 
     /**
@@ -232,11 +230,15 @@ class CasesController extends Controller
 
         // Count the number of completed stages
         $completedStages = 0;
+        // Extract the current stage IDs from the currentStages array
+        $currentStageId = $currentStages['stage_id'];
 
-        foreach ($currentStages as $currentStage) {
-            // Check if the current stage is completed
-            if (in_array($currentStage['id'], array_column($allStages, 'id'))) {
-                $completedStages++;
+        foreach ($allStages as $stage) {
+            var_dump($currentStageId);
+            $completedStages++;
+            // Check if the current stage ID is in the current stages
+            if ($stage['id'] === $currentStageId) {
+                break; // Exit the loop once the stage is found
             }
         }
 

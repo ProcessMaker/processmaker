@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::table('process_request_tokens', function (Blueprint $table) {
             // Add a 'stage_id' column to store the identifier of the current stage
             // This will allow tracking which stage the token is in within the process.
-            $table->string('stage_id')->nullable();
+            $table->integer('stage_id')->nullable();
             // Add a 'stage_name' column to store the name of the current stage
             // This will facilitate the identification of the stage
             $table->string('stage_name')->nullable();
