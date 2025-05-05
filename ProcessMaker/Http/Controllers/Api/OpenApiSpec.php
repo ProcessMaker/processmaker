@@ -67,7 +67,7 @@ namespace ProcessMaker\Http\Controllers\Api;
  *             name="fields",
  *             in="query",
  *             description="Fields to map the response object.",
- *             @OA\Schema(type="string"),
+ *             @OA\Schema(type="object"),
  *         ),
  *         @OA\Parameter(
  *             parameter="member_id",
