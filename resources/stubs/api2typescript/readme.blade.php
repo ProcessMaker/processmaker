@@ -42,4 +42,4 @@ Currently, the SDK includes:
 
 @foreach ($tags as $tag)
 - **{{ ucfirst(strtolower($tag)) }} API**: Complete implementation of the ProcessMaker {{ ucfirst(strtolower($tag)) }} API
-@endforeach 
+@endforeach

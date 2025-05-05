@@ -41,7 +41,7 @@ if ($paramType === 'boolean') {
     $paramValue = "JSON.stringify(params.{$paramName})";
 }
 @endphp
-      if (params.{{ $paramName }}) queryParams.append('{{ $param['name'] }}', {!! $paramValue !!}); // {{ $paramType }}
+      if (params.{{ $paramName }}) queryParams.append('{{ $param['name'] }}', {!! $paramValue !!}); // {!! $paramType !!}
 @endforeach
     }
 
@@ -66,4 +66,4 @@ if ($paramType === 'boolean') {
   }
 
 @endforeach
-} 
+}

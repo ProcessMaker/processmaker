@@ -17,7 +17,7 @@ class Api2TypescriptCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'make:api-typescript
+    protected $signature = 'pm-apps:api
                             {output : Output directory for TypeScript files}';
 
     /**
@@ -55,7 +55,6 @@ class Api2TypescriptCommand extends Command
      */
     public function handle()
     {
-        $openapiFile = url('/docs?api-docs.json'); //$this->argument('input');
         $outputDirectory = $this->argument('output');
 
         // update the api-docs.json file
@@ -102,6 +101,8 @@ class Api2TypescriptCommand extends Command
             }
         }
         $tags = array_keys($tags);
+        // sort tags alphabetically ascending
+        sort($tags, SORT_FLAG_CASE | SORT_STRING);
 
         $this->generateTypesForTag($openapi, 'types', $typesDir);
         // Process each tag as a separate API client
@@ -168,11 +169,6 @@ class Api2TypescriptCommand extends Command
         // Process paths to find related schemas and generate query param interfaces
         foreach ($openapi['paths'] as $path => $methods) {
             foreach ($methods as $method => $details) {
-                // Skip if not related to current tag
-                // if (!isset($details['tags']) || !in_array($tag, $details['tags'])) {
-                //     continue;
-                // }
-
                 // Generate query param interfaces for GET methods
                 if (isset($details['parameters'])) {
                     $queryParamInterface = $this->generateQueryParamInterface($details['parameters'], $tagLower, $details['operationId']);
@@ -234,12 +230,7 @@ class Api2TypescriptCommand extends Command
         $className = "ProcessMaker" . ucfirst($tagLower) . "Api";
 
         // Import interfaces
-        $imports = [
-            // ucfirst($tagLower),
-            // fix the editable name
-            // "Editable" . ucfirst($tagLower),
-            // "PaginatedResponse"
-        ];
+        $imports = [];
 
         // Add query param interfaces to imports
         foreach ($openapi['paths'] as $path => $methods) {
@@ -284,10 +275,17 @@ class Api2TypescriptCommand extends Command
             }
         }
 
+        $imports = array_unique($imports);
+        // sort imports alphabetically ascending
+        sort($imports, SORT_FLAG_CASE | SORT_STRING);
+        // sort methods alphabetically ascending by methodName
+        usort($methods, function($a, $b) {
+            return strcasecmp($a['methodName'], $b['methodName']);
+        });
         $data = [
             'tagLower' => $tagLower,
             'className' => $className,
-            'imports' => array_unique($imports),
+            'imports' => $imports,
             'methods' => $methods,
             'helper' => $this,
         ];
@@ -374,6 +372,9 @@ class Api2TypescriptCommand extends Command
             foreach ($params['$queryParams'] as $key => $value) {
                 if (is_array($value)) {
                     $value = implode(',', $value);
+                }
+                if (is_object($value)) {
+                    $value = json_encode($value);
                 }
                 $path .= ($first ? '?' : '&') . urlencode($key) . '=' . urlencode($value);
                 $first = false;
@@ -708,6 +709,10 @@ class Api2TypescriptCommand extends Command
                 'tagLower' => $tagLower
             ];
         }
+        // sort apiClasses alphabetically ascending by className
+        usort($apiClasses, function($a, $b) {
+            return strcasecmp($a['className'], $b['className']);
+        });
 
         $data = ['apiClasses' => $apiClasses];
         $content = Blade::render($this->getStub('api-index'), $data);

@@ -6,4 +6,4 @@ export {
 @foreach ($hooks as $hook)
   {{ $hook }},
 @endforeach
-}; 
+};
