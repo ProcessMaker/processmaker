@@ -179,6 +179,7 @@
                 "package-webentry": "2.29.0",
                 "package-api-testing": "1.3.0",
                 "package-variable-finder": "1.0.3",
+                "package-private-equity": "dev-main",
                 "packages": "^0"
             },
             "docker-executors": {
