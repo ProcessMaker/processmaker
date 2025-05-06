@@ -218,4 +218,65 @@ trait ProcessTrait
             'total' => $completed + $in_progress,
         ];
     }
+
+    /**
+     * Get the count of stages per request.
+     *
+     * This method retrieves the count of stages based on the last_stage_id for each request.
+     * If a JSON string of stages is provided, it decodes it; otherwise, it fetches all stages
+     * from the database. The method returns an array containing each stage's ID, name, and count.
+     *
+     * @param string|null $stages A JSON string representing stages. If provided, it will be decoded;
+     *                            if null, all stages will be fetched from the database.
+     * @return array An array of associative arrays, each containing:
+     *               - 'id': The ID of the stage.
+     *               - 'name': The name of the stage.
+     *               - 'count': The count of occurrences of the stage based on last_stage_id.
+     */
+    public function getStagesSummary($stages = null)
+    {
+        if (!empty($stages)) {
+            $allStages = json_decode($stages, true);
+        } else {
+            return [];
+        }
+
+        // Assuming 'stages' is a relationship defined in the model
+        $result = $this->requests()
+            ->selectRaw('last_stage_id, count(*) as count')
+            ->groupBy('last_stage_id')
+            ->get();
+
+        // Prepare an array to hold the counts for each stage
+        $stageCounts = [];
+        // Initialize stage counts with zero for all stages
+        foreach ($allStages as $stage) {
+            $stageCounts[] = [
+                'id' => $stage['id'],
+                'name' => $stage['name'],
+                'count' => 0, // Initialize count to 0 for each stage
+                'percentage' => 0, // Initialize percentaje to 0 for each stage
+            ];
+        }
+
+        foreach ($result as $stage) {
+            foreach ($stageCounts as $key => &$countData) {
+                if ($countData['id'] == $stage->last_stage_id) {
+                    $countData['count'] = $stage->count; // Update the count
+                }
+            }
+        }
+
+        // Calculate the total count of all stages
+        $totalCount = array_sum(array_column($stageCounts, 'count'));
+
+        // Calculate the percentage for each stage
+        foreach ($stageCounts as &$countData) {
+            if ($totalCount > 0) {
+                $countData['percentage'] = ($countData['count'] / $totalCount) * 100;
+            }
+        }
+
+        return $stageCounts;
+    }
 }
