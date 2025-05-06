@@ -84,9 +84,11 @@ class CasesController extends Controller
         } else {
             $request->summary_screen = $request->getSummaryScreen();
         }
+        //Stage data
         $currentStages = $this->getCurrentStage($request->last_stage_id, $request->last_stage_name);
         $allStages = $this->getStagesByProcessId($request->process_id);
         $progressStage = $this->getProgressStage($allStages, $currentStages);
+        // dd($progressStage);
         // Load the screen configured in "Request Detail Screen"
         $request->request_detail_screen = Screen::find($request->process->request_detail_screen_id);
         // The user canCancel if has the processPermission and the case has only one request
@@ -127,6 +129,7 @@ class CasesController extends Controller
             'inflightData',
             'pmBlockList',
             'progressStage',
+            'currentStages',
         ));
     }
 
