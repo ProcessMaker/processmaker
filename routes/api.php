@@ -5,6 +5,7 @@ use ProcessMaker\Http\Controllers\Api\BookmarkController;
 use ProcessMaker\Http\Controllers\Api\ChangePasswordController;
 use ProcessMaker\Http\Controllers\Api\CommentController;
 use ProcessMaker\Http\Controllers\Api\CssOverrideController;
+use ProcessMaker\Http\Controllers\Api\DataSourceIntegrationsController;
 use ProcessMaker\Http\Controllers\Api\DebugController;
 use ProcessMaker\Http\Controllers\Api\DevLinkController;
 use ProcessMaker\Http\Controllers\Api\EncryptedDataController;
@@ -430,5 +431,11 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         // Put these last to avoid conflicts with the other devlink routes
         Route::get('devlink/{devLink}', [DevLinkController::class, 'show'])->name('devlink.show');
     });
+
+    // Data Source Integrations
+    Route::post('data-source-integrations', [DataSourceIntegrationsController::class, 'store'])->name('data-source-integrations.store');
+    Route::get('data-source-integrations/parameters', [DataSourceIntegrationsController::class, 'getParameters'])->name('data-source-integrations.parameters');
+    Route::get('data-source-integrations/companies', [DataSourceIntegrationsController::class, 'getCompanies'])->name('data-source-integrations.companies');
+    Route::get('data-source-integrations/{source}/{companyId}/company-details', [DataSourceIntegrationsController::class, 'fetchCompanyDetails'])->name('data-source-integrations.company-details');
 });
 Route::post('devlink/bundle-updated/{bundle}/{token}', [DevLinkController::class, 'bundleUpdated'])->name('devlink.bundle-updated');
