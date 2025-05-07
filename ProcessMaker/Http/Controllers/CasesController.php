@@ -236,7 +236,6 @@ class CasesController extends Controller
         $currentStageId = $currentStages['stage_id'];
 
         foreach ($allStages as $stage) {
-            var_dump($currentStageId);
             $completedStages++;
             // Check if the current stage ID is in the current stages
             if ($stage['id'] === $currentStageId) {
