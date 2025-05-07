@@ -1,23 +1,30 @@
 <template>
-  <div class="process-info-main" v-if="selectedProcess">
+  <div
+    v-if="selectedProcess"
+    class="process-info-main">
     <div class="mobile-process-nav bg-primary">
       <div class="left">
-        <a href="#" @click.prevent="goBackCategory">
+        <a
+          href="#"
+          @click.prevent="goBackCategory">
           <i class="fas fa-arrow-left" />
         </a>
       </div>
       <div class="center">
-        <a href="#" @click.prevent="showDetails = !showDetails">
+        <a
+          href="#"
+          @click.prevent="showDetails = !showDetails">
           <i class="fas fa-info-circle" />
         </a>
       </div>
       <div class="right">
         <bookmark
-          :process="selectedProcess"
-        />
+          :process="selectedProcess" />
       </div>
     </div>
-    <div class="mobile-process-details" :class="{ 'active' : showDetails }">
+    <div
+      class="mobile-process-details"
+      :class="{ 'active' : showDetails }">
       <process-description :process="selectedProcess" />
       <process-counter :process="selectedProcess" />
     </div>
@@ -26,14 +33,12 @@
       v-if="!verifyScreen"
       :process="selectedProcess"
       :ellipsis-permission="ellipsisPermission"
-      @goBackCategory="goBackCategory"
-    />
+      @goBackCategory="goBackCategory" />
     <ProcessScreen
       v-if="verifyScreen"
       :process="selectedProcess"
       :ellipsis-permission="ellipsisPermission"
-      @goBackCategory="goBackCategory"
-    />
+      @goBackCategory="goBackCategory" />
   </div>
 </template>
 
@@ -46,10 +51,10 @@ import ProcessDescription from "./optionsMenu/ProcessDescription.vue";
 import ProcessCounter from "./optionsMenu/ProcessCounter.vue";
 
 export default {
-  props: ["process", "processId", "ellipsisPermission"],
   components: {
-    ProcessInfo, ProcessScreen, MiniPieChart, Bookmark, ProcessDescription, ProcessCounter
+    ProcessInfo, ProcessScreen, MiniPieChart, Bookmark, ProcessDescription, ProcessCounter,
   },
+  props: ["process", "processId", "ellipsisPermission"],
   data() {
     return {
       loadedProcess: null,
@@ -59,7 +64,7 @@ export default {
   computed: {
     /**
      * if we pass in a process, use that. Otherwise load the process by ID
-     **/
+     * */
     selectedProcess() {
       if (this.process) {
         return this.process;
@@ -74,7 +79,7 @@ export default {
     /**
      * Verify if the process open the info or Screen
      */
-     verifyScreen() {
+    verifyScreen() {
       let screenId = 0;
       const unparseProperties = this.selectedProcess?.launchpad?.properties || null;
       if (unparseProperties !== null) {
@@ -88,11 +93,6 @@ export default {
     },
     startedCases() {
       return this.selectedProcess.counts?.total || 0;
-    },
-  },
-  methods: {
-    goBackCategory() {
-      this.$emit("goBackCategory");
     },
   },
   mounted() {
@@ -112,6 +112,11 @@ export default {
     if (window.ProcessMaker?.navbarMobile) {
       window.ProcessMaker.navbarMobile.display = true;
     }
+  },
+  methods: {
+    goBackCategory() {
+      this.$emit("goBackCategory");
+    },
   },
 };
 </script>
@@ -136,7 +141,7 @@ export default {
   .right {
     text-align: right;
   }
- 
+
   .left i, .center i {
     display: block;
     color: #FFFFFF;
