@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Laravel\Horizon\Repositories\RedisJobRepository;
 use ProcessMaker\Events\MarkArtisanCachesAsInvalid;
 use ProcessMaker\SanitizeHelper;
@@ -275,4 +276,32 @@ if (!function_exists('shouldShow')) {
             return true;
         }
     }
+}
+
+/**
+ * Helper to log in devtools
+ *
+ * @param  string      $method        HTTP method (GET, POST, etc.)
+ * @param  string      $url           Endpoint URL
+ * @param  string      $status        Status code
+ * @param  array       $details       Additional details
+ * @return void
+ */
+function devtools(
+    string $method,
+    string $url,
+    string $status,
+    array $details = []
+): void {
+    $key = 'devtools.endpoints';
+    $entries = Cache::get($key, []);
+    $entries[] = [
+        'method'      => $method,
+        'url'         => $url,
+        'time'        => date('Y-m-d H:i:s'),
+        'status'      => $status,
+        'details'     => $details,
+    ];
+
+    Cache::put($key, $entries, 60 * 5);
 }
