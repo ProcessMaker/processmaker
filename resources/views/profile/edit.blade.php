@@ -114,6 +114,21 @@
 	<script src="{{mix('js/admin/profile/edit.js')}}"></script>
 
 <script>
+        const DEFAULT_ACCOUNTS = {
+            connectorSlack: {
+                name: 'Slack',
+                description: 'Send ProcessMaker notifications to Slack',
+                icon: 'https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg',
+                defaultSettings: {
+                    enabled: false,
+                    channel_id: null,
+                    ui_options: {
+                        show_toggle: true,
+                        show_edit_modal: false
+                    }
+                }
+            }
+        };
         let formVueInstance = new Vue({
             el: '#editProfile',
             mixins:addons,
@@ -147,7 +162,6 @@
                     }
                 ],
                 focusErrors: 'errors',
-                accounts: @json($currentUser['connected_accounts']) === null ? []  : @json(json_decode($currentUser['connected_accounts'], true)),
             },
             created() {
               if (this.meta) {
@@ -267,6 +281,13 @@
                 checkEmailChange() {
                   this.emailHasChanged = this.formData.email !== this.originalEmail;
                 },
+                handleConnectedAccountToggle(account, $event) {
+                  const accounts = JSON.parse(this.formData.connected_accounts)
+                      .map(acc => acc.name === account.name ? { ...acc, enabled: $event } : acc);
+                  
+                  this.formData.connected_accounts = JSON.stringify(accounts);
+                  this.saveProfileChanges();
+                }
             },
             computed: {
                 state2FA() {
@@ -287,6 +308,19 @@
                       this.$delete(this.formData.meta, 'disableRecommendations');
                     }
                   }
+                },
+                accounts() {
+                  let accounts = this.formData.connected_accounts
+                    ? JSON.parse(this.formData.connected_accounts) 
+                    : [];
+
+                  if (window.ProcessMaker.packages.includes('connector-slack')) {
+                    if (!accounts.some(account => account.name === 'Slack')) {
+                      accounts.push(DEFAULT_ACCOUNTS.connectorSlack);
+                    }
+                  }
+
+                  return accounts;
                 }
             }
         });
