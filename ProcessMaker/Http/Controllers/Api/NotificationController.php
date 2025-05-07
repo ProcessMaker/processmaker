@@ -64,6 +64,7 @@ class NotificationController extends Controller
      *             ),
      *             @OA\Property(
      *                 property="meta",
+     *                 type="object",
      *                 @OA\Schema(ref="#/components/schemas/metadata"),
      *             ),
      *         ),

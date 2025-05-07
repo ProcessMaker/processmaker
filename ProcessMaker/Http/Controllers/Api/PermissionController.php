@@ -48,6 +48,7 @@ class PermissionController extends Controller
      *     @OA\Put(
      *     path="/permissions",
      *     summary="Update the permissions of a user",
+     *     operationId="updatePermissions",
      *     tags={"Permissions"},
      *
      *     @OA\RequestBody(
