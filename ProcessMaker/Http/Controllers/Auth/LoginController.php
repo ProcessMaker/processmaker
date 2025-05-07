@@ -74,19 +74,10 @@ class LoginController extends Controller
         $addons = $manager->list();
         // Cheche if the user can by pass
         $showForceLogin = $request->has('showLogin') && $request->get('showLogin') === 'true';
-        // Review if we need to redirect the default SSO
-        if (config('app.enable_default_sso') && !$showForceLogin) {
-            $arrayAddons = $addons->toArray();
-            $driver = $this->getDefaultSSO($arrayAddons);
-            // If a default SSO was defined we will to redirect
-            if (!empty($driver)) {
-                return redirect()->route('sso.redirect', ['driver' => $driver]);
-            }
-        }
         $block = $manager->getBlock();
-        // clear cookie to avoid an issue when logout SLO and then try to login with simple PM login form
+        // Clear cookie to avoid an issue when logout SLO and then try to login with simple PM login form
         \Cookie::queue(\Cookie::forget(config('session.cookie')));
-        // cookie required here because SSO redirect resets the session
+        // Cookie required here because SSO redirect resets the session
         $cookie = cookie(
             'processmaker_intended',
             redirect()->intended()->getTargetUrl(),
@@ -98,6 +89,16 @@ class LoginController extends Controller
             false,
             'none'
         );
+        // Review if we need to redirect the default SSO
+        if (config('app.enable_default_sso') && !$showForceLogin) {
+            $arrayAddons = $addons->toArray();
+            $driver = $this->getDefaultSSO($arrayAddons);
+            // If a default SSO was defined we will to redirect
+            if (!empty($driver)) {
+                return redirect()->route('sso.redirect', ['driver' => $driver])->withCookie($cookie);
+            }
+        }
+        // Otherwise
         $loginView = empty(config('app.login_view')) ? 'auth.login' : config('app.login_view');
         $response = response(view($loginView, compact('addons', 'block')));
         $response->withCookie($cookie);
