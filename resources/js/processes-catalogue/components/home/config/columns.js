@@ -79,7 +79,7 @@ export const taskColumn = ({
   width,
   filter: {
     dataType: "string",
-    operators: ["=", ">", ">=", "in", "between"],
+    operators: ["=", "in", "contains", "regex"],
     resetTable: true,
   },
   cellRenderer: () => ({

@@ -35,7 +35,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { FilterableTable, TablePlaceholder } from "../../../../../jscomposition/system";
-import { buildColumns } from "../config";
+import { buildColumns, buildFilters } from "../config";
 import { Pagination } from "../../../../../jscomposition/base";
 import CustomHomeFilter from "./CustomHomeFilter.vue";
 import { prepareToGetTasks } from "./CustomHomeTableSection";
@@ -61,7 +61,7 @@ const dataTable = ref({
   filter: "",
   orderDirection: "DESC",
   orderBy: "ID",
-  advancedFilter: [{ subject: { type: "Status" }, operator: "=", value: "In Progress" }],
+  advancedFilter: [],
   pmql: `(user_id = ${user.id}) AND (process_id = ${props.process.id})`,
 });
 
@@ -117,7 +117,13 @@ const onGo = async (page) => {
 };
 
 const onChangeFilter = async (filterData) => {
-  console.log(filterData);
+  const newFilterToAdvancedFilter = buildFilters({
+    defaultColumns,
+    filterData,
+  });
+  dataTable.value.advancedFilter = newFilterToAdvancedFilter;
+
+  await hookData();
 };
 
 const onChangeInputFilter = async (value) => {

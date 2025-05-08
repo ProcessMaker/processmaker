@@ -24,6 +24,10 @@ export const statuses = {
     color: "blue",
     label: `${t("Completed")}`,
   },
+  CLOSED: {
+    color: "blue",
+    label: `${t("Closed")}`,
+  },
   ERROR: {
     color: "red",
     label: `${t("Error")}`,
