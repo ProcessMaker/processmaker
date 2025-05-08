@@ -325,4 +325,61 @@ class CasesControllerTest extends TestCase
         // Check custom detail screen is displayed instead default summary
         $response->assertSee('TEST WITH CUSTOM REQUEST DETAIL SCREEN');
     }
+
+    /**
+     * Test getting stage case with a valid case number.
+     *
+     * @return void
+     */
+    public function testGetStageCaseWithValidCaseNumber()
+    {
+        // Create a parent request
+        $parentRequest = ProcessRequest::factory()->create([
+            'status' => 'ACTIVE',
+            'completed_at' => null,
+            'parent_request_id' => null, // This is a parent request
+        ]);
+
+        // Create a child request
+        ProcessRequest::factory()->create([
+            'process_id' => $parentRequest->process_id,
+            'case_number' => $parentRequest->case_number,
+            'status' => 'ACTIVE',
+            'completed_at' => null,
+            'parent_request_id' => $parentRequest->id, // This is a child request
+        ]);
+
+        // Call the API endpoint
+        $response = $this->apiCall('GET', '/cases' . '/' . $parentRequest->case_number . '/stages_bar');
+
+        // Assert the response status and structure
+        $response->assertStatus(200)
+                 ->assertJsonStructure([
+                     'parentRequest' => [
+                         'id',
+                         'case_number',
+                         'status',
+                         'completed_at',
+                     ],
+                     'requestCount',
+                     'all_stages',
+                     'current_stage',
+                     'stages_per_case',
+                 ]);
+    }
+
+    /**
+     * Test getting stage case with an invalid case number.
+     *
+     * @return void
+     */
+    public function testGetStageCaseWithInvalidCaseNumber()
+    {
+        // Call the API endpoint with a case number that does not exist
+        $response = $this->apiCall('GET', '/cases' . '/' . '99999' . '/stages_bar');
+
+        // Assert the response status and error message
+        $response->assertStatus(404)
+                 ->assertJson(['error' => 'No requests found for this case number']);
+    }
 }

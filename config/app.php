@@ -275,6 +275,9 @@ return [
 
     'custom_executors' => env('CUSTOM_EXECUTORS', false),
 
+    // Enable or disable TCE customization feature
+    'tce_customization_enable' => env('TCE_CUSTOMIZATION_ENABLED', false),
+
     'prometheus_namespace' => env('PROMETHEUS_NAMESPACE', 'processmaker'),
 
     'server_timing' => [
