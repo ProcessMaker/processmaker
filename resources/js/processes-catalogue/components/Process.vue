@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="selectedProcess"
-    class="process-info-main">
+    class="tw-relative tw-w-full tw-h-full">
     <div class="mobile-process-nav bg-primary">
       <div class="left">
         <a
@@ -39,7 +39,7 @@
       :process="selectedProcess"
       :ellipsis-permission="ellipsisPermission"
       @goBackCategory="goBackCategory" />
-    <ProcessScreen
+    <CustomHomeScreen
       v-if="verifyScreen == 'custom'"
       :process="selectedProcess"
       :ellipsis-permission="ellipsisPermission"
@@ -54,10 +54,11 @@ import MiniPieChart from "./MiniPieChart.vue";
 import Bookmark from "./Bookmark.vue";
 import ProcessDescription from "./optionsMenu/ProcessDescription.vue";
 import ProcessCounter from "./optionsMenu/ProcessCounter.vue";
+import CustomHomeScreen from "./home/CustomHomeScreen.vue";
 
 export default {
   components: {
-    ProcessInfo, ProcessScreen, MiniPieChart, Bookmark, ProcessDescription, ProcessCounter,
+    ProcessInfo, ProcessScreen, MiniPieChart, Bookmark, ProcessDescription, ProcessCounter, CustomHomeScreen,
   },
   props: ["process", "processId", "ellipsisPermission"],
   data() {
@@ -139,9 +140,6 @@ export default {
 
 <style lang="scss" scoped>
 @import '~styles/variables';
-.process-info-main {
-  position: relative;
-}
 .mobile-process-nav {
   display: none;
 
