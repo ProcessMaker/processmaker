@@ -84,6 +84,7 @@ class CasesController extends Controller
         } else {
             $request->summary_screen = $request->getSummaryScreen();
         }
+        //Stage data
         $currentStages = $this->getCurrentStage($request->last_stage_id, $request->last_stage_name);
         $allStages = $this->getStagesByProcessId($request->process_id);
         $progressStage = $this->getProgressStage($allStages, $currentStages);
@@ -127,6 +128,7 @@ class CasesController extends Controller
             'inflightData',
             'pmBlockList',
             'progressStage',
+            'currentStages',
         ));
     }
 
@@ -234,7 +236,6 @@ class CasesController extends Controller
         $currentStageId = $currentStages['stage_id'];
 
         foreach ($allStages as $stage) {
-            var_dump($currentStageId);
             $completedStages++;
             // Check if the current stage ID is in the current stages
             if ($stage['id'] === $currentStageId) {
