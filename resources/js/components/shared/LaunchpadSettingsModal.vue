@@ -199,6 +199,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    myCasesColumns: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -254,6 +258,12 @@ export default {
         defaultColumns: [],
         dataColumns: [],
       },
+      myCases: {
+        currentColumns: [], // For storing the currently selected case columns
+        availableColumns: [], // For storing available case columns
+        defaultColumns: [], // For storing default case columns
+        dataColumns: [], // For storing data columns related to cases
+      },
     };
   },
   mounted() {
@@ -281,11 +291,19 @@ export default {
           if (launchpadProperties !== "" && "tabs" in launchpadProperties) {
             this.tabs = launchpadProperties.tabs;
           }
+          // Get the task columns configured
           if (
             launchpadProperties !== "" &&
             "my_tasks_columns" in launchpadProperties
           ) {
             this.myTasks.currentColumns = launchpadProperties.my_tasks_columns;
+          }
+          // Get the cases columns configured
+          if (
+            launchpadProperties !== "" &&
+            "my_cases_columns" in launchpadProperties
+          ) {
+            this.myCases.currentColumns = launchpadProperties.my_cases_columns;
           }
           if (
             launchpadProperties &&
@@ -427,6 +445,7 @@ export default {
           icon_label: this.selectedLaunchpadIconLabel,
           tabs: this.tabs,
           my_tasks_columns: this.myTasks.currentColumns,
+          my_cases_columns: this.myCases.currentColumns,
         },
         null,
         1
