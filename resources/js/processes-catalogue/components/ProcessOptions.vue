@@ -1,14 +1,16 @@
 <template>
-  <div class="tw-flex tw-flex-row tw-gap-4">
+  <div class="tw-flex tw-flex-col tw-gap-4">
     <div class="tw-flex tw-flex-col tw-gap-4 tw-w-full">
       <process-description :process="process" />
       <process-counter
         v-if="collapsed"
-        :process="process" />
+        :process="process"
+      />
     </div>
     <chart-save-search
       class="tw-w-full"
-      :process="process" />
+      :process="process"
+    />
   </div>
 </template>
 
