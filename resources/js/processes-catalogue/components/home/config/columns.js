@@ -1,11 +1,32 @@
 import { t } from "i18next";
 import { get } from "lodash";
 import {
-  LinkCell, TitleCell, FlagCell, StatusCell,
+  LinkCell, TitleCell, FlagCell, StatusCell, TruncatedOptionsCell, ParticipantsCell,
 } from "../../../../../jscomposition/system/index";
 import { formatDate } from "../../../../../jscomposition/utils";
 // Columns in the table:
-// Case #, Title, Flag, Task, Status, Started, Completed
+
+export const requestNumberColumn = ({
+  id, field, header, resizable, width,
+}) => ({
+  id,
+  field,
+  header,
+  resizable,
+  width,
+  formatter: (row, column, columns) => `# ${row.id}`,
+  filter: {
+    dataType: "string",
+    operators: ["=", ">", ">=", "in", "between"],
+    resetTable: true,
+  },
+  cellRenderer: () => ({
+    component: LinkCell,
+    params: {
+      href: (row) => `/requests/${get(row, field)}`,
+    },
+  }),
+});
 
 export const caseNumberColumn = ({
   id, field, header, resizable, width,
@@ -15,7 +36,7 @@ export const caseNumberColumn = ({
   header,
   resizable,
   width,
-  formatter: (row, column, columns) => `# ${get(row, "process_request.case_number")}`,
+  formatter: (row, column, columns) => `# ${row.id}`,
   filter: {
     dataType: "string",
     operators: ["=", ">", ">=", "in", "between"],
@@ -33,16 +54,31 @@ export const caseTitleColumn = ({
   id, field, header, resizable, width,
 }) => ({
   id,
-  field: "process_request.case_title",
+  field,
   header,
   resizable,
   width,
   cellRenderer: () => ({
     component: TitleCell,
     params: {
-      href: (row) => `/cases/${get(row, field)}`,
+      href: (row) => `/cases/${row.case_number}`,
     },
   }),
+  filter: {
+    dataType: "string",
+    operators: ["=", "in", "contains", "regex"],
+    resetTable: true,
+  },
+});
+
+export const textColumn = ({
+  id, field, header, resizable, width,
+}) => ({
+  id,
+  field,
+  header,
+  resizable,
+  width,
   filter: {
     dataType: "string",
     operators: ["=", "in", "contains", "regex"],
@@ -83,9 +119,37 @@ export const taskColumn = ({
     resetTable: true,
   },
   cellRenderer: () => ({
-    component: LinkCell,
+    component: TruncatedOptionsCell,
     params: {
-      href: (row) => `/cases/${get(row, field)}`,
+      href: (option) => `/tasks/${option.id}/edit`,
+      formatterOptions: (option, row, column, columns) => option.element_name,
+      filterData: (row, column, columns) => row.active_tasks,
+    },
+  }),
+});
+
+export const participantsColumn = ({
+  id, field, header, resizable, width,
+}) => ({
+  id,
+  field,
+  header,
+  resizable,
+  width,
+  filter: {
+    dataType: "string",
+    operators: ["=", "in", "contains", "regex"],
+    resetTable: true,
+  },
+  cellRenderer: () => ({
+    component: ParticipantsCell,
+    params: {
+      click: (option, row, column, columns) => {
+        window.document.location = `/profile/${option.id}`;
+      },
+      formatter: (option, row, column, columns) => option.username,
+      initials: (option, row, column, columns) => option.username[0],
+      src: (option, row, column, columns) => option.avatar,
     },
   }),
 });
@@ -130,7 +194,7 @@ export const statusColumn = ({
   },
 });
 
-export const dueAtColumn = ({
+export const dateColumn = ({
   id, field, header, resizable, width,
 }) => ({
   id,
@@ -138,7 +202,7 @@ export const dueAtColumn = ({
   header,
   resizable,
   width,
-  formatter: (row, column, columns) => formatDate(row.due_at, "datetime"),
+  formatter: (row, column, columns) => formatDate(row[field], "datetime"),
   filter: {
     dataType: "datetime",
     operators: ["between", ">", ">=", "<", "<="],
@@ -159,12 +223,13 @@ export const defaultColumn = ({
 export const getColumns = (type) => {
   const columnsDefinition = {
     default: [
+      requestNumberColumn(),
       caseNumberColumn(),
       caseTitleColumn(),
       flagColumn(),
       taskColumn(),
       statusColumn(),
-      dueAtColumn(),
+      dateColumn(),
     ],
   };
 
@@ -184,39 +249,48 @@ export const getColumns = (type) => {
 
 /// /////////////////////////////////////////////////////////
 
-export const buildColumns = (defaultColumnsFromBE) => {
+export const buildColumns = (defaultColumns) => {
   const columns = [];
 
-  defaultColumnsFromBE.forEach((column) => {
+  defaultColumns.forEach((column) => {
   // Convert column format from type 'a' to type 'b'
     const convertedColumn = {
       id: column.field,
-      field: column.order_column || column.field,
+      field: column.field,
       header: column.label,
       resizable: true,
-      width: column.fixed_width || column.width || 144,
+      width: column.width || 144,
     };
 
     let newColumn = null;
 
     switch (column.field) {
+      case "id":
+        newColumn = requestNumberColumn(convertedColumn);
+        break;
       case "case_number":
         newColumn = caseNumberColumn(convertedColumn);
         break;
       case "case_title":
         newColumn = caseTitleColumn(convertedColumn);
         break;
-      case "is_priority":
-        newColumn = flagColumn(convertedColumn);
+      case "name":
+        newColumn = textColumn(convertedColumn);
         break;
-      case "element_name":
+      case "active_tasks":
         newColumn = taskColumn(convertedColumn);
+        break;
+      case "participants":
+        newColumn = participantsColumn(convertedColumn);
         break;
       case "status":
         newColumn = statusColumn(convertedColumn);
         break;
-      case "due_at":
-        newColumn = dueAtColumn(convertedColumn);
+      case "initiated_at":
+        newColumn = dateColumn(convertedColumn);
+        break;
+      case "completed_at":
+        newColumn = dateColumn(convertedColumn);
         break;
       default:
         newColumn = defaultColumn(convertedColumn);
