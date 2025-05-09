@@ -38,7 +38,7 @@
         </div>
       </div>
     </div>
-    <Home />
+    <!-- <Home /> -->
     <create-template-modal
       id="create-template-modal"
       ref="create-template-modal"

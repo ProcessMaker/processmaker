@@ -11,8 +11,8 @@
   </div>
 </template>
 <script>
-import { defineComponent, ref, onMounted } from "vue";
-import { InputLeading } from "../../../base/form/index";
+import { defineComponent, ref } from "vue";
+import { InputLeading } from "../../../../../jscomposition/base/form/index";
 
 export default defineComponent({
   components: {
@@ -38,29 +38,11 @@ export default defineComponent({
       emit("keypress", val);
     };
 
-    const extractPMQLFromURL = () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get("pmql");
-    };
-
-    const initializeFromURL = () => {
-      const urlPmql = extractPMQLFromURL();
-      if (urlPmql) {
-        model.value = urlPmql;
-        handleSearch();
-      }
-    };
-
-    onMounted(() => {
-      initializeFromURL();
-    });
-
     return {
       model,
       onChange,
       onKeypress,
       handleSearch,
-      extractPMQLFromURL,
     };
   },
 });
