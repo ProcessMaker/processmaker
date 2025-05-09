@@ -7,50 +7,37 @@
       :my-tasks-columns="myTasksColumns"
       @goBackCategory="$emit('goBackCategory')"
       @updateMyTasksColumns="updateMyTasksColumns"
-      @toggle-info="toggleInfo" />
+      @toggle-info="toggleInfo"
+    />
     <process-tab
       v-show="hideLaunchpad"
       ref="processTab"
       :current-user="currentUser"
       :process="process"
-      class="tw-mt-4 tw-mr-5 lg:tw-mt-4 lg:tw-mr-5" />
-
-    <div
-      v-show="!hideLaunchpad"
-      class="tw-w-full tw-h-full">
-      <div class="tw-card tw-card-body">
-        <div class="tw-flex tw-justify-between">
-          <div class="tw-flex tw-items-center">
-            <i
-              class="fas fa-angle-left"
-              @click="closeFullCarousel" />
-            <span class="tw-ml-2.5">{{ process.name }} {{ firstImage }} of {{ lastImage }}</span>
-          </div>
-        </div>
-      </div>
-      <processes-carousel
-        :process="process"
-        :full-carousel="{ url: null, hideLaunchpad: true }"
-        :index-selected-image="indexSelectedImage" />
-    </div>
-
+      class="tw-mt-4 tw-mr-5 lg:tw-mt-4 lg:tw-mr-5"
+    />
     <!-- SlideOver -->
     <slide-process-info
       :show="showProcessInfo"
-      :title="$t('Process Information')"
-      @close="closeProcessInfo">
-      <div class="tw-flex tw-flex-col tw-gap-4">
-        <processes-carousel
-          class="tw-w-full"
+      :title="title"
+      :process="process"
+      :full-carousel="fullCarousel"
+      @closeCarousel="closeFullCarousel"
+      @close="closeProcessInfo"
+    >
+      <div class="tw-flex tw-flex-col tw-gap-4 tw-pl-10 tw-pr-10">
+        <carousel-slide
           :process="process"
-          :full-carousel="{ url: null, hideLaunchpad: false }" />
-
-        <process-options
-          class="tw-w-full"
-          :process="process"
-          :collapsed="collapsed" />
-
-        <progress-bar-section :stages-summary="process.stagesSummary"/>
+          @full-carousel="showFullCarousel"
+        />
+        <div v-show="!fullCarousel">
+          <process-options
+            class="tw-w-full"
+            :process="process"
+            :collapsed="collapsed"
+          />
+          <progress-bar-section :stages-summary="process.stagesSummary" />
+        </div>
       </div>
     </slide-process-info>
   </div>
@@ -59,7 +46,7 @@
 <script>
 import ProcessCollapseInfo from "./ProcessCollapseInfo.vue";
 import ProcessTab from "./ProcessTab.vue";
-import ProcessesCarousel from "./ProcessesCarousel.vue";
+import CarouselSlide from "./CarouselSlide.vue";
 import SlideProcessInfo from "./slideProcessInfo/SlideProcessInfo.vue";
 import ProcessOptions from "./ProcessOptions.vue";
 import ProgressBarSection from "./progressBar/ProgressBarSection.vue";
@@ -68,10 +55,10 @@ export default {
   components: {
     ProcessCollapseInfo,
     ProcessTab,
-    ProcessesCarousel,
     SlideProcessInfo,
     ProcessOptions,
     ProgressBarSection,
+    CarouselSlide,
   },
   props: ["process", "currentUserId", "currentUser", "ellipsisPermission"],
   data() {
@@ -86,9 +73,15 @@ export default {
       myTasksColumns: [],
       showProcessInfo: false,
       collapsed: true,
+      fullCarousel: false,
     };
   },
   computed: {
+    title() {
+      return this.fullCarousel
+        ? this.process.name
+        : this.$t("Process Information");
+    },
   },
   mounted() {
     this.dataOptions = {
@@ -109,7 +102,7 @@ export default {
   },
   methods: {
     closeFullCarousel() {
-      this.$root.$emit("clickCarouselImage", false);
+      this.fullCarousel = false;
     },
     updateMyTasksColumns(columns) {
       this.myTasksColumns = columns;
@@ -125,6 +118,9 @@ export default {
     },
     closeProcessInfo() {
       this.showProcessInfo = false;
+    },
+    showFullCarousel() {
+      this.fullCarousel = true;
     },
   },
 };

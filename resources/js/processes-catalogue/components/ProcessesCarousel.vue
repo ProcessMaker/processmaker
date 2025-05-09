@@ -1,34 +1,26 @@
 <template>
   <div
-    id="carouselwrapper"
     v-show="imagesLoaded"
+    id="carouselwrapper"
     class="h-100 w-100 custom-fit"
   >
     <button
       :class="[fullPage ? 'prev-full' : 'prev']"
       @click="prevSlide"
     >
-      <i class="fas fa-caret-left"></i>
+      <i class="fas fa-caret-left" />
     </button>
     <button
       :class="[fullPage ? 'next-full' : 'next']"
       @click="nextSlide"
     >
-      <i class="fas fa-caret-right"></i>
+      <i class="fas fa-caret-right" />
     </button>
 
     <div
       ref="containercarousel"
-      @resize="updateSlideWidth"
       class="carousel"
-      :style="{
-        '--var-sizes-sm': `${100 / sizes.sm}%`,
-        '--var-sizes-md': `${100 / sizes.md}%`,
-        '--var-sizes-lg': `${100 / sizes.lg}%`,
-        '--var-sizes-xl': `${100 / sizes.xl}%`,
-        '--var-sizes-2xl': `${100 / sizes['2xl']}%`,
-        '--var-sizes-3xl': `${100 / sizes['3xl']}%`,
-      }"
+      @resize="updateSlideWidth"
     >
       <div
         ref="slidesDiv"
@@ -36,10 +28,10 @@
         :style="{ transform: 'translateX(' + translateX + 'px)' }"
       >
         <div
-          ref="slidesDivChild"
-          class="slide"
           v-for="(image, index) in images.length > 0 ? images : defaultImage"
+          ref="slidesDivChild"
           :key="index"
+          class="slide"
         >
           <iframe
             v-if="image.type === 'embed'"
@@ -56,14 +48,17 @@
             :src="image.url"
             :alt="process.name"
             @click="handleClick(image.url, index)"
-          />
+          >
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
+import CarouselMixin from "./mixins/CarouselMixin";
+
 export default {
+  mixins: [CarouselMixin],
   props: {
     process: {
       type: Object,
@@ -104,8 +99,13 @@ export default {
       },
     };
   },
+  computed: {
+    slideCount() {
+      return this.images.length - this.discountSlide;
+    },
+  },
   watch: {
-    'fullCarousel.hideLaunchpad': {
+    "fullCarousel.hideLaunchpad": {
       immediate: true,
       handler(value) {
         if (value) {
@@ -119,18 +119,13 @@ export default {
           };
           this.discountSlide = 0;
           this.fullPage = true;
-        } 
-      }
+        }
+      },
     },
     indexSelectedImage() {
-        this.currentIndex = 0;
-        this.currentIndex = this.indexSelectedImage - 1;
-        this.nextSlide();
-    },
-  },
-  computed: {
-    slideCount() {
-      return this.images.length - this.discountSlide;
+      this.currentIndex = 0;
+      this.currentIndex = this.indexSelectedImage - 1;
+      this.nextSlide();
     },
   },
   mounted() {
@@ -144,7 +139,7 @@ export default {
           this.images = [];
           this.getLaunchpadImages();
         }
-      }
+      },
     );
     this.$nextTick(() => {
       this.updateSlideWidth();
@@ -165,57 +160,15 @@ export default {
   methods: {
     handleClick(url, index) {
       this.$root.hasClickSlide = true;
-      if(!this.fullPage) {
+      if (!this.fullPage) {
         const data = {
-          "url" : url,
-          "hideLaunchpad" : true,
-          "countImages" : this.images.length,
-          "imagePosition" : index,
-          };
+          url,
+          hideLaunchpad: true,
+          countImages: this.images.length,
+          imagePosition: index,
+        };
         this.$root.$emit("clickCarouselImage", data);
       }
-    },
-    /**
-     * Get images from Media library related to process.
-     */
-    getLaunchpadImages() {
-      ProcessMaker.apiClient
-        .get(`process_launchpad/${this.process.id}`)
-        .then((response) => {
-          const firstResponse = response.data.shift();
-          const mediaArray = firstResponse.media;
-          const embedArray = firstResponse.embed;
-          mediaArray.forEach((media) => {
-            const mediaType = media.custom_properties.type ?? "image";
-            this.images.push({
-              url: media.original_url,
-              type: mediaType,
-            });
-          });
-          embedArray.forEach((embed) => {
-            const customProperties = JSON.parse(embed.custom_properties);
-            this.images.push({
-              url: customProperties.url,
-              type: customProperties.type,
-            });
-          });
-          // If no images were loaded Carousel container is not shown
-          if (this.images.length === 0) {
-            this.imagesLoaded = false;
-          }
-          // If only one image is loaded, rest of carousel must be completed with default image
-          if (this.images.length === 1) {
-            for (let i = 1; i <= 3; i++) {
-              this.images[i] = {
-                url: "/img/launchpad-images/defaultImage.svg",
-                type: "image",
-              };
-            }
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
     },
     updateSlideWidth() {
       if (this.$refs.slides?.[0]) {
@@ -225,32 +178,32 @@ export default {
     },
     prevSlide() {
       if (this.currentIndex > 0) {
-        this.currentIndex--;
+        this.currentIndex -= 1;
         this.translateX += this.slideWidth;
         this.$root.$emit("carouselImageSelected", this.currentIndex);
       }
     },
     nextSlide() {
-      let slidesWidth = getComputedStyle(this.$refs.slidesDiv).getPropertyValue('width');
-      let slidesWidthChild = getComputedStyle(this.$refs.slidesDivChild[0]).getPropertyValue('width');
-      slidesWidth = parseInt(slidesWidth);
-      slidesWidthChild = parseInt(slidesWidthChild);
+      let slidesWidth = getComputedStyle(this.$refs.slidesDiv).getPropertyValue("width");
+      let slidesWidthChild = getComputedStyle(this.$refs.slidesDivChild[0]).getPropertyValue("width");
+      slidesWidth = parseInt(slidesWidth, 10);
+      slidesWidthChild = parseInt(slidesWidthChild, 10);
       let n = this.slideCount - 1;
       let optionClicked = true;
-      if(slidesWidth === slidesWidthChild) {
+      if (slidesWidth === slidesWidthChild) {
         n = this.slideCount;
       }
 
-      let currentTranslateX = this.translateX;
-      let slideWidth = this.slideWidth;
-      let newTranslateX = currentTranslateX - slideWidth;
-      let slideWidthTotal = (-1) * slideWidth * this.slideCount;
-      if(this.$root.hasClickSlide) {
+      const currentTranslateX = this.translateX;
+      const { slideWidth } = this;
+      const newTranslateX = currentTranslateX - slideWidth;
+      const slideWidthTotal = (-1) * slideWidth * this.slideCount;
+      if (this.$root.hasClickSlide) {
         optionClicked = (newTranslateX > slideWidthTotal);
       }
 
       if ((this.currentIndex < n) && optionClicked) {
-        this.currentIndex++;
+        this.currentIndex += 1;
         this.translateX -= this.slideWidth;
         this.$root.$emit("carouselImageSelected", this.currentIndex);
       }
@@ -317,13 +270,11 @@ export default {
   background-color: #ccc;
 }
 
-
-
 .prev {
   left: 0px;
   background-color: #fff;
   position: absolute;
-  top: 50%;
+  top: 10%;
   transform: translateY(-50%);
   border: none;
   cursor: pointer;
@@ -333,7 +284,7 @@ export default {
   right: 0%;
   background-color: #fff;
   position: absolute;
-  top: 50%;
+  top: 0%;
   transform: translateY(-50%);
   border: none;
   cursor: pointer;
