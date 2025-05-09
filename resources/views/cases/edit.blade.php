@@ -140,6 +140,7 @@
     const requestCount = @json($requestCount);
     const screenBuilderScripts = @json($manager->getScripts());
     const inflightData = @json($inflightData);
+    const tceCustomizationEnable = @json($isTceCustomization);
     window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
   </script>
   <script src="{{mix('js/composition/cases/casesDetail/loader.js')}}"></script>
