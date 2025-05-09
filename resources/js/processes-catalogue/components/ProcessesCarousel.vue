@@ -20,6 +20,14 @@
     <div
       ref="containercarousel"
       class="carousel"
+      :style="{
+        '--var-sizes-sm': `${100 / sizes.sm}%`,
+        '--var-sizes-md': `${100 / sizes.md}%`,
+        '--var-sizes-lg': `${100 / sizes.lg}%`,
+        '--var-sizes-xl': `${100 / sizes.xl}%`,
+        '--var-sizes-2xl': `${100 / sizes['2xl']}%`,
+        '--var-sizes-3xl': `${100 / sizes['3xl']}%`,
+      }"
       @resize="updateSlideWidth"
     >
       <div
@@ -274,7 +282,7 @@ export default {
   left: 0px;
   background-color: #fff;
   position: absolute;
-  top: 10%;
+  top: 50%;
   transform: translateY(-50%);
   border: none;
   cursor: pointer;
@@ -284,7 +292,7 @@ export default {
   right: 0%;
   background-color: #fff;
   position: absolute;
-  top: 0%;
+  top: 50%;
   transform: translateY(-50%);
   border: none;
   cursor: pointer;
