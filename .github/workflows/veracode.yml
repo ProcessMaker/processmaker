@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Veracode Action Step
         id: Veracode
-        uses: veracode/veracode-dast-essentials-action@v1.0.1
+        uses: veracode/veracode-dast-essentials-action@v1.0.2
         with:
           VERACODE_WEBHOOK: '${{ secrets.VERACODE_WEBHOOK }}'
           VERACODE_SECRET_ID: '${{ secrets.VERACODE_SECRET_ID }}'
