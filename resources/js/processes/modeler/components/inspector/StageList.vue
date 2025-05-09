@@ -24,7 +24,11 @@
       />
     </div>
     <div class="tw-flex tw-justify-end tw-mt-2">
-      <button @click="adding = !adding; newStage = '';" class="tw-bg-blue-500 text-white tw-text-sm tw-px-2 tw-py-0.5 tw-rounded">
+      <button 
+        @click="addNewStage" 
+        :disabled="disableButton"
+        class="tw-bg-blue-500 text-white tw-text-sm tw-px-2 tw-py-0.5 tw-rounded" 
+        :class="{'tw-bg-gray-300 tw-cursor-not-allowed': disableButton}">
         <i class="fas fa-plus"></i>
       </button>
     </div>
@@ -42,9 +46,18 @@ const props = defineProps({
 const emit = defineEmits(['change']);
 
 const adding = ref(false);
-const stages = ref([...props.initialStages]);
+const stages = computed(() => props.initialStages);
 const newStage = ref('');
 const totalStages = computed(() => stages.value.length);
+const disableButton = computed(() => totalStages.value >= 8);
+
+const addNewStage = () => {
+  if (disableButton.value) {
+    return;
+  }
+  adding.value = !adding.value; 
+  newStage.value = '';
+};
 
 const addStage = () => {
   if (newStage.value.trim()) {
@@ -76,6 +89,7 @@ const removeStage = (index) => {
   );
 };
 </script>
+
 <style scoped>
   .stage-item-number {
     background-color: #788793;

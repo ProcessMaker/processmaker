@@ -12,15 +12,37 @@
 
 <script setup>
 import StageList from './StageList.vue';
+import { ref, watch, reactive, toRefs, onMounted, computed, getCurrentInstance } from 'vue';
 
-const defaultStages = [
-  { id: 1, label: 'Request Sent', selected: false },
-  { id: 2, label: 'Request Reviewed', selected: true },
-  { id: 3, label: 'Manager Reviewed', selected: false },
-];
+const props = defineProps({
+  value: Object
+});
+const config = reactive({
+  stage: {
+    id: '',
+    label: ''
+  }
+});
+const defaultStages = ref([]);
+const currentInstance = getCurrentInstance();
+
+const loadStagesFromApi = () => {
+  let stages = [
+    { id: 1, label: 'Request Sent', selected: false },
+    { id: 2, label: 'Request Reviewed', selected: true },
+    { id: 3, label: 'Manager Reviewed', selected: false }
+  ];
+  stages.forEach(item => {
+      defaultStages.value.push(item);
+  });  
+};
 
 const changeStage = (stages) => {
-    //trigger when stages change.
-
+    
 };
+
+onMounted(() => {
+  console.log('onMounted');
+  loadStagesFromApi();
+});
 </script>
