@@ -109,6 +109,9 @@ class CasesController extends Controller
         $modelerController = new ModelerController();
         $pmBlockList = $modelerController->getPmBlockList();
 
+        // Is TCE Customization
+        $isTceCustomization = config('app.tce_customization_enable');
+
         // Return the view
         return view('cases.edit', compact(
             'request',
@@ -122,7 +125,8 @@ class CasesController extends Controller
             'managerModelerScripts',
             'bpmn',
             'inflightData',
-            'pmBlockList'
+            'pmBlockList',
+            'isTceCustomization',
         ));
     }
 
