@@ -3,10 +3,6 @@
     class="tw-flex tw-justify-between tw-items-center
             tw-px-4 tw-py-3 tw-transition tw-duration-150 tw-ease-out
             hover:tw-ease-in tw-cursor-pointer tw-rounded-lg tw-text-gray-600"
-    :class="[{
-      [`tw-bg-${color}-100 hover:tw-bg-${color}-100`]:!active,
-      [`tw-bg-${color}-100 tw-bg-${color}-100 hover:tw-bg-${color}-200`]:active
-    }]"
     @click="handleClick">
     <div>
       <slot name="icon">
@@ -53,10 +49,6 @@ export default defineComponent({
     active: {
       type: Boolean,
       default: () => false,
-    },
-    color: {
-      type: String,
-      default: () => "gray",
     },
     content: {
       type: String,

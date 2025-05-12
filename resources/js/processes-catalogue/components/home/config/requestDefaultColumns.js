@@ -46,15 +46,27 @@ export const defaultColumns = [
     },
   },
   {
-    label: "Task",
-    field: "active_tasks",
-    sortable: false,
+    label: "Stage",
+    field: "stage",
+    sortable: true,
     default: true,
     width: 200,
     truncate: true,
     subject: {
       type: "Field",
-      value: "active_tasks",
+      value: "stage",
+    },
+  },
+  {
+    label: "Progress",
+    field: "progress",
+    sortable: true,
+    default: true,
+    width: 200,
+    truncate: true,
+    subject: {
+      type: "Field",
+      value: "progress",
     },
   },
   {

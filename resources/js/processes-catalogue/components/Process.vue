@@ -86,7 +86,6 @@ export default {
      * Verify if the process open the info or Screen
      */
     verifyScreen() {
-      console.log("verifyScreen", this.selectedProcess);
       let screenId = 0;
       const unparseProperties = this.selectedProcess?.launchpad?.properties || null;
       if (unparseProperties !== null) {

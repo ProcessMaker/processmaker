@@ -8,8 +8,7 @@
       :header="item.header"
       :body="item.body"
       :active="index === active"
-      class="tw-w-full"
-      :color="item.color"
+      :class="`tw-w-full ${item.className}`"
       :icon="item.icon"
       :content="item.content"
       @click="onClick(item, index)" />
@@ -28,7 +27,6 @@ const props = defineProps({
       id: String,
       header: String,
       body: String,
-      color: String,
       icon: String,
     },
   },

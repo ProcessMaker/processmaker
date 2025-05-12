@@ -98,6 +98,12 @@ const hookData = async () => {
 
   setTimeout(() => {
     data.value = response.data;
+
+    data.value.forEach((item) => {
+      item.progress = Math.floor(Math.random() * 101);
+      item.stage = `stage${Math.floor(Math.random() * 10) + 1}`;
+    });
+
     if (response.data && !response.data.length) {
       placeholderType.value = "empty-cases";
       return;

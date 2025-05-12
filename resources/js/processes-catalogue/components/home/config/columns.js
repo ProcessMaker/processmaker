@@ -1,7 +1,7 @@
 import { t } from "i18next";
 import { get } from "lodash";
 import {
-  LinkCell, TitleCell, FlagCell, StatusCell, TruncatedOptionsCell, ParticipantsCell,
+  LinkCell, TitleCell, FlagCell, StatusCell, TruncatedOptionsCell, ParticipantsCell, ProgressBarCell,
 } from "../../../../../jscomposition/system/index";
 import { formatDate } from "../../../../../jscomposition/utils";
 // Columns in the table:
@@ -101,6 +101,23 @@ export const flagColumn = ({
       click: (active, row, column, columns) => {
         console.log(active, row, column, columns);
       },
+    },
+  }),
+});
+
+export const progressColumn = ({
+  id, field, header, resizable, width,
+}) => ({
+  id,
+  field,
+  header,
+  resizable,
+  width: 200,
+  cellRenderer: () => ({
+    component: ProgressBarCell,
+    params: {
+      data: (row, column, columns) => get(row, field),
+      color: "green",
     },
   }),
 });
@@ -280,6 +297,12 @@ export const buildColumns = (defaultColumns) => {
         break;
       case "status":
         newColumn = statusColumn(convertedColumn);
+        break;
+      case "stage":
+        newColumn = defaultColumn(convertedColumn);
+        break;
+      case "progress":
+        newColumn = progressColumn(convertedColumn);
         break;
       case "initiated_at":
         newColumn = dateColumn(convertedColumn);
