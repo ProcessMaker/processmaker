@@ -170,6 +170,8 @@ class TokenRepository implements TokenRepositoryInterface
         $token->setId($token->getKey());
         $request = $token->getInstance();
         $request->notifyProcessUpdated('ACTIVITY_ACTIVATED', $token);
+        // TO_DO: save the last stage id $this->request->last_stage_id
+        // TO_DO: save the last stage id $this->request->last_stage_name
 
         CaseUpdate::dispatchSync($request, $token);
 
@@ -244,6 +246,10 @@ class TokenRepository implements TokenRepositoryInterface
             Log::Info('User isEmailTaskEnable: ' . $user->email_task_notification);
             // Return if email task notification is not enabled or email is empty
             if ($user->email_task_notification === 0 || empty($user->email)) {
+                return null;
+            }
+            // Check if the required class exists
+            if (!class_exists('ProcessMaker\Packages\Connectors\ActionsByEmail\EmailProvider')) {
                 return null;
             }
             // Prepare data for the email
@@ -354,10 +360,6 @@ class TokenRepository implements TokenRepositoryInterface
         $token->setId($token->getKey());
         $request = $token->getInstance();
         $request->notifyProcessUpdated('START_EVENT_TRIGGERED', $token);
-    }
-
-    private function assignTaskUser(ActivityInterface $activity, TokenInterface $token, Instance $instance)
-    {
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use ProcessMaker\Http\Controllers\CasesController;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;

@@ -52,6 +52,7 @@ import ErrorHandlingRetryAttempts from "./components/inspector/ErrorHandlingRetr
 import ErrorHandlingRetryWaitTime from "./components/inspector/ErrorHandlingRetryWaitTime";
 import NotifyProcessManager from "./components/inspector/NotifyProcessManager";
 import { onModelerInit } from "./modelerInit";
+import StageManager from "./components/inspector/StageManager";
 
 Vue.component("UserSelect", UserSelect);
 Vue.component("UserById", UserById);
@@ -74,6 +75,7 @@ Vue.component("ErrorHandlingTimeout", ErrorHandlingTimeout);
 Vue.component("ErrorHandlingRetryAttempts", ErrorHandlingRetryAttempts);
 Vue.component("ErrorHandlingRetryWaitTime", ErrorHandlingRetryWaitTime);
 Vue.component("NotifyProcessManager", NotifyProcessManager);
+Vue.component("StageManager", StageManager);
 
 const nodeTypes = [
   endEvent,
@@ -407,6 +409,25 @@ ProcessMaker.EventBus.$on(
         helper: "Select Screen to display this Task",
         name: "FlowVariable",
       },
+    });
+
+    registerInspectorExtension(sequenceFlow, {
+      component: "FormAccordion",
+      container: true,
+      config: {
+        initiallyOpen: false,
+        label: i18next.t("Stages"),
+        icon: "cog fa-lg",
+        name: "stages-accordion",
+      },
+      items: [
+        {
+          component: "StageManager",
+          config: {
+            helper: "Users that should be notified about task events",
+          },
+        },
+      ],
     });
 
     registerInspectorExtension(callActivity, {
