@@ -113,11 +113,6 @@ export const taskColumn = ({
   header,
   resizable,
   width,
-  filter: {
-    dataType: "string",
-    operators: ["=", "in", "contains", "regex"],
-    resetTable: true,
-  },
   cellRenderer: () => ({
     component: TruncatedOptionsCell,
     params: {
@@ -172,15 +167,15 @@ export const statusColumn = ({
     config: {
       options: [{
         label: t("In progress"),
-        value: "in_progress",
+        value: "In progress",
       },
       {
         label: t("Completed"),
-        value: "completed",
+        value: "Completed",
       },
       {
         label: t("Error"),
-        value: "error",
+        value: "Error",
       },
       {
         label: t("Overdue"),
@@ -188,7 +183,7 @@ export const statusColumn = ({
       },
       {
         label: t("Canceled"),
-        value: "canceled",
+        value: "Canceled",
       }],
     },
   },
