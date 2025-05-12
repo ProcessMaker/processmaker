@@ -101,6 +101,7 @@ abstract class BaseFilter
         } elseif ($this->subjectType === self::TYPE_PROCESS) {
             $this->filterByProcessId($query);
         } elseif ($this->subjectValue === self::PROCESS_NAME_IN_REQUEST) {
+            $this->subjectType = self::TYPE_PROCESS_NAME;
             $this->filterByProcessName($query);
         } elseif ($this->subjectType === self::TYPE_PROCESS_NAME) {
             $this->filterByProcessName($query);
@@ -314,8 +315,8 @@ abstract class BaseFilter
     {
         if ($query->getModel() instanceof ProcessRequestToken) {
             $query->whereIn('process_request_id', function ($query) {
-                $query->select('id')->from('process_requests')
-                      ->where('name', '=', $this->value());
+                $query->select('id')->from('process_requests');
+                $this->applyQueryBuilderMethod($query);
             });
         } else {
             $query->whereIn('name', (array) $this->value());

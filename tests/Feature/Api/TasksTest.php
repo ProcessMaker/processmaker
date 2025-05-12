@@ -806,10 +806,25 @@ class TasksTest extends TestCase
             'process_request_id' => $missRequest->id,
         ]);
 
+        // Filter by operator =
         $filterString = json_encode([
             [
                 'subject' => ['type' => 'Field', 'value' => 'process_request.name'],
                 'operator' => '=',
+                'value' => $hitProcess->name,
+
+            ],
+        ]);
+
+        $response = $this->apiCall('GET', '/tasks', ['advanced_filter' => $filterString]);
+        $json = $response->json();
+
+        $this->assertEquals($hitTask->id, $json['data'][0]['id']);
+        // Filter by operator contains
+        $filterString = json_encode([
+            [
+                'subject' => ['type' => 'Field', 'value' => 'process_request.name'],
+                'operator' => 'contains',
                 'value' => $hitProcess->name,
 
             ],
