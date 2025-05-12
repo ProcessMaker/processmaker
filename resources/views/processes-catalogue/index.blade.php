@@ -33,7 +33,6 @@
       Js::from(\Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'projects', 'documentation'))
     }};
     window.ProcessMaker.defaultSavedSearch = {{{$defaultSavedSearch ?? 'null'}}};
-    window.ProcessMaker.defaultColumns = @json($defaultColumns);
   </script>
   @foreach($manager->getScripts() as $script)
     <script src="{{$script}}"></script>

@@ -1,4 +1,4 @@
-import { getTasks } from "../../api";
+import { getRequests } from "../../api";
 
 export const buildPmql = (pmql, filter) => {
   let pmqlBuilded = null;
@@ -14,7 +14,7 @@ export const buildPmql = (pmql, filter) => {
   return pmqlBuilded;
 };
 
-export const prepareToGetTasks = async ({
+export const prepareToGetRequests = async ({
   page, perPage, orderDirection, orderBy, processesIManage,
   allInbox, pmql, filter, advancedFilter, include, statusFilter,
 }) => {
@@ -22,27 +22,27 @@ export const prepareToGetTasks = async ({
   const nPerPage = perPage;
   const nOrderDirection = orderDirection;
   const nOrderBy = orderBy;
-  const nNonSystem = true;
-  const nProcessesIManage = processesIManage;
-  const nAllInbox = allInbox;
+  // const nNonSystem = true;
+  // const nProcessesIManage = processesIManage;
+  // const nAllInbox = allInbox;
   const nPmql = buildPmql(pmql, filter);
   const nFilter = buildPmql(pmql, filter) === pmql ? filter : "";
   const nAdvancedFilter = advancedFilter;
 
-  const nInclude = `process,processRequest,processRequest.user,user,data${include ? `,${include}` : ""}`;
+  const nInclude = `process,participants,activeTasks,data${include ? `,${include}` : ""}`;
 
-  const response = await getTasks({
+  const response = await getRequests({
     page: nPage,
     perPage: nPerPage,
     orderDirection: nOrderDirection,
     orderBy: nOrderBy,
-    nonSystem: nNonSystem,
-    processesIManage: nProcessesIManage,
-    allInbox: nAllInbox,
+    // nonSystem: nNonSystem,
+    // processesIManage: nProcessesIManage,
+    // allInbox: nAllInbox,
     pmql: nPmql,
     filter: nFilter,
     include: nInclude,
-    statusFilter,
+    // statusFilter,
     advancedFilter: nAdvancedFilter,
   });
   return response;
