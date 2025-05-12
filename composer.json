@@ -22,6 +22,7 @@
         "google/apiclient": "^2.18",
         "guzzlehttp/guzzle": "^7.9",
         "igaster/laravel-theme": "^2.0",
+        "jdavidbakr/mail-tracker": "^7.18",
         "jenssegers/agent": "^2.6",
         "laravel/framework": "^11.0",
         "laravel/horizon": "^5.30",
