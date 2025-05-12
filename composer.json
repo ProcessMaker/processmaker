@@ -106,10 +106,10 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "8cd539ff",
+            "build": "91ada418",
             "cicd-enabled": true,
             "custom": {
-                "package-ellucian-ethos": "1.19.2",
+                "package-ellucian-ethos": "1.19.3",
                 "package-plaid": "1.6.0",
                 "paypal-package": "dev-fall",
                 "pps-adsync": "dev-fall",
@@ -154,7 +154,7 @@
                 "package-ai": "1.16.4",
                 "package-analytics-reporting": "1.11.0",
                 "package-auth": "1.24.2",
-                "package-collections": "2.25.2",
+                "package-collections": "2.25.3",
                 "package-comments": "1.16.0",
                 "package-conversational-forms": "1.15.0",
                 "package-data-sources": "1.34.0",
