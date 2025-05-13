@@ -101,6 +101,8 @@ abstract class BaseFilter
         } elseif ($this->subjectType === self::TYPE_PROCESS) {
             $this->filterByProcessId($query);
         } elseif ($this->subjectValue === self::PROCESS_NAME_IN_REQUEST) {
+            // For performance reasons, the task list uses the column process_request.name
+            // But the filters must use the Process table, for this reason the subjectType is updated
             $this->subjectType = self::TYPE_PROCESS_NAME;
             $this->filterByProcessName($query);
         } elseif ($this->subjectType === self::TYPE_PROCESS_NAME) {
