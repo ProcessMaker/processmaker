@@ -87,7 +87,7 @@ class TimerExpression implements FormalExpressionInterface
     public function __invoke($data)
     {
         $expression = $this->getProperty(FormalExpressionInterface::BPMN_PROPERTY_BODY);
-        $isFeel = $this->getProperty('type') === 'tFormalExpression';
+        $isFeel = str_contains($this->getProperty('type'), 'tFormalExpression');
         if ($isFeel) {
             $feel = new FeelExpressionEvaluator();
             $expression = $feel->render($expression, $data);
