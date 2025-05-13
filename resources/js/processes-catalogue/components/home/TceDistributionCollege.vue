@@ -6,23 +6,10 @@
       :my-tasks-columns="myTasksColumns"
       @toggle-info="toggleInfo"
       @goBackCategory="emit('goBackCategory')" />
+    <BaseCardButtonGroup :data="data" />
 
-    <div class="tw-w-full tw-flex tw-flex-row tw-space-x-4">
-      <ArrowButtonHome
-        class="tw-w-60 tw-bg-emerald-200"
-        header="200"
-        body="Cases" />
+    <PercentageCardButtonGroup :data="subpercentageData" />
 
-      <ArrowButtonGroup
-        class="tw-flex-grow tw-overflow-auto"
-        :data="arrowData"
-        color="orange" />
-
-      <ArrowButtonHome
-        class="tw-w-60 tw-bg-blue-200"
-        header="5"
-        body="Completed" />
-    </div>
     <CustomHomeTableSection
       class="tw-w-full tw-flex tw-flex-col
       tw-overflow-hidden tw-grow tw-p-4 tw-bg-white tw-rounded-lg tw-shadow-md tw-border tw-border-gray-200"
@@ -39,11 +26,11 @@
 <script setup>
 import { ref } from "vue";
 import CustomHomeTableSection from "./CustomHomeTableSection/CustomHomeTableSection.vue";
+import BaseCardButtonGroup from "./ButtonGroup/BaseCardButtonGroup.vue";
 import ProcessCollapseInfo from "../ProcessCollapseInfo.vue";
-import ArrowButtonHome from "./ArrowButtonGroup/ArrowButtonHome.vue";
-import ArrowButtonGroup from "./ArrowButtonGroup/ArrowButtonGroup.vue";
-import ProcessInfo from "./ProcessInfo.vue";
+import PercentageCardButtonGroup from "./PercentageButtonGroup/PercentageCardButtonGroup.vue";
 import { ellipsisPermission } from "../variables";
+import ProcessInfo from "./ProcessInfo.vue";
 
 const props = defineProps({
   process: {
@@ -56,60 +43,72 @@ const emit = defineEmits(["goBackCategory"]);
 
 const myTasksColumns = ref([]);
 
-const arrowData = ref([
+const data = ref([
   {
     id: "1",
-    body: "Grants",
-    header: "40%",
-    float: "28K",
-    percentage: 40,
-    content: "28,678",
-    color: "amber",
+    header: "Max amount available",
+    body: "Across 10 aplicants",
+    icon: "fas fa-reply",
+    content: "84K",
+    active: true,
+    className: "tw-bg-white hover:tw-bg-gray-200",
   },
   {
     id: "2",
-    body: "Scholarships",
-    header: "20%",
-    float: "4K",
-    percentage: 20,
-    content: "4,678",
-    color: "green",
+    header: "Application awarded",
+    body: "30% of all submitted",
+    icon: "fas fa-user",
+    content: "3",
+    className: "tw-bg-amber-100 hover:tw-bg-amber-200",
+    active: false,
   },
   {
     id: "3",
-    body: "Loans",
-    header: "15%",
-    float: "11K",
+    header: "Total amount awarded",
+    body: "Across 3 aplicants",
+    icon: "fas fa-user",
+    content: "46K+",
+    className: "tw-bg-green-100 hover:tw-bg-green-200",
+    active: false,
+  },
+]);
+
+const subpercentageData = ref([
+  {
+    id: "1",
+    header: "Grants",
+    body: "40%",
+    percentage: 40,
+    content: "28,678",
+    color: "amber",
+    subpercentage: 20,
+  },
+  {
+    id: "2",
+    header: "Scholarships",
+    body: "20%",
+    percentage: 20,
+    content: "4,678",
+    color: "green",
+    subpercentage: 70,
+  },
+  {
+    id: "3",
+    header: "Loans",
+    body: "15%",
     percentage: 15,
     content: "11,678",
     color: "blue",
+    subpercentage: 20,
   },
   {
     id: "4",
-    body: "Out of pocket remaining",
-    header: "25%",
-    float: "17K",
+    header: "Out of pocket remaining",
+    body: "25%",
     percentage: 25,
     content: "17,649",
     color: "red",
-  },
-  {
-    id: "4",
-    body: "Out of pocket remaining",
-    header: "25%",
-    float: "17K",
-    percentage: 25,
-    content: "17,649",
-    color: "red",
-  },
-  {
-    id: "4",
-    body: "Out of pocket remaining",
-    header: "25%",
-    float: "17K",
-    percentage: 25,
-    content: "17,649",
-    color: "red",
+    subpercentage: 50,
   },
 ]);
 

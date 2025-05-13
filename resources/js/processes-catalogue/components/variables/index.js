@@ -15,3 +15,5 @@ export const defaultColumns = window.ProcessMaker?.defaultColumns;
 export const { debounce } = _;
 
 export const ellipsisPermission = window.ProcessMaker?.ellipsisPermission;
+
+export const isTceCustomization = () => window.ProcessMaker?.isTceCustomization;

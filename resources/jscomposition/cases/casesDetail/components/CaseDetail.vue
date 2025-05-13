@@ -17,10 +17,12 @@ import TabFiles from "./TabFiles.vue";
 import Overview from "./NewOverview.vue";
 import TabSummary from "./TabSummary.vue";
 import ErrorsTab from "./ErrorsTab.vue";
-import { getRequestCount, getRequestStatus, isErrors } from "../variables/index";
+import {
+  getRequestCount, getRequestStatus, isErrors, isTceCustomization,
+} from "../variables/index";
 
 const translate = ProcessMaker.i18n;
-const Router = window.ProcessMaker.Router;
+const { Router } = window.ProcessMaker;
 const path = window.location.pathname;
 
 const urlTabs = [
@@ -38,7 +40,6 @@ const tabDefault = computed(() => {
   if (urlTabs.includes(window.location.hash.substring(1))) {
     return window.location.hash.substring(1);
   }
-
   // This section is for the package-files, the issue should be fixed in page with vue-router
   const routeResolved = Router.resolve(path);
   if (routeResolved.route?.name && routeResolved.route?.meta?.package === "package-files") {
@@ -46,6 +47,9 @@ const tabDefault = computed(() => {
   }
   if (isErrors()) {
     return "errors";
+  }
+  if (isTceCustomization()) {
+    return "summary";
   }
   return "tasks";
 });

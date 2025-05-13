@@ -55,6 +55,7 @@ import Bookmark from "./Bookmark.vue";
 import ProcessDescription from "./optionsMenu/ProcessDescription.vue";
 import ProcessCounter from "./optionsMenu/ProcessCounter.vue";
 import CustomHomeScreen from "./home/CustomHomeScreen.vue";
+import { isTceCustomization } from "./variables";
 
 export default {
   components: {
@@ -94,7 +95,7 @@ export default {
 
       const validScreen = ["tce-student", "tce-college", "tce-grants"];
 
-      if (validScreen.includes(screenId)) {
+      if (validScreen.includes(screenId) && isTceCustomization()) {
         return "custom";
       }
 
