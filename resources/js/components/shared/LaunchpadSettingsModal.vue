@@ -544,8 +544,6 @@ export default {
               uuid: item.uuid,
             }));
 
-            console.log("JOAO", isTceCustomization());
-
             this.dropdownSavedScreen = [this.defaultScreen];
             if (isTceCustomization()) {
               this.dropdownSavedScreen = this.dropdownSavedScreen.concat(this.tceScreens);
