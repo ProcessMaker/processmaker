@@ -167,7 +167,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
                 if ($hasBoundaryEvent) {
                     foreach ($element->getBoundaryEvents() as $boundaryEvent) {
                         foreach ($boundaryEvent->getEventDefinitions() as $eventDefinition) {
-                            if ($eventDefinition instanceof MessageEventDefinitionInterface && $eventDefinition->getPayload()->getId() === $messageEventId) {
+                            if ($eventDefinition instanceof MessageEventDefinitionInterface && $eventDefinition->getPayload()?->getId() === $messageEventId) {
                                 BoundaryEvent::dispatchSync($request->process, $request, $token, $boundaryEvent, $data);
                             }
                         }
