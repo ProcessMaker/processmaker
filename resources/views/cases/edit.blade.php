@@ -148,6 +148,7 @@
     const inflightData = @json($inflightData);
     const currentStages = @json($currentStages);
     const progressStage = @json($progressStage);
+    const tceCustomizationEnable = @json($isTceCustomization);
     window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
   </script>
   <script src="{{mix('js/composition/cases/casesDetail/loader.js')}}"></script>
