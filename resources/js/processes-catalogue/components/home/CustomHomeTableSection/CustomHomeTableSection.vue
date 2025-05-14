@@ -102,6 +102,14 @@ const hookData = async () => {
     data.value.forEach((item) => {
       item.progress = Math.floor(Math.random() * 101);
       item.stage = `stage${Math.floor(Math.random() * 10) + 1}`;
+      item.data = {
+        program: {
+          name: `Program ${Math.floor(Math.random() * 10) + 1}`,
+          type: `Type ${Math.floor(Math.random() * 5) + 1}`,
+          source: `Source ${Math.floor(Math.random() * 3) + 1}`,
+          deadline: `${Math.floor(Math.random() * 30) + 1} days`,
+        },
+      };
     });
 
     if (response.data && !response.data.length) {

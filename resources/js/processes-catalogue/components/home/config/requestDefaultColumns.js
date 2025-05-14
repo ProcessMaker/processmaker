@@ -111,4 +111,52 @@ export const defaultColumns = [
       value: "completed_at",
     },
   },
+  {
+    label: "Name",
+    field: "data.program.name",
+    sortable: true,
+    default: true,
+    width: 200,
+    truncate: true,
+    subject: {
+      type: "Field",
+      value: "data.program.name",
+    },
+  },
+  {
+    label: "Aid Type",
+    field: "data.program.type",
+    sortable: true,
+    default: true,
+    width: 200,
+    truncate: true,
+    subject: {
+      type: "Field",
+      value: "data.program.type",
+    },
+  },
+  {
+    label: "Source",
+    field: "data.program.source",
+    sortable: true,
+    default: true,
+    width: 200,
+    truncate: true,
+    subject: {
+      type: "Field",
+      value: "data.program.source",
+    },
+  },
+  {
+    label: "Deadline",
+    field: "data.program.deadline",
+    sortable: true,
+    default: true,
+    width: 200,
+    truncate: true,
+    subject: {
+      type: "Field",
+      value: "data.program.deadline",
+    },
+  },
 ];
