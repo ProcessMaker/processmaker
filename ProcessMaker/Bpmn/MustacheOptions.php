@@ -18,6 +18,7 @@ class MustacheOptions
             'json' => [$this, 'json'],
             'serialize' => [$this, 'serialize'],
             'xml' => [$this, 'xml'],
+            'urlencode' => [$this, 'urlencode'],
         ];
     }
 
@@ -73,5 +74,20 @@ class MustacheOptions
             return xmlrpc_encode($text);
         }
         return xmlrpc_encode($helper->render($text));
+    }
+
+    /**
+     * URL encode a string
+     *
+     * @param string $text
+     * @param Mustache_LambdaHelper|null $helper
+     * @return string
+     */
+    public function urlencode($text, ?Mustache_LambdaHelper $helper = null)
+    {
+        if (!$helper) {
+            return urlencode($text);
+        }
+        return urlencode($helper->render($text));
     }
 }
