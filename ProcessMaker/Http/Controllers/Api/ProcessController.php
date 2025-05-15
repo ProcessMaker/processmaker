@@ -1968,7 +1968,7 @@ class ProcessController extends Controller
      *                 @OA\Property(property="stage_name", type="string", example="In progress"),
      *                 @OA\Property(property="percentage", type="number", nullable=true, example=60),
      *                 @OA\Property(property="percentage_format", type="string", example="60%"),
-     *                 @OA\Property(property="agregation_sum", type="number", nullable=true, example=28,678),
+     *                 @OA\Property(property="agregation_sum", type="number", nullable=true, example=28678),
      *                 @OA\Property(property="agregation_count", type="number", nullable=true, example=100),
      *             )
      *         )
