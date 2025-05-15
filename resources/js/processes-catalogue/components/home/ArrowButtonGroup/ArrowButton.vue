@@ -41,7 +41,7 @@ const props = defineProps({
     required: true,
   },
   float: {
-    type: String,
+    type: [String, Number],
     required: false,
   },
   color: {

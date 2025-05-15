@@ -38,13 +38,14 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import CustomHomeTableSection from "./CustomHomeTableSection/CustomHomeTableSection.vue";
 import ProcessCollapseInfo from "../ProcessCollapseInfo.vue";
 import ArrowButtonHome from "./ArrowButtonGroup/ArrowButtonHome.vue";
 import ArrowButtonGroup from "./ArrowButtonGroup/ArrowButtonGroup.vue";
 import ProcessInfo from "./ProcessInfo.vue";
 import { ellipsisPermission } from "../variables";
+import { getStages, getMetrics } from "../api";
 
 const props = defineProps({
   process: {
@@ -56,6 +57,9 @@ const props = defineProps({
 const emit = defineEmits(["goBackCategory"]);
 
 const myTasksColumns = ref([]);
+
+const metrics = ref();
+const stages = ref();
 
 const arrowData = ref([
   // {
@@ -119,4 +123,27 @@ const showProcessInfo = ref(false);
 const toggleInfo = () => {
   showProcessInfo.value = !showProcessInfo.value;
 };
+
+const hookMetrics = async () => {
+  const metricsResponse = await getMetrics({ processId: props.process.id });
+  metrics.value = metricsResponse;
+};
+
+const hookStages = async () => {
+  const stagesResponse = await getStages({ processId: props.process.id });
+  stages.value = stagesResponse;
+
+  arrowData.value = stages.value.map((stage) => ({
+    id: stage.stage_id,
+    body: stage.stage_name,
+    header: stage.percentage_format,
+    float: stage.agregation_sum,
+    percentage: stage.percentage,
+  }));
+};
+
+onMounted(() => {
+  hookMetrics();
+  hookStages();
+});
 </script>
