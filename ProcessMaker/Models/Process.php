@@ -1882,7 +1882,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                     'stage_name' => 'Completed',
                     'percentage' => 50,
                     'percentage_format' => '50%',
-                    'agregation_sum' => 0,
+                    'agregation_sum' => 28, 678,
                     'agregation_count' => 100,
                 ],
             ];
