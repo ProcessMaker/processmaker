@@ -1860,7 +1860,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      * @param string|null $stagesJson The JSON string of the stages configuration.
      * @return array The formatted array of stages.
      */
-    public static function formatStagesForProcess(?string $stagesJson): array
+    public static function formatStages(?string $stagesJson): array
     {
         $stagesConf = [];
         if ($stagesJson) {
@@ -1870,38 +1870,32 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         if (empty($stagesConf)) {
             return [
                 [
-                    'id' => '0', // This is an invalid stage
-                    'header' => 'In progress',
-                    'body' => '50%', // TO_DO: Get the percentaje with %
+                    'stage_id' => 0, // This is an invalid stage
+                    'stage_name' => 'In progress', // This is a case status
                     'percentage' => 50, // TO_DO: Get the percentaje
-                    'content' => '28,678', // TO_DO: Get the average
-                    'counter' => '100', // TO_DO: Get the counter
-                    'color' => 'amber',
+                    'percentage_format' => '50%', // TO_DO: Get the percentaje with %
+                    'agregation_sum' => 0, // TO_DO: Get the average
+                    'agregation_count' => 100, // TO_DO: Get the counter
                 ],
                 [
-                    'id' => '0',
-                    'header' => 'Completed',
-                    'body' => '50%',
+                    'stage_id' => 0,
+                    'stage_name' => 'Completed',
                     'percentage' => 50,
-                    'content' => '28,678',
-                    'counter' => '100',
-                    'color' => 'green',
+                    'percentage_format' => '50%',
+                    'agregation_sum' => 0,
+                    'agregation_count' => 100,
                 ],
             ];
         }
 
-        $colors = ['amber', 'green', 'blue', 'red'];
-        $genericColor = 'gray';
-
-        return collect($stagesConf)->map(function ($stage, $index) use ($colors, $genericColor) {
+        return collect($stagesConf)->map(function ($stage, $index) {
             return [
-                'id' => (string) ($stage['id']),
-                'header' => $stage['name'] ?? 'Stage ' . ($index + 1),
-                'body' => $stage['percentage'] ?? '0%', // TO_DO: Get the percentaje with %
+                'stage_id' => $stage['id'] ?? 0,
+                'stage_name' => $stage['name'] ?? 'Unknown Stage ' . ($index + 1),
                 'percentage' => $stage['percentage'] ?? 100, // TO_DO: Get the percentaje
-                'content' => $stage['content'] ?? '28,678', // TO_DO: Get the average
-                'counter' => $stage['counter'] ?? '100', // TO_DO: Get the counter
-                'color' => $colors[$index] ?? $genericColor,
+                'percentage_format' => $stage['percentage'] ?? '100%',
+                'agregation_sum' => $stage['content'] ?? 28, 678, // TO_DO: Get the average
+                'agregation_count' => $stage['counter'] ?? 100, // TO_DO: Get the counter
             ];
         })->toArray();
     }
@@ -1912,63 +1906,65 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      * @param string|null $stagesJson The JSON string of the stages configuration.
      * @return array The formatted array of stages.
      */
-    public static function formatMetricsForProcess($format = 'student'): array
+    public static function formatMetrics($format = 'student'): array
     {
         if ($format === 'student') {
-            return [
+            $metrics = [
                 [
-                    'id' => '1',
-                    'header' => 'Max amount available',
-                    'body' => 'Across 10 aplicants',
-                    'icon' => 'fas fa-reply',
-                    'content' => '84K',
-                    'color' => 'gray',
+                    'id' => 1,
+                    'metric_description' => 'Max amount available',
+                    'metric_count' => 10,
+                    'metric_count_description' => 'Across 10 aplicants',
+                    'metric_value' => 84000,
+                    'metric_value_unit' => 'k',
                 ],
                 [
-                    'id' => '2',
-                    'header' => 'Application awarded',
-                    'body' => '30% of all submitted',
-                    'icon' => 'fas fa-user',
-                    'content' => '3',
-                    'color' => 'amber',
+                    'id' => 2,
+                    'metric_description' => 'Application awarded',
+                    'metric_count' => null, // No direct count equivalent
+                    'metric_count_description' => 'Of all submitted',
+                    'metric_value' => 30,
+                    'metric_value_unit' => '%',
                 ],
                 [
-                    'id' => '3',
-                    'header' => 'Total amount awarded',
-                    'body' => 'Across 3 aplicants',
-                    'icon' => 'fas fa-user',
-                    'content' => '46K+',
-                    'color' => 'green',
+                    'id' => 3,
+                    'metric_description' => 'Total amount awarded',
+                    'metric_count' => null,
+                    'metric_count_description' => 'Across aplicants',
+                    'metric_value' => 46000,
+                    'metric_value_unit' => '+', // Assuming '+' signifies 'K+'
                 ],
             ];
         } else {
-            return [
+            $metrics = [
                 [
-                    'id' => '1',
-                    'header' => 'Total amount awarded',
-                    'body' => 'Across all applications approved',
-                    'icon' => 'fas fa-reply',
-                    'content' => '46M',
-                    'color' => 'green',
+                    'id' => 1,
+                    'metric_description' => 'Total amount awarded',
+                    'metric_count' => null, // No direct count equivalent
+                    'metric_count_description' => 'Across all applications approved',
+                    'metric_value' => 46000000,
+                    'metric_value_unit' => 'M',
                 ],
                 [
-                    'id' => '2',
-                    'header' => 'Total Awarded Students',
-                    'body' => '50% of all submitted',
-                    'icon' => 'fas fa-user',
-                    'content' => '7500',
-                    'color' => 'blue',
+                    'id' => 2,
+                    'metric_description' => 'Total Awarded Students',
+                    'metric_count' => null, // No direct count equivalent
+                    'metric_count_description' => 'Of all submitted',
+                    'metric_value' => 7500,
+                    'metric_value_unit' => '',
                 ],
                 [
-                    'id' => '3',
-                    'header' => 'Total Applications Received',
-                    'body' => 'This semester',
-                    'icon' => 'fas fa-user',
-                    'content' => '15,000',
-                    'color' => 'gray',
+                    'id' => 3,
+                    'metric_description' => 'Total Applications Received',
+                    'metric_count' => null, // No direct count equivalent
+                    'metric_count_description' => 'This semester',
+                    'metric_value' => 15000,
+                    'metric_value_unit' => '',
                 ],
             ];
         }
+
+        return $metrics;
     }
 
     public function scopeOrderByRecentRequests($query)

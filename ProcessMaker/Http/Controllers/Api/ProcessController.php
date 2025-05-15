@@ -1964,13 +1964,12 @@ class ProcessController extends Controller
      *             type="array",
      *             @OA\Items(
      *                 type="object",
-     *                 @OA\Property(property="id", type="string", example="1"),
-     *                 @OA\Property(property="header", type="string", example="In progress"),
-     *                 @OA\Property(property="body", type="string", example="0%"),
+     *                 @OA\Property(property="stage_id", type="number", example="1"),
+     *                 @OA\Property(property="stage_name", type="string", example="In progress"),
      *                 @OA\Property(property="percentage", type="number", nullable=true, example=60),
-     *                 @OA\Property(property="content", type="string", example="28,678"),
-     *                 @OA\Property(property="counter", type="string", example="100"),
-     *                 @OA\Property(property="color", type="string", example="amber")
+     *                 @OA\Property(property="percentage_format", type="string", example="60%"),
+     *                 @OA\Property(property="agregation_sum", type="number", nullable=true, example=28,678),
+     *                 @OA\Property(property="agregation_count", type="number", nullable=true, example=100),
      *             )
      *         )
      *     )
@@ -1978,7 +1977,7 @@ class ProcessController extends Controller
      */
     public function getStagesPerProcess(Process $process)
     {
-        $formattedStages = Process::formatStagesForProcess($process->stages);
+        $formattedStages = Process::formatStages($process->stages);
 
         return response()->json($formattedStages);
     }
@@ -2006,13 +2005,12 @@ class ProcessController extends Controller
      *             type="array",
      *             @OA\Items(
      *                 type="object",
-     *                 @OA\Property(property="id", type="string", example="1"),
-     *                 @OA\Property(property="header", type="string", example="In progress"),
-     *                 @OA\Property(property="body", type="string", example="0%"),
-     *                 @OA\Property(property="percentage", type="number", nullable=true, example=60),
-     *                 @OA\Property(property="content", type="string", example="28,678"),
-     *                 @OA\Property(property="counter", type="string", example="100"),
-     *                 @OA\Property(property="color", type="string", example="amber")
+     *                 @OA\Property(property="id", type="number", example=1),
+     *                 @OA\Property(property="metric_description", type="string", example="Max amount available"),
+     *                 @OA\Property(property="metric_count", type="number", nullable=true, example=10),
+     *                 @OA\Property(property="metric_count_description", type="string", example="Across 10 aplicants"),
+     *                 @OA\Property(property="metric_value", type="number", nullable=true, example=84000),
+     *                 @OA\Property(property="metric_value_unit", type="string", example="k"),
      *             )
      *         )
      *     )
@@ -2022,7 +2020,7 @@ class ProcessController extends Controller
     {
         $format = $request->query('format');
 
-        $formattedMetrics = Process::formatMetricsForProcess($format);
+        $formattedMetrics = Process::formatMetrics($format);
 
         return response()->json($formattedMetrics);
     }
