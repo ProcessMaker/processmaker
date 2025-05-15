@@ -1940,4 +1940,90 @@ class ProcessController extends Controller
             $embedUrl->delete();
         }
     }
+
+    /**
+     * Get the stages configuration for a specific process.
+     *
+     * @OA\Get(
+     *     path="/api/processes/{process}/stages",
+     *     summary="Get process stages configuration",
+     *     description="Retrieves and formats the stages configuration for a specific process.",
+     *     operationId="getStagesPerProcess",
+     *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         name="process",
+     *         description="ID of the process",
+     *         required=true,
+     *         in="path",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="id", type="string", example="1"),
+     *                 @OA\Property(property="header", type="string", example="In progress"),
+     *                 @OA\Property(property="body", type="string", example="0%"),
+     *                 @OA\Property(property="percentage", type="number", nullable=true, example=60),
+     *                 @OA\Property(property="content", type="string", example="28,678"),
+     *                 @OA\Property(property="counter", type="string", example="100"),
+     *                 @OA\Property(property="color", type="string", example="amber")
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function getStagesPerProcess(Process $process)
+    {
+        $formattedStages = Process::formatStagesForProcess($process->stages);
+
+        return response()->json($formattedStages);
+    }
+
+    /**
+     * Get the stages configuration for a specific process.
+     *
+     * @OA\Get(
+     *     path="/api/processes/{process}/stages",
+     *     summary="Get process stages configuration",
+     *     description="Retrieves and formats the stages configuration for a specific process.",
+     *     operationId="getStagesPerProcess",
+     *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         name="process",
+     *         description="ID of the process",
+     *         required=true,
+     *         in="path",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="id", type="string", example="1"),
+     *                 @OA\Property(property="header", type="string", example="In progress"),
+     *                 @OA\Property(property="body", type="string", example="0%"),
+     *                 @OA\Property(property="percentage", type="number", nullable=true, example=60),
+     *                 @OA\Property(property="content", type="string", example="28,678"),
+     *                 @OA\Property(property="counter", type="string", example="100"),
+     *                 @OA\Property(property="color", type="string", example="amber")
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function getMetricsPerProcess(Process $process, Request $request)
+    {
+        $format = $request->query('format');
+
+        $formattedMetrics = Process::formatMetricsForProcess($format);
+
+        return response()->json($formattedMetrics);
+    }
 }

@@ -226,7 +226,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         'assigned',
         'completed',
         'due',
-        'default'
+        'default',
     ];
 
     protected $appends = [
@@ -1852,6 +1852,123 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     public function hasAlternative()
     {
         return true;
+    }
+
+    /**
+     * Formats the stages configuration for the API response.
+     *
+     * @param string|null $stagesJson The JSON string of the stages configuration.
+     * @return array The formatted array of stages.
+     */
+    public static function formatStagesForProcess(?string $stagesJson): array
+    {
+        $stagesConf = [];
+        if ($stagesJson) {
+            $stagesConf = json_decode($stagesJson, true);
+        }
+
+        if (empty($stagesConf)) {
+            return [
+                [
+                    'id' => '0', // This is an invalid stage
+                    'header' => 'In progress',
+                    'body' => '50%', // TO_DO: Get the percentaje with %
+                    'percentage' => 50, // TO_DO: Get the percentaje
+                    'content' => '28,678', // TO_DO: Get the average
+                    'counter' => '100', // TO_DO: Get the counter
+                    'color' => 'amber',
+                ],
+                [
+                    'id' => '0',
+                    'header' => 'Completed',
+                    'body' => '50%',
+                    'percentage' => 50,
+                    'content' => '28,678',
+                    'counter' => '100',
+                    'color' => 'green',
+                ],
+            ];
+        }
+
+        $colors = ['amber', 'green', 'blue', 'red'];
+        $genericColor = 'gray';
+
+        return collect($stagesConf)->map(function ($stage, $index) use ($colors, $genericColor) {
+            return [
+                'id' => (string) ($stage['id']),
+                'header' => $stage['name'] ?? 'Stage ' . ($index + 1),
+                'body' => $stage['percentage'] ?? '0%', // TO_DO: Get the percentaje with %
+                'percentage' => $stage['percentage'] ?? 100, // TO_DO: Get the percentaje
+                'content' => $stage['content'] ?? '28,678', // TO_DO: Get the average
+                'counter' => $stage['counter'] ?? '100', // TO_DO: Get the counter
+                'color' => $colors[$index] ?? $genericColor,
+            ];
+        })->toArray();
+    }
+
+    /**
+     * Formats the stages configuration for the API response.
+     *
+     * @param string|null $stagesJson The JSON string of the stages configuration.
+     * @return array The formatted array of stages.
+     */
+    public static function formatMetricsForProcess($format = 'student'): array
+    {
+        if ($format === 'student') {
+            return [
+                [
+                    'id' => '1',
+                    'header' => 'Max amount available',
+                    'body' => 'Across 10 aplicants',
+                    'icon' => 'fas fa-reply',
+                    'content' => '84K',
+                    'color' => 'gray',
+                ],
+                [
+                    'id' => '2',
+                    'header' => 'Application awarded',
+                    'body' => '30% of all submitted',
+                    'icon' => 'fas fa-user',
+                    'content' => '3',
+                    'color' => 'amber',
+                ],
+                [
+                    'id' => '3',
+                    'header' => 'Total amount awarded',
+                    'body' => 'Across 3 aplicants',
+                    'icon' => 'fas fa-user',
+                    'content' => '46K+',
+                    'color' => 'green',
+                ],
+            ];
+        } else {
+            return [
+                [
+                    'id' => '1',
+                    'header' => 'Total amount awarded',
+                    'body' => 'Across all applications approved',
+                    'icon' => 'fas fa-reply',
+                    'content' => '46M',
+                    'color' => 'green',
+                ],
+                [
+                    'id' => '2',
+                    'header' => 'Total Awarded Students',
+                    'body' => '50% of all submitted',
+                    'icon' => 'fas fa-user',
+                    'content' => '7500',
+                    'color' => 'blue',
+                ],
+                [
+                    'id' => '3',
+                    'header' => 'Total Applications Received',
+                    'body' => 'This semester',
+                    'icon' => 'fas fa-user',
+                    'content' => '15,000',
+                    'color' => 'gray',
+                ],
+            ];
+        }
     }
 
     public function scopeOrderByRecentRequests($query)

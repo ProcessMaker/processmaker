@@ -216,6 +216,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     // Cases
     Route::get('cases/{case_number}/stages_bar', [CaseController::class, 'getStageCase'])->name('cases.stage');
+    Route::get('processes/{process}/stages', [ProcessController::class, 'getStagesPerProcess'])->name('processes.stages');
+    Route::get('processes/{process}/metrics', [ProcessController::class, 'getMetricsPerProcess'])->name('processes.metrics');
 
     // TaskDrafts
     Route::put('drafts/{task}', [TaskDraftController::class, 'update'])->name('taskdraft.update');
