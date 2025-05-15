@@ -1940,4 +1940,109 @@ class ProcessController extends Controller
             $embedUrl->delete();
         }
     }
+
+    /**
+     * Get the stages configuration for a specific process.
+     *
+     * @OA\Get(
+     *     path="/api/processes/{process}/stages",
+     *     summary="Get process stages configuration",
+     *     description="Retrieves and formats the stages configuration for a specific process.",
+     *     operationId="getStagesPerProcess",
+     *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         name="process",
+     *         description="ID of the process",
+     *         required=true,
+     *         in="path",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="stage_id", type="number", example="1"),
+     *                 @OA\Property(property="stage_name", type="string", example="In progress"),
+     *                 @OA\Property(property="percentage", type="number", nullable=true, example=60),
+     *                 @OA\Property(property="percentage_format", type="string", example="60%"),
+     *                 @OA\Property(property="agregation_sum", type="number", nullable=true, example=28678),
+     *                 @OA\Property(property="agregation_count", type="number", nullable=true, example=100),
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function getStagesPerProcess(Process $process)
+    {
+        $formattedStages = Process::formatStages($process->stages);
+
+        return response()->json($formattedStages);
+    }
+
+    /**
+     * Get the metrics configuration for a specific process.
+     *
+     * @OA\Get(
+     *     path="/api/processes/{process}/metrics",
+     *     summary="Get process metrics configuration",
+     *     description="Retrieves and formats the metrics configuration for a specific process. Supports different formats like 'student' or default metrics.",
+     *     operationId="getMetricsPerProcess",
+     *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         name="process",
+     *         description="ID of the process",
+     *         required=true,
+     *         in="path",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="format",
+     *         description="Format type of the metrics (e.g., 'student')",
+     *         required=false,
+     *         in="query",
+     *         @OA\Schema(
+     *             type="string",
+     *             enum={"student", "default"},
+     *             default="student"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="metric_description", type="string", example="Max amount available"),
+     *                 @OA\Property(property="metric_count", type="integer", nullable=true, example=10),
+     *                 @OA\Property(property="metric_count_description", type="string", example="Across 10 applicants"),
+     *                 @OA\Property(property="metric_value", type="number", example=84000),
+     *                 @OA\Property(property="metric_value_unit", type="string", example="k")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid format parameter",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Invalid format parameter")
+     *         )
+     *     )
+     * )
+     */
+    public function getMetricsPerProcess(Process $process, Request $request)
+    {
+        try {
+            $format = $request->query('format', 'student');
+            $formattedMetrics = Process::formatMetrics($format);
+
+            return response()->json($formattedMetrics);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
+    }
 }

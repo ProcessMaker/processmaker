@@ -26,7 +26,7 @@ class CaseController extends Controller
             }
         }
 
-        $stagesPerCase = $this->getStagesSummary($parentRequest->id);
+        $stagesPerCase = $this->getStagesSummary($parentRequest->id, $parentRequest->process_id);
 
         $responseData = [
             'parentRequest' => [
@@ -56,19 +56,42 @@ class CaseController extends Controller
      * @return array An array of stage results, each containing the stage ID, name, status,
      *               and completion date.
      */
-    public function getStagesSummary($requestId)
+    public function getStagesSummary($requestId, $processId)
     {
-        // TO_DO: get all values processes.stages
-        $allStages = [
-            ['id' => 1, 'name' => 'Stage A'],
-            ['id' => 2, 'name' => 'Stage B'],
-            ['id' => 3, 'name' => 'Stage C'],
-        ];
-        // TO_DO: Create a query to get ProcessRequestToken::where('process_request_id', $requestId)->select('stage_id', 'stage_name', 'status', 'completed_at')->get();
-        $allCurrentStages = [
-            ['stage_id' => 1, 'stage_name' => 'Stage A', 'status' => 'CLOSED', 'completed_at' => '2025-04-23 21:22:34'],
-            ['stage_id' => 2, 'stage_name' => 'Stage B', 'status' => 'ACTIVE', 'completed_at' => 'null'],
-        ];
+        $process = Process::where('id', $processId)->first();
+        if ($process && !empty($process->stages)) {
+            $allStages = json_decode($process->stages, true);
+        } else {
+            // TO_DO: remove this harcode values
+            $allStages = [
+                ['id' => 1, 'name' => 'Stage A'],
+                ['id' => 2, 'name' => 'Stage B'],
+                ['id' => 3, 'name' => 'Stage C'],
+            ];
+        }
+
+        $allCurrentStages = ProcessRequestToken::where('process_request_id', $requestId)
+            ->select('stage_id', 'stage_name', 'status', 'completed_at')
+            ->get()
+            ->toArray();
+        if (empty($allCurrentStages)) {
+            // TO_DO: remove this harcode values
+            $allCurrentStages = [
+                ['stage_id' => 1, 'stage_name' => 'Stage A', 'status' => 'CLOSED', 'completed_at' => '2025-04-23 21:22:34'],
+                ['stage_id' => 2, 'stage_name' => 'Stage B', 'status' => 'ACTIVE', 'completed_at' => 'null'],
+            ];
+        }
+
+        // Helper to map status
+        $mapStatus = function ($status) {
+            if ($status === 'CLOSED') {
+                return 'Done';
+            } elseif ($status === 'ACTIVE') {
+                return 'In Progress';
+            } else {
+                return 'Pending';
+            }
+        };
 
         $stageResult = [];
         // Initialize stage counts with zero for all stages
@@ -76,13 +99,13 @@ class CaseController extends Controller
             $stageData = [
                 'id' => $stage['id'],
                 'name' => $stage['name'],
-                'status' => 'ACTIVE',
+                'status' => 'Pending',
                 'completed_at' => '',
             ];
 
             foreach ($allCurrentStages as $task) {
                 if ($task['stage_id'] === $stage['id']) {
-                    $stageData['status'] = $task['status'];
+                    $stageData['status'] = $mapStatus($task['status']);
                     $stageData['completed_at'] = $task['completed_at'] ?? '';
                     break;
                 }

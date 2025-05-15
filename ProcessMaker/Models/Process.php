@@ -226,7 +226,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         'assigned',
         'completed',
         'due',
-        'default'
+        'default',
     ];
 
     protected $appends = [
@@ -1852,6 +1852,119 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     public function hasAlternative()
     {
         return true;
+    }
+
+    /**
+     * Formats the stages configuration for the API response.
+     *
+     * @param string|null $stagesJson The JSON string of the stages configuration.
+     * @return array The formatted array of stages.
+     */
+    public static function formatStages(?string $stagesJson): array
+    {
+        $stagesConf = [];
+        if ($stagesJson) {
+            $stagesConf = json_decode($stagesJson, true);
+        }
+
+        if (empty($stagesConf)) {
+            return [
+                [
+                    'stage_id' => 0, // This is an invalid stage
+                    'stage_name' => 'In progress', // This is a case status
+                    'percentage' => 50, // TO_DO: Get the percentaje
+                    'percentage_format' => '50%', // TO_DO: Get the percentaje with %
+                    'agregation_sum' => 0, // TO_DO: Get the average
+                    'agregation_count' => 100, // TO_DO: Get the counter
+                ],
+                [
+                    'stage_id' => 0,
+                    'stage_name' => 'Completed',
+                    'percentage' => 50,
+                    'percentage_format' => '50%',
+                    'agregation_sum' => 28, 678,
+                    'agregation_count' => 100,
+                ],
+            ];
+        }
+
+        return collect($stagesConf)->map(function ($stage, $index) {
+            return [
+                'stage_id' => $stage['id'] ?? 0,
+                'stage_name' => $stage['name'] ?? 'Unknown Stage ' . ($index + 1),
+                'percentage' => $stage['percentage'] ?? 100, // TO_DO: Get the percentaje
+                'percentage_format' => $stage['percentage'] ?? '100%',
+                'agregation_sum' => $stage['content'] ?? 28, 678, // TO_DO: Get the average
+                'agregation_count' => $stage['counter'] ?? 100, // TO_DO: Get the counter
+            ];
+        })->toArray();
+    }
+
+    /**
+     * Formats the stages configuration for the API response.
+     *
+     * @param string|null $stagesJson The JSON string of the stages configuration.
+     * @return array The formatted array of stages.
+     */
+    public static function formatMetrics($format = 'student'): array
+    {
+        if ($format === 'student') {
+            $metrics = [
+                [
+                    'id' => 1,
+                    'metric_description' => 'Max amount available',
+                    'metric_count' => 10,
+                    'metric_count_description' => 'Across 10 aplicants',
+                    'metric_value' => 84000,
+                    'metric_value_unit' => 'k',
+                ],
+                [
+                    'id' => 2,
+                    'metric_description' => 'Application awarded',
+                    'metric_count' => null, // No direct count equivalent
+                    'metric_count_description' => 'Of all submitted',
+                    'metric_value' => 30,
+                    'metric_value_unit' => '%',
+                ],
+                [
+                    'id' => 3,
+                    'metric_description' => 'Total amount awarded',
+                    'metric_count' => null,
+                    'metric_count_description' => 'Across aplicants',
+                    'metric_value' => 46000,
+                    'metric_value_unit' => '+', // Assuming '+' signifies 'K+'
+                ],
+            ];
+        } else {
+            $metrics = [
+                [
+                    'id' => 1,
+                    'metric_description' => 'Total amount awarded',
+                    'metric_count' => null, // No direct count equivalent
+                    'metric_count_description' => 'Across all applications approved',
+                    'metric_value' => 46000000,
+                    'metric_value_unit' => 'M',
+                ],
+                [
+                    'id' => 2,
+                    'metric_description' => 'Total Awarded Students',
+                    'metric_count' => null, // No direct count equivalent
+                    'metric_count_description' => 'Of all submitted',
+                    'metric_value' => 7500,
+                    'metric_value_unit' => '',
+                ],
+                [
+                    'id' => 3,
+                    'metric_description' => 'Total Applications Received',
+                    'metric_count' => null, // No direct count equivalent
+                    'metric_count_description' => 'This semester',
+                    'metric_value' => 15000,
+                    'metric_value_unit' => '',
+                ],
+            ];
+        }
+
+        return $metrics;
     }
 
     public function scopeOrderByRecentRequests($query)

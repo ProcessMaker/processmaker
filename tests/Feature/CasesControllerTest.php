@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Carbon\Carbon;
 use ProcessMaker\Http\Controllers\CasesController;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
@@ -334,8 +335,31 @@ class CasesControllerTest extends TestCase
      */
     public function testGetStageCaseWithValidCaseNumber()
     {
+        $stagesData = [
+            [
+                'id' => 1,
+                'name' => 'Request Send',
+                'order' => 1,
+            ],
+            [
+                'id' => 2,
+                'name' => 'Request Reviewed',
+                'order' => 2,
+            ],
+            [
+                'id' => 3,
+                'name' => 'Manager Reviewed',
+                'order' => 3,
+            ],
+        ];
+        // Create a new process and save stages as JSON
+        $process = Process::factory()->create([
+            'status' => 'ACTIVE',
+            'stages' => json_encode($stagesData),
+        ]);
         // Create a parent request
         $parentRequest = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
             'status' => 'ACTIVE',
             'completed_at' => null,
             'parent_request_id' => null, // This is a parent request
@@ -349,24 +373,75 @@ class CasesControllerTest extends TestCase
             'completed_at' => null,
             'parent_request_id' => $parentRequest->id, // This is a child request
         ]);
+        ProcessRequestToken::factory()->create([
+            'process_id' => $parentRequest->process_id,
+            'process_request_id' => $parentRequest->id,
+            'completed_at' => '2025-05-01 21:24:24',
+            'status' => 'CLOSED',
+            'stage_id' => $stagesData[0]['id'],
+            'stage_name' => $stagesData[0]['name'],
+        ]);
+        ProcessRequestToken::factory()->create([
+            'process_id' => $parentRequest->process_id,
+            'process_request_id' => $parentRequest->id,
+            'status' => 'ACTIVE',
+            'completed_at' => null,
+            'stage_id' => $stagesData[1]['id'],
+            'stage_name' => $stagesData[1]['name'],
+        ]);
 
         // Call the API endpoint
         $response = $this->apiCall('GET', '/cases' . '/' . $parentRequest->case_number . '/stages_bar');
 
         // Assert the response status and structure
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'parentRequest' => [
-                         'id',
-                         'case_number',
-                         'status',
-                         'completed_at',
-                     ],
-                     'requestCount',
-                     'all_stages',
-                     'current_stage',
-                     'stages_per_case',
-                 ]);
+            ->assertJsonStructure([
+                'parentRequest' => [
+                    'id',
+                    'case_number',
+                    'status',
+                    'completed_at',
+                ],
+                'requestCount',
+                'all_stages',
+                'current_stage',
+                'stages_per_case',
+            ]);
+        $this->assertNotEmpty($response->json('stages_per_case'));
+        $expectedStages = [
+            [
+                'id' => 1,
+                'name' => 'Request Send',
+                'status' => 'Done',
+                'completed_at' => '2025-05-01T21:24:24+00:00',
+            ],
+            [
+                'id' => 2,
+                'name' => 'Request Reviewed',
+                'status' => 'In Progress',
+                'completed_at' => '',
+            ],
+            [
+                'id' => 3,
+                'name' => 'Manager Reviewed',
+                'status' => 'Pending',
+                'completed_at' => '',
+            ],
+        ];
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'parentRequest' => [
+                    'id',
+                    'case_number',
+                    'status',
+                    'completed_at',
+                ],
+                'requestCount',
+                'all_stages',
+                'current_stage',
+                'stages_per_case',
+            ])
+            ->assertJsonPath('stages_per_case', $expectedStages);
     }
 
     /**
