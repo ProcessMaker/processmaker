@@ -1855,49 +1855,144 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     }
 
     /**
-     * Formats the stages configuration for the API response.
+     * Decodes the JSON string of the stages configuration.
      *
      * @param string|null $stagesJson The JSON string of the stages configuration.
-     * @return array The formatted array of stages.
+     * @return array The decoded stages configuration as an array.
      */
-    public static function formatStages(?string $stagesJson): array
+    protected static function decodeStagesConfig(?string $stagesJson): array
     {
-        $stagesConf = [];
-        if ($stagesJson) {
-            $stagesConf = json_decode($stagesJson, true);
+        return $stagesJson ? json_decode($stagesJson, true) : [];
+    }
+
+    /**
+     * Provides default stage data when no configuration exists.
+     *
+     * @param int $processId The process_id.
+     * @return array The default formatted array of stages.
+     */
+    protected static function getDefaultStagesData(int $processId): array
+    {
+        $totalCount = 0;
+        $activeCount = 0;
+        $completedCount = 0;
+        $activePercentage = 0;
+        $completedPercentage = 0;
+        $defaultCounts = self::getProcessDefaultStageCounts($processId);
+        if ($defaultCounts) {
+            $totalCount = $defaultCounts['total_count'] ?? 0;
+            $activeCount = $defaultCounts['active_count'] ?? 0;
+            $completedCount = $defaultCounts['completed_count'] ?? 0;
+            $activePercentage = ($totalCount > 0) ? (($activeCount / $totalCount) * 100) : 0;
+            $completedPercentage = ($totalCount > 0) ? (($completedCount / $totalCount) * 100) : 0;
         }
 
-        if (empty($stagesConf)) {
-            return [
-                [
-                    'stage_id' => 0, // This is an invalid stage
-                    'stage_name' => 'In progress', // This is a case status
-                    'percentage' => 50, // TO_DO: Get the percentaje
-                    'percentage_format' => '50%', // TO_DO: Get the percentaje with %
-                    'agregation_sum' => 0, // TO_DO: Get the average
-                    'agregation_count' => 100, // TO_DO: Get the counter
-                ],
-                [
-                    'stage_id' => 0,
-                    'stage_name' => 'Completed',
-                    'percentage' => 50,
-                    'percentage_format' => '50%',
-                    'agregation_sum' => 28, 678,
-                    'agregation_count' => 100,
-                ],
-            ];
-        }
+        return [
+            [
+                'stage_id' => 0,
+                'stage_name' => 'In progress',
+                'percentage' => $activePercentage,
+                'percentage_format' => $activePercentage . '%',
+                'agregation_sum' => 0,
+                'agregation_count' => $activeCount,
+            ],
+            [
+                'stage_id' => 0,
+                'stage_name' => 'Completed',
+                'percentage' => $completedPercentage,
+                'percentage_format' => $completedPercentage . '%',
+                'agregation_sum' => 0,
+                'agregation_count' => $completedCount,
+            ],
+        ];
+    }
 
-        return collect($stagesConf)->map(function ($stage, $index) {
+    /**
+     * Maps the stages configuration with the counts from the database.
+     *
+     * @param array $stagesConf The decoded stages configuration.
+     * @param array $stageCounts The counts of process requests by last_stage_id.
+     * @return array The formatted array of stages with counts.
+     */
+    protected static function mapStagesWithCounts(array $stagesConfig, array $stageCounts): array
+    {
+        return collect($stagesConfig)->map(function ($stage, $index) use ($stageCounts) {
+            $stageId = $stage['id'] ?? 0;
+            $totalCount = $stageCounts['total_count'] ?? 0;
+            $stageCount = $stageCounts[$stageId]['count'] ?? 0;
+            $stageSum = $stageCounts[$stageId]['total_aggregation_sum'] ?? 0;
+            $stagePercentage = ($totalCount > 0) ? ($stageCount / $totalCount * 100) : 0;
+
             return [
                 'stage_id' => $stage['id'] ?? 0,
                 'stage_name' => $stage['name'] ?? 'Unknown Stage ' . ($index + 1),
-                'percentage' => $stage['percentage'] ?? 100, // TO_DO: Get the percentaje
-                'percentage_format' => $stage['percentage'] ?? '100%',
-                'agregation_sum' => $stage['content'] ?? 28, 678, // TO_DO: Get the average
-                'agregation_count' => $stage['counter'] ?? 100, // TO_DO: Get the counter
+                'percentage' => $stagePercentage,
+                'percentage_format' => $stagePercentage . '%',
+                'agregation_sum' => $stageSum,
+                'agregation_count' => $stageCount,
             ];
         })->toArray();
+    }
+
+    protected static function getProcessDefaultStageCounts(int $processId): array
+    {
+        return ProcessRequest::where('process_id', $processId)
+            ->whereIn('status', ['ACTIVE', 'COMPLETED'])
+            ->selectRaw("
+                COUNT(CASE WHEN status = 'ACTIVE' THEN 1 END) AS active_count,
+                COUNT(CASE WHEN status = 'COMPLETED' THEN 1 END) AS completed_count,
+                COUNT(*) AS total_count
+            ")
+            ->first()
+            ->toArray();
+    }
+
+    protected static function getProcessStageCounts(int $processId, string $amountKey = 'amount'): array
+    {
+        $rawSql = sprintf('last_stage_id, COUNT(*) AS count, SUM(CAST(JSON_EXTRACT(data, \'$.%s\') AS DECIMAL(10, 2))) AS var_aggregation_sum', $amountKey);
+
+        $results = ProcessRequest::where('process_id', $processId)
+            ->groupBy('last_stage_id')
+            ->selectRaw($rawSql)
+            ->get()
+            ->toArray();
+
+        $stageData = [];
+        $totalCount = 0;
+        foreach ($results as $result) {
+            $stageData[$result['last_stage_id']] = [
+                'count' => $result['count'],
+                'total_aggregation_sum' => $result['var_aggregation_sum'],
+            ];
+            // We will consider only the request with stages related
+            if (!empty($result['last_stage_id'])) {
+                $totalCount += $result['count'];
+            }
+        }
+        $stageData['total_count'] = $totalCount;
+
+        return $stageData;
+    }
+
+    /**
+     * Formats the stages configuration for the API response.
+     *
+     * @param int $processId The process_id
+     * @param string|null $stagesJson The JSON string of the stages configuration.
+     * @return array The formatted array of stages.
+     */
+    public static function formatStages($processId, ?string $stagesJson): array
+    {
+        $stagesConfig = self::decodeStagesConfig($stagesJson);
+        if (empty($stagesConfig)) {
+            // If not exist stages we will return the default stages
+            return self::getDefaultStagesData($processId);
+        } else {
+            // Get the stages
+            $stageCounts = self::getProcessStageCounts($processId);
+
+            return self::mapStagesWithCounts($stagesConfig, $stageCounts);
+        }
     }
 
     /**

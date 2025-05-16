@@ -4,6 +4,7 @@ namespace ProcessMaker\Api\Tests\Feature;
 
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessRequest;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -187,5 +188,181 @@ class ProcessControllerTest extends TestCase
 
         // Assert the content of the stages
         $this->assertEquals($stagesData, $retrievedStages);
+    }
+
+    /**
+     * Test getting default stages for a process with statistics
+     */
+    public function testGetDefaultStagesPerProcess()
+    {
+        $process = Process::factory()->create([
+            'name' => 'Test Process Stages',
+            'status' => 'ACTIVE',
+        ]);
+
+        // Create 20 requests in "In Progress" stage
+        ProcessRequest::factory()->count(18)->create([
+            'process_id' => $process->id,
+            'status' => 'ACTIVE',
+        ]);
+        // Create 10 requests in "Completed" stage
+        ProcessRequest::factory()->count(12)->create([
+            'process_id' => $process->id,
+            'status' => 'COMPLETED',
+        ]);
+
+        $response = $this->apiCall('GET', route('api.processes.default-stages', ['process' => $process->id]));
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    'stage_id',
+                    'stage_name',
+                    'percentage',
+                    'percentage_format',
+                    'agregation_sum',
+                    'agregation_count',
+                ],
+            ],
+        ]);
+
+        // Verify stages statistics
+        $data = $response->json('data');
+        $this->assertCount(2, $data);
+
+        // Verify "In Progress" stage
+        $inProgress = collect($data)->firstWhere('stage_name', 'In progress');
+        $this->assertNotNull($inProgress);
+        $this->assertEquals(0, $inProgress['stage_id']);
+        $this->assertEquals(60, $inProgress['percentage']);
+        $this->assertEquals('60%', $inProgress['percentage_format']);
+        $this->assertEquals(0, $inProgress['agregation_sum']);
+        $this->assertEquals(18, $inProgress['agregation_count']);
+
+        // Verify "Completed" stage
+        $completed = collect($data)->firstWhere('stage_name', 'Completed');
+        $this->assertNotNull($completed);
+        $this->assertEquals(0, $completed['stage_id']);
+        $this->assertEquals(40, $completed['percentage']);
+        $this->assertEquals('40%', $completed['percentage_format']);
+        $this->assertEquals(0, $completed['agregation_sum']);
+        $this->assertEquals(12, $completed['agregation_count']);
+
+        // Verify the percentage needs to sum 100%
+        $this->assertEquals(100, $inProgress['percentage'] + $completed['percentage']);
+    }
+
+    /**
+     * Test getting custom stages for a process
+     */
+    public function testGetStagesPerProcess()
+    {
+        $stagesData = [
+            [
+                'id' => 1,
+                'name' => 'Custom Stage 1',
+                'order' => 2,
+            ],
+            [
+                'id' => 2,
+                'name' => 'Custom Stage 2',
+                'order' => 1,
+            ],
+        ];
+
+        $process = Process::factory()->create([
+            'name' => 'Test Process Custom Stages',
+            'status' => 'ACTIVE',
+            'stages' => json_encode($stagesData),
+        ]);
+        // Create 2 requests without stage
+        ProcessRequest::factory()->count(2)->create([
+            'process_id' => $process->id,
+            'status' => 'ACTIVE',
+            'data' => ['amount' => '10'],
+        ]);
+        // Create 5 requests in "Custom Stage 1" stage
+        ProcessRequest::factory()->count(5)->create([
+            'process_id' => $process->id,
+            'status' => 'ACTIVE',
+            'last_stage_id' => 1,
+            'last_stage_name' => 'Custom Stage 1',
+            'data' => ['amount' => '10'],
+        ]);
+        // Create 3 requests in "Custom Stage 2" stage
+        ProcessRequest::factory()->count(3)->create([
+            'process_id' => $process->id,
+            'status' => 'ACTIVE',
+            'last_stage_id' => 2,
+            'last_stage_name' => 'Custom Stage 2',
+            'data' => ['amount' => '10'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.processes.stages', ['process' => $process->id]));
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    'stage_id',
+                    'stage_name',
+                    'percentage',
+                    'percentage_format',
+                    'agregation_sum',
+                    'agregation_count',
+                ],
+            ],
+        ]);
+
+        // Verify custom stages
+        $data = $response->json('data');
+        $this->assertCount(2, $data);
+        // Verify "1" stage
+        $firstStage = collect($data)->firstWhere('stage_id', '1');
+        $this->assertEquals('Custom Stage 1', $firstStage['stage_name']);
+        $this->assertEquals(50, $firstStage['agregation_sum']);
+        $this->assertEquals(5, $firstStage['agregation_count']);
+
+        // Verify "2" stage
+        $secondStage = collect($data)->firstWhere('stage_id', '2');
+        $this->assertEquals('Custom Stage 2', $secondStage['stage_name']);
+        $this->assertEquals(30, $secondStage['agregation_sum']);
+        $this->assertEquals(3, $secondStage['agregation_count']);
+
+        // Verify the percentage needs to sum 100%
+        $this->assertEquals(100, $firstStage['percentage'] + $secondStage['percentage']);
+    }
+
+    /**
+     * Test getting metrics for a process
+     */
+    public function testGetMetricsPerProcess()
+    {
+        $process = Process::factory()->create([
+            'name' => 'Test Process Metrics',
+            'status' => 'ACTIVE',
+        ]);
+
+        $response = $this->apiCall('GET', route('api.processes.metrics', ['process' => $process->id]));
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    'id',
+                    'metric_description',
+                    'metric_count',
+                    'metric_count_description',
+                    'metric_value',
+                    'metric_value_unit',
+                ],
+            ],
+        ]);
+
+        $data = $response->json('data');
+
+        // Verify metrics array structure
+        $this->assertCount(3, $data);
     }
 }

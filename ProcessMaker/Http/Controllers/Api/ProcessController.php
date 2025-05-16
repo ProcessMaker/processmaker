@@ -1977,9 +1977,50 @@ class ProcessController extends Controller
      */
     public function getStagesPerProcess(Process $process)
     {
-        $formattedStages = Process::formatStages($process->stages);
+        $formattedStages = Process::formatStages($process->id, $process->stages);
 
-        return response()->json($formattedStages);
+        return response()->json(['data' => $formattedStages]);
+    }
+
+    /**
+     * Get the stages configuration for a specific process.
+     *
+     * @OA\Get(
+     *     path="/api/processes/{process}/default-stages",
+     *     summary="Get default process stages configuration",
+     *     description="Retrieves and formats the default stages configuration for a process.",
+     *     operationId="getDefaultStagesPerProcess",
+     *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         name="process",
+     *         description="ID of the process",
+     *         required=true,
+     *         in="path",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="stage_id", type="number", example="1"),
+     *                 @OA\Property(property="stage_name", type="string", example="In progress"),
+     *                 @OA\Property(property="percentage", type="number", nullable=true, example=60),
+     *                 @OA\Property(property="percentage_format", type="string", example="60%"),
+     *                 @OA\Property(property="agregation_sum", type="number", nullable=true, example=28678),
+     *                 @OA\Property(property="agregation_count", type="number", nullable=true, example=100),
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function getDefaultStagesPerProcess(Process $process)
+    {
+        $formattedStages = Process::formatStages($process->id, '');
+
+        return response()->json(['data' => $formattedStages]);
     }
 
     /**
@@ -2040,7 +2081,7 @@ class ProcessController extends Controller
             $format = $request->query('format', 'student');
             $formattedMetrics = Process::formatMetrics($format);
 
-            return response()->json($formattedMetrics);
+            return response()->json(['data' => $formattedMetrics]);
         } catch (\InvalidArgumentException $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
