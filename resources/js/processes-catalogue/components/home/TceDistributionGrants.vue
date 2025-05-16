@@ -61,62 +61,7 @@ const myTasksColumns = ref([]);
 const metrics = ref();
 const stages = ref();
 
-const arrowData = ref([
-  // {
-  //   id: "1",
-  //   body: "Grants",
-  //   header: "40%",
-  //   float: "28K",
-  //   percentage: 40,
-  //   content: "28,678",
-  //   color: "amber",
-  // },
-  // {
-  //   id: "2",
-  //   body: "Scholarships",
-  //   header: "20%",
-  //   float: "4K",
-  //   percentage: 20,
-  //   content: "4,678",
-  //   color: "green",
-  // },
-  // {
-  //   id: "3",
-  //   body: "Loans",
-  //   header: "15%",
-  //   float: "11K",
-  //   percentage: 15,
-  //   content: "11,678",
-  //   color: "blue",
-  // },
-  // {
-  //   id: "4",
-  //   body: "Out of pocket remaining",
-  //   header: "25%",
-  //   float: "17K",
-  //   percentage: 25,
-  //   content: "17,649",
-  //   color: "red",
-  // },
-  // {
-  //   id: "4",
-  //   body: "Out of pocket remaining",
-  //   header: "25%",
-  //   float: "17K",
-  //   percentage: 25,
-  //   content: "17,649",
-  //   color: "red",
-  // },
-  // {
-  //   id: "4",
-  //   body: "Out of pocket remaining",
-  //   header: "25%",
-  //   float: "17K",
-  //   percentage: 25,
-  //   content: "17,649",
-  //   color: "red",
-  // },
-]);
+const arrowData = ref([]);
 
 const showProcessInfo = ref(false);
 

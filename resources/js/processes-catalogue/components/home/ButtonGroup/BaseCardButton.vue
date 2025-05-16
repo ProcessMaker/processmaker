@@ -51,7 +51,7 @@ export default defineComponent({
       default: () => false,
     },
     content: {
-      type: String,
+      type: [String, Number],
       default: () => "",
     },
   },

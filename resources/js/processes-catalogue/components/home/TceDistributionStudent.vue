@@ -23,13 +23,15 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import CustomHomeTableSection from "./CustomHomeTableSection/CustomHomeTableSection.vue";
 import BaseCardButtonGroup from "./ButtonGroup/BaseCardButtonGroup.vue";
 import ProcessCollapseInfo from "../ProcessCollapseInfo.vue";
 import PercentageCardButtonGroup from "./PercentageButtonGroup/PercentageCardButtonGroup.vue";
 import { ellipsisPermission } from "../variables";
 import ProcessInfo from "./ProcessInfo.vue";
+import { getMetrics, getStages } from "../api";
+import { buildMetrics } from "./config/metrics";
 
 const props = defineProps({
   process: {
@@ -41,36 +43,8 @@ const emit = defineEmits(["goBackCategory"]);
 
 const myTasksColumns = ref([]);
 
-const data = ref([
-  {
-    id: "1",
-    header: "Max amount available",
-    body: "Across 10 aplicants",
-    icon: "fas fa-reply",
-    content: "84K",
-    active: true,
-    className: "tw-bg-white hover:tw-bg-gray-200",
-  },
-  {
-    id: "2",
-    header: "Application awarded",
-    body: "30% of all submitted",
-    icon: "fas fa-user",
-    content: "3",
-    className: "tw-bg-amber-100 hover:tw-bg-amber-200",
-    active: false,
-  },
-  {
-    id: "3",
-    header: "Total amount awarded",
-    body: "Across 3 aplicants",
-    icon: "fas fa-user",
-    content: "46K+",
-    className: "tw-bg-green-100 hover:tw-bg-green-200",
-    active: false,
-  },
-]);
-
+const stages = ref();
+const data = ref();
 const percentageData = ref([
   {
     id: "1",
@@ -111,4 +85,19 @@ const showProcessInfo = ref(false);
 const toggleInfo = () => {
   showProcessInfo.value = !showProcessInfo.value;
 };
+
+const hookMetrics = async () => {
+  const metricsResponse = await getMetrics({ processId: props.process.id });
+  data.value = buildMetrics(metricsResponse);
+};
+
+const hookStages = async () => {
+  const stagesResponse = await getStages({ processId: props.process.id });
+  stages.value = stagesResponse;
+};
+
+onMounted(() => {
+  hookMetrics();
+  hookStages();
+});
 </script>
