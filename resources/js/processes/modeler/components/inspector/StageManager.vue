@@ -25,15 +25,30 @@ const defaultStages = ref([]);
 const currentInstance = getCurrentInstance();
 
 const loadStagesFromApi = () => {
-  let stages = [
-    { id: 1, order: 1, label: 'Request Sent', selected: false },
-    { id: 2, order: 2, label: 'Request Reviewed', selected: false },
-    { id: 3, order: 3, label: 'Manager Reviewed', selected: false }
-  ];
-  selectItemFromDefinition(stages);
-  stages.forEach(item => {
-      defaultStages.value = [...defaultStages.value, item];
-  });
+  const id = window.ProcessMaker.modeler.process.id;
+  ProcessMaker
+    .apiClient
+    .get(`/processes/${id}/stages`)
+    .then((response) => {
+      let stages = response.data.data;
+      selectItemFromDefinition(stages);
+      stages.forEach(item => {
+        item.selected = false;
+        defaultStages.value = [...defaultStages.value, item];
+      });
+    });
+};
+
+const saveStagesToApi = (stages) => {
+  const id = window.ProcessMaker.modeler.process.id;
+  const params = {
+    stages: stages
+  };
+  ProcessMaker
+    .apiClient
+    .post(`/processes/${id}/stages`, params)
+    .then((response) => {
+    });
 };
 
 const getModeler = () => {
@@ -118,6 +133,7 @@ const removeStageToFlow = () => {
 
 const onChange = (stages) => {
   updateStagesForAllFlowConfigs(stages);
+  saveStagesToApi(stages);
 };
 
 const onUpdate = (stages, index, val, Oldal) => {

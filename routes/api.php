@@ -154,6 +154,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::delete('processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy')->middleware('can:archive-processes,process');
     Route::put('processes/{process}/restore', [ProcessController::class, 'restore'])->name('processes.restore')->middleware('can:archive-processes,process');
     Route::put('processes/{process}/duplicate', [ProcessController::class, 'duplicate'])->name('processes.duplicate')->middleware('can:create-processes,process');
+    Route::get('processes/{process}/stages', [ProcessController::class, 'getStages'])->name('processes.getStages')->middleware('can:view-processes,process');
+    Route::post('processes/{process}/stages', [ProcessController::class, 'saveStages'])->name('processes.saveStages')->middleware('can:create-processes');
 
     // Process Bookmark
     $middlewareCatalog = 'can:view-process-catalog';
