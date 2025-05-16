@@ -4,45 +4,139 @@
     <p class="text-sm mb-4">
       {{ $t("Here you have all the stages already set in this process. Define the order you prefer:") }}
     </p>
-    <StageList :initialStages="defaultStages" 
-               @change="changeStage"
+    <StageList :initialStages="defaultStages"
+               @onUpdate="onUpdate"
+               @onRemove="onRemove"
+               @onChange="onChange"
+               @onClickCheckbox="onClickCheckbox"
+               @onClickSelected="onClickSelected"
     ></StageList>
   </div>
 </template>
 
 <script setup>
 import StageList from './StageList.vue';
-import { ref, watch, reactive, toRefs, onMounted, computed, getCurrentInstance } from 'vue';
+import { ref, watch, reactive, toRefs, onMounted, computed, getCurrentInstance, nextTick } from 'vue';
 
 const props = defineProps({
   value: Object
-});
-const config = reactive({
-  stage: {
-    id: '',
-    label: ''
-  }
 });
 const defaultStages = ref([]);
 const currentInstance = getCurrentInstance();
 
 const loadStagesFromApi = () => {
   let stages = [
-    { id: 1, label: 'Request Sent', selected: false },
-    { id: 2, label: 'Request Reviewed', selected: true },
-    { id: 3, label: 'Manager Reviewed', selected: false }
+    { id: 1, order: 1, label: 'Request Sent', selected: false },
+    { id: 2, order: 2, label: 'Request Reviewed', selected: false },
+    { id: 3, order: 3, label: 'Manager Reviewed', selected: false }
   ];
+  selectItemFromDefinition(stages);
   stages.forEach(item => {
-      defaultStages.value.push(item);
-  });  
+      defaultStages.value = [...defaultStages.value, item];
+  });
 };
 
-const changeStage = (stages) => {
-    
+const getModeler = () => {
+  return currentInstance.proxy.$root.$children[0].$refs.modeler;
+};
+
+const getHighlightedNode = () => {
+  return getModeler().highlightedNode;
+};
+
+const getDefinition = () => {
+  return getHighlightedNode().definition;
+};
+
+const getConfigFromDefinition = (definition) => {
+  let config = {};
+  try {
+    config = JSON.parse(definition.config);
+  } catch (error) {
+    config = {};
+  }
+  return config;
+};
+
+const selectItemFromDefinition = (stages) => {
+  const config = getConfigFromDefinition(getDefinition());
+  const id = config?.stage?.id;
+  if (id === undefined) {
+    return;
+  }
+  for (const stage of stages) {
+    stage.selected = stage.id === id;
+  }
+};
+
+const updateStagesForAllFlowConfigs = (stages) => {
+  const links = getModeler().graph.getLinks();
+  for (const link of links) {
+    for (const stage of stages) {
+      let config = getConfigFromDefinition(link.component.node.definition);
+      if (config?.stage?.id === stage.id) {
+        config.stage.order = stage.order;
+        config.stage.label = stage.label;
+        Vue.set(link.component.node.definition, 'config', JSON.stringify(config));
+      }
+    }
+    link.component.setStageLabel();
+  }
+};
+
+const removeStageInAllFlowConfig = (stage) => {
+  const links = getModeler().graph.getLinks();
+  for (const link of links) {
+    let config = getConfigFromDefinition(link.component.node.definition);
+    if (config?.stage?.id === stage.id) {
+      delete config.stage;
+      Vue.set(link.component.node.definition, 'config', JSON.stringify(config));
+    }
+    link.component.removeStageLabels();
+  }
+};
+
+const applyStageToFlow = (stage) => {
+  let config = getConfigFromDefinition(getDefinition());
+  config.stage = {
+    id: stage.id,
+    order: stage.order,
+    label: stage.label
+  };
+  let definition = getDefinition();
+  Vue.set(definition, 'config', JSON.stringify(config));
+  getModeler().getCurrentStageModelComponent().setStageLabel();
+};
+
+const removeStageToFlow = () => {
+  let definition = getDefinition();
+  let config = getConfigFromDefinition(definition);
+  delete config.stage;
+  Vue.set(definition, 'config', JSON.stringify(config));
+  getModeler().getCurrentStageModelComponent().removeStageLabels();
+};
+
+const onChange = (stages) => {
+  updateStagesForAllFlowConfigs(stages);
+};
+
+const onUpdate = (stages, index, val, Oldal) => {
+  updateStagesForAllFlowConfigs(stages);
+};
+
+const onRemove = (stages, index, removed) => {
+  removeStageInAllFlowConfig(removed);
+};
+
+const onClickCheckbox = (stage) => {
+  applyStageToFlow(stage);
+};
+
+const onClickSelected = (stage) => {
+  removeStageToFlow();
 };
 
 onMounted(() => {
-  console.log('onMounted');
   loadStagesFromApi();
 });
 </script>
