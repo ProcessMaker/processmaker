@@ -1,15 +1,22 @@
 <template>
   <div>
-    <draggable v-model="stages" item-key="id" handle=".fa-grip-vertical" class="divide-y">
+    <draggable 
+      v-model="stages" 
+      item-key="id" 
+      handle=".fa-grip-vertical" 
+      class="divide-y"
+      @end="onReorder">
       <StageItem
         v-for="(item, index) in stages" 
-        :key="item.id" 
-        :item="item"
+        :key="index"
+        :id="item.id"
+        :order="item.order"
         :label="item.label"
-        :index="index"
         :selected="item.selected"
-        @update="updateLabel(index, $event)"
-        @remove="removeStage(index)"
+        @onUpdate="onUpdate(index, $event)"
+        @onRemove="onRemove(index)"
+        @onClickCheckbox="onClickCheckbox(index)"
+        @onClickSelected="onClickSelected(index)"
       ></StageItem>
     </draggable>
 
@@ -19,12 +26,16 @@
       <input
         v-model="newStage"
         class="tw-flex-1 tw-border tw-rounded px-2"
-        placeholder="Finished Request"
-        @keyup.enter="addStage"
+        :placeholder="$t('Enter label')"
+        @keyup.enter="onKeyupEnter"
       />
     </div>
     <div class="tw-flex tw-justify-end tw-mt-2">
-      <button @click="adding = !adding; newStage = '';" class="tw-bg-blue-500 text-white tw-text-sm tw-px-2 tw-py-0.5 tw-rounded">
+      <button 
+        @click="onClickAdd" 
+        :disabled="disableButton"
+        class="tw-bg-blue-500 text-white tw-text-sm tw-px-2 tw-py-0.5 tw-rounded" 
+        :class="{'tw-bg-gray-300 tw-cursor-not-allowed': disableButton}">
         <i class="fas fa-plus"></i>
       </button>
     </div>
@@ -32,50 +43,97 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import draggable from 'vuedraggable';
 import StageItem from './StageItem.vue';
 
 const props = defineProps({
-  initialStages: Array,
+  initialStages: {
+    type: Array,
+    default: () => []
+  }
 });
-const emit = defineEmits(['change']);
-
+const emit = defineEmits(['onAdd', 'onUpdate', 'onRemove', 'onChange', 'onClickCheckbox', 'onClickSelected']);
 const adding = ref(false);
-const stages = ref([...props.initialStages]);
 const newStage = ref('');
+const stages = ref([...props.initialStages]);
 const totalStages = computed(() => stages.value.length);
+const disableButton = computed(() => totalStages.value >= 8);
+const $t = window.ProcessMaker.i18n.t;
 
-const addStage = () => {
+const onClickAdd = () => {
+  if (disableButton.value) {
+    return;
+  }
+  adding.value = !adding.value; 
+  newStage.value = '';
+};
+
+const onKeyupEnter = () => {
   if (newStage.value.trim()) {
+    const uniqueId = Number(`${Date.now()}${Math.floor(Math.random() * 900 + 100)}`);
+    const order = stages.value.length + 1;
     stages.value.push({
-      id: Date.now(),
+      id: uniqueId,
+      order: order,
       label: newStage.value,
-      selected: false,
+      selected: false
     });
     newStage.value = '';
     adding.value = false;
-    emit('change', stages.value);
+    emit('onAdd', stages.value, stages.value.length - 1);
+    emit('onChange', stages.value);
   }
 };
 
-const updateLabel = (index, newLabel) => {
+const onUpdate = (index, newLabel) => {
+  const oldLabel = stages.value[index].label;
   stages.value[index].label = newLabel;
-  emit('change', stages.value);
+  emit('onUpdate', stages.value, index, newLabel, oldLabel);
+  emit('onChange', stages.value);
 };
 
-const removeStage = (index) => {
+const onRemove = (index) => {
   ProcessMaker.confirmModal(
-    "Caution!",
-    "Are you sure you want to delete the stage?",
+    $t("Caution!"),
+    $t("Are you sure you want to delete the stage?"),
     "",
     () => {
-      stages.value.splice(index, 1);
-      emit('change', stages.value);  
+      const removed = stages.value.splice(index, 1);
+      emit('onRemove', stages.value, index, removed[0]);
+      emit('onChange', stages.value);
     }
   );
 };
+
+const onClickCheckbox = (index) => {
+  stages.value.forEach((stage, i) => {
+    stage.selected = i === index;
+  });
+  emit('onClickCheckbox', stages.value[index]);
+};
+
+const onClickSelected = (index) => {
+  stages.value.forEach((stage, i) => {
+    if (i === index) {
+      stage.selected = false;
+    }
+  });
+  emit('onClickSelected', stages.value[index]);
+};
+
+const onReorder = () => {
+  stages.value.forEach((item, index) => {
+    item.order = index + 1;
+  });
+  emit('onChange', stages.value);
+};
+
+watch(() => props.initialStages, (newVal) => {
+  stages.value = [...newVal];
+});
 </script>
+
 <style scoped>
   .stage-item-number {
     background-color: #788793;
