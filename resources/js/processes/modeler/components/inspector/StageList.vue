@@ -71,9 +71,10 @@ const onClickAdd = () => {
 
 const onKeyupEnter = () => {
   if (newStage.value.trim()) {
+    const uniqueId = Number(`${Date.now()}${Math.floor(Math.random() * 900 + 100)}`);
     const order = stages.value.length + 1;
     stages.value.push({
-      id: 0,
+      id: uniqueId,
       order: order,
       label: newStage.value,
       selected: false

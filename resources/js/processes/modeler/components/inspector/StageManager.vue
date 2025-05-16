@@ -39,12 +39,13 @@ const loadStagesFromApi = () => {
 };
 
 const saveStagesToApi = (stages) => {
-  stages.forEach(item => {
+  const copy = structuredClone(stages);
+  copy.forEach(item => {
     delete item.selected;
   });
   const id = window.ProcessMaker.modeler.process.id;
   const params = {
-    stages: stages
+    stages: copy
   };
   ProcessMaker
     .apiClient
