@@ -226,7 +226,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         'assigned',
         'completed',
         'due',
-        'default'
+        'default',
     ];
 
     protected $appends = [
@@ -241,6 +241,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         'signal_events' => 'array',
         'conditional_events' => 'array',
         'properties' => 'array',
+        'stages' => 'array',
     ];
 
     public static function boot()

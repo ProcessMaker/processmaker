@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use ProcessMaker\Http\Controllers\Api\BookmarkController;
+use ProcessMaker\Http\Controllers\Api\CaseController;
 use ProcessMaker\Http\Controllers\Api\ChangePasswordController;
 use ProcessMaker\Http\Controllers\Api\CommentController;
 use ProcessMaker\Http\Controllers\Api\CssOverrideController;
@@ -154,6 +155,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::delete('processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy')->middleware('can:archive-processes,process');
     Route::put('processes/{process}/restore', [ProcessController::class, 'restore'])->name('processes.restore')->middleware('can:archive-processes,process');
     Route::put('processes/{process}/duplicate', [ProcessController::class, 'duplicate'])->name('processes.duplicate')->middleware('can:create-processes,process');
+    Route::get('processes/{process}/stages', [ProcessController::class, 'getStages'])->name('processes.getStages')->middleware('can:view-processes,process');
+    Route::post('processes/{process}/stages', [ProcessController::class, 'saveStages'])->name('processes.saveStages')->middleware('can:create-processes');
 
     // Process Bookmark
     $middlewareCatalog = 'can:view-process-catalog';
@@ -212,6 +215,9 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('tasks/{task}/setPriority', [TaskController::class, 'setPriority'])->name('tasks.priority');
     Route::put('tasks/updateReassign', [TaskController::class, 'updateReassign'])->name('tasks.updateReassign');
     Route::get('tasks/user-can-reassign', [TaskController::class, 'userCanReassign'])->name('tasks.user_can_reassign');
+
+    // Cases
+    Route::get('cases/{case_number}/stages_bar', [CaseController::class, 'getStageCase'])->name('cases.stage');
 
     // TaskDrafts
     Route::put('drafts/{task}', [TaskDraftController::class, 'update'])->name('taskdraft.update');

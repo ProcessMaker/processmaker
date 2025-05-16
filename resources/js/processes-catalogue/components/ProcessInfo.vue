@@ -1,52 +1,64 @@
 <template>
-  <div>
+  <div class="tw-relative tw-h-full">
     <process-collapse-info
-      v-show="hideLaunchpad"
       :process="process"
       :current-user-id="currentUserId"
       :ellipsis-permission="ellipsisPermission"
       :my-tasks-columns="myTasksColumns"
       @goBackCategory="$emit('goBackCategory')"
       @updateMyTasksColumns="updateMyTasksColumns"
+      @toggle-info="toggleInfo"
     />
     <process-tab
-      ref="processTab"
       v-show="hideLaunchpad"
+      ref="processTab"
       :current-user="currentUser"
       :process="process"
-      class="process-tab-container"
+      class="tw-mt-4 tw-mr-5 lg:tw-mt-4 lg:tw-mr-5"
     />
-
-    <div w-100 h-100 v-show="!hideLaunchpad">
-      <div class="card card-body">
-      <div class="d-flex justify-content-between">
-        <div class="d-flex align-items-center">
-          <i class="fas fa-angle-left"
-          @click="closeFullCarousel"
+    <!-- SlideOver -->
+    <slide-process-info
+      :show="showProcessInfo"
+      :title="title"
+      :process="process"
+      :full-carousel="fullCarousel"
+      @closeCarousel="closeFullCarousel"
+      @close="closeProcessInfo"
+    >
+      <div class="tw-flex tw-flex-col tw-gap-4 tw-pl-10 tw-pr-10">
+        <carousel-slide
+          :process="process"
+          @full-carousel="showFullCarousel"
+        />
+        <div v-show="!fullCarousel">
+          <process-options
+            class="tw-w-full"
+            :process="process"
+            :collapsed="collapsed"
           />
-          <span style="margin-left: 10px;">{{ process.name }} {{ this.firstImage }} of {{ this.lastImage }}</span>
+          <progress-bar-section :stages-summary="process.stagesSummary" />
         </div>
       </div>
-      </div>
-      <processes-carousel
-        :process="process"
-        :full-carousel="{ url: null, hideLaunchpad: true }"
-        :index-selected-image="indexSelectedImage"
-      />
-    </div>
+    </slide-process-info>
   </div>
 </template>
 
 <script>
 import ProcessCollapseInfo from "./ProcessCollapseInfo.vue";
 import ProcessTab from "./ProcessTab.vue";
-import ProcessesCarousel from "./ProcessesCarousel.vue";
+import CarouselSlide from "./CarouselSlide.vue";
+import SlideProcessInfo from "./slideProcessInfo/SlideProcessInfo.vue";
+import ProcessOptions from "./ProcessOptions.vue";
+import ProgressBarSection from "./progressBar/ProgressBarSection.vue";
 
 export default {
   components: {
     ProcessCollapseInfo,
     ProcessTab,
-    ProcessesCarousel,
+    SlideProcessInfo,
+    ProcessOptions,
+    ProgressBarSection,
+    CarouselSlide,
   },
   props: ["process", "currentUserId", "currentUser", "ellipsisPermission"],
   data() {
@@ -59,7 +71,17 @@ export default {
       lastImage: null,
       indexSelectedImage: 0,
       myTasksColumns: [],
+      showProcessInfo: false,
+      collapsed: true,
+      fullCarousel: false,
     };
+  },
+  computed: {
+    title() {
+      return this.fullCarousel
+        ? this.process.name
+        : this.$t("Process Information");
+    },
   },
   mounted() {
     this.dataOptions = {
@@ -68,6 +90,7 @@ export default {
     };
     this.$root.$on("clickCarouselImage", (val) => {
       this.hideLaunchpad = !val.hideLaunchpad;
+      this.showProcessInfo = false;
       this.lastImage = val.countImages;
       this.indexSelectedImage = val.imagePosition;
       this.firstImage = this.indexSelectedImage + 1;
@@ -77,28 +100,36 @@ export default {
     });
     this.getMyTasksColumns();
   },
-  computed: {
-  },
   methods: {
     closeFullCarousel() {
-      this.$root.$emit("clickCarouselImage", false);
+      this.fullCarousel = false;
     },
     updateMyTasksColumns(columns) {
       this.myTasksColumns = columns;
-      this.$refs['processTab'].updateColumnsByType('myTasks', columns);
+      this.$refs.processTab.updateColumnsByType("myTasks", columns);
     },
     getMyTasksColumns() {
       this.$nextTick(() => {
-        this.myTasksColumns = this.$refs['processTab'].getDefaultColumnsByType("myTasks");
+        this.myTasksColumns = this.$refs.processTab.getDefaultColumnsByType("myTasks");
       });
-    }
+    },
+    toggleInfo() {
+      this.showProcessInfo = !this.showProcessInfo;
+    },
+    closeProcessInfo() {
+      this.showProcessInfo = false;
+    },
+    showFullCarousel() {
+      this.fullCarousel = true;
+    },
   },
 };
 </script>
 <style lang="scss" scoped>
 @import '~styles/variables';
-.process-tab-container {
-  @media (min-width: $lp-breakpoint) {
+/* Media queries responsive */
+@media (min-width: $lp-breakpoint) {
+  .tw-mt-4.tw-mr-5 {
     margin-top: 16px;
     margin-right: 20px;
   }
