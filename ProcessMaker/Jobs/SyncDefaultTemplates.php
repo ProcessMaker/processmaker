@@ -3,14 +3,13 @@
 namespace ProcessMaker\Jobs;
 
 use Exception;
-use Facades\ProcessMaker\JsonColumnIndex;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\ProcessCategory;
@@ -22,8 +21,6 @@ class SyncDefaultTemplates implements ShouldQueue
 
     /**
      * Create a new job instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -34,7 +31,6 @@ class SyncDefaultTemplates implements ShouldQueue
      * Execute the job.
      * Function to handle the execution of this job when it is run.
      * Here the function fetches default templates list from Github and saves them to the database.
-     * @return void
      */
     public function handle()
     {
@@ -54,10 +50,11 @@ class SyncDefaultTemplates implements ShouldQueue
         )->getKey();
 
         // Get the default template list from Github.
-        $response = Http::get($url);
-
+        $response = Http::timeout(10)->get($url);
         if (!$response->successful()) {
-            throw new Exception('Unable to fetch default template list.');
+            Log::warning("[SyncDefaultTemplates] Failed to fetch template index from GitHub: {$url} - Status: {$response->status()}");
+
+            return; // skip the job gracefully
         }
 
         // Extract the json data from the response and iterate over the categories and templates to retrieve them.
@@ -73,10 +70,12 @@ class SyncDefaultTemplates implements ShouldQueue
                     continue;
                 }
 
-                $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/' . $template['relative_path'];
-                $response = Http::get($url);
+                $relativePath = ltrim($template['relative_path'], './');
+                $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/' . $relativePath;
+                $response = Http::timeout(10)->get($url);
                 if (!$response->successful()) {
-                    throw new Exception("Unable to fetch default template {$template['name']}.");
+                    Log::warning("[SyncDefaultTemplates] Skipped template due to failed fetch: {$template['name']} ({$template['uuid']}) - Status: {$response->status()}");
+                    continue;
                 }
                 $payload = $response->json();
                 data_set($payload, 'export.' . $payload['root'] . '.attributes.process_category_id', $processCategoryId);
@@ -86,7 +85,7 @@ class SyncDefaultTemplates implements ShouldQueue
                     'saveAssetsMode' => 'saveAllAssets',
                 ]);
                 $importer = new Importer($payload, $options);
-                $manifest = $importer->doImport();
+                $importer->doImport();
             }
         }
     }
