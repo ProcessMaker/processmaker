@@ -46,15 +46,27 @@ export const defaultColumns = [
     },
   },
   {
-    label: "Task",
-    field: "active_tasks",
-    sortable: false,
+    label: "Stage",
+    field: "stage",
+    sortable: true,
     default: true,
     width: 200,
     truncate: true,
     subject: {
       type: "Field",
-      value: "active_tasks",
+      value: "stage",
+    },
+  },
+  {
+    label: "Progress",
+    field: "progress",
+    sortable: true,
+    default: true,
+    width: 200,
+    truncate: true,
+    subject: {
+      type: "Field",
+      value: "progress",
     },
   },
   {
@@ -97,6 +109,54 @@ export const defaultColumns = [
     subject: {
       type: "Field",
       value: "completed_at",
+    },
+  },
+  {
+    label: "Name",
+    field: "data.program.name",
+    sortable: true,
+    default: true,
+    width: 200,
+    truncate: true,
+    subject: {
+      type: "Field",
+      value: "data.program.name",
+    },
+  },
+  {
+    label: "Aid Type",
+    field: "data.program.type",
+    sortable: true,
+    default: true,
+    width: 200,
+    truncate: true,
+    subject: {
+      type: "Field",
+      value: "data.program.type",
+    },
+  },
+  {
+    label: "Source",
+    field: "data.program.source",
+    sortable: true,
+    default: true,
+    width: 200,
+    truncate: true,
+    subject: {
+      type: "Field",
+      value: "data.program.source",
+    },
+  },
+  {
+    label: "Deadline",
+    field: "data.program.deadline",
+    sortable: true,
+    default: true,
+    width: 200,
+    truncate: true,
+    subject: {
+      type: "Field",
+      value: "data.program.deadline",
     },
   },
 ];
