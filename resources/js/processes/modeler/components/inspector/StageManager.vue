@@ -33,13 +33,15 @@ const loadStagesFromApi = () => {
       let stages = response.data.data;
       selectItemFromDefinition(stages);
       stages.forEach(item => {
-        item.selected = false;
         defaultStages.value = [...defaultStages.value, item];
       });
     });
 };
 
 const saveStagesToApi = (stages) => {
+  stages.forEach(item => {
+    delete item.selected;
+  });
   const id = window.ProcessMaker.modeler.process.id;
   const params = {
     stages: stages
