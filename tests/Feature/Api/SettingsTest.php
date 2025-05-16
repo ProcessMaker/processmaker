@@ -174,4 +174,59 @@ class SettingsTest extends TestCase
         //Verify variable were not updated
         $this->assertDatabaseMissing('settings', ['config' => '{"1myVar":"This is my variable 1","myVar space":"This is my variable 2"}']);
     }
+
+    public function test_it_can_create_a_setting()
+    {
+        $menu = SettingsMenus::create([
+            'menu_group' => 'Log-In & Auth',
+        ]);
+        $data = [
+            'key' => 'white_list.drive',
+            'format' => 'text',
+            'config' => 'https://drive.google.com',
+            'name' => 'Drive',
+            'group' => 'IFrame Whitelist Config',
+            'group_id' => $menu->id,
+            'hidden' => false,
+            'ui' => null,
+        ];
+        $route = route('api.settings.store');
+        $response = $this->apiCall('POST', $route, $data);
+        //Verify the status
+        $response->assertStatus(201);
+    }
+
+    public function test_it_returns_error_for_duplicate_entry()
+    {
+        $menu = SettingsMenus::create([
+            'menu_group' => 'Log-In & Auth',
+        ]);
+        // Create a setting first
+        Setting::create([
+            'key' => 'white_list.drive',
+            'format' => 'text',
+            'config' => 'https://drive.google.com',
+            'name' => 'Drive',
+            'group' => 'IFrame Whitelist Config',
+            'group_id' => $menu->id,
+            'hidden' => false,
+            'ui' => null,
+        ]);
+        // Data to create
+        $data = [
+            'key' => 'white_list.drive',
+            'format' => 'text',
+            'config' => 'https://drive.google.com',
+            'name' => 'Drive',
+            'group' => 'IFrame Whitelist Config',
+            'group_id' => $menu->id,
+            'hidden' => false,
+            'ui' => null,
+        ];
+        $route = route('api.settings.store');
+        $response = $this->apiCall('POST', $route, $data);
+        //Verify the status
+        $response->assertStatus(409)
+                 ->assertJson(['message' => 'The "Site Name" you\'re trying to add already exists. Please select a different name or review the existing entries to avoid duplication.']);
+    }
 }

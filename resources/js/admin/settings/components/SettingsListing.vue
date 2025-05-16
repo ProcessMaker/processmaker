@@ -188,6 +188,7 @@
         </div>
       </div>
     </div>
+    <modal-white-list ref="modal-whitelist" />
   </div>
 </template>
 
@@ -211,8 +212,10 @@ import SettingsRange from './SettingsRange';
 import SettingDriverAuthorization from './SettingDriverAuthorization';
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import SettingsEmpty from "./SettingsEmpty.vue";
+import ModalWhiteList from "./ModalWhiteList.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
+const whiteListName = "IFrame Whitelist Config";
 
 export default {
   components: {
@@ -232,6 +235,7 @@ export default {
     SettingsRange,
     SettingSelect,
     SettingsEmpty,
+    ModalWhiteList,
   },
   mixins:[dataLoadingMixin, uniqIdsMixin],
   props: ['group'],
@@ -272,37 +276,10 @@ export default {
     },
   },
   mounted() {
+    const that = this;
+
     this.$on("refresh-menu", this.removeElement);
-    if (! this.group) {
-      this.orderBy = "group";
-      this.fields.push({
-        key: "group",
-        label: "Group",
-        sortable: true,
-        tdClass: "td-group",
-      });
-    }
-
-    this.fields.push({
-      key: "name",
-      label: "Setting",
-      sortable: true,
-      tdClass: "align-middle td-name settings-listing-td1",
-    });
-
-    this.fields.push({
-      key: "config",
-      label: "Configuration",
-      sortable: false,
-      tdClass: "align-middle td-config settings-listing-td2",
-    });
-
-    this.fields.push({
-      key: "actions",
-      label: "",
-      sortable: false,
-      tdClass: "align-middle settings-listing-td3",
-    });
+    this.fillFields();
 
     ProcessMaker.EventBus.$on('setting-added-from-modal', () => {
       this.shouldDisplayNoDataMessage = false;
@@ -310,8 +287,44 @@ export default {
         this.refresh();
       });
     });
+
+    window.addWhiteListURL = function (owner) {
+      that.$refs["modal-whitelist"].show(owner.group);
+    };
   },
   methods: {
+    fillFields() {
+      if (!this.group) {
+        this.orderBy = "group";
+        this.fields.push({
+          key: "group",
+          label: "Group",
+          sortable: true,
+          tdClass: "td-group",
+        });
+      }
+
+      this.fields.push({
+        key: "name",
+        label: this.group === whiteListName ? "Name" : "Setting",
+        sortable: true,
+        tdClass: "align-middle td-name settings-listing-td1",
+      });
+
+      this.fields.push({
+        key: "config",
+        label: this.group === whiteListName ? "Links" : "Configuration",
+        sortable: false,
+        tdClass: "align-middle td-config settings-listing-td2",
+      });
+
+      this.fields.push({
+        key: "actions",
+        label: "",
+        sortable: false,
+        tdClass: "align-middle settings-listing-td3",
+      });
+    },
     loadButtons() {
       ProcessMaker.apiClient.get(`/settings/group/${this.group}/buttons`)
         .then((response) => {
