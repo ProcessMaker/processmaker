@@ -9,6 +9,7 @@ import LinkCell from "./LinkCell.vue";
 import CollapseFormCell from "./CollapseFormCell.vue";
 import TruncatedColumn from "./TruncatedColumn.vue";
 import FlagCell from "./FlagCell.vue";
+import ProgressBarCell from "./ProgressBarCell.vue";
 
 export {
   ParticipantsCell,
@@ -22,4 +23,5 @@ export {
   ParticipantCell,
   TruncatedColumn,
   FlagCell,
+  ProgressBarCell,
 };

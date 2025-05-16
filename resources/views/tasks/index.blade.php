@@ -161,6 +161,7 @@
         window.Processmaker.user = @json($currentUser);
         window.Processmaker.selectedProcess = @json($selectedProcess);
         window.Processmaker.defaultSavedSearchId = @json($defaultSavedSearchId);
+        window.ProcessMaker.isTceCustomization = {{{config('app.tce_customization_enable') ? 'true' : 'false'}}};
     </script>
     @foreach($manager->getScripts() as $script)
         <script src="{{$script}}"></script>

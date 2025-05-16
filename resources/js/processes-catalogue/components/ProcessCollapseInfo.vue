@@ -14,7 +14,7 @@
           <div class="d-flex justify-content-between">
             <div class="d-flex align-items-center flex-grow-1">
               <i
-                class="fas fa-chevron-left mr-2 custom-color"
+                class="fas fa-chevron-left mr-2 custom-color hover:tw-cursor-pointer"
                 @click="goBack()" />
               <div
                 v-b-tooltip.hover
@@ -97,8 +97,6 @@ import ProcessesMixin from "./mixins/ProcessesMixin";
 import ButtonsStart from "./optionsMenu/ButtonsStart.vue";
 import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 import Bookmark from "./Bookmark.vue";
-
-import Home from "./home/Home.vue";
 
 export default {
   components: {

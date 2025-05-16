@@ -155,6 +155,7 @@
   <script src="{{mix('js/initialLoad.js')}}"></script>
 
   <script>
+    window.ProcessMaker.caseNumber = request.case_number;
     window.ProcessMaker.modeler = {
       xml: @json($bpmn),
       configurables: [],

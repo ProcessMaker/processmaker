@@ -22,3 +22,13 @@ export const getRequests = async ({
 
   return response.data;
 };
+
+export const getStages = async ({ processId }) => {
+  const response = await api.get(`/processes/${processId}/stages`);
+  return response.data;
+};
+
+export const getMetrics = async ({ processId }) => {
+  const response = await api.get(`/processes/${processId}/metrics`);
+  return response.data;
+};

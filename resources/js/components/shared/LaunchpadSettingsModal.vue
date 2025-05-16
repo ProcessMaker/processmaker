@@ -171,6 +171,8 @@ import IconDropdown from "./IconDropdown.vue";
 import InputImageCarousel from "./InputImageCarousel.vue";
 import ColumnChooser from "./ColumnChooser.vue";
 
+const isTceCustomization = () => window.ProcessMaker?.isTceCustomization;
+
 export default {
   components: {
     Modal, IconDropdown, InputImageCarousel, ColumnChooser,
@@ -542,7 +544,11 @@ export default {
               uuid: item.uuid,
             }));
 
-            this.dropdownSavedScreen = [this.defaultScreen].concat(this.tceScreens).concat(resultArray);
+            this.dropdownSavedScreen = [this.defaultScreen];
+            if (isTceCustomization()) {
+              this.dropdownSavedScreen = this.dropdownSavedScreen.concat(this.tceScreens);
+            }
+            this.dropdownSavedScreen = this.dropdownSavedScreen.concat(resultArray);
           }
         })
         .catch((error) => {
