@@ -3,20 +3,17 @@
     <!-- First Option -->
     <div
       v-if="optionsModel.length"
-      class="tw-overflow-hidden tw-text-ellipsis"
-      >
+      class="tw-overflow-hidden tw-text-ellipsis">
       <a
         v-if="href !== null"
         class="hover:tw-text-blue-400 tw-text-gray-500"
-        :href="firstOptionHref"
-      >
+        :href="firstOptionHref">
         {{ firstOptionValue }}
       </a>
       <span
         v-else
         class="hover:tw-text-blue-400 tw-text-gray-500 hover:tw-cursor-pointer"
-        @click.prevent.stop="onClickOption(optionsModel[0], 0)"
-      >
+        @click.prevent.stop="onClickOption(optionsModel[0], 0)">
         {{ firstOptionValue }}
       </span>
     </div>
@@ -27,12 +24,10 @@
       v-model="show"
       :hover="false"
       position="bottom"
-      class="!tw-absolute tw-right-0 tw-top-0 tw-h-full tw-flex tw-items-center"
-    >
+      class="!tw-absolute tw-right-0 tw-top-0 tw-h-full tw-flex tw-items-center">
       <div
         class="tw-self-center tw-px-2 tw-rounded-md hover:tw-cursor-pointer hover:tw-bg-gray-200 tw-bg-white"
-        @click.prevent="onClick"
-      >
+        @click.prevent="onClick">
         <i class="fas fa-ellipsis-v" />
       </div>
       <template #content>
@@ -40,20 +35,17 @@
           <li
             v-for="(option, index) in additionalOptions"
             :key="index"
-            class="hover:tw-bg-gray-100"
-          >
+            class="hover:tw-bg-gray-100">
             <a
               v-if="href !== null"
               class="tw-flex tw-py-2 tw-px-4 transition duration-300 tw-text-gray-500 hover:tw-bg-gray-200 hover:tw-text-blue-400"
-              :href="getOptionHref(option)"
-            >
+              :href="getOptionHref(option)">
               {{ optionValues[index + 1] }}
             </a>
             <span
               v-else
               class="tw-flex tw-py-2 tw-px-4 transition duration-300 hover:tw-bg-gray-200 hover:tw-cursor-pointer"
-              @click.prevent.stop="onClickOption(option, index + 1)"
-            >
+              @click.prevent.stop="onClickOption(option, index + 1)">
               {{ optionValues[index + 1] }}
             </span>
           </li>
@@ -127,17 +119,13 @@ const optionsModel = computed(() => {
  * Computed array of additional options (all except first)
  * @returns {Array} Array of option objects excluding first option
  */
-const additionalOptions = computed(() => 
-  optionsModel.value.slice(1)
-);
+const additionalOptions = computed(() => optionsModel.value.slice(1));
 
 /**
  * Checks if there are additional options beyond the first one
  * @returns {boolean} True if more than one option exists
  */
-const hasAdditionalOptions = computed(() => 
-  optionsModel.value.length > 1
-);
+const hasAdditionalOptions = computed(() => optionsModel.value.length > 1);
 
 /**
  * Pre-computes formatted display values for all options
@@ -145,35 +133,28 @@ const hasAdditionalOptions = computed(() =>
  */
 const optionValues = computed(() => {
   if (!isFunction(props.formatterOptions)) return {};
-  
-  return optionsModel.value.map(option => 
-    props.formatterOptions(option, props.row, props.column, props.columns)
-  );
+
+  return optionsModel.value.map((option) => props.formatterOptions(option, props.row, props.column, props.columns));
 });
 
 /**
  * Gets the formatted value for the first option
  * @returns {string} Formatted value or empty string
  */
-const firstOptionValue = computed(() => 
-  optionValues.value[0] || ""
-);
+const firstOptionValue = computed(() => optionValues.value[0] || "");
 
 /**
  * Generates href for first option if href prop is provided
  * @returns {string|null} URL for first option or null
  */
-const firstOptionHref = computed(() => 
-  props.href ? props.href(optionsModel.value[0]) : null
-);
+const firstOptionHref = computed(() => (props.href ? props.href(optionsModel.value[0]) : null));
 
 /**
  * Generates href for a given option
  * @param {Object} option - The option object
  * @returns {string|null} URL for the option or null
  */
-const getOptionHref = (option) => 
-  props.href ? props.href(option) : null;
+const getOptionHref = (option) => (props.href ? props.href(option) : null);
 
 /**
  * Toggles visibility of options popover

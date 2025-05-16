@@ -24,6 +24,10 @@ export const statuses = {
     color: "blue",
     label: `${t("Completed")}`,
   },
+  CLOSED: {
+    color: "blue",
+    label: `${t("Closed")}`,
+  },
   ERROR: {
     color: "red",
     label: `${t("Error")}`,
@@ -35,6 +39,10 @@ export const statuses = {
   ACTIVE: {
     color: "green",
     label: `${t("In Progress")}`,
+  },
+  overdue: {
+    color: "red",
+    label: `${t("Overdue")}`,
   },
 };
 
@@ -54,17 +62,13 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-    const color = computed(() => {
-      return (
-        statuses[props.row[props.column.field]].color || statuses.IN_PROGRESS.color
-      );
-    });
+    const color = computed(() => (
+      statuses[props.row[props.column.field]].color || statuses.IN_PROGRESS.color
+    ));
 
-    const label = computed(() => {
-      return (
-        statuses[props.row[props.column.field]].label || statuses.IN_PROGRESS.label
-      );
-    });
+    const label = computed(() => (
+      statuses[props.row[props.column.field]].label || statuses.IN_PROGRESS.label
+    ));
 
     return {
       color,

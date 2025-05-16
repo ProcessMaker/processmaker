@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use ProcessMaker\Http\Controllers\Api\BookmarkController;
+use ProcessMaker\Http\Controllers\Api\CaseController;
 use ProcessMaker\Http\Controllers\Api\ChangePasswordController;
 use ProcessMaker\Http\Controllers\Api\CommentController;
 use ProcessMaker\Http\Controllers\Api\CssOverrideController;
@@ -212,6 +213,12 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('tasks/{task}/setPriority', [TaskController::class, 'setPriority'])->name('tasks.priority');
     Route::put('tasks/updateReassign', [TaskController::class, 'updateReassign'])->name('tasks.updateReassign');
     Route::get('tasks/user-can-reassign', [TaskController::class, 'userCanReassign'])->name('tasks.user_can_reassign');
+
+    // Cases
+    Route::get('cases/{case_number}/stages_bar', [CaseController::class, 'getStageCase'])->name('cases.stage');
+    Route::get('processes/{process}/default-stages', [ProcessController::class, 'getDefaultStagesPerProcess'])->name('processes.default-stages');
+    Route::get('processes/{process}/stages', [ProcessController::class, 'getStagesPerProcess'])->name('processes.stages');
+    Route::get('processes/{process}/metrics', [ProcessController::class, 'getMetricsPerProcess'])->name('processes.metrics');
 
     // TaskDrafts
     Route::put('drafts/{task}', [TaskDraftController::class, 'update'])->name('taskdraft.update');
