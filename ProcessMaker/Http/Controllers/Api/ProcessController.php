@@ -1973,7 +1973,7 @@ class ProcessController extends Controller
      */
     public function getStages(Process $process)
     {
-        $stages = $process->stages;
+        $stages = $process->stages ?? [];
 
         return new ApiCollection($stages);
     }
