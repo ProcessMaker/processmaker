@@ -36,7 +36,11 @@ class ProcessObserver
         $process->self_service_tasks = $process->getUpdatedSelfServiceTasks();
         $process->signal_events = $process->getUpdatedStartEventsSignalEvents();
         $process->conditional_events = $process->getUpdatedConditionalStartEvents();
-        $process->validateBpmnDefinition(true);
+        try {
+            $process->validateBpmnDefinition(true);
+        } catch (\Exception $e) {
+            \Log::warning("Validation failed: " . $e->getMessage());
+        }
     }
 
     /**
