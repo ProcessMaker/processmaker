@@ -33,6 +33,22 @@ Broadcast::channel('ProcessMaker.Models.ProcessRequest.{id}', function ($user, $
         || $request->process?->manager_id === $user->id;
 });
 
+Broadcast::channel('ProcessMaker.Models.ProcessRequest.{id}.SubProcesses', function ($user, $id) {
+    if ($id === 'undefined' || $user === 'undefined') {
+        return;
+    }
+
+    if ($user->is_administrator) {
+        return true;
+    }
+
+    $request = ProcessRequest::find($id);
+
+    return $request->user_id === $user->id
+        || !empty($request->participants()->where('users.id', $user->getKey())->first())
+        || $request->process?->manager_id === $user->id;
+});
+
 Broadcast::channel('ProcessMaker.Models.ProcessRequestToken.{id}', function ($user, $id) {
     if ($user->is_administrator) {
         return true;

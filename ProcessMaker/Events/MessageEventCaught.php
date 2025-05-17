@@ -11,7 +11,7 @@ use ProcessMaker\Models\Message;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface;
 
-class MessageEventThrown implements ShouldBroadcastNow
+class MessageEventCaught implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -48,7 +48,7 @@ class MessageEventThrown implements ShouldBroadcastNow
      */
     public function broadcastAs()
     {
-        return 'MessageEventThrown';
+        return 'MessageEventCaught';
     }
 
     /**

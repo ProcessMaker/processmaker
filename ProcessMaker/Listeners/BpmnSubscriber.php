@@ -8,11 +8,13 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityCompleted;
+use ProcessMaker\Events\MessageEventCaught;
 use ProcessMaker\Events\MessageEventThrown;
 use ProcessMaker\Events\ProcessCompleted;
 use ProcessMaker\Facades\Metrics;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Jobs\TerminateRequestEndEvent;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Models\Message;
@@ -24,6 +26,7 @@ use ProcessMaker\Nayra\Bpmn\Events\ActivityCompletedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ProcessInstanceCompletedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ProcessInstanceCreatedEvent;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ConditionalEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ErrorInterface;
@@ -252,6 +255,21 @@ class BpmnSubscriber
         foreach ($event->getEventDefinitions() as $eventDefinition) {
             foreach ($messages as $interface => $message) {
                 if (is_subclass_of($eventDefinition, $interface)) {
+                    $bpmnMessage = $eventDefinition->getPayload();
+                    if ($bpmnMessage) {
+                        event(new MessageEventCaught($token->getInstance(), $token->getOwnerElement(), $bpmnMessage));
+                        devtools(
+                            '▶︎ MessageEventCaught',
+                            $bpmnMessage->getName() ?? '(null)',
+                            $bpmnMessage->getId() ?? '(null)',
+                            [
+                                'Payload' => json_encode(
+                                    (object) $bpmnMessage->getData($token->getInstance()),
+                                    JSON_PRETTY_PRINT
+                                )
+                            ]
+                        );
+                    }
                     $comment = new Comment([
                         'user_id' => null,
                         'commentable_type' => ProcessRequest::class,
@@ -338,6 +356,29 @@ class BpmnSubscriber
         );
     }
 
+    public function onMessageEventCaught(CatchEventInterface $node, TokenInterface $token)
+    {
+        foreach ($node->getEventDefinitions() as $eventDefinition) {
+            if ($eventDefinition instanceof MessageEventDefinitionInterface) {
+                $bpmnMessage = $eventDefinition->getPayload();
+                if ($bpmnMessage) {
+                    event(new MessageEventCaught($token->getInstance(), $token->getOwnerElement(), $bpmnMessage));
+                    devtools(
+                        '▶︎ MessageEventCaught',
+                        $bpmnMessage->getName() ?? '(null)',
+                        $bpmnMessage->getId() ?? '(null)',
+                        [
+                            'Payload' => json_encode(
+                                (object) $bpmnMessage->getData($token->getInstance()),
+                                JSON_PRETTY_PRINT
+                            )
+                        ]
+                    );
+                }
+            }
+        }
+    }
+
     /**
      * Subscription.
      *
@@ -363,18 +404,21 @@ class BpmnSubscriber
 
         $events->listen(TerminateEventDefinitionInterface::EVENT_THROW_EVENT_DEFINITION, static::class . '@onTerminateEndEvent');
         $events->listen(MessageEventDefinitionInterface::EVENT_THROW_EVENT_DEFINITION, static::class . '@onMessageEventDefinition');
+        $events->listen(IntermediateCatchEventInterface::EVENT_CATCH_MESSAGE_CATCH, static::class . '@onMessageEventCaught');
 
         // Log devtools events for local and testing environments
         if (App::environment('local') || App::environment('testing')) {
             $events->listen('*', function ($event, $args) {
                 $hasBackslash = strpos($event, '\\') !== false;
                 if (!$hasBackslash && count($args) > 0) {
+                    $token = isset($args[1]) && ($args[1] instanceof ProcessRequestToken) ? $args[1] : null;
                     $payload = $args[0];
                     if (
                         $payload instanceof ActivityCompletedEvent
                         || $payload instanceof ActivityActivatedEvent
                         || $payload instanceof ActivityClosedEvent
                     ) {
+                        $token = $payload->token;
                         $payload = $payload->activity;
                     }
 
@@ -382,13 +426,18 @@ class BpmnSubscriber
                         $element = $payload->getBpmnElement();
                         $document = $payload->getOwnerDocument();
                         $xml = $element ? $document->saveXML($element) : '';
+                        $details = [
+                            'Node' => $xml
+                        ];
+                        if ($token) {
+                            $dm = new DataManager();
+                            $details['Data'] = json_encode((object) $dm->getData($token), JSON_PRETTY_PRINT);
+                        }
                         devtools(
                             $event,
                             $payload->getName() ?? '(null)',
                             $payload->getId() ?? '(null)',
-                            [
-                                'Node' => $xml,
-                            ]
+                            $details
                         );
                     }
                 }
