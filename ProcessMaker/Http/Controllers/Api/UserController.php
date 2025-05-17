@@ -946,4 +946,18 @@ class UserController extends Controller
 
         return response([], 204);
     }
+
+    public function current()
+    {
+        return response([
+            'data' => Auth::user(),
+        ], 200);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->token()->revoke();
+
+        return response()->json(['message' => 'OK']);
+    }
 }

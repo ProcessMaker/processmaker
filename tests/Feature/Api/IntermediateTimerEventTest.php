@@ -206,4 +206,44 @@ class IntermediateTimerEventTest extends TestCase
         $iteToken->refresh();
         $this->assertEquals('CLOSED', $iteToken->status);
     }
+
+    public function testScheduleIntermediateTimerEventWithFEELSyntax()
+    {
+        $this->be($this->user);
+        $data = [];
+        $data['bpmn'] = Process::getProcessTemplate('IntermediateTimerEventFEEL.bpmn');
+        $process = Process::factory()->create($data);
+        $definitions = $process->getDefinitions();
+        $startEvent = $definitions->getEvent('_2');
+        // now + 8 minutes
+        $timestamp = time() + 480;
+        // Pass variables to calculate the date and time using FEEL: date ~ "T" ~ time
+        $request = WorkflowManager::triggerStartEvent($process, $startEvent, [
+            'date' => date('Y-m-d', $timestamp),
+            'time' => date('H:i:sP', $timestamp)
+        ]);
+        $task1 = $request->tokens()->where('element_id', '_3')->first();
+        WorkflowManager::completeTask($process, $request, $task1, []); // moves to timer event I guess
+
+        // Time travel 5 minutes into the future
+        Carbon::setTestNow(Carbon::now()->addMinute(5));
+
+        // Re-schedule events for artisan call
+        $scheduleManager = new TaskSchedulerManager();
+        $scheduleManager->scheduleTasks();
+        \Artisan::call('schedule:run');
+
+        $iteToken = $request->tokens()->where('element_id', '_5')->firstOrFail();
+        $this->assertEquals('ACTIVE', $iteToken->status); // Not enough time has passed
+
+        // Time travel 5 more minutes into the future
+        Carbon::setTestNow(Carbon::now()->addMinute(5));
+
+        // Re-schedule events for artisan call
+        $scheduleManager->scheduleTasks();
+        \Artisan::call('schedule:run');
+
+        $iteToken->refresh();
+        $this->assertEquals('CLOSED', $iteToken->status);
+    }
 }

@@ -18,13 +18,17 @@ use ProcessMaker\Jobs\RunServiceTask;
 use ProcessMaker\Jobs\StartEvent;
 use ProcessMaker\Jobs\ThrowMessageEvent;
 use ProcessMaker\Jobs\ThrowSignalEvent;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken as Token;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\BoundaryEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\IntermediateCatchEventInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\MessageEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
@@ -135,6 +139,42 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
         //Validate data
         $this->validateData($data, $definitions, $boundaryEvent);
         BoundaryEvent::dispatchSync($definitions, $instance, $token, $boundaryEvent, $data);
+    }
+
+    /**
+     * Trigger a message event
+     *
+     * @param ProcessRequest $request
+     * @param string $messageEventId
+     * @param array $data
+     */
+    public function triggerMessageEvent(ProcessRequest $request, string $messageEventId, array $data)
+    {
+        // find active tokens that are waiting for this message event
+        $tokens = $request->tokens()->where('status', ActivityInterface::TOKEN_STATE_ACTIVE)->get();
+        foreach ($tokens as $token) {
+            $element = $token->getDefinition(true);
+            $isIntermediateCatchEvent = $element instanceof IntermediateCatchEventInterface;
+            $isTask = $element instanceof ActivityInterface;
+            if ($isIntermediateCatchEvent) {
+                foreach ($element->getEventDefinitions() as $eventDefinition) {
+                    if ($eventDefinition instanceof MessageEventDefinitionInterface && $eventDefinition->getPayload()->getId() === $messageEventId) {
+                        CatchEvent::dispatchSync($request->process, $request, $token, $data);
+                    }
+                }
+            } elseif ($isTask) {
+                $hasBoundaryEvent = $element->getBoundaryEvents()->count() > 0;
+                if ($hasBoundaryEvent) {
+                    foreach ($element->getBoundaryEvents() as $boundaryEvent) {
+                        foreach ($boundaryEvent->getEventDefinitions() as $eventDefinition) {
+                            if ($eventDefinition instanceof MessageEventDefinitionInterface && $eventDefinition->getPayload()?->getId() === $messageEventId) {
+                                BoundaryEvent::dispatchSync($request->process, $request, $token, $boundaryEvent, $data);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**

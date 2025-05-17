@@ -60,6 +60,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('users/update_language', [UserController::class, 'updateLanguage'])->name('users.updateLanguage');
     Route::get('users_task_count', [UserController::class, 'getUsersTaskCount'])->name('users.users_task_count')
         ->middleware('can:view-users');
+    Route::get('users/current', [UserController::class, 'current'])->name('users.current');
+    Route::post('users/logout', [UserController::class, 'logout'])->name('users.logout');
 
     // User Groups
     Route::put('users/{user}/groups', [UserController::class, 'updateGroups'])->name('users.groups.update')->middleware('can:edit-users');
@@ -240,7 +242,12 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('requests/{request}/retry', [ProcessRequestController::class, 'retry'])->name('requests.retry')->middleware('can:update,request');
     Route::delete('requests/{request}', [ProcessRequestController::class, 'destroy'])->name('requests.destroy')->middleware('can:destroy,request');
     Route::get('requests/{request}/tokens', [ProcessRequestController::class, 'getRequestToken'])->name('requests.getRequestToken')->middleware('can:view,request');
-    Route::post('requests/{request}/events/{event}', [ProcessRequestController::class, 'activateIntermediateEvent'])->name('requests.update,request');
+    Route::post('requests/{request}/events/{event}', [ProcessRequestController::class, 'activateIntermediateEvent'])
+        ->name('requests.update,request')
+        ->where('event', '[a-zA-Z0-9_\-\.]+');
+    Route::post('requests/{request}/boundary/{boundary_event}', [ProcessRequestController::class, 'triggerBoundaryEvent'])
+        ->name('requests.triggerBoundaryEvent')
+        ->where('boundary_event', '[a-zA-Z0-9_\-\.]+');
     Route::get('requests/{request}/details-screen-request', [ProcessRequestController::class, 'screenRequested'])->name('requests.detail.screen')->middleware('can:view,request');
     Route::get('requests/{request}/end-event-destination', [ProcessRequestController::class, 'endEventDestination'])->name('requests.end_event_destination')->middleware('can:view,request');
 

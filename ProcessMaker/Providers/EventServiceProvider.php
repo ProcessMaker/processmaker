@@ -3,16 +3,28 @@
 namespace ProcessMaker\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use jdavidbakr\MailTracker\Events\ComplaintMessageEvent;
+use jdavidbakr\MailTracker\Events\EmailDeliveredEvent;
+use jdavidbakr\MailTracker\Events\EmailSentEvent;
+use jdavidbakr\MailTracker\Events\LinkClickedEvent;
+use jdavidbakr\MailTracker\Events\PermanentBouncedMessageEvent;
+use jdavidbakr\MailTracker\Events\ViewEmailEvent;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityCompleted;
 use ProcessMaker\Events\ActivityReassignment;
 use ProcessMaker\Events\AuthClientCreated;
 use ProcessMaker\Events\AuthClientDeleted;
 use ProcessMaker\Events\AuthClientUpdated;
+use ProcessMaker\Events\BouncedEmail;
 use ProcessMaker\Events\CategoryCreated;
 use ProcessMaker\Events\CategoryDeleted;
 use ProcessMaker\Events\CategoryUpdated;
 use ProcessMaker\Events\CustomizeUiUpdated;
+use ProcessMaker\Events\EmailComplaint;
+use ProcessMaker\Events\EmailDelivered;
+use ProcessMaker\Events\EmailLinkClicked;
+use ProcessMaker\Events\EmailSent;
+use ProcessMaker\Events\EmailViewed;
 use ProcessMaker\Events\EnvironmentVariablesCreated;
 use ProcessMaker\Events\EnvironmentVariablesDeleted;
 use ProcessMaker\Events\EnvironmentVariablesUpdated;
@@ -110,6 +122,25 @@ class EventServiceProvider extends ServiceProvider
         ],
         TranslationChanged::class => [
             InvalidateScreenCacheOnTranslationChange::class,
+        ],
+        // Email Tracker
+        EmailSentEvent::class => [
+            EmailSent::class,
+        ],
+        ViewEmailEvent::class => [
+            EmailViewed::class,
+        ],
+        LinkClickedEvent::class => [
+            EmailLinkClicked::class,
+        ],
+        EmailDeliveredEvent::class => [
+            EmailDelivered::class,
+        ],
+        ComplaintMessageEvent::class => [
+            EmailComplaint::class,
+        ],
+        PermanentBouncedMessageEvent::class => [
+            BouncedEmail::class,
         ],
     ];
 

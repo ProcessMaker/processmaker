@@ -25,6 +25,8 @@ use ProcessMaker\Bpmn\Process;
  * @method static bool registerServiceImplementation($implementation, $class)
  * @method static bool existsServiceImplementation($implementation)
  * @method static bool runServiceImplementation($implementation, array $data, array $config, $tokenId = '')
+ * @method static void triggerBoundaryEvent(\ProcessMaker\Models\Process $process, \ProcessMaker\Models\ProcessRequest $request, \ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface $token, \ProcessMaker\Nayra\Contracts\Bpmn\BoundaryEventInterface $boundaryEvent)
+ * @method static void triggerMessageEvent(\ProcessMaker\Models\ProcessRequest $request, string $messageEventId, array $data)
  */
 class WorkflowManager extends Facade
 {
