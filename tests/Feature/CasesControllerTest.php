@@ -351,7 +351,7 @@ class CasesControllerTest extends TestCase
             [
                 'id' => 0,
                 'name' => 'In Progress',
-                'status' => 'In Progress',
+                'status' => 'Pending',
                 'completed_at' => '',
             ],
             [
@@ -377,7 +377,7 @@ class CasesControllerTest extends TestCase
      *
      * @return void
      */
-    public function testGetStageCaseWithValidCaseNumber()
+    public function testGetStageCaseWithValidCaseNumberWithProcessStages()
     {
         $stagesData = [
             [
@@ -493,7 +493,7 @@ class CasesControllerTest extends TestCase
      *
      * @return void
      */
-    public function testGetStageCaseWithValidCaseNumberWithoutProcessStages()
+    public function testGetStageCaseWithValidCaseNumberInProgressWithoutProcessStages()
     {
         // Create a new process and save stages as JSON
         $process = Process::factory()->create([
@@ -541,6 +541,87 @@ class CasesControllerTest extends TestCase
                 'stages_per_case',
             ]);
         $this->assertNotEmpty($response->json('stages_per_case'));
+
+        $expectedStages = [
+            [
+                'id' => 0,
+                'name' => 'In Progress',
+                'status' => 'In Progress',
+                'completed_at' => '',
+            ],
+            [
+                'id' => 0,
+                'name' => 'Completed',
+                'status' => 'Pending',
+                'completed_at' => '',
+            ],
+        ];
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'parentRequest',
+                'requestCount',
+                'all_stages',
+                'current_stage',
+                'stages_per_case',
+            ])
+            ->assertJsonPath('stages_per_case', $expectedStages);
+    }
+
+    /**
+     * Test getting stage case with a valid case number when the process does not have stages
+     *
+     * @return void
+     */
+    public function testGetStageCaseWithValidCaseNumberCompletedWithoutProcessStages()
+    {
+        // Create a new process and save stages as JSON
+        $process = Process::factory()->create([
+            'status' => 'ACTIVE',
+            'stages' => null,
+        ]);
+        // Create a parent request
+        $parentRequest = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'status' => 'COMPLETED',
+            'completed_at' => null,
+            'parent_request_id' => null, // This is a parent request
+        ]);
+
+        // Call the API endpoint
+        $response = $this->apiCall('GET', '/cases' . '/stages_bar' . '/' . $parentRequest->case_number);
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'parentRequest',
+                'requestCount',
+                'all_stages',
+                'current_stage',
+                'stages_per_case',
+            ]);
+        $this->assertNotEmpty($response->json('stages_per_case'));
+        $expectedStages = [
+            [
+                'id' => 0,
+                'name' => 'In Progress',
+                'status' => 'Done',
+                'completed_at' => '',
+            ],
+            [
+                'id' => 0,
+                'name' => 'Completed',
+                'status' => 'Done',
+                'completed_at' => '',
+            ],
+        ];
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'parentRequest',
+                'requestCount',
+                'all_stages',
+                'current_stage',
+                'stages_per_case',
+            ])
+            ->assertJsonPath('stages_per_case', $expectedStages);
     }
 
     /**
