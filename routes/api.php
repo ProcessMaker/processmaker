@@ -215,7 +215,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('tasks/user-can-reassign', [TaskController::class, 'userCanReassign'])->name('tasks.user_can_reassign');
 
     // Cases
-    Route::get('cases/{case_number}/stages_bar', [CaseController::class, 'getStageCase'])->name('cases.stage');
+    Route::get('cases/stages_bar/{case_number?}', [CaseController::class, 'getStagePerCase'])->name('cases.stage');
     Route::get('processes/{process}/default-stages', [ProcessController::class, 'getDefaultStagesPerProcess'])->name('processes.default-stages');
     Route::get('processes/{process}/stages', [ProcessController::class, 'getStagesPerProcess'])->name('processes.stages');
     Route::get('processes/{process}/metrics', [ProcessController::class, 'getMetricsPerProcess'])->name('processes.metrics');

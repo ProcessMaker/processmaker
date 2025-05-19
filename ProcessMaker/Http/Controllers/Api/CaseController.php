@@ -9,7 +9,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 
 class CaseController extends Controller
 {
-    public function getStageCase($case_number)
+    private function getSpecificCaseStages($case_number)
     {
         $allRequests = ProcessRequest::where('case_number', $case_number)->get();
         // Check if any requests were found
@@ -28,7 +28,7 @@ class CaseController extends Controller
 
         $stagesPerCase = $this->getStagesSummary($parentRequest->id, $parentRequest->process_id);
 
-        $responseData = [
+        return [
             'parentRequest' => [
                 'id' => $parentRequest->id,
                 'case_number' => $parentRequest->case_number,
@@ -40,6 +40,43 @@ class CaseController extends Controller
             'current_stage' => [],
             'stages_per_case' => $stagesPerCase,
         ];
+    }
+
+    private function getDefaultCaseStages()
+    {
+        $defaultStages = [
+            [
+                'id' => 0,
+                'name' => 'In Progress',
+                'status' => 'In Progress',
+                'completed_at' => '',
+            ],
+            [
+                'id' => 0,
+                'name' => 'Completed',
+                'status' => 'Pending',
+                'completed_at' => '',
+            ],
+        ];
+
+        return [
+            'parentRequest' => [],
+            'requestCount' => 0,
+            'all_stages' => [],
+            'current_stage' => [],
+            'stages_per_case' => $defaultStages,
+        ];
+    }
+
+    public function getStagePerCase($case_number = null)
+    {
+        if (!empty($case_number)) {
+            $responseData = $this->getSpecificCaseStages($case_number);
+
+            return response()->json($responseData);
+        }
+
+        $responseData = $this->getDefaultCaseStages();
 
         return response()->json($responseData);
     }
@@ -56,18 +93,14 @@ class CaseController extends Controller
      * @return array An array of stage results, each containing the stage ID, name, status,
      *               and completion date.
      */
-    public function getStagesSummary($requestId, $processId)
+    private function getStagesSummary($requestId, $processId)
     {
         $process = Process::where('id', $processId)->first();
         if ($process && !empty($process->stages)) {
             $allStages = json_decode($process->stages, true);
         } else {
-            // TO_DO: remove this harcode values
-            $allStages = [
-                ['id' => 1, 'name' => 'Stage A'],
-                ['id' => 2, 'name' => 'Stage B'],
-                ['id' => 3, 'name' => 'Stage C'],
-            ];
+            // Return the default stages if the process does not have
+            return $this->getDefaultCaseStages();
         }
 
         $allCurrentStages = ProcessRequestToken::where('process_request_id', $requestId)
@@ -75,11 +108,7 @@ class CaseController extends Controller
             ->get()
             ->toArray();
         if (empty($allCurrentStages)) {
-            // TO_DO: remove this harcode values
-            $allCurrentStages = [
-                ['stage_id' => 1, 'stage_name' => 'Stage A', 'status' => 'CLOSED', 'completed_at' => '2025-04-23 21:22:34'],
-                ['stage_id' => 2, 'stage_name' => 'Stage B', 'status' => 'ACTIVE', 'completed_at' => 'null'],
-            ];
+            // TO_DO: define what happen if the process does not have task, is a valid use case
         }
 
         // Helper to map status
