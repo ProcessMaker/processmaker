@@ -91,7 +91,8 @@ const onOk = async () => {
   await window.ProcessMaker.apiClient.post(`devlink/local-bundles/${bundleId}/add-settings`, {
     setting: settingKey.value,
     config: JSON.stringify(configs.value),
-    type: null
+    type: null,
+    replaceIds: true
   });
   window.ProcessMaker.alert('Settings saved', 'success');
   emit('settings-saved');
