@@ -1981,7 +1981,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      * @param string|null $stagesJson The JSON string of the stages configuration.
      * @return array The formatted array of stages.
      */
-    public static function formatStages($processId, ?string $stagesJson): array
+    public static function formatStages($processId, ?string $stagesJson, ?string $varAggregation): array
     {
         $stagesConfig = self::decodeStagesConfig($stagesJson);
         if (empty($stagesConfig)) {
@@ -1989,7 +1989,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             return self::getDefaultStagesData($processId);
         } else {
             // Get the stages
-            $stageCounts = self::getProcessStageCounts($processId);
+            $stageCounts = self::getProcessStageCounts($processId, $varAggregation);
 
             return self::mapStagesWithCounts($stagesConfig, $stageCounts);
         }

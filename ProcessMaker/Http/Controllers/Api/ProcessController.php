@@ -1977,7 +1977,7 @@ class ProcessController extends Controller
      */
     public function getStagesPerProcess(Process $process)
     {
-        $formattedStages = Process::formatStages($process->id, $process->stages);
+        $formattedStages = Process::formatStages($process->id, $process->stages, $process->aggregation);
 
         return response()->json(['data' => $formattedStages]);
     }
@@ -2018,7 +2018,7 @@ class ProcessController extends Controller
      */
     public function getDefaultStagesPerProcess(Process $process)
     {
-        $formattedStages = Process::formatStages($process->id, '');
+        $formattedStages = Process::formatStages($process->id, '', '');
 
         return response()->json(['data' => $formattedStages]);
     }

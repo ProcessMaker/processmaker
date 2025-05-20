@@ -256,7 +256,7 @@ class ProcessControllerTest extends TestCase
     /**
      * Test getting custom stages for a process
      */
-    public function testGetStagesPerProcess()
+    public function testGetStagesPerProcessWithDefaultAggregation()
     {
         $stagesData = [
             [
@@ -297,6 +297,88 @@ class ProcessControllerTest extends TestCase
             'last_stage_id' => 2,
             'last_stage_name' => 'Custom Stage 2',
             'data' => ['amount' => '10'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.processes.stages', ['process' => $process->id]));
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    'stage_id',
+                    'stage_name',
+                    'percentage',
+                    'percentage_format',
+                    'agregation_sum',
+                    'agregation_count',
+                ],
+            ],
+        ]);
+
+        // Verify custom stages
+        $data = $response->json('data');
+        $this->assertCount(2, $data);
+        // Verify "1" stage
+        $firstStage = collect($data)->firstWhere('stage_id', '1');
+        $this->assertEquals('Custom Stage 1', $firstStage['stage_name']);
+        $this->assertEquals(50, $firstStage['agregation_sum']);
+        $this->assertEquals(5, $firstStage['agregation_count']);
+
+        // Verify "2" stage
+        $secondStage = collect($data)->firstWhere('stage_id', '2');
+        $this->assertEquals('Custom Stage 2', $secondStage['stage_name']);
+        $this->assertEquals(30, $secondStage['agregation_sum']);
+        $this->assertEquals(3, $secondStage['agregation_count']);
+
+        // Verify the percentage needs to sum 100%
+        $this->assertEquals(100, $firstStage['percentage'] + $secondStage['percentage']);
+    }
+
+    /**
+     * Test getting custom stages for a process
+     */
+    public function testGetStagesPerProcessWithCustomAggregation()
+    {
+        $stagesData = [
+            [
+                'id' => 1,
+                'name' => 'Custom Stage 1',
+                'order' => 2,
+            ],
+            [
+                'id' => 2,
+                'name' => 'Custom Stage 2',
+                'order' => 1,
+            ],
+        ];
+
+        $process = Process::factory()->create([
+            'name' => 'Test Process Custom Stages',
+            'status' => 'ACTIVE',
+            'stages' => json_encode($stagesData),
+            'aggregation' => 'var_amount',
+        ]);
+        // Create 2 requests without stage
+        ProcessRequest::factory()->count(2)->create([
+            'process_id' => $process->id,
+            'status' => 'ACTIVE',
+            'data' => ['var_amount' => '10'],
+        ]);
+        // Create 5 requests in "Custom Stage 1" stage
+        ProcessRequest::factory()->count(5)->create([
+            'process_id' => $process->id,
+            'status' => 'ACTIVE',
+            'last_stage_id' => 1,
+            'last_stage_name' => 'Custom Stage 1',
+            'data' => ['var_amount' => '10'],
+        ]);
+        // Create 3 requests in "Custom Stage 2" stage
+        ProcessRequest::factory()->count(3)->create([
+            'process_id' => $process->id,
+            'status' => 'ACTIVE',
+            'last_stage_id' => 2,
+            'last_stage_name' => 'Custom Stage 2',
+            'data' => ['var_amount' => '10'],
         ]);
 
         $response = $this->apiCall('GET', route('api.processes.stages', ['process' => $process->id]));
