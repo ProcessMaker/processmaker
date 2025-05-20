@@ -23,7 +23,8 @@
       <label>{{ $t('Comments') }}</label>
       <textarea
         v-model="comments"
-        class="tw-w-full tw-border tw-border-gray-300 tw-rounded-md " />
+        class="tw-w-full tw-border tw-border-gray-300 tw-rounded-md"
+        :placeholder="$t('Add a comment to the assignment')" />
     </div>
 
     <div class="tw-flex tw-flex-row tw-space-x-2 tw-w-full tw-justify-end">
@@ -68,7 +69,10 @@ const comments = ref(null);
 const reassignUsers = ref([]);
 
 // Computed properties
-const disabled = computed(() => !selectedUser.value);
+const disabled = computed(() => {
+  const hasOnlyWhitespace = comments.value && comments.value.trim().length === 0;
+  return !selectedUser.value || hasOnlyWhitespace;
+});
 const currentTaskUserId = computed(() => props.task.user_id);
 
 // Load the reassign users
