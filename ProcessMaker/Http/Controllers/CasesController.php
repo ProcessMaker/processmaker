@@ -209,48 +209,4 @@ class CasesController extends Controller
 
         return $currentStages;
     }
-
-    /**
-     * Calculate the progress of stages.
-     *
-     * @param array $allStages An array of all stages.
-     * @param array $currentStages An array of current stage.
-     * @return float The progress percentage (0 to 100).
-     */
-    public static function getProgressStage(array $allStages, array $currentStages): float
-    {
-        // Total number of stages
-        $totalStages = count($allStages);
-
-        // If there are no stages, return 0% progress
-        if ($totalStages === 0) {
-            return 0.0;
-        }
-
-        // Total number of current stages
-        $totalCurrentStages = count($currentStages);
-
-        // If there are no stages, return 0% progress
-        if ($totalCurrentStages === 0) {
-            return 0.0;
-        }
-
-        // Count the number of completed stages
-        $completedStages = 0;
-        // Extract the current stage IDs from the currentStages array
-        $currentStageId = $currentStages['stage_id'];
-
-        foreach ($allStages as $stage) {
-            $completedStages++;
-            // Check if the current stage ID is in the current stages
-            if ($stage['id'] === $currentStageId) {
-                break; // Exit the loop once the stage is found
-            }
-        }
-
-        // Calculate progress percentage
-        $progressPercentage = ($completedStages / $totalStages) * 100;
-
-        return round($progressPercentage, 2);
-    }
 }
