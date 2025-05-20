@@ -252,8 +252,8 @@ trait ProcessTrait
         // Initialize stage counts with zero for all stages
         foreach ($allStages as $stage) {
             $stageCounts[] = [
-                'id' => $stage['id'],
-                'name' => $stage['name'],
+                'id' => $stage['id'] ?? 0,
+                'name' => $stage['name'] ?? 'Unknow Stage',
                 'count' => 0, // Initialize count to 0 for each stage
                 'percentage' => 0, // Initialize percentaje to 0 for each stage
             ];

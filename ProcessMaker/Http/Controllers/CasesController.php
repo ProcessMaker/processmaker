@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Helpers\StageProgressCalculator;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Controllers\Process\ModelerController;
 use ProcessMaker\Managers\ModelerManager;
@@ -84,10 +85,10 @@ class CasesController extends Controller
         } else {
             $request->summary_screen = $request->getSummaryScreen();
         }
-        //Stage data
-        $currentStages = $this->getCurrentStage($request->last_stage_id, $request->last_stage_name);
+        // Stage data
+        $currentStages = $this->formatCurrentStage($request->last_stage_id, $request->last_stage_name);
         $allStages = $this->getStagesByProcessId($request->process_id);
-        $progressStage = $this->getProgressStage($allStages, $currentStages);
+        $progressStage = StageProgressCalculator::getProgressStage($allStages, $currentStages);
         // Load the screen configured in "Request Detail Screen"
         $request->request_detail_screen = Screen::find($request->process->request_detail_screen_id);
         // The user canCancel if has the processPermission and the case has only one request
@@ -193,7 +194,7 @@ class CasesController extends Controller
      * @return array An associative array of stages if the JSON is valid;
      *               otherwise, an empty array.
      */
-    public static function getCurrentStage(?int $id, ?string $name): array
+    public static function formatCurrentStage(?int $id, ?string $name): array
     {
         // Initialize currentStages as an empty array
         $currentStages = [];
@@ -213,7 +214,7 @@ class CasesController extends Controller
      * Calculate the progress of stages.
      *
      * @param array $allStages An array of all stages.
-     * @param array $currentStages An array of current stages.
+     * @param array $currentStages An array of current stage.
      * @return float The progress percentage (0 to 100).
      */
     public static function getProgressStage(array $allStages, array $currentStages): float

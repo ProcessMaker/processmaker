@@ -147,35 +147,21 @@ class ProcessControllerTest extends TestCase
 
     /**
      * Test saving and retrieving stages in the Process model.
-     *
-     * @return void
      */
     public function testSaveAndRetrieveStages()
     {
-        // Sample stages data
-        $stagesData = [
-            [
-                'id' => 1,
-                'name' => 'Request Send',
-                'order' => 1,
-            ],
-            [
-                'id' => 3,
-                'name' => 'Request Reviewed',
-                'order' => 2,
-            ],
-            [
-                'id' => 2,
-                'name' => 'Manager Reviewed',
-                'order' => 3,
-            ],
+        // Define stages
+        $stages = [
+            ['id' => 101, 'order' => 1, 'label' => 'Request Send', 'selected' => false],
+            ['id' => 102, 'order' => 2, 'label' => 'Request Reviewed', 'selected' => false],
+            ['id' => 103, 'order' => 3, 'label' => 'Manager Reviewed', 'selected' => false],
         ];
 
         // Create a new process and save stages as JSON
         $process = Process::factory()->create([
             'name' => 'Sample Stage Process',
             'status' => 'ACTIVE',
-            'stages' => json_encode($stagesData),
+            'stages' => json_encode($stages),
         ]);
 
         // Retrieve the process from the database
@@ -187,11 +173,11 @@ class ProcessControllerTest extends TestCase
         $retrievedStages = json_decode($retrievedProcess->stages, true);
 
         // Assert the content of the stages
-        $this->assertEquals($stagesData, $retrievedStages);
+        $this->assertEquals($stages, $retrievedStages);
     }
 
     /**
-     * Test getting default stages for a process with statistics
+     * Test getting default stages for a process without stages
      */
     public function testGetDefaultStagesPerProcess()
     {
@@ -254,27 +240,19 @@ class ProcessControllerTest extends TestCase
     }
 
     /**
-     * Test getting custom stages for a process
+     * Test getting custom stages for a process with stages and return aggregation amount
      */
     public function testGetStagesPerProcessWithDefaultAggregation()
     {
-        $stagesData = [
-            [
-                'id' => 1,
-                'name' => 'Custom Stage 1',
-                'order' => 2,
-            ],
-            [
-                'id' => 2,
-                'name' => 'Custom Stage 2',
-                'order' => 1,
-            ],
+        $stages = [
+            ['id' => 101, 'order' => 1, 'label' => 'Custom Stage 1', 'selected' => false],
+            ['id' => 102, 'order' => 2, 'label' => 'Custom Stage 2', 'selected' => false],
         ];
 
         $process = Process::factory()->create([
             'name' => 'Test Process Custom Stages',
             'status' => 'ACTIVE',
-            'stages' => json_encode($stagesData),
+            'stages' => json_encode($stages),
         ]);
         // Create 2 requests without stage
         ProcessRequest::factory()->count(2)->create([
@@ -286,7 +264,7 @@ class ProcessControllerTest extends TestCase
         ProcessRequest::factory()->count(5)->create([
             'process_id' => $process->id,
             'status' => 'ACTIVE',
-            'last_stage_id' => 1,
+            'last_stage_id' => $stages[0]['id'],
             'last_stage_name' => 'Custom Stage 1',
             'data' => ['amount' => '10'],
         ]);
@@ -294,7 +272,7 @@ class ProcessControllerTest extends TestCase
         ProcessRequest::factory()->count(3)->create([
             'process_id' => $process->id,
             'status' => 'ACTIVE',
-            'last_stage_id' => 2,
+            'last_stage_id' => $stages[1]['id'],
             'last_stage_name' => 'Custom Stage 2',
             'data' => ['amount' => '10'],
         ]);
@@ -318,14 +296,15 @@ class ProcessControllerTest extends TestCase
         // Verify custom stages
         $data = $response->json('data');
         $this->assertCount(2, $data);
+
         // Verify "1" stage
-        $firstStage = collect($data)->firstWhere('stage_id', '1');
+        $firstStage = collect($data)->where('stage_id', $stages[0]['id'])->first();
         $this->assertEquals('Custom Stage 1', $firstStage['stage_name']);
         $this->assertEquals(50, $firstStage['agregation_sum']);
         $this->assertEquals(5, $firstStage['agregation_count']);
 
         // Verify "2" stage
-        $secondStage = collect($data)->firstWhere('stage_id', '2');
+        $secondStage = collect($data)->firstWhere('stage_id', $stages[1]['id']);
         $this->assertEquals('Custom Stage 2', $secondStage['stage_name']);
         $this->assertEquals(30, $secondStage['agregation_sum']);
         $this->assertEquals(3, $secondStage['agregation_count']);
@@ -335,27 +314,19 @@ class ProcessControllerTest extends TestCase
     }
 
     /**
-     * Test getting custom stages for a process
+     * Test getting custom stages for a process with stages and return custom aggregation
      */
     public function testGetStagesPerProcessWithCustomAggregation()
     {
-        $stagesData = [
-            [
-                'id' => 1,
-                'name' => 'Custom Stage 1',
-                'order' => 2,
-            ],
-            [
-                'id' => 2,
-                'name' => 'Custom Stage 2',
-                'order' => 1,
-            ],
+        $stages = [
+            ['id' => 101, 'order' => 1, 'label' => 'Custom Stage 1', 'selected' => false],
+            ['id' => 102, 'order' => 2, 'label' => 'Custom Stage 2', 'selected' => false],
         ];
 
         $process = Process::factory()->create([
             'name' => 'Test Process Custom Stages',
             'status' => 'ACTIVE',
-            'stages' => json_encode($stagesData),
+            'stages' => json_encode($stages),
             'aggregation' => 'var_amount',
         ]);
         // Create 2 requests without stage
@@ -368,7 +339,7 @@ class ProcessControllerTest extends TestCase
         ProcessRequest::factory()->count(5)->create([
             'process_id' => $process->id,
             'status' => 'ACTIVE',
-            'last_stage_id' => 1,
+            'last_stage_id' => $stages[0]['id'],
             'last_stage_name' => 'Custom Stage 1',
             'data' => ['var_amount' => '10'],
         ]);
@@ -376,7 +347,7 @@ class ProcessControllerTest extends TestCase
         ProcessRequest::factory()->count(3)->create([
             'process_id' => $process->id,
             'status' => 'ACTIVE',
-            'last_stage_id' => 2,
+            'last_stage_id' => $stages[1]['id'],
             'last_stage_name' => 'Custom Stage 2',
             'data' => ['var_amount' => '10'],
         ]);
@@ -401,13 +372,13 @@ class ProcessControllerTest extends TestCase
         $data = $response->json('data');
         $this->assertCount(2, $data);
         // Verify "1" stage
-        $firstStage = collect($data)->firstWhere('stage_id', '1');
+        $firstStage = collect($data)->firstWhere('stage_id', $stages[0]['id']);
         $this->assertEquals('Custom Stage 1', $firstStage['stage_name']);
         $this->assertEquals(50, $firstStage['agregation_sum']);
         $this->assertEquals(5, $firstStage['agregation_count']);
 
         // Verify "2" stage
-        $secondStage = collect($data)->firstWhere('stage_id', '2');
+        $secondStage = collect($data)->firstWhere('stage_id', $stages[1]['id']);
         $this->assertEquals('Custom Stage 2', $secondStage['stage_name']);
         $this->assertEquals(30, $secondStage['agregation_sum']);
         $this->assertEquals(3, $secondStage['agregation_count']);

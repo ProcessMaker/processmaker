@@ -1925,7 +1925,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
 
             return [
                 'stage_id' => $stage['id'] ?? 0,
-                'stage_name' => $stage['name'] ?? 'Unknown Stage ' . ($index + 1),
+                'stage_name' => $stage['label'] ?? 'Unknown Stage ' . ($index + 1),
                 'percentage' => $stagePercentage,
                 'percentage_format' => $stagePercentage . '%',
                 'agregation_sum' => $stageSum,
