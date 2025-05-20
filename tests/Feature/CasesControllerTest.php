@@ -329,11 +329,55 @@ class CasesControllerTest extends TestCase
     }
 
     /**
+     * Test getting stage case with an invalid case number.
+     *
+     * @return void
+     */
+    public function testGetStageCaseWithInvalidCaseNumber()
+    {
+        // Call the API endpoint with a case number that does not exist
+        $response = $this->apiCall('GET', '/cases' . '/stages_bar');
+        // Assert the response status and structure
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'parentRequest',
+                'requestCount',
+                'all_stages',
+                'current_stage',
+                'stages_per_case',
+            ]);
+        $this->assertNotEmpty($response->json('stages_per_case'));
+        $expectedStages = [
+            [
+                'id' => 0,
+                'name' => 'In Progress',
+                'status' => 'Pending',
+                'completed_at' => '',
+            ],
+            [
+                'id' => 0,
+                'name' => 'Completed',
+                'status' => 'Pending',
+                'completed_at' => '',
+            ],
+        ];
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'parentRequest',
+                'requestCount',
+                'all_stages',
+                'current_stage',
+                'stages_per_case',
+            ])
+            ->assertJsonPath('stages_per_case', $expectedStages);
+    }
+
+    /**
      * Test getting stage case with a valid case number.
      *
      * @return void
      */
-    public function testGetStageCaseWithValidCaseNumber()
+    public function testGetStageCaseWithValidCaseNumberWithProcessStages()
     {
         $stagesData = [
             [
@@ -391,7 +435,7 @@ class CasesControllerTest extends TestCase
         ]);
 
         // Call the API endpoint
-        $response = $this->apiCall('GET', '/cases' . '/' . $parentRequest->case_number . '/stages_bar');
+        $response = $this->apiCall('GET', '/cases' . '/stages_bar' . '/' . $parentRequest->case_number);
 
         // Assert the response status and structure
         $response->assertStatus(200)
@@ -445,17 +489,193 @@ class CasesControllerTest extends TestCase
     }
 
     /**
-     * Test getting stage case with an invalid case number.
+     * Test getting stage case with a valid case number when the process does not have stages
      *
      * @return void
      */
-    public function testGetStageCaseWithInvalidCaseNumber()
+    public function testGetStageCaseWithValidCaseNumberInProgressWithoutProcessStages()
     {
-        // Call the API endpoint with a case number that does not exist
-        $response = $this->apiCall('GET', '/cases' . '/' . '99999' . '/stages_bar');
+        // Create a new process and save stages as JSON
+        $process = Process::factory()->create([
+            'status' => 'ACTIVE',
+            'stages' => null,
+        ]);
+        // Create a parent request
+        $parentRequest = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'status' => 'ACTIVE',
+            'completed_at' => null,
+            'parent_request_id' => null, // This is a parent request
+        ]);
 
-        // Assert the response status and error message
-        $response->assertStatus(404)
-                 ->assertJson(['error' => 'No requests found for this case number']);
+        // Create a child request
+        ProcessRequest::factory()->create([
+            'process_id' => $parentRequest->process_id,
+            'case_number' => $parentRequest->case_number,
+            'status' => 'ACTIVE',
+            'completed_at' => null,
+            'parent_request_id' => $parentRequest->id, // This is a child request
+        ]);
+        ProcessRequestToken::factory()->create([
+            'process_id' => $parentRequest->process_id,
+            'process_request_id' => $parentRequest->id,
+            'completed_at' => '2025-05-01 21:24:24',
+            'status' => 'CLOSED',
+        ]);
+        ProcessRequestToken::factory()->create([
+            'process_id' => $parentRequest->process_id,
+            'process_request_id' => $parentRequest->id,
+            'status' => 'ACTIVE',
+            'completed_at' => null,
+        ]);
+
+        // Call the API endpoint
+        $response = $this->apiCall('GET', '/cases' . '/stages_bar' . '/' . $parentRequest->case_number);
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'parentRequest',
+                'requestCount',
+                'all_stages',
+                'current_stage',
+                'stages_per_case',
+            ]);
+        $this->assertNotEmpty($response->json('stages_per_case'));
+
+        $expectedStages = [
+            [
+                'id' => 0,
+                'name' => 'In Progress',
+                'status' => 'In Progress',
+                'completed_at' => '',
+            ],
+            [
+                'id' => 0,
+                'name' => 'Completed',
+                'status' => 'Pending',
+                'completed_at' => '',
+            ],
+        ];
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'parentRequest',
+                'requestCount',
+                'all_stages',
+                'current_stage',
+                'stages_per_case',
+            ])
+            ->assertJsonPath('stages_per_case', $expectedStages);
+    }
+
+    /**
+     * Test getting stage case with a valid case number when the process does not have stages
+     *
+     * @return void
+     */
+    public function testGetStageCaseWithValidCaseNumberCompletedWithoutProcessStages()
+    {
+        // Create a new process and save stages as JSON
+        $process = Process::factory()->create([
+            'status' => 'ACTIVE',
+            'stages' => null,
+        ]);
+        // Create a parent request
+        $parentRequest = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'status' => 'COMPLETED',
+            'completed_at' => null,
+            'parent_request_id' => null, // This is a parent request
+        ]);
+
+        // Call the API endpoint
+        $response = $this->apiCall('GET', '/cases' . '/stages_bar' . '/' . $parentRequest->case_number);
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'parentRequest',
+                'requestCount',
+                'all_stages',
+                'current_stage',
+                'stages_per_case',
+            ]);
+        $this->assertNotEmpty($response->json('stages_per_case'));
+        $expectedStages = [
+            [
+                'id' => 0,
+                'name' => 'In Progress',
+                'status' => 'Done',
+                'completed_at' => '',
+            ],
+            [
+                'id' => 0,
+                'name' => 'Completed',
+                'status' => 'Done',
+                'completed_at' => '',
+            ],
+        ];
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'parentRequest',
+                'requestCount',
+                'all_stages',
+                'current_stage',
+                'stages_per_case',
+            ])
+            ->assertJsonPath('stages_per_case', $expectedStages);
+    }
+
+    /**
+     * Test getting stage case with a valid case number when the process does not have stages
+     *
+     * @return void
+     */
+    public function testGetStageCaseWithValidCaseNumberWithoutTask()
+    {
+        $stagesData = [
+            [
+                'id' => 1,
+                'name' => 'Request Send',
+                'order' => 2,
+            ],
+            [
+                'id' => 2,
+                'name' => 'Request Reviewed',
+                'order' => 1,
+            ],
+        ];
+        // Create a new process and save stages as JSON
+        $process = Process::factory()->create([
+            'status' => 'ACTIVE',
+            'stages' => json_encode($stagesData),
+        ]);
+        // Create a parent request
+        $parentRequest = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'status' => 'ACTIVE',
+            'completed_at' => null,
+            'parent_request_id' => null, // This is a parent request
+        ]);
+
+        // Create a child request
+        ProcessRequest::factory()->create([
+            'process_id' => $parentRequest->process_id,
+            'case_number' => $parentRequest->case_number,
+            'status' => 'ACTIVE',
+            'completed_at' => null,
+            'parent_request_id' => $parentRequest->id, // This is a child request
+        ]);
+
+        // Call the API endpoint
+        $response = $this->apiCall('GET', '/cases' . '/stages_bar' . '/' . $parentRequest->case_number);
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'parentRequest',
+                'requestCount',
+                'all_stages',
+                'current_stage',
+                'stages_per_case',
+            ]);
+        $this->assertNotEmpty($response->json('stages_per_case'));
     }
 }
