@@ -66,7 +66,7 @@ class CaseController extends Controller
         if (!is_null($stages)) {
             $allStages = $stages;
         }
-        
+
         $processRequestTokens = ProcessRequestToken::where('process_request_id', $requestId)
             ->select('stage_id', 'stage_name', 'status', 'completed_at')
             ->get();
