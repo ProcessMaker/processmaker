@@ -22,6 +22,7 @@
     <div class="tw-flex tw-flex-col tw-space-x-2 tw-p-2 tw-w-full">
       <label>{{ $t('Comments') }}</label>
       <textarea
+        v-model="comments"
         rows="5"
         class="tw-w-full tw-border tw-border-gray-300 tw-rounded-md tw-resize-none"
         :placeholder="$t('Add a comment to the assignment')" />
@@ -65,15 +66,12 @@ const emit = defineEmits(["on-reassign-user"]);
 
 // Refs
 const selectedUser = ref(null);
-const comments = ref(null);
+const comments = ref("");
 const reassignUsers = ref([]);
 const disabledAssign = ref(false);
 
 // Computed properties
-const disabled = computed(() => {
-  const hasOnlyWhitespace = comments.value && comments.value.trim().length === 0;
-  return !selectedUser.value || hasOnlyWhitespace;
-});
+const disabled = computed(() => !selectedUser.value || !comments.value?.trim());
 
 // Load the reassign users
 const loadReassignUsers = async (filter) => {
