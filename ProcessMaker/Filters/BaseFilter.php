@@ -29,6 +29,8 @@ abstract class BaseFilter
 
     public const TYPE_PROCESS_NAME = 'ProcessName';
 
+    public const PROCESS_NAME_IN_REQUEST = 'process_request.name';
+
     public const TYPE_RELATIONSHIP = 'Relationship';
 
     public string|null $subjectValue;
@@ -98,6 +100,11 @@ abstract class BaseFilter
             $this->valueAliasAdapter($valueAliasMethod, $query);
         } elseif ($this->subjectType === self::TYPE_PROCESS) {
             $this->filterByProcessId($query);
+        } elseif ($this->subjectValue === self::PROCESS_NAME_IN_REQUEST) {
+            // For performance reasons, the task list uses the column process_request.name
+            // But the filters must use the Process table, for this reason the subjectType is updated
+            $this->subjectType = self::TYPE_PROCESS_NAME;
+            $this->filterByProcessName($query);
         } elseif ($this->subjectType === self::TYPE_PROCESS_NAME) {
             $this->filterByProcessName($query);
         } elseif ($this->subjectType === self::TYPE_RELATIONSHIP) {
