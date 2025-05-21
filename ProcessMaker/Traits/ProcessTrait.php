@@ -236,7 +236,7 @@ trait ProcessTrait
     public function getStagesSummary($stages = null)
     {
         if (!empty($stages)) {
-            $allStages = json_decode($stages, true);
+            $allStages = $stages;
         } else {
             return [];
         }

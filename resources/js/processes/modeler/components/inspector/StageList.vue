@@ -11,7 +11,7 @@
         :key="index"
         :id="item.id"
         :order="item.order"
-        :label="item.label"
+        :name="item.name"
         :selected="item.selected"
         @onUpdate="onUpdate(index, $event)"
         @onRemove="onRemove(index)"
@@ -26,7 +26,7 @@
       <input
         v-model="newStage"
         class="tw-flex-1 tw-border tw-rounded px-2"
-        :placeholder="$t('Enter label')"
+        :placeholder="$t('Enter name')"
         @keyup.enter="onKeyupEnter"
       />
     </div>
@@ -46,6 +46,7 @@
 import { ref, computed, watch, onMounted } from 'vue';
 import draggable from 'vuedraggable';
 import StageItem from './StageItem.vue';
+import i18next from 'i18next';
 
 const props = defineProps({
   initialStages: {
@@ -59,7 +60,6 @@ const newStage = ref('');
 const stages = ref([...props.initialStages]);
 const totalStages = computed(() => stages.value.length);
 const disableButton = computed(() => totalStages.value >= 8);
-const $t = window.ProcessMaker.i18n.t;
 
 const onClickAdd = () => {
   if (disableButton.value) {
@@ -76,7 +76,7 @@ const onKeyupEnter = () => {
     stages.value.push({
       id: uniqueId,
       order: order,
-      label: newStage.value,
+      name: newStage.value,
       selected: false
     });
     newStage.value = '';
@@ -86,17 +86,17 @@ const onKeyupEnter = () => {
   }
 };
 
-const onUpdate = (index, newLabel) => {
-  const oldLabel = stages.value[index].label;
-  stages.value[index].label = newLabel;
-  emit('onUpdate', stages.value, index, newLabel, oldLabel);
+const onUpdate = (index, newName) => {
+  const oldName = stages.value[index].name;
+  stages.value[index].name = newName;
+  emit('onUpdate', stages.value, index, newName, oldName);
   emit('onChange', stages.value);
 };
 
 const onRemove = (index) => {
   ProcessMaker.confirmModal(
-    $t("Caution!"),
-    $t("Are you sure you want to delete the stage?"),
+    i18next.t("Caution!"),
+    i18next.t("Are you sure you want to delete the stage?"),
     "",
     () => {
       const removed = stages.value.splice(index, 1);

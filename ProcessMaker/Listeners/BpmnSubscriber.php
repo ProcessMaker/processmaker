@@ -279,6 +279,7 @@ class BpmnSubscriber
 
         // Exit if no variable or expression is set
         $config = json_decode($flow->getProperties()['config'], true);
+
         // Check if stage is configured to update the intance
         $instance->stage_id = null;
         $instance->stage_name = null;

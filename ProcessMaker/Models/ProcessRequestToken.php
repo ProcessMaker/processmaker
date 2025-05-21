@@ -95,6 +95,39 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     use SerializeToIso8601;
     use TokenTrait;
 
+//    public static function boot()
+//    {
+//        parent::boot();
+//        $events = [
+//            'retrieved', // Cuando un modelo es recuperado de la base de datos
+//            'creating', // Antes de insertar un nuevo modelo
+//            'created', // Después de insertar un nuevo modelo
+//            'updating', // Antes de actualizar un modelo existente
+//            'updated', // Después de actualizar un modelo existente
+//            'saving', // Antes de crear o actualizar (se ejecuta en ambos casos)
+//            'saved', // Después de crear o actualizar (se ejecuta en ambos casos)
+//            'deleting', // Antes de eliminar un modelo
+//            'deleted', // Después de eliminar un modelo
+//        ];
+//        foreach ($events as $event) {
+//            static::$event(function ($model) use ($event) {
+//                $trace = array_filter(
+//                    debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS),
+//                    function ($item) {
+//                        if (isset($item['file'])) {
+//                            return !str_contains($item['file'], 'processmaker4/vendor/');
+//                        }
+//                    }
+//                );
+//                $trace = array_values($trace);
+//                if (!empty($trace)) {
+//                    $json = json_encode($trace, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+//                    logger("\n[" . get_class($model) . "] " . $event . ": " . $json);
+//                }
+//            });
+//        }
+//    }
+
     protected $connection = 'processmaker';
 
     /**
