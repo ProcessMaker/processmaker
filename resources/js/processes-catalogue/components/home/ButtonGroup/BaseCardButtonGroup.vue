@@ -31,29 +31,12 @@ const props = defineProps({
       icon: String,
     },
   },
-  active: {
-    type: Number,
-    default: () => 0,
-  },
 });
 
 const emit = defineEmits(["change"]);
 
-const dataModel = ref(props.data);
-
 const onClick = (counter, idxCounter) => {
-  const buttons = dataModel.value;
-
-  buttons.forEach((item) => {
-    if (item.id === counter.id) {
-      item.active = true;
-    } else {
-      item.active = false;
-    }
-  });
-
-  dataModel.value = buttons;
-  emit("change", dataModel.value);
+  emit("change", counter, idxCounter);
 };
 
 onMounted(() => {});

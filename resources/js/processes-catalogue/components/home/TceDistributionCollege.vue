@@ -6,6 +6,7 @@
       :my-tasks-columns="myTasksColumns"
       @toggle-info="toggleInfo"
       @goBackCategory="emit('goBackCategory')" />
+
     <BaseCardButtonGroup
       v-if="data.length > 0"
       :key="dataKey + 'button'"
@@ -13,7 +14,11 @@
       :data="data"
       @change="onChangeMetric" />
 
-    <PercentageCardButtonGroup :data="subpercentageData" />
+    <PercentageCardButtonGroup
+      :key="dataKey + 'subpercentage'"
+      class="tw-px-2"
+      :data="subpercentageData"
+      @change="onChangeStage" />
 
     <CustomHomeTableSection
       :key="dataKey + 'table'"
@@ -105,20 +110,42 @@ const toggleInfo = () => {
   showProcessInfo.value = !showProcessInfo.value;
 };
 
-const buildAdvancedFilter = (metric) => [{
-  subject: {
-    type: "Field",
-    value: "metric",
-  },
-  operator: "=",
-  value: metric.id,
-}];
+const buildAdvancedFilter = () => {
+  const stage = subpercentageData.value.find((item) => item.active);
+  const metric = data.value.find((item) => item.active);
 
-const onChangeMetric = (buttons) => {
-  const metric = buttons.find((item) => item.active);
-  data.value = buttons;
+  return [{
+    subject: {
+      type: "Field",
+      value: "metric",
+    },
+    operator: "=",
+    value: metric.id,
+  },
+  {
+    subject: {
+      type: "Field",
+      value: "stage",
+    },
+    operator: "=",
+    value: stage.id,
+  }];
+};
+
+const onChangeStage = (stage, idxItem) => {
+  subpercentageData.value.forEach((item, index) => {
+    index === idxItem ? item.active = true : item.active = false;
+  });
   dataKey.value += 1;
-  advancedFilter.value = buildAdvancedFilter(metric);
+  advancedFilter.value = buildAdvancedFilter();
+};
+
+const onChangeMetric = (stage, idxItem) => {
+  data.value.forEach((item, index) => {
+    index === idxItem ? item.active = true : item.active = false;
+  });
+  dataKey.value += 1;
+  advancedFilter.value = buildAdvancedFilter();
 };
 
 onMounted(() => {
