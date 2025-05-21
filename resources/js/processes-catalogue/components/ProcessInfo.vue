@@ -5,6 +5,7 @@
       :current-user-id="currentUserId"
       :ellipsis-permission="ellipsisPermission"
       :my-tasks-columns="myTasksColumns"
+      :my-cases-columns="myCasesColumns"
       @goBackCategory="$emit('goBackCategory')"
       @updateMyTasksColumns="updateMyTasksColumns"
       @toggle-info="toggleInfo"
@@ -71,6 +72,7 @@ export default {
       lastImage: null,
       indexSelectedImage: 0,
       myTasksColumns: [],
+      myCasesColumns: [],
       showProcessInfo: false,
       collapsed: true,
       fullCarousel: false,
@@ -98,7 +100,7 @@ export default {
     this.$root.$on("carouselImageSelected", (pos) => {
       this.firstImage = pos + 1;
     });
-    this.getMyTasksColumns();
+    this.getMyColumns();
   },
   methods: {
     closeFullCarousel() {
@@ -108,9 +110,10 @@ export default {
       this.myTasksColumns = columns;
       this.$refs.processTab.updateColumnsByType("myTasks", columns);
     },
-    getMyTasksColumns() {
+    getMyColumns() {
       this.$nextTick(() => {
-        this.myTasksColumns = this.$refs.processTab.getDefaultColumnsByType("myTasks");
+        this.myTasksColumns = this.$refs.processTab.getDefaultColumns("myTasks");
+        this.myCasesColumns = this.$refs.processTab.getDefaultColumns("myCases");
       });
     },
     toggleInfo() {
