@@ -31,7 +31,7 @@
       <button
         type="button"
         class="btn btn-primary btn-sm ml-2"
-        :disabled="disabled"
+        :disabled="disabled || disabledAssign"
         @click="reassignUser">
         {{ $t('Assign') }}
       </button>
@@ -67,13 +67,13 @@ const emit = defineEmits(["on-reassign-user"]);
 const selectedUser = ref(null);
 const comments = ref(null);
 const reassignUsers = ref([]);
+const disabledAssign = ref(false);
 
 // Computed properties
 const disabled = computed(() => {
   const hasOnlyWhitespace = comments.value && comments.value.trim().length === 0;
   return !selectedUser.value || hasOnlyWhitespace;
 });
-const currentTaskUserId = computed(() => props.task.user_id);
 
 // Load the reassign users
 const loadReassignUsers = async (filter) => {
@@ -118,17 +118,24 @@ const prepareToUpdateComment = async () => {
  * Reassign the user
  */
 const reassignUser = async () => {
+  disabledAssign.value = true;
   if (selectedUser.value) {
-    const response = await updateReassignUser(props.task.id, selectedUser.value, comments.value);
-    const commentResponse = await prepareToUpdateComment();
+    try {
+      const response = await updateReassignUser(props.task.id, selectedUser.value, comments.value);
+      const commentResponse = await prepareToUpdateComment();
 
-    if (response && commentResponse) {
-      emit("on-reassign-user", selectedUser.value);
+      if (response && commentResponse) {
+        emit("on-reassign-user", selectedUser.value);
+      }
+
+      nextTick(() => {
+        selectedUser.value = null;
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      disabledAssign.value = false;
     }
-
-    nextTick(() => {
-      selectedUser.value = null;
-    });
   }
 };
 
