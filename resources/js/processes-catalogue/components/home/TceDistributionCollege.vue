@@ -6,11 +6,17 @@
       :my-tasks-columns="myTasksColumns"
       @toggle-info="toggleInfo"
       @goBackCategory="emit('goBackCategory')" />
-    <BaseCardButtonGroup :data="data" />
+    <BaseCardButtonGroup
+      v-if="data.length > 0"
+      :key="dataKey + 'button'"
+      class="tw-px-2"
+      :data="data"
+      @change="onChangeMetric" />
 
     <PercentageCardButtonGroup :data="subpercentageData" />
 
     <CustomHomeTableSection
+      :key="dataKey + 'table'"
       class="tw-w-full tw-flex tw-flex-col
       tw-overflow-hidden tw-grow tw-p-4 tw-bg-white tw-rounded-lg tw-shadow-md tw-border tw-border-gray-200"
       :process="process" />
@@ -46,10 +52,12 @@ const emit = defineEmits(["goBackCategory"]);
 const myTasksColumns = ref([]);
 
 const data = ref([]);
+const advancedFilter = ref([]);
+const dataKey = ref(0);
 
 const hookMetrics = async () => {
   const metricsResponse = await getMetrics({ processId: props.process.id });
-  data.value = buildMetrics(metricsResponse);
+  data.value = buildMetrics(metricsResponse.data);
 };
 
 const subpercentageData = ref([
@@ -95,6 +103,22 @@ const showProcessInfo = ref(false);
 
 const toggleInfo = () => {
   showProcessInfo.value = !showProcessInfo.value;
+};
+
+const buildAdvancedFilter = (metric) => [{
+  subject: {
+    type: "Field",
+    value: "metric",
+  },
+  operator: "=",
+  value: metric.id,
+}];
+
+const onChangeMetric = (buttons) => {
+  const metric = buttons.find((item) => item.active);
+  data.value = buttons;
+  dataKey.value += 1;
+  advancedFilter.value = buildAdvancedFilter(metric);
 };
 
 onMounted(() => {

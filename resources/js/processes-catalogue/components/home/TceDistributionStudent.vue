@@ -88,12 +88,12 @@ const toggleInfo = () => {
 
 const hookMetrics = async () => {
   const metricsResponse = await getMetrics({ processId: props.process.id });
-  data.value = buildMetrics(metricsResponse);
+  data.value = buildMetrics(metricsResponse.data);
 };
 
 const hookStages = async () => {
   const stagesResponse = await getStages({ processId: props.process.id });
-  stages.value = stagesResponse;
+  stages.value = stagesResponse.data;
 };
 
 onMounted(() => {

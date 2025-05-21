@@ -1,5 +1,7 @@
 <template>
-  <div :class="`tw-flex tw-relative ${color}`">
+  <div
+    :class="`tw-flex tw-relative ${color}`"
+    @click="click">
     <div class=" tw-flex tw-flex-col tw-w-full">
       <div class="tw-flex tw-flex-col tw-justify-start tw-px-6 tw-py-4 tw-gap-0">
         <slot name="header">
@@ -50,10 +52,16 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(["click"]);
+
+const click = () => {
+  emit("click");
+};
 </script>
 
 <style scoped>
 .clip-path-triangle-right {
   clip-path: polygon(-1% 0, 90% 50%, -1% 100%);
+  position: relative;
 }
 </style>

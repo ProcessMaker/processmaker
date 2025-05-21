@@ -1,5 +1,11 @@
 <template>
-  <div :class="`tw-flex tw-relative tw-rounded-xl`">
+  <div
+    class="tw-flex tw-relative tw-rounded-xl"
+    :class="[{
+      [`tw-bg-${color}-200 hover:tw-bg-${color}-300`]:!active,
+      [`tw-outline tw-bg-${color}-100 tw-border-${color}-500 tw-outline-${color}-300 tw-bg-${color}-100 hover:tw-bg-${color}-200`]:active
+    }]"
+    @click="onClick">
     <div class=" tw-flex tw-flex-col tw-w-full">
       <div class="tw-flex tw-flex-col tw-justify-start tw-px-6 tw-py-4 tw-gap-0">
         <slot name="header">
@@ -28,8 +34,21 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  active: {
+    type: Boolean,
+    default: false,
+  },
+  color: {
+    type: String,
+    default: "orange",
+  },
 });
 
+const emit = defineEmits(["click"]);
+
+const onClick = () => {
+  emit("click");
+};
 </script>
 
 <style scoped>
