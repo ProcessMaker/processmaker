@@ -26,8 +26,8 @@ class StageProgressCalculatorTest extends TestCase
             0.0,
             StageProgressCalculator::getProgressStage(
                 [
-                    ['id' => 1, 'order' => 1, 'label' => 'Stage 1', 'selected' => false],
-                    ['id' => 2, 'order' => 2, 'label' => 'Stage 2', 'selected' => false],
+                    ['id' => 1, 'order' => 1, 'name' => 'Stage 1', 'selected' => false],
+                    ['id' => 2, 'order' => 2, 'name' => 'Stage 2', 'selected' => false],
                 ],
                 []
             )
@@ -38,9 +38,9 @@ class StageProgressCalculatorTest extends TestCase
             33.33,
             StageProgressCalculator::getProgressStage(
                 [
-                    ['id' => 1, 'order' => 1, 'label' => 'Stage 1', 'selected' => false],
-                    ['id' => 2, 'order' => 2, 'label' => 'Stage 2', 'selected' => false],
-                    ['id' => 3, 'order' => 3, 'label' => 'Stage 3', 'selected' => false],
+                    ['id' => 1, 'order' => 1, 'name' => 'Stage 1', 'selected' => false],
+                    ['id' => 2, 'order' => 2, 'name' => 'Stage 2', 'selected' => false],
+                    ['id' => 3, 'order' => 3, 'name' => 'Stage 3', 'selected' => false],
                 ],
                 ['stage_id' => 1, 'stage_name' => 'Stage 1']
             )
@@ -51,9 +51,9 @@ class StageProgressCalculatorTest extends TestCase
             66.67,
             StageProgressCalculator::getProgressStage(
                 [
-                    ['id' => 1, 'order' => 1, 'label' => 'Stage 1', 'selected' => false],
-                    ['id' => 2, 'order' => 2, 'label' => 'Stage 2', 'selected' => false],
-                    ['id' => 3, 'order' => 3, 'label' => 'Stage 3', 'selected' => false],
+                    ['id' => 1, 'order' => 1, 'name' => 'Stage 1', 'selected' => false],
+                    ['id' => 2, 'order' => 2, 'name' => 'Stage 2', 'selected' => false],
+                    ['id' => 3, 'order' => 3, 'name' => 'Stage 3', 'selected' => false],
                 ],
                 ['stage_id' => 2, 'stage_name' => 'Stage 2']
             )
@@ -64,9 +64,9 @@ class StageProgressCalculatorTest extends TestCase
             100.0,
             StageProgressCalculator::getProgressStage(
                 [
-                    ['id' => 1, 'order' => 1, 'label' => 'Stage 1', 'selected' => false],
-                    ['id' => 2, 'order' => 2, 'label' => 'Stage 2', 'selected' => false],
-                    ['id' => 3, 'order' => 3, 'label' => 'Stage 3', 'selected' => false],
+                    ['id' => 1, 'order' => 1, 'name' => 'Stage 1', 'selected' => false],
+                    ['id' => 2, 'order' => 2, 'name' => 'Stage 2', 'selected' => false],
+                    ['id' => 3, 'order' => 3, 'name' => 'Stage 3', 'selected' => false],
                 ],
                 ['stage_id' => 3, 'stage_name' => 'Stage 3']
             )
@@ -76,9 +76,9 @@ class StageProgressCalculatorTest extends TestCase
             100.0,
             StageProgressCalculator::getProgressStage(
                 [
-                    ['id' => 1, 'order' => 1, 'label' => 'Stage 1', 'selected' => false],
-                    ['id' => 2, 'order' => 2, 'label' => 'Stage 2', 'selected' => false],
-                    ['id' => 3, 'order' => 3, 'label' => 'Stage 3', 'selected' => false],
+                    ['id' => 1, 'order' => 1, 'name' => 'Stage 1', 'selected' => false],
+                    ['id' => 2, 'order' => 2, 'name' => 'Stage 2', 'selected' => false],
+                    ['id' => 3, 'order' => 3, 'name' => 'Stage 3', 'selected' => false],
                 ],
                 ['stage_id' => 4, 'stage_name' => 'Stage 4']
             )
@@ -88,9 +88,9 @@ class StageProgressCalculatorTest extends TestCase
             33.33,
             StageProgressCalculator::getProgressStage(
                 [
-                    ['id' => 3, 'order' => 1, 'label' => 'Stage 3', 'selected' => false],
-                    ['id' => 1, 'order' => 2, 'label' => 'Stage 1', 'selected' => false],
-                    ['id' => 2, 'order' => 3, 'label' => 'Stage 2', 'selected' => false],
+                    ['id' => 3, 'order' => 1, 'name' => 'Stage 3', 'selected' => false],
+                    ['id' => 1, 'order' => 2, 'name' => 'Stage 1', 'selected' => false],
+                    ['id' => 2, 'order' => 3, 'name' => 'Stage 2', 'selected' => false],
                 ],
                 ['stage_id' => 3, 'stage_name' => 'Stage 3']
             )
@@ -103,8 +103,8 @@ class StageProgressCalculatorTest extends TestCase
     public function testProgressIsWithinBounds(): void
     {
         $allStages = [
-            ['id' => 1, 'order' => 1, 'label' => 'Stage 1', 'selected' => false],
-            ['id' => 2, 'order' => 2, 'label' => 'Stage 2', 'selected' => false],
+            ['id' => 1, 'order' => 1, 'name' => 'Stage 1', 'selected' => false],
+            ['id' => 2, 'order' => 2, 'name' => 'Stage 2', 'selected' => false],
         ];
 
         $currentStages = ['stage_id' => 1, 'stage_name' => 'Stage 1'];
@@ -121,9 +121,9 @@ class StageProgressCalculatorTest extends TestCase
     public function testProgressIsRounded(): void
     {
         $allStages = [
-            ['id' => 1, 'order' => 1, 'label' => 'Stage 1', 'selected' => false],
-            ['id' => 2, 'order' => 2, 'label' => 'Stage 2', 'selected' => false],
-            ['id' => 3, 'order' => 3, 'label' => 'Stage 3', 'selected' => false],
+            ['id' => 1, 'order' => 1, 'name' => 'Stage 1', 'selected' => false],
+            ['id' => 2, 'order' => 2, 'name' => 'Stage 2', 'selected' => false],
+            ['id' => 3, 'order' => 3, 'name' => 'Stage 3', 'selected' => false],
         ];
 
         $currentStages = ['stage_id' => 1, 'stage_name' => 'Stage 1'];

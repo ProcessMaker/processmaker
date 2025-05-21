@@ -152,9 +152,9 @@ class ProcessControllerTest extends TestCase
     {
         // Define stages
         $stages = [
-            ['id' => 101, 'order' => 1, 'label' => 'Request Send', 'selected' => false],
-            ['id' => 102, 'order' => 2, 'label' => 'Request Reviewed', 'selected' => false],
-            ['id' => 103, 'order' => 3, 'label' => 'Manager Reviewed', 'selected' => false],
+            ['id' => 101, 'order' => 1, 'name' => 'Request Send', 'selected' => false],
+            ['id' => 102, 'order' => 2, 'name' => 'Request Reviewed', 'selected' => false],
+            ['id' => 103, 'order' => 3, 'name' => 'Manager Reviewed', 'selected' => false],
         ];
 
         // Create a new process and save stages as JSON
@@ -245,8 +245,8 @@ class ProcessControllerTest extends TestCase
     public function testGetStagesPerProcessWithDefaultAggregation()
     {
         $stages = [
-            ['id' => 101, 'order' => 1, 'label' => 'Custom Stage 1', 'selected' => false],
-            ['id' => 102, 'order' => 2, 'label' => 'Custom Stage 2', 'selected' => false],
+            ['id' => 101, 'order' => 1, 'name' => 'Custom Stage 1', 'selected' => false],
+            ['id' => 102, 'order' => 2, 'name' => 'Custom Stage 2', 'selected' => false],
         ];
 
         $process = Process::factory()->create([
@@ -319,8 +319,8 @@ class ProcessControllerTest extends TestCase
     public function testGetStagesPerProcessWithCustomAggregation()
     {
         $stages = [
-            ['id' => 101, 'order' => 1, 'label' => 'Custom Stage 1', 'selected' => false],
-            ['id' => 102, 'order' => 2, 'label' => 'Custom Stage 2', 'selected' => false],
+            ['id' => 101, 'order' => 1, 'name' => 'Custom Stage 1', 'selected' => false],
+            ['id' => 102, 'order' => 2, 'name' => 'Custom Stage 2', 'selected' => false],
         ];
 
         $process = Process::factory()->create([

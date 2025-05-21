@@ -10,8 +10,8 @@ class StageProgressCalculator
      * @param array $allStages List of all stages.
      *                         Example:
      *                         [
-     *                            ['id' => 1, 'order' => 1, 'label' => 'Stage 1', 'selected' => false],
-     *                            ['id' => 2, 'order' => 2, 'label' => 'Stage 2', 'selected' => false],
+     *                            ['id' => 1, 'order' => 1, 'name' => 'Stage 1', 'selected' => false],
+     *                            ['id' => 2, 'order' => 2, 'name' => 'Stage 2', 'selected' => false],
      *                         ]
      * @param array $currentStages Current stage details.
      *                             Example:
