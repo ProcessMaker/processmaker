@@ -22,8 +22,8 @@
     <div class="tw-flex tw-flex-col tw-space-x-2 tw-p-2 tw-w-full">
       <label>{{ $t('Comments') }}</label>
       <textarea
-        v-model="comments"
-        class="tw-w-full tw-border tw-border-gray-300 tw-rounded-md"
+        rows="5"
+        class="tw-w-full tw-border tw-border-gray-300 tw-rounded-md tw-resize-none"
         :placeholder="$t('Add a comment to the assignment')" />
     </div>
 
