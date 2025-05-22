@@ -29,6 +29,10 @@ Route::prefix('api/1.1')
             // Route to show the interstitial screen of a task
             Route::get('/{taskId}/interstitial', [TaskController::class, 'showInterstitial'])
                 ->name('show.interstitial');
+
+            // Route to move a token to a different task
+            Route::post('/{taskId}/move', [TaskController::class, 'moveToken'])
+                ->name('move.token');
         });
 
         // Cases Endpoints
