@@ -308,7 +308,8 @@ class BpmnSubscriber
         }
     }
 
-    public function updateStageWithFlowTransitionConfig($transition, $consumeTokens, $executionInstance) {
+    public function updateStageWithFlowTransitionConfig($transition, $consumeTokens, $executionInstance)
+    {
         $source = $transition->outgoing()->item(0)->origin()->getOwner();
         $target = $transition->outgoing()->item(0)->target()->getOwner();
         $flow = $source->getOutgoingFlows()->findFirst(function ($flowElement) use ($target) {

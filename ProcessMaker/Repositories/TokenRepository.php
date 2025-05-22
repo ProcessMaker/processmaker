@@ -169,11 +169,9 @@ class TokenRepository implements TokenRepositoryInterface
         $token->saveOrFail();
         $token->setId($token->getKey());
         $request = $token->getInstance();
-        //save stage values
         $request->last_stage_id = $token->stage_id;
         $request->last_stage_name = $token->stage_name;
         $request->notifyProcessUpdated('ACTIVITY_ACTIVATED', $token);
-        
 
         CaseUpdate::dispatchSync($request, $token);
 
