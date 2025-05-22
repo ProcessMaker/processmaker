@@ -288,7 +288,7 @@ if (!function_exists('calculateProgressById')) {
      *     (stage_order / total_stages) * 100
      *
      * The result is rounded to two decimal places.
-     * 
+     *
      * If the list of stages is `null` or empty, or if the stage with the given ID
      * is not found, the function returns 0.0.
      *
@@ -319,6 +319,7 @@ if (!function_exists('calculateProgressById')) {
             return 0.0;
         }
         $progress = ($currentStageOrder / $totalStages) * 100;
+
         return round($progress, 2);
     }
 }
