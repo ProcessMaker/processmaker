@@ -70,6 +70,7 @@ class CaseRepository implements CaseRepositoryInterface
                 'keywords' => CaseUtils::getKeywords($dataKeywords),
                 'last_stage_id' => $instance->last_stage_id,
                 'last_stage_name' => $instance->last_stage_name,
+                'progress' => 0,
             ]);
         } catch (\Exception $e) {
             Log::error('CaseException: ' . $e->getMessage());
@@ -102,6 +103,7 @@ class CaseRepository implements CaseRepositoryInterface
             $this->case->keywords = CaseUtils::getKeywords($dataKeywords);
             $this->case->last_stage_id = $token->stage_id;
             $this->case->last_stage_name = $token->stage_name;
+            $this->case->progress = calculateProgressById($token->stage_id, $instance?->process?->stages);
 
             $this->updateParticipants($token);
 

@@ -334,6 +334,7 @@ class BpmnSubscriber
         }
         $executionInstance->setProperty('stage_id', $config->stage->id);
         $executionInstance->setProperty('stage_name', $config->stage->name);
+        $executionInstance->setProperty('progress', calculateProgressById($config->stage->id, $executionInstance?->process?->stages));
     }
 
     public function onTerminateEndEvent($event)

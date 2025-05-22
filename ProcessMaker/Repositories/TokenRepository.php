@@ -171,6 +171,7 @@ class TokenRepository implements TokenRepositoryInterface
         $request = $token->getInstance();
         $request->last_stage_id = $token->stage_id;
         $request->last_stage_name = $token->stage_name;
+        $request->progress = calculateProgressById($token->stage_id, $request?->process?->stages);
         $request->notifyProcessUpdated('ACTIVITY_ACTIVATED', $token);
 
         CaseUpdate::dispatchSync($request, $token);
