@@ -1082,13 +1082,13 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 continue;
             }
             $pmConfig = $incomingFlow->getAttribute('pm:config');
-            $config = json_decode($pmConfig);
-            if ($config?->stage?->id) {
+            $config = json_decode($pmConfig ?? '');
+            if (isset($config->stage) && isset($config->stage->id)) {
                 break;
             }
         }
-        $this->stage_id = $config?->stage?->id;
-        $this->stage_name = $config?->stage?->name;
+        $this->stage_id = isset($config->stage) && isset($config->stage->id) ? $config->stage->id : null;
+        $this->stage_name = isset($config->stage) && isset($config->stage->name) ? $config->stage->name : null;
     }
 
     public function loadTokenProperties()
