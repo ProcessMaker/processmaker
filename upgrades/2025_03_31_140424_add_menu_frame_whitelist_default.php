@@ -4,7 +4,7 @@ use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\SettingsMenus;
 use ProcessMaker\Upgrades\UpgradeMigration as Upgrade;
 
-class AddMenuFrameWhitelist extends Upgrade
+class AddMenuFrameWhitelistDefault extends Upgrade
 {
     /**
      * Run the upgrade migration.
@@ -15,28 +15,19 @@ class AddMenuFrameWhitelist extends Upgrade
     {
         $groupId = SettingsMenus::getId(SettingsMenus::LOG_IN_AUTH_MENU_GROUP);
         $whiteListKey = [
-            'key' => 'white_list_frame',
+            'key' => 'white_list_frame.default',
         ];
-        $whiteListButtonOption = [
-            'format' => 'button',
+        $whiteListDefaultOption = [
+            'format' => 'text',
             'group' => 'IFrame Whitelist Config',
             'group_id' => $groupId,
             'helper' => null,
-            'config' => false,
-            'name' => 'Add URL',
-            'hidden' => true,
-            'ui' => [
-                'props' => [
-                    'variant' => 'primary',
-                    'position' => 'top',
-                    'order' => '100',
-                    'icon' => 'fas fa-plus',
-                ],
-                'handler' => 'addWhiteListURL',
-            ],
+            'config' => null,
+            'name' => 'Default URL',
+            'hidden' => false,
         ];
 
-        Setting::firstOrCreate($whiteListKey, $whiteListButtonOption);
+        Setting::firstOrCreate($whiteListKey, $whiteListDefaultOption);
     }
 
     /**
@@ -47,7 +38,7 @@ class AddMenuFrameWhitelist extends Upgrade
     public function down()
     {
         $whiteListKey = [
-            'key' => 'white_list_frame',
+            'key' => 'white_list_frame.default',
         ];
         Setting::where($whiteListKey)->delete();
     }
