@@ -41,7 +41,10 @@
             placeholder="https://www.sample.org/head"
             :state="stateURL"
           />
-          <div v-if="urlError" class="text-danger mt-1">
+          <div
+            v-if="urlError"
+            class="text-danger mt-1"
+          >
             {{ urlError }}
           </div>
         </div>
@@ -78,6 +81,7 @@ export default {
     show(groupName) {
       this.clear();
       this.groupName = groupName;
+      this.stateSiteName = null;
       return this.$refs["bv-modal-whitelist"].show();
     },
     clear() {
@@ -90,7 +94,7 @@ export default {
       return pattern.test(url);
     },
     addWhiteListURL() {
-      if (!this.siteName) {
+      if (!this.siteName.trim()) {
         this.stateSiteName = false;
         return;
       }
