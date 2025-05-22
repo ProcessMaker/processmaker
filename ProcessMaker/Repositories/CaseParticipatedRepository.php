@@ -81,7 +81,7 @@ class CaseParticipatedRepository
             'keywords' => $case->keywords,
             'last_stage_id' => $case->last_stage_id,
             'last_stage_name' => $case->last_stage_name,
-            'progress' => $case->progress,
+            'progress' => $case->progress ?? 0,
         ];
 
         if ($userId !== null) {

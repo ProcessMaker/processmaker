@@ -302,7 +302,7 @@ if (!function_exists('calculateProgressById')) {
     function calculateProgressById(int|null $id, array|null $stages = [])
     {
         if (is_null($stages)) {
-            return;
+            return 0.0;
         }
         $totalStages = count($stages);
         if ($totalStages === 0) {
