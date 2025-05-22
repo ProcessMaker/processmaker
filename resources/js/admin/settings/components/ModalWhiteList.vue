@@ -2,8 +2,7 @@
   <b-modal
     id="bv-modal-whitelist"
     ref="bv-modal-whitelist"
-    hide-footer
-  >
+    hide-footer>
     <template #modal-title>
       <div class="tw-self-stretch tw-text-base tw-font-medium tw-text-[#20242A]">
         {{ $t("Configure URL Parents for Embedding") }}
@@ -24,8 +23,7 @@
             type="text"
             required
             :state="stateSiteName"
-            :placeholder="$t('Site Name')"
-          />
+            :placeholder="$t('Site Name')" />
         </div>
       </div>
       <div class="form-group col-md-12">
@@ -39,12 +37,10 @@
             type="text"
             required
             placeholder="https://www.sample.org/head"
-            :state="stateURL"
-          />
+            :state="stateURL" />
           <div
             v-if="urlError"
-            class="text-danger mt-1"
-          >
+            class="text-danger mt-1">
             {{ urlError }}
           </div>
         </div>
@@ -56,8 +52,7 @@
         type="submit"
         variant="primary"
         block
-        @click="addWhiteListURL"
-      >
+        @click="addWhiteListURL">
         {{ $t('Create') }}
       </b-button>
     </div>

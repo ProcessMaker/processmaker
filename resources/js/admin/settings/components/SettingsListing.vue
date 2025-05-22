@@ -2,32 +2,27 @@
   <div>
     <div
       v-show="loading"
-      class="bg-white w-100 h-100 p-5"
-    >
+      class="bg-white w-100 h-100 p-5">
       <data-loading
         :for="/groups\?page/"
         :empty="$t('No Data Available')"
         :empty-desc="$t('')"
-        empty-icon="noData"
-      />
+        empty-icon="noData" />
     </div>
     <div
       v-show="!loading"
-      class="settings-listing data-table"
-    >
+      class="settings-listing data-table">
       <pmql-input
         class="mb-2"
         :search-type="'settings'"
         :value="pmql"
         :ai-enabled="false"
         :aria-label="$t('Advanced Search (PMQL)')"
-        @submit="onNLQConversion"
-      >
+        @submit="onNLQConversion">
         <template #right-buttons>
           <div
             v-if="topButtons"
-            class="d-flex"
-          >
+            class="d-flex">
             <b-button
               v-for="(btn, index) in topButtons"
               v-bind="btn.ui.props"
@@ -36,17 +31,14 @@
               :data-cy="btn.key"
               :disabled="disableButton"
               class="ml-2 nowrap"
-              @click="handler(btn)"
-            >
+              @click="handler(btn)">
               <b-spinner
                 ref="b-spinner"
                 small
-                :hidden="true"
-              />
+                :hidden="true" />
               <i
                 v-if="btn.ui.props.icon"
-                :class="btn.ui.props.icon"
-              />
+                :class="btn.ui.props.icon" />
               {{ btn.name }}
             </b-button>
           </div>
@@ -55,16 +47,14 @@
 
       <div
         v-if="shouldDisplayNoDataMessage"
-        class="p-5 text-center"
-      >
+        class="p-5 text-center">
         <h3>{{ noDataMessageConfig.name }}</h3>
         <small>{{ noDataMessageConfig.helper }}</small>
       </div>
 
       <div
         v-else
-        class="card card-body table-card"
-      >
+        class="card card-body table-card">
         <b-table
           ref="table"
           class="settings-table table table-responsive-lg text-break m-0 h-100 w-100"
@@ -76,20 +66,17 @@
           :sort-desc="orderDesc"
           :filter="searchQuery"
           show-empty
-          responsive
-        >
+          responsive>
           <template #cell(name)="row">
             <div
               v-if="row.item.name"
               v-uni-id="row.item.id.toString()"
-              class="capitalize"
-            >
+              class="capitalize">
               {{ $t(row.item.name) }}
             </div>
             <div
               v-else
-              v-uni-id="row.item.id.toString()"
-            >
+              v-uni-id="row.item.id.toString()">
               {{ row.item.key }}
             </div>
             <b-form-text v-if="row.item.helper">
@@ -106,13 +93,11 @@
                 :key="row.item.key"
                 v-model="row.item.config"
                 :setting="settings[row.index]"
-                @saved="onChange"
-              />
+                @saved="onChange" />
             </keep-alive>
             <i
               v-if="savingSetting && savingSetting.id === settings[row.index].id"
-              class="fas fa-cog fa-spin text-secondary"
-            />
+              class="fas fa-cog fa-spin text-secondary" />
           </template>
           <template #cell(actions)="row">
             <keep-alive>
@@ -123,14 +108,12 @@
                 :key="row.item.key"
                 v-model="row.item.config"
                 :setting="settings[row.index]"
-                @saved="onChange"
-              />
+                @saved="onChange" />
             </keep-alive>
             <template v-if="row.item && row.item.format !== 'boolean'">
               <span
                 v-b-tooltip.hover
-                :title="getTooltip(row)"
-              >
+                :title="getTooltip(row)">
                 <b-button
                   v-uni-aria-describedby="row.item.id.toString()"
                   variant="link"
@@ -138,8 +121,7 @@
                   :data-cy="`edit-${row.item.key}`"
                   :aria-label="$t('Edit')"
                   :disabled="row.item.readonly"
-                  @click="onEdit(row)"
-                >
+                  @click="onEdit(row)">
                   <i class="fa-lg fas fa-edit settings-listing-button mr-1" />
                 </b-button>
               </span>
@@ -154,24 +136,21 @@
                   :aria-label="$t('Copy to Clipboard')"
                   :disabled="row.item.key.includes('cdata.')"
                   :title="$t('Copy to Clipboard')"
-                  @click="onCopy(row)"
-                >
+                  @click="onCopy(row)">
                   <i class="fa-lg fas fa-copy settings-listing-button mr-1" />
                 </b-button>
 
                 <span
                   v-if="!['boolean', 'object', 'button'].includes(row.item.format) && enableDeleteSetting(row)"
                   v-b-tooltip.hover
-                  :title="$t('Delete')"
-                >
+                  :title="$t('Delete')">
                   <b-button
                     v-uni-aria-describedby="row.item.id.toString()"
                     variant="link"
                     class="settings-listing-button"
                     :data-cy="`delete-${row.item.key}`"
                     :aria-label="$t('Delete')"
-                    @click="onDelete(row)"
-                  >
+                    @click="onDelete(row)">
                     <i class="fa-lg fas fa-trash-alt settings-listing-button mr-1" />
                   </b-button>
                 </span>
@@ -179,8 +158,7 @@
                 <span
                   v-else-if="!['boolean', 'object', 'button'].includes(row.item.format) && !disabledDeleteSetting(row)"
                   v-b-tooltip.hover
-                  :title="$t('Clear')"
-                >
+                  :title="$t('Clear')">
                   <b-button
                     v-uni-aria-describedby="row.item.id.toString()"
                     :aria-label="$t('Clear')"
@@ -188,20 +166,17 @@
                     variant="link"
                     class="settings-listing-button"
                     :data-cy="`clear-${row.item.key}`"
-                    @click="onClear(row)"
-                  >
+                    @click="onClear(row)">
                     <i class="fa-lg fas fa-trash-alt settings-listing-button" />
                   </b-button>
                 </span>
                 <span
                   v-else
-                  class="invisible"
-                >
+                  class="invisible">
                   <b-button
                     v-uni-aria-describedby="row.item.id.toString()"
                     variant="link"
-                    class="settings-listing-button"
-                  >
+                    class="settings-listing-button">
                     <i class="fas fa-trash-alt settings-listing-button" />
                   </b-button>
                 </span>
@@ -225,18 +200,15 @@
             class="ml-2"
             v-bind="btn.ui.props"
             :disabled="false"
-            @click="handler(btn)"
-          >
+            @click="handler(btn)">
             <b-spinner
               ref="b-spinner"
               small
-              :hidden="true"
-            />
+              :hidden="true" />
             <span v-html="btn.icon" />
             <i
               v-if="btn.ui.props.icon"
-              :class="btn.ui.props.icon"
-            />
+              :class="btn.ui.props.icon" />
             {{ btn.name }}
           </b-button>
         </div>
