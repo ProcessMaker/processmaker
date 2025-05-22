@@ -69,9 +69,17 @@ const onClickAdd = () => {
   newStage.value = '';
 };
 
+const generateUniqueId = () => {
+  const timestamp = Math.floor(Date.now() / 1000);
+  const random = Math.floor(Math.random() * 1000);
+  const paddedRandom = random.toString().padStart(3, '0');
+  const combined = `${timestamp}${paddedRandom}`.slice(0, 10);
+  return Number(combined);
+}
+
 const onKeyupEnter = () => {
   if (newStage.value.trim()) {
-    const uniqueId = Number(`${Date.now()}${Math.floor(Math.random() * 900 + 100)}`);
+    const uniqueId = generateUniqueId();
     const order = stages.value.length + 1;
     stages.value.push({
       id: uniqueId,

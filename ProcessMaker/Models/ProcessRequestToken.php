@@ -1048,8 +1048,8 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
         // Set stage properties in record
         $instance = $this->getInstance();
-        $this->stage_id = $instance ? $instance->getProperty('stage_name', null) : null;
-        $this->stage_name = $instance ? $instance->getProperty('stage_id', null) : null;
+        $this->stage_id = $instance ? $instance->getProperty('stage_id', null) : null;
+        $this->stage_name = $instance ? $instance->getProperty('stage_name', null) : null;
     }
 
     public function loadTokenProperties()

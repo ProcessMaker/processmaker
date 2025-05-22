@@ -279,15 +279,6 @@ class BpmnSubscriber
 
         // Exit if no variable or expression is set
         $config = json_decode($flow->getProperties()['config'], true);
-
-        // Check if stage is configured to update the intance
-        $instance->stage_id = null;
-        $instance->stage_name = null;
-        if (!empty($config['stageName']) && !empty($config['stageId'])) {
-            $instance->setProperty('stage_name', $config['stageName']);
-            $instance->setProperty('stage_id', $config['stageId'] ?? null);
-        }
-        // Check if update_data is empty
         if (empty($config['update_data'])
             || empty($config['update_data']['variable'])
             || empty($config['update_data']['expression'])
@@ -317,6 +308,33 @@ class BpmnSubscriber
         }
     }
 
+    public function updateStageWithFlowTransitionConfig($transition, $consumeTokens, $executionInstance) {
+        $source = $transition->outgoing()->item(0)->origin()->getOwner();
+        $target = $transition->outgoing()->item(0)->target()->getOwner();
+        $flow = $source->getOutgoingFlows()->findFirst(function ($flowElement) use ($target) {
+            return $flowElement->getTarget() === $target;
+        });
+        if ($flow === false) {
+            return;
+        }
+        $properties = $flow->getProperties();
+        if (!is_array($properties)) {
+            return;
+        }
+        if (!isset($properties['config'])) {
+            return;
+        }
+        $config = json_decode($properties['config']);
+        if (is_null($config)) {
+            return;
+        }
+        if (is_null($config?->stage?->id) || is_null($config?->stage?->name)) {
+            return;
+        }
+        $executionInstance->setProperty('stage_id', $config->stage->id);
+        $executionInstance->setProperty('stage_name', $config->stage->name);
+    }
+
     public function onTerminateEndEvent($event)
     {
         $instances = collect($event->getOwnerProcess()->getInstances()->toArray());
@@ -332,8 +350,8 @@ class BpmnSubscriber
      */
     public function subscribe($events)
     {
+        $events->listen(TransitionInterface::EVENT_AFTER_TRANSIT, static::class . '@updateStageWithFlowTransitionConfig');
         $events->listen(TransitionInterface::EVENT_CONDITIONED_TRANSITION, static::class . '@updateDataWithFlowTransition');
-        $events->listen(TransitionInterface::EVENT_AFTER_TRANSIT, static::class . '@updateDataWithFlowTransition');
 
         $events->listen(ProcessInterface::EVENT_PROCESS_INSTANCE_CREATED, static::class . '@onProcessCreated');
         $events->listen(ProcessInterface::EVENT_PROCESS_INSTANCE_COMPLETED, static::class . '@onProcessCompleted');
