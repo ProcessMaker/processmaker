@@ -79,6 +79,7 @@ export default {
       this.clear();
       this.groupName = groupName;
       this.stateSiteName = null;
+      this.stateURL = null;
       return this.$refs["bv-modal-whitelist"].show();
     },
     clear() {
