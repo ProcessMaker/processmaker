@@ -78,6 +78,8 @@ export default {
     show(groupName) {
       this.clear();
       this.groupName = groupName;
+      this.stateSiteName = null;
+      this.stateURL = null;
       return this.$refs["bv-modal-whitelist"].show();
     },
     clear() {
@@ -90,7 +92,7 @@ export default {
       return pattern.test(url);
     },
     addWhiteListURL() {
-      if (!this.siteName) {
+      if (!this.siteName.trim()) {
         this.stateSiteName = false;
         return;
       }
