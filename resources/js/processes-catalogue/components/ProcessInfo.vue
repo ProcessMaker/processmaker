@@ -112,7 +112,7 @@ export default {
     },
     getMyColumns() {
       this.$nextTick(() => {
-        this.myTasksColumns = this.$refs.processTab.getDefaultColumns("myTasks");
+        this.myTasksColumns = this.$refs.processTab.getDefaultColumnsByType("myTasks");
         this.myCasesColumns = this.$refs.processTab.getDefaultColumns("myCases");
       });
     },

@@ -5,7 +5,7 @@
     class="modal-dialog modal-dialog-centered"
     hide-footer
     scrollable
-    :title="$t('Edit Task Column')"
+    :title="title"
   >
     <div class="modal-content-custom">
       <column-chooser
@@ -68,6 +68,9 @@ export default {
   computed: {
     columns() {
       return this.dataColumns;
+    },
+    title() {
+      return this.type === "tasks" ? this.$t("Edit Task Column") : this.$t("Edit Case Column");
     },
   },
   methods: {
