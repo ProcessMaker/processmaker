@@ -11,6 +11,7 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
+        \Log::error('HomeController index');
         if (Auth::check()) {
             // Redirect to home dynamic only if the package was enable
             if (hasPackage('package-dynamic-ui')) {
