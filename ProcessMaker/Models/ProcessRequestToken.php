@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
 use DB;
+use DOMXPath;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Arr;
@@ -21,6 +22,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\MultiInstanceLoopCharacteristicsInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Managers\WorkflowManagerDefault;
+use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Notifications\ActivityActivatedNotification;
 use ProcessMaker\Notifications\TaskReassignmentNotification;
 use ProcessMaker\Query\Expression;
@@ -1046,10 +1048,47 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             ARRAY_FILTER_USE_KEY
         );
 
-        // Set stage properties in record
+        $this->setStagePropertiesInRecord();
+    }
+
+    /**
+     * Extracts and assigns stage properties from the BPMN sequence flow configuration.
+     *
+     * This method loads the BPMN XML from the process associated with the current instance
+     * and uses XPath to locate any sequenceFlow elements that target the current element ID.
+     * It iterates over the matching flows and attempts to extract the `pm:config` attribute
+     * from each, which is expected to be a JSON-encoded string.
+     *
+     * If a configuration is found with a defined `stage.id`, the method assigns the `stage_id`
+     * and `stage_name` properties of the current object accordingly.
+     *
+     * Typical use case: setting the stage metadata (ID and name) during execution flow
+     * resolution in a BPMN process.
+     *
+     * @return void
+     */
+    public function setStagePropertiesInRecord()
+    {
         $instance = $this->getInstance();
-        $this->stage_id = $instance ? $instance->getProperty('stage_id', null) : null;
-        $this->stage_name = $instance ? $instance->getProperty('stage_name', null) : null;
+        $bpmnDocument = new BpmnDocument();
+        $bpmnDocument->loadXml($instance->process->bpmn);
+        $xpath = new DOMXPath($bpmnDocument);
+        $sequenceFlows = $xpath->query("//bpmn:sequenceFlow[@targetRef='$this->element_id']");
+        $config = null;
+        foreach ($sequenceFlows as $flow) {
+            $id = $flow->getAttribute('id');
+            $incomingFlow = $bpmnDocument->findElementById($id);
+            if (!$incomingFlow) {
+                continue;
+            }
+            $pmConfig = $incomingFlow->getAttribute('pm:config');
+            $config = json_decode($pmConfig);
+            if ($config?->stage?->id) {
+                break;
+            }
+        }
+        $this->stage_id = $config?->stage?->id;
+        $this->stage_name = $config?->stage?->name;
     }
 
     public function loadTokenProperties()

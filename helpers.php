@@ -299,7 +299,7 @@ if (!function_exists('calculateProgressById')) {
      *
      * @return float The progress percentage (0.0 to 100.0), rounded to two decimal places.
      */
-    function calculateProgressById(int $id, array|null $stages = [])
+    function calculateProgressById(int|null $id, array|null $stages = [])
     {
         if (is_null($stages)) {
             return;

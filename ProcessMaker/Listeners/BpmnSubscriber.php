@@ -308,35 +308,6 @@ class BpmnSubscriber
         }
     }
 
-    public function updateStageWithFlowTransitionConfig($transition, $consumeTokens, $executionInstance)
-    {
-        $source = $transition->outgoing()->item(0)->origin()->getOwner();
-        $target = $transition->outgoing()->item(0)->target()->getOwner();
-        $flow = $source->getOutgoingFlows()->findFirst(function ($flowElement) use ($target) {
-            return $flowElement->getTarget() === $target;
-        });
-        if ($flow === false) {
-            return;
-        }
-        $properties = $flow->getProperties();
-        if (!is_array($properties)) {
-            return;
-        }
-        if (!isset($properties['config'])) {
-            return;
-        }
-        $config = json_decode($properties['config']);
-        if (is_null($config)) {
-            return;
-        }
-        if (is_null($config?->stage?->id) || is_null($config?->stage?->name)) {
-            return;
-        }
-        $executionInstance->setProperty('stage_id', $config->stage->id);
-        $executionInstance->setProperty('stage_name', $config->stage->name);
-        $executionInstance->setProperty('progress', calculateProgressById($config->stage->id, $executionInstance?->process?->stages));
-    }
-
     public function onTerminateEndEvent($event)
     {
         $instances = collect($event->getOwnerProcess()->getInstances()->toArray());
@@ -352,7 +323,6 @@ class BpmnSubscriber
      */
     public function subscribe($events)
     {
-        $events->listen(TransitionInterface::EVENT_AFTER_TRANSIT, static::class . '@updateStageWithFlowTransitionConfig');
         $events->listen(TransitionInterface::EVENT_CONDITIONED_TRANSITION, static::class . '@updateDataWithFlowTransition');
 
         $events->listen(ProcessInterface::EVENT_PROCESS_INSTANCE_CREATED, static::class . '@onProcessCreated');

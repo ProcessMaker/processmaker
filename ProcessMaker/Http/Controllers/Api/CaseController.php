@@ -58,23 +58,17 @@ class CaseController extends Controller
      */
     public function getStagesSummary($requestId)
     {
-        $processId = ProcessRequest::find($requestId);
-        $stages = Process::find($processId)
-            ->first()
-            ->stages;
-        $allStages = [];
-        if (!is_null($stages)) {
-            $allStages = $stages;
-        }
-
-        $processRequestTokens = ProcessRequestToken::where('process_request_id', $requestId)
-            ->select('stage_id', 'stage_name', 'status', 'completed_at')
-            ->get();
-
-        $allCurrentStages = [];
-        if (!empty($processRequestTokens)) {
-            $allCurrentStages = $processRequestTokens;
-        }
+        // TO_DO: get all values processes.stages
+        $allStages = [
+            ['id' => 1, 'name' => 'Stage A'],
+            ['id' => 2, 'name' => 'Stage B'],
+            ['id' => 3, 'name' => 'Stage C'],
+        ];
+        // TO_DO: Create a query to get ProcessRequestToken::where('process_request_id', $requestId)->select('stage_id', 'stage_name', 'status', 'completed_at')->get();
+        $allCurrentStages = [
+            ['stage_id' => 1, 'stage_name' => 'Stage A', 'status' => 'CLOSED', 'completed_at' => '2025-04-23 21:22:34'],
+            ['stage_id' => 2, 'stage_name' => 'Stage B', 'status' => 'ACTIVE', 'completed_at' => 'null'],
+        ];
 
         $stageResult = [];
         // Initialize stage counts with zero for all stages
