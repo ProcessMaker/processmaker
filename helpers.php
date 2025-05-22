@@ -292,7 +292,7 @@ if (!function_exists('calculateProgressById')) {
      * If the list of stages is `null` or empty, or if the stage with the given ID
      * is not found, the function returns 0.0.
      *
-     * @param int $id The ID of the stage to calculate progress for.
+     * @param int|null $id The ID of the stage to calculate progress for.
      * @param array|null $stages An array of stages, where each stage is an associative array
      *                           containing at least the keys 'id' and 'order'.
      *                           This parameter can be null.
