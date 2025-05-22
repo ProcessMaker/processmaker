@@ -2,7 +2,8 @@
   <div
     v-if="!isArchived"
     id="processCollapseInfo"
-    class="tw-relative">
+    class="tw-relative"
+  >
     <div id="processData">
       <div>
         <div class="header-mobile">
@@ -15,11 +16,13 @@
             <div class="d-flex align-items-center flex-grow-1">
               <i
                 class="fas fa-chevron-left mr-2 custom-color hover:tw-cursor-pointer"
-                @click="goBack()" />
+                @click="goBack()"
+              />
               <div
                 v-b-tooltip.hover
                 class="title text-truncate"
-                :title="process.name">
+                :title="process.name"
+              >
                 {{ process.name }}
               </div>
             </div>
@@ -27,7 +30,8 @@
               <button
                 class="info-button mx-3"
                 :class="showProcessInfo ? 'info-button-active' : 'info-button'"
-                @click="toggleInfo">
+                @click="toggleInfo"
+              >
                 <span>i</span>
               </button>
               <div class="card-bookmark mx-3">
@@ -43,12 +47,14 @@
                   variant="none"
                   :is-documenter-installed="$root.isDocumenterInstalled"
                   :permission="$root.permission || ellipsisPermission"
-                  @navigate="ellipsisNavigate" />
+                  @navigate="ellipsisNavigate"
+                />
               </span>
               <buttons-start
                 :process="process"
                 :start-event="singleStartEvent"
-                :process-events="processEvents" />
+                :process-events="processEvents"
+              />
             </div>
           </div>
         </div>
@@ -60,19 +66,22 @@
       asset-type="process"
       :current-user-id="currentUserId"
       :asset-name="processTemplateName"
-      :asset-id="processId" />
+      :asset-id="processId"
+    />
     <create-pm-block-modal
       id="create-pm-block-modal"
       ref="create-pm-block-modal"
       :current-user-id="currentUserId"
       :asset-name="pmBlockName"
-      :asset-id="processId" />
+      :asset-id="processId"
+    />
     <add-to-project-modal
       id="add-to-project-modal"
       ref="add-to-project-modal"
       asset-type="process"
       :asset-id="processId"
-      :asset-name="assetName" />
+      :asset-name="assetName"
+    />
     <launchpad-settings-modal
       id="launchpad-settings-modal"
       ref="launchpad-settings-modal"
@@ -82,7 +91,9 @@
       :description-settings="process.description"
       :process="process"
       :my-tasks-columns="myTasksColumns"
-      @updateMyTasksColumns="updateMyTasksColumns" />
+      :my-cases-columns="myCasesColumns"
+      @updateMyTasksColumns="updateMyTasksColumns"
+    />
   </div>
 </template>
 
@@ -109,7 +120,7 @@ export default {
     Bookmark,
   },
   mixins: [ProcessesMixin, ellipsisMenuMixin, processNavigationMixin],
-  props: ["process", "currentUserId", "ellipsisPermission", "myTasksColumns"],
+  props: ["process", "currentUserId", "ellipsisPermission", "myTasksColumns", "myCasesColumns"],
   data() {
     return {
       mobileApp: window.ProcessMaker.mobileApp,
