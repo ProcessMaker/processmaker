@@ -1070,25 +1070,30 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     public function setStagePropertiesInRecord()
     {
         $instance = $this->getInstance();
-        $bpmnDocument = new BpmnDocument();
-        $bpmnDocument->loadXml($instance->process->bpmn);
-        $xpath = new DOMXPath($bpmnDocument);
-        $sequenceFlows = $xpath->query("//bpmn:sequenceFlow[@targetRef='$this->element_id']");
-        $config = null;
-        foreach ($sequenceFlows as $flow) {
-            $id = $flow->getAttribute('id');
-            $incomingFlow = $bpmnDocument->findElementById($id);
-            if (!$incomingFlow) {
-                continue;
+        if (isset($instance->process->bpmn)) {
+            $bpmnDocument = new BpmnDocument();
+            $bpmnDocument->loadXml($instance->process->bpmn);
+            $xpath = new DOMXPath($bpmnDocument);
+            $sequenceFlows = $xpath->query("//bpmn:sequenceFlow[@targetRef='$this->element_id']");
+            $config = null;
+            foreach ($sequenceFlows as $flow) {
+                $id = $flow->getAttribute('id');
+                $incomingFlow = $bpmnDocument->findElementById($id);
+                if (!$incomingFlow) {
+                    continue;
+                }
+                $pmConfig = $incomingFlow->getAttribute('pm:config');
+                $config = json_decode($pmConfig ?? '');
+                if (isset($config->stage) && isset($config->stage->id)) {
+                    break;
+                }
             }
-            $pmConfig = $incomingFlow->getAttribute('pm:config');
-            $config = json_decode($pmConfig ?? '');
-            if (isset($config->stage) && isset($config->stage->id)) {
-                break;
-            }
+            $this->stage_id = isset($config->stage) && isset($config->stage->id) ? $config->stage->id : null;
+            $this->stage_name = isset($config->stage) && isset($config->stage->name) ? $config->stage->name : null;
+        } else {
+            $this->stage_id = null;
+            $this->stage_name = null;
         }
-        $this->stage_id = isset($config->stage) && isset($config->stage->id) ? $config->stage->id : null;
-        $this->stage_name = isset($config->stage) && isset($config->stage->name) ? $config->stage->name : null;
     }
 
     public function loadTokenProperties()
