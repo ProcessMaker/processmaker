@@ -67,38 +67,38 @@ const click = (counter, idxCounter) => {
 
 <style>
 .tw-bg-tangerine-100 {
-  background-color: rgb(255 237 213 / 1);
+  background-color: rgb(255, 230, 213);
 }
 
 .tw-bg-tangerine-200 {
-  background-color: rgb(252, 228, 197);
+  background-color: rgb(252, 213, 186);
 }
 
 .tw-bg-tangerine-300 {
-  background-color: rgb(252, 222, 184);
+  background-color: rgb(255, 202, 165);
 }
 
 .tw-bg-tangerine-400 {
-  background-color: rgb(252, 216, 170);
+  background-color: rgb(255, 191, 145);
 }
 
 .tw-bg-tangerine-500 {
-  background-color: rgb(251, 207, 150);
+  background-color: rgb(255, 179, 124);
 }
 
 .tw-bg-tangerine-600 {
-  background-color: rgb(250, 201, 136);
+  background-color: rgb(255, 170, 109);
 }
 
 .tw-bg-tangerine-700 {
-  background-color: rgb(250, 195, 123);
+  background-color: rgb(255, 160, 92);
 }
 
 .tw-bg-tangerine-800 {
-  background-color: rgb(249, 189, 111);
+  background-color: rgb(254, 149, 74);
 }
 
 .tw-bg-tangerine-900 {
-  background-color: rgb(250, 178, 84);
+  background-color: rgb(253, 138, 56);
 }
 </style>

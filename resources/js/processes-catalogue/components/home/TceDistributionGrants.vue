@@ -7,7 +7,7 @@
       @toggle-info="toggleInfo"
       @goBackCategory="emit('goBackCategory')" />
 
-    <div class="tw-w-full tw-flex tw-flex-row tw-space-x-4 tw-px-2">
+    <div class="tw-w-full tw-flex tw-flex-row tw-space-x-4">
       <ArrowButtonHome
         v-if="lastStage"
         :key="dataStagesKey + 'first'"

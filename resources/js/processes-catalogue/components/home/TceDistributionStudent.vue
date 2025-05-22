@@ -10,14 +10,12 @@
     <BaseCardButtonGroup
       v-if="data.length > 0"
       :key="dataKey + 'button'"
-      class="tw-px-2"
       :data="data"
       @change="onChangeMetric" />
 
     <PercentageCardButtonGroup
       v-if="percentageData.length > 0"
       :key="dataKey + 'subpercentage'"
-      class="tw-px-2"
       :data="percentageData"
       @change="onChangeStage" />
 
