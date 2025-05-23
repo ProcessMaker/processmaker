@@ -4,8 +4,8 @@
             tw-px-4 tw-py-3 tw-transition tw-duration-150 tw-ease-out
             hover:tw-ease-in tw-cursor-pointer tw-text-gray-600"
     :class="[{
-      [`tw-bg-${color}-100 hover:tw-bg-${color}-100`]:!active,
-      [`tw-bg-${color}-100 tw-bg-${color}-100 hover:tw-bg-${color}-200`]:active
+      [`tw-bg-${color}-100 hover:tw-bg-${color}-200`]:!active,
+      [`tw-bg-${color}-200 hover:tw-bg-${color}-300 tw-border-${color}-500 tw-border-t-4`]:active
     }]"
     @click="handleClick">
     <div class="tw-flex tw-flex-col tw-w-full">

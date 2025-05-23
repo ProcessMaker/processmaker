@@ -7,9 +7,9 @@
       :key="index"
       :header="item.header"
       :body="item.body"
-      :active="index === active"
-      class="tw-w-full"
+      :active="item.active"
       :color="item.color"
+      :class="`tw-w-full ${item.className}`"
       :icon="item.icon"
       :content="item.content"
       @click="onClick(item, index)" />
@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import BaseCardButton from "./BaseCardButton.vue";
 
 const props = defineProps({
@@ -28,13 +28,8 @@ const props = defineProps({
       id: String,
       header: String,
       body: String,
-      color: String,
       icon: String,
     },
-  },
-  active: {
-    type: Number,
-    default: () => 0,
   },
 });
 

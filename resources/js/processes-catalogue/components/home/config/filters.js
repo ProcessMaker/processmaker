@@ -25,7 +25,7 @@ export const buildFilters = ({ defaultColumns, filterData }) => {
     }
 
     result.push({
-      subject: filter.filter_subject,
+      subject: filter.subject,
       operator: f.operator,
       value: buildValue(f.operator, f.value),
     });

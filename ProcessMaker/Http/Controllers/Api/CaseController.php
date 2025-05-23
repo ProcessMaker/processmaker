@@ -9,12 +9,39 @@ use ProcessMaker\Models\ProcessRequestToken;
 
 class CaseController extends Controller
 {
-    public function getStageCase($case_number)
+    /**
+     * Get stage information for cases
+     */
+    public function getStagePerCase($case_number = null)
     {
-        $allRequests = ProcessRequest::where('case_number', $case_number)->get();
+        if (!empty($case_number)) {
+            $responseData = $this->getSpecificCaseStages($case_number);
+
+            return response()->json($responseData);
+        }
+
+        $responseData = [
+            'parentRequest' => [],
+            'requestCount' => 0,
+            'all_stages' => [],
+            'current_stage' => [],
+            'stages_per_case' => $this->getDefaultCaseStages(),
+        ];
+
+        return response()->json($responseData);
+    }
+
+    /**
+     * Get specific case stages information
+     * @param string $caseNumber The unique identifier of the case to retrieve stages for
+     * @return array
+     */
+    private function getSpecificCaseStages($caseNumber)
+    {
+        $allRequests = ProcessRequest::where('case_number', $caseNumber)->get();
         // Check if any requests were found
         if ($allRequests->isEmpty()) {
-            return response()->json(['error' => 'No requests found for this case number'], 404);
+            return $this->getDefaultCaseStages();
         }
         $parentRequest = null;
         $requestCount = $allRequests->count();
@@ -26,9 +53,9 @@ class CaseController extends Controller
             }
         }
 
-        $stagesPerCase = $this->getStagesSummary($parentRequest->id);
+        $stagesPerCase = $this->getStagesSummary($parentRequest);
 
-        $responseData = [
+        return [
             'parentRequest' => [
                 'id' => $parentRequest->id,
                 'case_number' => $parentRequest->case_number,
@@ -40,35 +67,93 @@ class CaseController extends Controller
             'current_stage' => [],
             'stages_per_case' => $stagesPerCase,
         ];
-
-        return response()->json($responseData);
     }
 
     /**
-     * Get the stages summary based on the provided request ID.
+     * Get default case stages with status handling
      *
-     * This method retrieves the stages associated with a specific process request ID.
-     * It initializes a list of all possible stages and queries the ProcessRequestToken
-     * model to get the current stages for the given request ID.
-     * The method returns an array of stage results, including their status and completion date.
+     * @param string|null $status The status to set for the stages
+     * @return array
+     */
+    private function getDefaultCaseStages($status = null)
+    {
+        return [
+            [
+                'id' => 0,
+                'name' => 'In Progress',
+                'status' => $this->mapStatus($status, 'In Progress'),
+                'completed_at' => '',
+            ],
+            [
+                'id' => 0,
+                'name' => 'Completed',
+                'status' => $this->mapStatus($status, 'Completed'),
+                'completed_at' => '',
+            ],
+        ];
+    }
+
+    /**
+     * Map the status for each stage based on the input status
      *
-     * @param int $requestId The ID of the process request to get stages for.
+     * @param string|null $status The input status to map
+     * @param string $stageName The name of the stage ('In Progress' or 'Completed')
+     * @return string The mapped status
+     */
+    private function mapStatus($status, $stageName)
+    {
+        if ($status === 'COMPLETED') {
+            return 'Done';
+        }
+
+        if ($status === 'ACTIVE') {
+            return match ($stageName) {
+                'In Progress' => 'In Progress',
+                'Completed' => 'Pending',
+                default => 'Pending'
+            };
+        }
+
+        return 'Pending';
+    }
+
+    /**
+     * Get the stages summary based on the provided request.
+     *
+     * @param $requestId
      * @return array An array of stage results, each containing the stage ID, name, status,
      *               and completion date.
      */
-    public function getStagesSummary($requestId)
+    private function getStagesSummary(ProcessRequest $request)
     {
-        // TO_DO: get all values processes.stages
-        $allStages = [
-            ['id' => 1, 'name' => 'Stage A'],
-            ['id' => 2, 'name' => 'Stage B'],
-            ['id' => 3, 'name' => 'Stage C'],
-        ];
-        // TO_DO: Create a query to get ProcessRequestToken::where('process_request_id', $requestId)->select('stage_id', 'stage_name', 'status', 'completed_at')->get();
-        $allCurrentStages = [
-            ['stage_id' => 1, 'stage_name' => 'Stage A', 'status' => 'CLOSED', 'completed_at' => '2025-04-23 21:22:34'],
-            ['stage_id' => 2, 'stage_name' => 'Stage B', 'status' => 'ACTIVE', 'completed_at' => 'null'],
-        ];
+        $requestId = $request->id;
+        $processId = $request->process_id;
+        $process = Process::where('id', $processId)->first();
+        if ($process && !empty($process->stages)) {
+            $allStages = json_decode($process->stages, true);
+        } else {
+            // Return the default stages if the process does not have
+            return $this->getDefaultCaseStages($request->status);
+        }
+
+        $allCurrentStages = ProcessRequestToken::where('process_request_id', $requestId)
+            ->select('stage_id', 'stage_name', 'status', 'completed_at')
+            ->get()
+            ->toArray();
+        if (empty($allCurrentStages)) {
+            // TO_DO: define what happen if the process does not have task, is a valid use case
+        }
+
+        // Helper to map status
+        $mapStatus = function ($status) {
+            if ($status === 'CLOSED') {
+                return 'Done';
+            } elseif ($status === 'ACTIVE') {
+                return 'In Progress';
+            } else {
+                return 'Pending';
+            }
+        };
 
         $stageResult = [];
         // Initialize stage counts with zero for all stages
@@ -76,13 +161,13 @@ class CaseController extends Controller
             $stageData = [
                 'id' => $stage['id'],
                 'name' => $stage['name'],
-                'status' => 'ACTIVE',
+                'status' => 'Pending',
                 'completed_at' => '',
             ];
 
             foreach ($allCurrentStages as $task) {
                 if ($task['stage_id'] === $stage['id']) {
-                    $stageData['status'] = $task['status'];
+                    $stageData['status'] = $mapStatus($task['status']);
                     $stageData['completed_at'] = $task['completed_at'] ?? '';
                     break;
                 }

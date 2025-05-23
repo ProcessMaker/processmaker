@@ -35,18 +35,23 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { FilterableTable, TablePlaceholder } from "../../../../../jscomposition/system";
-import { buildColumns, buildFilters } from "../config";
+import { buildColumns, buildFilters, defaultColumns } from "../config";
 import { Pagination } from "../../../../../jscomposition/base";
 import CustomHomeFilter from "./CustomHomeFilter.vue";
-import { prepareToGetTasks } from "./CustomHomeTableSection";
-import { user, defaultColumns } from "../../variables";
+import { prepareToGetRequests } from "./CustomHomeTableSection";
+import { user } from "../../variables";
 
 const props = defineProps({
   process: {
     type: Object,
     required: true,
   },
+  advancedFilter: {
+    type: Array,
+    required: false,
+  },
 });
+
 const showPlaceholder = ref(false);
 const columnsConfig = ref();
 const placeholderType = ref("loading");
@@ -61,7 +66,7 @@ const dataTable = ref({
   filter: "",
   orderDirection: "DESC",
   orderBy: "ID",
-  advancedFilter: [],
+  advancedFilter: [], // props.advancedFilter,
   pmql: `(user_id = ${user.id}) AND (process_id = ${props.process.id})`,
 });
 
@@ -80,17 +85,17 @@ const hookData = async () => {
   placeholderType.value = "loading";
   showPlaceholder.value = true;
 
-  const response = await prepareToGetTasks({
+  const response = await prepareToGetRequests({
     page: dataPagination.value.page,
     perPage: dataPagination.value.perPage,
     orderDirection: dataTable.value.orderDirection,
     orderBy: dataTable.value.orderBy,
-    nonSystem: true, // Hardcoded to true
-    processesIManage: false, // Hardcoded to false
-    allInbox: true, // Hardcoded to false
+    // nonSystem: true, // Hardcoded to true
+    // processesIManage: false, // Hardcoded to false
+    // allInbox: true, // Hardcoded to false
     pmql: dataTable.value.pmql,
     filter: dataTable.value.filter,
-    statusFilter: "ACTIVE,CLOSED",
+    // statusFilter: "ACTIVE,CLOSED",
     advancedFilter: dataTable.value.advancedFilter,
   });
 
@@ -98,6 +103,20 @@ const hookData = async () => {
 
   setTimeout(() => {
     data.value = response.data;
+
+    data.value.forEach((item) => {
+      item.progress = Math.floor(Math.random() * 101);
+      item.stage = ["Grants", "Scholarships", "Loans", "Out of pocket remaining"][Math.floor(Math.random() * 4)];
+      item.data = {
+        program: {
+          name: `Program ${Math.floor(Math.random() * 10) + 1}`,
+          type: `Type ${Math.floor(Math.random() * 5) + 1}`,
+          source: `Source ${Math.floor(Math.random() * 3) + 1}`,
+          deadline: `${Math.floor(Math.random() * 30) + 1} days`,
+        },
+      };
+    });
+
     if (response.data && !response.data.length) {
       placeholderType.value = "empty-cases";
       return;
