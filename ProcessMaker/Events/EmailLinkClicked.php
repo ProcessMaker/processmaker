@@ -2,32 +2,40 @@
 
 namespace ProcessMaker\Events;
 
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Queue\SerializesModels;
 use jdavidbakr\MailTracker\Events\LinkClickedEvent;
-use ProcessMaker\Facades\WorkflowManager;
-use ProcessMaker\Models\ProcessRequest;
 
-class EmailLinkClicked
+/**
+ * Class EmailLinkClicked
+ *
+ * This event handler is triggered when a link in a ProcessMaker email is clicked.
+ * It extracts the necessary data from the email headers and triggers the appropriate message event.
+ */
+class EmailLinkClicked extends BaseEmailEvent
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
-
+    /**
+     * Handle the link clicked event
+     *
+     * @param LinkClickedEvent $event The link clicked event from MailTracker
+     * @return void
+     */
     public function handle(LinkClickedEvent $event)
     {
-        $tracker = $event->sent_email;
-        $emailIdentifier = $tracker->getHeader('X-ProcessMaker-Email-ID');
-        $messageEventId = $tracker->getHeader('X-ProcessMaker-Sent-Message-Event-ID');
-        $requestIdentifier = $tracker->getHeader('X-ProcessMaker-Request-ID');
+        $this->processEmailEvent($event);
+    }
 
-        if ($requestIdentifier && $messageEventId) {
-            $request = ProcessRequest::where('id', $requestIdentifier)->first();
-            if ($request) {
-                $data = [
-                    'email_id' => $emailIdentifier,
-                ];
-                WorkflowManager::triggerMessageEvent($request, $messageEventId, $data);
-            }
-        }
+    /**
+     * @inheritdoc
+     */
+    protected function getEventType(): string
+    {
+        return 'Link clicked';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getMessageEventIdHeader(): string
+    {
+        return 'X-ProcessMaker-Link-Clicked-Message-Event-ID';
     }
 }

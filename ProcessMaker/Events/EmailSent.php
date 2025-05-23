@@ -2,32 +2,40 @@
 
 namespace ProcessMaker\Events;
 
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Queue\SerializesModels;
 use jdavidbakr\MailTracker\Events\EmailSentEvent;
-use ProcessMaker\Facades\WorkflowManager;
-use ProcessMaker\Models\ProcessRequest;
 
-class EmailSent
+/**
+ * Class EmailSent
+ *
+ * This event handler is triggered when a ProcessMaker email is sent.
+ * It extracts the necessary data from the email headers and triggers the appropriate message event.
+ */
+class EmailSent extends BaseEmailEvent
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
-
+    /**
+     * Handle the email sent event
+     *
+     * @param EmailSentEvent $event The email sent event from MailTracker
+     * @return void
+     */
     public function handle(EmailSentEvent $event)
     {
-        $tracker = $event->sent_email;
-        $emailIdentifier = $tracker->getHeader('X-ProcessMaker-Email-ID');
-        $messageEventId = $tracker->getHeader('X-ProcessMaker-Sent-Message-Event-ID');
-        $requestIdentifier = $tracker->getHeader('X-ProcessMaker-Request-ID');
+        $this->processEmailEvent($event);
+    }
 
-        if ($requestIdentifier && $messageEventId) {
-            $request = ProcessRequest::where('id', $requestIdentifier)->first();
-            if ($request) {
-                $data = [
-                    'email_id' => $emailIdentifier,
-                ];
-                WorkflowManager::triggerMessageEvent($request, $messageEventId, $data);
-            }
-        }
+    /**
+     * @inheritdoc
+     */
+    protected function getEventType(): string
+    {
+        return 'Sent';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getMessageEventIdHeader(): string
+    {
+        return 'X-ProcessMaker-Sent-Message-Event-ID';
     }
 }

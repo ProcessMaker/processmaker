@@ -2,37 +2,40 @@
 
 namespace ProcessMaker\Events;
 
-use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 use jdavidbakr\MailTracker\Events\ViewEmailEvent;
-use ProcessMaker\Facades\WorkflowManager;
-use ProcessMaker\Models\ProcessRequest;
 
-class EmailViewed
+/**
+ * Class EmailViewed
+ *
+ * This event handler is triggered when a ProcessMaker email is viewed by a recipient.
+ * It extracts the necessary data from the email headers and triggers the appropriate message event.
+ */
+class EmailViewed extends BaseEmailEvent
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
-
+    /**
+     * Handle the email viewed event
+     *
+     * @param ViewEmailEvent $event The view email event from MailTracker
+     * @return void
+     */
     public function handle(ViewEmailEvent $event)
     {
-        $tracker = $event->sent_email;
-        $emailIdentifier = $tracker->getHeader('X-ProcessMaker-Email-ID');
-        $messageEventId = $tracker->getHeader('X-ProcessMaker-Viewed-Message-Event-ID');
-        $requestIdentifier = $tracker->getHeader('X-ProcessMaker-Request-ID');
+        $this->processEmailEvent($event);
+    }
 
-        if ($requestIdentifier && $messageEventId) {
-            $request = ProcessRequest::where('id', $requestIdentifier)->first();
-            if ($request) {
-                $data = [
-                    'email_id' => $emailIdentifier,
-                ];
-                WorkflowManager::triggerMessageEvent($request, $messageEventId, $data);
-            }
-        }
+    /**
+     * @inheritdoc
+     */
+    protected function getEventType(): string
+    {
+        return 'Viewed';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getMessageEventIdHeader(): string
+    {
+        return 'X-ProcessMaker-Viewed-Message-Event-ID';
     }
 }
