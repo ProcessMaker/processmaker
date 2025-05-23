@@ -26,6 +26,7 @@ class Kernel extends HttpKernel
         Middleware\BrowserCache::class,
         ServerTimingMiddleware::class,
         Middleware\FileSizeCheck::class,
+        Middleware\AddTenantHeaders::class,
     ];
 
     /**

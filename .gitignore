@@ -5,6 +5,7 @@
 /public/css
 /storage/*.key
 /storage/*.index
+/storage/tenant_*
 /vendor
 /.idea
 /.vscode

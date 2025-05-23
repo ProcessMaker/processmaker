@@ -210,6 +210,7 @@ return [
         'Theme' => Igaster\LaravelTheme\Facades\Theme::class,
         'WorkspaceManager' => ProcessMaker\Facades\WorkspaceManager::class,
         'SettingCache' => ProcessMaker\Cache\Settings\SettingCacheFacade::class,
+        'Tenant' => ProcessMaker\Multitenancy\Tenant::class,
     ])->toArray(),
 
     'debug_blacklist' => [
