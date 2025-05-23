@@ -9,24 +9,40 @@
 
     <div class="tw-w-full tw-flex tw-flex-row tw-space-x-4">
       <ArrowButtonHome
-        class="tw-w-60 tw-bg-emerald-200"
-        header="200"
-        body="Cases" />
+        v-if="lastStage"
+        :key="dataStagesKey + 'first'"
+        class="tw-w-60"
+        color="blue"
+        :header="firstStage.header"
+        :body="firstStage.body"
+        :active="firstStage.active"
+        @click="onClickFirstStage" />
 
       <ArrowButtonGroup
-        v-if="arrowData.length > 0"
+        v-if="dataStages.length > 0"
+        :key="dataStagesKey + 'group'"
         class="tw-flex-grow tw-overflow-auto"
-        :data="arrowData"
-        color="orange" />
+        :data="dataStages"
+        active-color="orange"
+        color="tangerine"
+        @change="updateDataStages" />
 
       <ArrowButtonHome
-        class="tw-w-60 tw-bg-blue-200"
-        header="5"
-        body="Completed" />
+        v-if="lastStage"
+        :key="dataStagesKey + 'last'"
+        class="tw-w-60"
+        color="emerald"
+        :header="lastStage.header"
+        :body="lastStage.body"
+        :active="lastStage.active"
+        @click="onClickLastStage" />
     </div>
+
     <CustomHomeTableSection
+      :key="dataStagesKey + 'table'"
       class="tw-w-full tw-flex tw-flex-col
       tw-overflow-hidden tw-grow tw-p-4 tw-bg-white tw-rounded-lg tw-shadow-md tw-border tw-border-gray-200"
+      :advanced-filter="advancedFilter"
       :process="process" />
 
     <ProcessInfo
@@ -45,7 +61,7 @@ import ArrowButtonHome from "./ArrowButtonGroup/ArrowButtonHome.vue";
 import ArrowButtonGroup from "./ArrowButtonGroup/ArrowButtonGroup.vue";
 import ProcessInfo from "./ProcessInfo.vue";
 import { ellipsisPermission } from "../variables";
-import { getStages, getMetrics } from "../api";
+import { getStages } from "../api";
 
 const props = defineProps({
   process: {
@@ -57,38 +73,75 @@ const props = defineProps({
 const emit = defineEmits(["goBackCategory"]);
 
 const myTasksColumns = ref([]);
-
-const metrics = ref();
 const stages = ref();
-
-const arrowData = ref([]);
-
+const dataStages = ref([]);
+const lastStage = ref(null);
+const firstStage = ref(null);
 const showProcessInfo = ref(false);
-
+const dataStagesKey = ref(0);
 const toggleInfo = () => {
   showProcessInfo.value = !showProcessInfo.value;
 };
 
-const hookMetrics = async () => {
-  const metricsResponse = await getMetrics({ processId: props.process.id });
-  metrics.value = metricsResponse;
-};
+const advancedFilter = ref([]);
 
 const hookStages = async () => {
   const stagesResponse = await getStages({ processId: props.process.id });
-  stages.value = stagesResponse;
-
-  arrowData.value = stages.value.map((stage) => ({
+  stages.value = stagesResponse.data;
+  const stagesFormatted = stages.value.map((stage) => ({
     id: stage.stage_id,
     body: stage.stage_name,
     header: stage.percentage_format,
-    float: stage.agregation_sum,
+    helper: stage.agregation_sum,
     percentage: stage.percentage,
   }));
+
+  lastStage.value = stagesFormatted.pop();
+  firstStage.value = stagesFormatted.shift();
+  dataStages.value = stagesFormatted;
+};
+
+const buildAdvancedFilters = (stage) => {
+  advancedFilter.value = [{
+    subject: {
+      type: "Field",
+      value: "stage",
+    },
+    operator: "=",
+    value: stage.id,
+  },
+  ];
+};
+
+const updateDataStages = (data) => {
+  lastStage.value.active = false;
+  firstStage.value.active = false;
+  dataStages.value = data;
+  dataStagesKey.value += 1;
+  buildAdvancedFilters(dataStages.value.find((stage) => stage.active));
+};
+
+const onClickLastStage = () => {
+  dataStages.value.forEach((stage) => {
+    stage.active = false;
+  });
+  dataStagesKey.value += 1;
+  firstStage.value.active = false;
+  lastStage.value.active = true;
+  buildAdvancedFilters(lastStage.value);
+};
+
+const onClickFirstStage = () => {
+  dataStages.value.forEach((stage) => {
+    stage.active = false;
+  });
+  firstStage.value.active = true;
+  dataStagesKey.value += 1;
+  lastStage.value.active = false;
+  buildAdvancedFilters(firstStage.value);
 };
 
 onMounted(() => {
-  hookMetrics();
   hookStages();
 });
 </script>

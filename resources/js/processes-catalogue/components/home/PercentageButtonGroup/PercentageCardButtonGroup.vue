@@ -5,15 +5,10 @@
       v-for="(item, index) in data"
       :key="index"
       :style="{ width: `${item.percentage}%` }"
-      :class="`first:tw-rounded-l-lg
-        last:tw-rounded-r-lg
-        tw-border-y
-        tw-border-gray-200
-        first:tw-overflow-hidden
-        first:tw-border-l
-        last:tw-overflow-hidden
-        last:tw-border-r`"
-      class="tw-w-auto tw-flex tw-flex-col sm:tw-space-y-0 sm:tw-py-0">
+      class=" tw-w-auto tw-flex tw-flex-col sm:tw-space-y-0 sm:tw-py-0
+        first:tw-rounded-l-lg last:tw-rounded-r-lg tw-border-y tw-border-gray-200
+        first:tw-overflow-hidden first:tw-border-l
+        last:tw-overflow-hidden last:tw-border-r">
       <PercentageCardButton
         :id="item.id"
         :header="item.header"
@@ -21,6 +16,7 @@
         :percentage="item.percentage"
         :color="item.color"
         :icon="item.icon"
+        :active="item.active"
         :content="item.content"
         @click="onClick(item, index)" />
       <div
@@ -57,8 +53,8 @@ const props = defineProps({
 
 const emit = defineEmits(["change"]);
 
-const onClick = (counter, idxCounter) => {
-  emit("change", counter, idxCounter);
+const onClick = (item, idxItem) => {
+  emit("change", item, idxItem);
 };
 
 onMounted(() => {});

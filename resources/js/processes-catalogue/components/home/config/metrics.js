@@ -2,18 +2,18 @@ export const defaultMetrics = [{
   id: 1,
   icon: "fas fa-reply",
   active: true,
-  className: "tw-bg-white hover:tw-bg-gray-200",
+  color: "blue",
 },
 {
   id: 2,
   icon: "fas fa-user",
-  className: "tw-bg-amber-100 hover:tw-bg-amber-200",
+  color: "amber",
   active: false,
 },
 {
   id: 3,
   icon: "fas fa-user",
-  className: "tw-bg-green-100 hover:tw-bg-green-200",
+  color: "green",
   active: false,
 }];
 

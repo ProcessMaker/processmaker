@@ -46,7 +46,12 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  advancedFilter: {
+    type: Array,
+    required: false,
+  },
 });
+
 const showPlaceholder = ref(false);
 const columnsConfig = ref();
 const placeholderType = ref("loading");
@@ -61,8 +66,8 @@ const dataTable = ref({
   filter: "",
   orderDirection: "DESC",
   orderBy: "ID",
-  advancedFilter: [],
-  pmql: `(user_id = ${user.id})`,
+  advancedFilter: [], // props.advancedFilter,
+  pmql: `(user_id = ${user.id}) AND (process_id = ${props.process.id})`,
 });
 
 const data = ref([]);
@@ -101,7 +106,7 @@ const hookData = async () => {
 
     data.value.forEach((item) => {
       item.progress = Math.floor(Math.random() * 101);
-      item.stage = `stage${Math.floor(Math.random() * 10) + 1}`;
+      item.stage = ["Grants", "Scholarships", "Loans", "Out of pocket remaining"][Math.floor(Math.random() * 4)];
       item.data = {
         program: {
           name: `Program ${Math.floor(Math.random() * 10) + 1}`,

@@ -5,7 +5,7 @@
             hover:tw-ease-in tw-cursor-pointer tw-text-gray-600"
     :class="[{
       [`tw-bg-${color}-100 hover:tw-bg-${color}-200`]:!active,
-      [`tw-bg-${color}-200 hover:tw-bg-${color}-300`]:active
+      [`tw-bg-${color}-200 hover:tw-bg-${color}-300 tw-border-${color}-500 tw-border-t-4`]:active
     }]"
     @click="handleClick">
     <div class="tw-flex tw-flex-col tw-w-full">

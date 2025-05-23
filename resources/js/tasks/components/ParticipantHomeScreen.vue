@@ -1,6 +1,6 @@
 <template>
   <div
-    class="process-catalog-main-participant"
+    class="process-catalog-main-participant tw-px-4"
     id="tasks"
     :class="{ 'menu-open': showMenu }"
   >
