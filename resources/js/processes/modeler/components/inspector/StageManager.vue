@@ -94,7 +94,7 @@ const updateStagesForAllFlowConfigs = (stages) => {
       let config = getConfigFromDefinition(link.component.node.definition);
       if (config?.stage?.id === stage.id) {
         config.stage.order = stage.order;
-        config.stage.label = stage.label;
+        config.stage.name = stage.name;
         Vue.set(link.component.node.definition, 'config', JSON.stringify(config));
       }
     }
@@ -119,7 +119,7 @@ const applyStageToFlow = (stage) => {
   config.stage = {
     id: stage.id,
     order: stage.order,
-    label: stage.label
+    name: stage.name
   };
   let definition = getDefinition();
   Vue.set(definition, 'config', JSON.stringify(config));

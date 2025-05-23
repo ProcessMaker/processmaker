@@ -5,13 +5,13 @@
     <div class="tw-flex-1">
       <template v-if="editing">
         <input
-          v-model="localLabel"
+          v-model="localName"
           class="tw-w-full tw-border tw-rounded px-2"
           @keyup.enter="onKeyupEnter"
         />
       </template>
       <template v-else>
-        <span :class="{ 'font-bold stage-item-selected': selected }">{{ label }}</span>
+        <span :class="{ 'font-bold stage-item-selected': selected }">{{ name }}</span>
       </template>
     </div>
     <i v-if="selected" class="fas fp-check-circle-blue stage-item-color" @click="onClickSelected"></i>
@@ -31,17 +31,17 @@ import { ref, watch } from 'vue';
 const props = defineProps({
   id: Number,
   order: Number,
-  label: String,
+  name: String,
   selected: Boolean
 });
 
 const emit = defineEmits(['onRemove', 'onUpdate', 'onClickCheckbox', 'onClickSelected']);
 const editing = ref(false);
-const localLabel = ref(props.label);
+const localName = ref(props.name);
 const isChecked = ref(false);
 
 const onKeyupEnter = () => {
-  emit('onUpdate', localLabel.value);
+  emit('onUpdate', localName.value);
   editing.value = false;
 };
 
@@ -53,8 +53,8 @@ const onClickSelected = () => {
   emit('onClickSelected');
 };
 
-watch(() => props.label, (val) => {
-  localLabel.value = val;
+watch(() => props.name, (val) => {
+  localName.value = val;
 });
 
 watch(() => props.selected, (val) => {

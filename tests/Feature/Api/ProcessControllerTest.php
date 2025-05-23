@@ -202,8 +202,8 @@ class ProcessControllerTest extends TestCase
     public function test_can_get_process_stages()
     {
         $stages = [
-            ['id' => 1, 'order' => 1, 'label' => 'Start', 'selected' => false],
-            ['id' => 2, 'order' => 2, 'label' => 'Review', 'selected' => true],
+            ['id' => 1, 'order' => 1, 'name' => 'Start', 'selected' => false],
+            ['id' => 2, 'order' => 2, 'name' => 'Review', 'selected' => true],
         ];
 
         $process = Process::factory()->create([
@@ -234,8 +234,8 @@ class ProcessControllerTest extends TestCase
         $process = Process::factory()->create();
 
         $newStages = [
-            ['id' => 1, 'order' => 1, 'label' => 'New Stage 1', 'selected' => true],
-            ['id' => 2, 'order' => 2, 'label' => 'New Stage 2', 'selected' => false],
+            ['id' => 1, 'order' => 1, 'name' => 'New Stage 1', 'selected' => true],
+            ['id' => 2, 'order' => 2, 'name' => 'New Stage 2', 'selected' => false],
         ];
 
         $response = $this->actingAs($this->user, 'api')
