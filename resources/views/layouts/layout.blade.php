@@ -135,6 +135,10 @@
 <script src="{{ mix('js/app.js') }}"></script>
 <script>
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+  window.ProcessMaker.ai = {
+    ragCollections: @json(config('ai.rag_collections.enabled')),
+    genieClientTimeout: @json(config('ai.genie_client.timeout'))
+  };
 </script>
 <script src="{{ mix('js/app-layout.js') }}"></script>
 @include('shared.monaco')
