@@ -1,9 +1,9 @@
 import { api } from "../variables";
 
-export const getTasks = async ({
+export const getRequests = async ({
   page, perPage, orderDirection, orderBy, nonSystem, processesIManage, allInbox, pmql, filter, advancedFilter, include, statusFilter,
 }) => {
-  const response = await api.get("/tasks", {
+  const response = await api.get("/requests", {
     params: {
       page,
       include,
@@ -11,14 +11,24 @@ export const getTasks = async ({
       pmql,
       order_direction: orderDirection,
       order_by: orderBy,
-      non_system: nonSystem,
-      all_inbox: allInbox,
-      processesIManage,
+      // non_system: nonSystem,
+      // all_inbox: allInbox,
+      // processesIManage,
       filter,
       advanced_filter: JSON.stringify(advancedFilter),
-      status_filter: statusFilter,
+      // status_filter: statusFilter,
     },
   });
 
+  return response.data;
+};
+
+export const getStages = async ({ processId }) => {
+  const response = await api.get(`/processes/${processId}/stages`);
+  return response.data;
+};
+
+export const getMetrics = async ({ processId }) => {
+  const response = await api.get(`/processes/${processId}/metrics`);
   return response.data;
 };

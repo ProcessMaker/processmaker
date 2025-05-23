@@ -8,7 +8,7 @@
       :header="item.header"
       :body="item.body"
       :float="item.float"
-      :color="`${[`tw-bg-${item.color}-${(index+1) * 100}`]}`"
+      :color="`${[`tw-bg-${color || item.color}-${(index+1) * 100}`]}`"
       :style="{ width: `${100 / data.length}%` }"
       :class="`first:tw-rounded-l-xl
         last:tw-rounded-r-xl
@@ -35,7 +35,7 @@ const props = defineProps({
   },
   color: {
     type: String,
-    default: "amber",
+    default: "orange",
   },
 });
 
@@ -44,12 +44,4 @@ const emit = defineEmits(["change"]);
 const onClick = (counter, idxCounter) => {
   emit("change", counter, idxCounter);
 };
-
-onMounted(() => {
-  if (props.color) {
-    props.data.forEach((item) => {
-      item.color = props.color;
-    });
-  }
-});
 </script>

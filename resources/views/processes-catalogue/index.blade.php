@@ -33,7 +33,7 @@
       Js::from(\Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'projects', 'documentation'))
     }};
     window.ProcessMaker.defaultSavedSearch = {{{$defaultSavedSearch ?? 'null'}}};
-    window.ProcessMaker.defaultColumns = @json($defaultColumns);
+    window.ProcessMaker.isTceCustomization = {{{config('app.tce_customization_enable') ? 'true' : 'false'}}};
   </script>
   @foreach($manager->getScripts() as $script)
     <script src="{{$script}}"></script>

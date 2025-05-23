@@ -148,12 +148,14 @@
     const inflightData = @json($inflightData);
     const currentStages = @json($currentStages);
     const progressStage = @json($progressStage);
+    const tceCustomizationEnable = @json($isTceCustomization);
     window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
   </script>
   <script src="{{mix('js/composition/cases/casesDetail/loader.js')}}"></script>
   <script src="{{mix('js/initialLoad.js')}}"></script>
 
   <script>
+    window.ProcessMaker.caseNumber = request.case_number;
     window.ProcessMaker.modeler = {
       xml: @json($bpmn),
       configurables: [],

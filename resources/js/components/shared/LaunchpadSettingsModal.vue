@@ -9,7 +9,8 @@
       :set-custom-buttons="true"
       :custom-buttons="customModalButtons"
       @saveModal="saveModal"
-      @closeModal="closeModal">
+      @closeModal="closeModal"
+    >
       <div class="modal-content-custom">
         <p class="text-info-custom">
           {{
@@ -22,7 +23,8 @@
           <div class="col-sm-12 col-lg-6">
             <div
               md="12"
-              class="no-padding">
+              class="no-padding"
+            >
               <label>{{ $t("Launchpad Carousel") }}</label>
               <input-image-carousel ref="image-carousel" />
             </div>
@@ -43,7 +45,8 @@
                   :internal-search="true"
                   :allow-empty="false"
                   @open="retrieveDisplayScreen"
-                  @search-change="retrieveDisplayScreen">
+                  @search-change="retrieveDisplayScreen"
+                >
                   <template slot="noResult">
                     {{
                       $t(
@@ -76,7 +79,8 @@
                   :internal-search="true"
                   :allow-empty="false"
                   @open="retrieveSavedSearchCharts"
-                  @search-change="retrieveSavedSearchCharts">
+                  @search-change="retrieveSavedSearchCharts"
+                >
                   <template slot="noResult">
                     {{
                       $t(
@@ -91,10 +95,23 @@
               </b-input-group>
             </div>
             <label />
-            <div>
+            <div v-if="showTasks">
               <a
                 href="#"
-                @click.prevent="showEditTaskColumn">{{ $t("Edit Task Column") }} <i class="fp-box-arrow-up-right" /></a>
+                @click.prevent="showEditColumn('tasks')"
+              >
+                {{ $t("Edit Task Column") }}
+                <i class="fp-box-arrow-up-right" />
+              </a>
+            </div>
+            <div v-if="showCases">
+              <a
+                href="#"
+                @click.prevent="showEditColumn('cases')"
+              >
+                {{ $t("Edit Cases Column") }}
+                <i class="fp-box-arrow-up-right" />
+              </a>
             </div>
           </div>
         </div>
@@ -108,60 +125,30 @@
           type="text"
           rows="5"
           :aria-label="$t('Description')"
-          disabled />
+          disabled
+        />
       </div>
       <template #modal-footer>
         <b-button
           variant="outline-secondary"
-          @click="hideModal">
+          @click="hideModal"
+        >
           Cancel 2
         </b-button>
         <b-button
           variant="secondary"
-          @click="saveModal">
+          @click="saveModal"
+        >
           Save 1
         </b-button>
       </template>
     </modal>
-    <b-modal
-      ref="editTaskColumn"
-      size="lg"
-      class="modal-dialog modal-dialog-centered"
-      hide-footer
-      scrollable
-      :title="$t('Edit Task Column')">
-      <div class="modal-content-custom">
-        <column-chooser
-          v-model="myTasks.currentColumns"
-          :available-columns="myTasks.availableColumns"
-          :default-columns="myTasks.defaultColumns"
-          :data-columns="myTasks.dataColumns">
-          <template #title1>
-            <small class="form-text text-muted">
-              <a
-                href="#"
-                @click.prevent="$refs['editTaskColumn'].hide()">
-                <i class="fp-arrow-left" />
-                {{ $t("Go back to Launchpad Settings") }}
-              </a>
-            </small>
-          </template>
-          <template #footer>
-            <b-button
-              variant="outline-secondary"
-              class="mr-1"
-              @click="$refs['editTaskColumn'].hide()">
-              {{ $t("Cancel and go back") }}
-            </b-button>
-            <b-button
-              variant="secondary"
-              @click="$refs['editTaskColumn'].hide()">
-              {{ $t("Save columns") }}
-            </b-button>
-          </template>
-        </column-chooser>
-      </div>
-    </b-modal>
+    <edit-column-modal
+      ref="editColumnModal"
+      :data-columns="columnListing"
+      :type="typeListing"
+      @updateColumns="updateColumns"
+    />
   </div>
 </template>
 
@@ -169,19 +156,21 @@
 import Modal from "./Modal.vue";
 import IconDropdown from "./IconDropdown.vue";
 import InputImageCarousel from "./InputImageCarousel.vue";
-import ColumnChooser from "./ColumnChooser.vue";
+import EditColumnModal from "./EditColumnModal.vue";
+
+const isTceCustomization = () => window.ProcessMaker?.isTceCustomization;
 
 export default {
   components: {
-    Modal, IconDropdown, InputImageCarousel, ColumnChooser,
+    Modal, IconDropdown, InputImageCarousel, EditColumnModal,
   },
   props: {
     options: {
       type: Object,
-      default: {
+      default: () => ({
         id: "",
         type: "",
-      },
+      }),
     },
     filter: {
       type: String,
@@ -200,6 +189,10 @@ export default {
       default: () => ({}),
     },
     myTasksColumns: {
+      type: Array,
+      default: () => [],
+    },
+    myCasesColumns: {
       type: Array,
       default: () => [],
     },
@@ -269,13 +262,54 @@ export default {
         },
       ],
       tabs: [],
+      columnListing: {},
+      typeListing: "",
       myTasks: {
         currentColumns: [],
         availableColumns: [],
         defaultColumns: [],
         dataColumns: [],
       },
+      myCases: {
+        currentColumns: [],
+        availableColumns: [],
+        defaultColumns: [],
+        dataColumns: [],
+      },
+      ScreenDefaultId: [0, "tce-student", "tce-college", "tce-grants"],
     };
+  },
+  computed: {
+    isEditColumns() {
+      if (this.ScreenDefaultId.includes(this.selectedScreen?.id)) {
+        return true;
+      }
+      return false;
+    },
+    isTCEScreen() {
+      if (this.selectedScreen?.id === 0) {
+        return false;
+      }
+      if (this.ScreenDefaultId.includes(this.selectedScreen?.id)) {
+        return true;
+      }
+      return false;
+    },
+    showTasks() {
+      if (this.isEditColumns && !this.isTCEScreen) {
+        return true;
+      }
+      return false;
+    },
+    showCases() {
+      if (this.isEditColumns && this.isTCEScreen) {
+        return true;
+      }
+      if (this.isEditColumns && !this.isTCEScreen) {
+        return true;
+      }
+      return false;
+    },
   },
   mounted() {
     this.retrieveSavedSearchCharts();
@@ -296,42 +330,29 @@ export default {
         .then((response) => {
           const firstResponse = response.data.shift();
           const unparseProperties = firstResponse?.launchpad?.properties;
-          const launchpadProperties = unparseProperties
-            ? JSON.parse(unparseProperties)
-            : "";
+          const launchpadProperties = unparseProperties ? JSON.parse(unparseProperties) : "";
           if (launchpadProperties !== "" && "tabs" in launchpadProperties) {
             this.tabs = launchpadProperties.tabs;
           }
-          if (
-            launchpadProperties !== ""
-            && "my_tasks_columns" in launchpadProperties
-          ) {
+          if (launchpadProperties !== "" && "my_tasks_columns" in launchpadProperties) {
             this.myTasks.currentColumns = launchpadProperties.my_tasks_columns;
           }
-          if (
-            launchpadProperties
-            && Object.keys(launchpadProperties).length > 0
-          ) {
+          if (launchpadProperties !== "" && "my_cases_columns" in launchpadProperties) {
+            this.myCases.currentColumns = launchpadProperties.my_cases_columns;
+          }
+          if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
             this.selectedSavedChart = this.getSelectedSavedChartJSONFromResult(launchpadProperties);
-            this.selectedLaunchpadIcon = this.verifyProperty(
-              launchpadProperties.icon,
-            )
+            this.selectedLaunchpadIcon = this.verifyProperty(launchpadProperties.icon)
               ? this.defaultIcon
               : launchpadProperties.icon;
-            this.selectedLaunchpadIconLabel = this.verifyProperty(
-              launchpadProperties.icon_label,
-            )
+            this.selectedLaunchpadIconLabel = this.verifyProperty(launchpadProperties.icon_label)
               ? this.defaultIcon
               : launchpadProperties.icon_label;
             this.selectedScreen = this.getSelectedScreenJSONFromResult(launchpadProperties);
             this.$refs["icon-dropdown"].setIcon(this.selectedLaunchpadIcon);
           } else {
-            this.selectedSavedChart = this.getSelectedSavedChartJSON(
-              this.defaultChart,
-            );
-            this.selectedScreen = this.getSelectedScreenJSON(
-              this.defaultScreen,
-            );
+            this.selectedSavedChart = this.getSelectedSavedChartJSON(this.defaultChart);
+            this.selectedScreen = this.getSelectedScreenJSON(this.defaultScreen);
           }
           this.oldScreen = this.selectedScreen.id;
           // Load media into Carousel Container
@@ -445,6 +466,7 @@ export default {
           icon_label: this.selectedLaunchpadIconLabel,
           tabs: this.tabs,
           my_tasks_columns: this.myTasks.currentColumns,
+          my_cases_columns: this.myCases.currentColumns,
         },
         null,
         1,
@@ -542,7 +564,11 @@ export default {
               uuid: item.uuid,
             }));
 
-            this.dropdownSavedScreen = [this.defaultScreen].concat(this.tceScreens).concat(resultArray);
+            this.dropdownSavedScreen = [this.defaultScreen];
+            if (isTceCustomization()) {
+              this.dropdownSavedScreen = this.dropdownSavedScreen.concat(this.tceScreens);
+            }
+            this.dropdownSavedScreen = this.dropdownSavedScreen.concat(resultArray);
           }
         })
         .catch((error) => {
@@ -589,21 +615,23 @@ export default {
      * This method shows a modal window to edit the columns of the My Tasks list.
      * If you don't use the nextTick method, the modal will not be displayed correctly.
      */
-    showEditTaskColumn() {
-      this.$refs.editTaskColumn.show();
+    showEditColumn(type) {
+      this.columnListing = type === "tasks" ? this.myTasks : this.myCases;
+      this.typeListing = type;
+      this.$refs.editColumnModal.showModal();
       this.$nextTick(() => {
-        this.getMyTasksColumns();
+        this.getMyColumns(type);
       });
     },
-    async getMyTasksColumns() {
-      this.myTasks.currentColumns = this.myTasksColumns;
+    async getMyColumns(type) {
+      this.columnListing.currentColumns = type === "tasks" ? this.myTasksColumns : this.myCasesColumns;
 
       await ProcessMaker.apiClient
         .get("saved-searches/columns")
         .then((response) => {
           if (response.data && response.data.default) {
-            this.myTasks.defaultColumns = response.data.default;
-            this.myTasks.defaultColumns.push({
+            this.columnListing.defaultColumns = response.data.default;
+            this.columnListing.defaultColumns.push({
               field: "options",
               label: "",
               sortable: false,
@@ -612,26 +640,33 @@ export default {
           }
           if (response.data) {
             if (response.data.available) {
-              this.myTasks.availableColumns = response.data.available;
+              this.columnListing.availableColumns = response.data.available;
 
               // Merge all available and default columns; we use map to avoid duplicates.
               const allColumns = new Map([
-                ...this.myTasks.defaultColumns.map((col) => [col.field, col]),
-                ...this.myTasks.availableColumns.map((col) => [col.field, col]),
+                ...this.columnListing.defaultColumns.map((col) => [col.field, col]),
+                ...this.columnListing.availableColumns.map((col) => [col.field, col]),
               ]);
 
               // Filter only those that are not in `currentColumns`.
-              this.myTasks.availableColumns = [...allColumns.values()].filter(
-                (column) => !this.myTasks.currentColumns.some(
+              this.columnListing.availableColumns = [...allColumns.values()].filter(
+                (column) => !this.columnListing.currentColumns.some(
                   (currentColumn) => currentColumn.field === column.field,
                 ),
               );
             }
             if (response.data.data) {
-              this.myTasks.dataColumns = response.data.data;
+              this.columnListing.dataColumns = response.data.data;
             }
           }
         });
+    },
+    updateColumns(columns, type) {
+      if (type === "tasks") {
+        this.myTasks.currentColumns = columns;
+      } else {
+        this.myCases.currentColumns = columns;
+      }
     },
   },
 };
