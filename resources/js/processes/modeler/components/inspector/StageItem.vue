@@ -1,23 +1,25 @@
 <template>
   <div class="tw-flex tw-items-center tw-space-x-2 tw-w-full tw-py-1">
-    <span class="tw-w-6 text-center stage-item-number">{{ index + 1 }}</span>
+    <span class="tw-w-6 text-center stage-item-number">{{ order }}</span>
     <i class="fas fa-grip-vertical stage-item-grip-vertical tw-cursor-move"></i>
     <div class="tw-flex-1">
       <template v-if="editing">
         <input
-          v-model="localLabel"
+          v-model="localName"
           class="tw-w-full tw-border tw-rounded px-2"
-          @keyup.enter="save"
+          @keyup.enter="onKeyupEnter"
         />
       </template>
       <template v-else>
-        <span :class="{ 'font-bold stage-item-selected': selected }">{{ label }}</span>
+        <span :class="{ 'font-bold stage-item-selected': selected }">{{ name }}</span>
       </template>
     </div>
+    <i v-if="selected" class="fas fp-check-circle-blue stage-item-color" @click="onClickSelected"></i>
+    <input v-else type="checkbox" v-model="isChecked" @change="onClickCheckbox"/>
     <button @click="editing = !editing" class="p-1 bg-transparent border-0">
       <i class="fas fp-pen-edit stage-item-color"></i>
     </button>
-    <button @click="$emit('remove')" class="p-1 bg-transparent border-0">
+    <button @click="$emit('onRemove')" class="p-1 bg-transparent border-0">
       <i class="fas fp-trash-blue stage-item-color"></i>
     </button>
   </div>
@@ -27,22 +29,36 @@
 import { ref, watch } from 'vue';
 
 const props = defineProps({
-  label: String,
-  index: Number,
-  selected: Boolean,
+  id: Number,
+  order: Number,
+  name: String,
+  selected: Boolean
 });
-const emit = defineEmits(['update', 'remove']);
 
+const emit = defineEmits(['onRemove', 'onUpdate', 'onClickCheckbox', 'onClickSelected']);
 const editing = ref(false);
-const localLabel = ref(props.label);
+const localName = ref(props.name);
+const isChecked = ref(false);
 
-const save = () => {
-  emit('update', localLabel.value);
+const onKeyupEnter = () => {
+  emit('onUpdate', localName.value);
   editing.value = false;
 };
 
-watch(() => props.label, (val) => {
-  localLabel.value = val;
+const onClickCheckbox = () => {
+  emit('onClickCheckbox');
+};
+
+const onClickSelected = () => {
+  emit('onClickSelected');
+};
+
+watch(() => props.name, (val) => {
+  localName.value = val;
+});
+
+watch(() => props.selected, (val) => {
+  isChecked.value = val;
 });
 </script>
 <style scoped>

@@ -175,13 +175,12 @@ trait ProcessMapTrait
         if ($process) {
             $stages = $process->stages;
 
-            // If stages are stored as JSON, decode them
-            if ($stages) {
-                return json_decode($stages, true); // Decode JSON to an associative array
+            if (!is_null($stages)) {
+                return $stages;
             }
         }
 
-        // Return null if the process does not exist or has no stages
+        // Return empty array if the process does not exist or has no stages
         return [];
     }
 }

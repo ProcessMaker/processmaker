@@ -5,6 +5,7 @@ namespace ProcessMaker\Api\Tests\Feature;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -191,6 +192,67 @@ class ProcessControllerTest extends TestCase
     }
 
     /**
+     * Test that a process returns its stages correctly.
+     *
+     * This test creates a process with a predefined list of stages
+     * and verifies that the GET endpoint `/processes/{process}/stages`
+     * returns the correct JSON structure.
+     *
+     * @return void
+     */
+    public function test_can_get_process_stages()
+    {
+        $stages = [
+            ['id' => 1, 'order' => 1, 'name' => 'Start', 'selected' => false],
+            ['id' => 2, 'order' => 2, 'name' => 'Review', 'selected' => true],
+        ];
+
+        $process = Process::factory()->create([
+            'stages' => $stages,
+        ]);
+
+        $response = $this->actingAs($this->user, 'api')
+            ->getJson("/api/1.0/processes/{$process->id}/stages");
+
+        $response->assertOk()
+            ->assertJson([
+                'data' => $stages,
+            ]);
+    }
+
+    /**
+     * Test that stages can be saved for a process.
+     *
+     * This test sends a POST request to `/processes/{process}/stages`
+     * with a set of stage data, and verifies that:
+     * - The response contains the saved stages
+     * - The process record in the database was updated correctly
+     *
+     * @return void
+     */
+    public function test_can_save_process_stages()
+    {
+        $process = Process::factory()->create();
+
+        $newStages = [
+            ['id' => 1, 'order' => 1, 'name' => 'New Stage 1', 'selected' => true],
+            ['id' => 2, 'order' => 2, 'name' => 'New Stage 2', 'selected' => false],
+        ];
+
+        $response = $this->actingAs($this->user, 'api')
+            ->postJson("/api/1.0/processes/{$process->id}/stages", [
+                'stages' => $newStages,
+            ]);
+
+        $response->assertOk()
+            ->assertJson([
+                'data' => $newStages,
+            ]);
+
+        $this->assertEquals($newStages, $process->fresh()->stages);
+    }
+
+    /**
      * Test getting default stages for a process with statistics
      */
     public function testGetDefaultStagesPerProcess()
@@ -274,7 +336,7 @@ class ProcessControllerTest extends TestCase
         $process = Process::factory()->create([
             'name' => 'Test Process Custom Stages',
             'status' => 'ACTIVE',
-            'stages' => json_encode($stagesData),
+            'stages' => $stagesData,
         ]);
         // Create 2 requests without stage
         ProcessRequest::factory()->count(2)->create([
@@ -299,7 +361,7 @@ class ProcessControllerTest extends TestCase
             'data' => ['amount' => '10'],
         ]);
 
-        $response = $this->apiCall('GET', route('api.processes.stages', ['process' => $process->id]));
+        $response = $this->apiCall('GET', route('api.processes.stage-mapping', ['process' => $process->id]));
 
         $response->assertStatus(200);
         $response->assertJsonStructure([

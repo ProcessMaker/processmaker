@@ -241,6 +241,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         'signal_events' => 'array',
         'conditional_events' => 'array',
         'properties' => 'array',
+        'stages' => 'array',
     ];
 
     public static function boot()
@@ -1978,20 +1979,19 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      * Formats the stages configuration for the API response.
      *
      * @param int $processId The process_id
-     * @param string|null $stagesJson The JSON string of the stages configuration.
+     * @param array $stages The stages configuration.
      * @return array The formatted array of stages.
      */
-    public static function formatStages($processId, ?string $stagesJson): array
+    public static function formatStages($processId, $stages = []): array
     {
-        $stagesConfig = self::decodeStagesConfig($stagesJson);
-        if (empty($stagesConfig)) {
+        if (empty($stages)) {
             // If not exist stages we will return the default stages
             return self::getDefaultStagesData($processId);
         } else {
             // Get the stages
             $stageCounts = self::getProcessStageCounts($processId);
 
-            return self::mapStagesWithCounts($stagesConfig, $stageCounts);
+            return self::mapStagesWithCounts($stages, $stageCounts);
         }
     }
 
