@@ -53,7 +53,8 @@ class ProcessesCatalogueController extends Controller
         $userConfiguration = (new UserConfigurationController())->index()['ui_configuration'];
 
         $defaultSavedSearch = $this->getDefaultSavedSearchId();
+        $defaultColumns = [];
 
-        return view('processes-catalogue.index', compact('process', 'currentUser', 'manager', 'userConfiguration', 'defaultSavedSearch'));
+        return view('processes-catalogue.index', compact('process', 'currentUser', 'manager', 'userConfiguration', 'defaultSavedSearch', 'defaultColumns'));
     }
 }

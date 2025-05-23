@@ -54,6 +54,12 @@ class ProcessController extends Controller
         'EMBED' => 'embed',
     ];
 
+    const STAGES_STRUCTURE = [
+        'id',
+        'name',
+        'order',
+    ];
+
     /**
      * A whitelist of attributes that should not be
      * sanitized by our SanitizeInput middleware.
@@ -498,6 +504,15 @@ class ProcessController extends Controller
             $process->warnings = null;
         }
 
+        // Validate stages
+        $stages = $request->input('stages', null);
+        if (!empty($stages)) {
+            $stages = json_decode($stages, true);
+            if (!$this->validateStagesStructure($stages)) {
+                return ['error' => 'Invalid stages structure. Each stage must have id, name, and order.'];
+            }
+        }
+
         $process->fill($request->except('notifications', 'task_notifications', 'notification_settings', 'cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id', 'projects'));
         if ($request->has('manager_id')) {
             $process->manager_id = $request->input('manager_id', null);
@@ -573,6 +588,31 @@ class ProcessController extends Controller
         ProcessPublished::dispatch($process->refresh(), $changes, $original);
 
         return new Resource($process->refresh());
+    }
+
+    /**
+     * Validate the structure of stages.
+     *
+     * @param array $stages
+     * @return bool
+     */
+    private function validateStagesStructure(array $stages): bool
+    {
+        foreach ($stages as $stage) {
+            // Check if all required keys are present
+            foreach (self::STAGES_STRUCTURE as $key) {
+                if (!array_key_exists($key, $stage)) {
+                    return false; // Missing required key
+                }
+            }
+
+            // Additional validation for data types
+            if (!is_int($stage['id']) || !is_string($stage['name']) || !is_int($stage['order'])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function updateBpmn(Request $request, Process $process)
@@ -1898,6 +1938,240 @@ class ProcessController extends Controller
         // Check if embed before delete
         if ($embedUrl) {
             $embedUrl->delete();
+        }
+    }
+
+    /**
+     * Get stages of a process
+     *
+     * @OA\Get(
+     *     path="/processes/{process}/stages",
+     *     summary="Get the list of stages for a process",
+     *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         name="process",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the process",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of stages",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="order", type="integer"),
+     *                 @OA\Property(property="label", type="string"),
+     *                 @OA\Property(property="selected", type="boolean")
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function getStages(Process $process)
+    {
+        $stages = $process->stages ?? [];
+
+        return new ApiCollection($stages);
+    }
+
+    /**
+     * Save stages for a process
+     *
+     * @OA\Post(
+     *     path="/processes/{process}/stages",
+     *     summary="Save or update the list of stages for a process",
+     *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         name="process",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the process",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="order", type="integer"),
+     *                 @OA\Property(property="label", type="string"),
+     *                 @OA\Property(property="selected", type="boolean")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Updated stages",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="order", type="integer"),
+     *                 @OA\Property(property="label", type="string"),
+     *                 @OA\Property(property="selected", type="boolean")
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function saveStages(Request $request, Process $process)
+    {
+        $process->stages = $request->input('stages');
+        $process->save();
+
+        return new ApiCollection($process->stages);
+    }
+
+    /**
+     * Get the stages configuration for a specific process.
+     *
+     * @OA\Get(
+     *     path="/processes/{process}/stage-mapping",
+     *     summary="Get process stages configuration",
+     *     description="Retrieves and formats the stages configuration for a specific process.",
+     *     operationId="getStageMapping",
+     *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         name="process",
+     *         description="ID of the process",
+     *         required=true,
+     *         in="path",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="stage_id", type="number", example="1"),
+     *                 @OA\Property(property="stage_name", type="string", example="In progress"),
+     *                 @OA\Property(property="percentage", type="number", nullable=true, example=60),
+     *                 @OA\Property(property="percentage_format", type="string", example="60%"),
+     *                 @OA\Property(property="agregation_sum", type="number", nullable=true, example=28678),
+     *                 @OA\Property(property="agregation_count", type="number", nullable=true, example=100),
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function getStageMapping(Process $process)
+    {
+        $formattedStages = Process::formatStages($process->id, $process->stages);
+
+        return response()->json(['data' => $formattedStages]);
+    }
+
+    /**
+     * Get the stages configuration for a specific process.
+     *
+     * @OA\Get(
+     *     path="/api/processes/{process}/default-stages",
+     *     summary="Get default process stages configuration",
+     *     description="Retrieves and formats the default stages configuration for a process.",
+     *     operationId="getDefaultStagesPerProcess",
+     *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         name="process",
+     *         description="ID of the process",
+     *         required=true,
+     *         in="path",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="stage_id", type="number", example="1"),
+     *                 @OA\Property(property="stage_name", type="string", example="In progress"),
+     *                 @OA\Property(property="percentage", type="number", nullable=true, example=60),
+     *                 @OA\Property(property="percentage_format", type="string", example="60%"),
+     *                 @OA\Property(property="agregation_sum", type="number", nullable=true, example=28678),
+     *                 @OA\Property(property="agregation_count", type="number", nullable=true, example=100),
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function getDefaultStagesPerProcess(Process $process)
+    {
+        $formattedStages = Process::formatStages($process->id, '');
+
+        return response()->json(['data' => $formattedStages]);
+    }
+
+    /**
+     * Get the metrics configuration for a specific process.
+     *
+     * @OA\Get(
+     *     path="/api/processes/{process}/metrics",
+     *     summary="Get process metrics configuration",
+     *     description="Retrieves and formats the metrics configuration for a specific process. Supports different formats like 'student' or default metrics.",
+     *     operationId="getMetricsPerProcess",
+     *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         name="process",
+     *         description="ID of the process",
+     *         required=true,
+     *         in="path",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="format",
+     *         description="Format type of the metrics (e.g., 'student')",
+     *         required=false,
+     *         in="query",
+     *         @OA\Schema(
+     *             type="string",
+     *             enum={"student", "default"},
+     *             default="student"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="metric_description", type="string", example="Max amount available"),
+     *                 @OA\Property(property="metric_count", type="integer", nullable=true, example=10),
+     *                 @OA\Property(property="metric_count_description", type="string", example="Across 10 applicants"),
+     *                 @OA\Property(property="metric_value", type="number", example=84000),
+     *                 @OA\Property(property="metric_value_unit", type="string", example="k")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid format parameter",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Invalid format parameter")
+     *         )
+     *     )
+     * )
+     */
+    public function getMetricsPerProcess(Process $process, Request $request)
+    {
+        try {
+            $format = $request->query('format', 'student');
+            $formattedMetrics = Process::formatMetrics($format);
+
+            return response()->json(['data' => $formattedMetrics]);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
         }
     }
 }
