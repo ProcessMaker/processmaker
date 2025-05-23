@@ -1069,11 +1069,12 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
      */
     public function setStagePropertiesInRecord()
     {
-        $instance = $this->getInstance();
-        if (isset($instance->process->bpmn)) {
+        try {
+            $instance = $this->getInstance();
             $bpmnDocument = new BpmnDocument();
             $bpmnDocument->loadXml($instance->process->bpmn);
             $xpath = new DOMXPath($bpmnDocument);
+            $xpath->registerNamespace('bpmn', BpmnDocument::BPMN_MODEL);
             $sequenceFlows = $xpath->query("//bpmn:sequenceFlow[@targetRef='$this->element_id']");
             $config = null;
             foreach ($sequenceFlows as $flow) {
@@ -1090,9 +1091,8 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             }
             $this->stage_id = isset($config->stage) && isset($config->stage->id) ? $config->stage->id : null;
             $this->stage_name = isset($config->stage) && isset($config->stage->name) ? $config->stage->name : null;
-        } else {
-            $this->stage_id = null;
-            $this->stage_name = null;
+        } catch (Exception $e) {
+            Log::debug($e->getMessage());
         }
     }
 
