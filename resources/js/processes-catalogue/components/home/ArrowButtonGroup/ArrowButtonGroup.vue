@@ -7,7 +7,7 @@
       :key="`${index}-${item.active}`"
       :header="item.header"
       :body="item.body"
-      :float="item.float"
+      :helper="item.helper"
       :color="`${[`tw-bg-${color || item.color}-${(index+1) * 100}`]}
       ${item.active ? `tw-border-b-4 ${'tw-border-' + activeColor}-500` : ''}`"
       :style="{ width: `${100 / data.length}%` }"
@@ -32,7 +32,7 @@ const props = defineProps({
       header: String,
       body: String,
       color: String,
-      float: String,
+      helper: String,
     },
   },
   color: {

@@ -92,7 +92,7 @@ const hookStages = async () => {
     id: stage.stage_id,
     body: stage.stage_name,
     header: stage.percentage_format,
-    float: stage.agregation_sum,
+    helper: stage.agregation_sum,
     percentage: stage.percentage,
   }));
 

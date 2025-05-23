@@ -3,20 +3,20 @@
     :class="`tw-flex tw-relative ${color}`"
     @click="click">
     <div class=" tw-flex tw-flex-col tw-w-full">
-      <div class="tw-flex tw-flex-col tw-justify-start tw-px-6 tw-py-4 tw-gap-0">
+      <div class="tw-flex tw-flex-col tw-justify-start tw-px-6 tw-py-2 tw-gap-0">
         <slot name="header">
           <div class="tw-text-lg tw-font-bold tw-truncate">
-            {{ body }}
-          </div>
-        </slot>
-        <slot name="body">
-          <div class="tw-text-sm tw-truncate">
             {{ header }}
           </div>
         </slot>
-        <slot name="float">
-          <div class="tw-absolute tw-text-xs tw-right-1 tw-top-2 tw-rounded-full tw-bg-white tw-px-2 tw-py-1">
-            {{ float }}
+        <slot name="body">
+          <div class="tw-text-sm tw-truncate tw-font-semibold">
+            {{ body }}
+          </div>
+        </slot>
+        <slot name="helper">
+          <div class="tw-text-sm tw-truncate">
+            {{ helper }}
           </div>
         </slot>
       </div>
@@ -42,7 +42,7 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  float: {
+  helper: {
     type: [String, Number],
     required: false,
   },
