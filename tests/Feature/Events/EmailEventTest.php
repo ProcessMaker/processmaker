@@ -3,6 +3,7 @@
 namespace Tests\Feature\Events;
 
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 use jdavidbakr\MailTracker\Events\ComplaintMessageEvent;
 use jdavidbakr\MailTracker\Events\EmailDeliveredEvent;
 use jdavidbakr\MailTracker\Events\EmailSentEvent;
@@ -420,6 +421,52 @@ class EmailEventTest extends TestCase
             ->andReturn($this->requestId);
 
         return $trackerMock;
+    }
+
+    /**
+     * Test that emails without tracking enabled don't generate warning logs
+     */
+    public function testEmailWithoutTrackingEnabled()
+    {
+        // Mock the Log facade using Laravel's built-in support
+        Log::shouldReceive('debug')
+            ->withAnyArgs()
+            ->atLeast(0);
+
+        Log::shouldReceive('error')
+            ->withAnyArgs()
+            ->atLeast(0);
+
+        // The important part - we should not see warnings about missing headers
+        // when no tracking headers are present
+        Log::shouldReceive('warning')
+            ->with(Mockery::pattern('/.*missing required headers.*/'), Mockery::any())
+            ->never();
+
+        // Create an event handler (using EmailSent as an example)
+        $handler = new EmailSent();
+
+        // Create tracker mock with no tracking headers
+        $trackerMock = Mockery::mock(SentEmail::class);
+        $trackerMock->shouldReceive('getHeader')
+            ->with('X-ProcessMaker-Email-ID')
+            ->andReturn(null); // No email ID header = tracking not enabled
+        $trackerMock->shouldReceive('getHeader')
+            ->with('X-ProcessMaker-Sent-Message-Event-ID')
+            ->andReturn(null);
+        $trackerMock->shouldReceive('getHeader')
+            ->with('X-ProcessMaker-Request-ID')
+            ->andReturn(null);
+
+        // Create event mock
+        $eventMock = Mockery::mock(EmailSentEvent::class);
+        $eventMock->sent_email = $trackerMock;
+
+        // WorkflowManager should NOT be called when tracking not enabled
+        WorkflowManager::shouldReceive('triggerMessageEvent')->never();
+
+        // Call the handler - this should not throw an exception
+        $handler->handle($eventMock);
     }
 
     /**

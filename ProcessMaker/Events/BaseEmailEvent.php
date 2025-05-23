@@ -67,11 +67,14 @@ abstract class BaseEmailEvent
                     ]);
                 }
             } else {
-                Log::warning($this->getEventType() . ' but missing required headers', [
-                    'email_id' => $emailIdentifier,
-                    'message_event_id' => $messageEventId,
-                    'request_id' => $requestIdentifier,
-                ]);
+                // Only log a warning if email tracking was explicitly enabled for this email
+                if ($emailIdentifier) {
+                    Log::warning($this->getEventType() . ' but missing required headers', [
+                        'email_id' => $emailIdentifier,
+                        'message_event_id' => $messageEventId,
+                        'request_id' => $requestIdentifier,
+                    ]);
+                }
             }
         } catch (\Exception $e) {
             Log::error('Error handling ' . $this->getEventType() . ' event', [
