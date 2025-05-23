@@ -4,23 +4,26 @@
     <p class="text-sm mb-4">
       {{ $t("Here you have all the stages already set in this process. Define the order you prefer:") }}
     </p>
-    <StageList :initialStages="defaultStages" 
-               @change="changeStage"
-    ></StageList>
+    <StageList
+      :initial-stages="defaultStages"
+      @change="changeStage"
+    />
+    <AgregationProperty />
   </div>
 </template>
 
 <script setup>
-import StageList from './StageList.vue';
+import StageList from "./StageList.vue";
+import AgregationProperty from "./AgregationProperty.vue";
 
 const defaultStages = [
-  { id: 1, label: 'Request Sent', selected: false },
-  { id: 2, label: 'Request Reviewed', selected: true },
-  { id: 3, label: 'Manager Reviewed', selected: false },
+  { id: 1, label: "Request Sent", selected: false },
+  { id: 2, label: "Request Reviewed", selected: true },
+  { id: 3, label: "Manager Reviewed", selected: false },
 ];
 
 const changeStage = (stages) => {
-    //trigger when stages change.
+  // trigger when stages change.
 
 };
 </script>
