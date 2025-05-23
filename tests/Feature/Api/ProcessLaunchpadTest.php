@@ -116,13 +116,13 @@ class ProcessLaunchpadTest extends TestCase
     {
         // Create stages for the process
         $stages = [
-            ['id' => 1, 'name' => 'Stage A'],
-            ['id' => 2, 'name' => 'Stage B'],
+            ['id' => 1, 'name' => 'Stage A', 'order' => 1],
+            ['id' => 2, 'name' => 'Stage B', 'order' => 2],
         ];
         $user = Auth::user();
         // Create a process with stages
         $process = Process::factory()->create([
-            'stages' => json_encode($stages),
+            'stages' => $stages,
         ]);
         ProcessLaunchpad::factory()->create([
             'process_id' => $process->id,
@@ -130,7 +130,7 @@ class ProcessLaunchpadTest extends TestCase
 
         // No ProcessRequest records are created for this test
 
-        $stageSummary = $process->getStagesSummary(json_encode($stages));
+        $stageSummary = $process->getStagesSummary($stages);
         $expectedStagesSummary = [
             ['id' => 1, 'name' => 'Stage A', 'count' => 0, 'percentage' => 0],
             ['id' => 2, 'name' => 'Stage B', 'count' => 0, 'percentage' => 0],
@@ -152,7 +152,7 @@ class ProcessLaunchpadTest extends TestCase
         ];
         // Create a process
         $process = Process::factory()->create([
-            'stages' => json_encode($stages),
+            'stages' => $stages,
         ]);
         ProcessLaunchpad::factory()->create([
             'process_id' => $process->id,
@@ -176,7 +176,7 @@ class ProcessLaunchpadTest extends TestCase
 
         // Call the API GET
         $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $process->id);
-        $stageSummary = $process->getStagesSummary(json_encode($stages));
+        $stageSummary = $process->getStagesSummary($stages);
         // Validate the header status code
         $response->assertStatus(200);
         $this->assertNotEmpty($response);

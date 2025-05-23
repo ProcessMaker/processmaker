@@ -1942,13 +1942,101 @@ class ProcessController extends Controller
     }
 
     /**
+     * Get stages of a process
+     *
+     * @OA\Get(
+     *     path="/processes/{process}/stages",
+     *     summary="Get the list of stages for a process",
+     *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         name="process",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the process",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of stages",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="order", type="integer"),
+     *                 @OA\Property(property="label", type="string"),
+     *                 @OA\Property(property="selected", type="boolean")
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function getStages(Process $process)
+    {
+        $stages = $process->stages ?? [];
+
+        return new ApiCollection($stages);
+    }
+
+    /**
+     * Save stages for a process
+     *
+     * @OA\Post(
+     *     path="/processes/{process}/stages",
+     *     summary="Save or update the list of stages for a process",
+     *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         name="process",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the process",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="order", type="integer"),
+     *                 @OA\Property(property="label", type="string"),
+     *                 @OA\Property(property="selected", type="boolean")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Updated stages",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="order", type="integer"),
+     *                 @OA\Property(property="label", type="string"),
+     *                 @OA\Property(property="selected", type="boolean")
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function saveStages(Request $request, Process $process)
+    {
+        $process->stages = $request->input('stages');
+        $process->save();
+
+        return new ApiCollection($process->stages);
+    }
+
+    /**
      * Get the stages configuration for a specific process.
      *
      * @OA\Get(
-     *     path="/api/processes/{process}/stages",
+     *     path="/processes/{process}/stage-mapping",
      *     summary="Get process stages configuration",
      *     description="Retrieves and formats the stages configuration for a specific process.",
-     *     operationId="getStagesPerProcess",
+     *     operationId="getStageMapping",
      *     tags={"Processes"},
      *     @OA\Parameter(
      *         name="process",
@@ -1975,7 +2063,7 @@ class ProcessController extends Controller
      *     )
      * )
      */
-    public function getStagesPerProcess(Process $process)
+    public function getStageMapping(Process $process)
     {
         $formattedStages = Process::formatStages($process->id, $process->stages, $process->aggregation);
 

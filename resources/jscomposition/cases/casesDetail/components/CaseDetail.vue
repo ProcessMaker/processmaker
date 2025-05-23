@@ -1,9 +1,14 @@
 <template>
-  <Tabs
-    :tab-default="tabDefault"
-    :tabs="tabs"
-    :keep-alive="['NewOverview']"
-  />
+  <div>
+    <div v-if="isTceCustomization()">
+      <component :is="componentToShow" />
+    </div>
+    <Tabs
+      :tab-default="tabDefault"
+      :tabs="tabs"
+      :keep-alive="['NewOverview']"
+    />
+  </div>
 </template>
 
 <script setup>
@@ -48,10 +53,14 @@ const tabDefault = computed(() => {
   if (isErrors()) {
     return "errors";
   }
-  if (isTceCustomization()) {
-    return "summary";
-  }
   return "tasks";
+});
+
+const componentToShow = computed(() => {
+  if (isTceCustomization()) {
+    return TabSummary;
+  }
+  return null;
 });
 
 const tabs = [
@@ -73,14 +82,14 @@ const tabs = [
     name: translate.t("Overview"),
     href: "#overview",
     current: "overview",
-    show: true,
+    show: !isTceCustomization(),
     content: Overview,
   },
   {
     name: translate.t("Summary"),
     href: "#summary",
     current: "summary",
-    show: getRequestStatus() !== "ERROR",
+    show: getRequestStatus() !== "ERROR" && !isTceCustomization(),
     content: TabSummary,
   },
   {
@@ -101,14 +110,14 @@ const tabs = [
     name: translate.t("History"),
     href: "#history",
     current: "history",
-    show: true,
+    show: !isTceCustomization(),
     content: TabHistory,
   },
   {
     name: translate.t("Requests"),
     href: "#requests",
     current: "requests",
-    show: getRequestCount() !== 1,
+    show: getRequestCount() !== 1 && !isTceCustomization(),
     content: RequestTable,
   },
 ];

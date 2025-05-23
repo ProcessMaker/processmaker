@@ -6,11 +6,20 @@
       :my-tasks-columns="myTasksColumns"
       @toggle-info="toggleInfo"
       @goBackCategory="emit('goBackCategory')" />
-    <BaseCardButtonGroup :data="data" />
 
-    <PercentageCardButtonGroup :data="subpercentageData" />
+    <BaseCardButtonGroup
+      v-if="data.length > 0"
+      :key="dataKey + 'button'"
+      :data="data"
+      @change="onChangeMetric" />
+
+    <PercentageCardButtonGroup
+      :key="dataKey + 'subpercentage'"
+      :data="subpercentageData"
+      @change="onChangeStage" />
 
     <CustomHomeTableSection
+      :key="dataKey + 'table'"
       class="tw-w-full tw-flex tw-flex-col
       tw-overflow-hidden tw-grow tw-p-4 tw-bg-white tw-rounded-lg tw-shadow-md tw-border tw-border-gray-200"
       :process="process" />
@@ -46,10 +55,12 @@ const emit = defineEmits(["goBackCategory"]);
 const myTasksColumns = ref([]);
 
 const data = ref([]);
+const advancedFilter = ref([]);
+const dataKey = ref(0);
 
 const hookMetrics = async () => {
   const metricsResponse = await getMetrics({ processId: props.process.id });
-  data.value = buildMetrics(metricsResponse);
+  data.value = buildMetrics(metricsResponse.data);
 };
 
 const subpercentageData = ref([
@@ -95,6 +106,44 @@ const showProcessInfo = ref(false);
 
 const toggleInfo = () => {
   showProcessInfo.value = !showProcessInfo.value;
+};
+
+const buildAdvancedFilter = () => {
+  const stage = subpercentageData.value.find((item) => item.active);
+  const metric = data.value.find((item) => item.active);
+
+  return [{
+    subject: {
+      type: "Field",
+      value: "metric",
+    },
+    operator: "=",
+    value: metric.id,
+  },
+  {
+    subject: {
+      type: "Field",
+      value: "stage",
+    },
+    operator: "=",
+    value: stage.id,
+  }];
+};
+
+const onChangeStage = (stage, idxItem) => {
+  subpercentageData.value.forEach((item, index) => {
+    index === idxItem ? item.active = true : item.active = false;
+  });
+  dataKey.value += 1;
+  advancedFilter.value = buildAdvancedFilter();
+};
+
+const onChangeMetric = (stage, idxItem) => {
+  data.value.forEach((item, index) => {
+    index === idxItem ? item.active = true : item.active = false;
+  });
+  dataKey.value += 1;
+  advancedFilter.value = buildAdvancedFilter();
 };
 
 onMounted(() => {
