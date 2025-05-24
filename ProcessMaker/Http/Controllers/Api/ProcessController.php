@@ -2030,6 +2030,93 @@ class ProcessController extends Controller
     }
 
     /**
+     * Get aggregation for a process
+     *
+     * @OA\Get(
+     *     path="/processes/{process}/aggregation",
+     *     summary="Get the aggregation configuration for a process",
+     *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         name="process",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the process",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Aggregation configuration",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="aggregation", type="string", description="string containing var aggregation")
+     *         )
+     *     )
+     * )
+     */
+    public function getAggregation(Process $process)
+    {
+        return new ApiResource([
+            'data' => $process->aggregation,
+        ]);
+    }
+
+    /**
+     * Save aggregation for a process
+     *
+     * @OA\Post(
+     *     path="/processes/{process}/aggregation",
+     *     summary="Save or update the aggregation field for a process",
+     *     description="Updates the aggregation field of a process. If no aggregation is provided, defaults to 'amount'.",
+     *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         name="process",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the process",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=false,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="aggregation",
+     *                 type="string",
+     *                 description="Field name to use for aggregation (defaults to 'amount' if not provided)",
+     *                 example="amount"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Updated aggregation field",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="string",
+     *                 description="The saved aggregation field value",
+     *                 example="amount"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Process not found"
+     *     )
+     * )
+     */
+    public function saveAggregation(Request $request, Process $process)
+    {
+        $process->aggregation = $request->input('aggregation', 'amount');
+        $process->save();
+
+        return new ApiResource([
+            'data' => $process->aggregation,
+        ]);
+    }
+
+    /**
      * Get the stages configuration for a specific process.
      *
      * @OA\Get(
@@ -2065,7 +2152,7 @@ class ProcessController extends Controller
      */
     public function getStageMapping(Process $process)
     {
-        $formattedStages = Process::formatStages($process->id, $process->stages);
+        $formattedStages = Process::formatStages($process->id, $process->stages, $process->aggregation);
 
         return response()->json(['data' => $formattedStages]);
     }
@@ -2106,7 +2193,7 @@ class ProcessController extends Controller
      */
     public function getDefaultStagesPerProcess(Process $process)
     {
-        $formattedStages = Process::formatStages($process->id, '');
+        $formattedStages = Process::formatStages($process->id, '', '');
 
         return response()->json(['data' => $formattedStages]);
     }
