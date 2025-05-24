@@ -158,6 +158,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // Stages
     Route::get('processes/{process}/stages', [ProcessController::class, 'getStages'])->name('processes.getStages')->middleware('can:view-processes,process');
     Route::post('processes/{process}/stages', [ProcessController::class, 'saveStages'])->name('processes.saveStages')->middleware('can:create-processes');
+    Route::get('processes/{process}/aggregation', [ProcessController::class, 'getAggregation'])->name('processes.get-aggregation')->middleware('can:view-processes,process');
+    Route::post('processes/{process}/aggregation', [ProcessController::class, 'saveAggregation'])->name('processes.save-aggregation')->middleware('can:create-processes');
     Route::get('processes/{process}/default-stages', [ProcessController::class, 'getDefaultStagesPerProcess'])->name('processes.default-stages');
     Route::get('processes/{process}/stage-mapping', [ProcessController::class, 'getStageMapping'])->name('processes.stage-mapping');
     Route::get('processes/{process}/metrics', [ProcessController::class, 'getMetricsPerProcess'])->name('processes.metrics');

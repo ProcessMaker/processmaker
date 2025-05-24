@@ -239,6 +239,47 @@ class ProcessControllerTest extends TestCase
     }
 
     /**
+     * Test that a process returns its stages correctly.
+     */
+    public function testCanGetAggregation()
+    {
+        $process = Process::factory()->create([
+            'aggregation' => 'var_amount',
+        ]);
+
+        $response = $this->apiCall('GET', route('api.processes.get-aggregation', ['process' => $process->id]));
+        $response->assertStatus(200);
+    }
+
+    /**
+     * Test that stages can be saved for a process.
+     */
+    public function testSaveAggregation()
+    {
+        $process = Process::factory()->create();
+
+        // Test 1: Save with default value (amount)
+        $response = $this->apiCall('POST', route('api.processes.save-aggregation', ['process' => $process->id]));
+        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertJson([
+                'data' => 'amount',
+            ]);
+
+        // Test 2: Save with custom value
+        $response = $this->apiCall('POST', route('api.processes.save-aggregation', [
+            'process' => $process->id,
+        ]), [
+            'aggregation' => 'total_amount',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'data' => 'total_amount',
+            ]);
+    }
+
+    /**
      * Test getting default stages for a process with statistics
      */
     public function testGetDefaultStagesPerProcess()
