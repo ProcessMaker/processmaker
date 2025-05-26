@@ -580,7 +580,6 @@ export default {
 .home-screen-inbox {
   width: 100%;
   margin-right: 0px;
-  overflow-x: hidden;
   @media (max-width: 639px) {
     padding-left: 0;
   }

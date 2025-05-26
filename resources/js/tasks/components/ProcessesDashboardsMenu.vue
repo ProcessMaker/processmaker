@@ -138,11 +138,14 @@ export default {
       });
     },
     loadDashboards() {
-      const url = this.buildURLDashboards();
-
-      ProcessMaker.apiClient.get(url).then((response) => {
-        this.dashboards = this.dashboards.concat(response.data);
-      });
+      try {
+        const url = this.buildURLDashboards();
+        ProcessMaker.apiClient.get(url).then((response) => {
+          this.dashboards = this.dashboards.concat(response.data);
+        });
+      } catch (error) {
+        console.error(error);
+      }
     },
     /**
      * Build URL for Process Cards

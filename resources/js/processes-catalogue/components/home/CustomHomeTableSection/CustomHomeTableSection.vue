@@ -52,6 +52,7 @@ const props = defineProps({
   },
 });
 
+console.log(props.process);
 const defaultCasesColumns = ref(JSON.parse(props.process?.launchpad?.properties)?.my_cases_columns || []);
 
 const showPlaceholder = ref(false);
