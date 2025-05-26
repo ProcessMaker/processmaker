@@ -315,19 +315,6 @@ export const getColumns = (type) => {
 //     width: 144
 // };
 
-/// /////////////////////////////////////////////////////////
-// DEFAULT COLUMNS FROM BE
-// {
-//   mask: null,
-//   field: "case_number",
-//   label: "Case #",
-//   format: "int",
-//   default: true,
-//   sortable: true,
-//   isSubmitButton: null,
-//   encryptedConfig: null,
-// }
-
 export const buildColumns = (defaultColumns) => {
   const columns = [];
 
