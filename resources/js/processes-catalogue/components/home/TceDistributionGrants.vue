@@ -76,8 +76,20 @@ const emit = defineEmits(["goBackCategory"]);
 const myTasksColumns = ref([]);
 const stages = ref();
 const dataStages = ref([]);
-const lastStage = ref(null);
-const firstStage = ref(null);
+const lastStage = ref({
+  body: "In progress",
+  color: "green",
+  header: "100%",
+  helper: 0,
+  active: false,
+});
+const firstStage = ref({
+  body: "All cases",
+  color: "blue",
+  header: "50%",
+  helper: 0,
+  active: true,
+});
 const showProcessInfo = ref(false);
 const dataStagesKey = ref(0);
 const toggleInfo = () => {
@@ -91,9 +103,11 @@ const hookStages = async () => {
   stages.value = stagesResponse.data;
   const stagesFormatted = buildStages(stages.value);
 
-  lastStage.value = stagesFormatted.pop();
-  firstStage.value = stagesFormatted.shift();
+  // lastStage.value = stagesFormatted.pop();
+  // firstStage.value = stagesFormatted.shift();
   dataStages.value = stagesFormatted;
+
+  console.log("stagesFormatted", stagesFormatted);
 };
 
 const buildAdvancedFilters = (stage) => {
@@ -123,7 +137,15 @@ const onClickLastStage = () => {
   dataStagesKey.value += 1;
   firstStage.value.active = false;
   lastStage.value.active = true;
-  buildAdvancedFilters(lastStage.value);
+  advancedFilter.value = [
+    {
+      subject: {
+        type: "Status",
+      },
+      operator: "=",
+      value: "In progress",
+    },
+  ];
 };
 
 const onClickFirstStage = () => {
@@ -133,7 +155,7 @@ const onClickFirstStage = () => {
   firstStage.value.active = true;
   dataStagesKey.value += 1;
   lastStage.value.active = false;
-  buildAdvancedFilters(firstStage.value);
+  advancedFilter.value = [];
 };
 
 onMounted(() => {

@@ -170,7 +170,9 @@ export const taskColumn = ({
       href: (option) => `/tasks/${option.id}/edit`,
       formatterOptions: (option, row, column, columns) =>
         option.element_name,
-      filterData: (row, column, columns) => row.active_tasks,
+      filterData: (row, column, columns) => {
+        return row.active_tasks;
+      },
     },
   }),
 });
@@ -355,6 +357,9 @@ export const buildColumns = (defaultColumns) => {
         newColumn = textColumn(convertedColumn);
         break;
       case "active_tasks":
+        newColumn = taskColumn(convertedColumn);
+        break;
+      case "element_name":
         newColumn = taskColumn(convertedColumn);
         break;
       case "participants":

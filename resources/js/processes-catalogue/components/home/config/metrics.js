@@ -1,7 +1,7 @@
 export const defaultMetrics = [{
   id: 1,
   icon: "fas fa-reply",
-  active: true,
+  active: false,
   color: "blue",
 },
 {

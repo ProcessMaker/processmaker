@@ -15,11 +15,12 @@
 
     <PercentageCardButtonGroup
       :key="dataKey + 'subpercentage'"
-      :data="subpercentageData"
+      :data="stages"
       @change="onChangeStage" />
 
     <CustomHomeTableSection
       :key="dataKey + 'table'"
+      :advanced-filter="advancedFilter"
       class="tw-w-full tw-flex tw-flex-col
       tw-overflow-hidden tw-grow tw-p-4 tw-bg-white tw-rounded-lg tw-shadow-md tw-border tw-border-gray-200"
       :process="process" />
@@ -40,8 +41,8 @@ import ProcessCollapseInfo from "../ProcessCollapseInfo.vue";
 import PercentageCardButtonGroup from "./PercentageButtonGroup/PercentageCardButtonGroup.vue";
 import { ellipsisPermission } from "../variables";
 import ProcessInfo from "./ProcessInfo.vue";
-import { getMetrics } from "../api";
-import { buildMetrics } from "./config/metrics";
+import { getMetrics, getStages } from "../api";
+import { buildMetrics, buildStages } from "./config/metrics";
 
 const props = defineProps({
   process: {
@@ -57,50 +58,17 @@ const myTasksColumns = ref([]);
 const data = ref([]);
 const advancedFilter = ref([]);
 const dataKey = ref(0);
+const stages = ref([]);
 
 const hookMetrics = async () => {
   const metricsResponse = await getMetrics({ processId: props.process.id });
   data.value = buildMetrics(metricsResponse.data);
 };
 
-const subpercentageData = ref([
-  {
-    id: "1",
-    header: "Grants",
-    body: "40%",
-    percentage: 40,
-    content: "28,678",
-    color: "amber",
-    subpercentage: 20,
-  },
-  {
-    id: "2",
-    header: "Scholarships",
-    body: "20%",
-    percentage: 20,
-    content: "4,678",
-    color: "green",
-    subpercentage: 70,
-  },
-  {
-    id: "3",
-    header: "Loans",
-    body: "15%",
-    percentage: 15,
-    content: "11,678",
-    color: "blue",
-    subpercentage: 20,
-  },
-  {
-    id: "4",
-    header: "Out of pocket remaining",
-    body: "25%",
-    percentage: 25,
-    content: "17,649",
-    color: "red",
-    subpercentage: 50,
-  },
-]);
+const hookStages = async () => {
+  const stagesResponse = await getStages({ processId: props.process.id });
+  stages.value = buildStages(stagesResponse.data);
+};
 
 const showProcessInfo = ref(false);
 
@@ -109,18 +77,9 @@ const toggleInfo = () => {
 };
 
 const buildAdvancedFilter = () => {
-  const stage = subpercentageData.value.find((item) => item.active);
-  const metric = data.value.find((item) => item.active);
+  const stage = stages.value.find((item) => item.active);
 
   return [{
-    subject: {
-      type: "Field",
-      value: "metric",
-    },
-    operator: "=",
-    value: metric.id,
-  },
-  {
     subject: {
       type: "Field",
       value: "stage",
@@ -131,7 +90,7 @@ const buildAdvancedFilter = () => {
 };
 
 const onChangeStage = (stage, idxItem) => {
-  subpercentageData.value.forEach((item, index) => {
+  stages.value.forEach((item, index) => {
     index === idxItem ? item.active = true : item.active = false;
   });
   dataKey.value += 1;
@@ -148,5 +107,6 @@ const onChangeMetric = (stage, idxItem) => {
 
 onMounted(() => {
   hookMetrics();
+  hookStages();
 });
 </script>

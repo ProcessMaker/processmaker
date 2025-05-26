@@ -11,8 +11,7 @@
       :color="item.color"
       :class="`tw-w-full ${item.className}`"
       :icon="item.icon"
-      :content="item.content"
-      @click="onClick(item, index)" />
+      :content="item.content" />
   </div>
 </template>
 
@@ -32,12 +31,6 @@ const props = defineProps({
     },
   },
 });
-
-const emit = defineEmits(["change"]);
-
-const onClick = (counter, idxCounter) => {
-  emit("change", counter, idxCounter);
-};
 
 onMounted(() => {});
 

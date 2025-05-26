@@ -10,8 +10,7 @@
     <BaseCardButtonGroup
       v-if="data.length > 0"
       :key="dataKey + 'button'"
-      :data="data"
-      @change="onChangeMetric" />
+      :data="data" />
 
     <PercentageCardButtonGroup
       v-if="stages.length > 0"
@@ -21,6 +20,7 @@
 
     <CustomHomeTableSection
       :key="dataKey + 'table'"
+      :advanced-filter="advancedFilter"
       class="tw-w-full tw-flex tw-flex-col
       tw-overflow-hidden tw-grow tw-p-4 tw-bg-white tw-rounded-lg tw-shadow-md tw-border tw-border-gray-200"
       :process="process" />
@@ -66,17 +66,7 @@ const toggleInfo = () => {
 
 const buildAdvancedFilter = () => {
   const stage = stages.value.find((item) => item.active);
-  const metric = data.value.find((item) => item.active);
-
   return [{
-    subject: {
-      type: "Field",
-      value: "metric",
-    },
-    operator: "=",
-    value: metric.id,
-  },
-  {
     subject: {
       type: "Field",
       value: "stage",
@@ -98,14 +88,6 @@ const hookStages = async () => {
 
 const onChangeStage = (stage, idxItem) => {
   stages.value.forEach((item, index) => {
-    index === idxItem ? item.active = true : item.active = false;
-  });
-  dataKey.value += 1;
-  advancedFilter.value = buildAdvancedFilter();
-};
-
-const onChangeMetric = (stage, idxItem) => {
-  data.value.forEach((item, index) => {
     index === idxItem ? item.active = true : item.active = false;
   });
   dataKey.value += 1;
