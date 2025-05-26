@@ -46,7 +46,7 @@
         "predis/predis": "^2.3",
         "processmaker/docker-executor-lua": "^1.0",
         "processmaker/docker-executor-node": "1.1.0",
-        "processmaker/docker-executor-php": "1.2.0",
+        "processmaker/docker-executor-php": "1.4.0",
         "processmaker/laravel-i18next": "dev-master",
         "processmaker/nayra": "1.12.1",
         "processmaker/pmql": "1.13.1",
