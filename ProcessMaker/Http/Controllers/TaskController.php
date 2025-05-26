@@ -19,6 +19,7 @@ use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\Comment;
+use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessAbeRequestToken;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -74,7 +75,30 @@ class TaskController extends Controller
 
         $defaultSavedSearchId = $this->getDefaultSavedSearchId();
 
-        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns', 'taskDraftsEnabled', 'userConfiguration', 'showOldTaskScreen', 'currentUser', 'selectedProcess', 'defaultSavedSearchId', 'manager'));
+        $metricsApiEndpoint = '';
+        // If TCE customization is enabled, get the metrics API endpoint
+        if (config('app.tce_customization_enable') == 'true') {
+            $metricsApiEndpoint = EnvironmentVariable::getMetricsApiEndpoint();
+        }
+
+        return view('tasks.index', compact(
+            // User and Authentication related
+            'currentUser',
+            'userFilter',
+            'userConfiguration',
+            // Process and Task related
+            'selectedProcess',
+            'defaultColumns',
+            'taskDraftsEnabled',
+            'showOldTaskScreen',
+            // Search and Display
+            'defaultSavedSearchId',
+            'manager',
+            // General
+            'title',
+            // Metrics API Endpoint
+            'metricsApiEndpoint',
+        ));
     }
 
     public function edit(ProcessRequestToken $task, string $preview = '')
