@@ -368,7 +368,7 @@ export const buildColumns = (defaultColumns) => {
       case "status":
         newColumn = statusColumn(convertedColumn);
         break;
-      case "stage":
+      case "last_stage_name":
         newColumn = defaultColumn(convertedColumn);
         break;
       case "progress":
