@@ -1,13 +1,23 @@
 import { t } from "i18next";
 import { get } from "lodash";
 import {
-  LinkCell, TitleCell, FlagCell, StatusCell, TruncatedOptionsCell, ParticipantsCell, ProgressBarCell,
+  LinkCell,
+  TitleCell,
+  FlagCell,
+  StatusCell,
+  TruncatedOptionsCell,
+  ParticipantsCell,
+  ProgressBarCell,
 } from "../../../../../jscomposition/system/index";
 import { formatDate } from "../../../../../jscomposition/utils";
 // Columns in the table:
 
 export const requestNumberColumn = ({
-  id, field, header, resizable, width,
+  id,
+  field,
+  header,
+  resizable,
+  width,
 }) => ({
   id,
   field,
@@ -29,7 +39,11 @@ export const requestNumberColumn = ({
 });
 
 export const caseNumberColumn = ({
-  id, field, header, resizable, width,
+  id,
+  field,
+  header,
+  resizable,
+  width,
 }) => ({
   id,
   field,
@@ -51,7 +65,11 @@ export const caseNumberColumn = ({
 });
 
 export const caseTitleColumn = ({
-  id, field, header, resizable, width,
+  id,
+  field,
+  header,
+  resizable,
+  width,
 }) => ({
   id,
   field,
@@ -72,7 +90,11 @@ export const caseTitleColumn = ({
 });
 
 export const textColumn = ({
-  id, field, header, resizable, width,
+  id,
+  field,
+  header,
+  resizable,
+  width,
 }) => ({
   id,
   field,
@@ -87,7 +109,11 @@ export const textColumn = ({
 });
 
 export const flagColumn = ({
-  id, field, header, resizable, width,
+  id,
+  field,
+  header,
+  resizable,
+  width,
 }) => ({
   id,
   field,
@@ -106,7 +132,11 @@ export const flagColumn = ({
 });
 
 export const progressColumn = ({
-  id, field, header, resizable, width,
+  id,
+  field,
+  header,
+  resizable,
+  width,
 }) => ({
   id,
   field,
@@ -123,7 +153,11 @@ export const progressColumn = ({
 });
 
 export const taskColumn = ({
-  id, field, header, resizable, width,
+  id,
+  field,
+  header,
+  resizable,
+  width,
 }) => ({
   id,
   field,
@@ -134,14 +168,21 @@ export const taskColumn = ({
     component: TruncatedOptionsCell,
     params: {
       href: (option) => `/tasks/${option.id}/edit`,
-      formatterOptions: (option, row, column, columns) => option.element_name,
-      filterData: (row, column, columns) => row.active_tasks,
+      formatterOptions: (option, row, column, columns) =>
+        option.element_name,
+      filterData: (row, column, columns) => {
+        return row.active_tasks;
+      },
     },
   }),
 });
 
 export const participantsColumn = ({
-  id, field, header, resizable, width,
+  id,
+  field,
+  header,
+  resizable,
+  width,
 }) => ({
   id,
   field,
@@ -167,7 +208,11 @@ export const participantsColumn = ({
 });
 
 export const statusColumn = ({
-  id, field, header, resizable, width,
+  id,
+  field,
+  header,
+  resizable,
+  width,
 }) => ({
   id,
   field,
@@ -182,39 +227,46 @@ export const statusColumn = ({
     operators: ["="],
     resetTable: true,
     config: {
-      options: [{
-        label: t("In progress"),
-        value: "In progress",
-      },
-      {
-        label: t("Completed"),
-        value: "Completed",
-      },
-      {
-        label: t("Error"),
-        value: "Error",
-      },
-      {
-        label: t("Overdue"),
-        value: "overdue",
-      },
-      {
-        label: t("Canceled"),
-        value: "Canceled",
-      }],
+      options: [
+        {
+          label: t("In progress"),
+          value: "In progress",
+        },
+        {
+          label: t("Completed"),
+          value: "Completed",
+        },
+        {
+          label: t("Error"),
+          value: "Error",
+        },
+        {
+          label: t("Overdue"),
+          value: "overdue",
+        },
+        {
+          label: t("Canceled"),
+          value: "Canceled",
+        },
+      ],
     },
   },
 });
 
 export const dateColumn = ({
-  id, field, header, resizable, width,
+  id,
+  field,
+  header,
+  resizable,
+  width,
 }) => ({
   id,
   field,
   header,
   resizable,
   width,
-  formatter: (row, column, columns) => formatDate(row[field], "datetime"),
+  formatter: (row, column, columns) =>
+    formatDate(row[field], "datetime"),
   filter: {
     dataType: "datetime",
     operators: ["between", ">", ">=", "<", "<="],
@@ -223,7 +275,11 @@ export const dateColumn = ({
 });
 
 export const defaultColumn = ({
-  id, field, header, resizable, width,
+  id,
+  field,
+  header,
+  resizable,
+  width,
 }) => ({
   id,
   field,
@@ -260,12 +316,23 @@ export const getColumns = (type) => {
 // };
 
 /// /////////////////////////////////////////////////////////
+// DEFAULT COLUMNS FROM BE
+// {
+//   mask: null,
+//   field: "case_number",
+//   label: "Case #",
+//   format: "int",
+//   default: true,
+//   sortable: true,
+//   isSubmitButton: null,
+//   encryptedConfig: null,
+// }
 
 export const buildColumns = (defaultColumns) => {
   const columns = [];
 
   defaultColumns.forEach((column) => {
-  // Convert column format from type 'a' to type 'b'
+    // Convert column format from type 'a' to type 'b'
     const convertedColumn = {
       id: column.field,
       field: column.field,
@@ -292,13 +359,16 @@ export const buildColumns = (defaultColumns) => {
       case "active_tasks":
         newColumn = taskColumn(convertedColumn);
         break;
+      case "element_name":
+        newColumn = taskColumn(convertedColumn);
+        break;
       case "participants":
         newColumn = participantsColumn(convertedColumn);
         break;
       case "status":
         newColumn = statusColumn(convertedColumn);
         break;
-      case "stage":
+      case "last_stage_name":
         newColumn = defaultColumn(convertedColumn);
         break;
       case "progress":

@@ -1,7 +1,7 @@
 export const defaultMetrics = [{
   id: 1,
   icon: "fas fa-reply",
-  active: true,
+  active: false,
   color: "blue",
 },
 {
@@ -34,4 +34,17 @@ export const buildMetrics = (metrics) => {
   });
 
   return response;
+};
+
+export const stagesColors = ["amber", "green", "blue","red", "purple", "emerald", "yellow", "indigo", "pink", "orange", "teal", "violet", "fuchsia", "rose", "sky", "lime", "cyan", "gray", "black", "white"];
+
+export const buildStages = (stages) => {
+  return stages.map((stage, index) => ({
+    id: stage.stage_id,
+    body: stage.stage_name,
+    header: stage.percentage_format,
+    helper: stage.agregation_sum,
+    percentage: stage.percentage || 100,
+    color: stagesColors.at(index),
+  }));
 };
