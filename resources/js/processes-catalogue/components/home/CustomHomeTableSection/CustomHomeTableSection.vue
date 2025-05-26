@@ -35,7 +35,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { FilterableTable, TablePlaceholder } from "../../../../../jscomposition/system";
-import { buildColumns, buildFilters, defaultColumns } from "../config";
+import { buildColumns, buildFilters } from "../config";
 import { Pagination } from "../../../../../jscomposition/base";
 import CustomHomeFilter from "./CustomHomeFilter.vue";
 import { prepareToGetRequests } from "./CustomHomeTableSection";
@@ -51,6 +51,8 @@ const props = defineProps({
     required: false,
   },
 });
+
+const defaultCasesColumns = ref(JSON.parse(props.process?.launchpad?.properties)?.my_cases_columns || []);
 
 const showPlaceholder = ref(false);
 const columnsConfig = ref();
@@ -137,7 +139,7 @@ const onGo = async (page) => {
 
 const onChangeFilter = async (filterData) => {
   const newFilterToAdvancedFilter = buildFilters({
-    defaultColumns,
+    defaultColumns: defaultCasesColumns.value,
     filterData,
   });
   dataTable.value.advancedFilter = newFilterToAdvancedFilter;
@@ -156,7 +158,7 @@ const onStopResize = async () => {
 
 onMounted(async () => {
   // Default columns from BE
-  columnsConfig.value = buildColumns(defaultColumns);
+  columnsConfig.value = buildColumns(defaultCasesColumns.value);
   hookData();
 });
 
