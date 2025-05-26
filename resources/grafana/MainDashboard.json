@@ -24,8 +24,7 @@
     "panels": [
         {
             "datasource": {
-                "type": "prometheus",
-                "uid": "de96jy15v6qrkc"
+                "type": "prometheus"
             },
             "description": "Visual representation of cache performance showing the hit and miss rates for screens.",
             "fieldConfig": {
@@ -85,8 +84,7 @@
             "targets": [
                 {
                     "datasource": {
-                        "type": "prometheus",
-                        "uid": "de96jy15v6qrkc"
+                        "type": "prometheus"
                     },
                     "disableTextWrap": false,
                     "editorMode": "code",
@@ -100,8 +98,7 @@
                 },
                 {
                     "datasource": {
-                        "type": "prometheus",
-                        "uid": "de96jy15v6qrkc"
+                        "type": "prometheus"
                     },
                     "disableTextWrap": false,
                     "editorMode": "code",
@@ -121,8 +118,7 @@
         },
         {
             "datasource": {
-                "type": "prometheus",
-                "uid": "de96jy15v6qrkc"
+                "type": "prometheus"
             },
             "description": "Visual representation of cache performance showing the hit and miss rates for settings.",
             "fieldConfig": {
@@ -182,8 +178,7 @@
             "targets": [
                 {
                     "datasource": {
-                        "type": "prometheus",
-                        "uid": "de96jy15v6qrkc"
+                        "type": "prometheus"
                     },
                     "disableTextWrap": false,
                     "editorMode": "code",
@@ -197,8 +192,7 @@
                 },
                 {
                     "datasource": {
-                        "type": "prometheus",
-                        "uid": "de96jy15v6qrkc"
+                        "type": "prometheus"
                     },
                     "disableTextWrap": false,
                     "editorMode": "code",
@@ -218,8 +212,7 @@
         },
         {
             "datasource": {
-                "type": "prometheus",
-                "uid": "de96jy15v6qrkc"
+                "type": "prometheus"
             },
             "description": "Visual representation of cache performance showing the hit and miss rates for screens.",
             "fieldConfig": {
@@ -270,8 +263,7 @@
             "targets": [
                 {
                     "datasource": {
-                        "type": "prometheus",
-                        "uid": "de96jy15v6qrkc"
+                        "type": "prometheus"
                     },
                     "disableTextWrap": false,
                     "editorMode": "code",
@@ -290,8 +282,7 @@
         },
         {
             "datasource": {
-                "type": "prometheus",
-                "uid": "de96jy15v6qrkc"
+                "type": "prometheus"
             },
             "description": "Count the number of completed tasks by time",
             "fieldConfig": {
@@ -373,8 +364,7 @@
             "targets": [
                 {
                     "datasource": {
-                        "type": "prometheus",
-                        "uid": "de96jy15v6qrkc"
+                        "type": "prometheus"
                     },
                     "disableTextWrap": false,
                     "editorMode": "code",
@@ -392,8 +382,7 @@
         },
         {
             "datasource": {
-                "type": "prometheus",
-                "uid": "de96jy15v6qrkc"
+                "type": "prometheus"
             },
             "description": "Time a task was completed",
             "fieldConfig": {
@@ -455,8 +444,7 @@
             "targets": [
                 {
                     "datasource": {
-                        "type": "prometheus",
-                        "uid": "de96jy15v6qrkc"
+                        "type": "prometheus"
                     },
                     "disableTextWrap": false,
                     "editorMode": "code",
@@ -478,8 +466,7 @@
         },
         {
             "datasource": {
-                "type": "prometheus",
-                "uid": "de96jy15v6qrkc"
+                "type": "prometheus"
             },
             "description": "Top Slowest Tasks",
             "fieldConfig": {
@@ -532,8 +519,7 @@
             "targets": [
                 {
                     "datasource": {
-                        "type": "prometheus",
-                        "uid": "de96jy15v6qrkc"
+                        "type": "prometheus"
                     },
                     "disableTextWrap": false,
                     "editorMode": "code",
@@ -555,8 +541,7 @@
         },
         {
             "datasource": {
-                "type": "prometheus",
-                "uid": "de96jy15v6qrkc"
+                "type": "prometheus"
             },
             "description": "Average task time completition",
             "fieldConfig": {
@@ -648,8 +633,7 @@
             "targets": [
                 {
                     "datasource": {
-                        "type": "prometheus",
-                        "uid": "de96jy15v6qrkc"
+                        "type": "prometheus"
                     },
                     "disableTextWrap": false,
                     "editorMode": "code",
@@ -671,8 +655,7 @@
         },
         {
             "datasource": {
-                "type": "prometheus",
-                "uid": "de96jy15v6qrkc"
+                "type": "prometheus"
             },
             "description": "Shows task completion distribution by activity and process to highlight execution patterns and identify key task volumes.",
             "fieldConfig": {
@@ -726,8 +709,7 @@
             "targets": [
                 {
                     "datasource": {
-                        "type": "prometheus",
-                        "uid": "de96jy15v6qrkc"
+                        "type": "prometheus"
                     },
                     "disableTextWrap": false,
                     "editorMode": "builder",
@@ -747,8 +729,7 @@
         },
         {
             "datasource": {
-                "type": "prometheus",
-                "uid": "de96jy15v6qrkc"
+                "type": "prometheus"
             },
             "description": "Time a task was completed",
             "fieldConfig": {
@@ -810,8 +791,7 @@
             "targets": [
                 {
                     "datasource": {
-                        "type": "prometheus",
-                        "uid": "de96jy15v6qrkc"
+                        "type": "prometheus"
                     },
                     "disableTextWrap": false,
                     "editorMode": "code",
@@ -833,8 +813,7 @@
         },
         {
             "datasource": {
-                "type": "prometheus",
-                "uid": "de96jy15v6qrkc"
+                "type": "prometheus"
             },
             "description": "Average task time completition",
             "fieldConfig": {
@@ -926,8 +905,7 @@
             "targets": [
                 {
                     "datasource": {
-                        "type": "prometheus",
-                        "uid": "de96jy15v6qrkc"
+                        "type": "prometheus"
                     },
                     "disableTextWrap": false,
                     "editorMode": "code",
@@ -949,8 +927,7 @@
         },
         {
             "datasource": {
-                "type": "prometheus",
-                "uid": "de96jy15v6qrkc"
+                "type": "prometheus"
             },
             "description": "Top Slowest Tasks",
             "fieldConfig": {
@@ -1003,8 +980,7 @@
             "targets": [
                 {
                     "datasource": {
-                        "type": "prometheus",
-                        "uid": "de96jy15v6qrkc"
+                        "type": "prometheus"
                     },
                     "disableTextWrap": false,
                     "editorMode": "code",
@@ -1026,8 +1002,7 @@
         },
         {
             "datasource": {
-                "type": "prometheus",
-                "uid": "de96jy15v6qrkc"
+                "type": "prometheus"
             },
             "description": "Shows task completion distribution by activity and process to highlight execution patterns and identify key task volumes.",
             "fieldConfig": {
@@ -1081,8 +1056,7 @@
             "targets": [
                 {
                     "datasource": {
-                        "type": "prometheus",
-                        "uid": "de96jy15v6qrkc"
+                        "type": "prometheus"
                     },
                     "disableTextWrap": false,
                     "editorMode": "code",
