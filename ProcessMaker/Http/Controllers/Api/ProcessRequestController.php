@@ -548,6 +548,65 @@ class ProcessRequestController extends Controller
     }
 
     /**
+     * Trigger a boundary event
+     *
+     * @param ProcessRequest $request
+     * @param string $event
+     * @return void
+     *
+     * @OA\Post(
+     *     path="/requests/{process_request_id}/boundary/{boundary_event_id}",
+     *     summary="Trigger a boundary event",
+     *     operationId="triggerBoundaryEvent",
+     *     tags={"Process Requests"},
+     *     @OA\Parameter(
+     *         description="ID of process request",
+     *         in="path",
+     *         name="process_request_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="integer",
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         description="ID of boundary event",
+     *         in="path",
+     *         name="boundary_event_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       @OA\JsonContent(
+     *          required={"data"},
+     *          @OA\Property(property="data", type="object"),
+     *       )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="success",
+     *     ),
+     * )
+     */
+    public function triggerBoundaryEvent(ProcessRequest $request, $boundaryEventId)
+    {
+        $data = (array) request()->json()->all();
+        // Get the process definition
+        $definitions = $request->getVersionDefinitions();
+        $boundaryEvent = $definitions->getBoundaryEvent($boundaryEventId);
+        $activity = $boundaryEvent->getAttachedTo();
+        $tokens = $request->tokens()
+            ->where('element_id', $activity->getId())
+            ->where('status', 'ACTIVE')->get();
+        foreach ($tokens as $token) {
+            WorkflowManager::triggerBoundaryEvent($request->process, $request, $token, $boundaryEvent, $data);
+        }
+
+        return response([], 204);
+    }
+
+    /**
      * Parse the whitelist parameter
      *
      * @param string $whitelist

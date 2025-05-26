@@ -127,7 +127,7 @@ class DataManager
         }
 
         // Magic Variable: _user
-        $data = $this->loadUserData($data, $token);
+        $data = $this->loadUserData($data ?? [], $token);
 
         // Magic Variable: _request
         $request = $token->getInstance() ?: $token->processRequest;
