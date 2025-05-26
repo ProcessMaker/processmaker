@@ -1980,16 +1980,17 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      *
      * @param int $processId The process_id
      * @param array $stages The stages configuration.
+     * @param string $varAggregation The aggregation var configuration.
      * @return array The formatted array of stages.
      */
-    public static function formatStages($processId, $stages = []): array
+    public static function formatStages($processId, $stages = [], ?string $varAggregation = ''): array
     {
         if (empty($stages)) {
             // If not exist stages we will return the default stages
             return self::getDefaultStagesData($processId);
         } else {
             // Get the stages
-            $stageCounts = self::getProcessStageCounts($processId);
+            $stageCounts = self::getProcessStageCounts($processId, $varAggregation);
 
             return self::mapStagesWithCounts($stages, $stageCounts);
         }
