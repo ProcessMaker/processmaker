@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->integer('last_stage_id')->nullable();
             $table->string('last_stage_name')->nullable();
             // This column will be used to display the percentage of advancement of the case through the stages.
-            $table->float('progress')->default(0);
+            $table->float('progress')->default(0)->nullable();
         });
     }
 
