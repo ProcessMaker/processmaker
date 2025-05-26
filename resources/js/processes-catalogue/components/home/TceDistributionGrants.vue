@@ -62,6 +62,7 @@ import ArrowButtonGroup from "./ArrowButtonGroup/ArrowButtonGroup.vue";
 import ProcessInfo from "./ProcessInfo.vue";
 import { ellipsisPermission } from "../variables";
 import { getStages } from "../api";
+import { buildStages } from "./config/metrics";
 
 const props = defineProps({
   process: {
@@ -88,13 +89,7 @@ const advancedFilter = ref([]);
 const hookStages = async () => {
   const stagesResponse = await getStages({ processId: props.process.id });
   stages.value = stagesResponse.data;
-  const stagesFormatted = stages.value.map((stage) => ({
-    id: stage.stage_id,
-    body: stage.stage_name,
-    header: stage.percentage_format,
-    helper: stage.agregation_sum,
-    percentage: stage.percentage,
-  }));
+  const stagesFormatted = buildStages(stages.value);
 
   lastStage.value = stagesFormatted.pop();
   firstStage.value = stagesFormatted.shift();

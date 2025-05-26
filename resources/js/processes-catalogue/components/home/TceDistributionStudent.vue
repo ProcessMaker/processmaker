@@ -14,9 +14,9 @@
       @change="onChangeMetric" />
 
     <PercentageCardButtonGroup
-      v-if="percentageData.length > 0"
+      v-if="stages.length > 0"
       :key="dataKey + 'subpercentage'"
-      :data="percentageData"
+      :data="stages"
       @change="onChangeStage" />
 
     <CustomHomeTableSection
@@ -42,7 +42,7 @@ import PercentageCardButtonGroup from "./PercentageButtonGroup/PercentageCardBut
 import { ellipsisPermission } from "../variables";
 import ProcessInfo from "./ProcessInfo.vue";
 import { getMetrics, getStages } from "../api";
-import { buildMetrics } from "./config/metrics";
+import { buildMetrics, buildStages } from "./config/metrics";
 
 const props = defineProps({
   process: {
@@ -54,42 +54,8 @@ const emit = defineEmits(["goBackCategory"]);
 
 const myTasksColumns = ref([]);
 
-const stages = ref();
+const stages = ref([]);
 const data = ref([]);
-const percentageData = ref([
-  {
-    id: "1",
-    header: "Grants",
-    body: "40%",
-    percentage: 40,
-    content: "28,678",
-    color: "amber",
-  },
-  {
-    id: "2",
-    header: "Scholarships",
-    body: "20%",
-    percentage: 20,
-    content: "4,678",
-    color: "green",
-  },
-  {
-    id: "3",
-    header: "Loans",
-    body: "15%",
-    percentage: 15,
-    content: "11,678",
-    color: "blue",
-  },
-  {
-    id: "4",
-    header: "Out of pocket remaining",
-    body: "25%",
-    percentage: 25,
-    content: "17,649",
-    color: "red",
-  },
-]);
 
 const showProcessInfo = ref(false);
 const advancedFilter = ref([]);
@@ -99,7 +65,7 @@ const toggleInfo = () => {
 };
 
 const buildAdvancedFilter = () => {
-  const stage = percentageData.value.find((item) => item.active);
+  const stage = stages.value.find((item) => item.active);
   const metric = data.value.find((item) => item.active);
 
   return [{
@@ -127,11 +93,11 @@ const hookMetrics = async () => {
 
 const hookStages = async () => {
   const stagesResponse = await getStages({ processId: props.process.id });
-  stages.value = stagesResponse.data;
+  stages.value = buildStages(stagesResponse.data);
 };
 
 const onChangeStage = (stage, idxItem) => {
-  percentageData.value.forEach((item, index) => {
+  stages.value.forEach((item, index) => {
     index === idxItem ? item.active = true : item.active = false;
   });
   dataKey.value += 1;
