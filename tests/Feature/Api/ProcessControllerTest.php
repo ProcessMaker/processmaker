@@ -451,7 +451,8 @@ class ProcessControllerTest extends TestCase
             'stages' => $stages,
             'aggregation' => 'var_amount',
         ]);
-        // Create 2 requests without stage
+
+        // Create 2 requests without stage test
         ProcessRequest::factory()->count(2)->create([
             'process_id' => $process->id,
             'status' => 'ACTIVE',
