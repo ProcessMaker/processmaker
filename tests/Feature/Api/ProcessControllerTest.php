@@ -2,10 +2,11 @@
 
 namespace ProcessMaker\Api\Tests\Feature;
 
+use Database\Seeders\MetricsApiEnvironmentVariableSeeder;
+use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -236,6 +237,24 @@ class ProcessControllerTest extends TestCase
             ]);
 
         $this->assertEquals($newStages, $process->fresh()->stages);
+    }
+
+    public function testCanSaveProcessWithoutStages()
+    {
+        $process = Process::factory()->create([
+            'description' => 'Test Process Without Stages',
+        ]);
+        $stage = [
+            ['id' => 1, 'order' => 1, 'name' => 'New Stage 1', 'selected' => true],
+        ];
+
+        $response = $this->actingAs($this->user, 'api')
+            ->putJson("/api/1.0/processes/{$process->id}", [
+                'description' => 'Test Process Without Stages',
+                'stages' => $stage,
+            ]);
+
+        $response->assertOk();
     }
 
     /**
@@ -520,5 +539,25 @@ class ProcessControllerTest extends TestCase
 
         // Verify metrics array structure
         $this->assertCount(3, $data);
+    }
+
+    public function testMetricsApiEndpointConfigurationIsAccessible()
+    {
+        $process = Process::factory()->create([
+            'status' => 'ACTIVE',
+        ]);
+
+        \Artisan::call('db:seed', ['--class' => MetricsApiEnvironmentVariableSeeder::class, '--force' => true]);
+
+        $metricApi = EnvironmentVariable::where('name', 'METRICS_API_ENDPOINT')->firstOrFail()->value;
+
+        // Reemplazar {process} con el ID del proceso real
+        $endpoint = str_replace('{process}', $process->id, $metricApi);
+
+        // Hacer la llamada a la API
+        $response = $this->actingAs($this->user, 'api')
+            ->getJson($endpoint);
+        $response->assertOk()
+            ->assertJsonCount(3, 'data');
     }
 }

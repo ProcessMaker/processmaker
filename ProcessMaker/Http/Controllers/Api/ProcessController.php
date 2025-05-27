@@ -507,8 +507,7 @@ class ProcessController extends Controller
         // Validate stages
         $stages = $request->input('stages', null);
         if (!empty($stages)) {
-            $stages = json_decode($stages, true);
-            if (!$this->validateStagesStructure($stages)) {
+            if (!is_array($stages) && !$this->validateStagesStructure($stages)) {
                 return ['error' => 'Invalid stages structure. Each stage must have id, name, and order.'];
             }
         }

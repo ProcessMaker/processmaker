@@ -10,6 +10,7 @@ use ProcessMaker\Http\Controllers\Api\UserConfigurationController;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Bookmark;
+use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessLaunchpad;
@@ -55,6 +56,20 @@ class ProcessesCatalogueController extends Controller
         $defaultSavedSearch = $this->getDefaultSavedSearchId();
         $defaultColumns = [];
 
-        return view('processes-catalogue.index', compact('process', 'currentUser', 'manager', 'userConfiguration', 'defaultSavedSearch', 'defaultColumns'));
+        $metricsApiEndpoint = '';
+        // If TCE customization is enabled, get the metrics API endpoint
+        if (config('app.tce_customization_enable') == 'true') {
+            $metricsApiEndpoint = EnvironmentVariable::getMetricsApiEndpoint();
+        }
+
+        return view('processes-catalogue.index', compact(
+            'process',
+            'currentUser',
+            'manager',
+            'userConfiguration',
+            'defaultSavedSearch',
+            'defaultColumns',
+            'metricsApiEndpoint',
+        ));
     }
 }
