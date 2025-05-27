@@ -1,4 +1,4 @@
-export const defaultColumns = [
+export const subjectColumns = [
   {
     label: "Request ID",
     field: "id",

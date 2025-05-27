@@ -162,6 +162,7 @@
         window.Processmaker.selectedProcess = @json($selectedProcess);
         window.Processmaker.defaultSavedSearchId = @json($defaultSavedSearchId);
         window.ProcessMaker.isTceCustomization = {{{config('app.tce_customization_enable') ? 'true' : 'false'}}};
+        window.ProcessMaker.metricsApiEndpoint = `{{{$metricsApiEndpoint}}}`;
     </script>
     @foreach($manager->getScripts() as $script)
         <script src="{{$script}}"></script>

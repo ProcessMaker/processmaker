@@ -104,8 +104,7 @@ const hookStages = async () => {
 const buildAdvancedFilters = (stage) => {
   advancedFilter.value = [{
     subject: {
-      type: "Field",
-      value: "stage",
+      type: "Stage",
     },
     operator: "=",
     value: stage.id,

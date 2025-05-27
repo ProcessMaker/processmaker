@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
@@ -19,6 +20,7 @@ use ProcessMaker\Exception\PmqlMethodException;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Filters\Filter;
+use ProcessMaker\Filters\BaseFilter;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -44,6 +46,9 @@ class ProcessRequestController extends Controller
     use ProcessMapTrait;
 
     const DOMAIN_CACHE_TIME = 86400;
+
+    public const TYPE_STAGE = 'Stage';
+
 
     /**
      * A whitelist of attributes that should not be

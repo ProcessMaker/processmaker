@@ -222,35 +222,6 @@ export const statusColumn = ({
   cellRenderer: () => ({
     component: StatusCell,
   }),
-  filter: {
-    dataType: "enum",
-    operators: ["="],
-    resetTable: true,
-    config: {
-      options: [
-        {
-          label: t("In progress"),
-          value: "In progress",
-        },
-        {
-          label: t("Completed"),
-          value: "Completed",
-        },
-        {
-          label: t("Error"),
-          value: "Error",
-        },
-        {
-          label: t("Overdue"),
-          value: "overdue",
-        },
-        {
-          label: t("Canceled"),
-          value: "Canceled",
-        },
-      ],
-    },
-  },
 });
 
 export const dateColumn = ({

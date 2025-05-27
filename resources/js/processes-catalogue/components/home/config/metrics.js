@@ -44,6 +44,7 @@ export const buildStages = (stages) => {
     body: stage.percentage_format,
     header: stage.stage_name,
     content: stage.agregation_count,
+    helper: stage.agregation_count,
     percentage: stage.percentage || 100,
     color: stagesColors.at(index),
   }));
