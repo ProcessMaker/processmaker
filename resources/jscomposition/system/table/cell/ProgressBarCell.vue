@@ -1,22 +1,13 @@
 <template>
-  <div
-    class="tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis tw-p-3">
-    <div :class="`tw-w-full tw-bg-${color}-200 tw-rounded-full`">
-      <div
-        :class="`tw-bg-${color}-500 tw-text-white tw-rounded-full tw-text-center tw-h-2`"
-        role="progressbar"
-        :style="{ width: percentage + '%' }"
-        :aria-valuenow="percentage"
-        aria-valuemin="0"
-        aria-valuemax="100">
-      &nbsp;
-      </div>
-    </div>
-  </div>
+  <ProgressBar
+    :percentage="percentage"
+    :color="color"
+  />
 </template>
 
 <script setup>
 import { computed } from "vue";
+import ProgressBar from "../../ProgressBar.vue";
 
 const props = defineProps({
   columns: {
@@ -31,16 +22,14 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
-  data: {
-    type: Function,
-    default: () => {},
-  },
-  color: {
-    type: String,
-    default: "green",
-  },
 });
 
-const percentage = computed(() => props.data(props.row, props.column, props.columns));
+const percentage = computed(() => props.row[props.column.field]);
 
+const color = computed(() => {
+  if (percentage.value < 100) {
+    return "green";
+  }
+  return "blue";
+});
 </script>
