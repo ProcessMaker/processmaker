@@ -210,6 +210,7 @@ class ProcessVariableController extends Controller
     {
         // Determine which columns to exclude based on the saved search
         $activeColumns = [];
+        $savedSearch = null;
         if ($excludeSavedSearch) {
             $savedSearch = SavedSearch::find($excludeSavedSearch);
             if ($savedSearch && $savedSearch->current_columns) {
@@ -222,6 +223,7 @@ class ProcessVariableController extends Controller
             !class_exists(ProcessVariable::class)
             || !Schema::hasTable('process_variables')
             || !self::$useVarFinder
+            || $savedSearch
         ) {
             $paginator = $this->getProcessesVariablesFrom($processIds);
             if ($request->has('onlyAvailable')) {
