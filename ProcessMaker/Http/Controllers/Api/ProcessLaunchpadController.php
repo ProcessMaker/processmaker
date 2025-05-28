@@ -56,6 +56,8 @@ class ProcessLaunchpadController extends Controller
             $process->bookmark_id = Bookmark::getBookmarked($bookmark, $process->id, $user->id);
             // Get the launchpad configuration
             $process->launchpad = ProcessLaunchpad::getLaunchpad($launchpad, $process->id);
+            // Load Stages
+            $process->stagesSummary = $process->getStagesSummary($process->stages);
         }
 
         $process = $processes->map(function ($process) {

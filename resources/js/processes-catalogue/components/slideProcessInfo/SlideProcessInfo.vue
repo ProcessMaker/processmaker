@@ -19,15 +19,32 @@
 
             {{ title }}
           </h3>
-          <button
-            class="tw-bg-transparent tw-border-none
-              tw-text-lg tw-text-gray-600 tw-cursor-pointer
-              tw-p-1.5 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-8 tw-h-8
-              tw-transition-colors hover:tw-bg-gray-100 hover:tw-text-blue-500"
-            @click="closeSlide"
-          >
-            <i class="fas fa-times" />
-          </button>
+          <div class="tw-flex tw-gap-4">
+            <div
+              v-if="isWizardTemplate"
+              class="tw-flex"
+            >
+              <div
+                class="tw-m-0 tw-text-lg tw-font-medium tw-text-gray-700 hover:tw-cursor-pointer"
+                @click="getHelperProcess"
+              >
+                <img
+                  src="../../../../img/wizard-icon.svg"
+                  :alt="$t('Guided Template Icon')"
+                >
+                <span> {{ $t('Re-run Wizard') }} </span>
+              </div>
+            </div>
+            <button
+              class="tw-bg-transparent tw-border-none
+                tw-text-lg tw-text-gray-600 tw-cursor-pointer
+                tw-p-1.5 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-8 tw-h-8
+                tw-transition-colors hover:tw-bg-gray-100 hover:tw-text-blue-500"
+              @click="closeSlide"
+            >
+              <i class="fas fa-times" />
+            </button>
+          </div>
         </div>
         <div class="tw-flex-1 tw-p-5 tw-overflow-y-auto">
           <slot />
@@ -57,6 +74,10 @@ export default {
       type: Object,
       required: true,
     },
+    isWizardTemplate: {
+      type: Boolean,
+      default: false,
+    },
   },
   methods: {
     closeSlide() {
@@ -64,6 +85,9 @@ export default {
     },
     closeFullCarousel() {
       this.$emit("closeCarousel");
+    },
+    getHelperProcess() {
+      this.$emit("getHelperProcess");
     },
   },
 };
