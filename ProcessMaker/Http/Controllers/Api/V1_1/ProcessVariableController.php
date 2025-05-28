@@ -219,11 +219,22 @@ class ProcessVariableController extends Controller
         }
 
         // If the classes or tables do not exist, fallback to a saved search approach.
+
+        if ($savedSearch && $request->has('onlyAvailable')) {
+            $paginator = $this->getProcessesVariablesFrom($processIds);
+            $availableColumns = $this->mergeAvailableColumns($savedSearch);
+            $availableColumns = $this->filterActiveColumns($availableColumns, $activeColumns);
+            $paginator->setCollection(
+                $availableColumns->merge($paginator->items())
+            );
+
+            return $paginator;
+        }
+
         if (
             !class_exists(ProcessVariable::class)
             || !Schema::hasTable('process_variables')
             || !self::$useVarFinder
-            || $savedSearch
         ) {
             $paginator = $this->getProcessesVariablesFrom($processIds);
             if ($request->has('onlyAvailable')) {
