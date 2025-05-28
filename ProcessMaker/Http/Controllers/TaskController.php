@@ -231,16 +231,26 @@ class TaskController extends Controller
                     if ($task->status === 'CLOSED') {
                         return $this->returnErrorResponse(__('Task already closed'), 404);
                     }
+
+                    $userId = null;
+
+                    // Review if the user is authenticated
+                    if (Auth::check()) {
+                        $user = Auth::user();
+
+                        if (!$user->is_administrator || $user->id !== $task->user_id) {
+                            return $this->returnErrorResponse(__('You are not authorized to update this task'), 403);
+                        }
+
+                        $userId = $user->id;
+                    }
                     // Update the data
                     $data[$request->varName] = $request->varValue;
                     $abe->data = json_encode($data);
                     // Define the answered_at and is_answered
                     $abe->is_answered = true;
                     $abe->answered_at = Carbon::now();
-                    // Review if the user is autenticated
-                    if (Auth::check()) {
-                        $abe->user_id = Auth::id();
-                    }
+                    $abe->user_id = $userId;
                     $abe->save();
                     // Define the parameter for complete the task
                     $process = Process::find($task->process_id);
