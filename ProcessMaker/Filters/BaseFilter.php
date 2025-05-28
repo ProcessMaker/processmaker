@@ -99,8 +99,7 @@ abstract class BaseFilter
         if ($valueAliasMethod = $this->valueAliasMethod()) {
             $this->valueAliasAdapter($valueAliasMethod, $query);
         } elseif ($this->subjectType === self::TYPE_STAGE) {
-            // dd("stage",self::TYPE_STAGE);
-            $this->filterByStageId($query); //-----> add this new filter
+            $this->filterByStageId($query);
         } elseif ($this->subjectType === self::TYPE_PROCESS) {
             $this->filterByProcessId($query);
         } elseif ($this->subjectType === self::TYPE_PROCESS_NAME) {
@@ -127,8 +126,8 @@ abstract class BaseFilter
         if ($query->getModel() instanceof ProcessRequestToken) {
             $query->whereIn('process_request_id', function ($query) {
                 $query->select('id')
-                        ->from('process_requests')
-                        ->whereIn('last_stage_id', (array) $this->value());
+                    ->from('process_requests')
+                    ->whereIn('last_stage_id', (array) $this->value());
             });
         } else {
             $query->whereIn('last_stage_id', (array) $this->value());

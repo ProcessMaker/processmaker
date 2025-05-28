@@ -44,11 +44,8 @@ use Throwable;
 class ProcessRequestController extends Controller
 {
     use ProcessMapTrait;
-
+    
     const DOMAIN_CACHE_TIME = 86400;
-
-    public const TYPE_STAGE = 'Stage';
-
 
     /**
      * A whitelist of attributes that should not be
