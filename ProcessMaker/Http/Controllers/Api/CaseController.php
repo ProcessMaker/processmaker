@@ -130,7 +130,7 @@ class CaseController extends Controller
         $processId = $request->process_id;
         $process = Process::where('id', $processId)->first();
         if ($process && !empty($process->stages)) {
-            $allStages = json_decode($process->stages, true);
+            $allStages = $process->stages;
         } else {
             // Return the default stages if the process does not have
             return $this->getDefaultCaseStages($request->status);
