@@ -82,11 +82,11 @@
                                     <input id="is_administrator" type="checkbox" v-model="formData.is_administrator"  class="custom-control-input">
                                     <label for="is_administrator" class="custom-control-label">{{ __('Make this user a Super Admin') }}</label>
                                 </div>
-                                <div class="mb-3 custom-control custom-switch">
-                                    <input id="selectAll" type="checkbox" v-model="selectAll" class="custom-control-input" @click="select" :disabled="formData.is_administrator">
-                                    <label for="selectAll" class="custom-control-label">{{ __('Assign all permissions to this user') }}</label>
-                                </div>
                                 @endif
+                                <div class="mb-3 custom-control custom-switch">
+                                  <input id="selectAll" type="checkbox" v-model="selectAll" class="custom-control-input" @click="select" :disabled="formData.is_administrator">
+                                  <label for="selectAll" class="custom-control-label">{{ __('Assign all permissions to this user') }}</label>
+                                </div>
                                 @include('admin.shared.permissions')
                                 <div class="d-flex justify-content-end mt-3">
                                     {{ html()->button(__('Cancel'), 'button')->class('btn btn-outline-secondary')->attribute('@click', 'onClose') }}
