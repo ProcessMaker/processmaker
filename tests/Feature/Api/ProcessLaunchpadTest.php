@@ -119,7 +119,6 @@ class ProcessLaunchpadTest extends TestCase
             ['id' => 1, 'name' => 'Stage A', 'order' => 1],
             ['id' => 2, 'name' => 'Stage B', 'order' => 2],
         ];
-        $user = Auth::user();
         // Create a process with stages
         $process = Process::factory()->create([
             'stages' => $stages,
