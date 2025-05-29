@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->string('name');
             $table->string('domain')->unique();
             $table->string('database')->unique();
-            $table->json('config_overrides')->nullable();
+            $table->json('config')->nullable();
             $table->timestamps();
         });
     }

@@ -1,8 +1,5 @@
 #!/usr/bin/env php
 <?php
-
-use Illuminate\Support\Env;
-
 define('LARAVEL_START', microtime(true));
 /*
 |--------------------------------------------------------------------------
@@ -30,20 +27,8 @@ $app = require_once __DIR__.'/bootstrap/app.php';
 $consoleOutput = new Symfony\Component\Console\Output\ConsoleOutput;
 $consoleOutput->setVerbosity(100);
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
-$input = new Symfony\Component\Console\Input\ArgvInput;
-
-// Shortcut for tenant:artisan by using the TENANT environment variable
-$tenant = Env::get('TENANT', null);
-$tokens = $input->getRawTokens();
-$isTenantAware = isset($tokens[0]) && $tokens[0] === 'tenants:artisan';
-if ($tenant && !$isTenantAware) {
-    $command = join(' ', $tokens);
-    $newTokens = ['artisan', 'tenants:artisan', $command, "--tenant={$tenant}"];
-    $input = new Symfony\Component\Console\Input\ArgvInput($newTokens);
-}
-
 $status = $kernel->handle(
-    $input,
+    $input = new Symfony\Component\Console\Input\ArgvInput,
     $consoleOutput
 );
 /*

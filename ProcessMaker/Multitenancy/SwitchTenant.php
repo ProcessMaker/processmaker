@@ -2,8 +2,10 @@
 
 namespace ProcessMaker\Multitenancy;
 
+use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Bootstrap\LoadConfiguration;
+use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 use Spatie\Multitenancy\Contracts\IsTenant;
 use Spatie\Multitenancy\Tasks\SwitchTenantTask;
 
@@ -17,6 +19,7 @@ class SwitchTenant implements SwitchTenantTask
      */
     public function makeCurrent(IsTenant $tenant): void
     {
+        \Log::info('SwitchTenant starting with tenant: ' . $tenant->id);
         $app = app();
 
         // Set the tenant-specific storage path
@@ -25,7 +28,6 @@ class SwitchTenant implements SwitchTenantTask
         $app->setStoragePath($tenantStoragePath);
 
         // Create the tenant storage directory if it doesn't exist
-
         // TODO: Move these to somewhere else - should not be run on every request
         if (!file_exists($tenantStoragePath)) {
             mkdir($tenantStoragePath, 0755, true);
@@ -39,13 +41,8 @@ class SwitchTenant implements SwitchTenantTask
         putenv('APP_CONFIG_CACHE=' . $tennantCacheFolder . '/config.php');
         (new LoadConfiguration())->bootstrap($app);
 
-        // Set the app.url config
-        $app->config->set('app.url', $app->config->get('app.protocol') . '://' . $tenant->domain);
-
-        if ($tenant->config_overrides) {
-            foreach ($tenant->config_overrides as $key => $value) {
-                $app->config->set($key, $value);
-            }
+        foreach ($tenant->config as $key => $value) {
+            $app->config->set($key, $value);
         }
     }
 
