@@ -17,3 +17,5 @@ export const { debounce } = _;
 export const ellipsisPermission = window.ProcessMaker?.ellipsisPermission;
 
 export const isTceCustomization = () => window.ProcessMaker?.isTceCustomization;
+
+export const metricsApiEndpoint = window.ProcessMaker?.metricsApiEndpoint;

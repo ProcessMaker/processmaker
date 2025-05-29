@@ -34,6 +34,7 @@
     }};
     window.ProcessMaker.defaultSavedSearch = {{{$defaultSavedSearch ?? 'null'}}};
     window.ProcessMaker.isTceCustomization = {{{config('app.tce_customization_enable') ? 'true' : 'false'}}};
+    window.ProcessMaker.metricsApiEndpoint = `{{{$metricsApiEndpoint}}}`;
   </script>
   @foreach($manager->getScripts() as $script)
     <script src="{{$script}}"></script>
