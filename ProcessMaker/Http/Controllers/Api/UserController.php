@@ -719,14 +719,11 @@ class UserController extends Controller
      */
     private function uploadAvatar(User $user, Request $request)
     {
-        \Log::info('uploadAvatar', [$request->all()]);
         // verify data
         $data = $request->all();
 
         // if the avatar is an url (neither page nor file) we do not update the avatar
         if (filter_var($data['avatar'], FILTER_VALIDATE_URL)) {
-            \Log::info('avatar 1');
-
             return;
         }
 
@@ -734,7 +731,6 @@ class UserController extends Controller
         // the avatar both by deleting the image itself from the filesystem and emptying
         // the "avatar" column for this user in the database
         if ($data['avatar'] === false) {
-            \Log::info('avatar 2');
             $user->clearMediaCollection(User::COLLECTION_PROFILE);
             $user->setAttribute('avatar', '');
             $user->save();
@@ -743,7 +739,6 @@ class UserController extends Controller
         }
 
         if (preg_match('/^data:image\/(\w+);base64,/', $data['avatar'], $type)) {
-            \Log::info('avatar 3');
             $data = substr($data['avatar'], strpos($data['avatar'], ',') + 1);
             $type = strtolower($type[1]); // jpg, png, gif
 
@@ -783,16 +778,13 @@ class UserController extends Controller
             $user->addMedia("/tmp/img.{$type}")
                 ->toMediaCollection(User::COLLECTION_PROFILE, User::DISK_PROFILE);
         } elseif (isset($data['avatar']) && !empty($data['avatar'])) {
-            \Log::info('avatar 4');
             $request->validate([
                 'avatar' => 'required',
             ]);
 
-            \Log::info('avatar 5');
             $user->addMedia($request->avatar)
                 ->toMediaCollection(User::COLLECTION_PROFILE, User::DISK_PROFILE);
         }
-        \Log::info('avatar 6');
         $user->avatar = $user->getAvatar();
         $user->saveOrFail();
     }
