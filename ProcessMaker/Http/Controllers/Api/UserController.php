@@ -477,8 +477,19 @@ class UserController extends Controller
 
         //Call new Event to store User Changes into LOG
         UserUpdated::dispatch($user, $changes, $original);
-        if ($request->has('avatar')) {
-            $this->uploadAvatar($user, $request);
+        try {
+            if ($request->has('avatar')) {
+                $this->uploadAvatar($user, $request);
+            }
+        } catch (\Exception $e) {
+            return response([
+                'message' => 'Error uploading avatar',
+                'errors' => [
+                    'avatar' => [
+                        $e->getMessage(),
+                    ],
+                ],
+            ], 422);
         }
 
         RecommendationEngine::handleUserSettingChanges($user, $original);
@@ -708,11 +719,14 @@ class UserController extends Controller
      */
     private function uploadAvatar(User $user, Request $request)
     {
+        \Log::info('uploadAvatar', [$request->all()]);
         // verify data
         $data = $request->all();
 
         // if the avatar is an url (neither page nor file) we do not update the avatar
         if (filter_var($data['avatar'], FILTER_VALIDATE_URL)) {
+            \Log::info('avatar 1');
+
             return;
         }
 
@@ -720,6 +734,7 @@ class UserController extends Controller
         // the avatar both by deleting the image itself from the filesystem and emptying
         // the "avatar" column for this user in the database
         if ($data['avatar'] === false) {
+            \Log::info('avatar 2');
             $user->clearMediaCollection(User::COLLECTION_PROFILE);
             $user->setAttribute('avatar', '');
             $user->save();
@@ -728,11 +743,17 @@ class UserController extends Controller
         }
 
         if (preg_match('/^data:image\/(\w+);base64,/', $data['avatar'], $type)) {
+            \Log::info('avatar 3');
             $data = substr($data['avatar'], strpos($data['avatar'], ',') + 1);
             $type = strtolower($type[1]); // jpg, png, gif
 
             if (!in_array($type, ['jpg', 'jpeg', 'gif', 'png', 'svg'])) {
                 throw new \Exception('invalid image type');
+            }
+
+            // Validate base64 string
+            if (!preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $data)) {
+                throw new \Exception('invalid base64 string');
             }
 
             $data = base64_decode($data);
@@ -741,17 +762,37 @@ class UserController extends Controller
                 throw new \Exception('base64_decode failed');
             }
 
+            // Validate image content
+            if ($type === 'svg') {
+                // For SVG files, validate against XSS
+                if (preg_match('/<script/i', $data) ||
+                    preg_match('/on\w+\s*=/i', $data) ||
+                    preg_match('/javascript:/i', $data) ||
+                    preg_match('/data:/i', $data)) {
+                    throw new \Exception('SVG contains potentially malicious content');
+                }
+            } else {
+                // For other image types, validate using getimagesize
+                $imageInfo = @getimagesizefromstring($data);
+                if ($imageInfo === false) {
+                    throw new \Exception('invalid image content');
+                }
+            }
+
             file_put_contents("/tmp/img.{$type}", $data);
             $user->addMedia("/tmp/img.{$type}")
                 ->toMediaCollection(User::COLLECTION_PROFILE, User::DISK_PROFILE);
         } elseif (isset($data['avatar']) && !empty($data['avatar'])) {
+            \Log::info('avatar 4');
             $request->validate([
                 'avatar' => 'required',
             ]);
 
+            \Log::info('avatar 5');
             $user->addMedia($request->avatar)
                 ->toMediaCollection(User::COLLECTION_PROFILE, User::DISK_PROFILE);
         }
+        \Log::info('avatar 6');
         $user->avatar = $user->getAvatar();
         $user->saveOrFail();
     }
