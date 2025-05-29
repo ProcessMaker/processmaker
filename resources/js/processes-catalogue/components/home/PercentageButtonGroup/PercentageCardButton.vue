@@ -61,7 +61,7 @@ export default defineComponent({
       default: () => "gray",
     },
     content: {
-      type: String,
+      type: [String, Number],
       default: () => "",
     },
   },

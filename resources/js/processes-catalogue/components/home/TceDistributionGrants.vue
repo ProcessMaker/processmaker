@@ -76,13 +76,7 @@ const emit = defineEmits(["goBackCategory"]);
 const myTasksColumns = ref([]);
 const stages = ref();
 const dataStages = ref([]);
-const lastStage = ref({
-  body: "In progress",
-  color: "green",
-  header: "100%",
-  helper: 0,
-  active: false,
-});
+const lastStage = ref();
 const firstStage = ref({
   body: "All cases",
   color: "blue",
@@ -103,18 +97,14 @@ const hookStages = async () => {
   stages.value = stagesResponse.data;
   const stagesFormatted = buildStages(stages.value);
 
-  // lastStage.value = stagesFormatted.pop();
-  // firstStage.value = stagesFormatted.shift();
+  lastStage.value = stagesFormatted.pop();
   dataStages.value = stagesFormatted;
-
-  console.log("stagesFormatted", stagesFormatted);
 };
 
 const buildAdvancedFilters = (stage) => {
   advancedFilter.value = [{
     subject: {
-      type: "Field",
-      value: "stage",
+      type: "Stage",
     },
     operator: "=",
     value: stage.id,
@@ -137,15 +127,7 @@ const onClickLastStage = () => {
   dataStagesKey.value += 1;
   firstStage.value.active = false;
   lastStage.value.active = true;
-  advancedFilter.value = [
-    {
-      subject: {
-        type: "Status",
-      },
-      operator: "=",
-      value: "In progress",
-    },
-  ];
+  advancedFilter.value = buildAdvancedFilters(lastStage.value);
 };
 
 const onClickFirstStage = () => {

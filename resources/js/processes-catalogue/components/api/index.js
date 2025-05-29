@@ -1,4 +1,4 @@
-import { api } from "../variables";
+import { api, metricsApiEndpoint } from "../variables";
 
 export const getRequests = async ({
   page, perPage, orderDirection, orderBy, nonSystem, processesIManage, allInbox, pmql, filter, advancedFilter, include, statusFilter,
@@ -29,6 +29,7 @@ export const getStages = async ({ processId }) => {
 };
 
 export const getMetrics = async ({ processId }) => {
-  const response = await api.get(`/processes/${processId}/metrics`);
+  const apiDefault = metricsApiEndpoint ? `${metricsApiEndpoint.replace("{process}", processId)}` : `/processes/${processId}/metrics`;
+  const response = await api.get(apiDefault);
   return response.data;
 };

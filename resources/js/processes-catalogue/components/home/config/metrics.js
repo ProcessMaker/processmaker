@@ -36,14 +36,15 @@ export const buildMetrics = (metrics) => {
   return response;
 };
 
-export const stagesColors = ["amber", "green", "blue","red", "purple", "emerald", "yellow", "indigo", "pink", "orange", "teal", "violet", "fuchsia", "rose", "sky", "lime", "cyan", "gray", "black", "white"];
+export const stagesColors = ["red", "indigo", "sky","white", "purple", "emerald", "yellow", "indigo", "pink", "orange", "teal", "violet", "fuchsia", "rose", "sky", "lime", "cyan", "gray", "black", "white"];
 
 export const buildStages = (stages) => {
   return stages.map((stage, index) => ({
     id: stage.stage_id,
-    body: stage.stage_name,
-    header: stage.percentage_format,
-    helper: stage.agregation_sum,
+    body: stage.percentage_format,
+    header: stage.stage_name,
+    content: stage.agregation_count,
+    helper: stage.agregation_count,
     percentage: stage.percentage || 100,
     color: stagesColors.at(index),
   }));

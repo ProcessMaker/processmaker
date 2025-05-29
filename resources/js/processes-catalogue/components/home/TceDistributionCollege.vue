@@ -81,8 +81,7 @@ const buildAdvancedFilter = () => {
 
   return [{
     subject: {
-      type: "Field",
-      value: "stage",
+      type: "Stage",
     },
     operator: "=",
     value: stage.id,

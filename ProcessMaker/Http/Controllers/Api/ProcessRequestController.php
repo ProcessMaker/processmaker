@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
@@ -42,7 +43,6 @@ use Throwable;
 class ProcessRequestController extends Controller
 {
     use ProcessMapTrait;
-
     const DOMAIN_CACHE_TIME = 86400;
 
     /**

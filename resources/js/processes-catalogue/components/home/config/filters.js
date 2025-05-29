@@ -1,3 +1,4 @@
+import { subjectColumns } from "./requestDefaultColumns";
 // Convert value filter from FilterableTable to value for AdvancedFilter
 export const buildValue = (operator, value) => {
   switch (operator) {
@@ -18,14 +19,14 @@ export const buildFilters = ({ defaultColumns, filterData }) => {
   const result = [];
 
   filterData.forEach((f) => {
-    const filter = defaultColumns.find((column) => column.field === f.id);
+    const filter = subjectColumns.find((column) => column.field === f.id);
 
-    if (!filter) {
-      return;
-    }
+    const subject = {
+      type: "Field",
+    };
 
     result.push({
-      subject: filter.subject,
+      subject: filter.subject || subject,
       operator: f.operator,
       value: buildValue(f.operator, f.value),
     });
