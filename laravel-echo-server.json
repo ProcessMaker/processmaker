@@ -1,11 +1,7 @@
 {
+	"authHost": "http://localhost",
 	"authEndpoint": "/broadcasting/auth",
-	"clients": [
-		{
-			"appId": "0fd1f7a0ce0d527c",
-			"key": "21a795019957dde6bcd96142e05d4b10"
-		}
-	],
+	"clients": [],
 	"database": "redis",
 	"databaseConfig": {
 		"redis": {},
@@ -13,10 +9,14 @@
 			"databasePath": "/database/laravel-echo-server.sqlite"
 		}
 	},
-	"protocol": "https",
+	"devMode": false,
+	"host": null,
+	"port": "6001",
+	"protocol": "http",
 	"socketio": {},
-	"sslCertPath": "/etc/nginx/ssl/processmaker.local.processmaker.com.crt",
-	"sslKeyPath": "/etc/nginx/ssl/processmaker.local.processmaker.com.key",
+	"secureOptions": 67108864,
+	"sslCertPath": "",
+	"sslKeyPath": "",
 	"sslCertChainPath": "",
 	"sslPassphrase": "",
 	"subscribers": {

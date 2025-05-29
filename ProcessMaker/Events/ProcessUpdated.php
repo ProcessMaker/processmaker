@@ -37,9 +37,8 @@ class ProcessUpdated implements ShouldBroadcastNow
         $this->event = $event;
 
         $this->processRequest = $processRequest;
-
+        $this->activeTokens = $this->processRequest->getActiveTokens($this->processRequest);
         if ($token) {
-            $this->activeTokens = $this->processRequest->getActiveTokens($this->processRequest);
             $this->tokenId = $token->getId();
             $this->elementType = $token->element_type;
         }
