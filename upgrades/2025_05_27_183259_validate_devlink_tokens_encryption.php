@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Upgrades\UpgradeMigration as Upgrade;
 
-class EncryptDevlinkTokens extends Upgrade
+class ValidateDevlinkTokensEncryption extends Upgrade
 {
     /**
      * check if the table and column exist before running the upgrade
@@ -17,7 +17,13 @@ class EncryptDevlinkTokens extends Upgrade
      */
     public function preflightChecks()
     {
-        //
+        if (!Schema::hasTable('dev_links')) {
+            throw new RuntimeException('The table dev_links does not exist');
+        }
+
+        if (!Schema::hasColumn('dev_links', 'client_secret')) {
+            throw new RuntimeException('The column client_secret does not exist in the dev_links table');
+        }
     }
 
     /**
@@ -27,10 +33,16 @@ class EncryptDevlinkTokens extends Upgrade
      */
     public function up()
     {
-        // Change the column type to TEXT
-        Schema::table('dev_links', function ($table) {
-            $table->text('client_secret')->change()->nullable();
-        });
+        // Verify if the column is already nullable
+        $columnInfo = DB::select("SHOW COLUMNS FROM dev_links WHERE Field = 'client_secret'")[0];
+        $isNullable = $columnInfo->Null === 'YES';
+
+        // If the column is not nullable, make the change
+        if (!$isNullable || $columnInfo->Type === 'varchar(255)') {
+            Schema::table('dev_links', function ($table) {
+                $table->text('client_secret')->change()->nullable();
+            });
+        }
 
         $devlinks = DB::table('dev_links')->get();
 
@@ -91,6 +103,10 @@ class EncryptDevlinkTokens extends Upgrade
      */
     private function isEncrypted($value)
     {
+        if (empty($value)) {
+            return true;
+        }
+
         try {
             Crypt::decryptString($value);
 
