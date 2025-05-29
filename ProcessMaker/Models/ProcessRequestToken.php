@@ -1208,7 +1208,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
      * @param User $requestingUser
      * @return void
      */
-    public function reassign($toUserId, User $requestingUser)
+    public function reassign($toUserId, User $requestingUser, $comments = '')
     {
         $sendActivityActivatedNotifications = false;
         $reassingAction = false;
@@ -1232,6 +1232,9 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             $this->reassignTo($toUserId);
             $this->persistUserData($toUserId);
             $reassingAction = true;
+        }
+        if ($comments != null && $comments !== '') {
+            $this->comments = $comments;
         }
         $this->save();
 
