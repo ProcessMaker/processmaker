@@ -134,7 +134,7 @@
                 "package-zj-sonymusic": "dev-fall",
                 "pm-platform": "dev-fall",
                 "package-zj-nas": "dev-fall",
-                "package-plg": "0.0.3",
+                "package-plg": "0.14.0",
                 "package-accessibility": "1.0.0",
                 "package-zj-birmingham": "dev-main",
                 "package-tce": "dev-master",
