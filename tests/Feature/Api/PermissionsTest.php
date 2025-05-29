@@ -250,4 +250,66 @@ class PermissionsTest extends TestCase
             'title' => $permissionTitle,
         ]);
     }
+
+    /**
+     * Test that only administrators can assign administrator privileges
+     */
+    public function testAdministratorRoleAssignment()
+    {
+        $regularUser = User::factory()->create(['is_administrator' => false]);
+        $adminUser = User::factory()->create(['is_administrator' => true]);
+        $targetUser = User::factory()->create(['is_administrator' => false]);
+
+        // Test 1: Regular user cannot assign admin role
+        $this->user = $regularUser;
+        $this->user->save();
+        
+        $response = $this->apiCall('PUT', '/permissions', [
+            'user_id' => $targetUser->id,
+            'is_administrator' => true,
+            'permission_names' => [],
+        ]);
+        $response->assertStatus(403);
+        $targetUser->refresh();
+        $this->assertFalse($targetUser->is_administrator);
+
+        // Test 2: Regular user cannot modify existing admin
+        $targetUser->is_administrator = true;
+        $targetUser->save();
+        
+        $response = $this->apiCall('PUT', '/permissions', [
+            'user_id' => $targetUser->id,
+            'is_administrator' => false,
+            'permission_names' => [],
+        ]);
+        
+        $response->assertStatus(403);
+        $targetUser->refresh();
+        $this->assertTrue($targetUser->is_administrator);
+
+        // Test 3: Admin can assign admin role
+        $this->user = $adminUser;
+        $this->user->save();
+        
+        $response = $this->apiCall('PUT', '/permissions', [
+            'user_id' => $targetUser->id,
+            'is_administrator' => false,
+            'permission_names' => [],
+        ]);
+        
+        $response->assertStatus(204);
+        $targetUser->refresh();
+        $this->assertFalse($targetUser->is_administrator);
+
+        // Test 4: Admin can grant admin role
+        $response = $this->apiCall('PUT', '/permissions', [
+            'user_id' => $targetUser->id,
+            'is_administrator' => true,
+            'permission_names' => []
+        ]);
+        
+        $response->assertStatus(204);
+        $targetUser->refresh();
+        $this->assertTrue($targetUser->is_administrator);
+    }
 }
