@@ -24,6 +24,8 @@ class ProcessUpdated implements ShouldBroadcastNow
 
     private $processRequest;
 
+    public $activeTokens;
+
     /**
      * Create a new event instance.
      *
@@ -37,6 +39,7 @@ class ProcessUpdated implements ShouldBroadcastNow
         $this->processRequest = $processRequest;
 
         if ($token) {
+            $this->activeTokens = $this->processRequest->getActiveTokens($this->processRequest);
             $this->tokenId = $token->getId();
             $this->elementType = $token->element_type;
         }
@@ -65,7 +68,7 @@ class ProcessUpdated implements ShouldBroadcastNow
     /**
      * Return the process request.
      *
-     * @return \ProcessMaker\Models\ProcessRequest
+     * @return ProcessRequest
      */
     public function getProcessRequest()
     {
