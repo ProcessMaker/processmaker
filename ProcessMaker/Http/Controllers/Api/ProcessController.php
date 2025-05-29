@@ -2253,7 +2253,7 @@ class ProcessController extends Controller
     {
         try {
             $format = $request->query('format', 'student');
-            $formattedMetrics = Process::formatMetrics($format);
+            $formattedMetrics = Process::formatMetrics($process, $format);
 
             return response()->json(['data' => $formattedMetrics]);
         } catch (\InvalidArgumentException $e) {
