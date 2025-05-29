@@ -42,7 +42,7 @@
       </div>
     </slide-process-info>
     <wizard-helper-process-modal
-      v-if="wcreatedFromWizardTemplate"
+      v-if="createdFromWizardTemplate"
       id="wizardHelperProcessModal"
       ref="wizardHelperProcessModal"
       :process-launchpad-id="process.id"
