@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
+import { defineProps } from "vue";
 import ProgressInfo from "./ProgressInfo.vue";
 
 // Define props
@@ -24,8 +24,5 @@ const props = defineProps({
 });
 
 // Determine color based on stage
-const getColor = (stage) => {
-  // Blue if count is 0, otherwise green
-  return stage.count === 0 ? 'blue' : 'green';
-};
+const getColor = (stage) => (stage.count === 0 ? "blue" : "green");
 </script>
