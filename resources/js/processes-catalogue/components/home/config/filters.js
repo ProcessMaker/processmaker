@@ -25,8 +25,6 @@ export const buildFilters = ({ defaultColumns, filterData }) => {
       type: "Field",
     };
 
-    console.log("filter", filter);
-
     result.push({
       subject: filter.subject || subject,
       operator: f.operator,
