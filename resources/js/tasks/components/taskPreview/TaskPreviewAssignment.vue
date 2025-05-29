@@ -1,18 +1,21 @@
 <template>
   <div
     id="reassign-container"
-    class="tw-flex tw-flex-col tw-space-y-3 tw-items-center overlay-div tw-absolute top-0 start-0 tw-w-full bg-white shadow-lg tw-p-2">
+    class="tw-flex tw-flex-col tw-space-y-3 tw-items-center overlay-div tw-absolute top-0 start-0 tw-w-full bg-white shadow-lg tw-p-2"
+  >
     <div class="tw-flex tw-flex-col tw-space-x-2 tw-p-2 tw-w-full">
       <label>{{ $t('Assign to') }}:</label>
       <PMDropdownSuggest
         v-model="selectedUser"
         :options="reassignUsers"
         :placeholder="$t('Type here to search')"
-        @onInput="onReassignInput">
+        @onInput="onReassignInput"
+      >
         <template #pre-text="{ option }">
           <b-badge
             variant="secondary"
-            class="mr-2 custom-badges pl-2 pr-2 rounded-lg">
+            class="mr-2 custom-badges pl-2 pr-2 rounded-lg"
+          >
             {{ option.active_tasks_count }}
           </b-badge>
         </template>
@@ -25,22 +28,25 @@
         v-model="comments"
         rows="5"
         class="tw-w-full tw-border tw-border-gray-300 tw-rounded-md tw-resize-none"
-        :placeholder="$t('Add a comment to the assignment')" />
+        :placeholder="$t('Add a comment to the assignment')"
+      />
     </div>
 
     <div class="tw-flex tw-flex-row tw-space-x-2 tw-w-full tw-justify-end">
       <button
         type="button"
-        class="btn btn-primary btn-sm ml-2"
-        :disabled="disabled || disabledAssign"
-        @click="reassignUser">
-        {{ $t('Assign') }}
+        class="btn btn-outline-secondary btn-sm ml-2"
+        @click="cancelReassign"
+      >
+        {{ $t('Cancel') }}
       </button>
       <button
         type="button"
-        class="btn btn-outline-secondary btn-sm ml-2"
-        @click="cancelReassign">
-        {{ $t('Cancel') }}
+        class="btn btn-primary btn-sm ml-2"
+        :disabled="disabled || disabledAssign"
+        @click="reassignUser"
+      >
+        {{ $t('Assign') }}
       </button>
     </div>
   </div>
