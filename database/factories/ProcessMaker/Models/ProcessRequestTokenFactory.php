@@ -19,7 +19,7 @@ class ProcessRequestTokenFactory extends Factory
     public function definition(): array
     {
         return [
-            'element_type' => 'TASK',
+            'element_type' => 'task',
             'element_id' => $this->faker->randomDigit(),
             'element_name' => $this->faker->name(),
             'status' => $this->faker->randomElement(['ACTIVE', 'FAILING', 'COMPLETED', 'CLOSED', 'EVENT_CATCH']),

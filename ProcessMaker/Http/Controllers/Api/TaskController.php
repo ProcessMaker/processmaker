@@ -146,13 +146,13 @@ class TaskController extends Controller
 
         $this->applyAdvancedFilter($query, $request);
 
-        $this->applyForCurrentUser($query, $user);
-
         // Apply filter overdue
         $query->overdue($request->input('overdue'));
 
         if ($request->input('processesIManage') === 'true') {
             $this->applyProcessManager($query, $user);
+        } else {
+            $this->applyForCurrentUser($query, $user);
         }
 
         // If only the total is being requested (by a Saved Search), send it now

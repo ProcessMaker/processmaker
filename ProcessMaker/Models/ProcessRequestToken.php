@@ -750,13 +750,15 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
         $value = mb_strtolower($value);
 
-        return function ($query) use ($value, $statusMap, $expression, $user) {
+        $processesIManage = request()->input('processesIManage') === 'true';
+
+        return function ($query) use ($value, $statusMap, $expression, $user, $processesIManage) {
             if ($value === 'self service') {
                 if (!$user) {
                     $user = auth()->user();
                 }
 
-                if ($user) {
+                if ($user && !$processesIManage) {
                     $taskIds = $user->availableSelfServiceTaskIds();
                     $query->whereIn('id', $taskIds);
                 } else {
