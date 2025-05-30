@@ -1856,17 +1856,6 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     }
 
     /**
-     * Decodes the JSON string of the stages configuration.
-     *
-     * @param string|null $stagesJson The JSON string of the stages configuration.
-     * @return array The decoded stages configuration as an array.
-     */
-    protected static function decodeStagesConfig(?string $stagesJson): array
-    {
-        return $stagesJson ? json_decode($stagesJson, true) : [];
-    }
-
-    /**
      * Provides default stage data when no configuration exists.
      *
      * @param int $processId The process_id.
@@ -1889,21 +1878,31 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         }
 
         return [
-            [
+            'total' => [
                 'stage_id' => 0,
-                'stage_name' => 'In progress',
-                'percentage' => $activePercentage,
-                'percentage_format' => $activePercentage . '%',
+                'stage_name' => 'Total Cases',
+                'percentage' => 100,
+                'percentage_format' => '100%',
                 'agregation_sum' => 0,
-                'agregation_count' => $activeCount,
+                'agregation_count' => $totalCount,
             ],
-            [
-                'stage_id' => 0,
-                'stage_name' => 'Completed',
-                'percentage' => $completedPercentage,
-                'percentage_format' => $completedPercentage . '%',
-                'agregation_sum' => 0,
-                'agregation_count' => $completedCount,
+            'stages' => [
+                [
+                    'stage_id' => 0,
+                    'stage_name' => 'In progress',
+                    'percentage' => $activePercentage,
+                    'percentage_format' => $activePercentage . '%',
+                    'agregation_sum' => 0,
+                    'agregation_count' => $activeCount,
+                ],
+                [
+                    'stage_id' => 0,
+                    'stage_name' => 'Completed',
+                    'percentage' => $completedPercentage,
+                    'percentage_format' => $completedPercentage . '%',
+                    'agregation_sum' => 0,
+                    'agregation_count' => $completedCount,
+                ],
             ],
         ];
     }
@@ -1917,7 +1916,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      */
     protected static function mapStagesWithCounts(array $stagesConfig, array $stageCounts): array
     {
-        return collect($stagesConfig)->map(function ($stage, $index) use ($stageCounts) {
+        $stages = collect($stagesConfig)->map(function ($stage, $index) use ($stageCounts) {
             $stageId = $stage['id'] ?? 0;
             $totalCount = $stageCounts['total_count'] ?? 0;
             $stageCount = $stageCounts[$stageId]['count'] ?? 0;
@@ -1933,6 +1932,21 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                 'agregation_count' => $stageCount,
             ];
         })->toArray();
+
+        $totalCount = $stageCounts['total_count'] ?? 0;
+        $totalSum = collect($stages)->sum('agregation_sum') ?? 0;
+
+        return [
+            'total' => [
+                'stage_id' => 0,
+                'stage_name' => 'Total Cases',
+                'percentage' => 100,
+                'percentage_format' => '100%',
+                'agregation_sum' => $totalCount,
+                'agregation_count' => $totalSum,
+            ],
+            'stages' => $stages,
+        ];
     }
 
     protected static function getProcessDefaultStageCounts(int $processId): array

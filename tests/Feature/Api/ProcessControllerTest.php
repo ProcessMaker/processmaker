@@ -324,13 +324,23 @@ class ProcessControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'data' => [
-                '*' => [
+                'total' => [
                     'stage_id',
                     'stage_name',
                     'percentage',
                     'percentage_format',
                     'agregation_sum',
                     'agregation_count',
+                ],
+                'stages' => [
+                    '*' => [
+                        'stage_id',
+                        'stage_name',
+                        'percentage',
+                        'percentage_format',
+                        'agregation_sum',
+                        'agregation_count',
+                    ],
                 ],
             ],
         ]);
@@ -340,7 +350,7 @@ class ProcessControllerTest extends TestCase
         $this->assertCount(2, $data);
 
         // Verify "In Progress" stage
-        $inProgress = collect($data)->firstWhere('stage_name', 'In progress');
+        $inProgress = collect($data['stages'])->firstWhere('stage_name', 'In progress');
         $this->assertNotNull($inProgress);
         $this->assertEquals(0, $inProgress['stage_id']);
         $this->assertEquals(60, $inProgress['percentage']);
@@ -349,7 +359,7 @@ class ProcessControllerTest extends TestCase
         $this->assertEquals(18, $inProgress['agregation_count']);
 
         // Verify "Completed" stage
-        $completed = collect($data)->firstWhere('stage_name', 'Completed');
+        $completed = collect($data['stages'])->firstWhere('stage_name', 'Completed');
         $this->assertNotNull($completed);
         $this->assertEquals(0, $completed['stage_id']);
         $this->assertEquals(40, $completed['percentage']);
@@ -404,13 +414,23 @@ class ProcessControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'data' => [
-                '*' => [
+                'total' => [
                     'stage_id',
                     'stage_name',
                     'percentage',
                     'percentage_format',
                     'agregation_sum',
                     'agregation_count',
+                ],
+                'stages' => [
+                    '*' => [
+                        'stage_id',
+                        'stage_name',
+                        'percentage',
+                        'percentage_format',
+                        'agregation_sum',
+                        'agregation_count',
+                    ],
                 ],
             ],
         ]);
@@ -420,13 +440,13 @@ class ProcessControllerTest extends TestCase
         $this->assertCount(2, $data);
 
         // Verify "1" stage
-        $firstStage = collect($data)->where('stage_id', $stages[0]['id'])->first();
+        $firstStage = collect($data['stages'])->where('stage_id', $stages[0]['id'])->first();
         $this->assertEquals('Custom Stage 1', $firstStage['stage_name']);
         $this->assertEquals(50, $firstStage['agregation_sum']);
         $this->assertEquals(5, $firstStage['agregation_count']);
 
         // Verify "2" stage
-        $secondStage = collect($data)->firstWhere('stage_id', $stages[1]['id']);
+        $secondStage = collect($data['stages'])->firstWhere('stage_id', $stages[1]['id']);
         $this->assertEquals('Custom Stage 2', $secondStage['stage_name']);
         $this->assertEquals(30, $secondStage['agregation_sum']);
         $this->assertEquals(3, $secondStage['agregation_count']);
@@ -479,13 +499,23 @@ class ProcessControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'data' => [
-                '*' => [
+                'total' => [
                     'stage_id',
                     'stage_name',
                     'percentage',
                     'percentage_format',
                     'agregation_sum',
                     'agregation_count',
+                ],
+                'stages' => [
+                    '*' => [
+                        'stage_id',
+                        'stage_name',
+                        'percentage',
+                        'percentage_format',
+                        'agregation_sum',
+                        'agregation_count',
+                    ],
                 ],
             ],
         ]);
@@ -494,13 +524,13 @@ class ProcessControllerTest extends TestCase
         $data = $response->json('data');
         $this->assertCount(2, $data);
         // Verify "1" stage
-        $firstStage = collect($data)->firstWhere('stage_id', $stages[0]['id']);
+        $firstStage = collect($data['stages'])->firstWhere('stage_id', $stages[0]['id']);
         $this->assertEquals('Custom Stage 1', $firstStage['stage_name']);
         $this->assertEquals(50, $firstStage['agregation_sum']);
         $this->assertEquals(5, $firstStage['agregation_count']);
 
         // Verify "2" stage
-        $secondStage = collect($data)->firstWhere('stage_id', $stages[1]['id']);
+        $secondStage = collect($data['stages'])->firstWhere('stage_id', $stages[1]['id']);
         $this->assertEquals('Custom Stage 2', $secondStage['stage_name']);
         $this->assertEquals(30, $secondStage['agregation_sum']);
         $this->assertEquals(3, $secondStage['agregation_count']);

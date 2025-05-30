@@ -9,7 +9,7 @@
 
     <div class="tw-w-full tw-flex tw-flex-row tw-space-x-4">
       <ArrowButtonHome
-        v-if="lastStage"
+        v-if="firstStage"
         :key="dataStagesKey + 'first'"
         class="tw-w-60"
         color="blue"
@@ -77,13 +77,7 @@ const myTasksColumns = ref([]);
 const stages = ref();
 const dataStages = ref([]);
 const lastStage = ref();
-const firstStage = ref({
-  body: "All cases",
-  color: "blue",
-  header: "50%",
-  helper: 0,
-  active: true,
-});
+const firstStage = ref();
 const showProcessInfo = ref(false);
 const dataStagesKey = ref(0);
 const toggleInfo = () => {
@@ -94,11 +88,12 @@ const advancedFilter = ref([]);
 
 const hookStages = async () => {
   const stagesResponse = await getStages({ processId: props.process.id });
-  stages.value = stagesResponse.data;
+  stages.value = stagesResponse.data.stages;
   const stagesFormatted = buildStages(stages.value);
 
   lastStage.value = stagesFormatted.pop();
   dataStages.value = stagesFormatted;
+  [firstStage.value] = buildStages([stagesResponse.data.total]);
 };
 
 const buildAdvancedFilters = (stage) => {
@@ -124,10 +119,11 @@ const onClickLastStage = () => {
   dataStages.value.forEach((stage) => {
     stage.active = false;
   });
-  dataStagesKey.value += 1;
   firstStage.value.active = false;
   lastStage.value.active = true;
-  advancedFilter.value = buildAdvancedFilters(lastStage.value);
+  buildAdvancedFilters(lastStage.value);
+
+  dataStagesKey.value += 1;
 };
 
 const onClickFirstStage = () => {

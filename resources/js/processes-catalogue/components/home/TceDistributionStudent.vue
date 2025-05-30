@@ -82,7 +82,7 @@ const hookMetrics = async () => {
 
 const hookStages = async () => {
   const stagesResponse = await getStages({ processId: props.process.id });
-  stages.value = buildStages(stagesResponse.data);
+  stages.value = buildStages(stagesResponse.data.stages);
 };
 
 const onChangeStage = (stage, idxItem) => {
