@@ -380,26 +380,14 @@ class CasesControllerTest extends TestCase
     public function testGetStageCaseWithValidCaseNumberWithProcessStages()
     {
         $stagesData = [
-            [
-                'id' => 1,
-                'name' => 'Request Send',
-                'order' => 1,
-            ],
-            [
-                'id' => 2,
-                'name' => 'Request Reviewed',
-                'order' => 2,
-            ],
-            [
-                'id' => 3,
-                'name' => 'Manager Reviewed',
-                'order' => 3,
-            ],
+            ['id' => 1, 'name' => 'Request Send', 'order' => 1],
+            ['id' => 2, 'name' => 'Request Reviewed', 'order' => 2],
+            ['id' => 3, 'name' => 'Manager Reviewed', 'order' => 3],
         ];
         // Create a new process and save stages as JSON
         $process = Process::factory()->create([
             'status' => 'ACTIVE',
-            'stages' => json_encode($stagesData),
+            'stages' => $stagesData,
         ]);
         // Create a parent request
         $parentRequest = ProcessRequest::factory()->create([
@@ -632,21 +620,13 @@ class CasesControllerTest extends TestCase
     public function testGetStageCaseWithValidCaseNumberWithoutTask()
     {
         $stagesData = [
-            [
-                'id' => 1,
-                'name' => 'Request Send',
-                'order' => 2,
-            ],
-            [
-                'id' => 2,
-                'name' => 'Request Reviewed',
-                'order' => 1,
-            ],
+            ['id' => 1, 'name' => 'Request Send', 'order' => 1],
+            ['id' => 2, 'name' => 'Request Reviewed', 'order' => 2],
         ];
         // Create a new process and save stages as JSON
         $process = Process::factory()->create([
             'status' => 'ACTIVE',
-            'stages' => json_encode($stagesData),
+            'stages' => $stagesData,
         ]);
         // Create a parent request
         $parentRequest = ProcessRequest::factory()->create([
