@@ -141,7 +141,8 @@ class UserTokenController extends Controller
      */
     public function store(Request $request, User $user)
     {
-        if (!Auth::user()->can('edit', $user)) {
+        // The user can only create tokens for themselves or if they are an administrator.
+        if (!Auth::user()->can('edit', $user) || !(Auth::user()->is_administrator || Auth::user()->id === $user->id)) {
             throw new AuthorizationException(__('Not authorized to update this user.'));
         }
 
