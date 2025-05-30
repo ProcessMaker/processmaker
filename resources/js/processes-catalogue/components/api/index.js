@@ -25,7 +25,7 @@ export const getRequests = async ({
 
 export const getStages = async ({ processId }) => {
   const response = await api.get(`/processes/${processId}/stage-mapping`);
-  return response.data.stages;
+  return response.data;
 };
 
 export const getMetrics = async ({ processId }) => {
