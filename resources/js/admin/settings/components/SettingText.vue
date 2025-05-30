@@ -21,11 +21,8 @@
       @hidden="onModalHidden"
       @shown="onModalShown"
     >
-      <template
-        #modal-header
-        class="d-block"
-      >
-        <div>
+      <template #modal-header>
+        <div class="d-block">
           <h5
             v-if="setting.name"
             class="mb-0"
@@ -153,7 +150,9 @@ export default {
       if (this.setting?.ui?.isNotEmpty) {
         return this.transformed !== "" && this.transformed !== null;
       }
-
+      if (this.setting.key.startsWith("white_list.")) {
+        return this.validateURL(this.transformed);
+      }
       return true;
     },
     invalidFeedback() {
@@ -191,6 +190,11 @@ export default {
       if (this.setting.ui?.isNotEmpty && (this.transformed === "" || this.transformed === null)) {
         return;
       }
+      if (this.setting.key.startsWith("white_list.")) {
+        if (!this.validateURL(this.transformed)) {
+          return;
+        }
+      }
       this.input = this.copy(this.transformed);
       this.showModal = false;
       this.emitSaved(this.input);
@@ -198,6 +202,10 @@ export default {
     togglePassword() {
       this.type = this.type === "text" ? "password" : "text";
       this.$refs.input.focus();
+    },
+    validateURL(url) {
+      const pattern = /^(https:\/\/|http:\/\/)(\*\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?$/;
+      return pattern.test(url);
     },
   },
 };
