@@ -67,7 +67,10 @@
 </template>
 
 <script>
+import settingMixin from "../mixins/setting";
+
 export default {
+  mixins: [settingMixin],
   data() {
     return {
       siteName: "",
@@ -91,10 +94,6 @@ export default {
       this.siteName = "";
       this.url = "";
       this.urlError = "";
-    },
-    validateURL(url) {
-      const pattern = /^(https:\/\/|http:\/\/)(\*\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?$/;
-      return pattern.test(url);
     },
     addWhiteListURL() {
       if (!this.siteName.trim()) {

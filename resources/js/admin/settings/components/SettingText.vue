@@ -203,10 +203,6 @@ export default {
       this.type = this.type === "text" ? "password" : "text";
       this.$refs.input.focus();
     },
-    validateURL(url) {
-      const pattern = /^(https:\/\/|http:\/\/)(\*\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?$/;
-      return pattern.test(url);
-    },
   },
 };
 </script>
