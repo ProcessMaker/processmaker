@@ -495,7 +495,6 @@ class ProcessControllerTest extends TestCase
         ]);
 
         $response = $this->apiCall('GET', route('api.processes.stage-mapping', ['process' => $process->id]));
-        dd($response->json());
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
