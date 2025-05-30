@@ -6,6 +6,8 @@ import {
   StatusCell,
   LinkCell,
   TruncatedColumn,
+  StageCell,
+  ProgressBarCell,
 } from "../../../system/index";
 import { formatDate } from "../../../utils";
 
@@ -206,6 +208,29 @@ export const completedColumn = () => ({
   },
 });
 
+export const stageColumn = () => ({
+  field: "last_stage_name",
+  header: "Stage",
+  resizable: true,
+  width: 200,
+  filter: {
+    resetTable: true,
+  },
+  cellRenderer: () => ({
+    component: StageCell,
+  }),
+});
+
+export const progressColumn = () => ({
+  field: "progress",
+  header: "Progress",
+  resizable: true,
+  width: 200,
+  cellRenderer: () => ({
+    component: ProgressBarCell,
+  }),
+});
+
 export const getColumns = (type) => {
   const columnsDefinition = {
     default: [
@@ -215,6 +240,8 @@ export const getColumns = (type) => {
       taskColumn(),
       participantsColumn(),
       statusColumn(),
+      stageColumn(),
+      progressColumn(),
       startedColumn(),
       completedColumn(),
     ],
@@ -224,6 +251,8 @@ export const getColumns = (type) => {
       processColumn(),
       taskColumn(),
       participantsColumn(),
+      stageColumn(),
+      progressColumn(),
       startedColumn(),
     ],
     completed: [
@@ -232,6 +261,8 @@ export const getColumns = (type) => {
       processColumn(),
       taskColumn(),
       participantsColumn(),
+      stageColumn(),
+      progressColumn(),
       startedColumn(),
       completedColumn(),
     ],
@@ -242,6 +273,8 @@ export const getColumns = (type) => {
       taskColumn(),
       participantsColumn(),
       statusColumn(),
+      stageColumn(),
+      progressColumn(),
       startedColumn(),
       completedColumn(),
     ],

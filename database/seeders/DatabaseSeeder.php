@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             SignalSeeder::class,
             SettingsMenusSeeder::class,
             ScreenEmailSeeder::class,
+            MetricsApiEnvironmentVariableSeeder::class,
         ]);
         $this->callPluginSeeders();
     }
