@@ -530,6 +530,51 @@ You can provide an optional description, for example `Metrics::gauge('active_tas
 
 Go to Grafana and import the dashboards from the `resources/grafana` folder. Each JSON file represents a configured dashboard that can be imported into Grafana to visualize metrics and data.
 
+# Multitenancy
+
+ProcessMaker is now set up as a multitenant application. By default, there is one tenant.
+
+## Requirements
+
+- Your MySql user `DB_USERNAME` will need to be able to create databases.
+
+## Transition to multitenancy
+
+1. Modify your .env and add LANDLORD_DB_DATABASE
+
+1. Run the following command to enable multitenancy
+   ```
+   php artisan multitenancy:enable
+   ```
+   This command will
+   - Create the landlord database
+   - Set your existing database as the tenant database
+   - Move your existing storage folder to `storage/tenant_1`
+
+## Add a new tenant
+
+For local development, you will need add another domain to your nginx config. To do this with Valet, run:
+
+```
+valet link another-tenant.test
+```
+
+Run the following command to create a new tenant:
+```
+php artisan multitenancy:create --domain="another-tenant.test" --name="Another Tenant" --database="another_tenant"
+```
+
+This command will
+- Create the required folder structure
+- Create the tenant database
+- Seed the tenant database
+- Generate new passport keys
+- Run the upgrade commands
+
+## Migrate an existing instnace to a tenant
+
+Todo
+
 # License
 
 Distributed under the [AGPL Version 3](https://www.gnu.org/licenses/agpl-3.0.en.html)

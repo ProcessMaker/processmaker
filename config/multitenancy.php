@@ -5,6 +5,7 @@ use Illuminate\Events\CallQueuedListener;
 use Illuminate\Mail\SendQueuedMailable;
 use Illuminate\Notifications\SendQueuedNotifications;
 use Illuminate\Queue\CallQueuedClosure;
+use ProcessMaker\Multitenancy\SwitchTenant;
 use Spatie\Multitenancy\Actions\ForgetCurrentTenantAction;
 use Spatie\Multitenancy\Actions\MakeQueueTenantAwareAction;
 use Spatie\Multitenancy\Actions\MakeTenantCurrentAction;
@@ -34,11 +35,8 @@ return [
      * A valid task is any class that implements Spatie\Multitenancy\Tasks\SwitchTenantTask
      */
     'switch_tenant_tasks' => [
-        Spatie\Multitenancy\Tasks\PrefixCacheTask::class,
         Spatie\Multitenancy\Tasks\SwitchTenantDatabaseTask::class,
-
-        // Not needed because routes are the same for all tenants?
-        // \Spatie\Multitenancy\Tasks\SwitchRouteCacheTask::class,
+        SwitchTenant::class,
     ],
 
     /*
@@ -47,7 +45,7 @@ return [
      * It must  extend `Spatie\Multitenancy\Models\Tenant::class` or
      * implement `Spatie\Multitenancy\Contracts\IsTenant::class` interface
      */
-    'tenant_model' => Tenant::class,
+    'tenant_model' => ProcessMaker\Multitenancy\Tenant::class,
 
     /*
      * If there is a current tenant when dispatching a job, the id of the current tenant
