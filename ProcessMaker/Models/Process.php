@@ -1999,65 +1999,69 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     /**
      * Formats the stages configuration for the API response.
      *
+     * @param Process $process The process to get metrics for
      * @param string|null $stagesJson The JSON string of the stages configuration.
      * @return array The formatted array of stages.
      */
-    public static function formatMetrics($format = 'student'): array
+    public static function formatMetrics(self $process, $format = 'student'): array
     {
-        if ($format === 'student') {
-            $metrics = [
-                [
-                    'id' => 1,
-                    'metric_description' => 'Max amount available',
-                    'metric_count' => 10,
-                    'metric_count_description' => 'Across 10 aplicants',
-                    'metric_value' => 84000,
-                    'metric_value_unit' => 'k',
-                ],
-                [
-                    'id' => 2,
-                    'metric_description' => 'Application awarded',
-                    'metric_count' => null, // No direct count equivalent
-                    'metric_count_description' => 'Of all submitted',
-                    'metric_value' => 30,
-                    'metric_value_unit' => '%',
-                ],
-                [
-                    'id' => 3,
-                    'metric_description' => 'Total amount awarded',
-                    'metric_count' => null,
-                    'metric_count_description' => 'Across aplicants',
-                    'metric_value' => 46000,
-                    'metric_value_unit' => '+', // Assuming '+' signifies 'K+'
-                ],
-            ];
-        } else {
-            $metrics = [
-                [
-                    'id' => 1,
-                    'metric_description' => 'Total amount awarded',
-                    'metric_count' => null, // No direct count equivalent
-                    'metric_count_description' => 'Across all applications approved',
-                    'metric_value' => 46000000,
-                    'metric_value_unit' => 'M',
-                ],
-                [
-                    'id' => 2,
-                    'metric_description' => 'Total Awarded Students',
-                    'metric_count' => null, // No direct count equivalent
-                    'metric_count_description' => 'Of all submitted',
-                    'metric_value' => 7500,
-                    'metric_value_unit' => '',
-                ],
-                [
-                    'id' => 3,
-                    'metric_description' => 'Total Applications Received',
-                    'metric_count' => null, // No direct count equivalent
-                    'metric_count_description' => 'This semester',
-                    'metric_value' => 15000,
-                    'metric_value_unit' => '',
-                ],
-            ];
+        // Get user authenticated
+        $user = Auth::user();
+        // Create a base query for process requests
+        $baseQuery = ProcessRequest::query()
+            ->where('process_id', $process->id)
+            ->forUser($user);
+        // Count the number of process requests in different states
+        $counts = [
+            'started_me' => (clone $baseQuery)
+                ->startedMe($user->id)
+                ->notCompleted()
+                ->count(),
+            'in_progress' => (clone $baseQuery)
+                ->inProgress()
+                ->count(),
+            'completed' => (clone $baseQuery)
+                ->completed()
+                ->count(),
+        ];
+
+        $totalRequests = array_sum($counts);
+        $startedPercentage = $totalRequests > 0 ? round(($counts['started_me'] / $totalRequests) * 100) : 0;
+        $inProgressPercentage = $totalRequests > 0 ? round(($counts['in_progress'] / $totalRequests) * 100) : 0;
+        $completedPercentage = $totalRequests > 0 ? round(($counts['completed'] / $totalRequests) * 100) : 0;
+
+        switch ($format) {
+            case 'student':
+            case 'college':
+                $metrics = [
+                    [
+                        'id' => 1,
+                        'metric_description' => sprintf('Cases Started by me (%d%%)', $startedPercentage),
+                        'metric_count' => 40,
+                        'metric_count_description' => 'Applications started by me',
+                        'metric_value' => $counts['started_me'],
+                        'metric_value_unit' => '',
+                    ],
+                    [
+                        'id' => 2,
+                        'metric_description' => sprintf('Cases In progress (%d%%)', $inProgressPercentage),
+                        'metric_count' => 0,
+                        'metric_count_description' => 'Applications are currently being reviewed',
+                        'metric_value' => $counts['in_progress'],
+                        'metric_value_unit' => '',
+                    ],
+                    [
+                        'id' => 3,
+                        'metric_description' => sprintf('Completed Cases (%d%%)', $completedPercentage),
+                        'metric_count' => 0,
+                        'metric_count_description' => 'Applications have been processed',
+                        'metric_value' => $counts['completed'],
+                        'metric_value_unit' => '',
+                    ],
+                ];
+                break;
+            default:
+                // Default format for metrics
         }
 
         return $metrics;
