@@ -1963,7 +1963,7 @@ class ProcessController extends Controller
      *                 type="object",
      *                 @OA\Property(property="id", type="integer"),
      *                 @OA\Property(property="order", type="integer"),
-     *                 @OA\Property(property="label", type="string"),
+     *                 @OA\Property(property="name", type="string"),
      *                 @OA\Property(property="selected", type="boolean")
      *             )
      *         )
@@ -2013,7 +2013,7 @@ class ProcessController extends Controller
      *                 type="object",
      *                 @OA\Property(property="id", type="integer"),
      *                 @OA\Property(property="order", type="integer"),
-     *                 @OA\Property(property="label", type="string"),
+     *                 @OA\Property(property="name", type="string"),
      *                 @OA\Property(property="selected", type="boolean")
      *             )
      *         )
@@ -2121,7 +2121,7 @@ class ProcessController extends Controller
      * @OA\Get(
      *     path="/processes/{process}/stage-mapping",
      *     summary="Get process stages configuration",
-     *     description="Retrieves and formats the stages configuration for a specific process.",
+     *     description="Retrieves and formats the stages configuration for a specific process, including total counts and individual stages.",
      *     operationId="getStageMapping",
      *     tags={"Processes"},
      *     @OA\Parameter(
@@ -2135,15 +2135,33 @@ class ProcessController extends Controller
      *         response=200,
      *         description="Successful operation",
      *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
      *                 type="object",
-     *                 @OA\Property(property="stage_id", type="number", example="1"),
-     *                 @OA\Property(property="stage_name", type="string", example="In progress"),
-     *                 @OA\Property(property="percentage", type="number", nullable=true, example=60),
-     *                 @OA\Property(property="percentage_format", type="string", example="60%"),
-     *                 @OA\Property(property="agregation_sum", type="number", nullable=true, example=28678),
-     *                 @OA\Property(property="agregation_count", type="number", nullable=true, example=100),
+     *                 @OA\Property(
+     *                     property="total",
+     *                     type="object",
+     *                     @OA\Property(property="stage_id", type="number", example="0"),
+     *                     @OA\Property(property="stage_name", type="string", example="Total Cases"),
+     *                     @OA\Property(property="percentage", type="number", example=100),
+     *                     @OA\Property(property="percentage_format", type="string", example="100%"),
+     *                     @OA\Property(property="agregation_sum", type="number", example=50000),
+     *                     @OA\Property(property="agregation_count", type="number", example=150),
+     *                 ),
+     *                 @OA\Property(
+     *                     property="stages",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="object",
+     *                         @OA\Property(property="stage_id", type="number", example="1"),
+     *                         @OA\Property(property="stage_name", type="string", example="In progress"),
+     *                         @OA\Property(property="percentage", type="number", nullable=true, example=60),
+     *                         @OA\Property(property="percentage_format", type="string", example="60%"),
+     *                         @OA\Property(property="agregation_sum", type="number", nullable=true, example=28678),
+     *                         @OA\Property(property="agregation_count", type="number", nullable=true, example=100),
+     *                     )
+     *                 )
      *             )
      *         )
      *     )
