@@ -306,8 +306,7 @@
                     
                     // Ensure the JSON is properly formatted
                     const jsonString = JSON.stringify(accounts, null, 2);
-                    console.log('JSON before save:', jsonString);
-                    
+                
                     // Verify the JSON is valid
                     JSON.parse(jsonString);
                     
