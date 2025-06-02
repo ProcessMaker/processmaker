@@ -5,13 +5,13 @@
       {{ $t("Here you have all the stages already set in this process. Define the order you prefer:") }}
     </p>
     <StageList
+      :key="keyStage"
       :initial-stages="defaultStages"
       @onUpdate="onUpdate"
       @onRemove="onRemove"
       @onChange="onChange"
-      @onClickCheckbox="onClickCheckbox"
-      @onClickSelected="onClickSelected"
-    />
+      @onClickStage="onClickStage"
+      @onClickSelected="onClickSelected" />
     <AgregationProperty />
   </div>
 </template>
@@ -28,6 +28,7 @@ const props = defineProps({
 });
 const defaultStages = ref([]);
 const currentInstance = getCurrentInstance();
+const keyStage = ref(0);
 
 const loadStagesFromApi = () => {
   const { id } = window.ProcessMaker.modeler.process;
@@ -40,6 +41,7 @@ const loadStagesFromApi = () => {
       stages.forEach((item) => {
         defaultStages.value = [...defaultStages.value, item];
       });
+      keyStage.value += 1;
     });
 };
 
@@ -146,8 +148,9 @@ const onRemove = (stages, index, removed) => {
   removeStageInAllFlowConfig(removed);
 };
 
-const onClickCheckbox = (stage) => {
+const onClickStage = (stage) => {
   applyStageToFlow(stage);
+  keyStage.value += 1;
 };
 
 const onClickSelected = (stage) => {
