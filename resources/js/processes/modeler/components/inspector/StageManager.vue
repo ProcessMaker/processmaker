@@ -138,6 +138,7 @@ const removeStageToFlow = () => {
 const onChange = (stages) => {
   updateStagesForAllFlowConfigs(stages);
   saveStagesToApi(stages);
+  defaultStages.value = [...stages];
 };
 
 const onUpdate = (stages, index, val, Oldal) => {
@@ -149,7 +150,11 @@ const onRemove = (stages, index, removed) => {
 };
 
 const onClickStage = (stage) => {
-  applyStageToFlow(stage);
+  if (!stage.selected) {
+    removeStageToFlow();
+  } else {
+    applyStageToFlow(stage);
+  }
   keyStage.value += 1;
 };
 

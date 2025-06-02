@@ -114,6 +114,13 @@ const onUpdate = (index, newName) => {
   emit("onChange", stages.value);
 };
 
+const onReorder = () => {
+  stages.value.forEach((item, index) => {
+    item.order = index + 1;
+  });
+  emit("onChange", stages.value);
+};
+
 const onRemove = (index) => {
   ProcessMaker.confirmModal(
     i18next.t("Caution!"),
@@ -122,6 +129,8 @@ const onRemove = (index) => {
     () => {
       const removed = stages.value.splice(index, 1);
       emit("onRemove", stages.value, index, removed[0]);
+
+      onReorder();
       emit("onChange", stages.value);
     },
   );
@@ -143,12 +152,6 @@ const onClickSelected = (index) => {
   emit("onClickSelected", stages.value[index]);
 };
 
-const onReorder = () => {
-  stages.value.forEach((item, index) => {
-    item.order = index + 1;
-  });
-  emit("onChange", stages.value);
-};
 </script>
 
 <style scoped>
