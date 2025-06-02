@@ -281,6 +281,7 @@ export default {
   mounted() {
     this.requestTabConfiguration();
     this.requestMyTasksColumns();
+    this.requestMyCasesColumns();
     this.verifyTabsLength();
   },
   methods: {
@@ -399,6 +400,14 @@ export default {
         const properties = JSON.parse(this.process.launchpad.properties);
         if ("my_tasks_columns" in properties && properties.my_tasks_columns.length > 0) {
           this.updateColumnsByType("myTasks", _.cloneDeep(properties.my_tasks_columns));
+        }
+      }
+    },
+    requestMyCasesColumns() {
+      if (this.process.launchpad) {
+        const properties = JSON.parse(this.process.launchpad.properties);
+        if ("my_cases_columns" in properties && properties.my_cases_columns.length > 0) {
+          this.updateColumnsByType("myCases", _.cloneDeep(properties.my_cases_columns));
         }
       }
     },
