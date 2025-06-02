@@ -119,13 +119,11 @@
                 name: 'Slack',
                 description: 'Send ProcessMaker notifications to Slack',
                 icon: 'https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg',
-                defaultSettings: {
-                    enabled: false,
-                    channel_id: null,
-                    ui_options: {
-                        show_toggle: true,
-                        show_edit_modal: false
-                    }
+                enabled: false,
+                channel_id: null,
+                ui_options: {
+                    show_toggle: true,
+                    show_edit_modal: false
                 }
             }
         };
