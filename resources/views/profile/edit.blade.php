@@ -280,11 +280,43 @@
                   this.emailHasChanged = this.formData.email !== this.originalEmail;
                 },
                 handleConnectedAccountToggle(account, $event) {
-                  const accounts = JSON.parse(this.formData.connected_accounts)
-                      .map(acc => acc.name === account.name ? { ...acc, enabled: $event } : acc);
-                  
-                  this.formData.connected_accounts = JSON.stringify(accounts);
-                  this.saveProfileChanges();
+                  try {
+                    let accounts = [];
+                    if (this.formData.connected_accounts) {
+                      accounts = JSON.parse(this.formData.connected_accounts);
+                    }
+                    
+                    const index = accounts.findIndex(acc => acc.name === account.name);
+                    if (index !== -1) {
+                      accounts[index] = { ...accounts[index], enabled: $event };
+                    } else {
+                      const newAccount = {
+                        name: account.name,
+                        description: account.description,
+                        icon: account.icon,
+                        enabled: $event,
+                        channel_id: null,
+                        ui_options: {
+                          show_toggle: true,
+                          show_edit_modal: false
+                        }
+                      };
+                      accounts.push(newAccount);
+                    }
+                    
+                    // Ensure the JSON is properly formatted
+                    const jsonString = JSON.stringify(accounts, null, 2);
+                    console.log('JSON before save:', jsonString);
+                    
+                    // Verify the JSON is valid
+                    JSON.parse(jsonString);
+                    
+                    this.formData.connected_accounts = jsonString;
+                    this.saveProfileChanges();
+                  } catch (error) {
+                    console.error('Error handling connected account toggle:', error);
+                    ProcessMaker.alert(this.$t('Error updating connected account'), 'danger');
+                  }
                 }
             },
             computed: {
