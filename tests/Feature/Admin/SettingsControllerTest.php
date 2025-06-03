@@ -409,4 +409,35 @@ class SettingsControllerTest extends TestCase
 
         $response->assertStatus(422);
     }
+
+    /**
+     * Test storing a white_list setting with a URL containing IP address
+     */
+    public function testStoreWhiteListUrlWithString()
+    {
+        $this->actingAs($this->admin);
+
+        $setting = Setting::create([
+            'key' => 'white_list.default',
+            'config' => '',
+            'name' => 'Default URL',
+            'format' => 'text',
+            'group' => 'IFrame Whitelist Config',
+        ]);
+
+        $data = [
+            'key' => 'white_list.ip',
+            'config' => 'aaaabbb',
+            'name' => 'Default URL',
+            'format' => 'text',
+            'group' => 'IFrame Whitelist Config',
+            'hidden' => false,
+            'readonly' => false,
+        ];
+
+        $response = $this->actingAs($this->admin, 'api')
+            ->putJson("/api/1.0/settings/{$setting->id}", $data);
+
+        $response->assertStatus(422);
+    }
 }

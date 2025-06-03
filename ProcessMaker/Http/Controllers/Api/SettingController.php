@@ -298,7 +298,7 @@ class SettingController extends Controller
      */
     private function validateWhiteListURL(Request $request)
     {
-        if (strpos($request->input('key'), 'white_list.') === 0) {
+        if (strpos($request->input('key'), 'white_list.') === 0 || strpos($request->input('key'), 'white_list_frame.') === 0) {
             $request->validate([
                 'config' => [
                     'required',
