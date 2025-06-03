@@ -9,8 +9,7 @@
       :set-custom-buttons="true"
       :custom-buttons="customModalButtons"
       @saveModal="saveModal"
-      @closeModal="closeModal"
-    >
+      @closeModal="closeModal">
       <div class="modal-content-custom">
         <p class="text-info-custom">
           {{
@@ -21,7 +20,9 @@
         </p>
         <div class="row">
           <div class="col-sm-12 col-lg-6">
-            <div md="12" class="no-padding">
+            <div
+              md="12"
+              class="no-padding">
               <label>{{ $t("Launchpad Carousel") }}</label>
               <input-image-carousel ref="image-carousel" />
             </div>
@@ -42,8 +43,7 @@
                   :internal-search="true"
                   :allow-empty="false"
                   @open="retrieveDisplayScreen"
-                  @search-change="retrieveDisplayScreen"
-                >
+                  @search-change="retrieveDisplayScreen">
                   <template slot="noResult">
                     {{
                       $t(
@@ -76,8 +76,7 @@
                   :internal-search="true"
                   :allow-empty="false"
                   @open="retrieveSavedSearchCharts"
-                  @search-change="retrieveSavedSearchCharts"
-                >
+                  @search-change="retrieveSavedSearchCharts">
                   <template slot="noResult">
                     {{
                       $t(
@@ -91,11 +90,11 @@
                 </multiselect>
               </b-input-group>
             </div>
-            <label></label>
+            <label />
             <div>
-              <a href="#" @click.prevent="showEditTaskColumn"
-                >{{ $t("Edit Task Column") }} <i class="fp-box-arrow-up-right"
-              /></a>
+              <a
+                href="#"
+                @click.prevent="showEditTaskColumn">{{ $t("Edit Task Column") }} <i class="fp-box-arrow-up-right" /></a>
             </div>
           </div>
         </div>
@@ -109,14 +108,19 @@
           type="text"
           rows="5"
           :aria-label="$t('Description')"
-          disabled
-        />
+          disabled />
       </div>
       <template #modal-footer>
-        <b-button variant="outline-secondary" @click="hideModal">
+        <b-button
+          variant="outline-secondary"
+          @click="hideModal">
           Cancel 2
         </b-button>
-        <b-button variant="secondary" @click="saveModal"> Save 1 </b-button>
+        <b-button
+          variant="secondary"
+          @click="saveModal">
+          Save 1
+        </b-button>
       </template>
     </modal>
     <b-modal
@@ -125,18 +129,18 @@
       class="modal-dialog modal-dialog-centered"
       hide-footer
       scrollable
-      :title="$t('Edit Task Column')"
-    >
+      :title="$t('Edit Task Column')">
       <div class="modal-content-custom">
         <column-chooser
           v-model="myTasks.currentColumns"
           :available-columns="myTasks.availableColumns"
           :default-columns="myTasks.defaultColumns"
-          :data-columns="myTasks.dataColumns"
-        >
+          :data-columns="myTasks.dataColumns">
           <template #title1>
             <small class="form-text text-muted">
-              <a href="#" @click.prevent="$refs['editTaskColumn'].hide()">
+              <a
+                href="#"
+                @click.prevent="$refs['editTaskColumn'].hide()">
                 <i class="fp-arrow-left" />
                 {{ $t("Go back to Launchpad Settings") }}
               </a>
@@ -145,15 +149,13 @@
           <template #footer>
             <b-button
               variant="outline-secondary"
-              @click="$refs['editTaskColumn'].hide()"
               class="mr-1"
-            >
+              @click="$refs['editTaskColumn'].hide()">
               {{ $t("Cancel and go back") }}
             </b-button>
             <b-button
               variant="secondary"
-              @click="$refs['editTaskColumn'].hide()"
-            >
+              @click="$refs['editTaskColumn'].hide()">
               {{ $t("Save columns") }}
             </b-button>
           </template>
@@ -170,7 +172,9 @@ import InputImageCarousel from "./InputImageCarousel.vue";
 import ColumnChooser from "./ColumnChooser.vue";
 
 export default {
-  components: { Modal, IconDropdown, InputImageCarousel, ColumnChooser },
+  components: {
+    Modal, IconDropdown, InputImageCarousel, ColumnChooser,
+  },
   props: {
     options: {
       type: Object,
@@ -208,6 +212,23 @@ export default {
       description: "",
       errors: "",
       selectedSavedChart: null,
+      tceScreens: [
+        {
+          id: "tce-student",
+          uuid: "",
+          title: this.$t("Distribution Bar Fin Aid Student"),
+        },
+        {
+          id: "tce-college",
+          uuid: "",
+          title: this.$t("Distribution Bar Fin Aid College"),
+        },
+        {
+          id: "tce-grants",
+          uuid: "",
+          title: this.$t("Distribution Bar Grants"),
+        },
+      ],
       defaultScreen: {
         id: 0,
         uuid: "",
@@ -282,36 +303,34 @@ export default {
             this.tabs = launchpadProperties.tabs;
           }
           if (
-            launchpadProperties !== "" &&
-            "my_tasks_columns" in launchpadProperties
+            launchpadProperties !== ""
+            && "my_tasks_columns" in launchpadProperties
           ) {
             this.myTasks.currentColumns = launchpadProperties.my_tasks_columns;
           }
           if (
-            launchpadProperties &&
-            Object.keys(launchpadProperties).length > 0
+            launchpadProperties
+            && Object.keys(launchpadProperties).length > 0
           ) {
-            this.selectedSavedChart =
-              this.getSelectedSavedChartJSONFromResult(launchpadProperties);
+            this.selectedSavedChart = this.getSelectedSavedChartJSONFromResult(launchpadProperties);
             this.selectedLaunchpadIcon = this.verifyProperty(
-              launchpadProperties.icon
+              launchpadProperties.icon,
             )
               ? this.defaultIcon
               : launchpadProperties.icon;
             this.selectedLaunchpadIconLabel = this.verifyProperty(
-              launchpadProperties.icon_label
+              launchpadProperties.icon_label,
             )
               ? this.defaultIcon
               : launchpadProperties.icon_label;
-            this.selectedScreen =
-              this.getSelectedScreenJSONFromResult(launchpadProperties);
+            this.selectedScreen = this.getSelectedScreenJSONFromResult(launchpadProperties);
             this.$refs["icon-dropdown"].setIcon(this.selectedLaunchpadIcon);
           } else {
             this.selectedSavedChart = this.getSelectedSavedChartJSON(
-              this.defaultChart
+              this.defaultChart,
             );
             this.selectedScreen = this.getSelectedScreenJSON(
-              this.defaultScreen
+              this.defaultScreen,
             );
           }
           this.oldScreen = this.selectedScreen.id;
@@ -414,8 +433,7 @@ export default {
      */
     saveProcessDescription() {
       if (!this.$refs["image-carousel"].checkImages()) return;
-      this.dataProcess.imagesCarousel =
-        this.$refs["image-carousel"].getImages();
+      this.dataProcess.imagesCarousel = this.$refs["image-carousel"].getImages();
       this.dataProcess.properties = JSON.stringify(
         {
           saved_chart_id: this.selectedSavedChart.id,
@@ -429,7 +447,7 @@ export default {
           my_tasks_columns: this.myTasks.currentColumns,
         },
         null,
-        1
+        1,
       );
 
       ProcessMaker.apiClient
@@ -443,7 +461,7 @@ export default {
             this.$t("The launchpad settings were saved."),
             "success",
             5,
-            true
+            true,
           );
           const params = {
             indexImage: null,
@@ -452,7 +470,7 @@ export default {
           if (this.oldScreen !== this.selectedScreen.id) {
             ProcessMaker.EventBus.$emit(
               "reloadByNewScreen",
-              this.selectedScreenId
+              this.selectedScreenId,
             );
           }
           ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
@@ -484,9 +502,9 @@ export default {
       const filter = query === "" || query === null ? "" : `&filter=${query}`;
       ProcessMaker.apiClient
         .get(
-          "saved-searches?page=1&per_page=10&order_by=title&order_direction=asc" +
-            "&has=charts&include=charts&get=id,title,charts.id,charts.title,charts.saved_search_id,type" +
-            `${filter}`
+          "saved-searches?page=1&per_page=10&order_by=title&order_direction=asc"
+            + "&has=charts&include=charts&get=id,title,charts.id,charts.title,charts.saved_search_id,type"
+            + `${filter}`,
         )
         .then((response) => {
           if (response.data.data[0].charts) {
@@ -514,7 +532,7 @@ export default {
       const filter = query === "" || query === null ? "" : `&filter=${query}`;
       ProcessMaker.apiClient
         .get(
-          `screens?page=1&per_page=10&order_by=title&order_direction=asc&include=categories,category&exclude=config&type=DISPLAY${filter}`
+          `screens?page=1&per_page=10&order_by=title&order_direction=asc&include=categories,category&exclude=config&type=DISPLAY${filter}`,
         )
         .then((response) => {
           if (response.data.data) {
@@ -523,7 +541,8 @@ export default {
               title: item.title,
               uuid: item.uuid,
             }));
-            this.dropdownSavedScreen = [this.defaultScreen].concat(resultArray);
+
+            this.dropdownSavedScreen = [this.defaultScreen].concat(this.tceScreens).concat(resultArray);
           }
         })
         .catch((error) => {
@@ -536,8 +555,7 @@ export default {
     getDescriptionInitial() {
       if (this.origin !== "core") {
         if (ProcessMaker.modeler?.process) {
-          this.processDescriptionInitial =
-            ProcessMaker.modeler.process.description;
+          this.processDescriptionInitial = ProcessMaker.modeler.process.description;
         }
       } else {
         this.processDescriptionInitial = this.descriptionSettings;
@@ -572,7 +590,7 @@ export default {
      * If you don't use the nextTick method, the modal will not be displayed correctly.
      */
     showEditTaskColumn() {
-      this.$refs["editTaskColumn"].show();
+      this.$refs.editTaskColumn.show();
       this.$nextTick(() => {
         this.getMyTasksColumns();
       });
@@ -581,39 +599,39 @@ export default {
       this.myTasks.currentColumns = this.myTasksColumns;
 
       await ProcessMaker.apiClient
-          .get(`saved-searches/columns`)
-          .then((response) => {
-            if (response.data && response.data.default) {
-              this.myTasks.defaultColumns = response.data.default;
-              this.myTasks.defaultColumns.push({
-                  field: "options",
-                  label: "",
-                  sortable: false,
-                  width: 180
-              });
-            }
-            if (response.data) {
-              if (response.data.available) {
-                this.myTasks.availableColumns = response.data.available;
+        .get("saved-searches/columns")
+        .then((response) => {
+          if (response.data && response.data.default) {
+            this.myTasks.defaultColumns = response.data.default;
+            this.myTasks.defaultColumns.push({
+              field: "options",
+              label: "",
+              sortable: false,
+              width: 180,
+            });
+          }
+          if (response.data) {
+            if (response.data.available) {
+              this.myTasks.availableColumns = response.data.available;
 
-                //Merge all available and default columns; we use map to avoid duplicates.
-                const allColumns = new Map([
-                  ...this.myTasks.defaultColumns.map(col => [col.field, col]),
-                  ...this.myTasks.availableColumns.map(col => [col.field, col])
-                ]);
+              // Merge all available and default columns; we use map to avoid duplicates.
+              const allColumns = new Map([
+                ...this.myTasks.defaultColumns.map((col) => [col.field, col]),
+                ...this.myTasks.availableColumns.map((col) => [col.field, col]),
+              ]);
 
-                //Filter only those that are not in `currentColumns`.
-                this.myTasks.availableColumns = [...allColumns.values()].filter(
-                  column => !this.myTasks.currentColumns.some(
-                    currentColumn => currentColumn.field === column.field
-                  )
-                );
-              }
-              if (response.data.data) {
-                this.myTasks.dataColumns = response.data.data;
-              }
+              // Filter only those that are not in `currentColumns`.
+              this.myTasks.availableColumns = [...allColumns.values()].filter(
+                (column) => !this.myTasks.currentColumns.some(
+                  (currentColumn) => currentColumn.field === column.field,
+                ),
+              );
             }
-          });
+            if (response.data.data) {
+              this.myTasks.dataColumns = response.data.data;
+            }
+          }
+        });
     },
   },
 };

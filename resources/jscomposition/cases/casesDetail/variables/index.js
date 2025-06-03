@@ -25,3 +25,7 @@ export const isErrors = () => request.status === "ERROR";
 export const getInflightData = () => inflightData;
 
 export const getXML = () => inflightData.bpmn;
+
+export const getStageName = () => currentStages.stage_name;
+
+export const getProgressStage = () => progressStage;

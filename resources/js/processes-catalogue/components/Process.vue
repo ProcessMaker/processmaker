@@ -1,39 +1,49 @@
 <template>
-  <div class="process-info-main" v-if="selectedProcess">
+  <div
+    v-if="selectedProcess"
+    class="tw-relative tw-w-full tw-h-full">
     <div class="mobile-process-nav bg-primary">
       <div class="left">
-        <a href="#" @click.prevent="goBackCategory">
+        <a
+          href="#"
+          @click.prevent="goBackCategory">
           <i class="fas fa-arrow-left" />
         </a>
       </div>
       <div class="center">
-        <a href="#" @click.prevent="showDetails = !showDetails">
+        <a
+          href="#"
+          @click.prevent="showDetails = !showDetails">
           <i class="fas fa-info-circle" />
         </a>
       </div>
       <div class="right">
         <bookmark
-          :process="selectedProcess"
-        />
+          :process="selectedProcess" />
       </div>
     </div>
-    <div class="mobile-process-details" :class="{ 'active' : showDetails }">
+    <div
+      class="mobile-process-details"
+      :class="{ 'active' : showDetails }">
       <process-description :process="selectedProcess" />
       <process-counter :process="selectedProcess" />
     </div>
 
     <ProcessInfo
-      v-if="!verifyScreen"
+      v-if="verifyScreen == 'default'"
       :process="selectedProcess"
       :ellipsis-permission="ellipsisPermission"
-      @goBackCategory="goBackCategory"
-    />
+      @goBackCategory="goBackCategory" />
     <ProcessScreen
-      v-if="verifyScreen"
+      v-if="verifyScreen == 'screen'"
       :process="selectedProcess"
       :ellipsis-permission="ellipsisPermission"
-      @goBackCategory="goBackCategory"
-    />
+      @goBackCategory="goBackCategory" />
+    <CustomHomeScreen
+      v-if="verifyScreen == 'custom'"
+      :process="selectedProcess"
+      :ellipsis-permission="ellipsisPermission"
+      @goBackCategory="goBackCategory" />
   </div>
 </template>
 
@@ -44,12 +54,13 @@ import MiniPieChart from "./MiniPieChart.vue";
 import Bookmark from "./Bookmark.vue";
 import ProcessDescription from "./optionsMenu/ProcessDescription.vue";
 import ProcessCounter from "./optionsMenu/ProcessCounter.vue";
+import CustomHomeScreen from "./home/CustomHomeScreen.vue";
 
 export default {
-  props: ["process", "processId", "ellipsisPermission"],
   components: {
-    ProcessInfo, ProcessScreen, MiniPieChart, Bookmark, ProcessDescription, ProcessCounter
+    ProcessInfo, ProcessScreen, MiniPieChart, Bookmark, ProcessDescription, ProcessCounter, CustomHomeScreen,
   },
+  props: ["process", "processId", "ellipsisPermission"],
   data() {
     return {
       loadedProcess: null,
@@ -59,7 +70,7 @@ export default {
   computed: {
     /**
      * if we pass in a process, use that. Otherwise load the process by ID
-     **/
+     * */
     selectedProcess() {
       if (this.process) {
         return this.process;
@@ -74,25 +85,31 @@ export default {
     /**
      * Verify if the process open the info or Screen
      */
-     verifyScreen() {
+    verifyScreen() {
+      console.log("verifyScreen", this.selectedProcess);
       let screenId = 0;
       const unparseProperties = this.selectedProcess?.launchpad?.properties || null;
       if (unparseProperties !== null) {
         screenId = JSON.parse(unparseProperties)?.screen_id || 0;
       }
 
-      return screenId !== 0;
+      const validScreen = ["tce-student", "tce-college", "tce-grants"];
+
+      if (validScreen.includes(screenId)) {
+        return "custom";
+      }
+
+      if (screenId !== 0) {
+        return "screen";
+      }
+
+      return "default";
     },
     processVersion() {
       return moment(this.selectedProcess.updated_at).format();
     },
     startedCases() {
       return this.selectedProcess.counts?.total || 0;
-    },
-  },
-  methods: {
-    goBackCategory() {
-      this.$emit("goBackCategory");
     },
   },
   mounted() {
@@ -113,14 +130,16 @@ export default {
       window.ProcessMaker.navbarMobile.display = true;
     }
   },
+  methods: {
+    goBackCategory() {
+      this.$emit("goBackCategory");
+    },
+  },
 };
 </script>
 
 <style lang="scss" scoped>
 @import '~styles/variables';
-.process-info-main {
-  position: relative;
-}
 .mobile-process-nav {
   display: none;
 
@@ -136,7 +155,7 @@ export default {
   .right {
     text-align: right;
   }
- 
+
   .left i, .center i {
     display: block;
     color: #FFFFFF;

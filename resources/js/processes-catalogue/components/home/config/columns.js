@@ -1,0 +1,229 @@
+import { t } from "i18next";
+import { get } from "lodash";
+import {
+  LinkCell, TitleCell, FlagCell, StatusCell,
+} from "../../../../../jscomposition/system/index";
+import { formatDate } from "../../../../../jscomposition/utils";
+// Columns in the table:
+// Case #, Title, Flag, Task, Status, Started, Completed
+
+export const caseNumberColumn = ({
+  id, field, header, resizable, width,
+}) => ({
+  id,
+  field,
+  header,
+  resizable,
+  width,
+  formatter: (row, column, columns) => `# ${get(row, "process_request.case_number")}`,
+  filter: {
+    dataType: "string",
+    operators: ["=", ">", ">=", "in", "between"],
+    resetTable: true,
+  },
+  cellRenderer: () => ({
+    component: LinkCell,
+    params: {
+      href: (row) => `/cases/${get(row, field)}`,
+    },
+  }),
+});
+
+export const caseTitleColumn = ({
+  id, field, header, resizable, width,
+}) => ({
+  id,
+  field: "process_request.case_title",
+  header,
+  resizable,
+  width,
+  cellRenderer: () => ({
+    component: TitleCell,
+    params: {
+      href: (row) => `/cases/${get(row, field)}`,
+    },
+  }),
+  filter: {
+    dataType: "string",
+    operators: ["=", "in", "contains", "regex"],
+    resetTable: true,
+  },
+});
+
+export const flagColumn = ({
+  id, field, header, resizable, width,
+}) => ({
+  id,
+  field,
+  header: " ",
+  resizable,
+  width: 50,
+  cellRenderer: () => ({
+    component: FlagCell,
+    params: {
+      active: (row) => get(row, field),
+      click: (active, row, column, columns) => {
+        console.log(active, row, column, columns);
+      },
+    },
+  }),
+});
+
+export const taskColumn = ({
+  id, field, header, resizable, width,
+}) => ({
+  id,
+  field,
+  header,
+  resizable,
+  width,
+  filter: {
+    dataType: "string",
+    operators: ["=", "in", "contains", "regex"],
+    resetTable: true,
+  },
+  cellRenderer: () => ({
+    component: LinkCell,
+    params: {
+      href: (row) => `/cases/${get(row, field)}`,
+    },
+  }),
+});
+
+export const statusColumn = ({
+  id, field, header, resizable, width,
+}) => ({
+  id,
+  field,
+  header,
+  resizable,
+  width,
+  cellRenderer: () => ({
+    component: StatusCell,
+  }),
+  filter: {
+    dataType: "enum",
+    operators: ["="],
+    resetTable: true,
+    config: {
+      options: [{
+        label: t("In progress"),
+        value: "in_progress",
+      },
+      {
+        label: t("Completed"),
+        value: "completed",
+      },
+      {
+        label: t("Error"),
+        value: "error",
+      },
+      {
+        label: t("Overdue"),
+        value: "overdue",
+      },
+      {
+        label: t("Canceled"),
+        value: "canceled",
+      }],
+    },
+  },
+});
+
+export const dueAtColumn = ({
+  id, field, header, resizable, width,
+}) => ({
+  id,
+  field,
+  header,
+  resizable,
+  width,
+  formatter: (row, column, columns) => formatDate(row.due_at, "datetime"),
+  filter: {
+    dataType: "datetime",
+    operators: ["between", ">", ">=", "<", "<="],
+    resetTable: true,
+  },
+});
+
+export const defaultColumn = ({
+  id, field, header, resizable, width,
+}) => ({
+  id,
+  field,
+  header,
+  resizable,
+  width,
+});
+
+export const getColumns = (type) => {
+  const columnsDefinition = {
+    default: [
+      caseNumberColumn(),
+      caseTitleColumn(),
+      flagColumn(),
+      taskColumn(),
+      statusColumn(),
+      dueAtColumn(),
+    ],
+  };
+
+  return columnsDefinition[type] || columnsDefinition.default;
+};
+
+/// /////////////////////////////////////////////////////////
+// CONVERT DEFAULT COLUMNS FROM BE TO OUR FORMAT
+
+// const convertColumn = {
+//     id: 'string', // id of the column
+//     field: 'string', // variable to show  ex: processRequest.case_number
+//     header: 'string', // label of the column
+//     resizable: true,
+//     width: 144
+// };
+
+/// /////////////////////////////////////////////////////////
+
+export const buildColumns = (defaultColumnsFromBE) => {
+  const columns = [];
+
+  defaultColumnsFromBE.forEach((column) => {
+  // Convert column format from type 'a' to type 'b'
+    const convertedColumn = {
+      id: column.field,
+      field: column.order_column || column.field,
+      header: column.label,
+      resizable: true,
+      width: column.fixed_width || column.width || 144,
+    };
+
+    let newColumn = null;
+
+    switch (column.field) {
+      case "case_number":
+        newColumn = caseNumberColumn(convertedColumn);
+        break;
+      case "case_title":
+        newColumn = caseTitleColumn(convertedColumn);
+        break;
+      case "is_priority":
+        newColumn = flagColumn(convertedColumn);
+        break;
+      case "element_name":
+        newColumn = taskColumn(convertedColumn);
+        break;
+      case "status":
+        newColumn = statusColumn(convertedColumn);
+        break;
+      case "due_at":
+        newColumn = dueAtColumn(convertedColumn);
+        break;
+      default:
+        newColumn = defaultColumn(convertedColumn);
+    }
+
+    columns.push(newColumn);
+  });
+
+  return columns;
+};
