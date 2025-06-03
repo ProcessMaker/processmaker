@@ -11,8 +11,8 @@
         last:tw-overflow-hidden last:tw-border-r">
       <PercentageCardButton
         :id="item.id"
-        :header="item.header"
-        :body="item.body"
+        :header="item.body"
+        :body="item.header"
         :percentage="item.percentage"
         :color="item.color"
         :icon="item.icon"

@@ -2,8 +2,8 @@
   <div
     :class="`tw-flex tw-relative ${color}`"
     @click="click">
-    <div class=" tw-flex tw-flex-col tw-w-full">
-      <div class="tw-flex tw-flex-col tw-justify-start tw-px-6 tw-py-2 tw-gap-0">
+    <div class=" tw-flex tw-flex-col tw-w-full tw-h-full">
+      <div class="tw-flex tw-flex-col tw-justify-center tw-px-6 tw-py-2 tw-gap-0 tw-h-full">
         <slot name="header">
           <div class="tw-text-lg tw-font-bold tw-truncate">
             {{ header }}
@@ -35,11 +35,11 @@
 
 const props = defineProps({
   header: {
-    type: String,
+    type: [String, Number],
     required: true,
   },
   body: {
-    type: String,
+    type: [String, Number],
     required: true,
   },
   helper: {

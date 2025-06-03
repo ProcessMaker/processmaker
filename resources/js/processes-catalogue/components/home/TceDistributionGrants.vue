@@ -11,10 +11,11 @@
       <ArrowButtonHome
         v-if="firstStage"
         :key="dataStagesKey + 'first'"
-        class="tw-w-60"
-        color="blue"
+        class="tw-w-60 !tw-bg-[#FEE5FB]"
+        color="red"
         :header="firstStage.header"
         :body="firstStage.body"
+        :helper="firstStage.helper"
         :active="firstStage.active"
         @click="onClickFirstStage" />
 
@@ -34,6 +35,7 @@
         color="emerald"
         :header="lastStage.header"
         :body="lastStage.body"
+        :helper="lastStage.helper"
         :active="lastStage.active"
         @click="onClickLastStage" />
     </div>

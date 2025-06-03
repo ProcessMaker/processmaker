@@ -41,11 +41,11 @@ import { defineComponent } from "vue";
 export default defineComponent({
   props: {
     header: {
-      type: String,
+      type: [String, Number],
       default: () => "header",
     },
     body: {
-      type: String,
+      type: [String, Number],
       default: () => "body",
     },
     icon: {
