@@ -22,6 +22,7 @@ class EncryptDevlinkTokens extends Upgrade
 
     /**
      * Run the upgrade migration.
+     * This migration needs to execute after the migrations related with dev_links
      *
      * @return void
      */
