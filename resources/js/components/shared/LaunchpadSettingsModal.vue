@@ -626,7 +626,12 @@ export default {
       });
     },
     async getMyColumns(type) {
-      this.columnListing.currentColumns = type === "tasks" ? this.myTasksColumns : this.myCasesColumns;
+      //this.columnListing.currentColumns = type === "tasks" ? this.myTasksColumns : this.myCasesColumns;
+      console.log("myTasksColumns", JSON.stringify(this.myTasksColumns));
+      console.log("myCasesColumns", JSON.stringify(this.myCasesColumns));
+      if (this.isTCEScreen) {
+        this.changeSelectedScreen();
+      }
 
       await ProcessMaker.apiClient
         .get("saved-searches/columns")
@@ -664,6 +669,7 @@ export default {
         });
     },
     updateColumns(columns, type) {
+      console.log("updateColumns: ", this.myTasks.currentColumns,columns, type);
       if (type === "tasks") {
         this.myTasks.currentColumns = columns;
       } else {
