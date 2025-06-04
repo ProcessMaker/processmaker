@@ -179,8 +179,7 @@ export default {
       ProcessMaker.apiClient
         .get(`saved-searches/charts/${this.chartId}`, { timeout: 0 })
         .then((response) => {
-          this.charts = response.data;
-          this.transform(this.charts);
+          this.transform(response.data);
         })
         .catch(() => {
           this.getDefaultData();
@@ -267,6 +266,9 @@ export default {
     },
     transform(data) {
       this.chart = data;
+      // Reset chart data
+      this.resetChartData();
+
       if (this.chart.chart_data && this.chart.config) {
         this.chartData = this.transformChartData(this.chart);
         this.chartConfig = this.chart.config;
@@ -278,6 +280,13 @@ export default {
         this.error = this.chart.chart_error;
         this.hint = this.chart.chart_hint;
       }
+    },
+    resetChartData() {
+      this.chartData = null;
+      this.chartConfig = null;
+      this.chartOptions = null;
+      this.error = null;
+      this.hint = null;
     },
     fetchProcessConfigLaunchpad() {
       ProcessMaker.apiClient
