@@ -3,8 +3,7 @@
     <Recommendations v-if="showRecommendations" />
     <div
       v-show="true"
-      data-cy="tasks-table"
-    >
+      data-cy="tasks-table">
       <filter-table
         ref="filterTable"
         :headers="tableHeaders"
@@ -18,25 +17,21 @@
         @table-tr-mouseleave="handleTrMouseleave"
         @table-row-mouseleave="handleRowMouseleave"
         @table-column-mouseover="handleColumnMouseover"
-        @table-column-mouseleave="handleColumnMouseleave"
-      >
+        @table-column-mouseleave="handleColumnMouseleave">
         <!-- Slot Table Header -->
         <template
           v-for="(column, index) in visibleHeaders"
-          #[column.field]
-        >
+          #[column.field]>
           <div
             :id="`tasks-table-column-${column.field}`"
             :key="`tasks-table-column-${index}`"
-            class="pm-table-column-header-text"
-          >
+            class="pm-table-column-header-text">
             <img
               v-if="column.field === 'is_priority'"
               src="/img/priority-header.svg"
               alt="priority-header"
               width="20"
-              height="20"
-            >
+              height="20">
             <span v-else>{{ $t(column.label) }}</span>
           </div>
           <b-tooltip
@@ -45,16 +40,14 @@
             custom-class="pm-table-tooltip-header"
             placement="bottom"
             :delay="0"
-            @show="checkIfTooltipIsNeeded"
-          >
+            @show="checkIfTooltipIsNeeded">
             {{ $t(column.label) }}
           </b-tooltip>
         </template>
         <!-- Slot Table Header filter Button -->
         <template
           v-for="(column, index) in visibleHeaders"
-          #[`filter-${column.field}`]
-        >
+          #[`filter-${column.field}`]>
           <PMColumnFilterPopover
             v-if="column.sortable"
             :id="'pm-table-column-' + index"
@@ -74,19 +67,16 @@
             @onChangeSort="onChangeSort($event, column.field)"
             @onApply="onApply($event, column.field)"
             @onClear="onClear(column.field)"
-            @onUpdate="onUpdate($event, column.field)"
-          />
+            @onUpdate="onUpdate($event, column.field)" />
         </template>
         <!-- Slot Table Body -->
         <template
           v-for="(row, rowIndex) in data.data"
-          #[`row-${rowIndex}`]
-        >
+          #[`row-${rowIndex}`]>
           <td
             v-for="(header, colIndex) in visibleHeaders"
             :key="colIndex"
-            :class="{ 'pm-table-filter-applied-tbody': header.sortAsc || header.sortDesc }"
-          >
+            :class="{ 'pm-table-filter-applied-tbody': header.sortAsc || header.sortDesc }">
             <!-- Slot for floating buttons -->
             <template v-if="colIndex === visibleHeaders.length-1">
               <TaskListRowButtons
@@ -95,13 +85,11 @@
                 :row="row"
                 :row-index="rowIndex"
                 :col-index="colIndex"
-                :show-buttons="isTooltipVisible"
-              >
+                :show-buttons="isTooltipVisible">
                 <template #body>
                   <slot
                     name="tooltip"
-                    :preview-tasks="previewTasks"
-                  />
+                    :preview-tasks="previewTasks" />
                 </template>
               </TaskListRowButtons>
             </template>
@@ -109,11 +97,9 @@
               <div
                 :id="`element-${rowIndex}-${colIndex}`"
                 :class="{ 'pm-table-truncate': header.truncate }"
-                :style="{ maxWidth: header.width + 'px' }"
-              >
+                :style="{ maxWidth: header.width + 'px' }">
                 <span
-                  v-html="sanitize(getNestedPropertyValue(row, header))"
-                />
+                  v-html="sanitize(getNestedPropertyValue(row, header))" />
               </div>
               <b-tooltip
                 v-if="header.truncate"
@@ -123,8 +109,7 @@
                 trigger="hover"
                 boundary="viewport"
                 :delay="{'show':0,'hide':0}"
-                @show="checkIfTooltipIsNeeded"
-              >
+                @show="checkIfTooltipIsNeeded">
                 {{ sanitizeTooltip(getNestedPropertyValue(row, header)) }}
               </b-tooltip>
             </template>
@@ -132,8 +117,7 @@
               <template v-if="isComponent(row[header.field])">
                 <component
                   :is="row[header.field].component"
-                  v-bind="row[header.field].props"
-                />
+                  v-bind="row[header.field].props" />
               </template>
               <template v-else>
                 <template v-if="header.field === 'due_at'">
@@ -142,8 +126,7 @@
                       'badge',
                       'badge-' + row['color_badge'],
                       'due-' + row['color_badge'],
-                    ]"
-                  >
+                    ]">
                     {{ formatRemainingTime(row.due_at) }}
                   </span>
                   <span>{{ getNestedPropertyValue(row, header) }}</span>
@@ -161,16 +144,14 @@
                       height="20"
                       @click.prevent="
                         togglePriority(row.id, !row[header.field])
-                      "
-                    >
+                      ">
                   </span>
                 </template>
                 <template v-else>
                   <div
                     :id="`element-${rowIndex}-${colIndex}`"
                     :class="{ 'pm-table-truncate': header.truncate }"
-                    :style="{ maxWidth: header.width + 'px' }"
-                  >
+                    :style="{ maxWidth: header.width + 'px' }">
                     {{ getNestedPropertyValue(row, header) }}
                     <b-tooltip
                       v-if="header.truncate"
@@ -180,8 +161,7 @@
                       trigger="hover"
                       boundary="viewport"
                       :delay="{'show':0,'hide':0}"
-                      @show="checkIfTooltipIsNeeded"
-                    >
+                      @show="checkIfTooltipIsNeeded">
                       {{ getNestedPropertyValue(row, header) }}
                     </b-tooltip>
                   </div>
@@ -196,8 +176,7 @@
         :empty="$t('All clear')"
         :empty-desc="$t('No new tasks at this moment.')"
         empty-icon="noTasks"
-        :data-loading-id="dataLoadingId"
-      >
+        :data-loading-id="dataLoadingId">
         <template #no-results>
           <slot name="no-results" />
         </template>
@@ -206,14 +185,12 @@
         v-if="shouldShowLoader && noResultsMessage === 'launchpad'"
         :alt-text="$t('No Image')"
         :title-text="$t('No items to show.')"
-        :description-text="$t('You have to start a Case of this process.')"
-      />
+        :description-text="$t('You have to start a Case of this process.')" />
       <pagination-table
         v-show="!shouldShowLoader"
         :meta="data.meta"
         @page-change="changePage"
-        @per-page-change="changePerPage"
-      />
+        @per-page-change="changePerPage" />
     </div>
     <tasks-preview
       v-if="!verifyURL('saved-searches')"
@@ -221,15 +198,13 @@
       :tooltip-button="tooltipFromButton"
       @mark-selected-row="markSelectedRow"
       @onSetViewed="setViewed"
-      @onWatchShowPreview="onWatchShowPreview"
-    >
+      @onWatchShowPreview="onWatchShowPreview">
       <template #header="{ close, screenFilteredTaskData, taskReady }">
         <slot
           name="preview-header"
           :close="close"
           :screen-filtered-task-data="screenFilteredTaskData"
-          :task-ready="taskReady"
-        />
+          :task-ready="taskReady" />
       </template>
     </tasks-preview>
   </div>
@@ -531,17 +506,6 @@ export default {
     },
     getColumns() {
       if (this.columns && this.columns.length > 0) {
-        const exists = this.columns.some((column) => column.field === "options");
-        if (!exists) {
-          const customColumns = cloneDeep(this.columns);
-          customColumns.push({
-            label: "",
-            field: "options",
-            sortable: false,
-            width: 180,
-          });
-          return customColumns;
-        }
         return this.columns;
       }
       // from query string status=CLOSED
