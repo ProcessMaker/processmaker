@@ -28,11 +28,6 @@ class EncryptDevlinkTokens extends Upgrade
      */
     public function up()
     {
-        // Change the column type to TEXT
-        Schema::table('dev_links', function ($table) {
-            $table->text('client_secret')->change()->nullable();
-        });
-
         $devlinks = DB::table('dev_links')->get();
 
         // Encrypt the client_secret, access_token, and refresh_token columns
@@ -77,11 +72,6 @@ class EncryptDevlinkTokens extends Upgrade
                 continue;
             }
         }
-
-        // Change the column type back to String
-        Schema::table('dev_links', function ($table) {
-            $table->string('client_secret')->change()->nullable();
-        });
     }
 
     /**
