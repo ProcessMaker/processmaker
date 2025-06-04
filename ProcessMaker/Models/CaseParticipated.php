@@ -6,13 +6,17 @@ use Database\Factories\CaseParticipatedFactory;
 use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laravel\Scout\Searchable;
 use ProcessMaker\Models\ProcessMakerModel;
+use ProcessMaker\Traits\CasesSearchableArray;
 use ProcessMaker\Traits\HandlesValueAliasStatus;
 
 class CaseParticipated extends ProcessMakerModel
 {
     use HasFactory;
     use HandlesValueAliasStatus;
+    use Searchable;
+    use CasesSearchableArray;
 
     protected $table = 'cases_participated';
 
@@ -49,6 +53,23 @@ class CaseParticipated extends ProcessMakerModel
     protected static function newFactory(): Factory
     {
         return CaseParticipatedFactory::new();
+    }
+
+    /**
+     * Determine whether the model should be searchable.
+     */
+    public function shouldBeSearchable()
+    {
+        $setting = Setting::byKey('indexed-search');
+        return $setting && $setting->config['enabled'] === true;
+    }
+
+    /**
+     * Get the indexable data array for the model.
+     */
+    public function toSearchableArray()
+    {
+        return $this->searchableArray();
     }
 
     /**
