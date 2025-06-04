@@ -15,19 +15,19 @@
             :class="[`tw-text-lg`, icon]" />
         </slot>
         <slot name="header">
-          <div class="tw-text-base">
+          <div class="tw-text-base tw-truncate">
             {{ header }}
           </div>
         </slot>
         <slot name="body">
-          <div class="tw-text-xs">
+          <div class="tw-text-xs tw-truncate">
             {{ body }}
           </div>
         </slot>
       </div>
       <slot
         name="content">
-        <div class="tw-flex tw-justify-end tw-text-sm">
+        <div class="tw-flex tw-justify-end tw-text-sm tw-truncate">
           {{ content }}
         </div>
       </slot>
