@@ -347,3 +347,31 @@ export const buildColumns = (defaultColumns) => {
 
   return columns;
 };
+
+export const unbuildColumns = (columns) => {
+  return columns.map((col) => {
+    const original = {
+      label: col.header,
+      field: col.field,
+      width: col.width,
+    };
+
+    if (col.sortable) {
+      original.sortable = true;
+    }
+
+    if (col.filter?.dataType === "datetime") {
+      original.format = "datetime";
+    }
+
+    if (col.filter?.subject) {
+      original.filter_subject = col.filter.subject;
+    }
+
+    if (col.cellRenderer?.component?.name === "TruncatedOptionsCell") {
+      original.truncate = true;
+    }
+
+    return original;
+  });
+};

@@ -4,6 +4,7 @@
       :process="process"
       :ellipsis-permission="ellipsisPermission"
       :my-tasks-columns="myTasksColumns"
+      :my-cases-columns="myCasesColumns"
       @toggle-info="toggleInfo"
       @goBackCategory="emit('goBackCategory')" />
 
@@ -39,6 +40,7 @@
     </div>
 
     <CustomHomeTableSection
+      ref="childRef"
       :key="dataStagesKey + 'table'"
       class="tw-w-full tw-flex tw-flex-col
       tw-overflow-hidden tw-grow tw-p-4 tw-bg-white tw-rounded-lg tw-shadow-md tw-border tw-border-gray-200"
@@ -64,6 +66,8 @@ import { ellipsisPermission } from "../variables";
 import { getStages } from "../api";
 import { buildStages } from "./config/metrics";
 
+const childRef = ref(null)
+
 const props = defineProps({
   process: {
     type: Object,
@@ -74,6 +78,8 @@ const props = defineProps({
 const emit = defineEmits(["goBackCategory"]);
 
 const myTasksColumns = ref([]);
+const myCasesColumns = ref([]);
+
 const stages = ref();
 const dataStages = ref([]);
 const lastStage = ref();
@@ -138,5 +144,6 @@ const onClickFirstStage = () => {
 
 onMounted(() => {
   hookStages();
+  myCasesColumns.value = childRef.value?.getColumns();
 });
 </script>

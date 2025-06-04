@@ -46,6 +46,7 @@
                   :allow-empty="false"
                   @open="retrieveDisplayScreen"
                   @search-change="retrieveDisplayScreen"
+                  @input="changeSelectedScreen"
                 >
                   <template slot="noResult">
                     {{
@@ -499,6 +500,7 @@ export default {
           ProcessMaker.EventBus.$emit("getChartId", this.selectedSavedChart.id);
           this.customModalButtons[1].disabled = false;
           this.$emit("updateMyTasksColumns", this.myTasks.currentColumns);
+          this.$emit("updateMyCasesColumns", this.myCases.currentColumns);
           this.saveLaunchpadSettings(response.data);
           this.hideModal();
         })
@@ -624,7 +626,12 @@ export default {
       });
     },
     async getMyColumns(type) {
-      this.columnListing.currentColumns = type === "tasks" ? this.myTasksColumns : this.myCasesColumns;
+      //this.columnListing.currentColumns = type === "tasks" ? this.myTasksColumns : this.myCasesColumns;
+      console.log("myTasksColumns", JSON.stringify(this.myTasksColumns));
+      console.log("myCasesColumns", JSON.stringify(this.myCasesColumns));
+      if (this.isTCEScreen) {
+        this.changeSelectedScreen();
+      }
 
       await ProcessMaker.apiClient
         .get("saved-searches/columns")
@@ -662,11 +669,409 @@ export default {
         });
     },
     updateColumns(columns, type) {
+      console.log("updateColumns: ", this.myTasks.currentColumns,columns, type);
       if (type === "tasks") {
         this.myTasks.currentColumns = columns;
       } else {
         this.myCases.currentColumns = columns;
       }
+    },
+    changeSelectedScreen() {
+      if (this.selectedScreen.id === 'tce-student') {
+        this.myCases.currentColumns = this.getTceStudent();
+        return;
+      }
+      if (this.selectedScreen.id === 'tce-college') {
+        this.myCases.currentColumns = this.getTceCollege();
+        return;
+      }
+      if (this.selectedScreen.id === 'tce-grants') {
+        this.myCases.currentColumns = this.getTceGrants();
+        return;
+      }
+      this.myCases.currentColumns = this.getDefaultColumns(); 
+    },
+    getDefaultColumns() {
+      return [
+        {
+          label: "Case #",
+          field: "case_number",
+          sortable: true,
+          default: true,
+          width: 80,
+        },
+        {
+          label: "Case title",
+          field: "case_title",
+          sortable: true,
+          default: true,
+          truncate: true,
+          width: 220,
+        },
+        {
+          label: "Status",
+          field: "status",
+          sortable: true,
+          default: true,
+          width: 100,
+          filter_subject: { type: "Status" },
+        },
+        {
+          label: "Started",
+          field: "initiated_at",
+          format: "datetime",
+          sortable: true,
+          default: true,
+          width: 160,
+        },
+        {
+          label: "Completed",
+          field: "completed_at",
+          format: "datetime",
+          sortable: true,
+          default: true,
+          width: 160,
+        },
+      ];
+    },
+    /**
+     * column = [
+     *   'case_number'
+     *   'case_title'
+     *   'tasks'
+     *   'status'
+     *   'last_stage_name'
+     *   'progress'
+     *   'data.program.name'
+     *   'data.program.type'
+     *   'data.program.source'
+     *   'data.program.deadline'
+     *   'data.program.amount'
+     *   'data.program.status'
+     *  ];
+     * @returns {Array}
+     */
+    getTceStudent() {
+      return [
+        {
+          label: "Case #",
+          field: "case_number",
+          sortable: true,
+          default: true,
+          width: 80,
+        },
+        {
+          label: "Case title",
+          field: "case_title",
+          sortable: true,
+          default: true,
+          truncate: true,
+          width: 220,
+        },
+        {
+          label: "Tasks",
+          field: "active_tasks",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Status",
+          field: "status",
+          sortable: true,
+          default: true,
+          width: 80,
+          filter_subject: { type: "Status" },
+        },
+        {
+          label: "Last Stage Name",
+          field: "last_stage_name",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 110,
+        },
+        {
+          label: "Progress",
+          field: "progress",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Name",
+          field: "data.name",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Type",
+          field: "data.type",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Source",
+          field: "data.source",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Deadline",
+          field: "data.deadline",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Amount",
+          field: "data.amount",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Status",
+          field: "data.status",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+      ];
+    },
+    /**
+     * column = [
+     *   'case_number'
+     *   'case_title'
+     *   'tasks'
+     *   'status'
+     *   'last_stage_name'
+     *   'progress'
+     *   'data.program'
+     *   'data.type'
+     *   'data.source'
+     *   'data.deadline'
+     *   'data.amount'
+     *  ];
+     * @returns {Array}
+     */
+    getTceCollege() {
+      return [
+        {
+          label: "Case #",
+          field: "case_number",
+          sortable: true,
+          default: true,
+          width: 80,
+        },
+        {
+          label: "Case title",
+          field: "case_title",
+          sortable: true,
+          default: true,
+          truncate: true,
+          width: 220,
+        },
+        {
+          label: "Tasks",
+          field: "active_tasks",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Status",
+          field: "status",
+          sortable: true,
+          default: true,
+          width: 80,
+          filter_subject: { type: "Status" },
+        },
+        {
+          label: "Last Stage Name",
+          field: "last_stage_name",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 110,
+        },
+        {
+          label: "Progress",
+          field: "progress",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Program",
+          field: "data.program",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Type",
+          field: "data.type",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Source",
+          field: "data.source",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Deadline",
+          field: "data.deadline",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Amount",
+          field: "data.amount",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+      ];
+    },
+    /**
+     * column = [
+     *   'case_number'
+     *   'case_title'
+     *   'tasks'
+     *   'status'
+     *   'last_stage_name'
+     *   'progress'
+     *   'data.applicationId'
+     *   'data.title'
+     *   'data.department'
+     *   'data.primaryInvestigator'
+     *   'data.agency'
+     *   'data.dueDate'
+     * ];
+     * @returns {Array}
+     */
+    getTceGrants() {
+      return [
+        {
+          label: "Case #",
+          field: "case_number",
+          sortable: true,
+          default: true,
+          width: 80,
+        },
+        {
+          label: "Case title",
+          field: "case_title",
+          sortable: true,
+          default: true,
+          truncate: true,
+          width: 220,
+        },
+        {
+          label: "Tasks",
+          field: "active_tasks",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Status",
+          field: "status",
+          sortable: true,
+          default: true,
+          width: 80,
+          filter_subject: { type: "Status" },
+        },
+        {
+          label: "Last Stage Name",
+          field: "last_stage_name",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 110,
+        },
+        {
+          label: "Progress",
+          field: "progress",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Application Id",
+          field: "data.applicationId",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Title",
+          field: "data.title",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Department",
+          field: "data.department",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Primary Investigator",
+          field: "data.primaryInvestigator",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Agency",
+          field: "data.agency",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Due Date",
+          field: "data.dueDate",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+      ];
     },
   },
 };
