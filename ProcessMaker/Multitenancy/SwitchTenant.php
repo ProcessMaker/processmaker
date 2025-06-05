@@ -6,6 +6,7 @@ use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Bootstrap\LoadConfiguration;
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
+use ProcessMaker\Services\MetricsService;
 use Spatie\Multitenancy\Contracts\IsTenant;
 use Spatie\Multitenancy\Tasks\SwitchTenantTask;
 
@@ -44,6 +45,10 @@ class SwitchTenant implements SwitchTenantTask
         foreach ($tenant->config as $key => $value) {
             $app->config->set($key, $value);
         }
+
+        $app->config->set('database.redis.options.prefix', 'tenant_' . $tenant->id . ':');
+        $app->forgetInstance('redis'); // reload redis with the correct prefix
+        $app->forgetInstance(MetricsService::class); // reload the metrics service (that uses redis)
     }
 
     /**
