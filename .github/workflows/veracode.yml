@@ -1,0 +1,28 @@
+name: Veracode DAST Essentials
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  veracode_security_scan:
+    runs-on: ubuntu-latest
+    name: Run Veracode DAST Essentials Scan
+    steps:
+      - name: Veracode Action Step
+        id: Veracode
+        uses: veracode/veracode-dast-essentials-action@v1.0.2
+        with:
+          VERACODE_WEBHOOK: '${{ secrets.VERACODE_WEBHOOK }}'
+          VERACODE_SECRET_ID: '${{ secrets.VERACODE_SECRET_ID }}'
+          VERACODE_SECRET_ID_KEY: '${{ secrets.VERACODE_SECRET_ID_KEY }}'
+          REGION: 'us'
+          pull-report: 'true'
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v1
+        with:
+          report_paths: 'report.xml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}

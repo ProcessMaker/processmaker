@@ -124,6 +124,7 @@
       size="lg"
       class="modal-dialog modal-dialog-centered"
       hide-footer
+      scrollable
       :title="$t('Edit Task Column')"
     >
       <div class="modal-content-custom">
