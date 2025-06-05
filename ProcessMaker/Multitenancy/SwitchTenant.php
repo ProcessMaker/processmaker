@@ -23,7 +23,7 @@ class SwitchTenant implements SwitchTenantTask
      */
     public function makeCurrent(IsTenant $tenant): void
     {
-        \Log::info('SwitchTenant starting with tenant: ' . $tenant->id);
+        \Log::info('SwitchTenant starting with tenant: ' . $tenant->id, ['domain' => request()->getHost()]);
 
         $this->setTenantDatabaseConnection($tenant);
 

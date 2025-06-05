@@ -20,7 +20,7 @@ return [
      * This class should extend `Spatie\Multitenancy\TenantFinder\TenantFinder`
      *
      */
-    'tenant_finder' => Spatie\Multitenancy\TenantFinder\DomainTenantFinder::class,
+    'tenant_finder' => ProcessMaker\Multitenancy\TenantFinder::class,
 
     /*
      * These fields are used by tenant:artisan command to match one or more tenant.
