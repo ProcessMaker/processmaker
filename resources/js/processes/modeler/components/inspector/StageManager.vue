@@ -47,7 +47,7 @@ const saveStagesToApi = (stages) => {
   });
   const id = window.ProcessMaker.modeler.process.id;
   const params = {
-    stages: copy
+    stages: copy,
   };
   ProcessMaker
     .apiClient
