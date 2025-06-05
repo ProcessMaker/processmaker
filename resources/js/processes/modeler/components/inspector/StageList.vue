@@ -116,7 +116,7 @@ const onRemove = (index) => {
 
 const onClickCheckbox = (index) => {
   stages.value.forEach((stage, i) => {
-    stage.selected = i === index;
+    Vue.set(stage, "selected", i === index);
   });
   emit('onClickCheckbox', stages.value[index]);
 };
@@ -124,7 +124,7 @@ const onClickCheckbox = (index) => {
 const onClickSelected = (index) => {
   stages.value.forEach((stage, i) => {
     if (i === index) {
-      stage.selected = false;
+      Vue.set(stage, "selected", false);
     }
   });
   emit('onClickSelected', stages.value[index]);

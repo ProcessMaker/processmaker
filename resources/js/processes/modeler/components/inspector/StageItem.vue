@@ -2,7 +2,9 @@
   <div class="tw-flex tw-items-center tw-space-x-2 tw-w-full tw-py-1">
     <span class="tw-w-6 text-center stage-item-number">{{ order }}</span>
     <i class="fas fa-grip-vertical stage-item-grip-vertical tw-cursor-move"></i>
-    <div class="tw-flex-1">
+    <div class="tw-flex-1 tw-cursor-pointer"
+         @click="check"
+         @dblclick.stop="uncheck">
       <template v-if="editing">
         <input
           v-model="localName"
@@ -14,8 +16,6 @@
         <span :class="{ 'font-bold stage-item-selected': selected }">{{ name }}</span>
       </template>
     </div>
-    <i v-if="selected" class="fas fp-check-circle-blue stage-item-color" @click="onClickSelected"></i>
-    <input v-else type="checkbox" v-model="isChecked" @change="onClickCheckbox"/>
     <button @click="editing = !editing" class="p-1 bg-transparent border-0">
       <i class="fas fp-pen-edit stage-item-color"></i>
     </button>
@@ -50,6 +50,16 @@ const onClickCheckbox = () => {
 };
 
 const onClickSelected = () => {
+  emit('onClickSelected');
+};
+
+const check = () => {
+  isChecked.value = true;
+  emit('onClickCheckbox');
+};
+
+const uncheck = () => {
+  isChecked.value = false;
   emit('onClickSelected');
 };
 
