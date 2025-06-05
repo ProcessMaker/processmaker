@@ -46,9 +46,22 @@ class SwitchTenant implements SwitchTenantTask
             $app->config->set($key, $value);
         }
 
+        /**
+         * CACHE
+         */
         $app->config->set('database.redis.options.prefix', 'tenant_' . $tenant->id . ':');
-        $app->forgetInstance('redis'); // reload redis with the correct prefix
-        $app->forgetInstance(MetricsService::class); // reload the metrics service (that uses redis)
+
+        // reload redis with the correct prefix
+        $app->forgetInstance('redis');
+
+        // remove the resolved redis instance from the cache container
+        $app->make('cache')->forgetDriver('redis');
+
+        // cache_settings is a store that uses the redis driver so it also needs to be removed
+        $app->make('cache')->forgetDriver('cache_settings');
+
+        // The MetricsService is created using the redis driver so it needs to be reloaded
+        $app->forgetInstance(MetricsService::class);
     }
 
     /**
