@@ -16,8 +16,8 @@
 </template>
 
 <script setup>
-import StageList from "./StageList.vue";
 import { ref, onMounted, getCurrentInstance } from "vue";
+import StageList from "./StageList.vue";
 import AgregationProperty from "./AgregationProperty.vue";
 
 const props = defineProps({
