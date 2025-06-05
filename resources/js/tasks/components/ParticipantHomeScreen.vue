@@ -1,6 +1,6 @@
 <template>
   <div
-    class="process-catalog-main-participant"
+    class="process-catalog-main-participant tw-px-4"
     id="tasks"
     :class="{ 'menu-open': showMenu }"
   >
@@ -580,7 +580,6 @@ export default {
 .home-screen-inbox {
   width: 100%;
   margin-right: 0px;
-  overflow-x: hidden;
   @media (max-width: 639px) {
     padding-left: 0;
   }

@@ -4,6 +4,7 @@ namespace ProcessMaker\Traits;
 
 use Illuminate\Support\Collection;
 use ProcessMaker\Bpmn\Process;
+use ProcessMaker\Models\Process as ModelsProcess;
 use ProcessMaker\Models\ProcessRequest;
 use SimpleXMLElement;
 
@@ -157,5 +158,29 @@ trait ProcessMapTrait
             'requestIdleNodes' => $requestIdleNodes,
             'requestId' => $request->id,
         ];
+    }
+
+    /**
+     * Get the stages for a specific process ID.
+     *
+     * @param int $processId
+     * @return array|null
+     */
+    public static function getStagesByProcessId(int $processId): ?array
+    {
+        // Retrieve the process by ID
+        $process = ModelsProcess::find($processId);
+
+        // If the process exists, return the stages
+        if ($process) {
+            $stages = $process->stages;
+
+            if (!is_null($stages)) {
+                return $stages;
+            }
+        }
+
+        // Return empty array if the process does not exist or has no stages
+        return [];
     }
 }

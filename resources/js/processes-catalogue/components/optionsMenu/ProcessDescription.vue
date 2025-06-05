@@ -1,41 +1,38 @@
 <template>
-    <div id="processDescription" class="col-sm-9">
-      <span class="title">
-        {{ $t('Details') }}
-      </span>
-      <p class="title-process">
-        {{ process.name }}
-      </p>
-      <p
-        v-if="readActivated || !largeDescription"
-        class="description"
-      >
-        {{ process.description }}
-      </p>
-      <span
-        v-if="readActivated || !largeDescription"
-        class="class-version">
-        {{ $t('Version') }} {{ processVersion }}
-      </span>
-      <p
-        v-if="!readActivated && largeDescription"
-        class="description"
-      >
-        {{ process.description.slice(0,190) }} ...
-        <a
-          v-if="!readActivated"
-          class="read-more"
-          @click="activateReadMore"
-        >
+  <div id="processDescription">
+    <span class="title">
+      {{ $t('Details') }}
+    </span>
+    <p class="title-process">
+      {{ process.name }}
+    </p>
+    <p
+      v-if="readActivated || !largeDescription"
+      class="description">
+      {{ process.description }}
+    </p>
+    <span
+      v-if="readActivated || !largeDescription"
+      class="class-version">
+      {{ $t('Version') }} {{ processVersion }}
+    </span>
+    <p
+      v-if="!readActivated && largeDescription"
+      class="description">
+      {{ process.description.slice(0,190) }} ...
+      <a
+        v-if="!readActivated"
+        class="read-more"
+        @click="activateReadMore">
         <span style="color: #1572C2;">{{ $t('More') }}</span>
-        </a>
-      </p>
-        <div
-          v-if="!readActivated && largeDescription"
-          class="class-version">
-          {{ $t('Version') }} {{ processVersion }}
-        </div>
+      </a>
+    </p>
+    <div
+      v-if="!readActivated && largeDescription"
+      class="class-version">
+      {{ $t('Version') }} {{ processVersion }}
     </div>
+  </div>
 </template>
 <script>
 export default {

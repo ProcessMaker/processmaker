@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layout', ['content_margin' => '', 'overflow-auto' => ''])
 
 @section('title')
     {{ __($title) }}
@@ -161,6 +161,8 @@
         window.Processmaker.user = @json($currentUser);
         window.Processmaker.selectedProcess = @json($selectedProcess);
         window.Processmaker.defaultSavedSearchId = @json($defaultSavedSearchId);
+        window.ProcessMaker.isTceCustomization = {{{config('app.tce_customization_enable') ? 'true' : 'false'}}};
+        window.ProcessMaker.metricsApiEndpoint = `{{{$metricsApiEndpoint}}}`;
     </script>
     @foreach($manager->getScripts() as $script)
         <script src="{{$script}}"></script>
