@@ -17,11 +17,11 @@
 
 <script setup>
 import StageList from "./StageList.vue";
-import { ref, watch, reactive, toRefs, onMounted, computed, getCurrentInstance, nextTick } from "vue";
+import { ref, onMounted, getCurrentInstance } from "vue";
 import AgregationProperty from "./AgregationProperty.vue";
 
 const props = defineProps({
-  value: Object
+  value: Object,
 });
 const defaultStages = ref([]);
 const currentInstance = getCurrentInstance();
@@ -56,17 +56,11 @@ const saveStagesToApi = (stages) => {
     });
 };
 
-const getModeler = () => {
-   return currentInstance.proxy.$root.$children[0].$refs.modeler;
-};
+const getModeler = () => currentInstance.proxy.$root.$children[0].$refs.modeler;
 
-const getHighlightedNode = () => {
-  return getModeler().highlightedNode;
-};
+const getHighlightedNode = () => getModeler().highlightedNode;
 
-const getDefinition = () => {
-  return getHighlightedNode().definition;
-};
+const getDefinition = () => getHighlightedNode().definition;
 
 const getConfigFromDefinition = (definition) => {
   let config = {};
@@ -121,7 +115,7 @@ const applyStageToFlow = (stage) => {
   config.stage = {
     id: stage.id,
     order: stage.order,
-    name: stage.name
+    name: stage.name,
   };
   let definition = getDefinition();
   Vue.set(definition, "config", JSON.stringify(config));
