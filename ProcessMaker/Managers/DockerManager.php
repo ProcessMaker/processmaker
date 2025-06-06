@@ -34,7 +34,7 @@ class DockerManager
     public function getDockerExecutable($timeout = 0)
     {
         return $timeout > 0 ?
-            config('app.processmaker_scripts_timeout') . " -s 9 $timeout " . config('app.processmaker_scripts_docker') :
+            config('app.processmaker_scripts_timeout') . " -k 1s $timeout " . config('app.processmaker_scripts_docker') :
             config('app.processmaker_scripts_docker');
     }
 
