@@ -40,7 +40,7 @@ class ValidateDevlinkTokensEncryption extends Upgrade
         // If the column is not nullable, make the change
         if (!$isNullable || $columnInfo->Type === 'varchar(255)') {
             Schema::table('dev_links', function ($table) {
-                $table->text('client_secret')->change()->nullable();
+                $table->text('client_secret')->nullable()->change();
             });
         }
 
