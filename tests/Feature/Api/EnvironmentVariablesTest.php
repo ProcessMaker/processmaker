@@ -241,4 +241,17 @@ class EnvironmentVariablesTest extends TestCase
         $variable = EnvironmentVariable::where('name', 'newname')->first();
         $this->assertEquals('testvalue', $variable->value);
     }
+
+    public function testCreationOfMetricVariable()
+    {
+        Artisan::call('db:seed', ['class' => 'MetricsApiEnvironmentVariableSeeder']);
+
+        // Assert only one record exists
+        $this->assertCount(1, EnvironmentVariable::where('name', 'METRICS_API_ENDPOINT')->get());
+
+        // Assert the original values were preserved
+        $this->assertDatabaseHas('environment_variables', [
+            'name' => 'METRICS_API_ENDPOINT',
+        ]);
+    }
 }
