@@ -238,13 +238,7 @@ class ProcessVariableController extends Controller
         ) {
             $paginator = $this->getProcessesVariablesFrom($processIds);
             if ($request->has('onlyAvailable')) {
-                $availableColumns = $this->mergeAvailableColumns($savedSearch);
-                $availableColumns = $this->filterActiveColumns($availableColumns, $activeColumns);
-                $paginator->setCollection(
-                    $availableColumns->merge($paginator->items())
-                );
-
-                return $paginator;
+                return $this->mergeOnlyAvailableColumns($paginator, $savedSearch, $activeColumns);
             }
 
             return $paginator;
@@ -278,16 +272,29 @@ class ProcessVariableController extends Controller
         $paginator = $query->paginate($perPage, ['*'], 'page', $page);
 
         if ($request->has('onlyAvailable')) {
-            $availableColumns = $this->mergeAvailableColumns($savedSearch);
-            $availableColumns = $this->filterActiveColumns($availableColumns, $activeColumns);
-            $paginator->setCollection(
-                $availableColumns->merge($paginator->items())
-            );
-
-            return $paginator;
+            return $this->mergeOnlyAvailableColumns($paginator, $savedSearch, $activeColumns);
         }
 
         return $query->paginate($perPage, ['*'], 'page', $page);
+    }
+
+    /**
+     * Merge only available columns with collection items
+     *
+     * @param LengthAwarePaginator $paginator
+     * @param SavedSearch|null $savedSearch
+     * @param array $activeColumns
+     *
+     * @return LengthAwarePaginator
+     */
+    private function mergeOnlyAvailableColumns($paginator, $savedSearch, $activeColumns)
+    {
+        $availableColumns = $this->mergeAvailableColumns($savedSearch);
+        $availableColumns = $availableColumns->merge($paginator->items());
+        $availableColumns = $this->filterActiveColumns($availableColumns, $activeColumns);
+        $paginator->setCollection($availableColumns);
+
+        return $paginator;
     }
 
     /**
