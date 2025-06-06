@@ -10,5 +10,6 @@ class Tenant extends SpatieTenant
 
     protected $casts = [
         'config' => 'array',
+        'password' => 'encrypted',
     ];
 }

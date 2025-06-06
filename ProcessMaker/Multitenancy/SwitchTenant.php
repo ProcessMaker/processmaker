@@ -2,15 +2,19 @@
 
 namespace ProcessMaker\Multitenancy;
 
-use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
-use Illuminate\Foundation\Application;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Bootstrap\LoadConfiguration;
-use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
+use Illuminate\Support\Facades\DB;
+use PDO;
+use ProcessMaker\Services\MetricsService;
+use Spatie\Multitenancy\Concerns\UsesMultitenancyConfig;
 use Spatie\Multitenancy\Contracts\IsTenant;
 use Spatie\Multitenancy\Tasks\SwitchTenantTask;
 
 class SwitchTenant implements SwitchTenantTask
 {
+    use UsesMultitenancyConfig;
+
     /**
      * Make the given tenant current.
      *
@@ -19,12 +23,14 @@ class SwitchTenant implements SwitchTenantTask
      */
     public function makeCurrent(IsTenant $tenant): void
     {
-        \Log::info('SwitchTenant starting with tenant: ' . $tenant->id);
-        $app = app();
+        \Log::info('SwitchTenant starting with tenant: ' . $tenant->id, ['domain' => request()->getHost()]);
+
+        $this->setTenantDatabaseConnection($tenant);
 
         // Set the tenant-specific storage path
         $tenantStoragePath = base_path('storage/tenant_' . $tenant->id);
 
+        $app = app();
         $app->setStoragePath($tenantStoragePath);
 
         // Create the tenant storage directory if it doesn't exist
@@ -44,6 +50,23 @@ class SwitchTenant implements SwitchTenantTask
         foreach ($tenant->config as $key => $value) {
             $app->config->set($key, $value);
         }
+
+        /**
+         * CACHE
+         */
+        $app->config->set('database.redis.options.prefix', 'tenant_' . $tenant->id . ':');
+
+        // reload redis with the correct prefix
+        $app->forgetInstance('redis');
+
+        // remove the resolved redis instance from the cache container
+        $app->make('cache')->forgetDriver('redis');
+
+        // cache_settings is a store that uses the redis driver so it also needs to be removed
+        $app->make('cache')->forgetDriver('cache_settings');
+
+        // The MetricsService is created using the redis driver so it needs to be reloaded
+        $app->forgetInstance(MetricsService::class);
     }
 
     /**
@@ -53,5 +76,53 @@ class SwitchTenant implements SwitchTenantTask
      */
     public function forgetCurrent(): void
     {
+    }
+
+    /**
+     * Set the tenant database connection.
+     *
+     * Copied from laravel-multitenancy's src/Tasks/SwitchTenantDatabaseTask.php
+     *
+     * @param IsTenant $tenant
+     * @return void
+     */
+    private function setTenantDatabaseConnection(IsTenant $tenant): void
+    {
+        $tenantConnectionName = $this->tenantDatabaseConnectionName();
+
+        $tenantDBKey = "database.connections.{$tenantConnectionName}";
+
+        $databaseName = $tenant->getDatabaseName();
+        $username = $tenant->username;
+        $password = $tenant->password;
+
+        $setConfig = [
+            "{$tenantDBKey}.database" => $databaseName,
+        ];
+        if ($username) {
+            $setConfig["{$tenantDBKey}.username"] = $username;
+        }
+        if ($password) {
+            $setConfig["{$tenantDBKey}.password"] = $password;
+        }
+
+        config($setConfig);
+
+        app('db')->extend($tenantConnectionName, function ($config, $name) use ($databaseName, $username, $password) {
+            $config['database'] = $databaseName;
+            if ($username) {
+                $config['username'] = $username;
+            }
+            if ($password) {
+                $config['password'] = $password;
+            }
+
+            return app('db.factory')->make($config, $name);
+        });
+
+        DB::purge($tenantConnectionName);
+
+        // Octane will have an old `db` instance in the Model::$resolver.
+        Model::setConnectionResolver(app('db'));
     }
 }

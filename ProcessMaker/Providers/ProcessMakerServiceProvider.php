@@ -9,6 +9,7 @@ use Illuminate\Foundation\PackageManifest;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
+use Illuminate\Support\Env;
 use Illuminate\Support\Facades;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -58,6 +59,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
     {
         // Track the start time for service providers boot
         self::$bootStart = microtime(true);
+
+        // Set the current tenant
+        $this->setCurrentTenantForConsoleCommands();
 
         $this->app->singleton(Menu::class, function ($app) {
             return new MenuManager();
@@ -257,6 +261,19 @@ class ProcessMakerServiceProvider extends ServiceProvider
             $task_id = $event->getProcessRequestToken()->id;
             // Dispatch the SmartInbox job with the processRequestToken as parameter
             SmartInbox::dispatch($task_id);
+        });
+
+        Facades\Event::listen(\Spatie\Multitenancy\Events\MadeTenantCurrentEvent::class, function ($event) {
+            \Log::info('MULTITENANCY: MadeTenantCurrentEvent');
+        });
+
+        // \Spatie\Multitenancy\Events\TenantNotFoundForRequestEvent
+        Facades\Event::listen(\Spatie\Multitenancy\Events\TenantNotFoundForRequestEvent::class, function ($event) {
+            \Log::info('MULTITENANCY: TenantNotFoundForRequestEvent');
+        });
+
+        Facades\Event::listen(\Illuminate\Console\Events\CommandStarting::class, function ($event) {
+            \Log::info('ARTISAN: CommandStarting', ['command' => $event->command]);
         });
     }
 
@@ -466,5 +483,23 @@ class ProcessMakerServiceProvider extends ServiceProvider
     public static function getPackageBootTiming(): array
     {
         return self::$packageBootTiming;
+    }
+
+    /**
+     * Find the tenant based on the environment variable
+     */
+    private function setCurrentTenantForConsoleCommands(): void
+    {
+        // See ProcessMaker\Multitenancy\TenantFinder::findForRequest() for disguised console commands (APP_RUNNING_IN_CONSOLE=false)
+        // We need to do this in 2 places because laravel-multitenancy skips the tenant finder when running in console
+        if (!app()->runningInConsole()) {
+            return;
+        }
+
+        $tenantId = Env::get('TENANT');
+        if ($tenantId) {
+            $tenant = \ProcessMaker\Multitenancy\Tenant::findOrFail($tenantId);
+            $tenant->makeCurrent();
+        }
     }
 }
