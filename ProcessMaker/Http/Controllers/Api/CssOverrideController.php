@@ -177,7 +177,7 @@ class CssOverrideController extends Controller
     /**
      * Write variables in file
      *
-     * @param $request
+     * @param $data
      */
     private function writeColors($data)
     {
@@ -193,41 +193,109 @@ class CssOverrideController extends Controller
      * Write variables font in file
      *
      * @param $sansSerif
-     * @param $serif
      */
     private function writeFonts($sansSerif)
     {
+        $tenant = app('currentTenant');
+        $tenantId = $tenant ? $tenant->id : null;
+
         $sansSerif = $sansSerif ? $sansSerif : $this->sansSerifFontDefault();
         // Generate the _fonts.scss file
         $contents = "// Changed theme fonts\n";
         $contents .= '$font-family-sans-serif: ' . $sansSerif->id . " !default;\n";
-        File::put(app()->resourcePath('sass') . '/_fonts.scss', $contents);
+
+        if ($tenantId) {
+            // Create tenant-specific fonts file
+            $tenantSassPath = app()->resourcePath('sass/tenant_' . $tenantId);
+
+            if (!file_exists($tenantSassPath)) {
+                mkdir($tenantSassPath, 0755, true);
+            }
+
+            File::put($tenantSassPath . '/_fonts.scss', $contents);
+        } else {
+            File::put(app()->resourcePath('sass') . '/_fonts.scss', $contents);
+        }
     }
 
     /**
      * run jobs compile
      */
-    private function compileSass($userId)
+    private function compileSass($userId, $variables = [])
     {
-        // Compile the Sass files
-        $this->dispatch(new CompileSass([
-            'tag' => 'sidebar',
-            'origin' => 'resources/sass/sidebar/sidebar.scss',
-            'target' => 'public/css/sidebar.css',
-            'user' => $userId,
-        ]));
-        $this->dispatch(new CompileSass([
-            'tag' => 'app',
-            'origin' => 'resources/sass/app.scss',
-            'target' => 'public/css/app.css',
-            'user' => $userId,
-        ]));
-        $this->dispatch(new CompileSass([
-            'tag' => 'queues',
-            'origin' => 'resources/sass/admin/queues.scss',
-            'target' => 'public/css/admin/queues.css',
-            'user' => $userId,
-        ]));
+        $tenant = app('currentTenant');
+        $tenantId = $tenant ? $tenant->id : null;
+
+        if ($tenantId) {
+            // Make a copy of _variables.scss to _variables_tmp.scss
+            File::copy(app()->resourcePath('sass/_variables.scss'), app()->resourcePath('sass/_variables_tmp.scss'));
+
+            // replace @import 'fonts'; with @import 'fonts' with @import './tenant_1/_fonts';
+            $variablesScss = File::get(app()->resourcePath('sass/_variables_tmp.scss'));
+            $variablesScss = str_replace('@import \'fonts\';', '@import \'tenant_' . $tenantId . '/_fonts\';', $variablesScss);
+            File::put(app()->resourcePath('sass/_variables.scss'), $variablesScss);
+
+            /* $tenantAdminCssPath = public_path('css/tenant_' . $tenantId . '/admin');
+            if (!file_exists($tenantAdminCssPath)) {
+                mkdir($tenantAdminCssPath, 0755, true);
+            } */
+
+            // Compile tenant-specific Sass files
+            /* $this->dispatch(new CompileSass([
+                'tag' => 'sidebar',
+                'origin' => 'resources/sass/sidebar/sidebar.scss',
+                'target' => 'public/css/tenant_' . $tenantId . '/sidebar.css',
+                'user' => $userId,
+                'tenant_id' => $tenantId,
+            ])); */
+            $this->dispatch(new CompileSass([
+                'tag' => 'sidebar',
+                'origin' => 'resources/sass/sidebar/sidebar.scss',
+                'target' => 'public/css/sidebar.css',
+                'user' => $userId,
+            ]));
+            $this->dispatch(new CompileSass([
+                'tag' => 'app',
+                'origin' => 'resources/sass/app.scss',
+                // 'target' => 'public/css/tenant_' . $tenantId . '/app.css',
+                'target' => 'public/css/app_tenant_' . $tenantId . '.css',
+                'user' => $userId,
+            ]));
+            $this->dispatch(new CompileSass([
+                'tag' => 'queues',
+                'origin' => 'resources/sass/admin/queues.scss',
+                'target' => 'public/css/admin/queues.css',
+                'user' => $userId,
+            ]));
+
+            $this->updateTenantMixManifest($tenantId);
+            /* $this->dispatch(new CompileSass([
+                'tag' => 'queues',
+                'origin' => 'resources/sass/admin/queues.scss',
+                'target' => 'public/css/tenant_' . $tenantId . '/admin/queues.css',
+                'user' => $userId,
+                'tenant_id' => $tenantId,
+            ])); */
+        } else {
+            $this->dispatch(new CompileSass([
+                'tag' => 'sidebar',
+                'origin' => 'resources/sass/sidebar/sidebar.scss',
+                'target' => 'public/css/sidebar.css',
+                'user' => $userId,
+            ]));
+            $this->dispatch(new CompileSass([
+                'tag' => 'app',
+                'origin' => 'resources/sass/app.scss',
+                'target' => 'public/css/app.css',
+                'user' => $userId,
+            ]));
+            $this->dispatch(new CompileSass([
+                'tag' => 'queues',
+                'origin' => 'resources/sass/admin/queues.scss',
+                'target' => 'public/css/admin/queues.css',
+                'user' => $userId,
+            ]));
+        }
     }
 
     /**
@@ -300,5 +368,33 @@ class CssOverrideController extends Controller
             $setting->addMedia($request->file($filename))
                 ->toMediaCollection($collectionName, $diskName);
         }
+    }
+
+    /**
+     * Update tenant mix manifest
+     *
+     * @param $tenantId
+     */
+    private function updateTenantMixManifest($tenantId)
+    {
+        $manifestFile = public_path('mix-manifest.json');
+        if (!file_exists($manifestFile)) {
+            return;
+        }
+
+        $manifest = json_decode(file_get_contents($manifestFile), true);
+        if ($manifest === null) {
+            return;
+        }
+
+        // Add tenant-specific app.css entry
+        $guid = bin2hex(random_bytes(16));
+        $tenantAppKey = "/css/app_tenant_{$tenantId}.css";
+        $tenantAppValue = "/css/app_tenant_{$tenantId}.css?id={$guid}";
+
+        $manifest[$tenantAppKey] = $tenantAppValue;
+
+        $encodedManifest = json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        file_put_contents($manifestFile, $encodedManifest);
     }
 }

@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
@@ -53,6 +54,15 @@ class CompileSass implements ShouldQueue
         if (Str::contains($this->properties['tag'], 'app')) {
             $this->fixPathsInGeneratedAppCss();
             $this->updateCacheBuster();
+
+            $resourcePath = app()->resourcePath();
+
+            // Check if the _variables_tmp.scss file exists
+            if (File::exists($resourcePath . '/sass/_variables_tmp.scss')) {
+                // Restore _variables.scss
+                File::copy($resourcePath . '/sass/_variables_tmp.scss', $resourcePath . '/sass/_variables.scss');
+                File::delete($resourcePath . '/sass/_variables_tmp.scss');
+            }
         }
 
         $user = User::find($this->properties['user']);
@@ -83,7 +93,16 @@ class CompileSass implements ShouldQueue
     private function fixPathsInGeneratedAppCss()
     {
         chdir(app()->basePath());
-        $file = file_get_contents('public/css/app.css');
+
+        $tenant = app('currentTenant');
+        $tenantId = $tenant ? $tenant->id : null;
+
+        if ($tenantId) {
+            $file = file_get_contents('public/css/app_tenant_' . $tenantId . '.css');
+        } else {
+            $file = file_get_contents('public/css/app.css');
+        }
+
         $file = preg_replace('/\.\/fonts(\/[A-Za-z]+\/)OpenSans\-/m', '/fonts/OpenSans-', $file);
         $file = str_replace('public/css/precompiled/vue-multiselect.min.css', 'css/precompiled/vue-multiselect.min.css', $file);
         $file = str_replace('public/css/precompiled/poppins/300.css', 'css/precompiled/poppins/300.css', $file);
@@ -95,7 +114,12 @@ class CompileSass implements ShouldQueue
         $file = str_replace('content: /; }', 'content: "/"; }', $file);
         $re = '/(content:\s)\\\\\"(\\\\[0-9abcdef]+)\\\\\"/m';
         $file = preg_replace($re, '$1"$2"', $file);
-        file_put_contents('public/css/app.css', $file);
+
+        if ($tenantId) {
+            file_put_contents('public/css/app_tenant_' . $tenantId . '.css', $file);
+        } else {
+            file_put_contents('public/css/app.css', $file);
+        }
     }
 
     private function updateCacheBuster()
