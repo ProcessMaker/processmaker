@@ -3,10 +3,8 @@
 namespace ProcessMaker\Multitenancy;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Bootstrap\LoadConfiguration;
 use Illuminate\Support\Facades\DB;
 use PDO;
-use ProcessMaker\Services\MetricsService;
 use Spatie\Multitenancy\Concerns\UsesMultitenancyConfig;
 use Spatie\Multitenancy\Contracts\IsTenant;
 use Spatie\Multitenancy\Tasks\SwitchTenantTask;
@@ -43,30 +41,31 @@ class SwitchTenant implements SwitchTenantTask
             mkdir($tennantCacheFolder, 0755, true);
         }
 
-        // Reload the config
-        putenv('APP_CONFIG_CACHE=' . $tennantCacheFolder . '/config.php');
-        (new LoadConfiguration())->bootstrap($app);
+        // Set the cached config path
+        // Not needed for now because we are setting the config manually below
+        // putenv('APP_CONFIG_CACHE=' . $tennantCacheFolder . '/config.php');
 
-        foreach ($tenant->config as $key => $value) {
-            $app->config->set($key, $value);
-        }
+        // We cant reload config here because it overrides dynamic configs set in packages (like docker-executor-php)
+        // (new LoadConfiguration())->bootstrap($app);
 
-        /**
-         * CACHE
-         */
-        $app->config->set('database.redis.options.prefix', 'tenant_' . $tenant->id . ':');
+        // Instead, set each manually
+        $newConfig = [
+            'filesystems.disks.local.root' => storage_path('app'),
+            'filesystems.disks.public.root' => storage_path('app/public'),
+            'filesystems.disks.profile.root' => storage_path('app/public/profile'),
+            'filesystems.disks.settings.root' => storage_path('app/public/setting'),
+            'filesystems.disks.private_settings.root' => storage_path('app/private/settings'),
+            'filesystems.disks.web_services.root' => storage_path('app/private/web_services'),
+            'filesystems.disks.tmp.root' => storage_path('app/public/tmp'),
+            'filesystems.disks.samlidp.root' => storage_path('samlidp'),
+            'filesystems.disks.decision_tables.root' => storage_path('decision-tables'),
 
-        // reload redis with the correct prefix
-        $app->forgetInstance('redis');
+            'l5-swagger.defaults.paths.docs' => storage_path('api-docs'),
+        ];
+        config($newConfig);
 
-        // remove the resolved redis instance from the cache container
-        $app->make('cache')->forgetDriver('redis');
-
-        // cache_settings is a store that uses the redis driver so it also needs to be removed
-        $app->make('cache')->forgetDriver('cache_settings');
-
-        // The MetricsService is created using the redis driver so it needs to be reloaded
-        $app->forgetInstance(MetricsService::class);
+        // Set config from the entry in the tenants table
+        config($tenant->config);
     }
 
     /**
