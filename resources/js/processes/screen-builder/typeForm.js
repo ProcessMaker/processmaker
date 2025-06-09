@@ -20,6 +20,7 @@ ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
       && config.control.component !== "FormAvatar"
       && config.control.component !== "LinkButton"
       && config.control.component !== "FormCollectionViewControl"
+      && config.control.component !== "CaseProgressBar"
     ) {
       manager.addControl(
         config.control,

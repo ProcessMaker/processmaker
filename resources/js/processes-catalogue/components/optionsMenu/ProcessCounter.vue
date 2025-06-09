@@ -1,5 +1,5 @@
 <template>
-  <div class="spacing-class" v-if="!enableCollapse">
+  <div>
     <span class="title">
       {{ $t('Started Cases') }}
     </span>
@@ -8,7 +8,10 @@
         {{ count }}
       </p>
     </div>
-    <div class="charts">
+    <div
+      v-if="!isStagesSummary"
+      class="charts"
+    >
       <mini-pie-chart
         :count="process.counts.in_progress"
         :total="process.counts.total"
@@ -21,62 +24,29 @@
         :name="$t('Completed')"
         color="#478FCC"
       />
-    </div>
-  </div>
-  <div v-else class="d-flex align-items-center">
-    <img class="thumb-size" :src="`/img/launchpad-images/icons/${processIcon}.svg`" :alt="$t('No Image')"></img>
-    <span class="text-summary">{{ count }} {{ $t('Cases started') }}</span>
-    <div class="charts">
-      <mini-pie-chart
-        :count="process.counts.in_progress"
-        :total="process.counts.total"
-        :name="$t('In Progress')"
-        color="#4EA075"
-      />
-      <mini-pie-chart
-        :count="process.counts.completed"
-        :total="process.counts.total"
-        :name="$t('Completed')"
-        color="#478FCC"
-      />
-      <div >
-        <div
-          v-if="iconWizardTemplate"
-          class="icon-wizard-class"
-          @click="getHelperProcess"
-        >
-          <img style="margin-left: 8px;"
-            src="../../../../img/wizard-icon.svg"
-            :alt="$t('Guided Template Icon')"
-          >
-      </div>
-      </div>
     </div>
   </div>
 </template>
 <script>
 import MiniPieChart from "../MiniPieChart.vue";
-import WizardHelperProcessModal from "../../../components/templates/WizardHelperProcessModal.vue";
 
 export default {
   components: {
     MiniPieChart,
-    WizardHelperProcessModal,
   },
-  props: ["process", "enableCollapse", "iconWizardTemplate"],
+  props: ["process", "enableCollapse"],
   data() {
     return {
       count: 0,
-      completed: 0,
-      inProgress: 0,
-      processIcon: 'Default Icon',
-      completedCollapsed: 0,
-      inProgressCollapsed: 0,
     };
+  },
+  computed: {
+    isStagesSummary() {
+      return this.process.stagesSummary.length > 0;
+    },
   },
   mounted() {
     this.fetch();
-    this.getProcessImage();
   },
   methods: {
     fetch() {
@@ -88,18 +58,6 @@ export default {
         .catch(() => {
           this.count = 0;
         });
-    },
-    getProcessImage() {
-      if(this.process.launchpad) {
-        const propertiesString = this.process.launchpad["properties"];
-        const propertiesObject = JSON.parse(propertiesString);
-        this.processIcon = propertiesObject.icon;
-      }
-      
-      return this.processIcon ? this.processIcon : 'Default Icon';
-    },
-    getHelperProcess() {
-      this.$parent.$refs.wizardHelperProcessModal.getHelperProcessStartEvent();
     },
   },
 };

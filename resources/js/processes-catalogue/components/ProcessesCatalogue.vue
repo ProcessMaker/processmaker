@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="tw-flex tw-flex-col tw-h-full">
     <breadcrumbs
       ref="breadcrumb"
       :category="category ? category.name : ''"
@@ -472,7 +472,6 @@ export default {
 .processes-info {
   width: 100%;
   margin-right: 0px;
-  overflow-x: hidden;
   @media (max-width: $lp-breakpoint) {
     padding-left: 0;
   }

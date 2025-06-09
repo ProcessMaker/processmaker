@@ -276,3 +276,50 @@ if (!function_exists('shouldShow')) {
         }
     }
 }
+
+if (!function_exists('calculateProgressById')) {
+    /**
+     * Calculates the progress percentage of a stage based on its order
+     * within the total number of stages.
+     *
+     * This function searches for the stage with the given ID in the provided list
+     * of stages. Each stage must contain at least 'id' and 'order' keys.
+     * If the stage is found, it calculates the progress as:
+     *     (stage_order / total_stages) * 100
+     *
+     * The result is rounded to two decimal places.
+     *
+     * If the list of stages is `null` or empty, or if the stage with the given ID
+     * is not found, the function returns 0.0.
+     *
+     * @param int|null $id The ID of the stage to calculate progress for.
+     * @param array|null $stages An array of stages, where each stage is an associative array
+     *                           containing at least the keys 'id' and 'order'.
+     *                           This parameter can be null.
+     *
+     * @return float The progress percentage (0.0 to 100.0), rounded to two decimal places.
+     */
+    function calculateProgressById(int|null $id, array|null $stages = [])
+    {
+        if (is_null($stages)) {
+            return 0.0;
+        }
+        $totalStages = count($stages);
+        if ($totalStages === 0) {
+            return 0.0;
+        }
+        $currentStageOrder = 0;
+        foreach ($stages as $stage) {
+            if ($stage['id'] === $id) {
+                $currentStageOrder = $stage['order'];
+                break;
+            }
+        }
+        if ($currentStageOrder === 0) {
+            return 0.0;
+        }
+        $progress = ($currentStageOrder / $totalStages) * 100;
+
+        return round($progress, 2);
+    }
+}
