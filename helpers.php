@@ -276,3 +276,36 @@ if (!function_exists('shouldShow')) {
         }
     }
 }
+
+if (!function_exists('tenant_css_path')) {
+    /**
+     * Get the tenant-specific CSS path if available, otherwise return the default path
+     *
+     * @param string $path The CSS path relative to public/css
+     * @return string The full CSS path
+     */
+    function tenant_css_path($path)
+    {
+        $tenant = app('currentTenant');
+        if ($tenant) {
+            $files = [
+                'app.css' => 'app_tenant_' . $tenant->id . '.css',
+                'sidebar.css' => 'sidebar_tenant_' . $tenant->id . '.css',
+            ];
+
+            // Check for tenant-specific CSS file in mix manifest first
+            $manifestPath = public_path('mix-manifest.json');
+            if (file_exists($manifestPath)) {
+                $manifest = json_decode(file_get_contents($manifestPath), true);
+                $tenantCssKey = '/css/' . $files[$path];
+
+                if (isset($manifest[$tenantCssKey])) {
+                    return 'css/' . $files[$path];
+                }
+            }
+        }
+
+        // Fall back to default path
+        return 'css/' . basename($path);
+    }
+}

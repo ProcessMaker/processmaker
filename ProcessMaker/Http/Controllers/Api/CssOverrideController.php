@@ -230,52 +230,34 @@ class CssOverrideController extends Controller
             // Make a copy of _variables.scss to _variables_tmp.scss
             File::copy(app()->resourcePath('sass/_variables.scss'), app()->resourcePath('sass/_variables_tmp.scss'));
 
-            // replace @import 'fonts'; with @import 'fonts' with @import './tenant_1/_fonts';
+            // Replace @import 'fonts'; with @import 'fonts' with @import './tenant_1/_fonts';
             $variablesScss = File::get(app()->resourcePath('sass/_variables_tmp.scss'));
             $variablesScss = str_replace('@import \'fonts\';', '@import \'tenant_' . $tenantId . '/_fonts\';', $variablesScss);
             File::put(app()->resourcePath('sass/_variables.scss'), $variablesScss);
 
-            /* $tenantAdminCssPath = public_path('css/tenant_' . $tenantId . '/admin');
-            if (!file_exists($tenantAdminCssPath)) {
-                mkdir($tenantAdminCssPath, 0755, true);
-            } */
-
             // Compile tenant-specific Sass files
-            /* $this->dispatch(new CompileSass([
-                'tag' => 'sidebar',
-                'origin' => 'resources/sass/sidebar/sidebar.scss',
-                'target' => 'public/css/tenant_' . $tenantId . '/sidebar.css',
-                'user' => $userId,
-                'tenant_id' => $tenantId,
-            ])); */
             $this->dispatch(new CompileSass([
                 'tag' => 'sidebar',
                 'origin' => 'resources/sass/sidebar/sidebar.scss',
-                'target' => 'public/css/sidebar.css',
+                'target' => 'public/css/sidebar_tenant_' . $tenantId . '.css',
                 'user' => $userId,
             ]));
+            $this->updateTenantMixManifest($tenantId, 'sidebar');
+
             $this->dispatch(new CompileSass([
                 'tag' => 'app',
                 'origin' => 'resources/sass/app.scss',
-                // 'target' => 'public/css/tenant_' . $tenantId . '/app.css',
                 'target' => 'public/css/app_tenant_' . $tenantId . '.css',
                 'user' => $userId,
             ]));
+            $this->updateTenantMixManifest($tenantId, 'app');
+
             $this->dispatch(new CompileSass([
                 'tag' => 'queues',
                 'origin' => 'resources/sass/admin/queues.scss',
                 'target' => 'public/css/admin/queues.css',
                 'user' => $userId,
             ]));
-
-            $this->updateTenantMixManifest($tenantId);
-            /* $this->dispatch(new CompileSass([
-                'tag' => 'queues',
-                'origin' => 'resources/sass/admin/queues.scss',
-                'target' => 'public/css/tenant_' . $tenantId . '/admin/queues.css',
-                'user' => $userId,
-                'tenant_id' => $tenantId,
-            ])); */
         } else {
             $this->dispatch(new CompileSass([
                 'tag' => 'sidebar',
@@ -375,7 +357,7 @@ class CssOverrideController extends Controller
      *
      * @param $tenantId
      */
-    private function updateTenantMixManifest($tenantId)
+    private function updateTenantMixManifest($tenantId, $tag)
     {
         $manifestFile = public_path('mix-manifest.json');
         if (!file_exists($manifestFile)) {
@@ -389,8 +371,8 @@ class CssOverrideController extends Controller
 
         // Add tenant-specific app.css entry
         $guid = bin2hex(random_bytes(16));
-        $tenantAppKey = "/css/app_tenant_{$tenantId}.css";
-        $tenantAppValue = "/css/app_tenant_{$tenantId}.css?id={$guid}";
+        $tenantAppKey = "/css/{$tag}_tenant_{$tenantId}.css";
+        $tenantAppValue = "/css/{$tag}_tenant_{$tenantId}.css?id={$guid}";
 
         $manifest[$tenantAppKey] = $tenantAppValue;
 

@@ -42,8 +42,8 @@
     <title>@yield('title',__('Welcome')) - {{ __('ProcessMaker') }}</title>
 
     <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
-    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
-    <link href="{{ mix('css/sidebar.css') }}" rel="stylesheet">
+    <link href="{{ mix(tenant_css_path('app.css')) }}" rel="stylesheet">
+    <link href="{{ mix(tenant_css_path('sidebar.css')) }}" rel="stylesheet">
     <link href="/css/bpmn-symbols/css/bpmn.css" rel="stylesheet">
     @yield('css')
     <script type="text/javascript">
@@ -69,7 +69,7 @@
         enabledTransports: ['ws', 'wss'],
         disableStats: true,
       };
-      
+
       @if(config('broadcasting.connections.pusher.options.host'))
         window.Processmaker.broadcasting.wsHost = "{{config('broadcasting.connections.pusher.options.host')}}";
         window.Processmaker.broadcasting.wsPort = "{{config('broadcasting.connections.pusher.options.port')}}";
@@ -95,7 +95,7 @@
   <div class="d-flex flex-grow-1 flex-column overflow-hidden">
     <div class="flex-grow-1 d-flex flex-column overflow-hidden h-100" id="mainbody">
       <div id="main" class="main flex-grow-1 h-100 overflow-auto py-3">
-        
+
         <div class="flex-grow-1">
           <div id="navbarMobile">
             <nav class="navbar navbar-light bg-primary d-print-none
