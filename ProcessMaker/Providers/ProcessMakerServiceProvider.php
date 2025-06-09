@@ -262,19 +262,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
             // Dispatch the SmartInbox job with the processRequestToken as parameter
             SmartInbox::dispatch($task_id);
         });
-
-        Facades\Event::listen(\Spatie\Multitenancy\Events\MadeTenantCurrentEvent::class, function ($event) {
-            \Log::info('MULTITENANCY: MadeTenantCurrentEvent');
-        });
-
-        // \Spatie\Multitenancy\Events\TenantNotFoundForRequestEvent
-        Facades\Event::listen(\Spatie\Multitenancy\Events\TenantNotFoundForRequestEvent::class, function ($event) {
-            \Log::info('MULTITENANCY: TenantNotFoundForRequestEvent');
-        });
-
-        Facades\Event::listen(\Illuminate\Console\Events\CommandStarting::class, function ($event) {
-            \Log::info('ARTISAN: CommandStarting', ['command' => $event->command]);
-        });
     }
 
     /**

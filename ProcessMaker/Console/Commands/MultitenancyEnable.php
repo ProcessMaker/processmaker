@@ -15,14 +15,14 @@ class MultitenancyEnable extends Command
      *
      * @var string
      */
-    protected $signature = 'multitenancy:enable';
+    protected $signature = 'multitenancy:enable {--empty : Do do not migrate the existing instnace to a new tenant}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Migrate existing instnace to multitenancy';
+    protected $description = 'Enable multitenancy';
 
     /**
      * Execute the console command.
@@ -40,6 +40,12 @@ class MultitenancyEnable extends Command
         DB::statement("CREATE DATABASE IF NOT EXISTS `{$dbName}`");
 
         Artisan::call('migrate', ['--path' => 'database/migrations/landlord', '--database' => 'landlord']);
+
+        if ($this->option('empty')) {
+            $this->info('Multitenancy enabled successfully. No tenant was created.');
+
+            return;
+        }
 
         // Get just the domain from the app url
         $domain = parse_url(Env::get('APP_URL'), PHP_URL_HOST);

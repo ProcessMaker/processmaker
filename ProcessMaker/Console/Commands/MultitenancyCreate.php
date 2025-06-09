@@ -15,7 +15,7 @@ class MultitenancyCreate extends Command
      *
      * @var string
      */
-    protected $signature = 'multitenancy:create {--name=} {--database=} {--url=}';
+    protected $signature = 'multitenancy:create';
 
     /**
      * The console command description.
@@ -29,29 +29,57 @@ class MultitenancyCreate extends Command
      */
     public function handle()
     {
-        if (!$this->option('name') || !$this->option('database') || !$this->option('url')) {
-            $this->error('Name, database, and url are required');
+        // Datbase name should be .env DB_DATABASE + -tenant-<id>
+        // For example pm4_ci-003c0e7501-tenant-1
 
-            return;
+        // For CI Instnaces, Domain is https://t1.ci-003c0e7501.engk8s.processmaker.net
+
+        // In prod, domain won't change
+
+        $requiredOptions = ['name', 'database', 'url', 'username', 'password'];
+        foreach ($requiredOptions as $option) {
+            if (!$this->option($option)) {
+                $this->error('These settings are required: ' . implode(', ', $requiredOptions));
+
+                return;
+            }
         }
 
         $domain = parse_url($this->option('url'), PHP_URL_HOST);
+
+        if (Tenant::where('domain', $domain)->exists()) {
+            $this->info('Tenant already exists for domain: ' . $domain . '. Exiting.');
+
+            return;
+        }
 
         // insert into the tenants table
         $tenant = Tenant::create([
             'domain' => $domain,
             'name' => $this->option('name'),
             'database' => $this->option('database'),
+            'username' => $this->option('username'),
+            'password' => $this->option('password'),
             'config' => ['app.url' => $this->option('url')],
         ]);
 
         // build the folder structure
+
+        // Do not do when we copied the existing tenant storage
+
         $base = base_path('storage/tenant_' . $tenant->id);
         mkdir($base);
         $subfolders = [
             'app',
             'app/private',
             'app/public',
+            'app/public/profile',
+            'app/public/setting',
+            'app/private/settings',
+            'app/private/web_services',
+            'app/public/tmp',
+            'samlidp',
+            'decision-tables',
             'framework',
             'framework/views',
             'framework/cache',
@@ -59,20 +87,23 @@ class MultitenancyCreate extends Command
             'framework/sessions',
             'skins',
             'skins/base',
+            'api-docs',
         ];
         foreach ($subfolders as $subfolder) {
             mkdir($base . '/' . $subfolder);
         }
 
         // Create the database
-        DB::statement("CREATE DATABASE IF NOT EXISTS `{$this->option('database')}`");
-        $this->tenantArtisan('migrate --seed --force', $tenant->id);
+        if (!exists) {
+            DB::statement("CREATE DATABASE IF NOT EXISTS `{$this->option('database')}`");
+            $this->tenantArtisan('migrate --seed --force', $tenant->id);
 
-        // Add passport keys
-        $this->tenantArtisan('passport:keys', $tenant->id);
+            // Add passport keys
+            $this->tenantArtisan('passport:keys', $tenant->id);
 
-        // Call the upgrade commands
-        $this->tenantArtisan('upgrade', $tenant->id);
+            // Call the upgrade commands
+            $this->tenantArtisan('upgrade', $tenant->id);
+        }
 
         // Crate the config cache subfolder
         $configCachePath = base_path('bootstrap/cache/tenant_' . $tenant->id);
