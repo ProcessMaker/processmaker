@@ -107,6 +107,14 @@ abstract class CacheManagerBase
 
         if (!$prefix) {
             $prefix = $this->getPrefix($connection);
+
+            // Get the tenant id
+            $tenant = app('currentTenant');
+            $tenantId = $tenant ? $tenant->id : null;
+
+            if ($tenantId) {
+                $prefix = 'tenant_' . $tenantId . ':' . $prefix;
+            }
         }
 
         try {
