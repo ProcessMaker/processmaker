@@ -91,6 +91,17 @@ class CssOverrideController extends Controller
             $reset = true;
         }
 
+        $resourcePath = app()->resourcePath();
+
+        // Check if the _variables_bk.scss file exists
+        if (File::exists($resourcePath . '/sass/_variables_bk.scss')) {
+            // Restore _variables.scss
+            File::copy($resourcePath . '/sass/_variables_bk.scss', $resourcePath . '/sass/_variables.scss');
+        } else {
+            // Make a copy of _variables.scss to _variables_bk.scss
+            File::copy($resourcePath . '/sass/_variables.scss', $resourcePath . '/sass/_variables_bk.scss');
+        }
+
         $request->validate(Setting::rules($setting));
         $setting->fill($request->input());
         $setting->saveOrFail();
@@ -181,12 +192,19 @@ class CssOverrideController extends Controller
      */
     private function writeColors($data)
     {
+        $tenant = app('currentTenant');
+        $tenantId = $tenant ? $tenant->id : null;
+
         // Now generate the _colors.scss file
         $contents = "// Changed theme colors\n";
         foreach ($data as $key => $value) {
             $contents .= $value['id'] . ': ' . $value['value'] . ";\n";
         }
-        File::put(app()->resourcePath('sass') . '/_colors.scss', $contents);
+        if ($tenantId) {
+            File::put(app()->resourcePath('sass/tenant_' . $tenantId) . '/_colors.scss', $contents);
+        } else {
+            File::put(app()->resourcePath('sass') . '/_colors.scss', $contents);
+        }
     }
 
     /**
@@ -227,12 +245,11 @@ class CssOverrideController extends Controller
         $tenantId = $tenant ? $tenant->id : null;
 
         if ($tenantId) {
-            // Make a copy of _variables.scss to _variables_tmp.scss
-            File::copy(app()->resourcePath('sass/_variables.scss'), app()->resourcePath('sass/_variables_tmp.scss'));
-
-            // Replace @import 'fonts'; with @import 'fonts' with @import './tenant_1/_fonts';
-            $variablesScss = File::get(app()->resourcePath('sass/_variables_tmp.scss'));
+            $variablesScss = File::get(app()->resourcePath('sass/_variables.scss'));
+            // Replace @import 'fonts'; with @import 'fonts' with @import 'tenant_1/_fonts';
             $variablesScss = str_replace('@import \'fonts\';', '@import \'tenant_' . $tenantId . '/_fonts\';', $variablesScss);
+            // Replace @import 'colors'; with @import 'colors' with @import 'tenant_1/_colors';
+            $variablesScss = str_replace('@import \'colors\';', '@import \'tenant_' . $tenantId . '/_colors\';', $variablesScss);
             File::put(app()->resourcePath('sass/_variables.scss'), $variablesScss);
 
             // Compile tenant-specific Sass files

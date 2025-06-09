@@ -7,7 +7,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
@@ -56,13 +55,6 @@ class CompileSass implements ShouldQueue
             $this->updateCacheBuster();
 
             $resourcePath = app()->resourcePath();
-
-            // Check if the _variables_tmp.scss file exists
-            if (File::exists($resourcePath . '/sass/_variables_tmp.scss')) {
-                // Restore _variables.scss
-                File::copy($resourcePath . '/sass/_variables_tmp.scss', $resourcePath . '/sass/_variables.scss');
-                File::delete($resourcePath . '/sass/_variables_tmp.scss');
-            }
         }
 
         $user = User::find($this->properties['user']);

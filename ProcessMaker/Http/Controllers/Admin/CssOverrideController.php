@@ -18,7 +18,7 @@ class CssOverrideController extends Controller
 
         $config = Setting::byKey('css-override');
         $loginFooter = Setting::byKey('login-footer');
-        $altText = config('logo-alt-text', 'ProcessMaker');
+        $altText = Setting::byKey('logo-alt-text')?->config ?? 'ProcessMaker';
 
         return view('admin.cssOverride.edit', compact('config', 'loginFooter', 'altText', 'tab'));
     }
