@@ -271,7 +271,16 @@
                             this.formData.valpassword = "";
                         })
                         .catch(error => {
-                            this.errors = error.response.data.errors;
+                            if (error.response?.data?.errors) {
+                                this.errors = error.response.data.errors;
+                            }
+                            
+                            // Handle Slack notification errors
+                            if (error.response?.data?.message?.includes('Slack')) {
+                                ProcessMaker.alert(this.$t(error.response.data.message), 'danger');
+                                // Need to ensure the slack toggle is now disabled in the ui
+                                this.handleConnectedAccountToggle(DEFAULT_ACCOUNTS.connectorSlack, false);
+                            }
                         });
 
                   this.closeModal();
