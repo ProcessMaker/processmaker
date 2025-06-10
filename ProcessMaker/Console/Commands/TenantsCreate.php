@@ -8,14 +8,14 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\Multitenancy\Tenant;
 
-class MultitenancyCreate extends Command
+class TenantsCreate extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'multitenancy:create {--name=} {--url=} {--database=} {--username=} {--password=}';
+    protected $signature = 'tenants:create {--name=} {--url=} {--database=} {--username=} {--password=}';
 
     /**
      * The console command description.

@@ -8,21 +8,21 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\Multitenancy\Tenant;
 
-class MultitenancyEnable extends Command
+class TenantsEnable extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'multitenancy:enable {--empty : Do do not migrate the existing instnace to a new tenant}';
+    protected $signature = 'tenants:enable {--empty : Do do not migrate the existing instnace to a new tenant}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Enable multitenancy';
+    protected $description = 'Enable tenant support';
 
     /**
      * Execute the console command.
@@ -42,7 +42,7 @@ class MultitenancyEnable extends Command
         Artisan::call('migrate', ['--path' => 'database/migrations/landlord', '--database' => 'landlord']);
 
         if ($this->option('empty')) {
-            $this->info('Multitenancy enabled successfully. No tenant was created.');
+            $this->info('Tenant support enabled successfully. No tenant was created.');
 
             return;
         }
@@ -91,6 +91,6 @@ class MultitenancyEnable extends Command
         // cache config in bootstrap/cache/tenant_{id}/config.php
         Artisan::call('tenants:artisan', ['artisanCommand' => 'config:cache', '--tenant' => $tenant->id]);
 
-        $this->info('Multitenancy enabled successfully');
+        $this->info('Tenant support enabled successfully');
     }
 }

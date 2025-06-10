@@ -9,21 +9,21 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Multitenancy\Tenant;
 
-class MultitenancyDisable extends Command
+class TenantsDisable extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'multitenancy:disable {--default-tenant-id=}';
+    protected $signature = 'tenants:disable {--default-tenant-id=}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Disable multitenancy';
+    protected $description = 'Disable tenant support';
 
     /**
      * Execute the console command.
@@ -60,7 +60,7 @@ class MultitenancyDisable extends Command
             $tenant->delete();
         }
 
-        $this->info('Multitenancy disabled. You must switch to a non-multitenant branch to continue. You should delete bootstrap/cache/* and run php artisan optimize');
+        $this->info('Tenant support disabled. You must switch to a non-tenant branch to continue. You should delete bootstrap/cache/* and run php artisan optimize');
     }
 
     private function recursiveDelete($path)
