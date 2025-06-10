@@ -47,3 +47,4 @@ resources/lang/es
 resources/lang/fr
 devhub/pm-font/dist
 test-db-snapshot.db
+storage/transitions
