@@ -8,14 +8,14 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\Multitenancy\Tenant;
 
-class MultitenancyList extends Command
+class TenantsList extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'multitenancy:list {--ids : Only output the ids}';
+    protected $signature = 'tenants:list {--ids : Only output the ids}';
 
     /**
      * The console command description.

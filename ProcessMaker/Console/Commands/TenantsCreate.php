@@ -8,14 +8,14 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\Multitenancy\Tenant;
 
-class MultitenancyCreate extends Command
+class TenantsCreate extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'multitenancy:create';
+    protected $signature = 'tenants:create {--name=} {--url=} {--database=} {--username=} {--password=}';
 
     /**
      * The console command description.
@@ -94,7 +94,7 @@ class MultitenancyCreate extends Command
         }
 
         // Create the database
-        if (!exists) {
+        if (DB::connection('mysql')->getPdo()) {
             DB::statement("CREATE DATABASE IF NOT EXISTS `{$this->option('database')}`");
             $this->tenantArtisan('migrate --seed --force', $tenant->id);
 
