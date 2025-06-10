@@ -201,6 +201,13 @@ class CssOverrideController extends Controller
             $contents .= $value['id'] . ': ' . $value['value'] . ";\n";
         }
         if ($tenantId) {
+            // Create tenant-specific colors file
+            $tenantSassPath = app()->resourcePath('sass/tenant_' . $tenantId);
+
+            if (!file_exists($tenantSassPath)) {
+                mkdir($tenantSassPath, 0755, true);
+            }
+
             File::put(app()->resourcePath('sass/tenant_' . $tenantId) . '/_colors.scss', $contents);
         } else {
             File::put(app()->resourcePath('sass') . '/_colors.scss', $contents);
