@@ -4,7 +4,6 @@ namespace ProcessMaker\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use ProcessMaker\Multitenancy\Tenant;
 
 class TenantStorageLink extends Command
 {
@@ -13,44 +12,43 @@ class TenantStorageLink extends Command
      *
      * @var string
      */
-    protected $signature = 'tenant:storage-link {--tenant= : The ID of the tenant to create the link for}';
+    protected $signature = 'tenant:storage-link';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create the symbolic links for tenant storage directories';
+    protected $description = 'Create the symbolic link for the current tenant storage directory';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        $tenantId = $this->option('tenant');
+        $tenant = app('currentTenant');
 
-        if ($tenantId) {
-            $this->createLinkForTenant($tenantId);
-        } else {
-            // Create links for all tenants
-            // Tenant::all()->each(function ($tenant) {
-            //     $this->createLinkForTenant($tenant->id);
-            // });
+        if (!$tenant) {
+            $this->error('This command must be run within a tenant context using tenants:artisan');
+
+            return 1;
         }
+
+        $this->createStorageLink($tenant->id);
     }
 
     /**
-     * Create symbolic link for a specific tenant
+     * Create symbolic link for the current tenant
      *
      * @param int $tenantId
      * @return void
      */
-    protected function createLinkForTenant($tenantId)
+    protected function createStorageLink($tenantId)
     {
         $this->info('Creating storage link for tenant ' . $tenantId . '...');
 
         // Define paths
-        $tenantStoragePath = storage_path('tenant_' . $tenantId . '/app/public');
+        $tenantStoragePath = storage_path('/app/public');
         $publicPath = public_path('storage/tenant_' . $tenantId);
 
         // Create tenant storage directory if it doesn't exist

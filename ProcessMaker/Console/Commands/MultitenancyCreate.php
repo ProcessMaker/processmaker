@@ -113,7 +113,7 @@ class MultitenancyCreate extends Command
         $this->tenantArtisan('config:cache', $tenant->id);
 
         // Create storage link for the new tenant
-        $this->call('tenant:storage-link', ['--tenant' => $tenant->id]);
+        $this->tenantArtisan('tenant:storage-link', $tenant->id);
 
         $this->info('Tenant created successfully');
     }
