@@ -87,8 +87,6 @@ const ListMixin = {
         if (this.additionalIncludes) {
           include.push(...this.additionalIncludes);
         }
-
-        const getAllTasksInbox = "&all_inbox=true";
         // Load from our api client
         ProcessMaker.apiClient
           .get(
@@ -98,7 +96,6 @@ const ListMixin = {
                 this.perPage + this.sumCards
               }${filterParams}${this.getSortParam()}&non_system=true` +
               `&processesIManage=${this.processesIManage ? "true" : "false"}` +
-              getAllTasksInbox +
               advancedFilter +
               this.columnsQuery,
             {
