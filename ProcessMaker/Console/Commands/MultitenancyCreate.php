@@ -94,7 +94,7 @@ class MultitenancyCreate extends Command
         }
 
         // Create the database
-        if (!exists) {
+        if (DB::connection('mysql')->getPdo()) {
             DB::statement("CREATE DATABASE IF NOT EXISTS `{$this->option('database')}`");
             $this->tenantArtisan('migrate --seed --force', $tenant->id);
 
