@@ -402,5 +402,8 @@ class CssOverrideController extends Controller
 
         $encodedManifest = json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         file_put_contents($manifestFile, $encodedManifest);
+
+        // Cache the updated manifest
+        Cache::put('mix-manifest', $manifest, now()->addHours(24));
     }
 }
