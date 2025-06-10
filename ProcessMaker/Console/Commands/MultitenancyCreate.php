@@ -15,7 +15,7 @@ class MultitenancyCreate extends Command
      *
      * @var string
      */
-    protected $signature = 'multitenancy:create';
+    protected $signature = 'multitenancy:create {--name=} {--url=} {--database=} {--username=} {--password=}';
 
     /**
      * The console command description.
