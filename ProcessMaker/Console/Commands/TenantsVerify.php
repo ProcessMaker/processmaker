@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Spatie\Multitenancy\Models\Tenant;
 
-class TenantsVerifyCommand extends Command
+class TenantsVerify extends Command
 {
     /**
      * The name and signature of the console command.
