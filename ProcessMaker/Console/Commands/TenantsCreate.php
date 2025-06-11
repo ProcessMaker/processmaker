@@ -3,8 +3,10 @@
 namespace ProcessMaker\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Env;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use ProcessMaker\Multitenancy\Tenant;
@@ -54,19 +56,22 @@ class TenantsCreate extends Command
             return;
         }
 
+        $key = 'base64:' . base64_encode(
+            Encrypter::generateKey(config('app.cipher'))
+        );
+        $key = Crypt::encryptString($key);
+
         // insert into the tenants table
-        $tenant = Tenant::updateOrCreate([
+        $tenant = Tenant::create([
             'domain' => $domain,
-        ], [
             'name' => $this->option('name'),
             'database' => $this->option('database'),
             'username' => $this->option('username', null),
             'password' => $this->option('password', null),
-            'config' => ['app.url' => $this->option('url')],
+            'config' => ['app.url' => $this->option('url'), 'app.key' => $key],
         ]);
 
         // Setup storage
-
         $tenantStoragePath = base_path('storage/tenant_' . $tenant->id);
         $needsStorage = true;
 
@@ -112,20 +117,18 @@ class TenantsCreate extends Command
         }
 
         // Setup database
-
-        $tenantDbExists = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '{$this->option('database')}'");
+        // DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '{$this->option('database')}'");
+        DB::statement("CREATE DATABASE `{$this->option('database')}`");
 
         // Create the database
-        if (!$tenantDbExists) {
-            DB::statement("CREATE DATABASE `{$this->option('database')}`");
-            $this->tenantArtisan('migrate --seed --force', $tenant->id);
+        // SKIPPING - migrate/upgrade should be done on its own
+        // if (!$tenantDbExists) {
+        //     DB::statement("CREATE DATABASE `{$this->option('database')}`");
+        //     $this->tenantArtisan('migrate --seed --force', $tenant->id);
 
-            // Add passport keys
-            $this->tenantArtisan('passport:keys', $tenant->id);
-
-            // Call the upgrade commands
-            $this->tenantArtisan('upgrade', $tenant->id);
-        }
+        //     // Call the upgrade commands
+        //     $this->tenantArtisan('upgrade', $tenant->id);
+        // }
 
         // Crate the config cache subfolder
         //

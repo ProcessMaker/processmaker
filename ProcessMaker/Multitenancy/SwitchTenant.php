@@ -3,6 +3,7 @@
 namespace ProcessMaker\Multitenancy;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use PDO;
 use Spatie\Multitenancy\Concerns\UsesMultitenancyConfig;
@@ -65,7 +66,13 @@ class SwitchTenant implements SwitchTenantTask
         config($newConfig);
 
         // Set config from the entry in the tenants table
-        config($tenant->config);
+        $config = $tenant->config;
+        if (isset($config['app.key'])) {
+            // Decrypt using the landlord APP_KEY in the .env file.
+            // All encryption after this will use the tenant's key.
+            $config['app.key'] = Crypt::decryptString($config['app.key']);
+        }
+        config($config);
     }
 
     /**
