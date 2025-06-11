@@ -52,24 +52,22 @@ class DefaultColumns
     public static function verifyDefaultColumns($savedColumns, string $key): bool
     {
         // Handle null savedColumns
-        if ($savedColumns === null || !is_array($savedColumns)) {
-            return false;
+        if ($savedColumns === null || !is_array($savedColumns) || empty($savedColumns)) {
+            return true;
         }
 
         // Determine the type based on the key
         $type = null;
         if ($key === SavedSearch::KEY_TASKS) {
             $type = 'task';
-        } elseif ($key === SavedSearch::KEY_REQUESTS) {
-            $type = 'request';
         } else {
-            return false;
+            return true;
         }
 
         // Get default columns using the HasDataColumns trait
         $defaultColumns = SavedSearch::getDefaultColumns($type);
         if ($defaultColumns->isEmpty()) {
-            return false;
+            return true;
         }
 
         // Extract only the 'field' values from default columns
