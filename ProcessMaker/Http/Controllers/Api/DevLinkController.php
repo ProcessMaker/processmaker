@@ -90,7 +90,7 @@ class DevLinkController extends Controller
     public function ping(DevLink $devLink)
     {
         try {
-            return$devLink->client()->get(route('api.devlink.pong', [], false));
+            return $devLink->client()->get(route('api.devlink.pong', [], false));
         } catch (\Exception $e) {
             return response()->json(['error' => 'DevLink connection error'], $e->getCode());
         }
