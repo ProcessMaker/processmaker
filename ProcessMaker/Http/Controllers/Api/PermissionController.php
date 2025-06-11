@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Events\PermissionChanged;
 use ProcessMaker\Events\PermissionUpdated;
@@ -86,9 +87,15 @@ class PermissionController extends Controller
             $entity = User::findOrFail($request->input('user_id'));
             // Obtain user old Permissions before save
             $originalPermissionNames = $entity->permissions()->pluck('name')->toArray();
-
             if ($request->has('is_administrator')) {
-                $entity->is_administrator = filter_var($request->input('is_administrator'), FILTER_VALIDATE_BOOLEAN);
+                $isSettingToAdmin = $request->boolean('is_administrator');
+
+                if ((!Auth::user()->is_administrator && $entity->is_administrator) ||
+                    ($isSettingToAdmin && !Auth::user()->is_administrator)) {
+                    return response()->json(['message' => 'You are not authorized to modify administrator privileges'], 403);
+                }
+
+                $entity->is_administrator = $isSettingToAdmin;
                 $entity->save();
             }
         } elseif ($request->input('group_id')) {
