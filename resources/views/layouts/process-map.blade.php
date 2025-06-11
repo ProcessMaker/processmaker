@@ -61,7 +61,7 @@
           enabledTransports: ['ws', 'wss'],
           disableStats: true,
         };
-        
+
         @if(config('broadcasting.connections.pusher.options.host'))
           window.Processmaker.broadcasting.wsHost = "{{config('broadcasting.connections.pusher.options.host')}}";
           window.Processmaker.broadcasting.wsPort = "{{config('broadcasting.connections.pusher.options.port')}}";

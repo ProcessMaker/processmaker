@@ -16,6 +16,13 @@ abstract class CacheManagerBase
     protected const AVAILABLE_CONNECTIONS = ['redis', 'cache_settings'];
 
     /**
+     * The tenant prefix.
+     *
+     * @var string
+     */
+    protected const TENANT_PREFIX = 'tenant_';
+
+    /**
      * Check if a connection is available.
      *
      * @param string $connection The connection to check.
@@ -34,12 +41,22 @@ abstract class CacheManagerBase
      *
      * @return string The prefix for the connection.
      */
-    private function getPrefix(string $connection): string
+    public function getPrefix(string $connection): string
     {
         $prefix = config('cache.prefix');
 
         if ($connection === 'cache_settings') {
             $prefix = config('cache.stores.' . $connection . '.prefix');
+        }
+
+        $tenant = app('currentTenant');
+        $tenantId = $tenant ? $tenant->id : null;
+
+        if ($tenantId) {
+            if (strpos($prefix, self::TENANT_PREFIX) === false) {
+                $prefix = self::TENANT_PREFIX . $tenantId . ':' . $prefix;
+                config(['cache.stores.' . $connection . '.prefix' => $prefix]);
+            }
         }
 
         return $prefix;

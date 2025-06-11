@@ -138,6 +138,9 @@ class TenantsCreate extends Command
         // }
         // $this->tenantArtisan('config:cache', $tenant->id);
 
+        // Create storage link for the new tenant
+        $this->tenantArtisan('tenant:storage-link', $tenant->id);
+
         $this->info('Tenant created successfully');
     }
 

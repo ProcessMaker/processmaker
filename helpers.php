@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Auth;
 use Laravel\Horizon\Repositories\RedisJobRepository;
 use ProcessMaker\Events\MarkArtisanCachesAsInvalid;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\SanitizeHelper;
 
 if (!function_exists('job_pending')) {
@@ -74,8 +75,8 @@ if (!function_exists('color')) {
      */
     function color($key)
     {
-        if ($colors = config('css-override.variables')) {
-            $colors = json_decode($colors);
+        if ($setting = Setting::byKey('css-override')) {
+            $colors = json_decode($setting->config['variables']);
             foreach ($colors as $color) {
                 if ($color->id === '$' . $key) {
                     return $color->value;
@@ -95,7 +96,7 @@ if (!function_exists('sidebar_class')) {
      */
     function sidebar_class()
     {
-        if (config('css-override.variables')) {
+        if (Setting::byKey('css-override')) {
             $defaults = ['#0872C2', '#2773F3'];
             if (!in_array(color('primary'), $defaults)) {
                 return 'sidebar-custom';
@@ -274,5 +275,38 @@ if (!function_exists('shouldShow')) {
         } else {
             return true;
         }
+    }
+}
+
+if (!function_exists('tenant_css_path')) {
+    /**
+     * Get the tenant-specific CSS path if available, otherwise return the default path
+     *
+     * @param string $path The CSS path relative to public/css
+     * @return string The full CSS path
+     */
+    function tenant_css_path($path)
+    {
+        $tenant = app('currentTenant');
+        if ($tenant) {
+            $files = [
+                'app.css' => 'app_tenant_' . $tenant->id . '.css',
+                'sidebar.css' => 'sidebar_tenant_' . $tenant->id . '.css',
+            ];
+
+            // Check for tenant-specific CSS file in mix manifest first
+            $manifestPath = public_path('mix-manifest.json');
+            if (file_exists($manifestPath)) {
+                $manifest = json_decode(file_get_contents($manifestPath), true);
+                $tenantCssKey = '/css/' . $files[$path];
+
+                if (isset($manifest[$tenantCssKey])) {
+                    return 'css/' . $files[$path];
+                }
+            }
+        }
+
+        // Fall back to default path
+        return 'css/' . basename($path);
     }
 }
