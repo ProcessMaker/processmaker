@@ -77,4 +77,14 @@ class Application extends IlluminateApplication
     {
         return $this->basePath . DIRECTORY_SEPARATOR . 'ProcessMaker' . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
+
+    public function setStoragePath($path)
+    {
+        $this->storagePath = $path;
+    }
+
+    public function getStoragePath()
+    {
+        return $this->storagePath;
+    }
 }

@@ -57,6 +57,8 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        \Log::info('AuthServiceProvider boot');
+
         $this->registerPolicies();
 
         Passport::enablePasswordGrant();
@@ -71,6 +73,10 @@ class AuthServiceProvider extends ServiceProvider
             // Let other policies handle the request.
             return null;
         });
+
+        if ($this->app->runningInConsole()) {
+            return;
+        }
 
         try {
             // Cache the permissions for a day to improve performance

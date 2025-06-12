@@ -41,16 +41,15 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
         $cacheDriver = $isAvailableConnection ? self::DEFAULT_CACHE_DRIVER : $defaultCache;
         // Store the cache driver
         $this->cacheManager = $this->manager->store($cacheDriver);
+
+        $prefix = $this->getPrefix($cacheDriver);
+        $this->cacheManager->setPrefix($prefix);
     }
 
     /**
      * Create a cache key for a screen
      *
-     * @param int $processId Process ID
-     * @param int $processVersionId Process Version ID
-     * @param string $language Language code
-     * @param int $screenId Screen ID
-     * @param int $screenVersionId Screen Version ID
+     * @param array $params Parameters for key creation
      * @return string The generated cache key
      */
     public function createKey(array $params): string

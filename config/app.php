@@ -170,6 +170,7 @@ return [
     'login_view' => env('LOGIN_VIEW', 'auth.newLogin'),
 
     'providers' => ServiceProvider::defaultProviders()->merge([
+        Spatie\Multitenancy\MultitenancyServiceProvider::class,
         /**
          * Package Service Providers
          */
@@ -195,6 +196,7 @@ return [
         ProcessMaker\Providers\OpenAiServiceProvider::class,
         ProcessMaker\Providers\LicenseServiceProvider::class,
         ProcessMaker\Providers\MetricsServiceProvider::class,
+        ProcessMaker\Providers\MixServiceProvider::class,
     ])->toArray(),
 
     'aliases' => Facade::defaultAliases()->merge([
@@ -209,6 +211,7 @@ return [
         'Theme' => Igaster\LaravelTheme\Facades\Theme::class,
         'WorkspaceManager' => ProcessMaker\Facades\WorkspaceManager::class,
         'SettingCache' => ProcessMaker\Cache\Settings\SettingCacheFacade::class,
+        'Tenant' => ProcessMaker\Multitenancy\Tenant::class,
     ])->toArray(),
 
     'debug_blacklist' => [
