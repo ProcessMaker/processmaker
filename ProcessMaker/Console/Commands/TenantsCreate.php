@@ -150,5 +150,6 @@ class TenantsCreate extends Command
     private function tenantArtisan($command, $tenantId)
     {
         Artisan::call('tenants:artisan', ['artisanCommand' => $command, '--tenant' => $tenantId]);
+        $this->info(Artisan::output());
     }
 }

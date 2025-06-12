@@ -15,7 +15,7 @@ class TenantsEnable extends Command
      *
      * @var string
      */
-    protected $signature = 'tenants:enable {--empty : Do do not migrate the existing instnace to a new tenant}';
+    protected $signature = 'tenants:enable {--migrate: migrate the existing instance to a new tenant}';
 
     /**
      * The console command description.
@@ -29,52 +29,37 @@ class TenantsEnable extends Command
      */
     public function handle()
     {
-        $configCachePath = base_path('bootstrap/cache/config.php');
-        if (file_exists($configCachePath)) {
-            unlink($configCachePath);
+        $migrate = $this->option('migrate', false);
+
+        $landlordDbName = config('database.connections.landlord.database');
+        if ($migrate) {
+            // IF migrating, we keep the DB_DATABASE as the tenant database and create a new landlord database instead
+            // Otherwise, the DB_DATABASE is the landlord
+            $landlordDbName = 'landlord';
+            config(['database.connections.landlord.database' => $landlordDbName]);
         }
 
-        $dbName = config('database.connections.landlord.database');
+        // create the landlord database
+        DB::statement("CREATE DATABASE IF NOT EXISTS `{$landlordDbName}`");
 
         // migrate the landlord database
-        DB::statement("CREATE DATABASE IF NOT EXISTS `{$dbName}`");
-
         Artisan::call('migrate', ['--path' => 'database/migrations/landlord', '--database' => 'landlord']);
+        $this->info(Artisan::output());
 
-        if ($this->option('empty')) {
-            $this->info('Tenant support enabled successfully. No tenant was created.');
+        if (!$migrate) {
+            $this->info('Tenant support enabled successfully');
 
             return;
         }
 
-        // Get just the domain from the app url
-        $domain = parse_url(Env::get('APP_URL'), PHP_URL_HOST);
-
-        // Create the first tenant
-        $tenant = Tenant::updateOrCreate([
-            'domain' => $domain,
-        ], [
-            'name' => config('app.name'),
-            'database' => Env::get('DB_DATABASE'),
-            'config' => [
-                'app.url' => config('app.url'),
-            ],
+        // Create the tenant from the existing instance
+        Artisan::call('tenants:create', [
+            '--database' => config('database.connections.processmaker.database'),
+            '--url' => config('app.url'),
+            '--storage-folder' => base_path('storage'),
+            '--name' => config('app.name'),
         ]);
-
-        // make storage/tenant_{id}
-        $storageDir = base_path('storage/tenant_' . $tenant->id);
-        if (!file_exists($storageDir)) {
-            mkdir($storageDir, 0755);
-        }
-
-        // Move the existing storage into storage/tenant_{id} (except for tenant_*)
-        $storageFiles = glob(base_path('storage/*'));
-        foreach ($storageFiles as $file) {
-            if (preg_match('/^(tenant_|logs)/', basename($file))) {
-                continue;
-            }
-            rename($file, $storageDir . '/' . basename($file));
-        }
+        $this->info(Artisan::output());
 
         // Leave an empty folders to stop some providers from complaining
         $frameworkViewsDir = base_path('storage/framework/views');
@@ -82,15 +67,6 @@ class TenantsEnable extends Command
         $skinsBaseDir = base_path('storage/skins/base');
         mkdir($skinsBaseDir, 0755, true);
 
-        // make boostrap/cache/tenant_{id}
-        $configCacheDir = base_path('bootstrap/cache/tenant_' . $tenant->id);
-        if (!file_exists($configCacheDir)) {
-            mkdir($configCacheDir, 0755);
-        }
-
-        // cache config in bootstrap/cache/tenant_{id}/config.php
-        Artisan::call('tenants:artisan', ['artisanCommand' => 'config:cache', '--tenant' => $tenant->id]);
-
-        $this->info('Tenant support enabled successfully');
+        $this->info('Tenant support enabled successfully and migrated to a new tenant');
     }
 }

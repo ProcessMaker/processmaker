@@ -37,13 +37,15 @@ class SwitchTenant implements SwitchTenantTask
         if (!file_exists($tenantStoragePath)) {
             mkdir($tenantStoragePath, 0755, true);
         }
-        $tennantCacheFolder = base_path('bootstrap/cache/tenant_' . $tenant->id);
-        if (!file_exists($tennantCacheFolder)) {
-            mkdir($tennantCacheFolder, 0755, true);
-        }
 
         // Set the cached config path
         // Not needed for now because we are setting the config manually below
+
+        // $tennantCacheFolder = base_path('bootstrap/cache/tenant_' . $tenant->id);
+        // if (!file_exists($tennantCacheFolder)) {
+        //     mkdir($tennantCacheFolder, 0755, true);
+        // }
+
         // putenv('APP_CONFIG_CACHE=' . $tennantCacheFolder . '/config.php');
 
         // We cant reload config here because it overrides dynamic configs set in packages (like docker-executor-php)

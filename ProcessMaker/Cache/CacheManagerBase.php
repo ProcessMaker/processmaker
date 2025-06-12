@@ -49,7 +49,7 @@ abstract class CacheManagerBase
             $prefix = config('cache.stores.' . $connection . '.prefix');
         }
 
-        $tenant = app('currentTenant');
+        $tenant = app()->bound('currentTenant') ? app('currentTenant') : null;
         $tenantId = $tenant ? $tenant->id : null;
 
         if ($tenantId) {
