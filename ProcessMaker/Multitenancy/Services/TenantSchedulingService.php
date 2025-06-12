@@ -102,7 +102,7 @@ class TenantSchedulingService
             $scheduledEvent->description("Tenant {$tenant->id} ({$tenant->name}): {$command}");
 
             // Remove the environments restriction which might be preventing execution
-            // $scheduledEvent->environments(['tenant_' . $tenant->id]);
+            $scheduledEvent->environments(['tenant_' . $tenant->id]);
         }
 
         Log::info('Registered ' . count($config['schedule']) . " tasks for tenant {$tenant->id}");
