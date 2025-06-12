@@ -14,7 +14,6 @@
     @hide="onHide"
   >
     <template v-if="customButton" #button-content>
-    something here
       <i
         class="pr-1 ellipsis-menu-icon no-padding"
         :class="customButton.icon"
@@ -24,14 +23,12 @@
       </span>
     </template>
     <template v-else-if="lauchpad" #button-content>
-    something else here
       <i class="fas fa-ellipsis-v ellipsis-menu-icon p-0 ellipsis-icon-v" />
       <span>
         {{ $t('Options') }}
       </span>
     </template>
     <template v-else #button-content>
-    something else here 2
       <span class="text-capitalize screen-toolbar-button">
         <i class="fas fa-ellipsis-h ellipsis-menu-icon p-0" />
       </span>
@@ -212,7 +209,6 @@ export default {
     },
     filterActionsByPermissions() {
       return this.actions.filter(action => {
-        console.log('filterActionsByPermissions', action);
         // Check if the action has a 'permission' property and it's a non-empty string
         if (!action.permission || typeof action.permission === 'string' && action.permission.trim() === '') {
           return true; // No specific permission required or invalid format, so allow the action.
@@ -228,19 +224,12 @@ export default {
         // Check if this.permission is of type object
         if (typeof this.permission === 'object' && this.permission !== null) {
           const keys = Object.keys(this.permission);
-          console.log('KEYS', keys);
-          console.log('this.permission', this.permission);
-          console.log('requiredPermissions', requiredPermissions);
           if (keys[0] === "0") {
             return requiredPermissions.some(permission => Object.values(this.permission).includes(permission));
           } else {
-          console.log('++++ return this', requiredPermissions.some(permission => this.permission.hasOwnProperty(permission) && this.permission[permission]));
             return requiredPermissions.some(permission => this.permission.hasOwnProperty(permission) && this.permission[permission]);
           }
         }
-        console.log("===== ARE WER HERE? 3 =====");
-        console.log('THIS PERMISSION', this.permission);
-        console.log('REQUIRED PERMISSIONS', requiredPermissions);
         // Check if this.permission is a string or an array
         if (typeof this.permission === 'string') {
             return requiredPermissions.some(permission => this.permission.split(',').includes(permission));
@@ -277,9 +266,6 @@ export default {
       const isInUrl = /process-browser|inbox/.test(currentUrl);
       return isInUrl;
     },
-  },
-  mounted() {
-    console.log('EllipsisMenu mounted', this.actions);
   },
 };
 </script>
