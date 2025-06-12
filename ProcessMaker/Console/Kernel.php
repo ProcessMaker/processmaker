@@ -4,6 +4,7 @@ namespace ProcessMaker\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use ProcessMaker\Multitenancy\Services\TenantSchedulingService;
 
 class Kernel extends ConsoleKernel
 {
