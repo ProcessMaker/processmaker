@@ -66,9 +66,10 @@ class TenantStorageLink extends Command
 
         // Remove existing link or directory if it exists
         if (File::exists($publicPath)) {
-            if (!$this->confirm('The symbolic link for tenant ' . $tenantId . ' already exists. Do you want to recreate it?')) {
-                return;
-            }
+            // We can't use `confirm` here because this command will be run without any user interaction
+            // if (!$this->confirm('The symbolic link for tenant ' . $tenantId . ' already exists. Do you want to recreate it?')) {
+            //     return;
+            // }
             if (is_link($publicPath)) {
                 File::delete($publicPath);
             } else {

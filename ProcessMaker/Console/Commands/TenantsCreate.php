@@ -40,11 +40,12 @@ class TenantsCreate extends Command
         // In prod, domain won't change
 
         $requiredOptions = ['name', 'database', 'url'];
+
         foreach ($requiredOptions as $option) {
             if (!$this->option($option)) {
                 $this->error('These settings are required: ' . implode(', ', $requiredOptions));
 
-                return;
+                return 1;
             }
         }
 
@@ -53,7 +54,7 @@ class TenantsCreate extends Command
         if (Tenant::where('domain', $domain)->exists()) {
             $this->info('Tenant already exists for domain: ' . $domain . '. Exiting.');
 
-            return;
+            return 1;
         }
 
         $key = 'base64:' . base64_encode(
@@ -73,52 +74,66 @@ class TenantsCreate extends Command
 
         // Setup storage
         $tenantStoragePath = base_path('storage/tenant_' . $tenant->id);
-        $needsStorage = true;
-
-        // Check if the storage folder already exists
-        if (File::isDirectory($tenantStoragePath)) {
-            $needsStorage = false;
+        if (!File::isDirectory($tenantStoragePath)) {
+            mkdir($tenantStoragePath, 0755, true);
         }
 
         // Check if an existing storage folder is provided
         $storageFolderOption = $this->option('storage-folder', null);
-        if ($needsStorage && $storageFolderOption && File::isDirectory($storageFolderOption)) {
+        if ($storageFolderOption && File::isDirectory($storageFolderOption)) {
             $this->info('Moving storage folder to ' . $tenantStoragePath);
-            rename($storageFolderOption, $tenantStoragePath);
-            $needsStorage = false;
+            $subfoldersToExclude = '/^(tenant_\d+|logs|transitions)$/i';
+            foreach (File::directories($storageFolderOption) as $subfolder) {
+                if (preg_match($subfoldersToExclude, basename($subfolder))) {
+                    $this->info('Skipping ' . $subfolder);
+                    continue;
+                }
+                $this->info('Moving ' . $subfolder . ' to ' . $tenantStoragePath);
+                rename($subfolder, $tenantStoragePath . '/' . basename($subfolder));
+            }
         }
 
-        // If the storage folder does not exist, create it
-        if ($needsStorage) {
-            mkdir($tenantStoragePath);
-            $subfolders = [
-                'app',
-                'app/private',
-                'app/public',
-                'app/public/profile',
-                'app/public/setting',
-                'app/private/settings',
-                'app/private/web_services',
-                'app/public/tmp',
-                'samlidp',
-                'decision-tables',
-                'framework',
-                'framework/views',
-                'framework/cache',
-                'framework/cache/data',
-                'framework/sessions',
-                'skins',
-                'skins/base',
-                'api-docs',
-            ];
-            foreach ($subfolders as $subfolder) {
-                mkdir($tenantStoragePath . '/' . $subfolder);
+        $subfolders = [
+            'app',
+            'app/private',
+            'app/public',
+            'app/public/profile',
+            'app/public/setting',
+            'app/private/settings',
+            'app/private/web_services',
+            'app/public/tmp',
+            'samlidp',
+            'decision-tables',
+            'framework',
+            'framework/views',
+            'framework/cache',
+            'framework/cache/data',
+            'framework/sessions',
+            'skins',
+            'skins/base',
+            'api-docs',
+        ];
+
+        foreach ($subfolders as $subfolder) {
+            if (!File::isDirectory($tenantStoragePath . '/' . $subfolder)) {
+                mkdir($tenantStoragePath . '/' . $subfolder, 0755, true);
             }
+        }
+
+        // Make sure these folders still exist in landlor storage.
+        // Some providers look for these folders before the tenant is set.
+        $frameworkViewsDir = base_path('storage/framework/views');
+        if (!File::isDirectory($frameworkViewsDir)) {
+            mkdir($frameworkViewsDir, 0755, true);
+        }
+        $skinsBaseDir = base_path('storage/skins/base');
+        if (!File::isDirectory($skinsBaseDir)) {
+            mkdir($skinsBaseDir, 0755, true);
         }
 
         // Setup database
         // DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '{$this->option('database')}'");
-        DB::statement("CREATE DATABASE `{$this->option('database')}`");
+        DB::statement("CREATE DATABASE IF NOT EXISTS `{$this->option('database')}`");
 
         // Create the database
         // SKIPPING - migrate/upgrade should be done on its own
@@ -149,7 +164,6 @@ class TenantsCreate extends Command
 
     private function tenantArtisan($command, $tenantId)
     {
-        Artisan::call('tenants:artisan', ['artisanCommand' => $command, '--tenant' => $tenantId]);
-        $this->info(Artisan::output());
+        Artisan::call('tenants:artisan', ['artisanCommand' => $command, '--tenant' => $tenantId], $this->output);
     }
 }

@@ -540,18 +540,16 @@ ProcessMaker is now set up as a multitenant application. By default, there is on
 
 ## Transition to multitenancy
 
-1. Modify your .env and add LANDLORD_DB_DATABASE
-
 1. Run the following command to enable multitenancy
    ```
-   php artisan multitenancy:enable
+   php artisan tenants:enable
    ```
    This command will
    - Create the landlord database
    - Set your existing database as the tenant database
    - Move your existing storage folder to `storage/tenant_1`
 
-## Add a new tenant
+## Add another tenant
 
 For local development, you will need add another domain to your nginx config. To do this with Valet, run:
 
@@ -559,9 +557,9 @@ For local development, you will need add another domain to your nginx config. To
 valet link another-tenant.test
 ```
 
-Run the following command to create a new tenant:
+Run the following command to create another tenant:
 ```
-php artisan multitenancy:create --domain="another-tenant.test" --name="Another Tenant" --database="another_tenant"
+php artisan tenants:create --domain="another-tenant.test" --name="Another Tenant" --database="another_tenant"
 ```
 
 This command will
@@ -573,7 +571,33 @@ This command will
 
 ## Migrate an existing instnace to a tenant
 
-Todo
+### Option 1: Using the TenantsCreate command
+
+Provide the --storage-folder option with the path to the storage folder of the instance you want to migrate. Use the existing instances database name.
+
+Optionally, provide the --username and --password options of the db for the existing instance.
+
+The storage folder will be **moved** to the new tenant's storage folder.
+```
+php artisan tenants:create --domain="some-tenant.test" --name="Some Tenant" --database="some_tenant" --storage-folder="/path/to/storage/folder"
+```
+
+### Option 2: Using the TenantsTransition command
+
+Create a folder `storage/transitions` if it doesn't exist.
+
+In that folder create a new folder for each instance you want to migrate.
+
+The folder should contain exactly 2 things:
+- the .env from the instance you want to migrate
+- the storage folder from the instance you want to migrate, named `storage`
+
+Run the following command to migrate the instance(s) to a tenant:
+```
+php artisan tenants:transition
+```
+
+This command will:
 
 # License
 
