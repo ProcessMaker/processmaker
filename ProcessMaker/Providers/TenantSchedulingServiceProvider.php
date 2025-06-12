@@ -3,7 +3,7 @@
 namespace ProcessMaker\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use ProcessMaker\Services\TenantSchedulingService;
+use ProcessMaker\Multitenancy\Services\TenantSchedulingService;
 
 class TenantSchedulingServiceProvider extends ServiceProvider
 {
