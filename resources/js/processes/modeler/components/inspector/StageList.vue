@@ -31,7 +31,6 @@
         v-model="newStage"
         class="tw-flex-1 tw-border tw-rounded px-2"
         :placeholder="$t('Enter name')"
-        :state="stateNewStage"
         @keyup.enter="onKeyupEnter"
       >
     </div>
@@ -76,14 +75,6 @@ const onClickAdd = () => {
   adding.value = !adding.value;
   newStage.value = "";
 };
-
-const stateNewStage = computed(() => {
-  if (newStage.value.trim() === "") {
-    console.log(newStage.value);
-    return false;
-  }
-  return true;
-});
 
 const generateUniqueId = () => {
   const timestamp = Math.floor(Date.now() / 1000);

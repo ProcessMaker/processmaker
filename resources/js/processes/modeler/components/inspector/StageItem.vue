@@ -62,8 +62,10 @@ const localName = ref(props.name);
 const isChecked = ref(false);
 
 const onKeyupEnter = () => {
-  emit("onUpdate", localName.value);
-  editing.value = false;
+  if (localName.value && localName.value.trim()) {
+    emit("onUpdate", localName.value);
+    editing.value = false;
+  }
 };
 
 const check = () => {
