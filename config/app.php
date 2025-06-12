@@ -197,8 +197,6 @@ return [
         ProcessMaker\Providers\LicenseServiceProvider::class,
         ProcessMaker\Providers\MetricsServiceProvider::class,
         ProcessMaker\Providers\MixServiceProvider::class,
-        ProcessMaker\Providers\TenantSchedulingServiceProvider::class,
-        ProcessMaker\Multitenancy\MultitenancyServiceProvider::class,
     ])->toArray(),
 
     'aliases' => Facade::defaultAliases()->merge([

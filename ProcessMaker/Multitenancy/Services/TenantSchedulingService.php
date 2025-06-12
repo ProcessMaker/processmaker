@@ -81,28 +81,17 @@ class TenantSchedulingService
             return;
         }
 
-        // Make sure the tenant is set as the current tenant
-        $currentTenantId = app()->bound('currentTenantId') ? app('currentTenantId') : null;
-        Log::info('Current tenant ID in container: ' . ($currentTenantId ?? 'not set'));
-
-        // Only proceed if we're handling the correct tenant or no specific tenant is set
-        if ($currentTenantId !== null && $currentTenantId != $tenant->id) {
-            Log::info("Skipping tasks for tenant {$tenant->id} as current tenant is {$currentTenantId}");
-
-            return;
-        }
-
         foreach ($config['schedule'] as $command => $settings) {
             Log::info("Registering command for tenant {$tenant->id}: {$command}");
             $scheduledEvent = $this->createScheduledEvent($schedule, $tenant, $command);
             $this->applyScheduleFrequency($scheduledEvent, $settings);
             $this->applyScheduleOptions($scheduledEvent, $settings);
 
-            // Add a descriptive description with tenant info
-            $scheduledEvent->description("Tenant {$tenant->id} ({$tenant->name}): {$command}");
-
-            // Remove the environments restriction which might be preventing execution
-            $scheduledEvent->environments(['tenant_' . $tenant->id]);
+            // Format the command for display
+            $phpBinary = PHP_BINARY;
+            $formattedCommand = "'{$phpBinary}' 'artisan' {$command} > '/dev/null' 2>&1";
+            // Add a descriptive description with tenant info and formatted command
+            $scheduledEvent->description("Tenant {$tenant->id} ({$tenant->name}): {$formattedCommand}");
         }
 
         Log::info('Registered ' . count($config['schedule']) . " tasks for tenant {$tenant->id}");
@@ -118,24 +107,12 @@ class TenantSchedulingService
      */
     protected function createScheduledEvent(Schedule $schedule, Tenant $tenant, string $command)
     {
-        // Some commands may not support the tenant option, so wrap them in a closure
-        // that sets the tenant context first
-        $event = $schedule->call(function () use ($command, $tenant) {
-            // Set tenant context
-            if (method_exists($tenant, 'makeCurrent')) {
-                $tenant->makeCurrent();
-            }
-            app()->instance('currentTenant', $tenant);
+        // Lanza el comando exacto para ese tenant
+        $fullCommand = "tenants:artisan {$command} --tenant={$tenant->id}";
 
-            // Log that we're about to run the command
-            Log::info("Executing scheduled command for tenant {$tenant->id}: {$command}");
+        $event = $schedule->command($fullCommand);
 
-            // Execute the command
-            Artisan::call($command);
-        });
-
-        // Log the event creation
-        Log::info("Created scheduled event for tenant {$tenant->id}: {$command}");
+        Log::info("Created scheduled event for tenant {$tenant->id}: {$fullCommand}");
 
         return $event;
     }
@@ -188,7 +165,13 @@ class TenantSchedulingService
      */
     protected function applyScheduleOptions($event, array $settings)
     {
-        if (isset($settings['withoutOverlapping']) && $settings['withoutOverlapping']) {
+        if (isset($settings['withoutOverlapping']) && $settings['withoutOverlapping']
+            && method_exists($event, 'name')
+        ) {
+            // Ensure a unique name is set before withoutOverlapping()
+            $eventName = 'tenant-' . ($settings['tenant_id'] ?? 'unknown') . '-' . md5($event->description ?? microtime());
+            $event->name($eventName);
+
             $event->withoutOverlapping();
         }
 
