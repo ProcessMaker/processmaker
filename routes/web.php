@@ -35,11 +35,18 @@ use ProcessMaker\Http\Controllers\ProcessesCatalogueController;
 use ProcessMaker\Http\Controllers\ProfileController;
 use ProcessMaker\Http\Controllers\RequestController;
 use ProcessMaker\Http\Controllers\Saml\MetadataController;
+use ProcessMaker\Http\Controllers\StorageController;
 use ProcessMaker\Http\Controllers\TaskController;
 use ProcessMaker\Http\Controllers\TemplateController;
 use ProcessMaker\Http\Controllers\TestStatusController;
 use ProcessMaker\Http\Controllers\UnavailableController;
 use ProcessMaker\Http\Middleware\NoCache;
+
+// Public storage route - must be before auth middleware
+Route::get('storage/{path}', [StorageController::class, 'serve'])
+    ->where('path', '.*')  // Allow any characters including slashes for nested paths
+    ->middleware('tenant.storage')
+    ->name('storage.serve');
 
 Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '2fa')->group(function () {
     // Routes related to Authentication (password reset, etc)
