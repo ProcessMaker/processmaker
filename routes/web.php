@@ -45,7 +45,6 @@ use ProcessMaker\Http\Middleware\NoCache;
 // Public storage route - must be before auth middleware
 Route::get('storage/{path}', [StorageController::class, 'serve'])
     ->where('path', '.*')  // Allow any characters including slashes for nested paths
-    ->middleware('tenant.storage')
     ->name('storage.serve');
 
 Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '2fa')->group(function () {
