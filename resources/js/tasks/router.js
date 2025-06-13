@@ -22,6 +22,16 @@ const router = new VueRouter({
       })
     },
     {
+      path: "",
+      name: "inbox",
+      component: Process,
+      props: route => ({
+        processId: null,
+        process: null,
+        ellipsisPermission: window.ProcessMaker.ellipsisPermission
+      })
+    },
+    {
       path: "/dashboard/:dashboardId",
       name: "dashboard",
       component: DashboardViewer,

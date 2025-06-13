@@ -93,19 +93,6 @@ const ListMixin = {
         if (this.additionalIncludes) {
           include.push(...this.additionalIncludes);
         }
-        const currentUrl = window.location.href;
-        const path = new URL(currentUrl).pathname.split("/").pop();
-
-        let getAllTasksInbox = "";
-        if (path === "inbox") {
-          if (this.$parent.allInbox) {
-            getAllTasksInbox = "&all_inbox=true";
-          } else {
-            getAllTasksInbox = "&all_inbox=false";
-          }
-        } else {
-          getAllTasksInbox = "&all_inbox=true";
-        }
         // Load from our api client
         ProcessMaker.apiClient
           .get(
@@ -115,7 +102,6 @@ const ListMixin = {
                 this.perPage + this.sumCards
               }${filterParams}${this.getSortParam()}&non_system=true` +
               `&processesIManage=${this.processesIManage ? "true" : "false"}` +
-              getAllTasksInbox +
               advancedFilter +
               this.columnsQuery,
             {
