@@ -27,7 +27,7 @@ class MixServiceProvider extends ServiceProvider
                  */
                 public function __invoke($path, $manifestDirectory = '')
                 {
-                    $tenant = app('currentTenant');
+                    $tenant = app()->bound('currentTenant') ? app('currentTenant') : null;
 
                     if (!$tenant) {
                         return parent::__invoke($path, $manifestDirectory);

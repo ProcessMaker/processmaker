@@ -32,13 +32,17 @@ class StorageController extends Controller
             $path = $this->validateAndSanitizePath($path);
 
             // Get tenant context
-            $tenant = app('currentTenant');
-            $tenantId = $tenant?->id;
+            $tenant = app()->bound('currentTenant') ? app('currentTenant') : null;
 
-            // Handle tenant path
-            $path = $this->handleTenantPath($path, $tenantId);
+            if ($tenant) {
+                $tenantId = $tenant->id;
+
+                // Handle tenant path
+                $path = $this->handleTenantPath($path, $tenantId);
+            }
 
             // Get storage disk
+            // If there were no tenant, the default storage disk is used
             $disk = Storage::disk('public');
 
             // Validate file exists and is accessible
