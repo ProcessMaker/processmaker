@@ -249,13 +249,6 @@ class ProcessVariableController extends Controller
                 DB::raw('NULL AS `default`'),
             ]);
 
-        if (!empty($activeColumns)) {
-            $activeColumns = array_map(function ($column) {
-                return preg_replace('/^data\./', '', $column);
-            }, $activeColumns);
-            $query->whereNotIn('vfv.field', $activeColumns);
-        }
-
         // Return the paginated result
         $paginator = $query->paginate($perPage, ['*'], 'page', $page);
 
