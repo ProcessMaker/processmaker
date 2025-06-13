@@ -29,7 +29,8 @@
       <i class="fas fa-grip-vertical stage-item-grip-vertical tw-cursor-move" />
       <input
         v-model="newStage"
-        class="tw-flex-1 tw-border tw-rounded px-2"
+        class="tw-flex-1 tw-border tw-rounded px-2 form-control"
+        :class="{ 'is-invalid': !stateNewStage }"
         :placeholder="$t('Enter name')"
         @keyup.enter="onKeyupEnter"
       >
@@ -61,12 +62,15 @@ const props = defineProps({
     default: () => [],
   },
 });
+
 const emit = defineEmits(["onAdd", "onUpdate", "onRemove", "onChange", "onClickCheckbox", "onClickSelected"]);
+
 const adding = ref(false);
 const newStage = ref("");
 const stages = ref([...props.initialStages]);
 const totalStages = computed(() => stages.value.length);
 const disableButton = computed(() => totalStages.value >= 8);
+const stateNewStage = ref(true);
 
 const onClickAdd = () => {
   if (disableButton.value) {
@@ -86,6 +90,7 @@ const generateUniqueId = () => {
 
 const onKeyupEnter = () => {
   if (newStage.value.trim()) {
+    stateNewStage.value = true;
     const uniqueId = generateUniqueId();
     const order = stages.value.length + 1;
     stages.value.push({
@@ -98,6 +103,8 @@ const onKeyupEnter = () => {
     adding.value = false;
     emit("onAdd", stages.value, stages.value.length - 1);
     emit("onChange", stages.value);
+  } else {
+    stateNewStage.value = false;
   }
 };
 

@@ -10,7 +10,8 @@
       <template v-if="editing">
         <input
           v-model="localName"
-          class="tw-w-full tw-border tw-rounded px-2"
+          class="tw-w-full tw-border tw-rounded px-2 form-control"
+          :class="{ 'is-invalid': !stateName }"
           @keyup.enter="onKeyupEnter"
         >
       </template>
@@ -34,7 +35,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 
 const props = defineProps({
   id: {
@@ -60,6 +61,7 @@ const emit = defineEmits(["onRemove", "onUpdate", "onClickCheckbox", "onClickSel
 const editing = ref(false);
 const localName = ref(props.name);
 const isChecked = ref(false);
+const stateName = computed(() => localName.value.trim());
 
 const onKeyupEnter = () => {
   if (localName.value && localName.value.trim()) {

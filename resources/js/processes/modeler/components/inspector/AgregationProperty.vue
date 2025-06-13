@@ -26,19 +26,21 @@ const agregationVariable = ref("");
 const processId = ref(window.ProcessMaker?.modeler?.process?.id);
 const stateAggregationVariable = ref(true);
 
-const saveVariable = debounce((event) => {
+const saveVariable = (event) => {
   agregationVariable.value = event.target.value;
-  if (event.target.value.trim()) {
+  if (agregationVariable.value.trim()) {
     stateAggregationVariable.value = true;
-    ProcessMaker.apiClient
-      .post(`processes/${processId.value}/aggregation`, {
-        aggregation: event.target.value,
-      })
-      .then(() => { });
+    debounce(() => {
+      ProcessMaker.apiClient
+        .post(`processes/${processId.value}/aggregation`, {
+          aggregation: event.target.value,
+        })
+        .then(() => { });
+    }, 1000);
   } else {
     stateAggregationVariable.value = false;
   }
-}, 1000);
+};
 
 onMounted(() => {
   ProcessMaker.apiClient
