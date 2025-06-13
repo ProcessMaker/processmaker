@@ -86,24 +86,74 @@ php artisan json:test --iterations=5000
 
 ### Expected Output
 
+#### With Extensions Loaded (Optimized)
+
 ```
-Testing JSON optimization with 1000 iterations
-Data size: 45678 bytes
-
-=== JSON ENCODE TEST ===
-Native json_encode: 45.23ms
-✅ JSON optimization is active (SIMDJSON)
-
-=== JSON DECODE TEST ===
-Native json_decode: 38.67ms
-✅ JSON optimization is active (SIMDJSON)
-
-=== EXTENSION STATUS ===
+📋 Extension Status:
+==========================================
 SIMDJSON loaded: ✅ YES
 UOPZ loaded: ✅ YES
-Environment: production
+Environment: testing
 JSON optimization enabled: ✅ YES
+✅ Native JSON functions working correctly
+✅ ProcessMaker data processed correctly
+📏 JSON size: 193 bytes
+📝 SIMDJSON loaded - using optimized functions
+📝 UOPZ loaded - using optimized functions
+🎯 Optimization Status: 🚀 OPTIMIZED
+
+📊 JSON Optimization Performance Results:
+==========================================
+Native JSON functions (📝 NATIVE):
+  Encode: 4.0629ms
+  Decode: 11.024ms
+Optimized JSON functions (🚀 OPTIMIZED):
+  Encode: 1.2345ms
+  Decode: 2.8765ms
+
+📈 Performance Comparison:
+Encode ratio: 0.304x (3.29x faster)
+Decode ratio: 0.261x (3.83x faster)
+🚀 JSON optimization active and working
 ```
+
+#### Without Extensions (Fallback)
+
+```
+📋 Extension Status:
+==========================================
+SIMDJSON loaded: ❌ NO
+UOPZ loaded: ❌ NO
+Environment: testing
+JSON optimization enabled: ❌ NO
+✅ Native JSON functions working correctly
+✅ ProcessMaker data processed correctly
+📏 JSON size: 193 bytes
+📝 SIMDJSON not loaded - would use native functions
+📝 UOPZ not loaded - would use native functions
+🎯 Optimization Status: 📝 WOULD USE NATIVE
+
+📊 JSON Optimization Performance Results:
+==========================================
+Native JSON functions (📝 NATIVE):
+  Encode: 4.0629ms
+  Decode: 11.024ms
+Optimized JSON functions (📝 NATIVE):
+  Encode: 4.2799ms
+  Decode: 11.965ms
+
+📈 Performance Comparison:
+Encode ratio: 1.053x
+Decode ratio: 1.085x
+📝 JSON optimization not active (extensions may not be loaded)
+```
+
+#### Key Indicators
+
+- **🚀 OPTIMIZED**: Extensions loaded and working (ratios < 1.0)
+- **📝 WOULD USE NATIVE**: Extensions not loaded, using fallback (ratios > 1.0)
+- **✅ YES/❌ NO**: Clear extension loading status
+- **Performance ratios**: Show speed improvement (lower = faster)
 
 ### Extensions Not Loading
 

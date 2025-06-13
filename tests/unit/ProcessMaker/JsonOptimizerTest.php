@@ -20,18 +20,19 @@ class JsonOptimizerTest extends TestCase
         $status = [
             'simdjson_loaded' => extension_loaded('simdjson'),
             'uopz_loaded' => extension_loaded('uopz'),
-            'environment' => app()->environment(),
             'json_optimization_enabled' => config('app.json_optimization', false),
         ];
 
         Log::info('JSON Optimizer Extension Status', $status);
+        $yes = '✅ YES';
+        $no = '❌ NO';
 
         // Output to console for debugging
-        $this->info('📋 Extension Status:');
-        $this->info('SIMDJSON loaded: ' . ($status['simdjson_loaded'] ? '✅ YES' : '❌ NO'));
-        $this->info('UOPZ loaded: ' . ($status['uopz_loaded'] ? '✅ YES' : '❌ NO'));
-        $this->info('Environment: ' . $status['environment']);
-        $this->info('JSON optimization enabled: ' . ($status['json_optimization_enabled'] ? '✅ YES' : '❌ NO'));
+        $this->info('📋 EXTENSION STATUS:');
+        $this->info('==========================================');
+        $this->info('SIMDJSON loaded: ' . ($status['simdjson_loaded'] ? $yes : $no));
+        $this->info('UOPZ loaded: ' . ($status['uopz_loaded'] ? $yes : $no));
+        $this->info('JSON optimization enabled: ' . ($status['json_optimization_enabled'] ? $yes : $no));
     }
 
     /**
