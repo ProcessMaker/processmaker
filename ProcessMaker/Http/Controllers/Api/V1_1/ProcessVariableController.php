@@ -18,7 +18,7 @@ use ProcessMaker\Package\VariableFinder\Models\ProcessVariable;
 
 class ProcessVariableController extends Controller
 {
-    public const CACHE_TTL = 60;
+    const CACHE_TTL = 60;
 
     private static bool $mockData = false;
 
