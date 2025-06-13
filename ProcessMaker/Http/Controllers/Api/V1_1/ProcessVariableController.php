@@ -18,7 +18,7 @@ use ProcessMaker\Package\VariableFinder\Models\ProcessVariable;
 
 class ProcessVariableController extends Controller
 {
-    const CACHE_TTL = 60;
+    public const CACHE_TTL = 60;
 
     private static bool $mockData = false;
 
@@ -248,13 +248,6 @@ class ProcessVariableController extends Controller
                 DB::raw('MAX(av.process_id) as process_id'),
                 DB::raw('NULL AS `default`'),
             ]);
-
-        if (!empty($activeColumns)) {
-            $activeColumns = array_map(function ($column) {
-                return preg_replace('/^data\./', '', $column);
-            }, $activeColumns);
-            $query->whereNotIn('vfv.field', $activeColumns);
-        }
 
         // Return the paginated result
         $paginator = $query->paginate($perPage, ['*'], 'page', $page);
