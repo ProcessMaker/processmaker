@@ -9,6 +9,7 @@
     <label>{{ $t("Variable Name") }}</label>
     <input
       class="form-control"
+      :class="{ 'is-invalid': !stateAggregationVariable }"
       type="text"
       :placeholder="$t('Total Amount')"
       :value="agregationVariable"
@@ -23,14 +24,23 @@ import { debounce } from "lodash";
 
 const agregationVariable = ref("");
 const processId = ref(window.ProcessMaker?.modeler?.process?.id);
+const stateAggregationVariable = ref(true);
 
-const saveVariable = debounce((event) => {
-  ProcessMaker.apiClient
-    .post(`processes/${processId.value}/aggregation`, {
-      aggregation: event.target.value,
-    })
-    .then(() => { });
-}, 1000);
+const saveVariable = (event) => {
+  agregationVariable.value = event.target.value;
+  if (agregationVariable.value.trim()) {
+    stateAggregationVariable.value = true;
+    debounce(() => {
+      ProcessMaker.apiClient
+        .post(`processes/${processId.value}/aggregation`, {
+          aggregation: event.target.value,
+        })
+        .then(() => { });
+    }, 1000);
+  } else {
+    stateAggregationVariable.value = false;
+  }
+};
 
 onMounted(() => {
   ProcessMaker.apiClient
