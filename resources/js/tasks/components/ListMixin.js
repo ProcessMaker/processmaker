@@ -82,23 +82,16 @@ const ListMixin = {
           this.page = 1;
         }
         this.previousAdvancedFilter = advancedFilter;
-        const include =
-          "process,processRequest,processRequest.user,user,data".split(",");
+        let includeString = "process,processRequest,processRequest.user,user,data";
+        // If columns are default (isDefaultColumns = true), don't include data
+        // If columns are NOT default (isDefaultColumns = false), include data
+        const isDefaultColumns = window.ProcessMaker?.isDefaultColumns ?? false;
+        if (isDefaultColumns) {
+          includeString = "process,processRequest,processRequest.user,user";
+        }
+        const include = includeString.split(",");
         if (this.additionalIncludes) {
           include.push(...this.additionalIncludes);
-        }
-        const currentUrl = window.location.href;
-        const path = new URL(currentUrl).pathname.split("/").pop();
-
-        let getAllTasksInbox = "";
-        if (path === "inbox") {
-          if (this.$parent.allInbox) {
-            getAllTasksInbox = "&all_inbox=true";
-          } else {
-            getAllTasksInbox = "&all_inbox=false";
-          }
-        } else {
-          getAllTasksInbox = "&all_inbox=true";
         }
         // Load from our api client
         ProcessMaker.apiClient
@@ -109,7 +102,6 @@ const ListMixin = {
                 this.perPage + this.sumCards
               }${filterParams}${this.getSortParam()}&non_system=true` +
               `&processesIManage=${this.processesIManage ? "true" : "false"}` +
-              getAllTasksInbox +
               advancedFilter +
               this.columnsQuery,
             {
