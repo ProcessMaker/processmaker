@@ -43,6 +43,8 @@ class BookmarkController extends Controller
             // Get the launchpad configuration
             $process->launchpad = ProcessLaunchpad::getLaunchpad($launchpad, $process->id);
             $process->counts = $process->getCounts();
+            // Load Stages
+            $process->stagesSummary = $process->getStagesSummary($process->stages);
         }
 
         return new ProcessCollection($processes);
