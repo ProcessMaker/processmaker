@@ -93,6 +93,7 @@
       :my-tasks-columns="myTasksColumns"
       :my-cases-columns="myCasesColumns"
       @updateMyTasksColumns="updateMyTasksColumns"
+      @updateMyCasesColumns="updateMyCasesColumns"
     />
   </div>
 </template>
@@ -173,6 +174,9 @@ export default {
     },
     updateMyTasksColumns(columns) {
       this.$emit("updateMyTasksColumns", columns);
+    },
+    updateMyCasesColumns(columns) {
+      this.$emit("updateMyCasesColumns", columns);
     },
     onProcessInfoCollapsed(collapsed) {
       this.collapsed = collapsed;

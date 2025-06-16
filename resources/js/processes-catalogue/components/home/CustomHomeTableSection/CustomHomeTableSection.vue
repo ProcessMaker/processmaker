@@ -35,7 +35,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { FilterableTable, TablePlaceholder } from "../../../../../jscomposition/system";
-import { buildColumns, buildFilters } from "../config";
+import { buildColumns, buildFilters, unbuildColumns } from "../config";
 import { Pagination } from "../../../../../jscomposition/base";
 import CustomHomeFilter from "./CustomHomeFilter.vue";
 import { prepareToGetRequests } from "./CustomHomeTableSection";
@@ -156,10 +156,17 @@ const onChangeInputFilter = async (value) => {
 const onStopResize = async () => {
 };
 
+const getColumns = () => {
+  return unbuildColumns(columnsConfig.value);
+};
+
 onMounted(async () => {
   // Default columns from BE
   columnsConfig.value = buildColumns(defaultCasesColumns.value);
   hookData();
 });
 
+defineExpose({
+  getColumns
+})
 </script>

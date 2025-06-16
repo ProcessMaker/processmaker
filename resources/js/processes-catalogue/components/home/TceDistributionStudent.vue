@@ -4,6 +4,7 @@
       :process="process"
       :ellipsis-permission="ellipsisPermission"
       :my-tasks-columns="myTasksColumns"
+      :my-cases-columns="myCasesColumns"
       @toggle-info="toggleInfo"
       @goBackCategory="emit('goBackCategory')" />
 
@@ -19,6 +20,7 @@
       @change="onChangeStage" />
 
     <CustomHomeTableSection
+      ref="childRef"
       :key="dataKey + 'table'"
       :advanced-filter="advancedFilter"
       class="tw-w-full tw-flex tw-flex-col
@@ -44,6 +46,8 @@ import ProcessInfo from "./ProcessInfo.vue";
 import { getMetrics, getStages } from "../api";
 import { buildMetrics, buildStages } from "./config/metrics";
 
+const childRef = ref(null)
+
 const props = defineProps({
   process: {
     type: Object,
@@ -53,6 +57,7 @@ const props = defineProps({
 const emit = defineEmits(["goBackCategory"]);
 
 const myTasksColumns = ref([]);
+const myCasesColumns = ref([]);
 
 const stages = ref([]);
 const data = ref([]);
@@ -96,5 +101,6 @@ const onChangeStage = (stage, idxItem) => {
 onMounted(() => {
   hookMetrics();
   hookStages();
+  myCasesColumns.value = childRef.value?.getColumns();
 });
 </script>

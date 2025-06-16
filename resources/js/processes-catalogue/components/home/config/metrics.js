@@ -40,10 +40,10 @@ export const stagesColors = ["red", "indigo", "sky", "white", "purple", "emerald
 
 export const buildStages = (stages) => stages.map((stage, index) => ({
   id: stage.stage_id,
-  body: stage.percentage_format,
-  header: stage.stage_name,
+  body: stage.stage_name,
+  header: stage.agregation_count,
   content: stage.agregation_sum,
-  helper: stage.agregation_count,
+  helper: stage.agregation_sum,
   percentage: stage.percentage || 100,
   color: stagesColors.at(index),
 }));

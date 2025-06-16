@@ -8,6 +8,7 @@
       :my-cases-columns="myCasesColumns"
       @goBackCategory="$emit('goBackCategory')"
       @updateMyTasksColumns="updateMyTasksColumns"
+      @updateMyCasesColumns="updateMyCasesColumns"
       @toggle-info="toggleInfo"
     />
     <process-tab
@@ -37,7 +38,9 @@
           <process-options
             class="tw-w-full"
             :process="process"
+            :collapsed="collapsed"
           />
+          <progress-bar-section :stages-summary="process.stagesSummary" />
         </div>
       </div>
     </slide-process-info>
@@ -122,6 +125,10 @@ export default {
     updateMyTasksColumns(columns) {
       this.myTasksColumns = columns;
       this.$refs.processTab.updateColumnsByType("myTasks", columns);
+    },
+    updateMyCasesColumns(columns) {
+      this.myCasesColumns = columns;
+      this.$refs.processTab.updateColumnsByType("myCases", columns);
     },
     getMyColumns() {
       this.$nextTick(() => {
