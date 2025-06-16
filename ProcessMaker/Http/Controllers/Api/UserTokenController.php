@@ -24,22 +24,22 @@ class UserTokenController extends Controller
     /**
      * The token repository implementation.
      *
-     * @var \Laravel\Passport\TokenRepository
+     * @var TokenRepository
      */
     protected $tokenRepository;
 
     /**
      * The validation factory implementation.
      *
-     * @var \Illuminate\Contracts\Validation\Factory
+     * @var ValidationFactory
      */
     protected $validation;
 
     /**
      * Create a controller instance.
      *
-     * @param  \Laravel\Passport\TokenRepository  $tokenRepository
-     * @param  \Illuminate\Contracts\Validation\Factory  $validation
+     * @param  TokenRepository  $tokenRepository
+     * @param  ValidationFactory  $validation
      * @return void
      */
     public function __construct(TokenRepository $tokenRepository, ValidationFactory $validation)
@@ -109,7 +109,7 @@ class UserTokenController extends Controller
     /**
      * Create a new personal access token for the user.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return \Laravel\Passport\PersonalAccessTokenResult
      *
      * @OA\Post(
@@ -141,7 +141,8 @@ class UserTokenController extends Controller
      */
     public function store(Request $request, User $user)
     {
-        if (!Auth::user()->can('edit', $user)) {
+        // The user can only create tokens for themselves or if they are an administrator.
+        if (!Auth::user()->can('edit', $user) || !(Auth::user()->is_administrator || Auth::user()->id === $user->id)) {
             throw new AuthorizationException(__('Not authorized to update this user.'));
         }
 
@@ -214,7 +215,7 @@ class UserTokenController extends Controller
     /**
      * Delete the given token for a user
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @param  string  $tokenId
      * @return \Illuminate\Http\Response
      *

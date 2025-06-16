@@ -281,7 +281,11 @@ export default {
     },
     getAllTasks() {
       this.selectedProcess = "inbox";
-      this.allInbox = true;
+      if (this.$route.name !== 'inbox') {
+        this.$router.push({
+          name: "inbox",
+        });
+      }
       this.$refs.processesDashboardsMenu?.clearSelection();
       this.callingTaskList();
     },

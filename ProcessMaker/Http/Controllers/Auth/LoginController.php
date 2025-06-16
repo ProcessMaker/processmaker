@@ -80,7 +80,22 @@ class LoginController extends Controller
             $driver = $this->getDefaultSSO($arrayAddons);
             // If a default SSO was defined we will to redirect
             if (!empty($driver)) {
-                return redirect()->route('sso.redirect', ['driver' => $driver]);
+                // Store the current full URL as the intended URL before redirecting to SSO.
+                $intendedUrl = $request->session()->get('url.intended', url()->full());
+                $ssoIntendedCookie = cookie(
+                    'processmaker_intended',
+                    $intendedUrl,
+                    10,
+                    '/',
+                    null,
+                    true,
+                    true,
+                    false,
+                    'none'
+                );
+
+                // Redirect to SSO and attach the cookie
+                return redirect()->route('sso.redirect', ['driver' => $driver])->withCookie($ssoIntendedCookie);
             }
         }
         $block = $manager->getBlock();

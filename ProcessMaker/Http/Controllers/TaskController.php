@@ -67,6 +67,8 @@ class TaskController extends Controller
 
         $defaultColumns = DefaultColumns::get('tasks');
 
+        $isDefaultColumns = DefaultColumns::verifyDefaultColumns($defaultColumns, 'tasks');
+
         $taskDraftsEnabled = TaskDraft::draftsEnabled();
 
         $userConfiguration = (new UserConfigurationController())->index()['ui_configuration'] ?? [];
@@ -89,6 +91,7 @@ class TaskController extends Controller
             // Process and Task related
             'selectedProcess',
             'defaultColumns',
+            'isDefaultColumns',
             'taskDraftsEnabled',
             'showOldTaskScreen',
             // Search and Display

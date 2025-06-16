@@ -183,7 +183,7 @@ class User extends Authenticatable implements HasMedia
 
         return [
             // The following characters where not included in the regexp: & %  ' " ? /
-            'username' /****/ => ['required', 'regex:/^[a-zA-Z0-9.!#$*+=^_`|~\-@]+$/', 'min:3', 'max:255', $unique],
+            'username' /****/ => ['required', 'regex:/^[a-zA-Z0-9.!#$*+=^_`|~\-@]+$/', 'min:2', 'max:255', $unique],
             'firstname' /***/ => ['required', 'max:50'],
             'lastname' /****/ => ['required', 'max:50'],
             'email' /*******/ => ['required', 'email'],

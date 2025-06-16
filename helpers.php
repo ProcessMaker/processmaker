@@ -323,3 +323,22 @@ if (!function_exists('calculateProgressById')) {
         return round($progress, 2);
     }
 }
+
+if (!function_exists('validateURL')) {
+    /**
+     * Validate the URL
+     *
+     * @return Closure
+     */
+    function validateURL(): Closure
+    {
+        return function ($attribute, $value, $fail) {
+            if (!empty($value)) {
+                $pattern = '/^(https:\/\/|http:\/\/)(\*\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?$/';
+                if (!preg_match($pattern, $value)) {
+                    $fail('The URL format is invalid. It must start with http:// or https:// and be a valid domain.');
+                }
+            }
+        };
+    }
+}
