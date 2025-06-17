@@ -107,7 +107,6 @@ class TenantSchedulingService
      */
     protected function createScheduledEvent(Schedule $schedule, Tenant $tenant, string $command)
     {
-        // Lanza el comando exacto para ese tenant
         $fullCommand = "tenants:artisan {$command} --tenant={$tenant->id}";
 
         $event = $schedule->command($fullCommand);

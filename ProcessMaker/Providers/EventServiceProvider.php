@@ -93,6 +93,9 @@ class EventServiceProvider extends ServiceProvider
         'Illuminate\Database\Events\MigrationsEnded' => [
             'ProcessMaker\Listeners\UpdateDataLakeViews',
         ],
+        'Illuminate\Console\Events\CommandStarting' => [
+            'ProcessMaker\Listeners\RegisterTenantScheduleTasks',
+        ],
         'ProcessMaker\Events\SessionStarted' => [
             'ProcessMaker\Listeners\ActiveUserListener',
         ],
@@ -111,6 +114,7 @@ class EventServiceProvider extends ServiceProvider
         TranslationChanged::class => [
             InvalidateScreenCacheOnTranslationChange::class,
         ],
+
     ];
 
     /**
