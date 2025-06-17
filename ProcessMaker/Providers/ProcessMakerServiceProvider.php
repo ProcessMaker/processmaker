@@ -213,6 +213,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->extend('config', function ($originalConfig) {
             return new SettingsConfigRepository($originalConfig->all());
         });
+
+        $this->app->singleton('currentTenant', function () {
+            return null;
+        });
     }
 
     /**

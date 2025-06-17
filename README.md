@@ -538,16 +538,17 @@ ProcessMaker is now set up as a multitenant application. By default, there is on
 
 - Your MySql user `DB_USERNAME` will need to be able to create databases.
 
-## Transition to multitenancy
+## Transition your dev instnace to multitenancy
 
 1. Run the following command to enable multitenancy
    ```
-   php artisan tenants:enable
+   php artisan tenants:enable --migrate
    ```
    This command will
    - Create the landlord database
    - Set your existing database as the tenant database
    - Move your existing storage folder to `storage/tenant_1`
+   - Update your .env DB_DATABASE to the new landlord database name
 
 ## Add another tenant
 
