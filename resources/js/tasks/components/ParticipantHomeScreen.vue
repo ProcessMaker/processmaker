@@ -265,13 +265,55 @@ export default {
       urlConfiguration: "users/configuration",
       localUserConfiguration: {},
       selectedProcess: window.Processmaker.selectedProcess,
+      tab: "inbox",
     };
   },
   mounted() {
     this.defineUserConfiguration();
     this.callingTaskList();
+    this.setDefaultTab();
   },
   methods: {
+    // Set the default tab based on the advanced filter
+    setDefaultTab() {
+      const advancedFilter = window.ProcessMaker.advanced_filter?.filters;
+      const draft = advancedFilter.find((filter) => filter._column_field === "draft");
+      const priority = advancedFilter.find((filter) => filter._column_field === "is_priority");
+      if (draft) {
+        this.tab = "draft";
+      } else if (priority) {
+        this.tab = "priority";
+      }
+    },
+    // Switch the tab and update the advanced filter
+    switchTab(tab) {
+      this.tab = tab;
+      const taskListComponent = this.$refs.taskList;
+      taskListComponent.advancedFilter[this.priorityField] = [];
+      taskListComponent.advancedFilter[this.draftField] = [];
+      switch (tab) {
+        case "priority":
+          taskListComponent.advancedFilter["is_priority"] = this.priorityFilter;
+          break;
+        case "draft":
+          taskListComponent.advancedFilter["draft"] = this.draftFilter;
+          break;
+      }
+      taskListComponent.markStyleWhenColumnSetAFilter();
+      taskListComponent.storeFilterConfiguration();
+      taskListComponent.fetch(true);
+    },
+    handleTabCount(value) {
+      if (this.tab === "inbox") {
+        this.inboxCount = value;
+      }
+      if (this.tab === "draft") {
+        this.draftCount = value;
+      }
+      if (this.tab === "priority") {
+        this.priorityCount = value;
+      }
+    },
     callingTaskList() {
       this.$nextTick(() => {
         if (this.$refs.taskList) {

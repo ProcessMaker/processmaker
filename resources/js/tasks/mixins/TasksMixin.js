@@ -19,7 +19,6 @@ export default {
       inbox: true,
       priority: false,
       draft: false,
-      tab: "inbox",
       inboxCount: null,
       draftCount: null,
       priorityCount: null,
@@ -87,23 +86,6 @@ export default {
           console.error("Error", error);
         });
     },
-    switchTab(tab) {
-      this.tab = tab;
-      const taskListComponent = this.$refs.taskList;
-      taskListComponent.advancedFilter[this.priorityField] = [];
-      taskListComponent.advancedFilter[this.draftField] = [];
-      switch (tab) {
-        case "priority":
-          taskListComponent.advancedFilter["is_priority"] = this.priorityFilter;
-          break;
-        case "draft":
-          taskListComponent.advancedFilter["draft"] = this.draftFilter;
-          break;
-      }
-      taskListComponent.markStyleWhenColumnSetAFilter();
-      taskListComponent.storeFilterConfiguration();
-      taskListComponent.fetch(true);
-    },
     dataLoading(value) {
       this.isDataLoading = value;
     },
@@ -124,17 +106,6 @@ export default {
           this.inbox = this.priority = false;
         }
       });
-    },
-    handleTabCount(value) {
-      if (this.tab === "inbox") {
-        this.inboxCount = value;
-      }
-      if (this.tab === "draft") {
-        this.draftCount = value;
-      }
-      if (this.tab === "priority") {
-        this.priorityCount = value;
-      }
     },
     onFiltersPmqlChange(value) {
       this.filtersPmql = value[0];
