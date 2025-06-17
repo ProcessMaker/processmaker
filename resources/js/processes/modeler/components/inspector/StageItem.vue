@@ -16,7 +16,12 @@
         >
       </template>
       <template v-else>
-        <span :class="{ 'font-bold stage-item-selected': selected }">{{ name }}</span>
+        <span
+          class="tw-line-clamp-2"
+          :class="{ 'font-bold stage-item-selected': selected }"
+        >
+          {{ name }}
+        </span>
       </template>
     </div>
     <button
