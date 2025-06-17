@@ -11,6 +11,7 @@ use ProcessMaker\Http\Controllers\Admin\LdapLogsController;
 use ProcessMaker\Http\Controllers\Admin\QueuesController;
 use ProcessMaker\Http\Controllers\Admin\ScriptExecutorController;
 use ProcessMaker\Http\Controllers\Admin\SettingsController;
+use ProcessMaker\Http\Controllers\Admin\TenantQueueController;
 use ProcessMaker\Http\Controllers\Admin\UserController;
 use ProcessMaker\Http\Controllers\AdminController;
 use ProcessMaker\Http\Controllers\Auth\ChangePasswordController;
@@ -67,6 +68,15 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
         Route::get('customize-ui/{tab?}', [CssOverrideController::class, 'edit'])->name('customize-ui.edit');
 
         Route::get('script-executors', [ScriptExecutorController::class, 'index'])->name('script-executors.index');
+
+        // Tenant Jobs Dashboard
+        Route::get('tenant-queues', [TenantQueueController::class, 'index'])->name('tenant-queue.index');
+        Route::get('tenant-queues/tenants', [TenantQueueController::class, 'getTenants'])->name('tenant-queue.tenants');
+        Route::get('tenant-queues/overall-stats', [TenantQueueController::class, 'getOverallStats'])->name('tenant-queue.overall-stats');
+        Route::get('tenant-queues/{tenantId}/jobs', [TenantQueueController::class, 'getTenantJobs'])->name('tenant-queue.jobs');
+        Route::get('tenant-queues/{tenantId}/stats', [TenantQueueController::class, 'getTenantStats'])->name('tenant-queue.stats');
+        Route::get('tenant-queues/{tenantId}/jobs/{jobId}', [TenantQueueController::class, 'getJobDetails'])->name('tenant-queue.job-details');
+        Route::delete('tenant-queues/{tenantId}/clear', [TenantQueueController::class, 'clearTenantJobs'])->name('tenant-queue.clear');
 
         // DevLink
         Route::middleware('admin')->group(function () {
