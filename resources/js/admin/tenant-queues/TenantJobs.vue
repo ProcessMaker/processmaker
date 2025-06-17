@@ -148,9 +148,8 @@ export default {
   methods: {
     async loadTenantInfo() {
       try {
-        const response = await fetch("/admin/tenant-queues/tenants");
-        const tenants = await response.json();
-        this.tenant = tenants.find((t) => t.id.toString() === this.tenantId);
+        const { data } = await ProcessMaker.apiClient.get("/tenant-queues/tenants");
+        this.tenant = data.find((t) => t.id.toString() === this.tenantId);
       } catch (error) {
         console.error("Error loading tenant info:", error);
       }
@@ -158,9 +157,8 @@ export default {
     async loadTenantJobs() {
       this.loading = true;
       try {
-        const url = `/admin/tenant-queues/${this.tenantId}/jobs${this.selectedStatus ? `?status=${this.selectedStatus}` : ""}`;
-        const response = await fetch(url);
-        const data = await response.json();
+        const params = this.selectedStatus ? { status: this.selectedStatus } : {};
+        const { data } = await ProcessMaker.apiClient.get(`/tenant-queues/${this.tenantId}/jobs`, { params });
         this.jobs = data.jobs || [];
       } catch (error) {
         console.error("Error loading tenant jobs:", error);
@@ -198,13 +196,7 @@ export default {
 
       if (confirmed) {
         try {
-          const response = await fetch(`/admin/tenant-queues/${this.tenantId}/clear`, {
-            method: "DELETE",
-            headers: {
-              "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
-            },
-          });
-          const data = await response.json();
+          const { data } = await ProcessMaker.apiClient.delete(`/tenant-queues/${this.tenantId}/clear`);
 
           if (data.message) {
             this.$bvToast.toast(data.message, {

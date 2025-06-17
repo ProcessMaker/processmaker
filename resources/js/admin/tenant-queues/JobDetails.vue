@@ -153,17 +153,11 @@ export default {
       this.error = null;
 
       try {
-        const response = await fetch(`/admin/tenant-queues/${this.tenantId}/jobs/${this.jobId}`);
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const data = await response.json();
+        const { data } = await ProcessMaker.apiClient.get(`/tenant-queues/${this.tenantId}/jobs/${this.jobId}`);
         this.job = data;
       } catch (error) {
         console.error("Error loading job details:", error);
-        this.error = error.message || "Failed to load job details";
+        this.error = error.response?.data?.message || error.message || "Failed to load job details";
       } finally {
         this.loading = false;
       }

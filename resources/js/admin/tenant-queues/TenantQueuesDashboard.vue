@@ -185,8 +185,7 @@ export default {
 
     async loadOverallStats() {
       try {
-        const response = await fetch("/admin/tenant-queues/overall-stats");
-        const data = await response.json();
+        const { data } = await ProcessMaker.apiClient.get("/tenant-queues/overall-stats");
         this.overallStats = {
           totalTenants: data.total_tenants,
           totalJobs: data.total_jobs,
@@ -202,8 +201,7 @@ export default {
 
     async loadTenants() {
       try {
-        const response = await fetch("/admin/tenant-queues/tenants");
-        const data = await response.json();
+        const { data } = await ProcessMaker.apiClient.get("/tenant-queues/tenants");
         this.tenants = data;
       } catch (error) {
         console.error("Error loading tenants:", error);
