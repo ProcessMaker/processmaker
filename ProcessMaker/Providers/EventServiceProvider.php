@@ -114,7 +114,6 @@ class EventServiceProvider extends ServiceProvider
         TranslationChanged::class => [
             InvalidateScreenCacheOnTranslationChange::class,
         ],
-
     ];
 
     /**
