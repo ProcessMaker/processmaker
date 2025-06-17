@@ -91,6 +91,17 @@ class CssOverrideController extends Controller
             $reset = true;
         }
 
+        $resourcePath = app()->resourcePath();
+
+        // Check if the _variables_bk.scss file exists
+        if (File::exists($resourcePath . '/sass/_variables_bk.scss')) {
+            // Restore _variables.scss
+            File::copy($resourcePath . '/sass/_variables_bk.scss', $resourcePath . '/sass/_variables.scss');
+        } else {
+            // Make a copy of _variables.scss to _variables_bk.scss
+            File::copy($resourcePath . '/sass/_variables.scss', $resourcePath . '/sass/_variables_bk.scss');
+        }
+
         $request->validate(Setting::rules($setting));
         $setting->fill($request->input());
         $setting->saveOrFail();
@@ -177,57 +188,120 @@ class CssOverrideController extends Controller
     /**
      * Write variables in file
      *
-     * @param $request
+     * @param $data
      */
     private function writeColors($data)
     {
+        $tenant = app('currentTenant');
+        $tenantId = $tenant ? $tenant->id : null;
+
         // Now generate the _colors.scss file
         $contents = "// Changed theme colors\n";
         foreach ($data as $key => $value) {
             $contents .= $value['id'] . ': ' . $value['value'] . ";\n";
         }
-        File::put(app()->resourcePath('sass') . '/_colors.scss', $contents);
+        if ($tenantId) {
+            // Create tenant-specific colors file
+            $tenantSassPath = app()->resourcePath('sass/tenant_' . $tenantId);
+
+            if (!file_exists($tenantSassPath)) {
+                mkdir($tenantSassPath, 0755, true);
+            }
+
+            File::put(app()->resourcePath('sass/tenant_' . $tenantId) . '/_colors.scss', $contents);
+        } else {
+            File::put(app()->resourcePath('sass') . '/_colors.scss', $contents);
+        }
     }
 
     /**
      * Write variables font in file
      *
      * @param $sansSerif
-     * @param $serif
      */
     private function writeFonts($sansSerif)
     {
+        $tenant = app('currentTenant');
+        $tenantId = $tenant ? $tenant->id : null;
+
         $sansSerif = $sansSerif ? $sansSerif : $this->sansSerifFontDefault();
         // Generate the _fonts.scss file
         $contents = "// Changed theme fonts\n";
         $contents .= '$font-family-sans-serif: ' . $sansSerif->id . " !default;\n";
-        File::put(app()->resourcePath('sass') . '/_fonts.scss', $contents);
+
+        if ($tenantId) {
+            // Create tenant-specific fonts file
+            $tenantSassPath = app()->resourcePath('sass/tenant_' . $tenantId);
+
+            if (!file_exists($tenantSassPath)) {
+                mkdir($tenantSassPath, 0755, true);
+            }
+
+            File::put($tenantSassPath . '/_fonts.scss', $contents);
+        } else {
+            File::put(app()->resourcePath('sass') . '/_fonts.scss', $contents);
+        }
     }
 
     /**
      * run jobs compile
      */
-    private function compileSass($userId)
+    private function compileSass($userId, $variables = [])
     {
-        // Compile the Sass files
-        $this->dispatch(new CompileSass([
-            'tag' => 'sidebar',
-            'origin' => 'resources/sass/sidebar/sidebar.scss',
-            'target' => 'public/css/sidebar.css',
-            'user' => $userId,
-        ]));
-        $this->dispatch(new CompileSass([
-            'tag' => 'app',
-            'origin' => 'resources/sass/app.scss',
-            'target' => 'public/css/app.css',
-            'user' => $userId,
-        ]));
-        $this->dispatch(new CompileSass([
-            'tag' => 'queues',
-            'origin' => 'resources/sass/admin/queues.scss',
-            'target' => 'public/css/admin/queues.css',
-            'user' => $userId,
-        ]));
+        $tenant = app('currentTenant');
+        $tenantId = $tenant ? $tenant->id : null;
+
+        if ($tenantId) {
+            $variablesScss = File::get(app()->resourcePath('sass/_variables.scss'));
+            // Replace @import 'fonts'; with @import 'fonts' with @import 'tenant_1/_fonts';
+            $variablesScss = str_replace('@import \'fonts\';', '@import \'tenant_' . $tenantId . '/_fonts\';', $variablesScss);
+            // Replace @import 'colors'; with @import 'colors' with @import 'tenant_1/_colors';
+            $variablesScss = str_replace('@import \'colors\';', '@import \'tenant_' . $tenantId . '/_colors\';', $variablesScss);
+            File::put(app()->resourcePath('sass/_variables.scss'), $variablesScss);
+
+            // Compile tenant-specific Sass files
+            $this->dispatch(new CompileSass([
+                'tag' => 'sidebar',
+                'origin' => 'resources/sass/sidebar/sidebar.scss',
+                'target' => 'public/css/sidebar_tenant_' . $tenantId . '.css',
+                'user' => $userId,
+            ]));
+            $this->updateTenantMixManifest($tenantId, 'sidebar');
+
+            $this->dispatch(new CompileSass([
+                'tag' => 'app',
+                'origin' => 'resources/sass/app.scss',
+                'target' => 'public/css/app_tenant_' . $tenantId . '.css',
+                'user' => $userId,
+            ]));
+            $this->updateTenantMixManifest($tenantId, 'app');
+
+            $this->dispatch(new CompileSass([
+                'tag' => 'queues',
+                'origin' => 'resources/sass/admin/queues.scss',
+                'target' => 'public/css/admin/queues.css',
+                'user' => $userId,
+            ]));
+        } else {
+            $this->dispatch(new CompileSass([
+                'tag' => 'sidebar',
+                'origin' => 'resources/sass/sidebar/sidebar.scss',
+                'target' => 'public/css/sidebar.css',
+                'user' => $userId,
+            ]));
+            $this->dispatch(new CompileSass([
+                'tag' => 'app',
+                'origin' => 'resources/sass/app.scss',
+                'target' => 'public/css/app.css',
+                'user' => $userId,
+            ]));
+            $this->dispatch(new CompileSass([
+                'tag' => 'queues',
+                'origin' => 'resources/sass/admin/queues.scss',
+                'target' => 'public/css/admin/queues.css',
+                'user' => $userId,
+            ]));
+        }
     }
 
     /**
@@ -300,5 +374,36 @@ class CssOverrideController extends Controller
             $setting->addMedia($request->file($filename))
                 ->toMediaCollection($collectionName, $diskName);
         }
+    }
+
+    /**
+     * Update tenant mix manifest
+     *
+     * @param $tenantId
+     */
+    private function updateTenantMixManifest($tenantId, $tag)
+    {
+        $manifestFile = public_path('mix-manifest.json');
+        if (!file_exists($manifestFile)) {
+            return;
+        }
+
+        $manifest = json_decode(file_get_contents($manifestFile), true);
+        if ($manifest === null) {
+            return;
+        }
+
+        // Add tenant-specific app.css entry
+        $guid = bin2hex(random_bytes(16));
+        $tenantAppKey = "/css/{$tag}_tenant_{$tenantId}.css";
+        $tenantAppValue = "/css/{$tag}_tenant_{$tenantId}.css?id={$guid}";
+
+        $manifest[$tenantAppKey] = $tenantAppValue;
+
+        $encodedManifest = json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        file_put_contents($manifestFile, $encodedManifest);
+
+        // Cache the updated manifest
+        Cache::put('mix-manifest', $manifest, now()->addHours(24));
     }
 }

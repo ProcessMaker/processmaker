@@ -40,7 +40,7 @@ class GenerateSdk extends Command
      */
     public function handle()
     {
-        $jsonPath = base_path('storage/api-docs/api-docs.json');
+        $jsonPath = storage_path('api-docs/api-docs.json');
         $builder = new BuildSdk($jsonPath, $this->argument('output'));
 
         $userId = $this->options()['user-id'];

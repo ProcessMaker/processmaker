@@ -129,7 +129,7 @@
 @endif
 
 @yield('js')
-  
+
 @isset($addons)
   @foreach ($addons as $addon)
     @if (!empty($addon['script_mix']))
