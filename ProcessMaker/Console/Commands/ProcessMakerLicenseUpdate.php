@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Multitenancy\Tenant;
 
 class ProcessMakerLicenseUpdate extends Command
 {
@@ -32,7 +33,23 @@ class ProcessMakerLicenseUpdate extends Command
      */
     public function handle()
     {
+        $tenant = app('currentTenant');
+        if (!$tenant) {
+            $this->error('No tenant context found.');
+
+            return 1;
+        }
+        $tenantId = $tenant->id;
+
         $input = $this->argument('licenseFile');
+
+        // Validate tenant exists
+        $tenant = Tenant::find($tenantId);
+        if (!$tenant) {
+            $this->error("Tenant {$tenantId} not found.");
+
+            return 1;
+        }
 
         try {
             $content = file_get_contents($input);
@@ -43,7 +60,7 @@ class ProcessMakerLicenseUpdate extends Command
             Storage::disk('local')->put('license.json', $content);
 
             $this->info('Calling package:discover to update the package cache with enabled packages');
-            Artisan::call('package:discover');
+            Artisan::call('tenants:artisan "package:discover" --tenant=' . $tenantId);
             $this->info(Artisan::output());
 
             $this->info('License updated successfully');
