@@ -11,55 +11,6 @@ use ProcessMaker\Multitenancy\Tenant;
 class TenantSchedulingService
 {
     /**
-     * Register scheduled tasks for all tenants.
-     *
-     * @param  Schedule  $schedule
-     * @return void
-     */
-    public function registerTenantScheduledTasks(Schedule $schedule)
-    {
-        // Get tenant ID from the current request or use all tenants if not specified
-        $id = $this->getTenantIdFromCommand();
-        // Get all tenants by id or all
-
-        $tenants = $id ? Tenant::where('id', $id)->get() : Tenant::all();
-
-        // For each tenant, register their specific scheduled tasks
-        foreach ($tenants as $tenant) {
-            $this->registerScheduledTasksForTenant($schedule, $tenant);
-        }
-    }
-
-    /**
-     * Get tenant ID from command line arguments
-     *
-     * @return int|null
-     */
-    protected function getTenantIdFromCommand()
-    {
-        // Get tenant ID from the request
-        if (Request::has('tenant')) {
-            return Request::get('tenant');
-        }
-
-        // Check if running in console with --tenant option
-        if (app()->runningInConsole() && isset($_SERVER['argv'])) {
-            $args = $_SERVER['argv'];
-            foreach ($args as $index => $arg) {
-                if ($arg === '--tenant' && isset($args[$index + 1])) {
-                    return (int) $args[$index + 1];
-                }
-
-                if (strpos($arg, '--tenant=') === 0) {
-                    return (int) substr($arg, 9);
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * Register scheduled tasks for a specific tenant.
      *
      * @param Schedule $schedule
@@ -107,7 +58,6 @@ class TenantSchedulingService
      */
     protected function createScheduledEvent(Schedule $schedule, Tenant $tenant, string $command)
     {
-        // Lanza el comando exacto para ese tenant
         $fullCommand = "tenants:artisan {$command} --tenant={$tenant->id}";
 
         $event = $schedule->command($fullCommand);
