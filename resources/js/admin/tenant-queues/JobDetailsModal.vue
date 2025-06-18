@@ -46,7 +46,7 @@ export default {
   methods: {
     getStatusVariant(status) {
       const variants = {
-        processing: "warning",
+        pending: "warning",
         completed: "success",
         failed: "danger",
         exception: "secondary",
@@ -55,7 +55,7 @@ export default {
     },
     getStatusText(status) {
       const texts = {
-        processing: "Processing",
+        pending: "Pending",
         completed: "Completed",
         failed: "Failed",
         exception: "Exception",

@@ -22,8 +22,8 @@
             </div>
             <div class="col-md-2">
               <div class="text-center">
-                <h3 class="text-warning">{{ overallStats.totalProcessing }}</h3>
-                <small class="text-muted">Processing</small>
+                <h3 class="text-warning">{{ overallStats.totalPending }}</h3>
+                <small class="text-muted">Pending</small>
               </div>
             </div>
             <div class="col-md-2">
@@ -100,7 +100,7 @@
                   variant="warning"
                   class="mr-1"
                 >
-                  {{ data.item.stats.processing }}
+                  {{ data.item.stats.pending }}
                 </b-badge>
                 <b-badge
                   variant="success"
@@ -142,7 +142,7 @@ export default {
       overallStats: {
         totalTenants: "-",
         totalJobs: "-",
-        totalProcessing: "-",
+        totalPending: "-",
         totalCompleted: "-",
         totalFailed: "-",
         totalException: "-",
@@ -189,7 +189,7 @@ export default {
         this.overallStats = {
           totalTenants: data.total_tenants,
           totalJobs: data.total_jobs,
-          totalProcessing: data.total_processing,
+          totalPending: data.total_pending,
           totalCompleted: data.total_completed,
           totalFailed: data.total_failed,
           totalException: data.total_exception,

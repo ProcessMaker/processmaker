@@ -95,7 +95,7 @@ export default {
       selectedStatus: "",
       statusOptions: [
         { value: "", text: "All Statuses" },
-        { value: "processing", text: "Processing" },
+        { value: "pending", text: "Pending" },
         { value: "completed", text: "Completed" },
         { value: "failed", text: "Failed" },
         { value: "exception", text: "Exception" },
@@ -120,7 +120,7 @@ export default {
     },
     getStatusVariant(status) {
       const variants = {
-        processing: "warning",
+        pending: "warning",
         completed: "success",
         failed: "danger",
         exception: "secondary",
@@ -129,7 +129,7 @@ export default {
     },
     getStatusText(status) {
       const texts = {
-        processing: "Processing",
+        pending: "Pending",
         completed: "Completed",
         failed: "Failed",
         exception: "Exception",

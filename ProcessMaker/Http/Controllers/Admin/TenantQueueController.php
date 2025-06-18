@@ -105,7 +105,7 @@ class TenantQueueController extends Controller
         $overallStats = [
             'total_tenants' => count($tenantsWithJobs),
             'total_jobs' => 0,
-            'total_processing' => 0,
+            'total_pending' => 0,
             'total_completed' => 0,
             'total_failed' => 0,
             'total_exception' => 0,
@@ -114,7 +114,7 @@ class TenantQueueController extends Controller
         foreach ($tenantsWithJobs as $tenantData) {
             $stats = $tenantData['stats'];
             $overallStats['total_jobs'] += $stats['total'];
-            $overallStats['total_processing'] += $stats['processing'];
+            $overallStats['total_pending'] += $stats['pending'];
             $overallStats['total_completed'] += $stats['completed'];
             $overallStats['total_failed'] += $stats['failed'];
             $overallStats['total_exception'] += $stats['exception'];

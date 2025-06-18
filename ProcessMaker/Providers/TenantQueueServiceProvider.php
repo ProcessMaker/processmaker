@@ -34,12 +34,12 @@ class TenantQueueServiceProvider extends ServiceProvider
      */
     protected function registerQueueEventListeners(): void
     {
-        // Job processing
+        // Job pending
         Queue::before(function (JobProcessing $event) {
-            $this->trackJobByTenant($event->job, 'processing');
+            $this->trackJobByTenant($event->job, 'pending');
         });
 
-        // Job processed
+        // Job completed
         Queue::after(function (JobProcessed $event) {
             $this->trackJobByTenant($event->job, 'completed');
         });
@@ -82,12 +82,24 @@ class TenantQueueServiceProvider extends ServiceProvider
                 'attempts' => $job->attempts(),
             ];
 
-            // Store job data with tenant prefix
+            // Check if job already exists
             $tenantKey = "tenant_jobs:{$tenantId}:{$jobId}";
+            $existingJobData = Redis::get($tenantKey);
+
+            if ($existingJobData) {
+                $existingJob = json_decode($existingJobData, true);
+
+                // Remove job from old status list if status is different
+                if ($existingJob['status'] !== $status) {
+                    $this->removeJobFromStatusList($tenantId, $jobId, $existingJob['status']);
+                }
+            }
+
+            // Store job data with tenant prefix (always create new entry)
             Redis::setex($tenantKey, 86400, json_encode($jobData)); // Expire in 24 hours
 
             // Update tenant job counters
-            $this->updateTenantJobCounters($tenantId, $status);
+            $this->updateTenantJobCounters($tenantId, $status, $jobId);
 
             // Store in tenant-specific job lists
             $this->updateTenantJobLists($tenantId, $jobId, $status);
@@ -97,6 +109,7 @@ class TenantQueueServiceProvider extends ServiceProvider
                 'job_id' => $jobId,
                 'status' => $status,
                 'job_name' => $jobData['name'],
+                'action' => $existingJobData ? 'status_updated' : 'new_job',
             ]);
         } catch (\Exception $e) {
             Log::error('Error tracking tenant job', [
@@ -166,15 +179,62 @@ class TenantQueueServiceProvider extends ServiceProvider
     /**
      * Update tenant job counters.
      */
-    protected function updateTenantJobCounters(string $tenantId, string $status): void
+    protected function updateTenantJobCounters(string $tenantId, string $status, string $jobId): void
     {
         $counterKey = "tenant_job_counters:{$tenantId}";
 
-        Redis::pipeline(function ($pipe) use ($counterKey, $status) {
-            $pipe->hincrby($counterKey, $status, 1);
-            $pipe->hincrby($counterKey, 'total', 1);
-            $pipe->expire($counterKey, 86400); // Expire in 24 hours
-        });
+        // Check if this job ID has already been counted for this status
+        $countedJobsKey = "tenant_job_counted:{$tenantId}:{$status}";
+        $alreadyCounted = Redis::sismember($countedJobsKey, $jobId);
+
+        if (!$alreadyCounted) {
+            Redis::pipeline(function ($pipe) use ($counterKey, $status, $countedJobsKey, $jobId) {
+                // Increment the counter
+                $pipe->hincrby($counterKey, $status, 1);
+                $pipe->hincrby($counterKey, 'total', 1);
+                $pipe->expire($counterKey, 86400); // Expire in 24 hours
+
+                // Mark this job ID as counted for this status
+                $pipe->sadd($countedJobsKey, $jobId);
+                $pipe->expire($countedJobsKey, 86400); // Expire in 24 hours
+            });
+        }
+
+        // Handle status transitions: if job was previously in a different status,
+        // we need to decrement the previous status counter
+        $this->handleStatusTransition($tenantId, $jobId, $status);
+    }
+
+    /**
+     * Handle job status transitions to maintain accurate counters.
+     */
+    protected function handleStatusTransition(string $tenantId, string $jobId, string $newStatus): void
+    {
+        $statuses = ['pending', 'completed', 'failed', 'exception'];
+
+        foreach ($statuses as $status) {
+            if ($status === $newStatus) {
+                continue; // Skip the new status
+            }
+
+            $countedJobsKey = "tenant_job_counted:{$tenantId}:{$status}";
+            $wasCountedInStatus = Redis::sismember($countedJobsKey, $jobId);
+
+            if ($wasCountedInStatus) {
+                // This job was previously counted in a different status
+                // Remove it from the previous status and decrement the counter
+                Redis::pipeline(function ($pipe) use ($tenantId, $status, $jobId, $countedJobsKey) {
+                    $counterKey = "tenant_job_counters:{$tenantId}";
+
+                    // Decrement the previous status counter
+                    $pipe->hincrby($counterKey, $status, -1);
+                    $pipe->hincrby($counterKey, 'total', -1);
+
+                    // Remove the job ID from the counted set for the previous status
+                    $pipe->srem($countedJobsKey, $jobId);
+                });
+            }
+        }
     }
 
     /**
@@ -184,11 +244,34 @@ class TenantQueueServiceProvider extends ServiceProvider
     {
         $listKey = "tenant_job_lists:{$tenantId}:{$status}";
 
-        Redis::pipeline(function ($pipe) use ($listKey, $jobId) {
-            $pipe->lpush($listKey, $jobId);
-            $pipe->ltrim($listKey, 0, 999); // Keep only last 1000 jobs
-            $pipe->expire($listKey, 86400); // Expire in 24 hours
-        });
+        // Check if this job ID is already in the list
+        $jobIds = Redis::lrange($listKey, 0, -1);
+
+        if (!in_array($jobId, $jobIds)) {
+            Redis::pipeline(function ($pipe) use ($listKey, $jobId) {
+                $pipe->lpush($listKey, $jobId);
+                $pipe->ltrim($listKey, 0, 999); // Keep only last 1000 jobs
+                $pipe->expire($listKey, 86400); // Expire in 24 hours
+            });
+        } else {
+            // If job is already in the list, move it to the front (most recent)
+            Redis::pipeline(function ($pipe) use ($listKey, $jobId) {
+                $pipe->lrem($listKey, 0, $jobId);
+                $pipe->lpush($listKey, $jobId);
+                $pipe->expire($listKey, 86400); // Expire in 24 hours
+            });
+        }
+    }
+
+    /**
+     * Remove job from a specific status list.
+     */
+    protected function removeJobFromStatusList(string $tenantId, string $jobId, string $status): void
+    {
+        $listKey = "tenant_job_lists:{$tenantId}:{$status}";
+
+        // Remove the job ID from the list
+        Redis::lrem($listKey, 0, $jobId);
     }
 
     /**
@@ -203,7 +286,7 @@ class TenantQueueServiceProvider extends ServiceProvider
             $jobIds = Redis::lrange($listKey, 0, $limit - 1);
         } else {
             // Get jobs from all statuses
-            $statuses = ['processing', 'completed', 'failed', 'exception'];
+            $statuses = ['pending', 'completed', 'failed', 'exception'];
             $jobIds = [];
 
             foreach ($statuses as $status) {
@@ -242,7 +325,7 @@ class TenantQueueServiceProvider extends ServiceProvider
 
         return [
             'total' => (int) ($counters['total'] ?? 0),
-            'processing' => (int) ($counters['processing'] ?? 0),
+            'pending' => (int) ($counters['pending'] ?? 0),
             'completed' => (int) ($counters['completed'] ?? 0),
             'failed' => (int) ($counters['failed'] ?? 0),
             'exception' => (int) ($counters['exception'] ?? 0),
