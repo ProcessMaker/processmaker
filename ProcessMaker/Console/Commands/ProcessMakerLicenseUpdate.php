@@ -33,23 +33,7 @@ class ProcessMakerLicenseUpdate extends Command
      */
     public function handle()
     {
-        $tenant = app('currentTenant');
-        if (!$tenant) {
-            $this->error('No tenant context found.');
-
-            return 1;
-        }
-        $tenantId = $tenant->id;
-
         $input = $this->argument('licenseFile');
-
-        // Validate tenant exists
-        $tenant = Tenant::find($tenantId);
-        if (!$tenant) {
-            $this->error("Tenant {$tenantId} not found.");
-
-            return 1;
-        }
 
         try {
             $content = file_get_contents($input);
@@ -60,7 +44,7 @@ class ProcessMakerLicenseUpdate extends Command
             Storage::disk('local')->put('license.json', $content);
 
             $this->info('Calling package:discover to update the package cache with enabled packages');
-            Artisan::call('tenants:artisan "package:discover" --tenant=' . $tenantId);
+            Artisan::call('package:discover');
             $this->info(Artisan::output());
 
             $this->info('License updated successfully');

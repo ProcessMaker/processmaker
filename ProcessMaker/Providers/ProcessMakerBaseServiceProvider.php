@@ -14,7 +14,8 @@ abstract class ProcessMakerBaseServiceProvider extends ServiceProvider
     public function boot()
     {
         Event::listen(MadeTenantCurrentEvent::class, function () {
-            if (!TenantLicense::hasFeature(static::name)) {
+            // diferent of empty string
+            if (static::name !== '' || !TenantLicense::hasFeature(static::name)) {
                 return; // Don't register anything for this package for this tenant
             }
             $this->bootTenant();
