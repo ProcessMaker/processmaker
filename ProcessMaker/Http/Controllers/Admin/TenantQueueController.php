@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Redis;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Multitenancy\Tenant;
 use ProcessMaker\Providers\TenantQueueServiceProvider;
+use ReflectionClass;
 
 class TenantQueueController extends Controller
 {
@@ -133,13 +134,30 @@ class TenantQueueController extends Controller
         }
 
         $tenantKey = "tenant_jobs:{$tenantId}:{$jobId}";
-        $jobData = Redis::get($tenantKey);
+        $jobData = Redis::hgetall($tenantKey);
 
         if (!$jobData) {
             return response()->json(['error' => 'Job not found'], 404);
         }
 
-        return response()->json(json_decode($jobData, true));
+        $jobData['payload'] = json_decode($jobData['payload'], true);
+
+        if (isset($jobData['payload']['command'])) {
+            $command = unserialize($jobData['payload']['command']);
+            $reflection = new ReflectionClass($command);
+            $properties = [];
+
+            foreach ($reflection->getProperties() as $property) {
+                $property->setAccessible(true);
+                $properties[$property->getName()] = $property->getValue($command);
+            }
+
+            $jobData['payload']['data'] = $properties;
+
+            return response()->json($jobData);
+        }
+
+        return response()->json($jobData);
     }
 
     /**

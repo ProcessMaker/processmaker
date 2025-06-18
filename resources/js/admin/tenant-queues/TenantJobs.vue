@@ -88,8 +88,16 @@
               </b-badge>
             </template>
 
-            <template #cell(timestamp)="data">
-              {{ formatTimestamp(data.item.timestamp) }}
+            <template #cell(queued)="data">
+              {{ formatTimestamp(data.item.queued_at) }}
+            </template>
+
+            <template #cell(completed)="data">
+              {{ formatTimestamp(data.item.completed_at) }}
+            </template>
+
+            <template #cell(runtime)="data">
+              {{ formatRuntime(data.item.queued_at, data.item.completed_at) }}
             </template>
 
             <template #cell(actions)="data">
@@ -135,8 +143,9 @@ export default {
         { key: "name", label: "Name" },
         { key: "queue", label: "Queue" },
         { key: "status", label: "Status" },
-        { key: "attempts", label: "Attempts" },
-        { key: "timestamp", label: "Timestamp" },
+        { key: "queued", label: "Queued" },
+        { key: "completed", label: "Completed" },
+        { key: "runtime", label: "Runtime" },
         { key: "actions", label: "Actions" },
       ],
     };
@@ -243,6 +252,18 @@ export default {
     formatTimestamp(timestamp) {
       if (!timestamp) return "-";
       return new Date(timestamp * 1000).toLocaleString();
+    },
+    /**
+     * Format the runtime of a job.
+     * @param {number} createdAt - The timestamp of the job creation.
+     * @param {number} completedAt - The timestamp of the job completion.
+     * @returns {string} The formatted runtime.
+     */
+    formatRuntime(queuedAt, completedAt) {
+      console.log(queuedAt, completedAt);
+      if (!queuedAt || !completedAt) return "-";
+      const runtime = completedAt - queuedAt;
+      return `${runtime.toFixed(2)}s`;
     },
   },
 };

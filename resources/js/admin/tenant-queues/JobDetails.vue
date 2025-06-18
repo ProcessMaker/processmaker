@@ -105,17 +105,24 @@
                 </dd>
 
                 <dt class="col-sm-4">
-                  Timestamp:
+                  Queued At:
                 </dt>
                 <dd class="col-sm-8">
-                  {{ formatTimestamp(job.timestamp) }}
+                  {{ formatTimestamp(job.queued_at) }}
+                </dd>
+
+                <dt class="col-sm-4">
+                  Completed At:
+                </dt>
+                <dd class="col-sm-8">
+                  {{ formatTimestamp(job.completed_at) }}
                 </dd>
               </dl>
             </div>
 
             <div class="col-12 mt-4">
               <h6>Job Data</h6>
-              <pre class="bg-light p-3 border rounded">{{ JSON.stringify(job, null, 2) }}</pre>
+              <pre class="bg-light p-3 border rounded">{{ getJobData() }}</pre>
             </div>
           </div>
         </b-card>
@@ -183,6 +190,10 @@ export default {
     formatTimestamp(timestamp) {
       if (!timestamp) return "-";
       return new Date(timestamp * 1000).toLocaleString();
+    },
+    getJobData() {
+      console.log(this.job);
+      return JSON.stringify(this.job.payload, null, 2);
     },
   },
 };

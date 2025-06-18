@@ -1,11 +1,6 @@
-import TenantQueuesDashboard from "./TenantQueuesDashboard.vue";
-import JobDetailsModal from "./JobDetailsModal.vue";
-import TenantJobsModal from "./TenantJobsModal.vue";
+import router from "./router";
 
-export {
-  TenantQueuesDashboard,
-  JobDetailsModal,
-  TenantJobsModal,
-};
-
-export default TenantQueuesDashboard;
+new Vue({
+  el: "#tenant-queues-dashboard",
+  router,
+});

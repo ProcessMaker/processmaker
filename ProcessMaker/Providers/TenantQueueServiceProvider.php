@@ -72,15 +72,25 @@ class TenantQueueServiceProvider extends ServiceProvider
                 return;
             }
 
+            $payload = $job->payload();
+
             $jobData = [
                 'id' => $jobId,
                 'name' => $this->getJobName($job),
                 'queue' => $job->getQueue() ?? 'default',
                 'status' => $status,
-                'timestamp' => now()->timestamp,
+                'created_at' => $payload['pushedAt'],
+                'completed_at' => $status === 'completed' ? str_replace(',', '.', microtime(true)) : null,
+                'failed_at' => $status === 'failed' ? str_replace(',', '.', microtime(true)) : null,
+                'updated_at' => str_replace(',', '.', microtime(true)),
                 'tenant_id' => $tenantId,
                 'attempts' => $job->attempts(),
+                'payload' => json_encode($payload['data']),
             ];
+
+            if ($status === 'pending') {
+                $jobData['queued_at'] = str_replace(',', '.', microtime(true));
+            }
 
             // Check if job already exists
             $tenantKey = "tenant_jobs:{$tenantId}:{$jobId}";
@@ -96,10 +106,15 @@ class TenantQueueServiceProvider extends ServiceProvider
             }
 
             // Store job data with tenant prefix (always create new entry)
-            Redis::setex($tenantKey, 86400, json_encode($jobData)); // Expire in 24 hours
+            Redis::hmset($tenantKey, $jobData);
+            Redis::expire($tenantKey, 86400); // Expire in 24 hours
 
             // Update tenant job counters
             $this->updateTenantJobCounters($tenantId, $status, $jobId);
+
+            if ($status === 'completed' || $status === 'exception' || $status === 'failed') {
+                $this->removeJobFromStatusList($tenantId, $jobId, 'pending');
+            }
 
             // Store in tenant-specific job lists
             $this->updateTenantJobLists($tenantId, $jobId, $status);
@@ -300,10 +315,10 @@ class TenantQueueServiceProvider extends ServiceProvider
 
         foreach ($jobIds as $jobId) {
             $tenantKey = "tenant_jobs:{$tenantId}:{$jobId}";
-            $jobData = Redis::get($tenantKey);
+            $jobData = Redis::hgetall($tenantKey);
 
             if ($jobData) {
-                $jobs[] = json_decode($jobData, true);
+                $jobs[] = $jobData;
             }
         }
 
