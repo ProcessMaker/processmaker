@@ -90,4 +90,17 @@ return [
         'table' => 'failed_jobs',
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Tenant Job Tracking
+    |--------------------------------------------------------------------------
+    |
+    | These options configure the behavior of tenant-specific job tracking.
+    | When enabled, jobs will be tracked per tenant in Redis for monitoring
+    | and analytics purposes.
+    |
+    */
+
+    'tenant_tracking_enabled' => env('QUEUE_TENANT_TRACKING_ENABLED', false),
+
 ];
