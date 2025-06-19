@@ -15,6 +15,19 @@ use ReflectionClass;
 class TenantQueueController extends Controller
 {
     /**
+     * Constructor to check if tenant tracking is enabled.
+     */
+    public function __construct()
+    {
+        // Check if tenant job tracking is enabled
+        $enabled = config('queue.tenant_tracking_enabled', false);
+
+        if (!$enabled) {
+            abort(404, 'Tenant queue tracking is disabled');
+        }
+    }
+
+    /**
      * Show the tenant jobs dashboard.
      */
     public function index()

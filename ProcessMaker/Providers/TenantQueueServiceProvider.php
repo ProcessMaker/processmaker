@@ -26,7 +26,12 @@ class TenantQueueServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->registerQueueEventListeners();
+        // Only register queue event listeners if tenant job tracking is enabled
+        $enabled = config('queue.tenant_tracking_enabled', false);
+
+        if ($enabled) {
+            $this->registerQueueEventListeners();
+        }
     }
 
     /**
