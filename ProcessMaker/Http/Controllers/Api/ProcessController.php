@@ -87,6 +87,7 @@ class ProcessController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
      *     @OA\Parameter(ref="#/components/parameters/status"),
      *     @OA\Parameter(ref="#/components/parameters/include"),
+     *     @OA\Parameter(ref="#/components/parameters/pmql"),
      *     @OA\Parameter(
      *         name="simplified_data_for_selector",
      *         in="query",
@@ -1310,6 +1311,7 @@ class ProcessController extends Controller
      * @OA\Head(
      *     path="/processes/import/{code}/is_ready",
      *     summary="Check if the import is ready",
+     *     operationId="importReady",
      *     tags={"Processes"},
      *
      *     @OA\Parameter(

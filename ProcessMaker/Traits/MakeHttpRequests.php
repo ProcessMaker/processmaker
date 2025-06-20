@@ -27,6 +27,14 @@ trait MakeHttpRequests
         'OAUTH2_PASSWORD' => 'passwordAuthorization',
     ];
 
+    private $debugData = [
+        'method' => '',
+        'url' => '',
+        'headers' => [],
+        'body' => '',
+        'bodyType' => '',
+    ];
+
     /**
      * Verify certificate ssl
      *
@@ -316,8 +324,11 @@ trait MakeHttpRequests
         $status = $response->getStatusCode();
         $bodyContent = $response->getBody()->getContents();
         if (!$this->isJson($bodyContent)) {
+            devtools($this->debugData['method'], $this->debugData['url'], $status, ['Response' => $bodyContent, 'Request' => $this->debugData['body']]);
             return ['response' => $bodyContent, 'status' => $status];
         }
+
+        devtools($this->debugData['method'], $this->debugData['url'], $status, ['Response' => $bodyContent, 'Request' => $this->debugData['body']]);
 
         switch (true) {
             case $status == 200:
@@ -345,6 +356,7 @@ trait MakeHttpRequests
             }
         }
 
+        devtools('', 'MAPPED RESPONSE', '', ['Output' => json_encode($mapped, JSON_PRETTY_PRINT)]);
         return $mapped;
     }
 
@@ -353,8 +365,11 @@ trait MakeHttpRequests
         $status = $response->getStatusCode();
         $bodyContent = $response->getBody()->getContents();
         if (!$this->isJson($bodyContent)) {
+            devtools($this->debugData['method'], $this->debugData['url'], $status, ['Response' => $bodyContent, 'Request' => $this->debugData['body']]);
             return ['response' => $bodyContent, 'status' => $status];
         }
+
+        devtools($this->debugData['method'], $this->debugData['url'], $status, ['Response' => $bodyContent, 'Request' => $this->debugData['body']]);
 
         switch (true) {
             case $status == 200:
@@ -416,6 +431,7 @@ trait MakeHttpRequests
             $mapped[$processVar] = $evaluatedApiVar;
         }
 
+        devtools('', 'MAPPED RESPONSE', '', ['Output' => json_encode($mapped, JSON_PRETTY_PRINT)]);
         return $mapped;
     }
 
@@ -436,7 +452,8 @@ trait MakeHttpRequests
     {
         $client = $this->client ?? app()->make(Client::class, [
             'config' => [
-                'verify' => $this->verifySsl,
+                // Disable SSL verification in local development environment
+                'verify' => $this->verifySsl && (config('app.env') !== 'local'),
                 'timeout' => $this->timeout,
             ],
         ]);
@@ -446,6 +463,11 @@ trait MakeHttpRequests
         }
 
         $request = new Request($method, $url, $headers, $body);
+        $this->debugData['method'] = $method;
+        $this->debugData['url'] = $url;
+        $this->debugData['headers'] = $headers;
+        $this->debugData['body'] = $body;
+        $this->debugData['bodyType'] = $bodyType;
 
         if ($this->debug_mode) {
             $this->log('Request: ', var_export(compact('method', 'url', 'body', 'bodyType'), true));

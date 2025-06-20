@@ -18,36 +18,76 @@ class MustacheOptions
             'json' => [$this, 'json'],
             'serialize' => [$this, 'serialize'],
             'xml' => [$this, 'xml'],
+            'urlencode' => [$this, 'urlencode'],
         ];
     }
 
-    public function html64($text, Mustache_LambdaHelper $helper)
+    public function html64($text, ?Mustache_LambdaHelper $helper = null)
     {
+        if (!$helper) {
+            // Support for PRAGMA_FILTERS
+            return base64_encode('<html><body>' . $text . '</body></html>');
+        }
         return base64_encode('<html><body>' . $helper->render($text) . '</body></html>');
     }
 
-    public function base64($text, Mustache_LambdaHelper $helper)
+    public function base64($text, ?Mustache_LambdaHelper $helper = null)
     {
+        if (!$helper) {
+            // Support for PRAGMA_FILTERS
+            return base64_encode($text);
+        }
         return base64_encode($helper->render($text));
     }
 
-    public function key($text, Mustache_LambdaHelper $helper)
+    public function key($text, ?Mustache_LambdaHelper $helper = null)
     {
+        if (!$helper) {
+            // Support for PRAGMA_FILTERS
+            return urlencode(Hash::make($text));
+        }
         return urlencode(Hash::make($helper->render($text)));
     }
 
-    public function json($text, Mustache_LambdaHelper $helper)
+    public function json($text, ?Mustache_LambdaHelper $helper = null)
     {
+        if (!$helper) {
+            // Support for PRAGMA_FILTERS
+            return json_encode($text);
+        }
         return json_encode($helper->render($text));
     }
 
-    public function serialize($text, Mustache_LambdaHelper $helper)
+    public function serialize($text, ?Mustache_LambdaHelper $helper = null)
     {
+        if (!$helper) {
+            // Support for PRAGMA_FILTERS
+            return serialize($text);
+        }
         return serialize($helper->render($text));
     }
 
-    public function xml($text, Mustache_LambdaHelper $helper)
+    public function xml($text, ?Mustache_LambdaHelper $helper = null)
     {
+        if (!$helper) {
+            // Support for PRAGMA_FILTERS
+            return xmlrpc_encode($text);
+        }
         return xmlrpc_encode($helper->render($text));
+    }
+
+    /**
+     * URL encode a string
+     *
+     * @param string $text
+     * @param Mustache_LambdaHelper|null $helper
+     * @return string
+     */
+    public function urlencode($text, ?Mustache_LambdaHelper $helper = null)
+    {
+        if (!$helper) {
+            return urlencode($text);
+        }
+        return urlencode($helper->render($text));
     }
 }

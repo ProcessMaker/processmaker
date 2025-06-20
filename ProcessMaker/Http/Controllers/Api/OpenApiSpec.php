@@ -44,6 +44,12 @@ namespace ProcessMaker\Http\Controllers\Api;
  *             @OA\Schema(type="string", enum={"asc", "desc"}, default="asc"),
  *         ),
  *         @OA\Parameter(
+ *             parameter="page",
+ *             name="page",
+ *             in="query",
+ *             @OA\Schema(type="integer", default="1"),
+ *         ),
+ *         @OA\Parameter(
  *             parameter="per_page",
  *             name="per_page",
  *             in="query",
@@ -55,6 +61,13 @@ namespace ProcessMaker\Http\Controllers\Api;
  *             in="query",
  *             description="Include data from related models in payload. Comma separated list.",
  *             @OA\Schema(type="string", default=""),
+ *         ),
+ *         @OA\Parameter(
+ *             parameter="fields",
+ *             name="fields",
+ *             in="query",
+ *             description="Fields to map the response object.",
+ *             @OA\Schema(type="object"),
  *         ),
  *         @OA\Parameter(
  *             parameter="member_id",
@@ -73,6 +86,13 @@ namespace ProcessMaker\Http\Controllers\Api;
  *             name="commentable_type",
  *             in="query",
  *             @OA\Schema(type="string", default=""),
+ *         ),
+ *         @OA\Parameter(
+ *             parameter="pmql",
+ *             name="pmql",
+ *             in="query",
+ *             description="PMQL query to filter results",
+ *             @OA\Schema(type="string"),
  *         ),
  *         @OA\Schema(
  *           schema="DateTime",
