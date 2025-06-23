@@ -570,6 +570,8 @@ This command will
 - Generate new passport keys
 - Run the upgrade commands
 
+You will need to run the package install commands for all installed packages.
+
 ## Migrate an existing instnace to a tenant
 
 ### Option 1: Using the TenantsCreate command

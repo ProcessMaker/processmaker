@@ -33,6 +33,7 @@ use ProcessMaker\Managers;
 use ProcessMaker\Managers\MenuManager;
 use ProcessMaker\Managers\ScreenCompiledManager;
 use ProcessMaker\Models;
+use ProcessMaker\Multitenancy\Tenant;
 use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
 use ProcessMaker\Repositories\SettingsConfigRepository;
@@ -489,7 +490,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         $tenantId = Env::get('TENANT');
         if ($tenantId) {
-            $tenant = \ProcessMaker\Multitenancy\Tenant::findOrFail($tenantId);
+            $tenant = Tenant::findOrFail($tenantId);
             $tenant->makeCurrent();
         }
     }
