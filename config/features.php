@@ -16,5 +16,9 @@
  */
 
 return [
-    'dms' => (bool) env('FEATURE_DMS', true),
+    // Work in progress - set MY_FEATURE=true in your .env
+    'my_feature' => (bool) env('MY_FEATURE', false),
+
+    // When ready for relase, set to true or remove the the conditionals
+    'released_feature' => true
 ];
