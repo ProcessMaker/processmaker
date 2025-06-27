@@ -16,7 +16,7 @@ class TenantsDisable extends Command
      *
      * @var string
      */
-    protected $signature = 'tenants:disable {--default-tenant-id=}';
+    protected $signature = 'tenants:disable {--default-tenant-domain=}';
 
     /**
      * The console command description.
@@ -34,11 +34,13 @@ class TenantsDisable extends Command
         $domain = parse_url(Env::get('APP_URL'), PHP_URL_HOST);
 
         $tenant = null;
-        if ($this->option('default-tenant-id')) {
-            $tenantId = $this->option('default-tenant-id');
+        if ($this->option('default-tenant-domain')) {
+            $tenantDomain = $this->option('default-tenant-domain');
+            $tenantId = explode('.', $tenantDomain)[0];
         } else {
             $tenant = Tenant::where('domain', $domain)->firstOrFail();
-            $tenantId = $tenant->id;
+            $tenantDomain = explode('.', $tenant->domain)[0];
+            $tenantId = $tenantDomain;
         }
 
         $this->recursiveDelete(base_path('storage/framework'));

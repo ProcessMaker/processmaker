@@ -27,11 +27,11 @@ class SwitchTenant implements SwitchTenantTask
         $this->setTenantDatabaseConnection($tenant);
 
         // Set the tenant-specific storage path
-        $tenantStoragePath = base_path('storage/tenant_' . $tenant->id);
+        $tenantDomain = explode('.', $tenant->domain)[0];
+        $tenantStoragePath = base_path('storage/tenant_' . $tenantDomain);
 
         $app = app();
         $app->setStoragePath($tenantStoragePath);
-
         // Create the tenant storage directory if it doesn't exist
         // TODO: Move these to somewhere else - should not be run on every request
         if (!file_exists($tenantStoragePath)) {

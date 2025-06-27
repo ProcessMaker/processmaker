@@ -73,7 +73,8 @@ class TenantsCreate extends Command
         ]);
 
         // Setup storage
-        $tenantStoragePath = base_path('storage/tenant_' . $tenant->id);
+        $tenantName = explode('.', $tenant->domain)[0];
+        $tenantStoragePath = base_path('storage/tenant_' . $tenantName);
         if (!File::isDirectory($tenantStoragePath)) {
             mkdir($tenantStoragePath, 0755, true);
         }

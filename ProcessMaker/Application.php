@@ -12,6 +12,25 @@ use Illuminate\Support\Facades\Auth;
 class Application extends IlluminateApplication
 {
     /**
+     * Get the path to the cached packages.php file.
+     *
+     * @return string
+     */
+    public function getCachedPackagesPath()
+    {
+        //get tenant id from domain
+        $domain = request()->getHost();
+        $tenantDomain = explode('.', $domain)[0];
+        // check if there is a storage_path('tenant_' . $tenantDomain . '/framework/cache/packages.php')
+        if (file_exists(storage_path('tenant_' . $tenantDomain . '/framework/cache/packages.php'))) {
+            return storage_path('tenant_' . $tenantDomain . '/framework/cache/packages.php');
+        }
+
+        // if not, return the default path
+        return $this->normalizeCachePath('APP_PACKAGES_CACHE', 'cache/packages.php');
+    }
+
+    /**
      * Sets the timezone for the application and for php with the specified timezone.
      *
      * @param $timezone string
