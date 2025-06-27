@@ -108,6 +108,13 @@ const onKeyupEnter = () => {
   }
 };
 
+const onReorder = () => {
+  stages.value.forEach((item, index) => {
+    item.order = index + 1;
+  });
+  emit("onChange", stages.value);
+};
+
 const onUpdate = (index, newName) => {
   const oldName = stages.value[index].name;
   stages.value[index].name = newName;
@@ -122,6 +129,7 @@ const onRemove = (index) => {
     "",
     () => {
       const removed = stages.value.splice(index, 1);
+      onReorder();
       emit("onRemove", stages.value, index, removed[0]);
       emit("onChange", stages.value);
     },
@@ -142,13 +150,6 @@ const onClickSelected = (index) => {
     }
   });
   emit("onClickSelected", stages.value[index]);
-};
-
-const onReorder = () => {
-  stages.value.forEach((item, index) => {
-    item.order = index + 1;
-  });
-  emit("onChange", stages.value);
 };
 
 watch(() => props.initialStages, (newVal) => {

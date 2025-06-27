@@ -4,13 +4,14 @@
     <p class="text-sm mb-4">
       {{ $t("Here you have all the stages already set in this process. Define the order you prefer:") }}
     </p>
-    <StageList :initialStages="defaultStages"
-               @onUpdate="onUpdate"
-               @onRemove="onRemove"
-               @onChange="onChange"
-               @onClickCheckbox="onClickCheckbox"
-               @onClickSelected="onClickSelected"
-      ></StageList>
+    <StageList
+      :initial-stages="defaultStages"
+      @onUpdate="onUpdate"
+      @onRemove="onRemove"
+      @onChange="onChange"
+      @onClickCheckbox="onClickCheckbox"
+      @onClickSelected="onClickSelected"
+    />
     <AgregationProperty />
   </div>
 </template>
@@ -27,14 +28,14 @@ const defaultStages = ref([]);
 const currentInstance = getCurrentInstance();
 
 const loadStagesFromApi = () => {
-  const id = window.ProcessMaker.modeler.process.id;
+  const { id } = window.ProcessMaker.modeler.process;
   ProcessMaker
     .apiClient
     .get(`/processes/${id}/stages`)
     .then((response) => {
-      let stages = response.data.data;
+      const stages = response.data.data;
       selectItemFromDefinition(stages);
-      stages.forEach(item => {
+      stages.forEach((item) => {
         defaultStages.value = [...defaultStages.value, item];
       });
     });
@@ -42,10 +43,10 @@ const loadStagesFromApi = () => {
 
 const saveStagesToApi = (stages) => {
   const copy = structuredClone(stages);
-  copy.forEach(item => {
+  copy.forEach((item) => {
     delete item.selected;
   });
-  const id = window.ProcessMaker.modeler.process.id;
+  const { id } = window.ProcessMaker.modeler.process;
   const params = {
     stages: copy,
   };
@@ -87,7 +88,7 @@ const updateStagesForAllFlowConfigs = (stages) => {
   const links = getModeler().graph.getLinks();
   for (const link of links) {
     for (const stage of stages) {
-      let config = getConfigFromDefinition(link.component.node.definition);
+      const config = getConfigFromDefinition(link.component.node.definition);
       if (config?.stage?.id === stage.id) {
         config.stage.order = stage.order;
         config.stage.name = stage.name;
@@ -101,7 +102,8 @@ const updateStagesForAllFlowConfigs = (stages) => {
 const removeStageInAllFlowConfig = (stage) => {
   const links = getModeler().graph.getLinks();
   for (const link of links) {
-    let config = getConfigFromDefinition(link.component.node.definition);
+    const config = getConfigFromDefinition(link.component.node.definition);
+    debugger;
     if (config?.stage?.id === stage.id) {
       delete config.stage;
       Vue.set(link.component.node.definition, "config", JSON.stringify(config));
@@ -111,20 +113,20 @@ const removeStageInAllFlowConfig = (stage) => {
 };
 
 const applyStageToFlow = (stage) => {
-  let config = getConfigFromDefinition(getDefinition());
+  const config = getConfigFromDefinition(getDefinition());
   config.stage = {
     id: stage.id,
     order: stage.order,
     name: stage.name,
   };
-  let definition = getDefinition();
+  const definition = getDefinition();
   Vue.set(definition, "config", JSON.stringify(config));
   getModeler().getCurrentStageModelComponent().setStageLabel();
 };
 
 const removeStageToFlow = () => {
-  let definition = getDefinition();
-  let config = getConfigFromDefinition(definition);
+  const definition = getDefinition();
+  const config = getConfigFromDefinition(definition);
   delete config.stage;
   Vue.set(definition, "config", JSON.stringify(config));
   getModeler().getCurrentStageModelComponent().removeStageLabels();
