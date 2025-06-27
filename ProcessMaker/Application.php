@@ -18,12 +18,18 @@ class Application extends IlluminateApplication
      */
     public function getCachedPackagesPath()
     {
-        //get tenant id from domain
-        $domain = request()->getHost();
-        $tenantDomain = explode('.', $domain)[0];
-        // check if there is a storage_path('tenant_' . $tenantDomain . '/framework/cache/packages.php')
-        if (file_exists(storage_path('tenant_' . $tenantDomain . '/framework/cache/packages.php'))) {
-            return storage_path('tenant_' . $tenantDomain . '/framework/cache/packages.php');
+        // Get tenant domain name from domain
+        if (!app()->runningInConsole()) {
+            $domain = request()->getHost();
+            if (str_contains($domain, '.')) {
+                $tenantDomain = explode('.', $domain)[0];
+            } else {
+                $tenantDomain = $domain;
+            }
+            // check if there is a storage_path('tenant_' . $tenantDomain . '/framework/cache/packages.php')
+            if ($tenantDomain && file_exists(storage_path('tenant_' . $tenantDomain . '/framework/cache/packages.php'))) {
+                return storage_path('tenant_' . $tenantDomain . '/framework/cache/packages.php');
+            }
         }
 
         // if not, return the default path
