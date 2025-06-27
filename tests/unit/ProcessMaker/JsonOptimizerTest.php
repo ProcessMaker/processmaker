@@ -3,12 +3,13 @@
 namespace Tests;
 
 use Illuminate\Support\Facades\Log;
-use Tests\TestCase;
 use ProcessMaker\Support\JsonOptimizer;
+use Tests\TestCase;
 
 class JsonOptimizerTest extends TestCase
 {
     protected string $json;
+
     protected array $data;
 
     protected function setUp(): void
@@ -23,14 +24,12 @@ class JsonOptimizerTest extends TestCase
                 'version' => '4.0',
                 'active' => true,
                 'users' => 15000,
-            ]
+            ],
         ];
 
         $this->json = json_encode($this->data);
     }
 
-    /**
-     */
     public function test_it_decodes_json_correctly_with_optimizer()
     {
         $decoded = JsonOptimizer::decode($this->json, true);
@@ -40,8 +39,6 @@ class JsonOptimizerTest extends TestCase
         $this->assertEquals($this->data['meta']['version'], $decoded['meta']['version']);
     }
 
-    /**
-     */
     public function test_it_falls_back_to_native_decode_on_invalid_json()
     {
         $invalidJson = '{"name": "ProcessMaker", "invalid": }'; // malformed JSON
@@ -51,8 +48,6 @@ class JsonOptimizerTest extends TestCase
         $this->assertNull($result);
     }
 
-    /**
-     */
     public function test_it_uses_simdjson_when_available()
     {
         if (!extension_loaded('simdjson')) {
@@ -67,6 +62,7 @@ class JsonOptimizerTest extends TestCase
     }
 
     /**
+     * Test that the config flag json_optimization is respected.
      */
     public function test_it_respects_config_flag_json_optimization()
     {
@@ -76,7 +72,9 @@ class JsonOptimizerTest extends TestCase
 
         $this->assertEquals($this->data, $decoded);
     }
+
     /**
+     * Test that the helper function json_optimize_decode decodes valid JSON correctly.
      */
     public function test_helper_function_decodes_valid_json_correctly()
     {
@@ -87,8 +85,6 @@ class JsonOptimizerTest extends TestCase
         $this->assertCount(3, $decoded['meta']);
     }
 
-    /**
-     */
     public function test_helper_function_returns_null_on_invalid_json()
     {
         $invalidJson = '{"type": "workflow", "meta": ['; // malformed JSON
@@ -99,6 +95,7 @@ class JsonOptimizerTest extends TestCase
     }
 
     /**
+     * Test that the helper function json_optimize_decode respects the config setting.
      */
     public function test_helper_respects_config_setting()
     {
@@ -110,6 +107,7 @@ class JsonOptimizerTest extends TestCase
     }
 
     /**
+     * Test that the helper function json_optimize_decode uses simdjson when enabled.
      */
     public function test_helper_uses_simdjson_when_enabled()
     {
@@ -125,6 +123,7 @@ class JsonOptimizerTest extends TestCase
     }
 
     /**
+     * Test that the helper function json_optimize_encode encodes data correctly.
      */
     public function test_it_encodes_data_correctly()
     {
@@ -139,6 +138,7 @@ class JsonOptimizerTest extends TestCase
     }
 
     /**
+     * Test that the helper function json_optimize_encode encodes data correctly.
      */
     public function test_helper_encodes_data_correctly()
     {
