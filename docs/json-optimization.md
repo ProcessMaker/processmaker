@@ -2,167 +2,92 @@
 
 ## Overview
 
-This document describes the JSON optimization implementation for ProcessMaker using SIMDJSON and UOPZ extensions to improve JSON processing performance.
+This document describes the implementation of optimized JSON decoding in ProcessMaker using the [SIMDJSON PHP extension](https://github.com/ondrejsimek/php-simdjson) to improve performance in JSON processing.
+
+> **Note:** SIMDJSON is used **only for `json_decode`**. Encoding (`json_encode`) remains native, as SIMDJSON does not support it.
 
 ## Benefits
 
-- **2-4x faster** JSON decoding
-- **1.5-3x faster** JSON encoding
-- **Reduced CPU usage** for API responses
-- **Better user experience** with faster page loads
-- **Automatic fallback** to native functions if extensions fail
+* **2–4x faster** JSON decoding compared to native `json_decode`
+* **Reduced CPU usage** when parsing large or frequent JSON payloads
+* **Improved API performance**
+* **Graceful fallback** to native decoding if SIMDJSON is not available
+
+---
 
 ## Installation
 
-### Automatic Installation
-
-```bash
-# Make script executable
-chmod +x install_json_optimization.sh
-
-# Run installation script
-sudo ./install_json_optimization.sh
-```
-
-### Manual Installation
-
-#### 1. Install Extensions
+#### 1. Install SIMDJSON PHP Extension
 
 **Ubuntu/Debian:**
+
 ```bash
 sudo apt-get update
 sudo apt-get install libsimdjson-dev php-pear php-dev build-essential
 sudo pecl install simdjson
-sudo pecl install uopz
 ```
 
 **macOS:**
+
 ```bash
 brew install simdjson
 pecl install simdjson
-pecl install uopz
 ```
 
 #### 2. Configure PHP
 
-Add to your `php.ini`:
+Edit your `php.ini` and ensure the following line is present:
+
 ```ini
 extension=simdjson.so
-extension=uopz.so
 ```
 
-#### 3. Configure ProcessMaker
+Restart your web server or PHP-FPM:
 
-Add to your `.env` file:
 ```bash
+sudo systemctl restart php8.3-fpm
+```
+
+#### 3. Configure Laravel
+
+Enable JSON optimization in your `.env` file:
+
+```env
 JSON_OPTIMIZATION=true
 ```
 
-#### 4. Register Service Provider
+---
 
-The service provider is already registered in `config/app.php`:
+## Usage
+
+Instead of using `json_decode()` directly, use the wrapper:
+
 ```php
-'providers' => [
-    // ... other providers
-    ProcessMaker\Providers\JsonOptimizerServiceProvider::class,
-],
+use ProcessMaker\Support\JsonOptimizer;
+
+$data = JsonOptimizer::decode($json);
 ```
+
+Or, if you’ve added a global helper:
+
+```php
+$data = json_optimize_decode($json);
+```
+
+The optimizer will automatically use `simdjson` if available, and fall back to `json_decode` otherwise.
+
+---
 
 ## Testing
 
-### Test Installation
+### Verify Extension Loaded
 
 ```bash
-# Check if extensions are loaded
 php -m | grep simdjson
-php -m | grep uopz
-
-# Test JSON optimization
-php artisan json:test
-
-# Test with more iterations
-php artisan json:test --iterations=5000
 ```
 
-### Expected Output
-
-#### With Extensions Loaded (Optimized)
+Expected output:
 
 ```
-📋 Extension Status:
-==========================================
-SIMDJSON loaded: ✅ YES
-UOPZ loaded: ✅ YES
-Environment: testing
-JSON optimization enabled: ✅ YES
-✅ Native JSON functions working correctly
-✅ ProcessMaker data processed correctly
-📏 JSON size: 193 bytes
-📝 SIMDJSON loaded - using optimized functions
-📝 UOPZ loaded - using optimized functions
-🎯 Optimization Status: 🚀 OPTIMIZED
-
-📊 JSON Optimization Performance Results:
-==========================================
-Native JSON functions (📝 NATIVE):
-  Encode: 4.0629ms
-  Decode: 11.024ms
-Optimized JSON functions (🚀 OPTIMIZED):
-  Encode: 1.2345ms
-  Decode: 2.8765ms
-
-📈 Performance Comparison:
-Encode ratio: 0.304x (3.29x faster)
-Decode ratio: 0.261x (3.83x faster)
-🚀 JSON optimization active and working
+simdjson
 ```
-
-#### Without Extensions (Fallback)
-
-```
-📋 Extension Status:
-==========================================
-SIMDJSON loaded: ❌ NO
-UOPZ loaded: ❌ NO
-Environment: testing
-JSON optimization enabled: ❌ NO
-✅ Native JSON functions working correctly
-✅ ProcessMaker data processed correctly
-📏 JSON size: 193 bytes
-📝 SIMDJSON not loaded - would use native functions
-📝 UOPZ not loaded - would use native functions
-🎯 Optimization Status: 📝 WOULD USE NATIVE
-
-📊 JSON Optimization Performance Results:
-==========================================
-Native JSON functions (📝 NATIVE):
-  Encode: 4.0629ms
-  Decode: 11.024ms
-Optimized JSON functions (📝 NATIVE):
-  Encode: 4.2799ms
-  Decode: 11.965ms
-
-📈 Performance Comparison:
-Encode ratio: 1.053x
-Decode ratio: 1.085x
-📝 JSON optimization not active (extensions may not be loaded)
-```
-
-#### Key Indicators
-
-- **🚀 OPTIMIZED**: Extensions loaded and working (ratios < 1.0)
-- **📝 WOULD USE NATIVE**: Extensions not loaded, using fallback (ratios > 1.0)
-- **✅ YES/❌ NO**: Clear extension loading status
-- **Performance ratios**: Show speed improvement (lower = faster)
-
-### Extensions Not Loading
-
-1. **Check PHP version compatibility:**
-   ```bash
-   php --version
-   ```
-
-2. **Verify extensions are installed:**
-   ```bash
-   php -m | grep -E "(simdjson|uopz)"
-   ```
