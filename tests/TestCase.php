@@ -25,7 +25,7 @@ abstract class TestCase extends BaseTestCase
 {
     use RefreshDatabase;
 
-    protected $connectionsToTransact = ['processmaker', 'data'];
+    protected $connectionsToTransact = ['processmaker'];
 
     public $withPermissions = false;
 

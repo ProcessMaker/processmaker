@@ -45,7 +45,9 @@ class TenantsEnable extends Command
             // Otherwise, the DB_DATABASE is the landlord
             $landlordDbName = 'landlord';
             config(['database.connections.landlord.database' => $landlordDbName]);
-            $this->modifyEnvForDatabaseName($landlordDbName);
+
+            // Now, to ensure we are using the right DB, set the DB_DATABASE in the .env to null
+            $this->modifyEnvForDatabaseName('null');
         }
 
         // create the landlord database
@@ -89,7 +91,15 @@ class TenantsEnable extends Command
     {
         $envFile = base_path('.env');
         $env = file_get_contents($envFile);
-        $env = preg_replace('/DB_DATABASE=.*/', 'DB_DATABASE=' . $databaseName, $env);
+
+        if (preg_match('/DB_DATABASE=.*/', $env)) {
+            // Update existing DB_DATABASE line
+            $env = preg_replace('/DB_DATABASE=.*/', 'DB_DATABASE=' . $databaseName, $env);
+        } else {
+            // Add DB_DATABASE to the end of the file
+            $env .= "\nDB_DATABASE=" . $databaseName;
+        }
+
         file_put_contents($envFile, $env);
     }
 }
