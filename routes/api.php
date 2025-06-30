@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use ProcessMaker\Http\Controllers\Admin\TenantQueueController;
 use ProcessMaker\Http\Controllers\Api\BookmarkController;
 use ProcessMaker\Http\Controllers\Api\ChangePasswordController;
 use ProcessMaker\Http\Controllers\Api\CommentController;
@@ -199,6 +200,14 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // Permissions
     Route::get('permissions', [PermissionController::class, 'index'])->name('permissions.index');
     Route::put('permissions', [PermissionController::class, 'update'])->name('permissions.update')->middleware('can:edit-users');
+
+    // Tenant Jobs Dashboard API
+    Route::get('tenant-queues/tenants', [TenantQueueController::class, 'getTenants'])->name('tenant-queue.tenants');
+    Route::get('tenant-queues/overall-stats', [TenantQueueController::class, 'getOverallStats'])->name('tenant-queue.overall-stats');
+    Route::get('tenant-queues/{tenantId}/jobs', [TenantQueueController::class, 'getTenantJobs'])->name('tenant-queue.jobs');
+    Route::get('tenant-queues/{tenantId}/stats', [TenantQueueController::class, 'getTenantStats'])->name('tenant-queue.stats');
+    Route::get('tenant-queues/{tenantId}/jobs/{jobId}', [TenantQueueController::class, 'getJobDetails'])->name('tenant-queue.job-details');
+    Route::delete('tenant-queues/{tenantId}/clear', [TenantQueueController::class, 'clearTenantJobs'])->name('tenant-queue.clear');
 
     // Tasks
     Route::get('tasks', [TaskController::class, 'index'])->name('tasks.index'); // Already filtered in controller
