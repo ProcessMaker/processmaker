@@ -34,7 +34,9 @@ class TenantStorageLink extends Command
             return 1;
         }
 
-        $this->createStorageLink($tenant->id);
+        $tenantDomain = explode('.', $tenant->domain)[0];
+
+        $this->createStorageLink($tenantDomain);
     }
 
     /**
@@ -43,13 +45,13 @@ class TenantStorageLink extends Command
      * @param int $tenantId
      * @return void
      */
-    protected function createStorageLink($tenantId)
+    protected function createStorageLink($tenantDomain)
     {
-        $this->info('Creating storage link for tenant ' . $tenantId . '...');
+        $this->info('Creating storage link for tenant ' . $tenantDomain . '...');
 
         // Define paths
         $tenantStoragePath = storage_path('/app/public');
-        $publicPath = public_path('storage/tenant_' . $tenantId);
+        $publicPath = public_path('storage/tenant_' . $tenantDomain);
 
         // Create tenant storage directory if it doesn't exist
         if (!File::exists($tenantStoragePath)) {

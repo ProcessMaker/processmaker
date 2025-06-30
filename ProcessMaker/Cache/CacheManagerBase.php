@@ -50,7 +50,8 @@ abstract class CacheManagerBase
         }
 
         $tenant = app()->bound('currentTenant') ? app('currentTenant') : null;
-        $tenantId = $tenant ? $tenant->id : null;
+        $tenantDomain = $tenant ? $tenant->domain : null;
+        $tenantId = $tenantDomain ? explode('.', $tenantDomain)[0] : null;
 
         if ($tenantId) {
             if (strpos($prefix, self::TENANT_PREFIX) === false) {

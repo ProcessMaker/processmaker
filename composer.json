@@ -49,6 +49,7 @@
         "processmaker/docker-executor-php": "1.4.0",
         "processmaker/laravel-i18next": "dev-master",
         "processmaker/nayra": "1.12.1",
+        "processmaker/package-dynamic-ui": "^1.28",
         "processmaker/pmql": "1.13.1",
         "promphp/prometheus_client_php": "^2.12",
         "psr/http-message": "^1.1",
@@ -215,7 +216,84 @@
         {
             "type": "vcs",
             "url": "https://github.com/ProcessMaker/SocialiteProviders"
+        },
+        {
+            "type": "path",
+            "url": "/Users/rodrigoquelca/dev/packages"
+        },
+        {
+            "type": "path",
+            "url": "/Users/rodrigoquelca/dev/package-collections"
+        },
+        {
+            "type": "path",
+            "url": "/Users/rodrigoquelca/dev/package-data-sources"
+        },
+        {
+            "type": "path",
+            "url": "/Users/rodrigoquelca/dev/package-savedsearch"
+        },
+        {
+            "type": "path",
+            "url": "/Users/rodrigoquelca/dev/package-dynamic-ui"
+        },
+        {
+            "type": "path",
+            "url": "/Users/rodrigoquelca/dev/package-decision-engine"
+        },
+        {
+            "type": "path",
+            "url": "/Users/rodrigoquelca/dev/package-webentry"
+        },
+        {
+            "type": "path",
+            "url": "/Users/rodrigoquelca/dev/package-files"
+        },
+        {
+            "type": "path",
+            "url": "/Users/rodrigoquelca/dev/package-analytics-reporting"
+        },
+        {
+            "type": "path",
+            "url": "/Users/rodrigoquelca/dev/package-ab-testing"
+        },
+        {
+            "type": "path",
+            "url": "/Users/rodrigoquelca/dev/connector-send-email"
+        },
+        {
+            "type": "path",
+            "url": "/Users/rodrigoquelca/dev/package-testing"
+        },
+        {
+            "type": "path",
+            "url": "/Users/rodrigoquelca/dev/package-versions"
+        },
+        {
+            "type": "path",
+            "url": "/Users/rodrigoquelca/dev/package-files"
+        },
+        {
+            "type": "path",
+            "url": "/Users/rodrigoquelca/dev/package-auth"
+        },
+        {
+            "type": "path",
+            "url": "/Users/rodrigoquelca/dev/package-translations"
+        },
+        {
+            "type": "path",
+            "url": "/Users/rodrigoquelca/dev/package-advanced-user-manager"
+        },
+        {
+            "type": "path",
+            "url": "/Users/rodrigoquelca/dev/package-variable-finder"
+        },
+        {
+            "type": "path",
+            "url": "/Users/rodrigoquelca/dev/package-auth"
         }
+
     ],
     "config": {
         "preferred-install": "dist",

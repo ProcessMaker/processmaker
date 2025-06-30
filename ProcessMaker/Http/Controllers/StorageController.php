@@ -38,7 +38,9 @@ class StorageController extends Controller
                 $tenantId = $tenant->id;
 
                 // Handle tenant path
-                $path = $this->handleTenantPath($path, $tenantId);
+                $tenantDomain = explode('.', $tenant->domain)[0];
+
+                $path = $this->handleTenantPath($path, $tenantDomain);
             }
 
             // Get storage disk
@@ -98,13 +100,13 @@ class StorageController extends Controller
      *
      * @return string
      */
-    private function handleTenantPath(string $path, int $tenantId): string
+    private function handleTenantPath(string $path, string $tenantDomain): string
     {
         if (preg_match('/^tenant_\d+\//', $path)) {
-            return str_replace('tenant_' . $tenantId . '/', '', $path);
+            return str_replace('tenant_' . $tenantDomain . '/', '', $path);
         }
 
-        return 'tenant_' . $tenantId . '/' . $path;
+        return 'tenant_' . $tenantDomain . '/' . $path;
     }
 
     /**
