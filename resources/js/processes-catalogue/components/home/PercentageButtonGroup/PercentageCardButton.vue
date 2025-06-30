@@ -15,7 +15,7 @@
             :class="[`tw-text-lg`, icon]" />
         </slot>
         <slot name="header">
-          <div class="tw-text-base tw-truncate">
+          <div class="tw-text-base tw-line-clamp-1">
             {{ header }}
           </div>
         </slot>

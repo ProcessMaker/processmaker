@@ -391,6 +391,11 @@ class ProcessController extends Controller
             $processCreated = ProcessCreated::BPMN_CREATION;
         }
 
+        // Replace html entities with the correct characters
+        if (isset($data['bpmn'])) {
+            $data['bpmn'] = BpmnDocument::replaceHtmlEntities($data['bpmn']);
+        }
+
         if ($schemaErrors = $this->validateBpmn($request)) {
             return response(
                 ['message' => __('The bpm definition is not valid'),
@@ -487,6 +492,11 @@ class ProcessController extends Controller
         }
         $request->validate($rules);
         $original = $process->getOriginal();
+
+        // Replace html entities with the correct characters
+        if ($request->has('bpmn')) {
+            $request->merge(['bpmn' => BpmnDocument::replaceHtmlEntities($request->input('bpmn'))]);
+        }
 
         // bpmn validation
         if ($schemaErrors = $this->validateBpmn($request)) {
@@ -638,7 +648,8 @@ class ProcessController extends Controller
             $process->alternative = $request->input('alternative');
         }
 
-        $process->bpmn = $request->input('bpmn');
+        $bpmn = BpmnDocument::replaceHtmlEntities($request->input('bpmn'));
+        $process->bpmn = $bpmn;
         $process->name = $request->input('name');
         $process->description = $request->input('description');
         $process->saveOrFail();

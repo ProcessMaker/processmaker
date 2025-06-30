@@ -3,6 +3,9 @@
 namespace Tests\Feature\Cases;
 
 use Database\Factories\CaseStartedFactory;
+use Illuminate\Log\Logger;
+use Illuminate\Support\Facades\Log;
+use Mockery;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -40,15 +43,16 @@ class CasesTaskTest extends TestCase
             'user_id' => $this->user->id,
             'process_request_id' => $this->instance->id,
             'element_type' => 'task',
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ]);
 
         $this->caseNumber = 1234;
-        $this->task = (object)[
+        $this->task = (object) [
             'id' => 'task-1',
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ];
     }
+
     public function test_update_case_started_task_status()
     {
         $repo = new CaseRepository();
@@ -140,6 +144,32 @@ class CasesTaskTest extends TestCase
         ]);
     }
 
+    public function test_update_case_started_script_task_status_do_not_show_error()
+    {
+        // Mock the Log facade to check if no error is logged
+        $mock = Mockery::mock(Logger::class);
+        $mock->shouldReceive('error')->never();
+        Log::swap($mock);
+
+        // Change the element type to script
+        $this->token->element_type = 'scriptTask';
+        $this->token->save();
+
+        $repo = new CaseRepository();
+        $repo->create($this->instance);
+        $repo->update($this->instance, $this->token);
+
+        $this->assertDatabaseCount('cases_started', 1);
+        $this->assertDatabaseHas('cases_started', [
+            'case_number' => $this->instance->case_number,
+            'request_tokens->[0]' => $this->token->id,
+        ]);
+
+        $this->token->status = 'COMPLETED';
+        $taskRepo = new CaseTaskRepository(9999, $this->token);
+        $taskRepo->updateCaseStartedTaskStatus();
+    }
+
     public function test_find_case_by_task_id_case_found()
     {
         $taskRepo = new CaseTaskRepository($this->caseNumber, $this->task);
@@ -148,7 +178,7 @@ class CasesTaskTest extends TestCase
             'case_number' => $this->caseNumber,
             'tasks' => [
                 ['id' => 'task-1', 'status' => 'ACTIVE'],
-                ['id' => 'task-2', 'status' => 'ACTIVE']
+                ['id' => 'task-2', 'status' => 'ACTIVE'],
             ],
         ]);
 
@@ -175,7 +205,7 @@ class CasesTaskTest extends TestCase
             'case_number' => $this->caseNumber,
             'tasks' => [
                 ['id' => 'task-1', 'status' => 'ACTIVE'],
-                ['id' => 'task-2', 'status' => 'ACTIVE']
+                ['id' => 'task-2', 'status' => 'ACTIVE'],
             ],
         ]);
 
@@ -198,7 +228,7 @@ class CasesTaskTest extends TestCase
             'case_number' => $this->caseNumber,
             'tasks' => [
                 ['id' => 'task-1', 'status' => 'ACTIVE'],
-                ['id' => 'task-2', 'status' => 'ACTIVE']
+                ['id' => 'task-2', 'status' => 'ACTIVE'],
             ],
         ]);
 

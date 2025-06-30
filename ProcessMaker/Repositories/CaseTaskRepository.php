@@ -44,6 +44,13 @@ class CaseTaskRepository
      */
     public function updateTaskStatus()
     {
+        // Skip non-user tasks (e.g. script task, sub-process, etc.)
+        // tasks column contains only user tasks
+        $isUserTask = ($this->task->element_type ?? null) === 'task';
+        if (!$isUserTask) {
+            return;
+        }
+
         try {
             $case = $this->findCaseByTaskId($this->caseNumber, (string) $this->task->id);
 

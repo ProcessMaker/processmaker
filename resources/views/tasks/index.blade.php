@@ -155,6 +155,7 @@
         window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
         window.ProcessMaker.advanced_filter = @json($userFilter);
         window.Processmaker.defaultColumns = @json($defaultColumns);
+        window.ProcessMaker.isDefaultColumns = @json($isDefaultColumns ?? false);
         window.ProcessMaker.userConfiguration = @json($userConfiguration ?? []);
         window.sessionStorage.setItem('elementDestinationURL', window.location.href);
         window.ProcessMaker.showOldTaskScreen = @json($showOldTaskScreen);

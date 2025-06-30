@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Admin;
 
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Group;
@@ -87,6 +88,9 @@ class UserController extends Controller
         $addons = $this->getPluginAddons('edit', compact(['user']));
         $addonsSettings = $this->getPluginAddons('edit.settings', compact(['user']));
 
+        // The user can only create tokens for themselves or if they are an administrator.
+        $canCreateTokens = Auth::user()->is_administrator || Auth::user()->id === $user->id;
+
         return view('admin.users.edit', compact(
             'user',
             'groups',
@@ -104,6 +108,7 @@ class UserController extends Controller
             'addons',
             'addonsSettings',
             'ssoUser',
+            'canCreateTokens',
         ));
     }
 
