@@ -18,7 +18,6 @@
         "composer/semver": "^3.4",
         "darkaonline/l5-swagger": "^8.6",
         "doctrine/dbal": "^4.2",
-        "fakerphp/faker": "^1.24",
         "google/apiclient": "^2.18",
         "guzzlehttp/guzzle": "^7.9",
         "igaster/laravel-theme": "^2.0",
@@ -68,6 +67,7 @@
         "whichbrowser/parser": "^2.1"
     },
     "require-dev": {
+        "fakerphp/faker": "^1.24",
         "filp/whoops": "^2.16",
         "laravel/dusk": "^8.2",
         "laravel/homestead": "^15.0",
