@@ -37,6 +37,20 @@ class TenantsEnable extends Command
 
                 return 1;
             }
+
+            // Check if rsync exists
+            if (!exec('which rsync')) {
+                $this->error('rsync is not installed');
+
+                return 1;
+            }
+
+            // check if DB_DATABASE is null
+            if (!env('DB_DATABASE')) {
+                $this->error('DB_DATABASE is null so multitenancy is already enabled. Exiting.');
+
+                return 1;
+            }
         }
 
         $landlordDbName = config('database.connections.landlord.database');
@@ -48,10 +62,10 @@ class TenantsEnable extends Command
 
             // Now, to ensure we are using the right DB, set the DB_DATABASE in the .env to null
             $this->modifyEnvForDatabaseName('null');
-        }
 
-        // create the landlord database
-        DB::statement("CREATE DATABASE IF NOT EXISTS `{$landlordDbName}`");
+            // create the landlord database
+            DB::statement("CREATE DATABASE IF NOT EXISTS `{$landlordDbName}`");
+        }
 
         // migrate the landlord database
         $this->info("Database: {$landlordDbName}");
@@ -71,11 +85,25 @@ class TenantsEnable extends Command
 
         // Create the tenant from the existing instance
 
+        // First, copy the existing storage folder to a temp location
+        $tempStorageFolder = base_path('storage-temp');
+        exec("rsync -avz --exclude='tenant_*' " . base_path('storage') . ' ' . $tempStorageFolder, $output, $returnVar);
+        if ($returnVar !== 0) {
+            $this->error('Failed to copy storage folder to temp location');
+            $this->error(implode("\n", $output));
+
+            return 1;
+        }
+        $this->info(implode("\n", $output));
+
+        // Now, create the tenant. The folder will be moved to the new tenant after the creation
+        // and the $tempStorageFolder will no longer exist.
         $exitCode = Artisan::call('tenants:create', [
             '--database' => env('DB_DATABASE'),
             '--url' => config('app.url'),
-            '--storage-folder' => base_path('storage'),
+            '--storage-folder' => $tempStorageFolder,
             '--name' => config('app.name'),
+            '--app-key' => config('app.key'),
         ], $this->output);
 
         if ($exitCode !== 0) {

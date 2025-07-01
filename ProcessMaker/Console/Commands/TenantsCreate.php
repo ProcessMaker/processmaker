@@ -18,7 +18,7 @@ class TenantsCreate extends Command
      *
      * @var string
      */
-    protected $signature = 'tenants:create {--name=} {--url=} {--database=} {--username=} {--password=} {--storage-folder=}';
+    protected $signature = 'tenants:create {--name=} {--url=} {--database=} {--username=} {--password=} {--storage-folder=} {--app-key=}';
 
     /**
      * The console command description.
@@ -57,9 +57,12 @@ class TenantsCreate extends Command
             return 1;
         }
 
-        $key = 'base64:' . base64_encode(
-            Encrypter::generateKey(config('app.cipher'))
-        );
+        $key = $this->option('app-key');
+        if (!$key) {
+            $key = 'base64:' . base64_encode(
+                Encrypter::generateKey(config('app.cipher'))
+            );
+        }
         $key = Crypt::encryptString($key);
 
         // insert into the tenants table
@@ -132,34 +135,12 @@ class TenantsCreate extends Command
         }
 
         // Setup database
-        // DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '{$this->option('database')}'");
         DB::statement("CREATE DATABASE IF NOT EXISTS `{$this->option('database')}`");
 
-        // Create the database
-        // SKIPPING - migrate/upgrade should be done on its own
-        // if (!$tenantDbExists) {
-        //     DB::statement("CREATE DATABASE `{$this->option('database')}`");
-        //     $this->tenantArtisan('migrate --seed --force', $tenant->id);
-
-        //     // Call the upgrade commands
-        //     $this->tenantArtisan('upgrade', $tenant->id);
-        // }
-
-        // Crate the config cache subfolder
-        //
-        // SKIPPING FOR NOW - we because we set config vars at runtime in SwitchTenant.php
-        // so caching a tenant-specific config has no effect
-        //
-        // $configCachePath = base_path('bootstrap/cache/tenant_' . $tenant->id);
-        // if (!file_exists($configCachePath)) {
-        //     mkdir($configCachePath);
-        // }
-        // $this->tenantArtisan('config:cache', $tenant->id);
-
-        // Create storage link for the new tenant
         $this->tenantArtisan('tenant:storage-link', $tenant->id);
+        $this->tenantArtisan('passport:keys --force', $tenant->id);
 
-        $this->info('Tenant created successfully');
+        $this->info('Tenant created successfully. You need to run migrations, upgrades, and package install commands. Every command should be run with TENANT=' . $tenant->id);
     }
 
     private function tenantArtisan($command, $tenantId)
