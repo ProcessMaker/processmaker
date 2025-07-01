@@ -74,10 +74,6 @@ class AuthServiceProvider extends ServiceProvider
             return null;
         });
 
-        if ($this->app->runningInConsole()) {
-            return;
-        }
-
         try {
             // Cache the permissions for a day to improve performance
             $permissions = Cache::remember('permissions', 86400, function () {
