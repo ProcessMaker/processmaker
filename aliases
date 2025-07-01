@@ -28,16 +28,6 @@ function artisan() {
     php artisan "$@"
 }
 
-function dusk() {
-    pids=$(pidof /usr/bin/Xvfb)
-
-    if [ ! -n "$pids" ]; then
-        Xvfb :0 -screen 0 1280x960x24 &
-    fi
-
-    php artisan dusk "$@"
-}
-
 function php56() {
     sudo update-alternatives --set php /usr/bin/php5.6
     sudo update-alternatives --set php-config /usr/bin/php-config5.6
