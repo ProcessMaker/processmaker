@@ -13,10 +13,10 @@
 			"databasePath": "/database/laravel-echo-server.sqlite"
 		}
 	},
-	"protocol": "http",
+	"protocol": "https",
 	"socketio": {},
-	"sslCertPath": "",
-	"sslKeyPath": "",
+	"sslCertPath": "/etc/nginx/ssl/processmaker.local.processmaker.com.crt",
+	"sslKeyPath": "/etc/nginx/ssl/processmaker.local.processmaker.com.key",
 	"sslCertChainPath": "",
 	"sslPassphrase": "",
 	"subscribers": {
