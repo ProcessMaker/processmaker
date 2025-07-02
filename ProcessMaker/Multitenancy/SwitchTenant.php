@@ -63,6 +63,11 @@ class SwitchTenant implements SwitchTenantTask
             'filesystems.disks.samlidp.root' => storage_path('samlidp'),
             'filesystems.disks.decision_tables.root' => storage_path('decision-tables'),
 
+            'filesystems.disks.tenant_translations' => [
+                'driver' => 'local',
+                'root' => storage_path('lang'),
+            ],
+
             'l5-swagger.defaults.paths.docs' => storage_path('api-docs'),
         ];
         config($newConfig);
