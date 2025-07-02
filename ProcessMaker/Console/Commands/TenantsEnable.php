@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use PDOException;
 
 class TenantsEnable extends Command
 {
@@ -53,23 +54,21 @@ class TenantsEnable extends Command
             }
         }
 
+        // Get the landlord database name
         $landlordDbName = config('database.connections.landlord.database');
-        if ($migrate) {
-            // If migrating, the DB_DATABASE is the tenant database. Create a new landlord database instead
-            // Otherwise, the DB_DATABASE is the landlord
-            $landlordDbName = 'landlord';
-            config(['database.connections.landlord.database' => $landlordDbName]);
 
-            // Now, to ensure we are using the right DB, set the DB_DATABASE in the .env to null
-            $this->modifyEnvForDatabaseName('null');
+        // Check if the landlord database exists. If not, throw an error.
+        try {
+            DB::connection('landlord')->getPdo();
+        } catch (PDOException $e) {
+            $this->error("Landlord database does not exist. Please create {$landlordDbName} first.");
 
-            // create the landlord database
-            DB::statement("CREATE DATABASE IF NOT EXISTS `{$landlordDbName}`");
+            return 1;
         }
 
         // migrate the landlord database
         $this->info("Database: {$landlordDbName}");
-        $exitCode = Artisan::call('migrate', ['--path' => 'database/migrations/landlord', '--database' => 'landlord'], $this->output);
+        $exitCode = Artisan::call('migrate', ['--force' => true, '--path' => 'database/migrations/landlord', '--database' => 'landlord'], $this->output);
 
         if ($exitCode !== 0) {
             $this->error('Failed to migrate landlord database');
@@ -82,6 +81,9 @@ class TenantsEnable extends Command
 
             return;
         }
+
+        // To ensure we are using the right DB, set the DB_DATABASE in the .env to null
+        $this->modifyEnvForDatabaseName('null');
 
         // Create the tenant from the existing instance
 
