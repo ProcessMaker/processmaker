@@ -908,5 +908,15 @@ class ProcessRequestController extends Controller
     public function sftpConnection(Request $httpRequest, ProcessRequest $request)
     {
         $requestData = $request->data;
+
+        $sftpHost = $requestData['_parent']['config']['sftpHost'];
+        $sftpPort = $requestData['_parent']['config']['sftpPort'];
+        $sftpUser = $requestData['_parent']['config']['sftpUser'];
+        $sftpPath = $requestData['_parent']['config']['sftpPath'];
+        $usePrivateKey = ($requestData['_parent']['config']['authenticationType'] == 'privatePublicKey' ? true : false) ?? false;
+        $privateKey = getenv('PMBLOCK_SFTPReaderPrivateKey');
+        $publicKey = getenv('PMBLOCK_SFTPReaderPublicKey');
+        $password = getenv('PMBLOCK_SFTPReaderPassword');
+        $maxRetries = 5;
     }
 }
