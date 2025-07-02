@@ -904,4 +904,9 @@ class ProcessRequestController extends Controller
 
         return new ApiResource($response);
     }
+
+    public function sftpConnection(Request $httpRequest, ProcessRequest $request)
+    {
+        $requestData = $request->data;
+    }
 }
