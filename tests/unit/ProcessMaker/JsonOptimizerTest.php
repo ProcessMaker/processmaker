@@ -50,7 +50,7 @@ class JsonOptimizerTest extends TestCase
 
     public function test_it_uses_simdjson_when_available()
     {
-        if (!extension_loaded('simdjson')) {
+        if (!extension_loaded('simdjson_plus')) {
             $this->markTestSkipped('SIMDJSON extension not loaded.');
         }
 
@@ -111,7 +111,7 @@ class JsonOptimizerTest extends TestCase
      */
     public function test_helper_uses_simdjson_when_enabled()
     {
-        if (!extension_loaded('simdjson')) {
+        if (!extension_loaded('simdjson_plus')) {
             $this->markTestSkipped('SIMDJSON extension not available');
         }
 
@@ -127,6 +127,8 @@ class JsonOptimizerTest extends TestCase
      */
     public function test_it_encodes_data_correctly()
     {
+        config(['app.json_optimization' => true]);
+
         $encoded = JsonOptimizer::encode($this->data);
 
         $this->assertIsString($encoded);
@@ -142,6 +144,8 @@ class JsonOptimizerTest extends TestCase
      */
     public function test_helper_encodes_data_correctly()
     {
+        config(['app.json_optimization' => true]);
+
         $encoded = json_optimize_encode($this->data);
 
         $this->assertIsString($encoded, 'The encoded result should be a string.');
