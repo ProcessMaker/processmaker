@@ -135,7 +135,7 @@ class TenantsCreate extends Command
         }
 
         // Setup database
-        DB::statement("CREATE DATABASE IF NOT EXISTS `{$this->option('database')}`");
+        DB::connection('landlord')->statement("CREATE DATABASE IF NOT EXISTS `{$this->option('database')}`");
 
         $this->tenantArtisan('tenant:storage-link', $tenant->id);
         $this->tenantArtisan('passport:keys --force', $tenant->id);
