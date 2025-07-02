@@ -243,6 +243,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('requests/{request}/events/{event}', [ProcessRequestController::class, 'activateIntermediateEvent'])->name('requests.update,request');
     Route::get('requests/{request}/details-screen-request', [ProcessRequestController::class, 'screenRequested'])->name('requests.detail.screen')->middleware('can:view,request');
     Route::get('requests/{request}/end-event-destination', [ProcessRequestController::class, 'endEventDestination'])->name('requests.end_event_destination')->middleware('can:view,request');
+    Route::post('requests/{request}/sftp-connection', [ProcessRequestController::class, 'sftpConnection'])->name('requests.sftpConnection')->middleware('can:view,request');
 
     // Request Files
     Route::get('requests/{request}/files', [ProcessRequestFileController::class, 'index'])->name('requests.files.index')->middleware('can:view,request');
