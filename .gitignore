@@ -45,3 +45,4 @@ resources/lang/de
 resources/lang/es
 resources/lang/fr
 devhub/pm-font/dist
+test-db-snapshot.db

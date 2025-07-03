@@ -124,6 +124,7 @@
       size="lg"
       class="modal-dialog modal-dialog-centered"
       hide-footer
+      scrollable
       :title="$t('Edit Task Column')"
     >
       <div class="modal-content-custom">
@@ -578,55 +579,41 @@ export default {
     },
     async getMyTasksColumns() {
       this.myTasks.currentColumns = this.myTasksColumns;
-      let defaultSavedSearch =
-        window.ProcessMaker?.defaultSavedSearch ||
-        window.Processmaker?.defaultSavedSearchId ||
-        null;
 
-      // If there is no defaultSavedSearch, initialize empty arrays and exit
-      if (!defaultSavedSearch) {
-        this.myTasks.defaultColumns = [];
-        this.myTasks.availableColumns = [];
-        this.myTasks.dataColumns = [];
-        return;
-      }
-
-      if (defaultSavedSearch) {
-        await ProcessMaker.apiClient
-          .get(`saved-searches/${defaultSavedSearch}/columns?include=default`)
+      await ProcessMaker.apiClient
+          .get(`saved-searches/columns`)
           .then((response) => {
             if (response.data && response.data.default) {
               this.myTasks.defaultColumns = response.data.default;
+              this.myTasks.defaultColumns.push({
+                  field: "options",
+                  label: "",
+                  sortable: false,
+                  width: 180
+              });
             }
-          });
-
-        await ProcessMaker.apiClient
-          .get(
-            `saved-searches/${defaultSavedSearch}/columns?include=available,data`
-          )
-          .then((response) => {
             if (response.data) {
               if (response.data.available) {
                 this.myTasks.availableColumns = response.data.available;
-                // Update availableColumns with the fields that are not in currentColumns.
-                let columns = [
-                  ...this.myTasks.defaultColumns,
-                  ...this.myTasks.availableColumns,
-                ];
-                const difference = columns.filter(
-                  (column) =>
-                    !this.myTasks.currentColumns.some(
-                      (currentColumn) => currentColumn.field === column.field
-                    )
+
+                //Merge all available and default columns; we use map to avoid duplicates.
+                const allColumns = new Map([
+                  ...this.myTasks.defaultColumns.map(col => [col.field, col]),
+                  ...this.myTasks.availableColumns.map(col => [col.field, col])
+                ]);
+
+                //Filter only those that are not in `currentColumns`.
+                this.myTasks.availableColumns = [...allColumns.values()].filter(
+                  column => !this.myTasks.currentColumns.some(
+                    currentColumn => currentColumn.field === column.field
+                  )
                 );
-                this.myTasks.availableColumns = difference;
               }
               if (response.data.data) {
                 this.myTasks.dataColumns = response.data.data;
               }
             }
           });
-      }
     },
   },
 };

@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Exception;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,6 +25,7 @@ use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\TaskDraft;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 
 class ProcessRequestFileController extends Controller
 {
@@ -282,7 +284,21 @@ class ProcessRequestFileController extends Controller
             // Perform a chunk upload
             return $this->chunk($receiver, $request, $laravel_request);
         } else {
-            return $this->saveUploadedFile($laravel_request->file, $request, $laravel_request);
+            try {
+                return $this->saveUploadedFile($laravel_request->file, $request, $laravel_request);
+            } catch (FileIsTooBig $e) {
+                return response()->json([
+                    'errors' => [
+                        'file' => ['file may not be greater than ' . (config('media-library.max_file_size') / 1024) . ' kilobytes']
+                    ]
+                ], 422);
+            } catch (Exception $e) {
+                return response()->json([
+                    'errors' => [
+                        'message' => $e->getMessage()
+                    ]
+                ], 500);
+            }
         }
     }
 

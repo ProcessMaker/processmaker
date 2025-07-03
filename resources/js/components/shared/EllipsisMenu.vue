@@ -133,6 +133,7 @@ export default {
     "redirectTo",
     "redirectId",
     "translation",
+    'isAdmin'
   ],
   data() {
     return {
@@ -142,7 +143,13 @@ export default {
   },
   computed: {
     filterActions() {
-      let btns = this.filterActionsByPermissions();
+      let btns = [];
+      if (this.isAdmin) {
+        // if the user is admin, show all actions
+        btns = this.actions;
+      } else {
+        btns = this.filterActionsByPermissions();
+      }
       btns = this.filterActionsByConditionals(btns);
       return btns;
     },
@@ -223,7 +230,6 @@ export default {
             return requiredPermissions.some(permission => this.permission.hasOwnProperty(permission) && this.permission[permission]);
           }
         }
-
         // Check if this.permission is a string or an array
         if (typeof this.permission === 'string') {
             return requiredPermissions.some(permission => this.permission.split(',').includes(permission));
