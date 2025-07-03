@@ -44,7 +44,7 @@ import PercentageCardButtonGroup from "./PercentageButtonGroup/PercentageCardBut
 import { ellipsisPermission } from "../variables";
 import ProcessInfo from "./ProcessInfo.vue";
 import { getMetrics, getStages } from "../api";
-import { buildMetrics, buildStages } from "./config/metrics";
+import { buildMetrics, buildStages, verifyResponseMetrics } from "./config/metrics";
 
 const childRef = ref(null)
 
@@ -72,7 +72,16 @@ const hookMetrics = async () => {
       ProcessMaker.alert("Error: METRICS_API_ENDPOINT Not Found or Invalid", "danger");
       return;
     }
-    data.value = buildMetrics(metricsResponse.data);
+
+    const responseMetrics = buildMetrics(metricsResponse.data);
+    const verifyMetrics = verifyResponseMetrics(responseMetrics);
+
+    if (!verifyMetrics) {
+      ProcessMaker.alert("Issue with METRICS_API_ENDPOINT: Invalid API Response!", "danger");
+      return;
+    }
+
+    data.value = responseMetrics;
   } catch (error) {
     console.error(error);
   }
