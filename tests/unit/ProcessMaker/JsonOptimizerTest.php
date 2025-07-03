@@ -44,6 +44,9 @@ class JsonOptimizerTest extends TestCase
         }
     }
 
+    /**
+     * Test that the json_optimize_decode function decodes JSON correctly.
+     */
     public function test_it_decodes_json_correctly_with_optimizer()
     {
         $decoded = JsonOptimizer::decode($this->json, true);
@@ -53,6 +56,9 @@ class JsonOptimizerTest extends TestCase
         $this->assertEquals($this->data['meta']['version'], $decoded['meta']['version']);
     }
 
+    /**
+     * Test that the json_optimize_decode function falls back to native decode on invalid JSON.
+     */
     public function test_it_falls_back_to_native_decode_on_invalid_json()
     {
         $invalidJson = '{"name": "ProcessMaker", "invalid": }'; // malformed JSON
@@ -62,6 +68,9 @@ class JsonOptimizerTest extends TestCase
         $this->assertNull($result);
     }
 
+    /**
+     * Test that the json_optimize_decode function uses simdjson when available.
+     */
     public function test_it_uses_simdjson_when_available()
     {
         if (!extension_loaded('simdjson_plus')) {
@@ -99,6 +108,9 @@ class JsonOptimizerTest extends TestCase
         $this->assertCount(3, $decoded['meta']);
     }
 
+    /**
+     * Test that the helper function json_optimize_decode returns null on invalid JSON.
+     */
     public function test_helper_function_returns_null_on_invalid_json()
     {
         $invalidJson = '{"type": "workflow", "meta": ['; // malformed JSON
@@ -170,6 +182,9 @@ class JsonOptimizerTest extends TestCase
         $this->assertEquals($this->data, $decoded, 'The decoded JSON should match the original array.');
     }
 
+    /**
+     * Test the performance of the json_encode function.
+     */
     public function test_json_encode_performance()
     {
         $start = microtime(true);
@@ -180,6 +195,9 @@ class JsonOptimizerTest extends TestCase
         echo "\njson_encode duration: {$duration} sec";
     }
 
+    /**
+     * Test the performance of the json_optimize_encode function.
+     */
     public function test_json_optimize_encode_performance()
     {
         $start = microtime(true);
@@ -190,6 +208,9 @@ class JsonOptimizerTest extends TestCase
         echo "\njson_optimize_encode duration: {$duration} sec";
     }
 
+    /**
+     * Test the performance of the json_decode function.
+     */
     public function test_json_decode_performance()
     {
         $json = json_encode($this->testData);
@@ -202,6 +223,9 @@ class JsonOptimizerTest extends TestCase
         echo "\njson_decode duration: {$duration} sec";
     }
 
+    /**
+     * Test the performance of the json_optimize_decode function.
+     */
     public function test_json_optimize_decode_performance()
     {
         $json = json_encode($this->testData);
