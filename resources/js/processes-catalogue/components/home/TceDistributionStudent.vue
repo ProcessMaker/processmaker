@@ -81,8 +81,16 @@ const buildAdvancedFilter = () => {
 };
 
 const hookMetrics = async () => {
-  const metricsResponse = await getMetrics({ processId: props.process.id });
-  data.value = buildMetrics(metricsResponse.data);
+  try {
+    const metricsResponse = await getMetrics({ processId: props.process.id });
+    if (!metricsResponse.data) {
+      ProcessMaker.alert("Error: METRICS_API_ENDPOINT Not Found or Invalid", "danger");
+      return;
+    }
+    data.value = buildMetrics(metricsResponse.data);
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 const hookStages = async () => {

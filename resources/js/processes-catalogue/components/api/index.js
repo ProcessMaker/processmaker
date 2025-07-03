@@ -29,7 +29,11 @@ export const getStages = async ({ processId }) => {
 };
 
 export const getMetrics = async ({ processId }) => {
-  const apiDefault = metricsApiEndpoint ? `${metricsApiEndpoint.replace("{process}", processId)}` : `/processes/${processId}/metrics`;
-  const response = await api.get(apiDefault);
-  return response.data;
+  try {
+    const apiDefault = metricsApiEndpoint ? `${metricsApiEndpoint.replace("{process}", processId)}` : `/processes/${processId}/metrics`;
+    const response = await api.get(apiDefault);
+    return response.data;
+  } catch (error) {
+    return [];
+  }
 };
