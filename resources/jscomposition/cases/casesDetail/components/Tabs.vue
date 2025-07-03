@@ -1,5 +1,8 @@
 <template>
-  <div class="tw-flex tw-flex-col tw-pointer-events-auto tw-h-full">
+  <div
+    class="tw-flex tw-flex-col tw-pointer-events-auto"
+    :class="isTceCustomization() ? 'tw-h-[calc(100vh-480px)]' : 'tw-h-full'"
+  >
     <nav
       class="tw-mb-px tw-flex tw-space-x-2 tw-border-b tw-border-gray-300"
       aria-label="Tabs"
@@ -32,6 +35,7 @@
 
 <script>
 import { defineComponent, ref, onMounted } from "vue";
+import { isTceCustomization } from "../variables/index";
 
 export default defineComponent({
   props: {
@@ -68,6 +72,7 @@ export default defineComponent({
       content,
       selectTab,
       tabSelected,
+      isTceCustomization,
     };
   },
 });
