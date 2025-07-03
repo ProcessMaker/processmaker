@@ -307,7 +307,8 @@ export default {
         return true;
       }
       if (this.isEditColumns && !this.isTCEScreen) {
-        return true;
+        // This was not implemented now
+        return false;
       }
       return false;
     },
