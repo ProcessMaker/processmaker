@@ -106,19 +106,6 @@ const hookData = async () => {
   setTimeout(() => {
     data.value = response.data;
 
-    data.value.forEach((item) => {
-      item.progress = Math.floor(Math.random() * 101);
-      item.stage = ["Grants", "Scholarships", "Loans", "Out of pocket remaining"][Math.floor(Math.random() * 4)];
-      item.data = {
-        program: {
-          name: `Program ${Math.floor(Math.random() * 10) + 1}`,
-          type: `Type ${Math.floor(Math.random() * 5) + 1}`,
-          source: `Source ${Math.floor(Math.random() * 3) + 1}`,
-          deadline: `${Math.floor(Math.random() * 30) + 1} days`,
-        },
-      };
-    });
-
     if (response.data && !response.data.length) {
       placeholderType.value = "empty-cases";
       return;
