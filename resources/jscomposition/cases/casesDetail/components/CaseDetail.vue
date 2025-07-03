@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div v-if="isTceCustomization()">
+    <div
+      v-if="isTceCustomization()"
+      class="tw-h-[323px] tw-overflow-auto"
+    >
       <component :is="componentToShow" />
     </div>
     <Tabs
