@@ -114,6 +114,14 @@ class TenantsEnable extends Command
             return 1;
         }
 
+        // Remove temp storage folder
+        exec("rm -rf " . $tempStorageFolder, $output, $returnVar);
+        if ($returnVar !== 0) {
+            $this->error('Failed to remove temp storage folder');
+            $this->error(implode("\n", $output));
+        }
+        $this->info(implode("\n", $output));
+
         $this->info('Tenant support enabled successfully and migrated to a new tenant');
     }
 

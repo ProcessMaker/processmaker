@@ -137,7 +137,9 @@ class TenantsCreate extends Command
         // Setup database
         DB::connection('landlord')->statement("CREATE DATABASE IF NOT EXISTS `{$this->option('database')}`");
 
-        $this->tenantArtisan('tenant:storage-link', $tenant->id);
+        // Hold off on this for now.
+        // $this->tenantArtisan('tenant:storage-link', $tenant->id);
+
         $this->tenantArtisan('passport:keys --force', $tenant->id);
 
         $this->info('Tenant created successfully. You need to run migrations, upgrades, and package install commands. Every command should be run with TENANT=' . $tenant->id);
