@@ -5,7 +5,7 @@
 </template>
 <script setup>
 import { defineProps, computed } from "vue";
-import { get } from "lodash";
+import { t } from "i18next";
 
 const props = defineProps({
   columns: {
@@ -22,6 +22,25 @@ const props = defineProps({
   },
 });
 
-const value = computed(() => get(props.row, props.column?.field) || "");
+const defaultStages = {
+  COMPLETED: {
+    label: `${t("Completed")}`,
+  },
+  CANCELED: {
+    label: `${t("Canceled")}`,
+  },
+  ERROR: {
+    label: `${t("Error")}`,
+  },
+  IN_PROGRESS: {
+    label: `${t("In Progress")}`,
+  },
+};
+
+const value = computed(() => (
+  props.column.field
+    ? (defaultStages[props.row[props.column.field]]?.label || "")
+    : ""
+));
 
 </script>
