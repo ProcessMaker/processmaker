@@ -20,6 +20,9 @@ class RegisterTenantScheduleTasks
     {
         if ($event->command === 'schedule:run') {
             $tenant = app(IsTenant::class)::current();
+            if (!$tenant) {
+                return;
+            }
             app(TenantSchedulingService::class)->registerScheduledTasksForTenant($this->schedule, $tenant);
         }
     }
