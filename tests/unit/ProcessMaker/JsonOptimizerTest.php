@@ -11,7 +11,7 @@ class JsonOptimizerTest extends TestCase
     protected string $json;
 
     protected array $data;
-    
+
     protected array $testData = [];
 
     protected function setUp(): void
@@ -30,7 +30,7 @@ class JsonOptimizerTest extends TestCase
         ];
 
         $this->json = json_encode($this->data);
-        
+
         //generate big data.
         $this->testData = [];
 
