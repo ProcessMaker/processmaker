@@ -57,8 +57,6 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        \Log::info('AuthServiceProvider boot');
-
         $this->registerPolicies();
 
         Passport::enablePasswordGrant();
