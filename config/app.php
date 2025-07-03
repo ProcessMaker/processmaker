@@ -284,5 +284,7 @@ return [
 
     'editor' => null,
 
-    'json_optimization' => env('JSON_OPTIMIZATION', false),
+    'json_optimization_decode' => env('JSON_OPTIMIZATION_DECODE', false),
+
+    'json_optimization_encode' => env('JSON_OPTIMIZATION_ENCODE', false),
 ];

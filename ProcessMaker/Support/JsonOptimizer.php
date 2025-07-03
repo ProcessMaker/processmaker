@@ -11,7 +11,7 @@ class JsonOptimizer
      */
     public static function decode(string $json, bool $assoc = false, int $depth = 512, int $options = 0)
     {
-        if (extension_loaded('simdjson_plus') && config('app.json_optimization') === true) {
+        if (extension_loaded('simdjson_plus') && config('app.json_optimization_decode') === true) {
             try {
                 return simdjson_decode($json, $assoc, $depth, $options);
             } catch (\Throwable $e) {
@@ -27,7 +27,7 @@ class JsonOptimizer
      */
     public static function encode(mixed $value, int $flags = 0, int $depth = 512): string|false
     {
-        if (extension_loaded('simdjson_plus') && config('app.json_optimization') === true) {
+        if (extension_loaded('simdjson_plus') && config('app.json_optimization_encode') === true) {
             try {
                 return simdjson_encode($value, $flags, $depth);
             } catch (\Throwable $e) {

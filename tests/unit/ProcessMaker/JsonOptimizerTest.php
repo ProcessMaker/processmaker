@@ -11,6 +11,8 @@ class JsonOptimizerTest extends TestCase
     protected string $json;
 
     protected array $data;
+    
+    protected array $testData = [];
 
     protected function setUp(): void
     {
@@ -28,6 +30,18 @@ class JsonOptimizerTest extends TestCase
         ];
 
         $this->json = json_encode($this->data);
+        
+        //generate big data.
+        $this->testData = [];
+
+        for ($i = 0; $i < 1_000_000; $i++) {
+            $this->testData[] = [
+                'id' => $i,
+                'name' => 'Usuario_' . $i,
+                'email' => "user{$i}@example.com",
+                'active' => $i % 2 === 0,
+            ];
+        }
     }
 
     public function test_it_decodes_json_correctly_with_optimizer()
@@ -54,7 +68,7 @@ class JsonOptimizerTest extends TestCase
             $this->markTestSkipped('SIMDJSON extension not loaded.');
         }
 
-        config(['app.json_optimization' => true]);
+        config(['app.json_optimization_decode' => true]);
 
         $decoded = JsonOptimizer::decode($this->json, true);
 
@@ -62,11 +76,11 @@ class JsonOptimizerTest extends TestCase
     }
 
     /**
-     * Test that the config flag json_optimization is respected.
+     * Test that the config flag json_optimization_decode is respected.
      */
     public function test_it_respects_config_flag_json_optimization()
     {
-        config(['app.json_optimization' => false]);
+        config(['app.json_optimization_decode' => false]);
 
         $decoded = JsonOptimizer::decode($this->json, true);
 
@@ -99,7 +113,7 @@ class JsonOptimizerTest extends TestCase
      */
     public function test_helper_respects_config_setting()
     {
-        config(['app.json_optimization' => false]);
+        config(['app.json_optimization_decode' => false]);
 
         $decoded = json_optimize_decode($this->json, true);
 
@@ -115,7 +129,7 @@ class JsonOptimizerTest extends TestCase
             $this->markTestSkipped('SIMDJSON extension not available');
         }
 
-        config(['app.json_optimization' => true]);
+        config(['app.json_optimization_decode' => true]);
 
         $decoded = json_optimize_decode($this->json, true);
 
@@ -127,7 +141,7 @@ class JsonOptimizerTest extends TestCase
      */
     public function test_it_encodes_data_correctly()
     {
-        config(['app.json_optimization' => true]);
+        config(['app.json_optimization_encode' => true]);
 
         $encoded = JsonOptimizer::encode($this->data);
 
@@ -144,7 +158,7 @@ class JsonOptimizerTest extends TestCase
      */
     public function test_helper_encodes_data_correctly()
     {
-        config(['app.json_optimization' => true]);
+        config(['app.json_optimization_encode' => true]);
 
         $encoded = json_optimize_encode($this->data);
 
@@ -154,5 +168,49 @@ class JsonOptimizerTest extends TestCase
         $decoded = json_decode($encoded, true);
 
         $this->assertEquals($this->data, $decoded, 'The decoded JSON should match the original array.');
+    }
+
+    public function test_json_encode_performance()
+    {
+        $start = microtime(true);
+        $json = json_encode($this->testData);
+        $duration = microtime(true) - $start;
+
+        $this->assertIsString($json);
+        echo "\njson_encode duration: {$duration} sec";
+    }
+
+    public function test_json_optimize_encode_performance()
+    {
+        $start = microtime(true);
+        $json = json_optimize_encode($this->testData);
+        $duration = microtime(true) - $start;
+
+        $this->assertIsString($json);
+        echo "\njson_optimize_encode duration: {$duration} sec";
+    }
+
+    public function test_json_decode_performance()
+    {
+        $json = json_encode($this->testData);
+
+        $start = microtime(true);
+        $data = json_decode($json, true);
+        $duration = microtime(true) - $start;
+
+        $this->assertIsArray($data);
+        echo "\njson_decode duration: {$duration} sec";
+    }
+
+    public function test_json_optimize_decode_performance()
+    {
+        $json = json_encode($this->testData);
+
+        $start = microtime(true);
+        $data = json_optimize_decode($json, true);
+        $duration = microtime(true) - $start;
+
+        $this->assertIsArray($data);
+        echo "\njson_optimize_decode duration: {$duration} sec";
     }
 }

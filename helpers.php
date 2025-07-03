@@ -327,3 +327,22 @@ if (!function_exists('json_optimize_encode')) {
         return JsonOptimizer::encode($value, $flags, $depth);
     }
 }
+
+if (!function_exists('response_json_optimize')) {
+    /**
+     * Encodes a value into a JSON using simdjson if available.
+     *
+     * @param mixed $data
+     * @param int $status
+     * @param array $headers
+     * @return \Illuminate\Http\Response
+     */
+    function response_json_optimize($data, int $status = 200, array $headers = [])
+    {
+        $json = json_optimize_encode($data);
+
+        return response($json, $status)
+                ->header('Content-Type', 'application/json')
+                ->withHeaders($headers);
+    }
+}
