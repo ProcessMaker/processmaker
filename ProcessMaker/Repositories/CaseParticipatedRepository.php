@@ -4,6 +4,7 @@ namespace ProcessMaker\Repositories;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Constants\CaseStatusConstants;
 use ProcessMaker\Models\CaseParticipated;
 use ProcessMaker\Models\CaseStarted;
 
@@ -66,6 +67,10 @@ class CaseParticipatedRepository
      */
     private function mapCaseToArray(CaseStarted $case, int $userId = null): array
     {
+        // Define the case status if is not set the stage
+        if (is_null($case->last_stage_id)) {
+            $case->last_stage_name = $case->case_status;
+        }
         $data = [
             'case_number' => $case->case_number,
             'case_title' => $case->case_title,

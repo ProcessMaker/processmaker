@@ -53,6 +53,10 @@ class CaseRepository implements CaseRepositoryInterface
             $processData = CaseUtils::extractData($instance->process, 'PROCESS');
             $requestData = CaseUtils::extractData($instance, 'REQUEST');
             $dataKeywords = CaseUtils::extractData($instance, 'KEYWORD');
+            // Check the case status
+            if (is_null($instance->last_stage_id)) {
+                $instance->last_stage_name = $instance->case_status;
+            }
 
             CaseStarted::create([
                 'case_number' => $instance->case_number,
@@ -140,6 +144,7 @@ class CaseRepository implements CaseRepositoryInterface
 
             if (in_array($caseStatus, [CaseStatusConstants::COMPLETED, CaseStatusConstants::CANCELED])) {
                 $data['completed_at'] = $instance->completed_at;
+                $data['last_stage_name'] = $caseStatus;
             }
 
             // Update the case started and case participated
