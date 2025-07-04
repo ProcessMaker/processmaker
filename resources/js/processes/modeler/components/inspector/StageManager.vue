@@ -77,6 +77,17 @@ const getConfigFromDefinition = (definition) => {
   return config;
 };
 
+const selectItemFromDefinition = (stages) => {
+  const config = getConfigFromDefinition(getDefinition());
+  const id = config?.stage?.id;
+  if (id === undefined) {
+    return;
+  }
+  for (const stage of stages) {
+    stage.selected = stage.id === id;
+  }
+};
+
 const updateStagesForAllFlowConfigs = (stages) => {
   const links = getModeler().graph.getLinks();
   for (const link of links) {
