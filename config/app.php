@@ -275,7 +275,7 @@ return [
 
     'custom_executors' => env('CUSTOM_EXECUTORS', false),
 
-    'prometheus_namespace' => env('PROMETHEUS_NAMESPACE', 'processmaker'),
+    'prometheus_namespace' => env('PROMETHEUS_NAMESPACE', env('APP_NAME', 'processmaker')),
 
     'server_timing' => [
         'enabled' => env('SERVER_TIMING_ENABLED', true),
