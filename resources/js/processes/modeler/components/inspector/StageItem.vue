@@ -18,7 +18,7 @@
           @paste="onPaste"
         >
         <small class="tw-text-gray-500 tw-text-xs">
-          {{ localName.length }}/200 caracteres
+          {{ localName.length }}/200 {{ t('characters') }}
         </small>
       </template>
       <template v-else>
@@ -47,6 +47,7 @@
 
 <script setup>
 import { ref, watch, computed } from "vue";
+import { t } from "i18next";
 
 const props = defineProps({
   id: {
