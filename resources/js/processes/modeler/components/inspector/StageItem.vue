@@ -12,8 +12,14 @@
           v-model="localName"
           class="tw-w-full tw-border tw-rounded px-2 form-control"
           :class="{ 'is-invalid': !stateName }"
+          maxlength="200"
           @keyup.enter="onKeyupEnter"
+          @input="onInput"
+          @paste="onPaste"
         >
+        <small class="tw-text-gray-500 tw-text-xs">
+          {{ localName.length }}/200 caracteres
+        </small>
       </template>
       <template v-else>
         <span
@@ -67,6 +73,22 @@ const editing = ref(false);
 const localName = ref(props.name);
 const isChecked = ref(false);
 const stateName = computed(() => localName.value.trim());
+
+const onInput = (event) => {
+  // Limit to 200 characters
+  if (localName.value.length > 200) {
+    localName.value = localName.value.substring(0, 200);
+  }
+};
+
+const onPaste = (event) => {
+  // Handle paste event to ensure proper character counting
+  setTimeout(() => {
+    if (localName.value.length > 200) {
+      localName.value = localName.value.substring(0, 200);
+    }
+  }, 0);
+};
 
 const onKeyupEnter = () => {
   if (localName.value && localName.value.trim()) {
