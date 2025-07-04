@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Routing\Router;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -14,6 +15,12 @@ class RouteTest extends TestCase
      * This this does some basic checks to make sure we converted routes
      * to the correct class-based routes as part of the Laravel 8 upgrade
      */
+    protected function setUp(): void
+    {
+        parent::setUp();
+        config(['queue.tenant_tracking_enabled' => true]);
+    }
+
     public function testIndexRoute()
     {
         $ethosRoutePath = base_path('vendor/processmaker/package-ellucian-ethos/routes/');
