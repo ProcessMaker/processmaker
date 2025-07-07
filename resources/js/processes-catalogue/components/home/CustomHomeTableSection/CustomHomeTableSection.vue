@@ -92,12 +92,8 @@ const hookData = async () => {
     perPage: dataPagination.value.perPage,
     orderDirection: dataTable.value.orderDirection,
     orderBy: dataTable.value.orderBy,
-    // nonSystem: true, // Hardcoded to true
-    // processesIManage: false, // Hardcoded to false
-    // allInbox: true, // Hardcoded to false
     pmql: dataTable.value.pmql,
     filter: dataTable.value.filter,
-    // statusFilter: "ACTIVE,CLOSED",
     advancedFilter: dataTable.value.advancedFilter,
   });
 
