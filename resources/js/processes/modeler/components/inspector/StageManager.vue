@@ -6,6 +6,7 @@
     </p>
     <StageList
       :initial-stages="defaultStages"
+      :loading-stages="isLoading"
       @onUpdate="onUpdate"
       @onRemove="onRemove"
       @onChange="onChange"
@@ -24,8 +25,10 @@ import AgregationProperty from "./AgregationProperty.vue";
 const props = defineProps({
   value: Object,
 });
+
 const defaultStages = ref([]);
 const currentInstance = getCurrentInstance();
+const isLoading = ref(true);
 
 const loadStagesFromApi = () => {
   const { id } = window.ProcessMaker.modeler.process;
@@ -38,6 +41,7 @@ const loadStagesFromApi = () => {
       stages.forEach((item) => {
         defaultStages.value = [...defaultStages.value, item];
       });
+      isLoading.value = false;
     });
 };
 
@@ -103,7 +107,6 @@ const removeStageInAllFlowConfig = (stage) => {
   const links = getModeler().graph.getLinks();
   for (const link of links) {
     const config = getConfigFromDefinition(link.component.node.definition);
-    debugger;
     if (config?.stage?.id === stage.id) {
       delete config.stage;
       Vue.set(link.component.node.definition, "config", JSON.stringify(config));

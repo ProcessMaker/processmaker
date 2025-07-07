@@ -37,6 +37,7 @@
     </div>
     <div class="tw-flex tw-justify-end tw-mt-2">
       <button
+        v-if="!loadingStages"
         :disabled="disableButton"
         class="tw-bg-blue-500 text-white tw-text-sm tw-px-2 tw-py-0.5 tw-rounded"
         :class="{'tw-bg-gray-300 tw-cursor-not-allowed': disableButton}"
@@ -60,6 +61,10 @@ const props = defineProps({
   initialStages: {
     type: Array,
     default: () => [],
+  },
+  loadingStages: {
+    type: Boolean,
+    default: true,
   },
 });
 
