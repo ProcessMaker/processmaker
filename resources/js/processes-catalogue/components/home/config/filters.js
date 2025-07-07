@@ -1,4 +1,73 @@
-import { subjectColumns } from "./requestDefaultColumns";
+/**
+ * Only mao the subjects for filters
+ */
+export const subjectColumns = [
+  {
+    field: "id",
+    subject: {
+      type: "Field",
+      value: "id",
+    },
+  },
+  {
+    field: "case_number",
+    subject: {
+      type: "Field",
+      value: "case_number",
+    },
+  },
+  {
+    field: "case_title",
+    subject: {
+      type: "Field",
+      value: "case_title",
+    },
+  },
+  {
+    field: "name",
+    subject: {
+      type: "Field",
+      value: "name",
+    },
+  },
+  {
+    field: "stage",
+    subject: {
+      type: "Field",
+      value: "stage",
+    },
+  },
+  {
+    field: "progress",
+    subject: {
+      type: "Field",
+      value: "progress",
+    },
+  },
+  {
+    field: "participants",
+    subject: { type: "ParticipantsFullName" },
+  },
+  {
+    field: "status",
+    subject: { type: "Status" },
+  },
+  {
+    field: "initiated_at",
+    subject: {
+      type: "Field",
+      value: "initiated_at",
+    },
+  },
+  {
+    field: "completed_at",
+    subject: {
+      type: "Field",
+      value: "completed_at",
+    },
+  },
+];
+
 // Convert value filter from FilterableTable to value for AdvancedFilter
 export const buildValue = (operator, value) => {
   switch (operator) {

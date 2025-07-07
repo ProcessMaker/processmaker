@@ -22,9 +22,6 @@ export const prepareToGetRequests = async ({
   const nPerPage = perPage;
   const nOrderDirection = orderDirection;
   const nOrderBy = orderBy;
-  // const nNonSystem = true;
-  // const nProcessesIManage = processesIManage;
-  // const nAllInbox = allInbox;
   const nPmql = buildPmql(pmql, filter);
   const nFilter = buildPmql(pmql, filter) === pmql ? filter : "";
   const nAdvancedFilter = advancedFilter;
@@ -36,13 +33,9 @@ export const prepareToGetRequests = async ({
     perPage: nPerPage,
     orderDirection: nOrderDirection,
     orderBy: nOrderBy,
-    // nonSystem: nNonSystem,
-    // processesIManage: nProcessesIManage,
-    // allInbox: nAllInbox,
     pmql: nPmql,
     filter: nFilter,
     include: nInclude,
-    // statusFilter,
     advancedFilter: nAdvancedFilter,
   });
   return response;
