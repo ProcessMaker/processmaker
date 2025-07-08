@@ -305,6 +305,16 @@ class Screen extends ProcessMakerModel implements ScreenInterface, PrometheusMet
         return $screen;
     }
 
+    public static function getScreenByKeyNonSystem(string $key) : ?self
+    {
+        $screen = self::firstWhere('key', $key);
+        if (!$screen) {
+            $screen = self::createScreenByKey($key, false);
+        }
+
+        return $screen;
+    }
+
     private static function createScreenByKey(string $key, bool $isSystem = true, string $path = null): self
     {
         // If no path is provided, use the default path
