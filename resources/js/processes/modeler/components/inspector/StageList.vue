@@ -27,19 +27,21 @@
     >
       <span class="tw-w-6 text-center stage-item-number">{{ totalStages + 1 }}</span>
       <i class="fas fa-grip-vertical stage-item-grip-vertical tw-cursor-move" />
-      <input
-        v-model="newStage"
-        class="tw-flex-1 tw-border tw-rounded px-2 form-control"
-        :class="{ 'is-invalid': !stateNewStage }"
-        :placeholder="$t('Enter name')"
-        maxlength="200"
-        @keyup.enter="onKeyupEnter"
-        @input="onInput"
-        @paste="onPaste"
-      >
-      <small class="tw-text-gray-500 tw-text-xs">
-        {{ newStage.length }}/200 {{ $t('characters') }}
-      </small>
+      <div class="tw-flex-1">
+        <input
+          v-model="newStage"
+          class="tw-w-full tw-border tw-rounded px-2 form-control"
+          :class="{ 'is-invalid': !stateNewStage }"
+          :placeholder="$t('Enter name')"
+          maxlength="200"
+          @keyup.enter="onKeyupEnter"
+          @input="onInput"
+          @paste="onPaste"
+        >
+        <small class="tw-text-gray-500 tw-text-xs">
+          {{ newStage.length }}/200 {{ $t('characters') }}
+        </small>
+      </div>
     </div>
     <div class="tw-flex tw-justify-end tw-mt-2">
       <button
