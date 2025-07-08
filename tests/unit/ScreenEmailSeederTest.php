@@ -12,13 +12,6 @@ class ScreenEmailSeederTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function upgrade()
-    {
-        $this->artisan('migrate', [
-            '--path' => 'upgrades/2025_07_08_151252_update_default_email_task_notification_screen_category.php',
-        ])->run();
-    }
-
     public function test_seeder_creates_screen_without_system_flag()
     {
         $seeder = new ScreenEmailSeeder();
