@@ -61,7 +61,7 @@ import {
   ref, computed, watch,
 } from "vue";
 import draggable from "vuedraggable";
-import i18next from "i18next";
+import { t } from "i18next";
 import StageItem from "./StageItem.vue";
 
 const props = defineProps({
@@ -148,8 +148,8 @@ const onUpdate = (index, newName) => {
 
 const onRemove = (index) => {
   ProcessMaker.confirmModal(
-    i18next.t("Caution!"),
-    i18next.t("Are you sure you want to delete the stage?"),
+    t("Caution!"),
+    t("Are you sure you want to delete the stage?"),
     "",
     () => {
       const removed = stages.value.splice(index, 1);
