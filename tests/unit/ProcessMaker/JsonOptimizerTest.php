@@ -237,4 +237,98 @@ class JsonOptimizerTest extends TestCase
         $this->assertIsArray($data);
         echo "\njson_optimize_decode duration: {$duration} sec";
     }
+
+    /**
+     * Test JSON encoding and decoding with edge cases and special characters.
+     */
+    public function test_json_decode_edge_cases()
+    {
+        // Test with special characters
+        $specialData = [
+            'message' => 'Hello "World" with \'quotes\' and \n newlines',
+            'unicode' => 'Café & résumé',
+            'numbers' => [1, 2.5, -3, 0],
+            'booleans' => [true, false],
+            'emojis' => '😊🚀',
+            'chino' => '中文测试',
+            'japones'  => '日本語のテスト',
+            'special_chars' => "!@#$%^&*()_+-=[]{}|;':\",.<>?/~`",
+            'unicode_chars' => '✓ ✔ ✗ ✖',
+            'null_value' => null,
+            'empty' => ['', [], null],
+        ];
+
+        // Test helper functions
+        $encoded = json_encode($specialData);
+        $this->assertIsString($encoded);
+        $this->assertJson($encoded);
+
+        $decoded = json_optimize_decode($encoded, true);
+        $this->assertIsArray($decoded);
+        $this->assertEquals($specialData, $decoded);
+
+        // Verify specific edge cases
+        $this->assertEquals('Hello "World" with \'quotes\' and \n newlines', $decoded['message']);
+        $this->assertEquals('Café & résumé', $decoded['unicode']);
+        $this->assertEquals('😊🚀', $decoded['emojis']);
+        $this->assertEquals('中文测试', $decoded['chino']);
+        $this->assertEquals('日本語のテスト', $decoded['japones']);
+        $this->assertNull($decoded['null_value']);
+        $this->assertEquals([1, 2.5, -3, 0], $decoded['numbers']);
+        $this->assertEquals([true, false], $decoded['booleans']);
+    }
+
+    /**
+     * Test performance comparison between json_optimize_decode and json_decode using fixture data.
+     */
+    public function test_json_optimize_decode_performance_vs_native()
+    {
+        $jsonFixturePath = __DIR__ . '/../../Fixtures/json_optimizer_test_example.json';
+
+        // Check if fixture exists
+        if (!file_exists($jsonFixturePath)) {
+            $this->markTestSkipped('JSON fixture file not found: ' . $jsonFixturePath);
+        }
+
+        // Load fixture data
+        $fixtureData = json_decode(file_get_contents($jsonFixturePath), true);
+        $this->assertIsArray($fixtureData, 'Fixture data should be an array');
+
+        // Generate JSON using native json_encode
+        $jsonString = json_encode($fixtureData);
+        $this->assertIsString($jsonString);
+        $this->assertJson($jsonString);
+
+        $jsonSize = strlen($jsonString);
+        echo "\n📊 JSON size: " . number_format($jsonSize) . ' bytes';
+
+        // Test iterations for performance measurement
+        $iterations = 100;
+
+        // Test native json_decode performance
+        $nativeStart = microtime(true);
+        for ($i = 0; $i < $iterations; $i++) {
+            $nativeDecoded = json_decode($jsonString, true);
+        }
+        $nativeTime = microtime(true) - $nativeStart;
+
+        // Test json_optimize_decode performance
+        $optimizedStart = microtime(true);
+        for ($i = 0; $i < $iterations; $i++) {
+            $optimizedDecoded = json_optimize_decode($jsonString, true);
+        }
+        $optimizedTime = microtime(true) - $optimizedStart;
+
+        // Verify both decoders produce the same result
+        $this->assertEquals($nativeDecoded, $optimizedDecoded, 'Both decoders should produce identical results');
+
+        // Calculate performance metrics
+        $nativeAvg = ($nativeTime / $iterations) * 1000; // Convert to milliseconds
+        $optimizedAvg = ($optimizedTime / $iterations) * 1000; // Convert to milliseconds
+        $this->assertLessThan($optimizedAvg, $nativeAvg, 'json_optimize_decode should be faster than native json_decode');
+
+        // Verify data integrity
+        $this->assertIsArray($optimizedDecoded);
+        $this->assertEquals($fixtureData, $optimizedDecoded, 'Decoded data should match original fixture data');
+    }
 }

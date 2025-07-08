@@ -195,6 +195,7 @@ return [
         ProcessMaker\Providers\OpenAiServiceProvider::class,
         ProcessMaker\Providers\LicenseServiceProvider::class,
         ProcessMaker\Providers\MetricsServiceProvider::class,
+        ProcessMaker\Providers\JsonOptimizerServiceProvider::class,
     ])->toArray(),
 
     'aliases' => Facade::defaultAliases()->merge([
