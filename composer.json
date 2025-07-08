@@ -35,7 +35,7 @@
         "lcobucci/jwt": "^4.2",
         "league/flysystem-aws-s3-v3": "^3.29",
         "mateusjunges/laravel-kafka": "^2.4",
-        "microsoft/microsoft-graph": "^2.8",
+        "php-http/promise": "~1.2.0",
         "mittwald/vault-php": "^2.1",
         "moontoast/math": "^1.2",
         "mustache/mustache": "^2.14",
