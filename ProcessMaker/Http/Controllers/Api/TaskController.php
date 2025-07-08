@@ -174,7 +174,7 @@ class TaskController extends Controller
 
         $response->inOverdue = $inOverdueQuery->count();
 
-        return response_json_optimize(new TaskCollection($response));
+        return new TaskCollection($response);
     }
 
     /**
