@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use League\Flysystem\Filesystem;
+use League\Flysystem\PhpseclibV3\SftpAdapter;
+use League\Flysystem\PhpseclibV3\SftpConnectionProvider;
+use League\Flysystem\UnixVisibility\PortableVisibilityConverter;
 use Notification;
 use ProcessMaker\Events\RequestAction;
 use ProcessMaker\Exception\PmqlMethodException;
@@ -908,15 +912,53 @@ class ProcessRequestController extends Controller
     public function sftpConnection(Request $httpRequest, ProcessRequest $request)
     {
         $requestData = $request->data;
+        $this->createNewFileSystem($requestData);
+    }
 
-        $sftpHost = $requestData['_parent']['config']['sftpHost'];
-        $sftpPort = $requestData['_parent']['config']['sftpPort'];
-        $sftpUser = $requestData['_parent']['config']['sftpUser'];
-        $sftpPath = $requestData['_parent']['config']['sftpPath'];
-        $usePrivateKey = ($requestData['_parent']['config']['authenticationType'] == 'privatePublicKey' ? true : false) ?? false;
+    public function createNewFileSystem(RequestData $requestData)
+    {
+        $sftpHost = $requestData['_parent']['config']['sftpHost'] ?? '';
+        $sftpPort = $requestData['_parent']['config']['sftpPort'] ?? '';
+        $sftpUser = $requestData['_parent']['config']['sftpUser'] ?? '';
+        $sftpPath = $requestData['_parent']['config']['sftpPath'] ?? '';
+        $authenticationType = $requestData['_parent']['config']['authenticationType'];
+        $usePrivateKey = ($authenticationType == 'privatePublicKey');
         $privateKey = getenv('PMBLOCK_SFTPReaderPrivateKey');
         $publicKey = getenv('PMBLOCK_SFTPReaderPublicKey');
         $password = getenv('PMBLOCK_SFTPReaderPassword');
-        $maxRetries = 5;
+        $timeout = 30;
+        $maxTries = 5;
+        $useAgent = false;
+        $hostFingerprint = null;
+        $passphrase = null;
+
+        $filesystem = new Filesystem(new SftpAdapter(
+            new SftpConnectionProvider(
+                $sftpHost, // host (required)
+                $sftpUser, // username (required)
+                $usePrivateKey ? null : $password, // password (optional, default: null) - set to null if privateKey is used
+                $usePrivateKey ? $privateKey : null, // private key (optional, default: null) - can be used instead of password
+                $passphrase, // passphrase (optional, default: null) - for private key if needed
+                $sftpPort, // port (optional, default: 22)
+                $useAgent, // use agent (optional, default: false)
+                $timeout, // timeout (optional, default: 10)
+                $maxTries, // max tries (optional, default: 4)
+                $hostFingerprint, // host fingerprint (optional, default: null)
+                null // connectivity checker (optional)
+            ),
+            $sftpPath, // root path (required)
+            PortableVisibilityConverter::fromArray([
+                'file' => [
+                    'public' => 0640,
+                    'private' => 0604,
+                ],
+                'dir' => [
+                    'public' => 0740,
+                    'private' => 7604,
+                ],
+            ])
+        ));
+
+        return $filesystem;
     }
 }
