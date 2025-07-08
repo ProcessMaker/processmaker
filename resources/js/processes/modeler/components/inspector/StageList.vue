@@ -27,13 +27,21 @@
     >
       <span class="tw-w-6 text-center stage-item-number">{{ totalStages + 1 }}</span>
       <i class="fas fa-grip-vertical stage-item-grip-vertical tw-cursor-move" />
-      <input
-        v-model="newStage"
-        class="tw-flex-1 tw-border tw-rounded px-2 form-control"
-        :class="{ 'is-invalid': !stateNewStage }"
-        :placeholder="$t('Enter name')"
-        @keyup.enter="onKeyupEnter"
-      >
+      <div class="tw-flex-1">
+        <input
+          v-model="newStage"
+          class="tw-w-full tw-border tw-rounded px-2 form-control"
+          :class="{ 'is-invalid': !stateNewStage }"
+          :placeholder="$t('Enter name')"
+          maxlength="200"
+          @keyup.enter="onKeyupEnter"
+          @input="onInput"
+          @paste="onPaste"
+        >
+        <small class="tw-text-gray-500 tw-text-xs">
+          {{ newStage.length }}/200 {{ $t('characters') }}
+        </small>
+      </div>
     </div>
     <div class="tw-flex tw-justify-end tw-mt-2">
       <button
@@ -54,7 +62,7 @@ import {
   ref, computed, watch,
 } from "vue";
 import draggable from "vuedraggable";
-import i18next from "i18next";
+import { t } from "i18next";
 import StageItem from "./StageItem.vue";
 
 const props = defineProps({
@@ -76,6 +84,22 @@ const stages = ref([...props.initialStages]);
 const totalStages = computed(() => stages.value.length);
 const disableButton = computed(() => totalStages.value >= 8);
 const stateNewStage = ref(true);
+
+const onInput = (event) => {
+  // Limit to 200 characters
+  if (newStage.value.length > 200) {
+    newStage.value = newStage.value.substring(0, 200);
+  }
+};
+
+const onPaste = (event) => {
+  // Handle paste event to ensure proper character counting
+  setTimeout(() => {
+    if (newStage.value.length > 200) {
+      newStage.value = newStage.value.substring(0, 200);
+    }
+  }, 0);
+};
 
 const onClickAdd = () => {
   if (disableButton.value) {
@@ -129,8 +153,8 @@ const onUpdate = (index, newName) => {
 
 const onRemove = (index) => {
   ProcessMaker.confirmModal(
-    i18next.t("Caution!"),
-    i18next.t("Are you sure you want to delete the stage?"),
+    t("Caution!"),
+    t("Are you sure you want to delete the stage?"),
     "",
     () => {
       const removed = stages.value.splice(index, 1);
