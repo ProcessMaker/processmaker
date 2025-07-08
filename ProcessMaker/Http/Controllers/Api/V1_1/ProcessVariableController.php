@@ -219,18 +219,6 @@ class ProcessVariableController extends Controller
         }
 
         // If the classes or tables do not exist, fallback to a saved search approach.
-
-        if ($savedSearch && $request->has('onlyAvailable')) {
-            $paginator = $this->getProcessesVariablesFrom($processIds);
-            $availableColumns = $this->mergeAvailableColumns($savedSearch);
-            $availableColumns = $this->filterActiveColumns($availableColumns, $activeColumns);
-            $paginator->setCollection(
-                $availableColumns->merge($paginator->items())
-            );
-
-            return $paginator;
-        }
-
         if (
             !class_exists(ProcessVariable::class)
             || !Schema::hasTable('process_variables')
@@ -238,13 +226,7 @@ class ProcessVariableController extends Controller
         ) {
             $paginator = $this->getProcessesVariablesFrom($processIds);
             if ($request->has('onlyAvailable')) {
-                $availableColumns = $this->mergeAvailableColumns($savedSearch);
-                $availableColumns = $this->filterActiveColumns($availableColumns, $activeColumns);
-                $paginator->setCollection(
-                    $availableColumns->merge($paginator->items())
-                );
-
-                return $paginator;
+                return $this->mergeOnlyAvailableColumns($paginator, $savedSearch, $activeColumns);
             }
 
             return $paginator;
@@ -267,27 +249,33 @@ class ProcessVariableController extends Controller
                 DB::raw('NULL AS `default`'),
             ]);
 
-        if (!empty($activeColumns)) {
-            $activeColumns = array_map(function ($column) {
-                return preg_replace('/^data\./', '', $column);
-            }, $activeColumns);
-            $query->whereNotIn('vfv.field', $activeColumns);
-        }
-
         // Return the paginated result
         $paginator = $query->paginate($perPage, ['*'], 'page', $page);
 
         if ($request->has('onlyAvailable')) {
-            $availableColumns = $this->mergeAvailableColumns($savedSearch);
-            $availableColumns = $this->filterActiveColumns($availableColumns, $activeColumns);
-            $paginator->setCollection(
-                $availableColumns->merge($paginator->items())
-            );
-
-            return $paginator;
+            return $this->mergeOnlyAvailableColumns($paginator, $savedSearch, $activeColumns);
         }
 
         return $query->paginate($perPage, ['*'], 'page', $page);
+    }
+
+    /**
+     * Merge only available columns with collection items
+     *
+     * @param LengthAwarePaginator $paginator
+     * @param SavedSearch|null $savedSearch
+     * @param array $activeColumns
+     *
+     * @return LengthAwarePaginator
+     */
+    private function mergeOnlyAvailableColumns($paginator, $savedSearch, $activeColumns)
+    {
+        $availableColumns = $this->mergeAvailableColumns($savedSearch);
+        $availableColumns = $availableColumns->merge($paginator->items());
+        $availableColumns = $this->filterActiveColumns($availableColumns, $activeColumns);
+        $paginator->setCollection($availableColumns);
+
+        return $paginator;
     }
 
     /**

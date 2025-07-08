@@ -66,6 +66,8 @@ class TaskController extends Controller
 
         $defaultColumns = DefaultColumns::get('tasks');
 
+        $isDefaultColumns = DefaultColumns::verifyDefaultColumns($defaultColumns, 'tasks');
+
         $taskDraftsEnabled = TaskDraft::draftsEnabled();
 
         $userConfiguration = (new UserConfigurationController())->index()['ui_configuration'] ?? [];
@@ -74,7 +76,7 @@ class TaskController extends Controller
 
         $defaultSavedSearchId = $this->getDefaultSavedSearchId();
 
-        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns', 'taskDraftsEnabled', 'userConfiguration', 'showOldTaskScreen', 'currentUser', 'selectedProcess', 'defaultSavedSearchId', 'manager'));
+        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns', 'isDefaultColumns', 'taskDraftsEnabled', 'userConfiguration', 'showOldTaskScreen', 'currentUser', 'selectedProcess', 'defaultSavedSearchId', 'manager'));
     }
 
     public function edit(ProcessRequestToken $task, string $preview = '')

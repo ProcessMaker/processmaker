@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.15.1+beta-1",
+    "version": "4.15.3+beta-1",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -105,7 +105,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "8a583097",
+            "build": "76719b31",
             "cicd-enabled": true,
             "custom": {
                 "package-ellucian-ethos": "1.19.3",
@@ -143,7 +143,7 @@
             "enterprise": {
                 "connector-docusign": "1.11.0",
                 "connector-idp": "1.14.0",
-                "connector-pdf-print": "1.22.0",
+                "connector-pdf-print": "1.23.0",
                 "connector-send-email": "1.32.3",
                 "connector-slack": "1.9.0",
                 "docker-executor-node-ssr": "1.7.1",
@@ -152,11 +152,11 @@
                 "package-advanced-user-manager": "1.13.0",
                 "package-ai": "1.16.5",
                 "package-analytics-reporting": "1.11.0",
-                "package-auth": "1.24.2",
+                "package-auth": "1.24.4",
                 "package-collections": "2.25.4",
                 "package-comments": "1.16.0",
                 "package-conversational-forms": "1.15.0",
-                "package-data-sources": "1.34.0",
+                "package-data-sources": "1.34.1",
                 "package-decision-engine": "1.16.1",
                 "package-dynamic-ui": "1.28.1",
                 "package-files": "1.23.0",
@@ -166,10 +166,10 @@
                 "package-process-documenter": "1.12.0",
                 "package-process-optimization": "1.10.0",
                 "package-product-analytics": "1.5.10",
-                "package-projects": "1.12.2",
+                "package-projects": "1.12.3",
                 "package-rpa": "1.1.1",
-                "package-savedsearch": "1.42.5",
-                "package-slideshow": "1.4.1",
+                "package-savedsearch": "1.42.8",
+                "package-slideshow": "1.4.2",
                 "package-sentry": "1.12.0",
                 "package-signature": "1.15.0",
                 "package-testing": "1.8.0",
