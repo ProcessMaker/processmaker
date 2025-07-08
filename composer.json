@@ -11,7 +11,6 @@
     "prefer-stable": true,
     "require": {
         "php": "^8.3",
-        "aws/aws-sdk-php": "3.337.3",
         "babenkoivan/elastic-scout-driver": "^4.0",
         "bacon/bacon-qr-code": "^2.0",
         "codegreencreative/laravel-samlidp": "^5.2",
