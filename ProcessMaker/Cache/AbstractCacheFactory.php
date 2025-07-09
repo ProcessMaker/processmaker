@@ -38,12 +38,7 @@ abstract class AbstractCacheFactory implements CacheFactoryInterface
         // Create base cache instance
         $cache = static::createInstance($cacheManager);
 
-        // Wrap with metrics decorator
-        if (static::$storeMetrics) {
-            return new CacheMetricsDecorator($cache, $metrics);
-        }
-
-        return $cache;
+        return new CacheMetricsDecorator($cache, $metrics);
     }
 
     /**
