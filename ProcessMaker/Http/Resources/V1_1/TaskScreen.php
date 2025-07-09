@@ -50,7 +50,8 @@ class TaskScreen extends ApiResource
             if (array_key_exists('nested', $array['screen'])) {
                 foreach ($array['screen']['nested'] as &$nestedScreen) {
                     $nestedScreen['config'] = $screenTranslation->applyTranslations(new ScreenVersionModel($nestedScreen));
-                    $nestedScreen['config'] = $this->removeInspectorMetadata($nestedScreen['config']);
+                    // When Nested points to an empty screen (config = null in the database) we need to use an empty array
+                    $nestedScreen['config'] = $this->removeInspectorMetadata($nestedScreen['config'] ?? []);
                 }
             }
         }

@@ -240,6 +240,7 @@ class SettingController extends Controller
      */
     public function update(Setting $setting, Request $request)
     {
+        $this->validateWhiteListURL($request);
         $request->validate(Setting::rules($setting, $request->input('key') == 'users.properties'), Setting::messages());
         $setting->config = $request->input('config');
         $original = array_intersect_key($setting->getOriginal(), $setting->getDirty());
@@ -262,6 +263,8 @@ class SettingController extends Controller
         ]);
         // set to cache with key and setting
         $settingCache->set($key, $setting->refresh());
+        // update config
+        config([$setting->key => $setting->config]);
 
         return response([], 204);
     }
@@ -271,6 +274,7 @@ class SettingController extends Controller
         $setting = new Setting();
 
         try {
+            $this->validateWhiteListURL($request);
             $setting->fill($request->json()->all());
             $setting->saveOrFail();
 
@@ -285,6 +289,24 @@ class SettingController extends Controller
 
             // Handle other query exceptions
             return response()->json(['message' => 'An error occurred while saving the setting.'], 500);
+        }
+    }
+
+    /**
+     * Validate the white list URL
+     *
+     * @param Request $request
+     * @return void
+     */
+    private function validateWhiteListURL(Request $request)
+    {
+        if (strpos($request->input('key'), 'white_list.') === 0 || strpos($request->input('key'), 'white_list_frame.') === 0) {
+            $request->validate([
+                'config' => [
+                    'required',
+                    validateURL(),
+                ],
+            ]);
         }
     }
 
