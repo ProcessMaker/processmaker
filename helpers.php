@@ -315,7 +315,8 @@ if (!function_exists('json_optimize_decode')) {
 
 if (!function_exists('json_optimize_encode')) {
     /**
-     * Encodes a value into a JSON using simdjson if available.
+     * Currently, we're using PHP's native json_encode.
+     * We need to investigate alternative libraries or methods to boost its performance.
      *
      * @param mixed $value
      * @param int $flags
@@ -325,24 +326,5 @@ if (!function_exists('json_optimize_encode')) {
     function json_optimize_encode(mixed $value, int $flags = 0, int $depth = 512): string|false
     {
         return JsonOptimizer::encode($value, $flags, $depth);
-    }
-}
-
-if (!function_exists('response_json_optimize')) {
-    /**
-     * Encodes a value into a JSON using simdjson if available.
-     *
-     * @param mixed $data
-     * @param int $status
-     * @param array $headers
-     * @return \Illuminate\Http\Response
-     */
-    function response_json_optimize($data, int $status = 200, array $headers = [])
-    {
-        $json = json_optimize_encode($data);
-
-        return response($json, $status)
-                ->header('Content-Type', 'application/json')
-                ->withHeaders($headers);
     }
 }
