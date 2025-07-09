@@ -315,7 +315,8 @@ if (!function_exists('json_optimize_decode')) {
 
 if (!function_exists('json_optimize_encode')) {
     /**
-     * Encodes a value into a JSON using simdjson if available.
+     * Currently, we're using PHP's native json_encode.
+     * We need to investigate alternative libraries or methods to boost its performance.
      *
      * @param mixed $value
      * @param int $flags
