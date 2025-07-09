@@ -4,12 +4,12 @@
     "screens": [
         {
             "screen_category_id": null,
-            "title": "DEFAULT_EMAIL_TASK_NOTIFICATION",
+            "title": "Default Email Task Notification",
             "description": "Screen for the email task notification",
             "type": "EMAIL",
             "config": [
                 {
-                    "name": "DEFAULT_EMAIL_TASK_NOTIFICATION",
+                    "name": "Default Email Task Notification",
                     "items": [
                         {
                             "uuid": "c331f828-3b0f-47a3-bf6e-9037717a7690",
