@@ -22,12 +22,14 @@ sudo apt-get install php-pear php-dev build-essential
 **macOS, Ubuntu/Debian:**
 
 ```bash
+cd /tmp
 git clone https://github.com/ColinHoford/simdjson-plus-php-ext.git
 cd simdjson-plus-php-ext
-phpize
-./configure
+
+phpize83
+./configure --with-php-config=/usr/bin/php-config83
 make
-sudo make install
+make install
 ```
 
 #### 2. Configure PHP
@@ -74,7 +76,6 @@ brew services info nginx
 Enable JSON optimization in your `.env` file:
 
 ```env
-JSON_OPTIMIZATION_ENCODE=true
 JSON_OPTIMIZATION_DECODE=true
 ```
 
@@ -88,14 +89,12 @@ Instead of using `json_*()` directly, use the wrapper:
 use ProcessMaker\Support\JsonOptimizer;
 
 $data = JsonOptimizer::decode($json);
-$json = JsonOptimizer::encode($data);
 ```
 
 Or, if you’ve added a global helper:
 
 ```php
 $data = json_optimize_decode($json);
-$json = json_optimize_encode($data);
 ```
 
-The optimizer will automatically use `simdjson_plus` if available, and fall back to `json_decode or json_encode` otherwise.
+The optimizer will automatically use `simdjson_plus` if available, and fall back to `json_decode` otherwise.

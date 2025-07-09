@@ -31,6 +31,8 @@ class JsonOptimizer
 
     /**
      * Encodes a JSON using simdjson if available.
+     * But json_encode is more performant than json_optimization_encode.
+     * to_do: research other options for json_encode optimization.
      */
     public static function encode(mixed $value, int $flags = 0, int $depth = 512): string|false
     {

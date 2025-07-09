@@ -34,6 +34,6 @@ class JsonOptimizerServiceProvider extends ServiceProvider
 
         // Set optimization flags based on extension availability and config
         JsonOptimizer::$useSimdjsonDecode = $simdjsonAvailable && config('app.json_optimization_decode') === true;
-        JsonOptimizer::$useSimdjsonEncode = $simdjsonAvailable && config('app.json_optimization_encode') === true;
+        // About the json_encode is more performant than json_optimization_encode
     }
 }

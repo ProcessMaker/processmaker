@@ -312,19 +312,3 @@ if (!function_exists('json_optimize_decode')) {
         return JsonOptimizer::decode($json, $assoc, $depth, $options);
     }
 }
-
-if (!function_exists('json_optimize_encode')) {
-    /**
-     * Currently, we're using PHP's native json_encode.
-     * We need to investigate alternative libraries or methods to boost its performance.
-     *
-     * @param mixed $value
-     * @param int $flags
-     * @param int $depth
-     * @return string|false
-     */
-    function json_optimize_encode(mixed $value, int $flags = 0, int $depth = 512): string|false
-    {
-        return JsonOptimizer::encode($value, $flags, $depth);
-    }
-}
