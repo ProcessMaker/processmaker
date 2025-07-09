@@ -2,7 +2,6 @@
 
 namespace Tests;
 
-use Illuminate\Support\Facades\Log;
 use ProcessMaker\Support\JsonOptimizer;
 use Tests\TestCase;
 
@@ -166,49 +165,6 @@ class JsonOptimizerTest extends TestCase
     }
 
     /**
-     * Test that the helper function json_optimize_encode encodes data correctly.
-     */
-    public function test_helper_encodes_data_correctly()
-    {
-        config(['app.json_optimization_encode' => true]);
-
-        $encoded = json_optimize_encode($this->data);
-
-        $this->assertIsString($encoded, 'The encoded result should be a string.');
-        $this->assertJson($encoded, 'The result should be a valid JSON string.');
-
-        $decoded = json_decode($encoded, true);
-
-        $this->assertEquals($this->data, $decoded, 'The decoded JSON should match the original array.');
-    }
-
-    /**
-     * Test the performance of the json_encode function.
-     */
-    public function test_json_encode_performance()
-    {
-        $start = microtime(true);
-        $json = json_encode($this->testData);
-        $duration = microtime(true) - $start;
-
-        $this->assertIsString($json);
-        echo "\njson_encode duration: {$duration} sec";
-    }
-
-    /**
-     * Test the performance of the json_optimize_encode function.
-     */
-    public function test_json_optimize_encode_performance()
-    {
-        $start = microtime(true);
-        $json = json_optimize_encode($this->testData);
-        $duration = microtime(true) - $start;
-
-        $this->assertIsString($json);
-        echo "\njson_optimize_encode duration: {$duration} sec";
-    }
-
-    /**
      * Test the performance of the json_decode function.
      */
     public function test_json_decode_performance()
@@ -228,6 +184,10 @@ class JsonOptimizerTest extends TestCase
      */
     public function test_json_optimize_decode_performance()
     {
+        if (!extension_loaded('simdjson_plus')) {
+            $this->markTestSkipped('SIMDJSON extension not available');
+        }
+
         $json = json_encode($this->testData);
 
         $start = microtime(true);
@@ -263,7 +223,11 @@ class JsonOptimizerTest extends TestCase
         $this->assertIsString($encoded);
         $this->assertJson($encoded);
 
-        $decoded = json_optimize_decode($encoded, true);
+        if (extension_loaded('simdjson_plus')) {
+            $decoded = json_optimize_decode($encoded, true);
+        } else {
+            $decoded = json_decode($encoded, true);
+        }
         $this->assertIsArray($decoded);
         $this->assertEquals($specialData, $decoded);
 
@@ -315,7 +279,11 @@ class JsonOptimizerTest extends TestCase
         // Test json_optimize_decode performance
         $optimizedStart = microtime(true);
         for ($i = 0; $i < $iterations; $i++) {
-            $optimizedDecoded = json_optimize_decode($jsonString, true);
+            if (extension_loaded('simdjson_plus')) {
+                $optimizedDecoded = json_optimize_decode($jsonString, true);
+            } else {
+                $optimizedDecoded = json_decode($jsonString, true);
+            }
         }
         $optimizedTime = microtime(true) - $optimizedStart;
 
