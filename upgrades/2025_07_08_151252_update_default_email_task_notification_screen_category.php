@@ -27,7 +27,7 @@ class UpdateDefaultEmailTaskNotificationScreenCategory extends Migration
             }
 
             // Set screen_category_id to null to remove any category association
-            $screen->update(['screen_category_id' => null, 'title' => 'Default Email Task Notification']);
+            $screen->update(['screen_category_id' => null, 'title' => 'Default Email Task Notification', 'is_default' => 1]);
         }
     }
 
