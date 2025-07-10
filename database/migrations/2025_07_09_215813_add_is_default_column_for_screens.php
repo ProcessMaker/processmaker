@@ -13,6 +13,9 @@ return new class extends Migration {
         Schema::table('screens', function (Blueprint $table) {
             $table->boolean('is_default')->default(false);
         });
+        Schema::table('screen_versions', function (Blueprint $table) {
+            $table->boolean('is_default')->default(false);
+        });
     }
 
     /**
@@ -21,6 +24,9 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('screens', function (Blueprint $table) {
+            $table->dropColumn('is_default');
+        });
+        Schema::table('screen_versions', function (Blueprint $table) {
             $table->dropColumn('is_default');
         });
     }
