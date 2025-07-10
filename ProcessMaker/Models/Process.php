@@ -1952,9 +1952,11 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     protected static function getProcessDefaultStageCounts(int $processId): array
     {
         return ProcessRequest::where('process_id', $processId)
-            ->whereIn('status', ['ACTIVE', 'COMPLETED'])
+            ->whereIn('status', ['ACTIVE', 'COMPLETED', 'ERROR', 'CANCELED'])
             ->selectRaw("
                 COUNT(CASE WHEN status = 'ACTIVE' THEN 1 END) AS active_count,
+                COUNT(CASE WHEN status = 'ERROR' THEN 1 END) AS error_count,
+                COUNT(CASE WHEN status = 'CANCELED' THEN 1 END) AS cancel_count,
                 COUNT(CASE WHEN status = 'COMPLETED' THEN 1 END) AS completed_count,
                 COUNT(*) AS total_count
             ")
