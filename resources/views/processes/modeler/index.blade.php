@@ -105,7 +105,6 @@ a {
   }
   const warnings = @json($process->warnings);
 
-  console.log("window.ProcessMaker.EventBus");
   window.ProcessMaker.EventBus.$on('modeler-start', ({ loadXML, addWarnings, addBreadcrumbs }) => {
     loadXML(window.ProcessMaker.modeler.xml);
     addWarnings(warnings || []);
