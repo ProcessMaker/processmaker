@@ -294,7 +294,7 @@ class TokenRepository implements TokenRepositoryInterface
         $configEmail = [
             'emailServer' => 0, // Use the default email server
             'subject' => "{$user->firstname} assigned you in '{$taskName}'",
-            'screenEmailRef' => $screen->id ?? 0, // Define here the screen to use
+            'screenEmailRef' => $screen ? $screen->id : 0, // Use the screen ID dynamically
         ];
 
         return [
