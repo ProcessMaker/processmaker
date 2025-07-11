@@ -2,10 +2,11 @@
 
 namespace ProcessMaker\Multitenancy;
 
+use Illuminate\Broadcasting\BroadcastManager;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
-use PDO;
+use ProcessMaker\Multitenancy\Broadcasting\TenantAwareBroadcastManager;
 use Spatie\Multitenancy\Concerns\UsesMultitenancyConfig;
 use Spatie\Multitenancy\Contracts\IsTenant;
 use Spatie\Multitenancy\Tasks\SwitchTenantTask;
@@ -13,6 +14,8 @@ use Spatie\Multitenancy\Tasks\SwitchTenantTask;
 class SwitchTenant implements SwitchTenantTask
 {
     use UsesMultitenancyConfig;
+
+    public static $originalSettingsCachePrefix = null;
 
     /**
      * Make the given tenant current.
@@ -38,20 +41,16 @@ class SwitchTenant implements SwitchTenantTask
             mkdir($tenantStoragePath, 0755, true);
         }
 
-        // Set the cached config path
-        // Not needed for now because we are setting the config manually below
+        // Any config that relies on the original value needs to be saved in a static variable.
+        // Otherwise, it will use the last tenant's modified value. This mostly only affects
+        // the worker queue jobs since it reuses the same process.
+        if (!self::$originalSettingsCachePrefix) {
+            self::$originalSettingsCachePrefix = config('cache.stores.cache_settings.prefix');
+        }
 
-        // $tennantCacheFolder = base_path('bootstrap/cache/tenant_' . $tenant->id);
-        // if (!file_exists($tennantCacheFolder)) {
-        //     mkdir($tennantCacheFolder, 0755, true);
-        // }
-
-        // putenv('APP_CONFIG_CACHE=' . $tennantCacheFolder . '/config.php');
-
-        // We cant reload config here because it overrides dynamic configs set in packages (like docker-executor-php)
-        // (new LoadConfiguration())->bootstrap($app);
-
-        // Instead, set each manually
+        // We cant reload config here with (new LoadConfiguration())->bootstrap($app);
+        // because it overrides dynamic configs set in packages (like docker-executor-php)
+        // Instead, override each necessary config value on the fly.
         $newConfig = [
             'filesystems.disks.local.root' => storage_path('app'),
             'filesystems.disks.public.root' => storage_path('app/public'),
@@ -62,8 +61,8 @@ class SwitchTenant implements SwitchTenantTask
             'filesystems.disks.tmp.root' => storage_path('app/public/tmp'),
             'filesystems.disks.samlidp.root' => storage_path('samlidp'),
             'filesystems.disks.decision_tables.root' => storage_path('decision-tables'),
-
             'l5-swagger.defaults.paths.docs' => storage_path('api-docs'),
+            'cache.stores.cache_settings.prefix' =>  'tenant_id_' . $tenant->id . ':' . self::$originalSettingsCachePrefix,
         ];
         config($newConfig);
 
@@ -75,6 +74,9 @@ class SwitchTenant implements SwitchTenantTask
             $config['app.key'] = Crypt::decryptString($config['app.key']);
         }
         config($config);
+
+        // Prefix broadcasts with tenant id
+        $app->singleton(BroadcastManager::class, fn ($app) => new TenantAwareBroadcastManager($app));
     }
 
     /**
