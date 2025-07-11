@@ -11,6 +11,8 @@ abstract class AbstractCacheFactory implements CacheFactoryInterface
 {
     protected static ?CacheInterface $testInstance = null;
 
+    protected static bool $storeMetrics = true;
+
     /**
      * Set a test instance for the factory
      *
@@ -38,7 +40,11 @@ abstract class AbstractCacheFactory implements CacheFactoryInterface
         $cache = static::createInstance($cacheManager);
 
         // Wrap with metrics decorator
-        return new CacheMetricsDecorator($cache, $metrics);
+        if (static::$storeMetrics) {
+            return new CacheMetricsDecorator($cache, $metrics);
+        }
+
+        return $cache;
     }
 
     /**

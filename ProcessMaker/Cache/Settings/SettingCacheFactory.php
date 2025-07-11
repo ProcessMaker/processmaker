@@ -8,6 +8,8 @@ use ProcessMaker\Cache\CacheInterface;
 
 class SettingCacheFactory extends AbstractCacheFactory
 {
+    protected static bool $storeMetrics = false;
+
     /**
      * Create the specific settings cache instance
      *

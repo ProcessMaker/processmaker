@@ -195,6 +195,7 @@ return [
         ProcessMaker\Providers\OpenAiServiceProvider::class,
         ProcessMaker\Providers\LicenseServiceProvider::class,
         ProcessMaker\Providers\MetricsServiceProvider::class,
+        ProcessMaker\Providers\JsonOptimizerServiceProvider::class,
     ])->toArray(),
 
     'aliases' => Facade::defaultAliases()->merge([
@@ -277,8 +278,7 @@ return [
 
     // Enable or disable TCE customization feature
     'tce_customization_enable' => env('TCE_CUSTOMIZATION_ENABLED', false),
-
-    'prometheus_namespace' => env('PROMETHEUS_NAMESPACE', 'processmaker'),
+    'prometheus_namespace' => env('PROMETHEUS_NAMESPACE', strtolower(preg_replace('/[^a-zA-Z0-9_]+/', '_', env('APP_NAME', 'processmaker')))),
 
     'server_timing' => [
         'enabled' => env('SERVER_TIMING_ENABLED', true),
@@ -286,4 +286,6 @@ return [
     ],
 
     'editor' => null,
+
+    'json_optimization_decode' => env('JSON_OPTIMIZATION_DECODE', false),
 ];
