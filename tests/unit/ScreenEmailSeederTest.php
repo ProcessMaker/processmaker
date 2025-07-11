@@ -32,7 +32,7 @@ class ScreenEmailSeederTest extends TestCase
 
     public function test_get_screen_by_key_non_system_method()
     {
-        $screen = Screen::getScreenByKeyNonSystem('default-email-task-notification');
+        $screen = Screen::getScreenByKeyPerDefault('default-email-task-notification');
 
         $this->assertNotNull($screen);
         $this->assertEquals('default-email-task-notification', $screen->key);
@@ -43,5 +43,6 @@ class ScreenEmailSeederTest extends TestCase
         }
 
         $this->assertNull($screen->screen_category_id);
+        $this->assertEquals($screen->is_default, 1);
     }
 }
