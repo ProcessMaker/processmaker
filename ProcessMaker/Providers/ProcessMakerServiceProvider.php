@@ -23,6 +23,7 @@ use ProcessMaker\Cache\Settings\SettingCacheManager;
 use ProcessMaker\Console\Migration\ExtendedMigrateCommand;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Events\TenantResolved;
 use ProcessMaker\Helpers\PmHash;
 use ProcessMaker\Http\Middleware\Etag\HandleEtag;
 use ProcessMaker\ImportExport\Extension;
@@ -38,6 +39,8 @@ use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
 use ProcessMaker\Repositories\SettingsConfigRepository;
 use RuntimeException;
+use Spatie\Multitenancy\Events\MadeTenantCurrentEvent;
+use Spatie\Multitenancy\Events\TenantNotFoundForRequestEvent;
 
 /**
  * Provide our ProcessMaker specific services.
@@ -267,6 +270,14 @@ class ProcessMakerServiceProvider extends ServiceProvider
             // Dispatch the SmartInbox job with the processRequestToken as parameter
             SmartInbox::dispatch($task_id);
         });
+
+        Facades\Event::listen(MadeTenantCurrentEvent::class, function ($event) {
+            event(new TenantResolved($event->tenant));
+        });
+
+        Facades\Event::listen(TenantNotFoundForRequestEvent::class, function () {
+            event(new TenantResolved(null));
+        });
     }
 
     /**
@@ -492,6 +503,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
         if ($tenantId) {
             $tenant = Tenant::findOrFail($tenantId);
             $tenant->makeCurrent();
+        } else {
+            event(new TenantResolved(null));
         }
     }
 }
