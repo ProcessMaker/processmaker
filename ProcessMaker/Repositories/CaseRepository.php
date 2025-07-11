@@ -56,6 +56,7 @@ class CaseRepository implements CaseRepositoryInterface
             // Check the case status
             if (is_null($instance->last_stage_id)) {
                 $instance->last_stage_name = $instance->case_status;
+                $instance->progress = 50;
             }
 
             CaseStarted::create([
@@ -145,6 +146,7 @@ class CaseRepository implements CaseRepositoryInterface
             if (in_array($caseStatus, [CaseStatusConstants::COMPLETED, CaseStatusConstants::CANCELED])) {
                 $data['completed_at'] = $instance->completed_at;
                 $data['last_stage_name'] = $caseStatus;
+                $data['progress'] = 100;
             }
 
             // Update the case started and case participated

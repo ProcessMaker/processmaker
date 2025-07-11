@@ -70,6 +70,7 @@ class CaseParticipatedRepository
         // Define the case status if is not set the stage
         if (is_null($case->last_stage_id)) {
             $case->last_stage_name = $case->case_status;
+            $case->progress = 50;
         }
         $data = [
             'case_number' => $case->case_number,
