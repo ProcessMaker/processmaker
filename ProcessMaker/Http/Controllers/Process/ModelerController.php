@@ -125,6 +125,18 @@ class ModelerController extends Controller
             $process->load('alternativeInfo');
         }
 
+        $defaultEmailNotification = [
+            'subject' => "RE: {{_user.fullName}} assigned you in {{taskName}}",
+            'type' => "screen",
+            'screenRef' => 2,
+            'toRecipients' => [
+                [
+                    'type' => "assignedUser",
+                    'value' => null
+                ]
+            ],
+        ];
+
         return [
             'process' => $process,
             'manager' => $manager,
@@ -147,6 +159,7 @@ class ModelerController extends Controller
             'alternative' => $alternative,
             'abPublish' => PackageHelper::isPackageInstalled('ProcessMaker\Package\PackageABTesting\PackageServiceProvider'),
             'launchpad' => ProcessLaunchpad::getLaunchpad(true, $process->id),
+            'defaultEmailNotification' => $defaultEmailNotification,
         ];
     }
 
