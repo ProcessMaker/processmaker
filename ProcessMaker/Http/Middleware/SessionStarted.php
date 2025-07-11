@@ -22,7 +22,7 @@ class SessionStarted
     {
         // If there is no tenant, and multitenancy is enabled (based on DB_DATABASE being null)
         // then we should redirect to the landlord landing page
-        if (app('currentTenant') === null && config('database.processmaker.database') === null) {
+        if (app('currentTenant') === null && config('database.connections.processmaker.database') === null) {
             return response()->view('multitenancy.landlord-landing-page');
         }
 

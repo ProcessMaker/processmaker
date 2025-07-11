@@ -40,7 +40,7 @@ class TenantFinder extends DomainTenantFinder
             // Check if there is a database set for the processmaker connection.
             // If so, multitenancy is not enabled for this instance and we should
             // treat it as a regular request without a tenant.
-            if (config('database.processmaker.database') === null) {
+            if (config('database.connections.processmaker.database') === null) {
                 // Check if the host is the landlord (app.url).
                 // If so, return null so we can continue loading the app.
                 // We will display a landing page from ProcessMaker/Http/Middleware/SessionStarted.php
