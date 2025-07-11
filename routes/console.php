@@ -40,3 +40,8 @@ Artisan::command('check {path}', function ($path) {
         dump($elem);
     }
 })->purpose('Display an inspiring quote');
+
+Artisan::command('metrics:clear', function () {
+    \ProcessMaker\Facades\Metrics::clearMetrics();
+    echo "Metrics cleared.\n";
+})->purpose('Clear all metrics using Metrics::clearMetrics');
