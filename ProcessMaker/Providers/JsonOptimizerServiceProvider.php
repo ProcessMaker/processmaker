@@ -28,8 +28,8 @@ class JsonOptimizerServiceProvider extends ServiceProvider
      */
     private function initializeJsonOptimizer(): void
     {
-        // Check if simdjson_plus extension is available
-        $simdjsonAvailable = extension_loaded('simdjson_plus');
+        // Check if simdjson extension is available
+        $simdjsonAvailable = extension_loaded('simdjson');
 
         // Set optimization flags based on extension availability and config
         JsonOptimizer::$useSimdjsonDecode = $simdjsonAvailable && config('app.json_optimization_decode') === true;
