@@ -23,6 +23,7 @@ return [
         'http://localhost:4200',
         'https://legendary-adventure-2n21ppv.pages.github.io',
         'https://processmaker.github.io',
+        'https://pm-apps.pages.dev'
     ],
 
     'allowed_origins_patterns' => [],

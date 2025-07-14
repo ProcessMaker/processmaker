@@ -70,4 +70,19 @@ class MessageEventThrown implements ShouldBroadcastNow
             'data' => (object) $this->message->getData($this->processRequest),
         ];
     }
+
+    public function getProcessRequest()
+    {
+        return $this->processRequest;
+    }
+
+    public function getNode()
+    {
+        return $this->node;
+    }
+
+    public function getMessage()
+    {
+        return $this->message;
+    }
 }

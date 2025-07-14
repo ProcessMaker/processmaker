@@ -1,10 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Laravel\Horizon\Repositories\RedisJobRepository;
 use ProcessMaker\Events\MarkArtisanCachesAsInvalid;
 use ProcessMaker\SanitizeHelper;
+use ProcessMaker\Support\JsonOptimizer;
 
 if (!function_exists('job_pending')) {
     /**
@@ -275,6 +275,41 @@ if (!function_exists('shouldShow')) {
         } else {
             return true;
         }
+    }
+}
+
+if (!function_exists('validateURL')) {
+    /**
+     * Validate the URL
+     *
+     * @return Closure
+     */
+    function validateURL(): Closure
+    {
+        return function ($attribute, $value, $fail) {
+            if (!empty($value)) {
+                $pattern = '/^(https:\/\/|http:\/\/)(\*\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?$/';
+                if (!preg_match($pattern, $value)) {
+                    $fail('The URL format is invalid. It must start with http:// or https:// and be a valid domain.');
+                }
+            }
+        };
+    }
+}
+
+if (!function_exists('json_optimize_decode')) {
+    /**
+     * Decodes a JSON using simdjson if available.
+     *
+     * @param string $json
+     * @param bool $assoc
+     * @param int $depth
+     * @param int $options
+     * @return mixed
+     */
+    function json_optimize_decode(string $json, bool $assoc = false, int $depth = 512, int $options = 0)
+    {
+        return JsonOptimizer::decode($json, $assoc, $depth, $options);
     }
 }
 

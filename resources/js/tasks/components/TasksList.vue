@@ -531,17 +531,6 @@ export default {
     },
     getColumns() {
       if (this.columns && this.columns.length > 0) {
-        const exists = this.columns.some((column) => column.field === "options");
-        if (!exists) {
-          const customColumns = cloneDeep(this.columns);
-          customColumns.push({
-            label: "",
-            field: "options",
-            sortable: false,
-            width: 180,
-          });
-          return customColumns;
-        }
         return this.columns;
       }
       // from query string status=CLOSED

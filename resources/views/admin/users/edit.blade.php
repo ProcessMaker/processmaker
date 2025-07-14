@@ -77,13 +77,15 @@
                         </div>
                         <div class="tab-pane" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
                             <div class="accordion" id="accordionPermissions">
+                              @if(Auth::user()->is_administrator)
                                 <div class="mb-2 custom-control custom-switch">
                                     <input id="is_administrator" type="checkbox" v-model="formData.is_administrator"  class="custom-control-input">
                                     <label for="is_administrator" class="custom-control-label">{{ __('Make this user a Super Admin') }}</label>
                                 </div>
+                                @endif
                                 <div class="mb-3 custom-control custom-switch">
-                                    <input id="selectAll" type="checkbox" v-model="selectAll" class="custom-control-input" @click="select" :disabled="formData.is_administrator">
-                                    <label for="selectAll" class="custom-control-label">{{ __('Assign all permissions to this user') }}</label>
+                                  <input id="selectAll" type="checkbox" v-model="selectAll" class="custom-control-input" @click="select" :disabled="formData.is_administrator">
+                                  <label for="selectAll" class="custom-control-label">{{ __('Assign all permissions to this user') }}</label>
                                 </div>
                                 @include('admin.shared.permissions')
                                 <div class="d-flex justify-content-end mt-3">
@@ -94,7 +96,7 @@
                         </div>
                         <div class="tab-pane" id="nav-tokens" role="tabpanel" aria-labelledby="nav-tokens-tab">
                             <div>
-                                <div class="d-flex justify-content-end mb-3">
+                                <div class="d-flex justify-content-end mb-3" v-if="canCreateTokens">
                                     <button type="button" aria-label="{{__('New Token')}}" class="btn btn-secondary" @click="generateToken">
                                         <i class="fas fa-plus"></i> {{__('Token')}}
                                     </button>
@@ -284,6 +286,7 @@
             focusErrors: 'errors',
             originalEmail: '',
             emailHasChanged: false,
+            canCreateTokens: @json($canCreateTokens),
           }
         },
         created() {

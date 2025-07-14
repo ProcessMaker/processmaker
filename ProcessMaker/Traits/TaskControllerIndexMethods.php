@@ -27,17 +27,6 @@ trait TaskControllerIndexMethods
 
         $query = ProcessRequestToken::exclude(['data']);
 
-        // If all_inbox is true and user has process requests, filter to only show the latest process
-        if ($request->has('all_inbox') && $request->input('all_inbox') === 'false') {
-            $latestProcessRequest = ProcessRequestToken::where('user_id', auth()->id())
-                ->orderBy('created_at', 'desc')
-                ->first();
-
-            if ($latestProcessRequest) {
-                $query->where('process_id', $latestProcessRequest->process_id);
-            }
-        }
-
         $query = $query->with([
             'processRequest' => function ($q) use ($includeData) {
                 if (!$includeData) {

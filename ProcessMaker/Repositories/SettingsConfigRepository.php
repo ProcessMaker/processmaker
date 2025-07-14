@@ -87,6 +87,7 @@ class SettingsConfigRepository extends Repository
         $setting = Setting::byKey($key);
 
         if ($setting !== null) {
+            Arr::set($this->items, $key, $setting->config);
             return $setting->config;
         }
 
