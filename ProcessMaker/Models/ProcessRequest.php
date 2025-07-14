@@ -1141,9 +1141,19 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      */
     public static function getActiveTokens(self $processRequest)
     {
-        return $processRequest->tokens()
+        return ProcessRequestToken::query()
             ->select('id')
             ->where('status', 'ACTIVE')
+            // where if collaborationId is not null
+            ->where(function ($query) use ($processRequest) {
+                if ($processRequest->process_collaboration_id) {
+                    $query->whereIn('process_request_id', function ($query) use ($processRequest) {
+                        $query->select('id')->from('process_requests')->where('process_collaboration_id', $processRequest->process_collaboration_id);
+                    });
+                } else {
+                    $query->where('process_request_id', $processRequest->id);
+                }
+            })
             ->pluck('id')
             ->toArray();
     }

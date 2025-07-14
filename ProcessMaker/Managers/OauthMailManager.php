@@ -7,7 +7,6 @@ use DateTime;
 use Google\Client as GoogleClient;
 use GuzzleHttp\Client;
 use Illuminate\Mail\MailManager;
-use Microsoft\Graph\Graph;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Packages\Connectors\Email\EmailConfig;
 

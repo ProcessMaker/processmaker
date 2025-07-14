@@ -85,12 +85,6 @@ export default (isStatusCompletedList = false) => {
           fixed_width: 200,
         });
       }
-      columns.push({
-        label: "",
-        field: "options",
-        sortable: false,
-        width: 180,
-      });
       
       return columns;
 };
