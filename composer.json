@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.15.3-RC1",
+    "version": "4.15.4+beta-1",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -35,13 +35,13 @@
         "lcobucci/jwt": "^4.2",
         "league/flysystem-aws-s3-v3": "^3.29",
         "mateusjunges/laravel-kafka": "^2.4",
-        "microsoft/microsoft-graph": "^2.8",
         "mittwald/vault-php": "^2.1",
         "moontoast/math": "^1.2",
         "mustache/mustache": "^2.14",
         "openai-php/client": "^0.10.3",
         "openai-php/laravel": "^0.10.2",
         "php-amqplib/php-amqplib": "^3.7",
+        "php-http/promise": "~1.2.0",
         "pion/laravel-chunk-upload": "^1.5",
         "predis/predis": "^2.3",
         "processmaker/docker-executor-lua": "^1.0",
@@ -105,7 +105,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "c9ab1bda",
+            "build": "e181dec8",
             "cicd-enabled": true,
             "custom": {
                 "package-ellucian-ethos": "1.19.3",
