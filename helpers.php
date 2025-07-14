@@ -5,6 +5,7 @@ use Laravel\Horizon\Repositories\RedisJobRepository;
 use ProcessMaker\Events\MarkArtisanCachesAsInvalid;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\SanitizeHelper;
+use ProcessMaker\Support\JsonOptimizer;
 
 if (!function_exists('job_pending')) {
     /**
@@ -294,5 +295,21 @@ if (!function_exists('validateURL')) {
                 }
             }
         };
+    }
+}
+
+if (!function_exists('json_optimize_decode')) {
+    /**
+     * Decodes a JSON using simdjson if available.
+     *
+     * @param string $json
+     * @param bool $assoc
+     * @param int $depth
+     * @param int $options
+     * @return mixed
+     */
+    function json_optimize_decode(string $json, bool $assoc = false, int $depth = 512, int $options = 0)
+    {
+        return JsonOptimizer::decode($json, $assoc, $depth, $options);
     }
 }
