@@ -279,7 +279,7 @@
                             if (error.response?.data?.message?.includes('Slack')) {
                                 ProcessMaker.alert(this.$t(error.response.data.message), 'danger');
                                 // Need to ensure the slack toggle is now disabled in the ui
-                                this.handleConnectedAccountToggle(DEFAULT_ACCOUNTS.connectorSlack, false);
+                                this.handleConnectedAccountToggle(DEFAULT_ACCOUNTS.connectorSlack, false, true);
                             }
                         });
 
@@ -288,7 +288,7 @@
                 checkEmailChange() {
                   this.emailHasChanged = this.formData.email !== this.originalEmail;
                 },
-                handleConnectedAccountToggle(account, $event) {
+                handleConnectedAccountToggle(account, $event, error) {
                   try {
                     let accounts = [];
                     if (this.formData.connected_accounts) {
@@ -320,7 +320,9 @@
                     JSON.parse(jsonString);
                     
                     this.formData.connected_accounts = jsonString;
-                    this.saveProfileChanges();
+                    if(!error) {
+                      this.saveProfileChanges();
+                    }
                   } catch (error) {
                     console.error('Error handling connected account toggle:', error);
                     ProcessMaker.alert(this.$t('Error updating connected account'), 'danger');
