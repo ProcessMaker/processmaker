@@ -6,11 +6,13 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Laravel\Passport\Passport;
+use ProcessMaker\Events\TenantResolved;
 use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Notification;
@@ -74,19 +76,22 @@ class AuthServiceProvider extends ServiceProvider
             return null;
         });
 
-        try {
-            // Cache the permissions for a day to improve performance
-            $permissions = Cache::remember('permissions', 86400, function () {
-                return Permission::pluck('name')->toArray();
-            });
-            foreach ($permissions as $permission) {
-                Gate::define($permission, function ($user) use ($permission) {
-                    return $user->hasPermission($permission);
+        Event::listen(TenantResolved::class, function ($tenant) {
+            \Log::info('**** Core TenantResolved', ['tenant' => $tenant]);
+            try {
+                // Cache the permissions for a day to improve performance
+                $permissions = Cache::remember('permissions', 86400, function () {
+                    return Permission::pluck('name')->toArray();
                 });
+                foreach ($permissions as $permission) {
+                    Gate::define($permission, function ($user) use ($permission) {
+                        return $user->hasPermission($permission);
+                    });
+                }
+            } catch (\Exception $e) {
+                Log::notice('Unable to register gates. Either no database connection or no permissions table exists.');
             }
-        } catch (\Exception $e) {
-            Log::notice('Unable to register gates. Either no database connection or no permissions table exists.');
-        }
+        });
 
         Auth::viaRequest('anon', function ($request) {
             if ($request->user()) {

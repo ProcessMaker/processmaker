@@ -20,12 +20,6 @@ class SessionStarted
      */
     public function handle($request, Closure $next)
     {
-        // If there is no tenant, and multitenancy is enabled (based on DB_DATABASE being null)
-        // then we should redirect to the landlord landing page
-        if (app('currentTenant') === null && config('database.connections.processmaker.database') === null) {
-            return response()->view('multitenancy.landlord-landing-page');
-        }
-
         if (Auth::check()) {
             event(new SessionStartedEvent(Auth::user()));
         }

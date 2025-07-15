@@ -24,6 +24,8 @@ use ProcessMaker\Console\Migration\ExtendedMigrateCommand;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Events\TenantResolved;
+use ProcessMaker\Exception\MultitenancyAccessedLandlord;
+use ProcessMaker\Exception\MultitenancyNoTenantFound;
 use ProcessMaker\Helpers\PmHash;
 use ProcessMaker\Http\Middleware\Etag\HandleEtag;
 use ProcessMaker\ImportExport\Extension;
@@ -275,8 +277,24 @@ class ProcessMakerServiceProvider extends ServiceProvider
             event(new TenantResolved($event->tenant));
         });
 
-        Facades\Event::listen(TenantNotFoundForRequestEvent::class, function () {
-            event(new TenantResolved(null));
+        Facades\Event::listen(TenantNotFoundForRequestEvent::class, function ($event) {
+            if (config('app.multitenancy') === false) {
+                // This is expected if multitenancy is disabled.
+                // Call the TenantResolved event with null to continue loading the app.
+                event(new TenantResolved(null));
+            } else {
+                // Multitenancy is enabled, but no tenant was found.
+                // Check if we are attempting to access the landlord directly (by comparing app.url)
+                // If so, show thelandlord landing page.
+                $requestHost = $event->request->getHost();
+                $appHost = parse_url(config('app.url'), PHP_URL_HOST);
+                if ($appHost === $requestHost) {
+                    throw new MultitenancyAccessedLandlord();
+                }
+
+                // Otherwise, show a 404 page.
+                throw new MultitenancyNoTenantFound();
+            }
         });
     }
 
@@ -503,7 +521,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
         if ($tenantId) {
             $tenant = Tenant::findOrFail($tenantId);
             $tenant->makeCurrent();
-        } else {
+        } elseif (config('app.multitenancy') === false) {
+            // This is expected if multitenancy is disabled.
+            // Call the TenantResolved event with null to continue loading the app.
             event(new TenantResolved(null));
         }
     }

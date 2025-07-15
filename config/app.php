@@ -290,4 +290,6 @@ return [
     'editor' => null,
 
     'json_optimization_decode' => env('JSON_OPTIMIZATION_DECODE', false),
+
+    'multitenancy' => env('MULTITENANCY', false),
 ];

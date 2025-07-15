@@ -5,7 +5,7 @@ namespace ProcessMaker\Events;
 use Spatie\Multitenancy\Contracts\IsTenant;
 
 /**
- * This gets run after we attempt to find a tenant, weather we find one or not.
+ * This gets run if we find a tenant, or, if multitenancy is disabled.
  *
  * It's used for code that must be run after we have a tenant.
  */
