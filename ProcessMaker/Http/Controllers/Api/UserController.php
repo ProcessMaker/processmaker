@@ -472,7 +472,14 @@ class UserController extends Controller
             $user->meta = null;
         }
 
-        $user->saveOrFail();
+        try {
+            $user->saveOrFail();
+        } catch (\Exception $e) {
+            return response([
+                'message' => $e->getMessage(),
+            ], 422);
+        }
+
         $changes = $user->getChanges();
 
         //Call new Event to store User Changes into LOG
