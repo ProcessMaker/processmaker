@@ -15,7 +15,7 @@ class SwitchTenant implements SwitchTenantTask
 {
     use UsesMultitenancyConfig;
 
-    public static $originalSettingsCachePrefix = null;
+    public static $originalConfig = null;
 
     /**
      * Make the given tenant current.
@@ -44,13 +44,21 @@ class SwitchTenant implements SwitchTenantTask
         // Any config that relies on the original value needs to be saved in a static variable.
         // Otherwise, it will use the last tenant's modified value. This mostly only affects
         // the worker queue jobs since it reuses the same process.
-        if (!self::$originalSettingsCachePrefix) {
-            self::$originalSettingsCachePrefix = config('cache.stores.cache_settings.prefix');
+
+        if (!self::$originalConfig) {
+            self::$originalConfig = [
+                'scheme' => parse_url(config('app.url'), PHP_URL_SCHEME),
+                'cache.stores.cache_settings.prefix' => config('cache.stores.cache_settings.prefix'),
+                'app.instance' => config('app.instance') ?? config('database.connections.landlord.database'),
+                'script-runner-microservice.callback' => config('script-runner-microservice.callback'),
+            ];
         }
 
         // We cant reload config here with (new LoadConfiguration())->bootstrap($app);
         // because it overrides dynamic configs set in packages (like docker-executor-php)
         // Instead, override each necessary config value on the fly.
+
+        $appUrlHost = parse_url(config('app.url'), PHP_URL_HOST);
         $newConfig = [
             'filesystems.disks.local.root' => storage_path('app'),
             'filesystems.disks.public.root' => storage_path('app/public'),
@@ -62,7 +70,9 @@ class SwitchTenant implements SwitchTenantTask
             'filesystems.disks.samlidp.root' => storage_path('samlidp'),
             'filesystems.disks.decision_tables.root' => storage_path('decision-tables'),
             'l5-swagger.defaults.paths.docs' => storage_path('api-docs'),
-            'cache.stores.cache_settings.prefix' =>  'tenant_id_' . $tenant->id . ':' . self::$originalSettingsCachePrefix,
+            'cache.stores.cache_settings.prefix' =>  'tenant_id_' . $tenant->id . ':' . self::$originalConfig['cache.stores.cache_settings.prefix'],
+            'app.instance' => self::$originalConfig['app.instance'] . '_' . $tenant->id,
+            'script-runner-microservice.callback' => str_replace($appUrlHost, $tenant->domain, self::$originalConfig['script-runner-microservice.callback']),
         ];
         config($newConfig);
 

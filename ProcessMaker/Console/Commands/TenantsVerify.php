@@ -63,6 +63,7 @@ class TenantsVerify extends Command
             'filesystems.disks.local.root' => storage_path('app'),
             'cache.prefix' => config('cache.prefix'),
             'app.url' => config('app.url'),
+            'script-runner-microservice.callback' => config('script-runner-microservice.callback'),
         ];
 
         // Display current values
