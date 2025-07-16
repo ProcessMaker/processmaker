@@ -59,8 +59,6 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        \Log::info('AuthServiceProvider boot');
-
         $this->registerPolicies();
 
         Passport::enablePasswordGrant();
@@ -76,29 +74,36 @@ class AuthServiceProvider extends ServiceProvider
             return null;
         });
 
-        Event::listen(TenantResolved::class, function ($tenant) {
-            \Log::info('**** Core TenantResolved', ['tenant' => $tenant]);
-            try {
-                // Cache the permissions for a day to improve performance
-                $permissions = Cache::remember('permissions', 86400, function () {
-                    return Permission::pluck('name')->toArray();
-                });
-                foreach ($permissions as $permission) {
-                    Gate::define($permission, function ($user) use ($permission) {
-                        return $user->hasPermission($permission);
-                    });
-                }
-            } catch (\Exception $e) {
-                Log::notice('Unable to register gates. Either no database connection or no permissions table exists.');
-            }
-        });
-
         Auth::viaRequest('anon', function ($request) {
             if ($request->user()) {
                 return $request->user();
             }
 
             return app(AnonymousUser::class);
+        });
+    }
+
+    public function defineGates()
+    {
+        try {
+            // Cache the permissions for a day to improve performance
+            $permissions = Cache::remember('permissions', 86400, function () {
+                return Permission::pluck('name')->toArray();
+            });
+            foreach ($permissions as $permission) {
+                Gate::define($permission, function ($user) use ($permission) {
+                    return $user->hasPermission($permission);
+                });
+            }
+        } catch (\Exception $e) {
+            Log::notice('Unable to register gates. Either no database connection or no permissions table exists.');
+        }
+    }
+
+    public function register()
+    {
+        Event::listen(TenantResolved::class, function ($tenant) {
+            $this->defineGates();
         });
     }
 }
