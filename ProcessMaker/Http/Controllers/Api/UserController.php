@@ -475,9 +475,15 @@ class UserController extends Controller
         try {
             $user->saveOrFail();
         } catch (\Exception $e) {
-            return response([
-                'message' => $e->getMessage(),
-            ], 422);
+            $slackExceptionClass = 'ProcessMaker\Packages\Connectors\Slack\Exceptions\SlackConfigurationException';
+
+            if (class_exists($slackExceptionClass) && $e instanceof $slackExceptionClass) {
+                return response([
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+
+            throw $e;
         }
 
         $changes = $user->getChanges();
