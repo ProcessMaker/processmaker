@@ -6,11 +6,13 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Laravel\Passport\Passport;
+use ProcessMaker\Events\TenantResolved;
 use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Notification;
@@ -57,8 +59,6 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        \Log::info('AuthServiceProvider boot');
-
         $this->registerPolicies();
 
         Passport::enablePasswordGrant();
@@ -74,6 +74,17 @@ class AuthServiceProvider extends ServiceProvider
             return null;
         });
 
+        Auth::viaRequest('anon', function ($request) {
+            if ($request->user()) {
+                return $request->user();
+            }
+
+            return app(AnonymousUser::class);
+        });
+    }
+
+    public function defineGates()
+    {
         try {
             // Cache the permissions for a day to improve performance
             $permissions = Cache::remember('permissions', 86400, function () {
@@ -87,13 +98,12 @@ class AuthServiceProvider extends ServiceProvider
         } catch (\Exception $e) {
             Log::notice('Unable to register gates. Either no database connection or no permissions table exists.');
         }
+    }
 
-        Auth::viaRequest('anon', function ($request) {
-            if ($request->user()) {
-                return $request->user();
-            }
-
-            return app(AnonymousUser::class);
+    public function register()
+    {
+        Event::listen(TenantResolved::class, function ($tenant) {
+            $this->defineGates();
         });
     }
 }

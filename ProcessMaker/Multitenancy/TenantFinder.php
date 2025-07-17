@@ -11,15 +11,25 @@ class TenantFinder extends DomainTenantFinder
 {
     public function findForRequest(Request $request): ?IsTenant
     {
+        $tenant = null;
+        $message = null;
+
         /**
          * This could be a console command disguised as an http request (APP_RUNNING_IN_CONSOLE=false)
          * Check if we have a TENANT env variable set.
          * See ProcessMakerServiceProvider::setCurrentTenantForConsoleCommands() for non-disguised console commands
          */
         if (Env::get('TENANT')) {
-            return app(IsTenant::class)::findOrFail(Env::get('TENANT'));
+            $tenant = app(IsTenant::class)::findOrFail(Env::get('TENANT'));
         }
 
-        return parent::findForRequest($request);
+        if (!$tenant) {
+            try {
+                $tenant = parent::findForRequest($request);
+            } catch (\Illuminate\Database\QueryException $_e) {
+            }
+        }
+
+        return $tenant;
     }
 }

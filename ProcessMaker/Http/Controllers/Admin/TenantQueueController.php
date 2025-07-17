@@ -23,7 +23,9 @@ class TenantQueueController extends Controller
         $enabled = config('queue.tenant_tracking_enabled', false);
 
         if (!$enabled) {
-            abort(404, 'Tenant queue tracking is disabled');
+            if (!app()->runningInConsole()) {
+                abort(404, 'Tenant queue tracking is disabled');
+            }
         }
     }
 

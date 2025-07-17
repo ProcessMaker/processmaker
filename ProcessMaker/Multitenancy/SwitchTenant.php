@@ -2,10 +2,11 @@
 
 namespace ProcessMaker\Multitenancy;
 
+use Illuminate\Broadcasting\BroadcastManager;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
-use PDO;
+use ProcessMaker\Multitenancy\Broadcasting\TenantAwareBroadcastManager;
 use Spatie\Multitenancy\Concerns\UsesMultitenancyConfig;
 use Spatie\Multitenancy\Contracts\IsTenant;
 use Spatie\Multitenancy\Tasks\SwitchTenantTask;
@@ -13,6 +14,8 @@ use Spatie\Multitenancy\Tasks\SwitchTenantTask;
 class SwitchTenant implements SwitchTenantTask
 {
     use UsesMultitenancyConfig;
+
+    public static $originalConfig = null;
 
     /**
      * Make the given tenant current.
@@ -22,7 +25,7 @@ class SwitchTenant implements SwitchTenantTask
      */
     public function makeCurrent(IsTenant $tenant): void
     {
-        \Log::info('SwitchTenant starting with tenant: ' . $tenant->id, ['domain' => request()->getHost()]);
+        \Log::debug('SwitchTenant: ' . $tenant->id, ['domain' => request()->getHost()]);
 
         $this->setTenantDatabaseConnection($tenant);
 
@@ -38,20 +41,20 @@ class SwitchTenant implements SwitchTenantTask
             mkdir($tenantStoragePath, 0755, true);
         }
 
-        // Set the cached config path
-        // Not needed for now because we are setting the config manually below
+        // Any config that relies on the original value needs to be saved in a static variable.
+        // Otherwise, it will use the last tenant's modified value. This mostly only affects
+        // the worker queue jobs since it reuses the same process.
+        self::$originalConfig = self::$originalConfig ?? [];
+        self::$originalConfig[$tenant->id] = self::$originalConfig[$tenant->id] ?? [
+            'host' => parse_url(config('app.url'), PHP_URL_HOST),
+            'cache.stores.cache_settings.prefix' => config('cache.stores.cache_settings.prefix'),
+            'app.instance' => config('app.instance') ?? config('database.connections.landlord.database'),
+            'script-runner-microservice.callback' => config('script-runner-microservice.callback'),
+        ];
 
-        // $tennantCacheFolder = base_path('bootstrap/cache/tenant_' . $tenant->id);
-        // if (!file_exists($tennantCacheFolder)) {
-        //     mkdir($tennantCacheFolder, 0755, true);
-        // }
-
-        // putenv('APP_CONFIG_CACHE=' . $tennantCacheFolder . '/config.php');
-
-        // We cant reload config here because it overrides dynamic configs set in packages (like docker-executor-php)
-        // (new LoadConfiguration())->bootstrap($app);
-
-        // Instead, set each manually
+        // We cant reload config here with (new LoadConfiguration())->bootstrap($app);
+        // because it overrides dynamic configs set in packages (like docker-executor-php)
+        // Instead, override each necessary config value on the fly.
         $newConfig = [
             'filesystems.disks.local.root' => storage_path('app'),
             'filesystems.disks.public.root' => storage_path('app/public'),
@@ -62,13 +65,14 @@ class SwitchTenant implements SwitchTenantTask
             'filesystems.disks.tmp.root' => storage_path('app/public/tmp'),
             'filesystems.disks.samlidp.root' => storage_path('samlidp'),
             'filesystems.disks.decision_tables.root' => storage_path('decision-tables'),
-
             'filesystems.disks.tenant_translations' => [
                 'driver' => 'local',
                 'root' => storage_path('lang'),
             ],
-
             'l5-swagger.defaults.paths.docs' => storage_path('api-docs'),
+            'cache.stores.cache_settings.prefix' =>  'tenant_id_' . $tenant->id . ':' . self::$originalConfig[$tenant->id]['cache.stores.cache_settings.prefix'],
+            'app.instance' => self::$originalConfig[$tenant->id]['app.instance'] . '_' . $tenant->id,
+            'script-runner-microservice.callback' => str_replace(self::$originalConfig[$tenant->id]['host'], $tenant->domain, self::$originalConfig[$tenant->id]['script-runner-microservice.callback']),
         ];
         config($newConfig);
 
@@ -80,6 +84,16 @@ class SwitchTenant implements SwitchTenantTask
             $config['app.key'] = Crypt::decryptString($config['app.key']);
         }
         config($config);
+
+        // Handle Broadcasting
+
+        // First, manually resolve the deferred provider so that we can rebind it below.
+        $app->make(BroadcastManager::class);
+
+        // Then, rebind the BroadcastManager to our custom implementation that prefixes the channel names with the tenant id.
+        $app->singleton(BroadcastManager::class, function ($app) {
+            return new TenantAwareBroadcastManager($app);
+        });
     }
 
     /**

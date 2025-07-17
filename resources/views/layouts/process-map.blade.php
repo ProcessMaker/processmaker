@@ -10,6 +10,7 @@
   <meta name="is-prod" content="{{ config('app.env') == 'production' ? 'true' : 'false' }}">
   <meta name="app-url" content="{{ config('app.url') }}">
   <meta name="i18n-mdate" content='{!! json_encode(ProcessMaker\i18nHelper::mdates()) !!}'>
+  @include('layouts.common-meta')
   @if (Auth::user())
     <meta name="user-id" content="{{ Auth::user()->id }}">
     <meta name="datetime-format" content="{{ Auth::user()->datetime_format ?: config('app.dateformat') }}">

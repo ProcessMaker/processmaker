@@ -98,11 +98,6 @@ return [
      * resolve JobDecorator to getAction() like so: JobDecorator::class => 'getAction'
      */
     'queueable_to_job' => [
-        SendQueuedMailable::class => 'mailable',
-        SendQueuedNotifications::class => 'notification',
-        CallQueuedClosure::class => 'closure',
-        CallQueuedListener::class => 'class',
-        BroadcastEvent::class => 'event',
     ],
 
     /*

@@ -5,6 +5,7 @@ use Laravel\Horizon\Repositories\RedisJobRepository;
 use ProcessMaker\Events\MarkArtisanCachesAsInvalid;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\SanitizeHelper;
+use ProcessMaker\Support\JsonOptimizer;
 
 if (!function_exists('job_pending')) {
     /**
@@ -297,35 +298,18 @@ if (!function_exists('validateURL')) {
     }
 }
 
-if (!function_exists('tenant_css_path')) {
+if (!function_exists('json_optimize_decode')) {
     /**
-     * Get the tenant-specific CSS path if available, otherwise return the default path
+     * Decodes a JSON using simdjson if available.
      *
-     * @param string $path The CSS path relative to public/css
-     * @return string The full CSS path
+     * @param string $json
+     * @param bool $assoc
+     * @param int $depth
+     * @param int $options
+     * @return mixed
      */
-    function tenant_css_path($path)
+    function json_optimize_decode(string $json, bool $assoc = false, int $depth = 512, int $options = 0)
     {
-        $tenant = app('currentTenant');
-        if ($tenant) {
-            $files = [
-                'app.css' => 'app_tenant_' . $tenant->id . '.css',
-                'sidebar.css' => 'sidebar_tenant_' . $tenant->id . '.css',
-            ];
-
-            // Check for tenant-specific CSS file in mix manifest first
-            $manifestPath = public_path('mix-manifest.json');
-            if (file_exists($manifestPath)) {
-                $manifest = json_decode(file_get_contents($manifestPath), true);
-                $tenantCssKey = '/css/' . $files[$path];
-
-                if (isset($manifest[$tenantCssKey])) {
-                    return 'css/' . $files[$path];
-                }
-            }
-        }
-
-        // Fall back to default path
-        return 'css/' . basename($path);
+        return JsonOptimizer::decode($json, $assoc, $depth, $options);
     }
 }

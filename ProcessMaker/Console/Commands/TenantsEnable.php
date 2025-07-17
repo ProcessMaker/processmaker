@@ -114,6 +114,14 @@ class TenantsEnable extends Command
             return 1;
         }
 
+        // Remove temp storage folder
+        exec("rm -rf " . $tempStorageFolder, $output, $returnVar);
+        if ($returnVar !== 0) {
+            $this->error('Failed to remove temp storage folder');
+            $this->error(implode("\n", $output));
+        }
+        $this->info(implode("\n", $output));
+
         $this->info('Tenant support enabled successfully and migrated to a new tenant');
     }
 
@@ -122,9 +130,9 @@ class TenantsEnable extends Command
         $envFile = base_path('.env');
         $env = file_get_contents($envFile);
 
-        if (preg_match('/DB_DATABASE=.*/', $env)) {
+        if (preg_match('/^DB_DATABASE=.*/m', $env)) {
             // Update existing DB_DATABASE line
-            $env = preg_replace('/DB_DATABASE=.*/', 'DB_DATABASE=' . $databaseName, $env);
+            $env = preg_replace('/^DB_DATABASE=.*/m', 'DB_DATABASE=' . $databaseName, $env);
         } else {
             // Add DB_DATABASE to the end of the file
             $env .= "\nDB_DATABASE=" . $databaseName;
