@@ -81,8 +81,15 @@ class SwitchTenant implements SwitchTenantTask
         }
         config($config);
 
-        // Prefix broadcasts with tenant id
-        $app->singleton(BroadcastManager::class, fn ($app) => new TenantAwareBroadcastManager($app));
+        // Handle Broadcasting
+
+        // First, manually resolve the deferred provider so that we can rebind it below.
+        $app->make(BroadcastManager::class);
+
+        // Then, rebind the BroadcastManager to our custom implementation that prefixes the channel names with the tenant id.
+        $app->singleton(BroadcastManager::class, function ($app) {
+            return new TenantAwareBroadcastManager($app);
+        });
     }
 
     /**
