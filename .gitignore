@@ -49,4 +49,5 @@ resources/sass/tenant_*
 resources/sass/_variables_bk.scss
 devhub/pm-font/dist
 test-db-snapshot.db
+snapshot_*.db
 storage/transitions

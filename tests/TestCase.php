@@ -3,6 +3,7 @@
 namespace Tests;
 
 use ArrayAccess;
+use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
@@ -19,6 +20,7 @@ use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Jobs\RefreshArtisanCaches;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
+use ProcessMaker\Providers\AuthServiceProvider;
 use Tests\TestSeeder;
 
 abstract class TestCase extends BaseTestCase
@@ -54,7 +56,7 @@ abstract class TestCase extends BaseTestCase
 
         if (self::$currentNonTransactionalTest && self::$currentNonTransactionalTest !== $class) {
             // The last test to run was non-transactional, so we need to refresh the database
-            $this->restoreDatabaseFromSnapshot();
+            $this->restoreDatabaseSnapshot('non-transactional-test');
             self::$currentNonTransactionalTest = null;
         }
 
@@ -89,8 +91,26 @@ abstract class TestCase extends BaseTestCase
         }
 
         if (!self::$databaseSnapshotFile) {
-            self::$databaseSnapshotFile = $this->takeDatabaseSnapshot();
+            self::$databaseSnapshotFile = $this->takeDatabaseSnapshot('non-transactional-test');
         }
+
+        if ($this->withPermissions === true) {
+            $this->initializePermissions();
+        }
+    }
+
+    public function initializePermissions($runSeeder = true)
+    {
+        if ($runSeeder) {
+            //Run the permission seeder
+            (new PermissionSeeder)->run();
+        }
+
+        // Reboot our AuthServiceProvider. This is necessary so that it can
+        // pick up the new permissions and setup gates for each of them.
+        $asp = new AuthServiceProvider(app());
+        $asp->boot();
+        $asp->defineGates();
     }
 
     /**
@@ -217,11 +237,13 @@ abstract class TestCase extends BaseTestCase
         return (bool) env('POPULATE_DATABASE', true);
     }
 
-    private function takeDatabaseSnapshot($filename = 'test-db-snapshot.db')
+    public function takeDatabaseSnapshot($id = null)
     {
         if (!$this->populateDatabase()) {
             return;
         }
+
+        $filename = 'snapshot_' . $id . '.db';
 
         $snapshotFile = base_path($filename);
         $command = 'mysqldump ' . $this->mysqlConnectionString();
@@ -231,11 +253,17 @@ abstract class TestCase extends BaseTestCase
             dd("Failed to take database snapshot: $command");
         }
 
-        return $snapshotFile;
+        return $id;
     }
 
-    public function restoreDatabaseFromSnapshot($filename = 'test-db-snapshot.db')
+    public function restoreDatabaseSnapshot($id)
     {
+        $filename = 'snapshot_' . $id . '.db';
+
+        if (!file_exists(base_path($filename))) {
+            throw new \Exception("Database snapshot not found: $filename");
+        }
+
         if (!$this->populateDatabase()) {
             return;
         }
