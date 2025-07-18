@@ -6,6 +6,7 @@ use Database\Seeders\PermissionSeeder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use PHPUnit\Framework\TestStatus\Failure;
+use ProcessMaker\Events\TenantResolved;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\User;
 use ProcessMaker\Providers\AuthServiceProvider;
@@ -35,10 +36,13 @@ trait RequestHelper
             // pick up the new permissions and setup gates for each of them.
             $asp = new AuthServiceProvider(app());
             $asp->boot();
+            $asp->defineGates();
         }
 
         if (method_exists($this, 'withUserSetup')) {
             $this->withUserSetup();
+            $asp = new AuthServiceProvider(app());
+            $asp->defineGates();
         }
     }
 

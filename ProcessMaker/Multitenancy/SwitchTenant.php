@@ -65,6 +65,10 @@ class SwitchTenant implements SwitchTenantTask
             'filesystems.disks.tmp.root' => storage_path('app/public/tmp'),
             'filesystems.disks.samlidp.root' => storage_path('samlidp'),
             'filesystems.disks.decision_tables.root' => storage_path('decision-tables'),
+            'filesystems.disks.tenant_translations' => [
+                'driver' => 'local',
+                'root' => storage_path('lang'),
+            ],
             'l5-swagger.defaults.paths.docs' => storage_path('api-docs'),
             'cache.stores.cache_settings.prefix' =>  'tenant_id_' . $tenant->id . ':' . self::$originalConfig[$tenant->id]['cache.stores.cache_settings.prefix'],
             'app.instance' => self::$originalConfig[$tenant->id]['app.instance'] . '_' . $tenant->id,
