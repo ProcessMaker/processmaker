@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Shared;
 
-use Database\Seeders\PermissionSeeder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use PHPUnit\Framework\TestStatus\Failure;
@@ -28,21 +27,9 @@ trait RequestHelper
             'is_administrator' => true,
         ]);
 
-        if ($this->withPermissions === true) {
-            //Run the permission seeder
-            (new PermissionSeeder)->run();
-
-            // Reboot our AuthServiceProvider. This is necessary so that it can
-            // pick up the new permissions and setup gates for each of them.
-            $asp = new AuthServiceProvider(app());
-            $asp->boot();
-            $asp->defineGates();
-        }
-
         if (method_exists($this, 'withUserSetup')) {
             $this->withUserSetup();
-            $asp = new AuthServiceProvider(app());
-            $asp->defineGates();
+            $this->initializePermissions(false);
         }
     }
 
