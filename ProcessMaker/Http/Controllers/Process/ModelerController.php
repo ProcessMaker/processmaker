@@ -20,6 +20,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Package\Cdata\Http\Controllers\Api\CdataController;
 use ProcessMaker\Package\PackagePmBlocks\Http\Controllers\Api\PmBlockController;
 use ProcessMaker\PackageHelper;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\ProcessMapTrait;
 
@@ -125,6 +126,8 @@ class ModelerController extends Controller
             $process->load('alternativeInfo');
         }
 
+        $defaultEmailNotification = $this->getDefaultEmailNotification();
+
         return [
             'process' => $process,
             'manager' => $manager,
@@ -147,6 +150,33 @@ class ModelerController extends Controller
             'alternative' => $alternative,
             'abPublish' => PackageHelper::isPackageInstalled('ProcessMaker\Package\PackageABTesting\PackageServiceProvider'),
             'launchpad' => ProcessLaunchpad::getLaunchpad(true, $process->id),
+            'defaultEmailNotification' => $defaultEmailNotification,
+        ];
+    }
+
+    /**
+     * Get the default email notification configuration for tasks
+     * 
+     * Returns an array containing the default email notification settings including:
+     * - subject: The default email subject template
+     * - type: The notification type (screen)
+     * - screenRef: The ID of the default email notification screen
+     * - toRecipients: Array of default recipients (assigned user)
+     * @return array{screenRef: mixed, subject: string, toRecipients: array, type: string}
+     */
+    private function getDefaultEmailNotification(): array
+    {
+           $screen = Screen::getScreenByKey('default-email-task-notification');        
+           return [
+            'subject' => "RE: {{_user.fullName}} assigned you in {{taskName}}",
+            'type' => "screen",
+            'screenRef' => $screen->id,
+            'toRecipients' => [
+                [
+                    'type' => "assignedUser",
+                    'value' => null
+                ]
+            ],
         ];
     }
 
