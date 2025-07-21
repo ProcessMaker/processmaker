@@ -118,7 +118,7 @@
             connectorSlack: {
                 name: 'Slack',
                 description: 'Send ProcessMaker notifications to Slack',
-                icon: 'https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg',
+                icon: 'slack-color-logo',
                 enabled: false,
                 channel_id: null,
                 ui_options: {
@@ -327,6 +327,9 @@
                     console.error('Error handling connected account toggle:', error);
                     ProcessMaker.alert(this.$t('Error updating connected account'), 'danger');
                   }
+                },
+                formatIcon(icon) {
+                  return `/img/connected-account-images/${icon}.svg`;
                 }
             },
             computed: {

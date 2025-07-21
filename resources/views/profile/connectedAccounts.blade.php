@@ -5,7 +5,7 @@
     <ul v-else class="accounts-list w-100 pl-0">
       <li class="accounts-list-item d-flex align-items-start py-3 mt-3" v-for="(account, index) in accounts" :key="index" >
         <div class="d-flex align-items-start mr-3">
-          <img :src="account.icon" :alt="account.name + 'icon'" width="45px"/>
+          <img :src="formatIcon(account.icon)" :alt="account.name + 'icon'" width="45px"/>
         </div>
         <div class="d-flex flex-column flex-grow-1">
           <div class="d-flex align-items-center justify-content-between mb-2">
