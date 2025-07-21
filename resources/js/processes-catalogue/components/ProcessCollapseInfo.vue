@@ -172,6 +172,9 @@ export default {
       this.showProcessInfo = !this.showProcessInfo;
       this.$emit("toggle-info");
     },
+    setShowProcessInfo(show) {
+      this.showProcessInfo = show;
+    },
     updateMyTasksColumns(columns) {
       this.$emit("updateMyTasksColumns", columns);
     },
