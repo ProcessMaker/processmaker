@@ -1,6 +1,7 @@
 <template>
   <div class="tw-relative tw-h-full">
     <process-collapse-info
+      ref="processCollapseInfo"
       :process="process"
       :current-user-id="currentUserId"
       :ellipsis-permission="ellipsisPermission"
@@ -140,6 +141,7 @@ export default {
     },
     closeProcessInfo() {
       this.showProcessInfo = false;
+      this.$refs.processCollapseInfo.setShowProcessInfo(false);
     },
     showFullCarousel() {
       this.fullCarousel = true;
