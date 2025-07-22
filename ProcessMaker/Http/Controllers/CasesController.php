@@ -85,10 +85,18 @@ class CasesController extends Controller
         } else {
             $request->summary_screen = $request->getSummaryScreen();
         }
-        // Stage data
-        $currentStages = $this->formatCurrentStage($request->last_stage_id, $request->last_stage_name);
-        $allStages = $this->getStagesByProcessId($request->process_id);
-        $progressStage = StageProgressCalculator::getProgressStage($allStages, $currentStages);
+        // Stage information
+        if ($request->status === 'COMPLETED') {
+            $currentStages = [
+                'stage_id' => 0,
+                'stage_name' => __('Completed'),
+            ];
+            $progressStage = 100.0; // 100% completed
+        } else {
+            $currentStages = $this->formatCurrentStage($request->last_stage_id, $request->last_stage_name, $request->status);
+            $allStages = $this->getStagesByProcessId($request->process_id);
+            $progressStage = StageProgressCalculator::getProgressStage($allStages, $currentStages);
+        }
         // Load the screen configured in "Request Detail Screen"
         $request->request_detail_screen = Screen::find($request->process->request_detail_screen_id);
         // The user canCancel if has the processPermission and the case has only one request
