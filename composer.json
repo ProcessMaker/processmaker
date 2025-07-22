@@ -14,16 +14,16 @@
         "aws/aws-sdk-php": "3.337.3",
         "babenkoivan/elastic-scout-driver": "^4.0",
         "bacon/bacon-qr-code": "^2.0",
+        "brick/math": "^0.12.3",
         "codegreencreative/laravel-samlidp": "^5.2",
         "composer/semver": "^3.4",
         "darkaonline/l5-swagger": "^8.6",
         "doctrine/dbal": "^4.2",
-        "fakerphp/faker": "^1.24",
         "google/apiclient": "^2.18",
         "guzzlehttp/guzzle": "^7.9",
         "igaster/laravel-theme": "^2.0",
         "jenssegers/agent": "^2.6",
-        "laravel/framework": "^11.0",
+        "laravel/framework": "^11.45",
         "laravel/horizon": "^5.30",
         "laravel/pail": "^1.2",
         "laravel/passport": "^12.3",
@@ -35,16 +35,13 @@
         "lcobucci/jwt": "^4.2",
         "league/flysystem-aws-s3-v3": "^3.29",
         "mateusjunges/laravel-kafka": "^2.4",
-        "microsoft/microsoft-graph": "^2.8",
         "mittwald/vault-php": "^2.1",
-        "moontoast/math": "^1.2",
         "mustache/mustache": "^2.14",
         "openai-php/client": "^0.10.3",
         "openai-php/laravel": "^0.10.2",
         "php-amqplib/php-amqplib": "^3.7",
         "pion/laravel-chunk-upload": "^1.5",
         "predis/predis": "^2.3",
-        "processmaker/docker-executor-lua": "^1.0",
         "processmaker/docker-executor-node": "1.1.0",
         "processmaker/docker-executor-php": "1.4.0",
         "processmaker/laravel-i18next": "dev-master",
@@ -68,6 +65,7 @@
         "whichbrowser/parser": "^2.1"
     },
     "require-dev": {
+        "fakerphp/faker": "^1.24",
         "filp/whoops": "^2.16",
         "laravel/dusk": "^8.2",
         "laravel/homestead": "^15.0",
@@ -101,6 +99,9 @@
                 "laravel/passport"
             ]
         },
+        "aws/aws-sdk-php": [
+            "S3"
+        ],
         "google/apiclient-services": [
             "Gmail"
         ],
@@ -204,7 +205,10 @@
             "@php artisan package:discover",
             "@php artisan processmaker:install-pre-commit-hooks"
         ],
-        "pre-autoload-dump": "Google\\Task\\Composer::cleanup",
+        "pre-autoload-dump": [
+            "Google\\Task\\Composer::cleanup",
+            "Aws\\Script\\Composer\\Composer::removeUnusedServices"
+        ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
             "@php artisan vendor:publish --provider=\"OpenAI\\Laravel\\ServiceProvider\""
