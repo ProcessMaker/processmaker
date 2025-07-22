@@ -179,6 +179,7 @@
                 "package-webentry": "2.29.0",
                 "package-api-testing": "1.3.1",
                 "package-variable-finder": "1.0.3",
+                "package-email-start-event": "1.0.0",
                 "packages": "^0"
             },
             "docker-executors": {
