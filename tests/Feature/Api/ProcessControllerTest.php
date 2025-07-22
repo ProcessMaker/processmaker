@@ -308,12 +308,12 @@ class ProcessControllerTest extends TestCase
             'status' => 'ACTIVE',
         ]);
 
-        // Create 20 requests in "In Progress" stage
+        // Create 18 requests in "In Progress" stage
         ProcessRequest::factory()->count(18)->create([
             'process_id' => $process->id,
             'status' => 'ACTIVE',
         ]);
-        // Create 10 requests in "Completed" stage
+        // Create 12 requests in "Completed" stage
         ProcessRequest::factory()->count(12)->create([
             'process_id' => $process->id,
             'status' => 'COMPLETED',
@@ -352,7 +352,7 @@ class ProcessControllerTest extends TestCase
         // Verify "In Progress" stage
         $inProgress = collect($data['stages'])->firstWhere('stage_name', 'In progress');
         $this->assertNotNull($inProgress);
-        $this->assertEquals(0, $inProgress['stage_id']);
+        $this->assertGreaterThan(0, $inProgress['stage_id']);
         $this->assertEquals(60, $inProgress['percentage']);
         $this->assertEquals('60%', $inProgress['percentage_format']);
         $this->assertEquals(0, $inProgress['agregation_sum']);
@@ -361,7 +361,7 @@ class ProcessControllerTest extends TestCase
         // Verify "Completed" stage
         $completed = collect($data['stages'])->firstWhere('stage_name', 'Completed');
         $this->assertNotNull($completed);
-        $this->assertEquals(0, $completed['stage_id']);
+        $this->assertGreaterThan(0, $completed['stage_id']);
         $this->assertEquals(40, $completed['percentage']);
         $this->assertEquals('40%', $completed['percentage_format']);
         $this->assertEquals(0, $completed['agregation_sum']);

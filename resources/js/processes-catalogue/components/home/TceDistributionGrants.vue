@@ -105,6 +105,33 @@ const hookStages = async () => {
 };
 
 const buildAdvancedFilters = (stage) => {
+  //TODO Use case : when there arent any stages, the stages by default are in progress (id:in_progress) and completed (id:completed)
+  if (stage.id === "in_progress") {
+    advancedFilter.value = [
+      {
+        subject: {
+          type: "Status",
+        },
+        operator: "=",
+        value: "In Progress",
+      },
+    ];
+    return;
+  }
+
+  if (stage.id === "completed") {
+    advancedFilter.value = [
+      {
+        subject: {
+          type: "Status",
+        },
+        operator: "=",
+        value: "Completed",
+      },
+    ];
+    return;
+  }
+
   advancedFilter.value = [{
     subject: {
       type: "Stage",
