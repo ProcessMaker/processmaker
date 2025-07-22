@@ -3,10 +3,13 @@
 namespace ProcessMaker\Multitenancy;
 
 use Illuminate\Broadcasting\BroadcastManager;
+use Illuminate\Bus\Dispatcher;
+use Illuminate\Contracts\Queue\Factory as QueueFactoryContract;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\Multitenancy\Broadcasting\TenantAwareBroadcastManager;
+use ProcessMaker\Multitenancy\TenantAwareDispatcher;
 use Spatie\Multitenancy\Concerns\UsesMultitenancyConfig;
 use Spatie\Multitenancy\Contracts\IsTenant;
 use Spatie\Multitenancy\Tasks\SwitchTenantTask;
@@ -85,14 +88,16 @@ class SwitchTenant implements SwitchTenantTask
         }
         config($config);
 
-        // Handle Broadcasting
+        // Extend BroadcastManager to our custom implementation that prefixes the channel names with the tenant id.
+        $app->extend(BroadcastManager::class, function ($manager, $app) use ($tenant) {
+            \Log::info('RESOLVING New BroadcastManager');
 
-        // First, manually resolve the deferred provider so that we can rebind it below.
-        $app->make(BroadcastManager::class);
+            return new TenantAwareBroadcastManager($app, $tenant->id);
+        });
 
-        // Then, rebind the BroadcastManager to our custom implementation that prefixes the channel names with the tenant id.
-        $app->singleton(BroadcastManager::class, function ($app) {
-            return new TenantAwareBroadcastManager($app);
+        // Extend Dispatcher to our custom implementation that prefixes the queue names with the tenant id.
+        $app->extend(Dispatcher::class, function ($dispatcher, $app) use ($tenant) {
+            return new TenantAwareDispatcher($app, $dispatcher, $tenant->id);
         });
     }
 

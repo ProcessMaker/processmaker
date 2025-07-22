@@ -12,7 +12,7 @@ class TenantStorageLink extends Command
      *
      * @var string
      */
-    protected $signature = 'tenant:storage-link';
+    protected $signature = 'tenants:storage-link';
 
     /**
      * The console command description.
