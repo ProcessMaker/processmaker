@@ -1888,7 +1888,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             ],
             'stages' => [
                 [
-                    'stage_id' => 0,
+                    'stage_id' => 'in_progress',
                     'stage_name' => 'In progress',
                     'percentage' => $activePercentage,
                     'percentage_format' => $activePercentage . '%',
@@ -1896,7 +1896,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                     'agregation_count' => $activeCount,
                 ],
                 [
-                    'stage_id' => 0,
+                    'stage_id' => 'completed',
                     'stage_name' => 'Completed',
                     'percentage' => $completedPercentage,
                     'percentage_format' => $completedPercentage . '%',
