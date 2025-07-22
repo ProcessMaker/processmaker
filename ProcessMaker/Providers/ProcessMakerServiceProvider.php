@@ -88,6 +88,46 @@ class ProcessMakerServiceProvider extends ServiceProvider
         Route::pushMiddlewareToGroup('api', HandleEtag::class);
         // Hook after service providers boot
         self::$bootTime = (microtime(true) - self::$bootStart) * 1000; // Convert to milliseconds
+
+        // Only run this for console commands so we dont query the Tenants database for each request.
+        // This sets up individual supervisors for each tenant so that one tenant does not block
+        // the queue for another tenant. This must be done here instead of SwitchTenant.php because
+        // there is a single horizon instance for all tenants.
+        if ($this->app->runningInConsole() && config('app.multitenancy')) {
+            $tenantIds = Tenant::all()->pluck('id')->toArray();
+            $config = config('horizon.environments');
+            $config = $this->addTenantSupervisors($config, $tenantIds);
+            config(['horizon.environments' => $config]);
+        }
+    }
+
+    private function addTenantSupervisors(array $config, array $tenantIds): array
+    {
+        foreach ($config as $env => &$supervisors) {
+            $newSupervisors = [];
+
+            foreach ($supervisors as $supervisorName => $settings) {
+                foreach ($tenantIds as $tenantId) {
+                    $tenantSupervisorName = "tenant-{$tenantId}-{$supervisorName}";
+
+                    // Copy original settings
+                    $tenantSettings = $settings;
+
+                    // Prepend tenant ID to each queue
+                    if (isset($tenantSettings['queue']) && is_array($tenantSettings['queue'])) {
+                        $tenantSettings['queue'] = array_map(function ($queue) use ($tenantId) {
+                            return "tenant-{$tenantId}-{$queue}";
+                        }, $tenantSettings['queue']);
+                    }
+
+                    $newSupervisors[$tenantSupervisorName] = $tenantSettings;
+                }
+            }
+
+            $supervisors = $newSupervisors;
+        }
+
+        return $config;
     }
 
     public function register(): void

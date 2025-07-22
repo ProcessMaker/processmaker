@@ -6,18 +6,16 @@ use Illuminate\Broadcasting\BroadcastManager;
 
 class TenantAwareBroadcastManager extends BroadcastManager
 {
-    public function createPusherDriver($config)
+    private int $tenantId;
+
+    public function __construct($app, int $tenantId)
     {
-        return new TenantAwarePusherBroadcaster($this->pusher($config));
+        parent::__construct($app);
+        $this->tenantId = $tenantId;
     }
 
-    public function channel($name, $callback)
+    public function createPusherDriver($config)
     {
-        $tenantId = app('currentTenant')?->id;
-        if ($tenantId) {
-            $name = "tenant_{$tenantId}.{$name}";
-        }
-
-        return parent::channel($name, $callback);
+        return new TenantAwarePusherBroadcaster($this->pusher($config), $this->tenantId);
     }
 }
