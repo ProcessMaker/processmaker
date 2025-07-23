@@ -50,11 +50,14 @@ class TaskDraft extends ProcessMakerModel implements HasMedia
         self::handleDeletedFiles($draft);
 
         // Associate draft files with the actual process request
-        foreach ($draft->getMedia() as $mediaItem) {
+        $mediaFromTaskDraft = $draft->getMedia();
+        foreach ($mediaFromTaskDraft as $mediaItem) {
             $processRequestId = $mediaItem->getCustomProperty('parent_process_request_id');
             if ($processRequestId) {
                 $processRequest = ProcessRequest::find($processRequestId);
                 if ($processRequest) {
+//                    dd1("for::" . $mediaItem->id);
+//                    dd3($processRequest);
                     $existingFilesToDelete = self::filesToDelete($task, $mediaItem);
                     self::reAssociateMediaItem($mediaItem, $processRequest);
                     self::deleteFiles($existingFilesToDelete);
@@ -104,6 +107,9 @@ class TaskDraft extends ProcessMakerModel implements HasMedia
     {
         // Delete previous files
         foreach ($delete as $existingMediaItem) {
+            if ($existingMediaItem->model_type === ProcessRequest::class) {
+                continue;
+            }
             $existingMediaItem->delete();
         }
     }
