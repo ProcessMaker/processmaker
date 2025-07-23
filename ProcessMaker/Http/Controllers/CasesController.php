@@ -88,12 +88,11 @@ class CasesController extends Controller
         // Stage information
         if ($request->status === 'COMPLETED') {
             $currentStages = [
-                'stage_id' => 0,
                 'stage_name' => __('Completed'),
             ];
             $progressStage = 100.0; // 100% completed
         } else {
-            $currentStages = $this->formatCurrentStage($request->last_stage_id, $request->last_stage_name, $request->status);
+            $currentStages = $this->formatCurrentStage($request->last_stage_id, $request->last_stage_name);
             $allStages = $this->getStagesByProcessId($request->process_id);
             $progressStage = StageProgressCalculator::getProgressStage($allStages, $currentStages);
         }
