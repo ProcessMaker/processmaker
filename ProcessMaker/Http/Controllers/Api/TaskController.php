@@ -324,7 +324,7 @@ class TaskController extends Controller
                 return abort(422, __('Task already closed'));
             }
             // Skip ConvertEmptyStringsToNull and TrimStrings middlewares
-            $data = json_decode($request->getContent(), true);
+            $data = json_optimize_decode($request->getContent(), true);
             $data = SanitizeHelper::sanitizeData($data['data'], null, $task->processRequest->do_not_sanitize ?? []);
             //Call the manager to trigger the start event
             $process = $task->process;
