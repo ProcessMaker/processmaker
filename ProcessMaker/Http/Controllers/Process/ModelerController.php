@@ -12,6 +12,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessLaunchpad;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenType;
 use ProcessMaker\Models\ScriptCategory;
@@ -20,7 +21,6 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Package\Cdata\Http\Controllers\Api\CdataController;
 use ProcessMaker\Package\PackagePmBlocks\Http\Controllers\Api\PmBlockController;
 use ProcessMaker\PackageHelper;
-use ProcessMaker\Models\Screen;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\ProcessMapTrait;
 
@@ -156,7 +156,7 @@ class ModelerController extends Controller
 
     /**
      * Get the default email notification configuration for tasks
-     * 
+     *
      * Returns an array containing the default email notification settings including:
      * - subject: The default email subject template
      * - type: The notification type (screen)
@@ -166,16 +166,17 @@ class ModelerController extends Controller
      */
     private function getDefaultEmailNotification(): array
     {
-           $screen = Screen::getScreenByKey('default-email-task-notification');        
-           return [
-            'subject' => "RE: {{_user.fullName}} assigned you in {{taskName}}",
-            'type' => "screen",
+        $screen = Screen::getScreenByKey('default-email-task-notification');
+
+        return [
+            'subject' => 'RE: {{_user.firstname}} assigned you in {{_task_name}}',
+            'type' => 'screen',
             'screenRef' => $screen->id,
             'toRecipients' => [
                 [
-                    'type' => "assignedUser",
-                    'value' => null
-                ]
+                    'type' => 'assignedUser',
+                    'value' => null,
+                ],
             ],
         ];
     }
