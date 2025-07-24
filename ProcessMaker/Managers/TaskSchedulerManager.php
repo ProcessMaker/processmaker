@@ -160,9 +160,10 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                         continue;
                     }
                     $owner = $task->processRequestToken ?: $task->processRequest ?: $task->process;
-                    $ownerDateTime = $owner->created_at;
+                    $ownerDateTime = $owner?->created_at;
                     $nextDate = $this->nextDate($today, $config, $lastExecution, $ownerDateTime);
 
+                    dump($nextDate);
                     // if no execution date exists we go to the next task
                     if (empty($nextDate)) {
                         continue;
@@ -173,6 +174,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                     $method = config('app.timer_events_seconds') . 'DateTime';
                     $todayWithoutSeconds = $this->$method($today);
                     $nextDateWithoutSeconds = $this->$method($nextDate);
+                    dump([$task->type => $nextDateWithoutSeconds], $todayWithoutSeconds, $nextDateWithoutSeconds <= $todayWithoutSeconds);
                     if ($nextDateWithoutSeconds <= $todayWithoutSeconds) {
                         switch ($task->type) {
                             case 'TIMER_START_EVENT':
@@ -194,11 +196,18 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                                     $task->save();
                                 }
                                 break;
+                            case 'SCHEDULED_JOB':
+                                dump('run SCHEDULED_JOB');
+                                $this->executeScheduledJob($task, $config);
+                                $task->last_execution = $today->format('Y-m-d H:i:s');
+                                $task->save();
+                                break;
                             default:
                                 throw new Exception('Unknown timer event: ' . $task->type);
                         }
                     }
                 } catch (\Throwable $ex) {
+                dump($ex);
                     Log::Error('Failed Scheduled Task: ', [
                         'Task data' => print_r($task->getAttributes(), true),
                         'Exception' => $ex->__toString(),
@@ -272,6 +281,12 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
         //Trigger the start event
         $processRequest = WorkflowManager::triggerStartEvent($process, $event, $data);
+    }
+
+    public function executeScheduledJob(ScheduledTask $task, $config)
+    {
+        $job = $config->job;
+        $job::dispatch($config);
     }
 
     /**
@@ -545,6 +560,35 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         if ($token || ($this->registerStartEvents && !$token)) {
             $this->scheduleTask($cycle, $element, $token);
         }
+    }
+
+    /**
+     * Schedule a job for a specific cycle for the given BPMN element, event definition
+     * and an optional Token object
+     *
+     * @param string $cycle in ISO-8601 format
+     * @param TimerEventDefinitionInterface $eventDefinition
+     * @param EntityInterface $element
+     * @param TokenInterface $token
+     */
+    public function scheduleCycleJob(
+        $interval,
+        array $config
+    ) {
+        $configuration = [
+            'type' => 'TimeCycle',
+            'interval' => $interval,
+            ...$config,
+        ];
+        $scheduledTask = new ScheduledTask();
+        $scheduledTask->configuration = json_encode($configuration);
+        $scheduledTask->type = 'SCHEDULED_JOB';
+        $scheduledTask->last_execution = $this->today()
+            ->setTimezone(new DateTimeZone('UTC'))
+            ->format('Y-m-d H:i:s');
+        $scheduledTask->save();
+
+        return $scheduledTask;
     }
 
     /**
