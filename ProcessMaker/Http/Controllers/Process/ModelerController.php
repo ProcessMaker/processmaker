@@ -169,7 +169,7 @@ class ModelerController extends Controller
         $screen = Screen::getScreenByKey('default-email-task-notification');
 
         return [
-            'subject' => 'RE: {{_user.firstname}} assigned you in {{_task_name}}',
+            'subject' => 'RE: {{_user.firstname}} assigned you in "{{_task_name}}"',
             'type' => 'screen',
             'screenRef' => $screen->id,
             'toRecipients' => [
