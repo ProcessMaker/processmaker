@@ -13,7 +13,7 @@
       type="text"
       :placeholder="$t('Total Amount')"
       :value="agregationVariable"
-      @input="saveVariable"
+      @input="saveVariableDebounced"
     >
   </div>
 </template>
@@ -30,17 +30,15 @@ const saveVariable = (event) => {
   agregationVariable.value = event.target.value;
   if (agregationVariable.value.trim()) {
     stateAggregationVariable.value = true;
-    debounce(() => {
-      ProcessMaker.apiClient
-        .post(`processes/${processId.value}/aggregation`, {
-          aggregation: event.target.value,
-        })
-        .then(() => { });
-    }, 1000);
+    ProcessMaker.apiClient.post(`processes/${processId.value}/aggregation`, {
+      aggregation: event.target.value,
+    }).then(() => { });
   } else {
     stateAggregationVariable.value = false;
   }
 };
+
+const saveVariableDebounced = debounce(saveVariable, 1000);
 
 onMounted(() => {
   ProcessMaker.apiClient
