@@ -305,7 +305,17 @@ class Screen extends ProcessMakerModel implements ScreenInterface, PrometheusMet
         return $screen;
     }
 
-    private static function createScreenByKey(string $key, bool $isSystem = true, string $path = null): self
+    public static function getScreenByKeyPerDefault(string $key) : ?self
+    {
+        $screen = self::firstWhere('key', $key);
+        if (!$screen) {
+            $screen = self::createScreenByKey($key, false, null, 1);
+        }
+
+        return $screen;
+    }
+
+    private static function createScreenByKey(string $key, bool $isSystem = true, string $path = null, $isDefault = 0): self
     {
         // If no path is provided, use the default path
         if (!$path) {
@@ -339,6 +349,7 @@ class Screen extends ProcessMakerModel implements ScreenInterface, PrometheusMet
         // Create new screen
         unset($screen['categories']);
         $screen['screen_category_id'] = null;
+        $screen['is_default'] = $isDefault;
 
         if ($newScreen) {
             $newScreen->fill($screen);
