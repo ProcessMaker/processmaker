@@ -263,6 +263,8 @@ class SettingController extends Controller
         ]);
         // set to cache with key and setting
         $settingCache->set($key, $setting->refresh());
+        // update config
+        config([$setting->key => $setting->config]);
 
         return response([], 204);
     }
