@@ -46,6 +46,22 @@ class ScriptExporter extends ExporterBase
             $this->model->script_executor_id = $executor->id;
         }
 
+        // Pre-save cleanup for data source scripts to prevent constraint violations
+        if ($this->mode === 'update' && $this->model->exists) {
+            // Check if this script has any data source relationships that might cause conflicts
+            $hasDataSourceRelationships = \DB::table('data_source_scripts')
+                ->where('script_id', $this->model->id)
+                ->exists();
+
+            if ($hasDataSourceRelationships) {
+                // Clean up any conflicting records in data_source_scripts
+                \DB::table('data_source_scripts')
+                    ->where('script_id', $this->model->id)
+                    ->where('id', '!=', $this->model->id)
+                    ->delete();
+            }
+        }
+
         return $this->model->save();
     }
 
