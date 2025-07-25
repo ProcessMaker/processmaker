@@ -530,7 +530,9 @@ You can provide an optional description, for example `Metrics::gauge('active_tas
 
 Go to Grafana and import the dashboards from the `resources/grafana` folder. Each JSON file represents a configured dashboard that can be imported into Grafana to visualize metrics and data.
 
-# Multitenancy
+# Multitenancy (Alpha)
+
+**Note that this feature is disabled for clients. It's not fully implemented yet.**
 
 ProcessMaker is now set up as a multitenant application. By default, there is one tenant.
 

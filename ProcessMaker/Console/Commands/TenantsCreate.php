@@ -18,7 +18,7 @@ class TenantsCreate extends Command
      *
      * @var string
      */
-    protected $signature = 'tenants:create {--name=} {--url=} {--database=} {--username=} {--password=} {--storage-folder=} {--app-key=}';
+    protected $signature = 'tenants:create {--name=} {--url=} {--database=} {--username=} {--password=} {--storage-folder=} {--lang-folder=} {--app-key=}';
 
     /**
      * The console command description.
@@ -77,22 +77,64 @@ class TenantsCreate extends Command
 
         // Setup storage
         $tenantStoragePath = base_path('storage/tenant_' . $tenant->id);
-        if (!File::isDirectory($tenantStoragePath)) {
+        if (File::isDirectory($tenantStoragePath)) {
+            $this->error('Tenant storage path already exists: ' . $tenantStoragePath);
+
+            return 1;
+        } else {
             mkdir($tenantStoragePath, 0755, true);
+        }
+
+        // Setup lang folder
+        $tenantLangPath = $tenantStoragePath . '/lang';
+        if (File::isDirectory($tenantLangPath)) {
+            $this->error('Tenant lang path already exists: ' . $tenantLangPath);
+
+            return 1;
+        } else {
+            // Lang folder will be initialized later
         }
 
         // Check if an existing storage folder is provided
         $storageFolderOption = $this->option('storage-folder', null);
-        if ($storageFolderOption && File::isDirectory($storageFolderOption)) {
-            $this->info('Moving storage folder to ' . $tenantStoragePath);
-            $subfoldersToExclude = '/^(tenant_\d+|logs|transitions)$/i';
-            foreach (File::directories($storageFolderOption) as $subfolder) {
-                if (preg_match($subfoldersToExclude, basename($subfolder))) {
-                    $this->info('Skipping ' . $subfolder);
-                    continue;
+        if ($storageFolderOption) {
+            if (File::isDirectory($storageFolderOption)) {
+                $this->info('Moving storage folder to ' . $tenantStoragePath);
+                $subfoldersToExclude = '/^(tenant_\d+|logs|transitions)$/i';
+                foreach (File::directories($storageFolderOption) as $subfolder) {
+                    if (preg_match($subfoldersToExclude, basename($subfolder))) {
+                        $this->info('Skipping ' . $subfolder);
+                        continue;
+                    }
+                    $this->info('Moving ' . $subfolder . ' to ' . $tenantStoragePath);
+                    rename($subfolder, $tenantStoragePath . '/' . basename($subfolder));
                 }
-                $this->info('Moving ' . $subfolder . ' to ' . $tenantStoragePath);
-                rename($subfolder, $tenantStoragePath . '/' . basename($subfolder));
+            } else {
+                $this->error('Storage folder does not exist: ' . $storageFolderOption);
+
+                return 1;
+            }
+        }
+
+        // Check if an existing lang folder is provided
+        // WIP: Does not take into consideration package lang folders
+        $langFolderOption = $this->option('lang-folder', null);
+        if ($langFolderOption) {
+            if (File::isDirectory($langFolderOption)) {
+                $this->info('Moving lang folder to ' . $tenantLangPath);
+                rename($langFolderOption, $tenantLangPath);
+            } else {
+                $this->error('Lang folder does not exist: ' . $langFolderOption);
+
+                return 1;
+            }
+        } else {
+            // Initialize lang folder
+            $exitCode = $this->tenantArtisan('tenants:init-translations', $tenant->id);
+            if ($exitCode !== 0) {
+                $this->error('Failed to initialize lang folder');
+
+                return 1;
             }
         }
 
@@ -123,7 +165,7 @@ class TenantsCreate extends Command
             }
         }
 
-        // Make sure these folders still exist in landlor storage.
+        // Make sure these folders still exist in landlord storage.
         // Some providers look for these folders before the tenant is set.
         $frameworkViewsDir = base_path('storage/framework/views');
         if (!File::isDirectory($frameworkViewsDir)) {

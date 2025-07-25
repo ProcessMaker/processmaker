@@ -29,6 +29,13 @@ class TenantsTransition extends Command
      */
     public function handle()
     {
+        // Check if multitenancy is enabled
+        if (!config('app.multitenancy')) {
+            $this->error('Multitenancy is not enabled. Exiting.');
+
+            return 1;
+        }
+
         $transitionsPath = base_path('storage/transitions');
 
         if (!File::exists($transitionsPath)) {
@@ -99,6 +106,8 @@ class TenantsTransition extends Command
             '--username' => $envVars['DB_USERNAME'],
             '--password' => $envVars['DB_PASSWORD'],
             '--storage-folder' => $clientFolder . '/storage',
+            '--lang-folder' => $clientFolder . '/lang',
+            '--app-key' => $envVars['APP_KEY'],
         ];
 
         Artisan::call('tenants:create', $command);
@@ -110,15 +119,6 @@ class TenantsTransition extends Command
 
             return;
         }
-
-        // Update tenant config with additional values
-        $config = $tenant->config ?? [];
-        $config['app.key'] = $envVars['APP_KEY'] ?? null;
-        $config['script-runner-microservice.callback'] = $envVars['SCRIPT_MICROSERVICE_CALLBACK'] ?? null;
-        $config['docker_host_url'] = $envVars['DOCKER_HOST_URL'] ?? null;
-
-        $tenant->config = $config;
-        $tenant->save();
 
         // Delete the client folder
         File::deleteDirectory($clientFolder);
