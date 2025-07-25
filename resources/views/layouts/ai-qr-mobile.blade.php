@@ -14,6 +14,7 @@
     <meta name="screen-cache-enabled" content="{{ config('app.screen.cache_enabled') ? 'true' : 'false' }}">
     <meta name="screen-cache-timeout" content="{{ config('app.screen.cache_timeout') }}">
     <meta name="settings-translations-enabled" content="{{ config('translations.enabled') ? 'true' : 'false' }}">
+    @include('layouts.common-meta')
     @if(Auth::user())
     <meta name="user-id" content="{{ Auth::user()->id }}">
     <meta name="user-full-name" content="{{ Auth::user()->fullname }}">
@@ -70,7 +71,7 @@
         enabledTransports: ['ws', 'wss'],
         disableStats: true,
       };
-      
+
       @if(config('broadcasting.connections.pusher.options.host'))
         window.Processmaker.broadcasting.wsHost = "{{config('broadcasting.connections.pusher.options.host')}}";
         window.Processmaker.broadcasting.wsPort = "{{config('broadcasting.connections.pusher.options.port')}}";
@@ -96,7 +97,7 @@
   <div class="d-flex flex-grow-1 flex-column overflow-hidden">
     <div class="flex-grow-1 d-flex flex-column overflow-hidden h-100" id="mainbody">
       <div id="main" class="main flex-grow-1 h-100 overflow-auto py-3">
-        
+
         <div class="flex-grow-1">
           <div id="navbarMobile">
             <nav class="navbar navbar-light bg-primary d-print-none

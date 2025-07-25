@@ -191,26 +191,26 @@
     left: 0;
     width: 100%;
   }
-  
+
   .form-control-login {
     height: 45px;
     padding-bottom: 0;
     padding-top: 0;
   }
-  
+
   .background-wave-left {
       position: fixed;
       bottom: 0;
       left: 0;
   }
-  
+
   .background-wave-right {
       position: fixed;
       top: 0;
       right: 0;
       height: 50%;
   }
-  
+
   body {
     background: transparent;
   }
@@ -229,11 +229,11 @@
     font-weight: 900;
     color: #ffffff;
   }
-  
+
   .slogan h2.title {
       font-size: 1.4rem;
   }
-  
+
   .slogan h1.title {
       font-size: 3.4rem;
   }
@@ -283,7 +283,7 @@
     font-size: 24.017px;
     font-family: 'Poppins', sans-serif;
   }
-  
+
   .button-login {
       text-transform: none;
   }

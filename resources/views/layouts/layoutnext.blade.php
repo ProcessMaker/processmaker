@@ -16,6 +16,7 @@
     <meta name="screen-cache-enabled" content="{{ config('app.screen.cache_enabled') ? 'true' : 'false' }}">
     <meta name="screen-cache-timeout" content="{{ config('app.screen.cache_timeout') }}">
     <meta name="settings-translations-enabled" content="{{ config('translations.enabled') ? 'true' : 'false' }}">
+    @include('layouts.common-meta')
     @if(Auth::user())
     <meta name="user-id" content="{{ Auth::user()->id }}">
     <meta name="user-full-name" content="{{ Auth::user()->fullname }}">
@@ -130,7 +131,7 @@
 @endif
 
 @yield('js')
-  
+
 @isset($addons)
   @foreach ($addons as $addon)
     @if (!empty($addon['script_mix']))

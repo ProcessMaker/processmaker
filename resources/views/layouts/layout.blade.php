@@ -36,6 +36,7 @@
       <meta name="alertVariant" content="{{$type}}">
       <meta name="alertMessage" content="{{$message}}">
     @endif
+    @include('layouts.common-meta')
     <title>@yield('title',__('Welcome')) - {{ __('ProcessMaker') }}</title>
     <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
