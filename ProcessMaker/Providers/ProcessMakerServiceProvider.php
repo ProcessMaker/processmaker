@@ -75,6 +75,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         parent::boot();
 
+        Passport::loadKeysFrom('/var/taks/storage');
+
         Route::pushMiddlewareToGroup('api', HandleEtag::class);
         // Hook after service providers boot
         self::$bootTime = (microtime(true) - self::$bootStart) * 1000; // Convert to milliseconds
