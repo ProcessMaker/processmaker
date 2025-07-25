@@ -172,6 +172,7 @@
                 "package-slideshow": "1.4.2",
                 "package-sentry": "1.12.0",
                 "package-signature": "1.15.0",
+                "package-sis-integration": "0.0.2",
                 "package-testing": "1.8.0",
                 "package-translations": "2.14.0",
                 "package-versions": "1.13.0",
