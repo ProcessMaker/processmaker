@@ -90,8 +90,6 @@ class SwitchTenant implements SwitchTenantTask
 
         // Extend BroadcastManager to our custom implementation that prefixes the channel names with the tenant id.
         $app->extend(BroadcastManager::class, function ($manager, $app) use ($tenant) {
-            \Log::info('RESOLVING New BroadcastManager');
-
             return new TenantAwareBroadcastManager($app, $tenant->id);
         });
 
@@ -99,6 +97,14 @@ class SwitchTenant implements SwitchTenantTask
         $app->extend(Dispatcher::class, function ($dispatcher, $app) use ($tenant) {
             return new TenantAwareDispatcher($app, $dispatcher, $tenant->id);
         });
+
+        // Use tenant's translation files
+        // $app->useLangPath(storage_path('lang'));
+
+        // WIP
+        // $app->extend('translation.loader', function ($loader, $app) use ($tenant) {
+        //     return new TenantAwareTranslationLoader($loader, $tenant->id);
+        // });
     }
 
     /**
