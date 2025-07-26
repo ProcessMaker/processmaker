@@ -151,7 +151,7 @@
                 id="language-navbar"
                 class="ml-2"
                 :type="'navbar'"
-                :show-language-code="false"
+                :show-language-code="true"
                 :language="'{{ $user->language }}'">
             </language-selector-button>
         </b-navbar-nav>
