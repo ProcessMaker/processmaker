@@ -63,6 +63,8 @@ class UserTest extends TestCase
 
     public function testCanAnyFirst()
     {
+        dump('Starting test');
+
         $user = User::factory()->create();
 
         $p1 = Permission::factory()->create(['name' => 'foo']);
@@ -72,7 +74,7 @@ class UserTest extends TestCase
         Cache::forget('permissions');
         Cache::forget("user_{$user->id}_permissions");
 
-        (new AuthServiceProvider(app()))->boot();
+        $this->initializePermissions(false);
 
         $this->assertFalse($user->can('bar'));
         $this->assertFalse($user->canAnyFirst('foo|bar'));
@@ -103,7 +105,7 @@ class UserTest extends TestCase
 
                 $perm = Permission::factory()->create(['name' => "{$method}-{$plural}"]);
 
-                (new AuthServiceProvider(app()))->boot();
+                $this->initializePermissions(false);
 
                 $this->assertFalse($user->can($perm->name));
                 $this->assertFalse($user->can($viewCatPerm->name));

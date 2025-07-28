@@ -79,7 +79,7 @@ class PopulateCasesParticipatedTest extends TestCase
 
         // This upgrade creates a table so we need to restore the database whenever this is run.
         $this->beforeApplicationDestroyed(function () {
-            $this->restoreDatabaseFromSnapshot();
+            $this->restoreDatabaseSnapshot('non-transactional-test');
         });
     }
 

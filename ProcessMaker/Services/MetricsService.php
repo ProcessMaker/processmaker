@@ -39,10 +39,7 @@ class MetricsService
         try {
             // Set up Redis as the adapter if none is provided
             if ($adapter === null) {
-                $adapter = new Redis([
-                    'host' => config('database.redis.default.host'),
-                    'port' => config('database.redis.default.port'),
-                ]);
+                $adapter = Redis::fromExistingConnection(app('redis')->client());
             }
             $this->collectionRegistry = new CollectorRegistry($adapter);
         } catch (Exception $e) {
@@ -167,7 +164,7 @@ class MetricsService
 
     /**
      * Histogram observation.
-     * 
+     *
      * @param string $name The name of the histogram.
      * @param string|null $help The help text of the histogram.
      * @param array $labels The labels of the histogram.
@@ -194,7 +191,7 @@ class MetricsService
 
     /**
      * Add system labels to the provided labels.
-     * 
+     *
      * @param array $labels The labels to add system labels to.
      *
      * @return array The keys of the labels.
@@ -205,6 +202,7 @@ class MetricsService
         $labels['app_version'] = $this->getApplicationVersion();
         $labels['app_name'] = config('app.name');
         $labels['app_custom_label'] = config('app.prometheus_custom_label');
+
         return $labels;
     }
 
@@ -222,6 +220,7 @@ class MetricsService
     {
         $root = base_path('composer.json');
         $composer_json_path = json_decode(file_get_contents($root));
+
         return $composer_json_path->version ?? '4.0.0';
     }
 }

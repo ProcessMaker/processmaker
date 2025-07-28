@@ -158,13 +158,7 @@ class TasksTest extends TestCase
      */
     public function testGetListClosedTasks()
     {
-        // Run the permission seeder
-        (new PermissionSeeder)->run();
-
-        // Reboot our AuthServiceProvider. This is necessary so that it can
-        // pick up the new permissions and setup gates for each of them.
-        $asp = new AuthServiceProvider(app());
-        $asp->boot();
+        $this->initializePermissions();
 
         $user_1 = User::factory()->create();
         $user_1->giveDirectPermission('view-all_requests');

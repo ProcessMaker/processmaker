@@ -30,18 +30,18 @@ return [
 
     'disks' => [
 
-        'local' => [
+        'local' => [ // used throught the system
             'driver' => 'local',
             'root' => storage_path('app'),
             'throw' => false,
         ],
 
-        'imports' => [
+        'imports' => [ // does not appear to be used any more
             'driver' => 'local',
             'root' => storage_path('app/imports'),
         ],
 
-        'keys' => [
+        'keys' => [ // does not appear to be used any more
             'driver' => 'local',
             'root' => env('KEYS_PATH') ? base_path(env('KEYS_PATH')) : storage_path('keys'),
         ],
@@ -51,12 +51,12 @@ return [
             'root' => env('MAILTEMPLATES_PATH') ? base_path(env('MAILTEMPLATES_PATH')) : storage_path('mailTemplates'),
         ],
 
-        'process_templates' => [
+        'process_templates' => [ // unit tests
             'driver' => 'local',
             'root' => env('PROCESS_TEMPLATES_PATH') ? base_path(env('PROCESS_TEMPLATES_PATH')) : database_path('processes/templates'),
         ],
 
-        'public' => [
+        'public' => [ // used throught the system
             'driver' => 'local',
             'root' => storage_path('app/public'),
             'url' => env('APP_URL') . '/storage',
@@ -64,7 +64,7 @@ return [
             'throw' => false,
         ],
 
-        's3' => [
+        's3' => [ // DownloadSecurityLog
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
@@ -90,19 +90,19 @@ return [
             'visibility' => 'public',
         ],
 
-        'private_settings' => [
+        'private_settings' => [ // package-auth
             'driver' => 'local',
             'root' => storage_path('app/private/settings'),
             'visibility' => 'private',
         ],
 
-        'web_services' => [
+        'web_services' => [ // package-data-sources, SoapConfigBuilder.php in core
             'driver' => 'local',
             'root' => storage_path('app/private/web_services'),
             'visibility' => 'private',
         ],
 
-        'tmp' => [
+        'tmp' => [ // package-webentry, package-ai
             'driver' => 'local',
             'root' => storage_path('app/public/tmp'),
             'url' => env('APP_URL') . '/storage/tmp',
@@ -114,12 +114,16 @@ return [
             'root' => storage_path() . '/samlidp',
         ],
 
-        'decision_tables' => [
+        'decision_tables' => [ // package-decision-engine
             'driver' => 'local',
             'root' => storage_path('decision-tables'),
             'url' => env('APP_URL') . '/storage/decision-tables',
             'visibility' => 'private',
         ],
+
+        // Others declared in packages
+        // - translations - package-translations
+        // - 'filesystems.disks.install' configured on the fly
     ],
 
     /*

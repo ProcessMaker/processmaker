@@ -470,7 +470,8 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
                         $id = SettingsMenus::getId(SettingsMenus::LOG_IN_AUTH_MENU_GROUP);
                         break;
                     case 'User Signals':
-                    case 'Users': // Additional Properties
+                    case 'Users':
+                    case 'Translations': // Additional Properties
                         $id = SettingsMenus::getId(SettingsMenus::USER_SETTINGS_MENU_GROUP);
                         break;
                     case 'IDP': // Intelligent Document Processing
