@@ -530,6 +530,80 @@ You can provide an optional description, for example `Metrics::gauge('active_tas
 
 Go to Grafana and import the dashboards from the `resources/grafana` folder. Each JSON file represents a configured dashboard that can be imported into Grafana to visualize metrics and data.
 
+# Multitenancy (Alpha)
+
+**Note that this feature is disabled for clients. It's not fully implemented yet.**
+
+ProcessMaker is now set up as a multitenant application. By default, there is one tenant.
+
+## Requirements
+
+- Your MySql user `DB_USERNAME` will need to be able to create databases.
+
+## Transition your dev instnace to multitenancy
+
+1. Run the following command to enable multitenancy
+   ```
+   php artisan tenants:enable --migrate
+   ```
+   This command will
+   - Create the landlord database
+   - Set your existing database as the tenant database
+   - Move your existing storage folder to `storage/tenant_1`
+   - Update your .env DB_DATABASE to the new landlord database name
+
+## Add another tenant
+
+For local development, you will need add another domain to your nginx config. To do this with Valet, run:
+
+```
+valet link another-tenant.test
+```
+
+Run the following command to create another tenant:
+```
+php artisan tenants:create --domain="another-tenant.test" --name="Another Tenant" --database="another_tenant"
+```
+
+This command will
+- Create the required folder structure
+- Create the tenant database
+- Seed the tenant database
+- Generate new passport keys
+- Run the upgrade commands
+
+You will need to run the package install commands for all installed packages.
+
+## Migrate an existing instnace to a tenant
+
+### Option 1: Using the TenantsCreate command
+
+Provide the --storage-folder option with the path to the storage folder of the instance you want to migrate. Use the existing instances database name.
+
+Optionally, provide the --username and --password options of the db for the existing instance.
+
+The storage folder will be **moved** to the new tenant's storage folder.
+```
+php artisan tenants:create --domain="some-tenant.test" --name="Some Tenant" --database="some_tenant" --storage-folder="/path/to/storage/folder"
+```
+
+### Option 2: Using the TenantsTransition command
+
+Create a folder `storage/transitions` if it doesn't exist.
+
+In that folder create a new folder for each instance you want to migrate.
+
+The folder should contain exactly 2 things:
+- the .env from the instance you want to migrate
+- the storage folder from the instance you want to migrate, named `storage`
+
+Run the following command to migrate the instance(s) to a tenant:
+```
+php artisan tenants:transition
+```
+
+This command will:
+
 # License
 
 Distributed under the [AGPL Version 3](https://www.gnu.org/licenses/agpl-3.0.en.html)

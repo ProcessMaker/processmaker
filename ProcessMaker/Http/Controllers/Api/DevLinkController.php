@@ -12,6 +12,7 @@ use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Jobs\CompileSass;
+use ProcessMaker\Jobs\CompileUI;
 use ProcessMaker\Jobs\DevLinkInstall;
 use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\BundleAsset;
@@ -90,7 +91,7 @@ class DevLinkController extends Controller
     public function ping(DevLink $devLink)
     {
         try {
-            return$devLink->client()->get(route('api.devlink.pong', [], false));
+            return $devLink->client()->get(route('api.devlink.pong', [], false));
         } catch (\Exception $e) {
             return response()->json(['error' => 'DevLink connection error'], $e->getCode());
         }
@@ -409,15 +410,7 @@ class DevLinkController extends Controller
 
     public function refreshUi()
     {
-        $cssOverride = Setting::where('key', 'css-override')->first();
-
-        $config = $cssOverride->config;
-        $variables = json_decode($config['variables']);
-        $sansSerif = json_decode($config['sansSerifFont'], true);
-
-        $this->writeColors($variables);
-        $this->writeFonts($sansSerif);
-        $this->compileSass(auth()->user()->id);
+        CompileUI::dispatch(auth()->user()?->id);
         CustomizeUiUpdated::dispatch([], [], false);
     }
 

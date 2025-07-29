@@ -4,7 +4,6 @@ namespace ProcessMaker\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Auth\Access\Response;
-use Illuminate\Support\Facades\Request;
 use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -74,21 +73,10 @@ class ProcessRequestTokenPolicy
      *
      * @param  User  $user
      * @param  ProcessRequestToken  $processRequestToken
-     * @param  Screen  $screen
-     * @return mixed
      */
-    public function viewScreen(User $user, ProcessRequestToken $task, Screen $screen)
+    public function viewScreen(User $user, ProcessRequestToken $task): bool
     {
-        if (!$user->can('update', $task)) {
-            return false;
-        }
-
-        $screenIds = $task->getScreenAndNestedIds();
-        if (!in_array($screen->id, $screenIds)) {
-            return false;
-        }
-
-        return true;
+        return $user->can('update', $task);
     }
 
     /**
