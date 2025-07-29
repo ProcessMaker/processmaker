@@ -819,6 +819,14 @@ class ProcessController extends Controller
             $document = new BpmnDocument();
             try {
                 $document->loadXML($data['bpmn']);
+
+                // Get root node
+                $root = $document->documentElement;
+
+                if ($root) {
+                    // Set "targetNamespace" attribute always
+                    $root->setAttribute('targetNamespace', 'http://bpmn.io/schema/bpmn');
+                }
             } catch (\ErrorException $e) {
                 return [$e->getMessage()];
             }
