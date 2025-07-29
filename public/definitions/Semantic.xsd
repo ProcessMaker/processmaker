@@ -440,7 +440,7 @@
 			<xsd:extension base="tBaseElement">
 				<xsd:sequence>
 					<xsd:element name="sourceRef" type="xsd:IDREF" minOccurs="0" maxOccurs="unbounded"/>
-					<xsd:element name="targetRef" type="xsd:IDREF" minOccurs="1" maxOccurs="1"/>
+					<xsd:element name="targetRef" type="xsd:IDREF" minOccurs="0" maxOccurs="1"/>
 					<xsd:element name="transformation" type="tFormalExpression" minOccurs="0" maxOccurs="1"/>
 					<xsd:element ref="assignment" minOccurs="0" maxOccurs="unbounded"/>
 				</xsd:sequence>
