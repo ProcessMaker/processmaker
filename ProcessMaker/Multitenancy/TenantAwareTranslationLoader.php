@@ -17,10 +17,21 @@ class TenantAwareTranslationLoader implements Loader
         $this->tenantId = $tenantId;
     }
 
+    public function jsonPaths()
+    {
+        $paths = $this->loader->jsonPaths();
+        $paths = array_map(function ($path) {
+            return $path . '/tenant_' . $this->tenantId;
+        }, $paths);
+
+        return $paths;
+    }
+
+    /**
+     * Methods below are to satisfy the Loader interface.
+     */
     public function load($locale, $group, $namespace = null)
     {
-        \Log::info('TenantAwareTranslationLoader::load', ['locale' => $locale, 'group' => $group, 'namespace' => $namespace]);
-
         return $this->loader->load($locale, $group, $namespace);
     }
 
@@ -39,6 +50,9 @@ class TenantAwareTranslationLoader implements Loader
         return $this->loader->namespaces();
     }
 
+    /**
+     * Proxy all other methods to the original loader.
+     */
     public function __call($method, $arguments)
     {
         return $this->loader->$method(...$arguments);

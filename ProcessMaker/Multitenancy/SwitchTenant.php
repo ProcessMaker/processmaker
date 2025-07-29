@@ -99,12 +99,11 @@ class SwitchTenant implements SwitchTenantTask
         });
 
         // Use tenant's translation files
-        // $app->useLangPath(storage_path('lang'));
+        $app->useLangPath(app()->langPath('tenant_' . $tenant->id));
 
-        // WIP
-        // $app->extend('translation.loader', function ($loader, $app) use ($tenant) {
-        //     return new TenantAwareTranslationLoader($loader, $tenant->id);
-        // });
+        $app->extend('translation.loader', function ($loader, $app) use ($tenant) {
+            return new TenantAwareTranslationLoader($loader, $tenant->id);
+        });
     }
 
     /**

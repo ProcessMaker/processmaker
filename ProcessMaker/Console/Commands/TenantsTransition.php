@@ -93,6 +93,15 @@ class TenantsTransition extends Command
             }
         }
 
+        // Check required folders
+        foreach (['storage', 'lang', 'packages'] as $folder) {
+            if (!File::isDirectory($clientFolder . '/' . $folder)) {
+                $this->error("Missing required folder: {$folder} in {$clientName}");
+
+                return;
+            }
+        }
+
         // Create the tenant
         $domain = parse_url($envVars['APP_URL'], PHP_URL_HOST);
 
@@ -107,6 +116,7 @@ class TenantsTransition extends Command
             '--password' => $envVars['DB_PASSWORD'],
             '--storage-folder' => $clientFolder . '/storage',
             '--lang-folder' => $clientFolder . '/lang',
+            '--packages-folder' => $clientFolder . '/packages',
             '--app-key' => $envVars['APP_KEY'],
         ];
 

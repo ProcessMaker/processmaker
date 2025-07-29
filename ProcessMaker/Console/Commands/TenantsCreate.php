@@ -18,7 +18,7 @@ class TenantsCreate extends Command
      *
      * @var string
      */
-    protected $signature = 'tenants:create {--name=} {--url=} {--database=} {--username=} {--password=} {--storage-folder=} {--lang-folder=} {--app-key=}';
+    protected $signature = 'tenants:create {--name=} {--url=} {--database=} {--username=} {--password=} {--storage-folder=} {--lang-folder=} {--packages-folder=} {--app-key=}';
 
     /**
      * The console command description.
@@ -85,16 +85,6 @@ class TenantsCreate extends Command
             mkdir($tenantStoragePath, 0755, true);
         }
 
-        // Setup lang folder
-        $tenantLangPath = $tenantStoragePath . '/lang';
-        if (File::isDirectory($tenantLangPath)) {
-            $this->error('Tenant lang path already exists: ' . $tenantLangPath);
-
-            return 1;
-        } else {
-            // Lang folder will be initialized later
-        }
-
         // Check if an existing storage folder is provided
         $storageFolderOption = $this->option('storage-folder', null);
         if ($storageFolderOption) {
@@ -116,25 +106,79 @@ class TenantsCreate extends Command
             }
         }
 
+        if (str_contains(lang_path(), 'tenant')) {
+            $this->error('Lang path contains "tenant". Are you running this in multitenancy mode? You should not be.');
+
+            return 1;
+        }
+
         // Check if an existing lang folder is provided
-        // WIP: Does not take into consideration package lang folders
         $langFolderOption = $this->option('lang-folder', null);
         if ($langFolderOption) {
             if (File::isDirectory($langFolderOption)) {
-                $this->info('Moving lang folder to ' . $tenantLangPath);
-                rename($langFolderOption, $tenantLangPath);
+                $this->info('Moving lang folder to resources/lang/tenant_' . $tenant->id);
+                rename($langFolderOption, lang_path('tenant_' . $tenant->id));
             } else {
                 $this->error('Lang folder does not exist: ' . $langFolderOption);
 
                 return 1;
             }
         } else {
-            // Initialize lang folder
-            $exitCode = $this->tenantArtisan('tenants:init-translations', $tenant->id);
-            if ($exitCode !== 0) {
-                $this->error('Failed to initialize lang folder');
+            // Copy resources/lang to resources/lang/tenant_<id>
+            $this->info('Copying resources/lang to resources/lang/tenant_' . $tenant->id);
+            $source = lang_path();
+            $destination = lang_path('tenant_' . $tenant->id);
+            if (!File::isDirectory($destination)) {
+                File::makeDirectory($destination, 0755, true);
+            }
+            $this->info('Copying ' . $source . ' to ' . $destination);
+            exec('rsync -avz --exclude=tenant_* ' . $source . '/ ' . $destination, $output, $returnVar);
+            $this->info(implode("\n", $output));
+        }
+
+        // Check if an existing packages folder is provided
+        $packagesFolderOption = $this->option('packages-folder', null);
+        if ($packagesFolderOption) {
+            if (File::isDirectory($packagesFolderOption)) {
+                // Get each subfolder in the packages folder
+                $subfolders = File::directories($packagesFolderOption);
+                foreach ($subfolders as $subfolder) {
+                    $packageLangFolder = $subfolder . '/resources/lang';
+                    if (File::isDirectory($packageLangFolder)) {
+                        $destinationLangFolder = base_path('vendor/processmaker/' . basename($subfolder)) . '/resources/lang';
+                        if (File::isDirectory($destinationLangFolder)) {
+                            $destinationLangTenantFolder = $destinationLangFolder . '/tenant_' . $tenant->id;
+                            if (!File::isDirectory($destinationLangTenantFolder)) {
+                                File::makeDirectory($destinationLangTenantFolder, 0755, true);
+                            }
+                            $this->info('Moving' . $packageLangFolder . ' to ' . $destinationLangTenantFolder);
+                            rename($packageLangFolder, $destinationLangTenantFolder);
+                        } else {
+                            $this->error('Destination lang folder does not exist: ' . $destinationLangFolder);
+
+                            return 1;
+                        }
+                    }
+                }
+            } else {
+                $this->error('Packages folder does not exist: ' . $packagesFolderOption);
 
                 return 1;
+            }
+        } else {
+            // Copy the resources/lang folder in each vendor/processmaker folder to the tenant lang folder
+            $packages = File::directories(base_path('vendor/processmaker'));
+            foreach ($packages as $package) {
+                $packageLangFolder = $package . '/resources/lang';
+                if (File::isDirectory($packageLangFolder)) {
+                    $destinationLangFolder = $packageLangFolder . '/tenant_' . $tenant->id;
+                    if (!File::isDirectory($destinationLangFolder)) {
+                        File::makeDirectory($destinationLangFolder, 0755, true);
+                    }
+                    $this->info('Copying ' . $packageLangFolder . ' to ' . $destinationLangFolder);
+                    exec('rsync -avz --exclude=tenant_* ' . $packageLangFolder . '/ ' . $destinationLangFolder, $output, $returnVar);
+                    $this->info(implode("\n", $output));
+                }
             }
         }
 

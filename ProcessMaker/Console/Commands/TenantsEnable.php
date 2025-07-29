@@ -10,6 +10,12 @@ use PDOException;
 
 class TenantsEnable extends Command
 {
+    private $tempStorageFolder;
+
+    private $tempLangFolder;
+
+    private $tempPackagesFolder;
+
     /**
      * The name and signature of the console command.
      *
@@ -28,6 +34,14 @@ class TenantsEnable extends Command
      * Execute the console command.
      */
     public function handle()
+    {
+        $exitCode = $this->tenantsEnable();
+        $this->removeTempFolders();
+
+        return $exitCode;
+    }
+
+    private function tenantsEnable()
     {
         $migrate = $this->option('migrate', false);
 
@@ -98,7 +112,7 @@ class TenantsEnable extends Command
          */
 
         // First, copy the existing storage folder to a temp location
-        $tempStorageFolder = base_path('storage-temp');
+        $this->tempStorageFolder = $tempStorageFolder = base_path('storage-temp');
         exec("rsync -avz --exclude='tenant_*' " . base_path('storage') . '/ ' . $tempStorageFolder, $output, $returnVar);
         if ($returnVar !== 0) {
             $this->error('Failed to copy storage folder to temp location');
@@ -109,13 +123,32 @@ class TenantsEnable extends Command
         $this->info(implode("\n", $output));
 
         // Next, do the same thing for the lang folder
-        $tempLangFolder = base_path('lang-temp');
+        $this->tempLangFolder = $tempLangFolder = base_path('lang-temp');
         exec('rsync -avz ' . resource_path('lang') . '/ ' . $tempLangFolder, $output, $returnVar);
         if ($returnVar !== 0) {
             $this->error('Failed to copy lang folder to temp location');
             $this->error(implode("\n", $output));
         }
         $this->info(implode("\n", $output));
+
+        // And for the packages folders, but only the resources/lang in each package
+        $this->tempPackagesFolder = $tempPackagesFolder = base_path('packages-temp');
+        // Get all the folders in the vendor/processmaker folder
+        $packages = File::directories(base_path('vendor/processmaker'));
+        foreach ($packages as $package) {
+            $packageLangFolder = $package . '/resources/lang';
+            $this->info('Checking ' . $packageLangFolder);
+            if (File::isDirectory($packageLangFolder)) {
+                $packageName = basename($package);
+                $destinationFolder = $tempPackagesFolder . '/' . $packageName . '/resources/lang';
+                File::makeDirectory($destinationFolder, 0755, true);
+                $this->info('Copying ' . $packageLangFolder . ' to ' . $destinationFolder);
+                exec('rsync -avz ' . $packageLangFolder . '/ ' . $destinationFolder, $output, $returnVar);
+                $this->info(implode("\n", $output));
+            } else {
+                $this->info('Package lang folder does not exist for ' . $package . ' in ' . $packageLangFolder);
+            }
+        }
 
         // Now, create the tenant. The folder will be moved to the new tenant after the creation
         // and the $tempStorageFolder will no longer exist.
@@ -124,6 +157,7 @@ class TenantsEnable extends Command
             '--url' => config('app.url'),
             '--storage-folder' => $tempStorageFolder,
             '--lang-folder' => $tempLangFolder,
+            '--packages-folder' => $tempPackagesFolder,
             '--name' => config('app.name'),
             '--app-key' => config('app.key'),
         ], $this->output);
@@ -134,26 +168,12 @@ class TenantsEnable extends Command
             return 1;
         }
 
-        // Remove temp storage folder
-        exec('rm -rf ' . $tempStorageFolder, $output, $returnVar);
-        if ($returnVar !== 0) {
-            $this->error('Failed to remove temp storage folder');
-            $this->error(implode("\n", $output));
-        }
-        $this->info(implode("\n", $output));
-
-        // Remove temp lang folder
-        exec('rm -rf ' . $tempLangFolder, $output, $returnVar);
-        if ($returnVar !== 0) {
-            $this->error('Failed to remove temp lang folder');
-            $this->error(implode("\n", $output));
-        }
-        $this->info(implode("\n", $output));
-
         // Add or update the MULTITENANCY env var
         $this->addOrUpdateEnvVar('MULTITENANCY', 'true');
 
         $this->info('Tenant support enabled successfully and migrated to a new tenant');
+
+        return 0;
     }
 
     private function addOrUpdateEnvVar($envKey, $envValue)
@@ -170,5 +190,38 @@ class TenantsEnable extends Command
         }
 
         file_put_contents($envFile, $env);
+    }
+
+    private function removeTempFolders()
+    {
+        // Remove temp storage folder
+        if ($this->tempStorageFolder) {
+            exec('rm -rf ' . $this->tempStorageFolder, $output, $returnVar);
+            if ($returnVar !== 0) {
+                $this->error('Failed to remove temp storage folder');
+                $this->error(implode("\n", $output));
+            }
+            $this->info(implode("\n", $output));
+        }
+
+        // Remove temp lang folder
+        if ($this->tempLangFolder) {
+            exec('rm -rf ' . $this->tempLangFolder, $output, $returnVar);
+            if ($returnVar !== 0) {
+                $this->error('Failed to remove temp lang folder');
+                $this->error(implode("\n", $output));
+            }
+            $this->info(implode("\n", $output));
+        }
+
+        // Remove temp packages folder
+        if ($this->tempPackagesFolder) {
+            exec('rm -rf ' . $this->tempPackagesFolder, $output, $returnVar);
+            if ($returnVar !== 0) {
+                $this->error('Failed to remove temp packages folder');
+                $this->error(implode("\n", $output));
+            }
+            $this->info(implode("\n", $output));
+        }
     }
 }
