@@ -112,6 +112,7 @@ const removeStageInAllFlowConfig = (stage) => {
       Vue.set(link.component.node.definition, "config", JSON.stringify(config));
     }
     link.component.removeStageLabels();
+    removeStageToFlow();
   }
 };
 
