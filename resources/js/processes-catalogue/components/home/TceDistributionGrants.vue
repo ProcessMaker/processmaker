@@ -16,7 +16,6 @@
         color="red"
         :header="firstStage.header"
         :body="firstStage.body"
-        :helper="firstStage.helper"
         :active="firstStage.active"
         @click="onClickFirstStage" />
 
