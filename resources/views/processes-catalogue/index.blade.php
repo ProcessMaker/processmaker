@@ -13,7 +13,7 @@
 @endsection
 
 @section('content')
-  <div class="px-3" id="processes-catalogue">
+  <div class="px-3 tw-h-full" id="processes-catalogue">
     <processes-catalogue
       :process="{{$process ?? 0}}"
       :current-user-id="{{ \Auth::user()->id }}"
