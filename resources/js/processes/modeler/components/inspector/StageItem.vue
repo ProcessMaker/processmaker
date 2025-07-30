@@ -2,11 +2,7 @@
   <div class="tw-flex tw-items-center tw-space-x-2 tw-w-full tw-py-1">
     <span class="tw-w-6 text-center stage-item-number">{{ order }}</span>
     <i class="fas fa-grip-vertical stage-item-grip-vertical tw-cursor-move" />
-    <div
-      class="tw-flex-1 tw-cursor-pointer"
-      @click="check"
-      @dblclick.stop="uncheck"
-    >
+    <div class="tw-flex-1 tw-cursor-pointer">
       <template v-if="editing">
         <input
           v-model="localName"
@@ -22,12 +18,17 @@
         </small>
       </template>
       <template v-else>
-        <span
-          class="tw-line-clamp-2"
-          :class="{ 'font-bold stage-item-selected': selected }"
+        <div
+          @click="check"
+          @dblclick.stop="uncheck"
         >
-          {{ name }}
-        </span>
+          <span
+            class="tw-line-clamp-2"
+            :class="{ 'font-bold stage-item-selected': selected }"
+          >
+            {{ name }}
+          </span>
+        </div>
       </template>
     </div>
     <button
