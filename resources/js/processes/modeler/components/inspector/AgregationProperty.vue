@@ -13,22 +13,24 @@
       type="text"
       :placeholder="$t('Total Amount')"
       :value="agregationVariable"
-      @input="saveVariableDebounced"
-    >
+      @input="saveVariableDebounced">
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from "vue";
 import { debounce } from "lodash";
-const javascriptReservedKeywords = 'null,break,case,catch,continue,debugger,default,delete,do,else,finally,for,function,if,in,instanceof,new,return,switch,this,throw,try,typeof,var,void,while,with,class,const,enum,export,extends,import,super,true,false';
+
+const javascriptReservedKeywords = `null,break,case,catch,continue,debugger,
+  default,delete,do,else,finally,for,function,if,in,instanceof,new,return,switch,
+  this,throw,try,typeof,var,void,while,with,class,const,enum,export,extends,import,super,true,false`;
 
 const agregationVariable = ref("");
 const processId = ref(window.ProcessMaker?.modeler?.process?.id);
 const stateAggregationVariable = ref(true);
 
 const isValidVariableName = (name) => {
-  const validVariableNameExp = RegExp('^[A-Za-z][0-9a-zA-Z_$]*$');
+  const validVariableNameExp = RegExp("^[A-Za-z][0-9a-zA-Z_$]*$");
   const nameParts = name.split(".");
   let valid = true;
   nameParts.forEach((item) => {
