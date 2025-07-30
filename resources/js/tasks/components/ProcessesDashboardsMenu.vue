@@ -1,5 +1,5 @@
 <template>
-  <div class="tw-w-full">
+  <div class="tw-w-full tw-rounded-lg`">
     <div class="menu-sections">
       <div class="divider-custom">
         <span class="divider-text">{{ $t("Processes") }}</span>

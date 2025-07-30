@@ -120,10 +120,29 @@ export default {
   @media (max-width: $lp-breakpoint) {
     display: none;
     margin-right: 0;
-    
+
     .input-group {
       width: 100%;
     }
+  }
+
+  @media (min-width: 641px) and (max-width: 1075px) {
+    width: 300px;
+  }
+  @media (min-width: 1270px) and (max-width: 1520px) {
+      width: 701px;
+  }
+  @media (min-width: 1521px) and (max-width: 1789px) {
+      width: 1059px;
+  }
+  @media (min-width: 1790px) and (max-width: 2148px){
+      width: 1059px;
+  }
+  @media (min-width: 2149px) and (max-width: 2507px){
+      width: 1775px;
+  }
+  @media (min-width: 2508px){
+      width: 100%;
   }
 }
 
