@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta name="i18n-mdate" content='{!! json_encode(ProcessMaker\i18nHelper::mdates()) !!}'>
+  <meta name="settings-translations-enabled" content="{{ config('translations.enabled') ? 'true' : 'false' }}">
   <title>{{ __('Login') }} - {{ __('ProcessMaker') }}</title>
   <link href="{{ mix('css/app.css') }}" rel="stylesheet">
   <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
