@@ -627,50 +627,63 @@ export default {
       });
     },
     async getMyColumns(type) {
-      //this.columnListing.currentColumns = type === "tasks" ? this.myTasksColumns : this.myCasesColumns;
-      console.log("myTasksColumns", JSON.stringify(this.myTasksColumns));
-      console.log("myCasesColumns", JSON.stringify(this.myCasesColumns));
       if (this.isTCEScreen) {
         this.changeSelectedScreen();
       }
-
       await ProcessMaker.apiClient
         .get("saved-searches/columns")
         .then((response) => {
-          if (response.data && response.data.default) {
-            this.columnListing.defaultColumns = response.data.default;
-            this.columnListing.defaultColumns.push({
-              field: "options",
-              label: "",
-              sortable: false,
-              width: 180,
-            });
-          }
-          if (response.data) {
-            if (response.data.available) {
-              this.columnListing.availableColumns = response.data.available;
-
-              // Merge all available and default columns; we use map to avoid duplicates.
-              const allColumns = new Map([
-                ...this.columnListing.defaultColumns.map((col) => [col.field, col]),
-                ...this.columnListing.availableColumns.map((col) => [col.field, col]),
-              ]);
-
-              // Filter only those that are not in `currentColumns`.
-              this.columnListing.availableColumns = [...allColumns.values()].filter(
-                (column) => !this.columnListing.currentColumns.some(
-                  (currentColumn) => currentColumn.field === column.field,
-                ),
-              );
+          this.columnListing.currentColumns = type === "tasks" ? this.myTasksColumns : this.myCasesColumns;
+          if (this.isTCEScreen) {
+            if (response.data) {
+              if (response.data.default) {
+                this.columnListing.defaultColumns = response.data.default;
+              }
+              if (response.data.available) {
+                const current = this.columnListing.currentColumns;
+                const available = response.data.available;
+                const result = available.filter(b => !current.some(a => a.field === b.field));
+                this.columnListing.availableColumns = result;
+              }
+              if (response.data.data) {
+                this.columnListing.dataColumns = response.data.data;
+              }
             }
-            if (response.data.data) {
-              this.columnListing.dataColumns = response.data.data;
+          } else {
+            if (response.data) {
+              if (response.data.default) {
+                this.columnListing.defaultColumns = response.data.default;
+                this.columnListing.defaultColumns.push({
+                  field: "options",
+                  label: "",
+                  sortable: false,
+                  width: 180,
+                });
+              }
+              if (response.data.available) {
+                this.columnListing.availableColumns = response.data.available;
+
+                // Merge all available and default columns; we use map to avoid duplicates.
+                const allColumns = new Map([
+                  ...this.columnListing.defaultColumns.map((col) => [col.field, col]),
+                  ...this.columnListing.availableColumns.map((col) => [col.field, col]),
+                ]);
+
+                // Filter only those that are not in `currentColumns`.
+                this.columnListing.availableColumns = [...allColumns.values()].filter(
+                  (column) => !this.columnListing.currentColumns.some(
+                    (currentColumn) => currentColumn.field === column.field,
+                  ),
+                );
+              }
+              if (response.data.data) {
+                this.columnListing.dataColumns = response.data.data;
+              }
             }
           }
         });
     },
     updateColumns(columns, type) {
-      console.log("updateColumns: ", this.myTasks.currentColumns,columns, type);
       if (type === "tasks") {
         this.myTasks.currentColumns = columns;
       } else {
