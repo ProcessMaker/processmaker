@@ -5,7 +5,6 @@ namespace ProcessMaker\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Events\ScreenBuilderStarting;
-use ProcessMaker\Helpers\StageProgressCalculator;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Controllers\Process\ModelerController;
 use ProcessMaker\Managers\ModelerManager;
@@ -94,7 +93,7 @@ class CasesController extends Controller
         } else {
             $currentStages = $this->formatCurrentStage($request->last_stage_id, $request->last_stage_name);
             $allStages = $this->getStagesByProcessId($request->process_id);
-            $progressStage = StageProgressCalculator::getProgressStage($allStages, $currentStages);
+            $progressStage = calculateProgressById($request->last_stage_id, $allStages);
         }
         // Load the screen configured in "Request Detail Screen"
         $request->request_detail_screen = Screen::find($request->process->request_detail_screen_id);
