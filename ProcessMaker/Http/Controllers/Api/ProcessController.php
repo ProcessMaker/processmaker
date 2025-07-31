@@ -383,7 +383,7 @@ class ProcessController extends Controller
 
             // Some BPMN definitions created in others modelers doesn't comply BPMN 2.0
             // So, should be fixed
-            $fixBpmnSchemaService = new FixBpmnSchemaService();
+            $fixBpmnSchemaService = app(FixBpmnSchemaService::class);
             $data['bpmn'] = $fixBpmnSchemaService->fix($data['bpmn']);
 
             $request->merge(['bpmn' => $data['bpmn']]);
