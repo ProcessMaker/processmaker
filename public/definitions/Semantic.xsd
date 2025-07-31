@@ -446,8 +446,8 @@
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
-	</xsd:complexType>
-
+	</xsd:complexType>	
+	
 	<xsd:element name="dataInput" type="tDataInput" />
 	<xsd:complexType name="tDataInput">
 		<xsd:complexContent>

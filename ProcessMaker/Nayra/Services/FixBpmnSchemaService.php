@@ -45,7 +45,6 @@ class FixBpmnSchemaService
 
             // Find all task nodes
             $taskNodes = $xpath->query('//*[local-name()="task"]');
-            //$taskNodes = $xpath->query('//*[local-name()="task" or local-name()="userTask" or local-name()="serviceTask" or local-name()="scriptTask" or local-name()="receiveTask" or local-name()="sendTask" or local-name()="businessRuleTask" or local-name()="manualTask" or local-name()="callActivity" or local-name()="subProcess" or local-name()="intermediateThrowEvent"]');
 
             foreach ($taskNodes as $task) {
                 $taskId = $task->getAttribute("id");
