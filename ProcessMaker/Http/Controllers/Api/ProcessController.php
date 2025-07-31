@@ -37,6 +37,7 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\Template;
 use ProcessMaker\Nayra\Exceptions\ElementNotFoundException;
+use ProcessMaker\Nayra\Services\FixBpmnSchemaService;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Package\Translations\Models\Language;
 use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
@@ -379,6 +380,12 @@ class ProcessController extends Controller
         // Validate if exists file bpmn
         if ($request->has('file')) {
             $data['bpmn'] = $request->file('file')->get();
+
+            // Some BPMN definitions created in others modelers doesn't comply BPMN 2.0
+            // So, should be fixed
+            $fixBpmnSchemaService = new FixBpmnSchemaService();
+            $data['bpmn'] = $fixBpmnSchemaService->fix($data['bpmn']);
+
             $request->merge(['bpmn' => $data['bpmn']]);
             $request->offsetUnset('file');
             unset($data['file']);
@@ -819,14 +826,6 @@ class ProcessController extends Controller
             $document = new BpmnDocument();
             try {
                 $document->loadXML($data['bpmn']);
-
-                // Get root node
-                $root = $document->documentElement;
-
-                if ($root) {
-                    // Set "targetNamespace" attribute always
-                    $root->setAttribute('targetNamespace', 'http://bpmn.io/schema/bpmn');
-                }
             } catch (\ErrorException $e) {
                 return [$e->getMessage()];
             }
