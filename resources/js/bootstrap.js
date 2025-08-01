@@ -1,7 +1,7 @@
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 import * as bootstrap from "bootstrap";
-import Echo from "laravel-echo";
+import TenantAwareEcho from "./common/TenantAwareEcho";
 import Router from "vue-router";
 import ScreenBuilder, { initializeScreenCache } from "@processmaker/screen-builder";
 import * as VueDeepSet from "vue-deepset";
@@ -313,7 +313,6 @@ const userAvatar = document.head.querySelector("meta[name=\"user-avatar\"]");
 const formatDate = document.head.querySelector("meta[name=\"datetime-format\"]");
 const timezone = document.head.querySelector("meta[name=\"timezone\"]");
 const appUrl = document.head.querySelector("meta[name=\"app-url\"]");
-const tenantId = document.head.querySelector("meta[name=\"tenant-id\"]")?.content;
 
 if (appUrl) {
   window.ProcessMaker.app = {
@@ -346,23 +345,7 @@ if (window.Processmaker && window.Processmaker.broadcasting) {
     window.Pusher.logToConsole = config.debug;
   }
 
-  const echoInstance = new Echo(config);
-
-  if (tenantId) {
-    const originalPrivate = echoInstance.private.bind(echoInstance);
-    echoInstance.private = function(channel, ...args) {
-      const prefixedChannel = `tenant_${tenantId}.${channel}`;
-      return originalPrivate(prefixedChannel, ...args);
-    };
-
-    const originalLeave = echoInstance.leave.bind(echoInstance);
-    echoInstance.leave = function(channel, ...args) {
-      const prefixedChannel = `tenant_${tenantId}.${channel}`;
-      return originalLeave(prefixedChannel, ...args);
-    };
-  }
-
-  window.Echo = echoInstance;
+  window.Echo = new TenantAwareEcho(config);
 }
 
 if (userID) {

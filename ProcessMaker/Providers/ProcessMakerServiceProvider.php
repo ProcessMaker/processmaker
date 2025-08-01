@@ -263,6 +263,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton('currentTenant', function () {
             return null;
         });
+
+        $this->app->instance('tenant-resolved', false);
     }
 
     /**
@@ -314,6 +316,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         Facades\Event::listen(MadeTenantCurrentEvent::class, function ($event) {
+            app()->instance('tenant-resolved', true);
             event(new TenantResolved($event->tenant));
         });
 
