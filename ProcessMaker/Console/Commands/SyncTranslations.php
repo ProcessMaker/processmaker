@@ -4,9 +4,7 @@ namespace ProcessMaker\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
-use ProcessMaker\Managers\PackageManager;
 
 class SyncTranslations extends Command
 {
@@ -34,87 +32,51 @@ class SyncTranslations extends Command
     public function handle()
     {
         // Check if exists resources core
-        $translationsCore = app()->basePath() . '/resources-core';
-        $existsLangOrig = $this->fileExists(app()->langPath() . '.orig');
-        if ($this->fileExists($translationsCore)) {
-            //Search files
-            $this->listFiles($translationsCore . '/lang');
+        $translationsCore = base_path() . '/resources-core';
+        $existsLangOrig = $this->fileExists(lang_path() . '.orig');
 
-            // updating languages by default
-            foreach ($this->files as $pathFile) {
-                if (!(str_contains($pathFile, '.json') || str_contains($pathFile, '.php')) || str_contains($pathFile, '.bak.')) {
-                    continue;
-                }
-                // updating resources/lang
-                $this->syncFile(str_replace('/resources-core/', '/resources/', $pathFile), $pathFile);
-                if ($existsLangOrig) {
-                    // updating resources/lang.orig
-                    $this->syncFile(str_replace(['/resources-core/', '/lang/'], ['/resources/', '/lang.orig/'], $pathFile), $pathFile);
-                }
-            }
-
-            // updating all languages with new labels
-            $this->files = [];
-            $translationsCore = app()->basePath() . '/resources/lang';
-            $this->listFiles($translationsCore);
-            foreach ($this->files as $pathFile) {
-                if (!(str_contains($pathFile, '.json') || str_contains($pathFile, '.php')) || str_contains($pathFile, '.bak.')) {
-                    continue;
-                }
-                // updating resources/lang
-                $backup = str_replace('/resources/', '/resources-core/', preg_replace('/(?<=lang).+?(?=json)/', '/en.', $pathFile));
-                $path1 = explode('/lang/', $backup);
-                $path2 = explode('/', $path1[1]);
-                if (is_array($path2)) {
-                    $backup = str_replace('/' . $path2[0] . '/', '/en/', $backup);
-                }
-
-                $this->syncFile($pathFile, $backup);
-                if ($existsLangOrig) {
-                    // updating resources/lang.orig
-                    $this->syncFile(str_replace('/lang/', '/lang.orig/', $pathFile), $backup);
-                }
-            }
-        } else {
+        if (!$this->fileExists($translationsCore)) {
             $this->error('The folder resources-core not exists.');
+
+            return;
+        }
+        //Search files
+        $this->listFiles($translationsCore . '/lang');
+
+        // updating languages by default
+        foreach ($this->files as $pathFile) {
+            if (!(str_contains($pathFile, '.json') || str_contains($pathFile, '.php')) || str_contains($pathFile, '.bak.')) {
+                continue;
+            }
+            // updating resources/lang
+            $this->syncFile(str_replace('/resources-core/', '/resources/', $pathFile), $pathFile);
+            if ($existsLangOrig) {
+                // updating resources/lang.orig
+                $this->syncFile(str_replace(['/resources-core/', '/lang/'], ['/resources/', '/lang.orig/'], $pathFile), $pathFile);
+            }
         }
 
-        // check if exists backups of translations package
-        $translationsPackage = app()->basePath() . '/resources-package';
-        if ($this->fileExists($translationsPackage)) {
-            // get All packages installed
-            $packages = App::make(PackageManager::class)->getJsonTranslationsRegistered();
-            // review all packages by translations
-            foreach ($packages as $pathPackage) {
-                $package = explode('/src/', $pathPackage);
-                $package = explode('/', $package[0]);
-
-                if ($this->fileExists($translationsPackage . '/lang-' . last($package))) {
-                    $this->files = [];
-                    $this->listFiles($translationsPackage . '/lang-' . last($package));
-                    $existsLangOrig = $this->fileExists($translationsPackage . '/lang.orig-' . last($package));
-                    foreach ($this->files as $pathFile) {
-                        if (!str_contains($pathFile, '.json') || str_contains($pathFile, '.bak.')) {
-                            continue;
-                        }
-                        // updating resources/lang
-                        $this->syncFile($pathFile, $pathPackage . '/en.json');
-                        if ($existsLangOrig) {
-                            // updating resources/lang.orig
-                            $this->syncFile(str_replace('/lang-', '/lang.orig-', $pathFile), $pathPackage . '/en.json');
-                        }
-                    }
-
-                    File::copyDirectory($translationsPackage . '/lang-' . last($package), $pathPackage);
-                    if ($existsLangOrig) {
-                        File::copyDirectory($translationsPackage . '/lang.orig-' . last($package), $pathPackage . '.orig');
-                    }
-                } else {
-                    $this->error('Backup no exists: ' . last($package));
-                }
+        // updating all languages with new labels
+        $this->files = [];
+        $translationsCore = lang_path();
+        $this->listFiles($translationsCore);
+        foreach ($this->files as $pathFile) {
+            if (!(str_contains($pathFile, '.json') || str_contains($pathFile, '.php')) || str_contains($pathFile, '.bak.')) {
+                continue;
             }
-        } else {
-            $this->error('The folder resources-package not exists.');
+            // updating resources/lang
+            $backup = str_replace('/resources/', '/resources-core/', preg_replace('/(?<=lang).+?(?=json)/', '/en.', $pathFile));
+            $path1 = explode('/lang/', $backup);
+            $path2 = explode('/', $path1[1]);
+            if (is_array($path2)) {
+                $backup = str_replace('/' . $path2[0] . '/', '/en/', $backup);
+            }
+
+            $this->syncFile($pathFile, $backup);
+            if ($existsLangOrig) {
+                // updating resources/lang.orig
+                $this->syncFile(str_replace('/lang/', '/lang.orig/', $pathFile), $backup);
+            }
         }
     }
 
@@ -145,7 +107,7 @@ class SyncTranslations extends Command
 
         try {
             if ($pathInfo['extension'] === 'json') {
-                $lines = json_decode(file_get_contents($path));
+                $lines = json_decode(file_get_contents($path), true);
             } elseif ($pathInfo['extension'] === 'php') {
                 $lines = include $path;
             }
@@ -205,7 +167,7 @@ class SyncTranslations extends Command
             return false;
         }
 
-        // Solo obtener las claves que están en origin pero no en target
+        // Get keys that are in origin but not in target
         $diff = $origin->diffKeys($targetTranslations);
 
         if ($diff->isNotEmpty()) {
@@ -217,7 +179,7 @@ class SyncTranslations extends Command
                 $clear = false;
             }
 
-            // Agregar solo las nuevas claves al targetTranslations
+            // Add new keys to targetTranslations
             foreach ($diff as $key => $value) {
                 $targetTranslations[$key] = $clear ? '' : $value;
             }
