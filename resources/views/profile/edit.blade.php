@@ -121,6 +121,7 @@
                 icon: 'slack-color-logo',
                 enabled: false,
                 channel_id: null,
+                enabled_at: null,
                 ui_options: {
                     show_toggle: true,
                     show_edit_modal: false
