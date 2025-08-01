@@ -166,6 +166,7 @@
                                     <b-col>
                                         <label class="typo__label">{{__('Process Owner')}}</label>
                                         <select-user
+                                          data-cy="process-owner"
                                           v-model="owner"
                                           :multiple="false"
                                           :class="{'is-invalid': errors.user_id}"
