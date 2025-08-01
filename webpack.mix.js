@@ -103,6 +103,7 @@ mix
   .js("resources/js/admin/profile/edit.js", "public/js/admin/profile/edit.js")
   .js("resources/js/admin/cssOverride/edit.js", "public/js/admin/cssOverride/edit.js")
   .js("resources/js/admin/script-executors/index.js", "public/js/admin/script-executors/index.js")
+  .js("resources/js/admin/tenant-queues/index.js", "public/js/admin/tenant-queues/index.js")
 
   .js("resources/js/processes/index.js", "public/js/processes")
   .js("resources/js/processes/edit.js", "public/js/processes")
