@@ -5,6 +5,7 @@
 /public/css
 /storage/*.key
 /storage/*.index
+/storage/tenant_*
 /vendor
 /.idea
 /.vscode
@@ -44,5 +45,9 @@ coverage
 resources/lang/de
 resources/lang/es
 resources/lang/fr
+resources/sass/tenant_*
+resources/sass/_variables_bk.scss
 devhub/pm-font/dist
 test-db-snapshot.db
+snapshot_*.db
+storage/transitions

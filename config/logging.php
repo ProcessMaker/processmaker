@@ -62,14 +62,14 @@ return [
 
         'single' => [
             'driver' => 'single',
-            'path' => storage_path('logs/processmaker.log'),
+            'path' => base_path('storage/logs/processmaker.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'replace_placeholders' => true,
         ],
 
         'daily' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/processmaker.log'),
+            'path' => base_path('storage/logs/processmaker.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => 7,
             'replace_placeholders' => true,
@@ -126,12 +126,12 @@ return [
         ],
 
         'emergency' => [
-            'path' => storage_path('logs/laravel.log'),
+            'path' => base_path('storage/logs/laravel.log'),
         ],
 
         'data-source' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/data-source.log'),
+            'path' => base_path('storage/logs/data-source.log'),
             'level' => 'debug',
             'days' => env('DATA_SOURCE_CLEAR_LOG', 7),
         ],
