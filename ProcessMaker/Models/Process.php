@@ -226,7 +226,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         'assigned',
         'completed',
         'due',
-        'default'
+        'default',
     ];
 
     protected $appends = [
@@ -549,7 +549,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      */
     public static function getProcessTemplatesPath()
     {
-        return Storage::disk('process_templates')->path('');
+        return Storage::path(config('paths.process_templates.path'));
     }
 
     /**
@@ -561,7 +561,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      */
     public static function getProcessTemplate($name)
     {
-        return Storage::disk('process_templates')->get($name);
+        return Storage::get(Str::finish(config('paths.process_templates.path'), '/') . $name);
     }
 
     /**

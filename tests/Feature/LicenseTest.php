@@ -30,8 +30,8 @@ class LicenseTest extends TestCase
     protected function tearDown(): void
     {
         // remove the license.json file if it exists
-        if (Storage::disk('local')->exists('license.json')) {
-            Storage::disk('local')->delete('license.json');
+        if (Storage::exists('license.json')) {
+            Storage::delete('license.json');
         }
         Cache::forget(LicensedPackageManifest::EXPIRE_CACHE_KEY);
 
@@ -54,7 +54,7 @@ class LicenseTest extends TestCase
             ],
         ];
 
-        Storage::disk('local')->put('license.json', json_encode($license));
+        Storage::put('license.json', json_encode($license));
 
         $packageManifest = $this->app->make(PackageManifest::class);
         $packagesToIgnore = $packageManifest->loadPackagesToIgnore();
@@ -84,7 +84,7 @@ class LicenseTest extends TestCase
             ],
         ];
 
-        Storage::disk('local')->put('license.json', json_encode($license));
+        Storage::put('license.json', json_encode($license));
 
         Carbon::setTestNow(Carbon::now()->addDays(31));
 
@@ -118,7 +118,7 @@ class LicenseTest extends TestCase
                 'package-projects',
             ],
         ];
-        Storage::disk('local')->put('license.json', json_encode($license));
+        Storage::put('license.json', json_encode($license));
 
         Artisan::call('package:discover');
 
@@ -141,7 +141,7 @@ class LicenseTest extends TestCase
                 'package-projects',
             ],
         ];
-        Storage::disk('local')->put('license.json', json_encode($license));
+        Storage::put('license.json', json_encode($license));
 
         Artisan::call('package:discover');
 

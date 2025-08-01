@@ -23,8 +23,8 @@ class LicenseCommandsTest extends TestCase
     protected function tearDown(): void
     {
         // remove the license.json file if it exists
-        if (Storage::disk('local')->exists('license.json')) {
-            Storage::disk('local')->delete('license.json');
+        if (Storage::exists('license.json')) {
+            Storage::delete('license.json');
         }
         Cache::forget(LicensedPackageManifest::EXPIRE_CACHE_KEY);
         // run package:discover
@@ -43,7 +43,7 @@ class LicenseCommandsTest extends TestCase
         $this->artisan('processmaker:license-update', ['licenseFile' => $licenseFilePath])
             ->assertExitCode(0);
 
-        $this->assertTrue(Storage::disk('local')->exists('license.json'));
+        $this->assertTrue(Storage::exists('license.json'));
     }
 
     public function testLicenseUpdateWithInvalidContent()
@@ -59,26 +59,26 @@ class LicenseCommandsTest extends TestCase
 
     public function testLicenseRemoveConfirmation()
     {
-        Storage::disk('local')->put('license.json', 'sample content');
+        Storage::put('license.json', 'sample content');
 
         $this->artisan('processmaker:license-remove')
             ->expectsQuestion('Are you sure you want to remove the license.json file?', false)
             ->expectsOutput('Operation cancelled. license.json was not removed.')
             ->assertExitCode(0);
 
-        $this->assertTrue(Storage::disk('local')->exists('license.json'));
+        $this->assertTrue(Storage::exists('license.json'));
     }
 
     public function testLicenseRemove()
     {
-        Storage::disk('local')->put('license.json', '{"expires_at": "2023-12-31", "packages": []}');
+        Storage::put('license.json', '{"expires_at": "2023-12-31", "packages": []}');
 
         $this->artisan('processmaker:license-remove')
             ->expectsQuestion('Are you sure you want to remove the license.json file?', true)
             ->expectsOutput('license.json removed successfully!')
             ->assertExitCode(0);
 
-        $this->assertFalse(Storage::disk('local')->exists('license.json'));
+        $this->assertFalse(Storage::exists('license.json'));
     }
 
     public function testLicenseRemoveNonExistent()

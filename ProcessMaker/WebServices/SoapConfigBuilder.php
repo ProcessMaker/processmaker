@@ -4,6 +4,7 @@ namespace ProcessMaker\WebServices;
 
 use Exception;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use ProcessMaker\WebServices\Contracts\WebServiceConfigBuilderInterface;
 
 class SoapConfigBuilder implements WebServiceConfigBuilderInterface
@@ -24,7 +25,7 @@ class SoapConfigBuilder implements WebServiceConfigBuilderInterface
                 $config['wsdl'] = $dataSourceConfig['credentials']['service_url'];
                 break;
             case 'WSDL_FILE':
-                $config['wsdl'] = Storage::disk('web_services')->path($dataSourceConfig['wsdlFile']['path']) ?? null;
+                $config['wsdl'] = Storage::path(Str::finish(config('paths.web_services.path'), '/') . $dataSourceConfig['wsdlFile']['path']) ?? null;
                 break;
             case 'LOCAL_CERTIFICATE':
                 $config['wsdl'] = $dataSourceConfig['credentials']['service_url'];
@@ -95,7 +96,7 @@ class SoapConfigBuilder implements WebServiceConfigBuilderInterface
     private function getCertificatePath($dataSourceConfig)
     {
         if ($dataSourceConfig['credentials'] && $dataSourceConfig['credentials']['files'] && count($dataSourceConfig['credentials']['files']) > 0) {
-            return Storage::disk('web_services')->path($dataSourceConfig['credentials']['files'][0]['path']);
+            return Storage::path(Str::finish(config('paths.web_services.path'), '/') . $dataSourceConfig['credentials']['files'][0]['path']);
         }
 
         return '';
