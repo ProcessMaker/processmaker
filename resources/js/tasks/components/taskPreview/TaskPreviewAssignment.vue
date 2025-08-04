@@ -27,7 +27,8 @@
       <textarea
         v-model="comments"
         rows="5"
-        class="tw-w-full tw-border tw-border-gray-300 tw-rounded-md tw-resize-none"
+        class="tw-w-full tw-border tw-border-gray-300 tw-rounded-md
+          tw-resize-none placeholder:tw-text-gray-400/80 placeholder:tw-text-sm tw-p-2"
         :placeholder="$t('Add a comment to the assignment')"
       />
     </div>
