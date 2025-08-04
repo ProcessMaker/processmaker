@@ -23,7 +23,7 @@
         "guzzlehttp/guzzle": "^7.9",
         "igaster/laravel-theme": "^2.0",
         "jenssegers/agent": "^2.6",
-        "laravel/framework": "^11.0",
+        "laravel/framework": "^11.45",
         "laravel/horizon": "^5.30",
         "laravel/pail": "^1.2",
         "laravel/passport": "^12.3",
@@ -35,7 +35,6 @@
         "lcobucci/jwt": "^4.2",
         "league/flysystem-aws-s3-v3": "^3.29",
         "mateusjunges/laravel-kafka": "^2.4",
-        "microsoft/microsoft-graph": "^2.8",
         "mittwald/vault-php": "^2.1",
         "moontoast/math": "^1.2",
         "mustache/mustache": "^2.14",
@@ -44,9 +43,6 @@
         "php-amqplib/php-amqplib": "^3.7",
         "pion/laravel-chunk-upload": "^1.5",
         "predis/predis": "^2.3",
-        "processmaker/docker-executor-lua": "^1.0",
-        "processmaker/docker-executor-node": "1.1.0",
-        "processmaker/docker-executor-php": "1.4.0",
         "processmaker/laravel-i18next": "dev-master",
         "processmaker/nayra": "1.12.1",
         "processmaker/pmql": "1.13.1",
@@ -103,6 +99,9 @@
         },
         "google/apiclient-services": [
             "Gmail"
+        ],
+        "aws/aws-sdk-php": [
+            "S3"
         ],
         "processmaker": {
             "build": "9d9c17c9",
@@ -204,7 +203,10 @@
             "@php artisan package:discover",
             "@php artisan processmaker:install-pre-commit-hooks"
         ],
-        "pre-autoload-dump": "Google\\Task\\Composer::cleanup",
+        "pre-autoload-dump": [
+            "Google\\Task\\Composer::cleanup",
+            "Aws\\Script\\Composer\\Composer::removeUnusedServices"
+        ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
             "@php artisan vendor:publish --provider=\"OpenAI\\Laravel\\ServiceProvider\""
