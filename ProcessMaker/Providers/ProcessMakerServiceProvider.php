@@ -316,7 +316,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         Facades\Event::listen(MadeTenantCurrentEvent::class, function ($event) {
-            app()->instance('tenant-resolved', true);
             event(new TenantResolved($event->tenant));
         });
 
