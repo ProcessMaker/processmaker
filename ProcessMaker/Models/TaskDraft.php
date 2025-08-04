@@ -81,9 +81,14 @@ class TaskDraft extends ProcessMakerModel implements HasMedia
         foreach ($task->processRequest->getMedia() as $existingMediaItem) {
             $existingMediaDataName = $existingMediaItem->getCustomProperty('data_name');
             $mediaItemDataName = $mediaItem->getCustomProperty('data_name');
+            /**
+             * This is different when the process depends on a subprocess.
+             */
+            $subProcessParallel = $mediaItem->getCustomProperty('parent_process_request_id') === $task->processRequest->id;
             if (
                 $existingMediaDataName === $mediaItemDataName &&
-                !$mediaItem->getCustomProperty('is_multiple')
+                !$mediaItem->getCustomProperty('is_multiple') &&
+                $subProcessParallel
             ) {
                 $delete[] = $existingMediaItem;
             }
