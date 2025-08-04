@@ -39,10 +39,7 @@ class MetricsService
         try {
             // Set up Redis as the adapter if none is provided
             if ($adapter === null) {
-                $adapter = new Redis([
-                    'host' => config('database.redis.default.host'),
-                    'port' => config('database.redis.default.port'),
-                ]);
+                $adapter = Redis::fromExistingConnection(app('redis')->client());
             }
             $this->collectionRegistry = new CollectorRegistry($adapter);
         } catch (Exception $e) {
