@@ -75,7 +75,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         parent::boot();
 
-        Passport::loadKeysFrom('/var/taks/storage');
+        if (!empty($keysPath = env('SERVERLESS_PASSPORT_PATH'))) {
+            Passport::loadKeysFrom($keysPath);
+        }
 
         Route::pushMiddlewareToGroup('api', HandleEtag::class);
         // Hook after service providers boot
