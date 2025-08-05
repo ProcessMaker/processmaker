@@ -305,6 +305,7 @@
                         description: account.description,
                         icon: account.icon,
                         enabled: $event,
+                        enabled_at: new Date().toISOString(),
                         channel_id: null,
                         ui_options: {
                           show_toggle: true,
