@@ -40,7 +40,7 @@ class User extends Authenticatable implements HasMedia
     protected $connection = 'processmaker';
 
     // Disk
-    public const DISK_PROFILE = 'profile';
+    public const DISK_PROFILE = 's3';
 
     // collection media library
     public const COLLECTION_PROFILE = 'profile';

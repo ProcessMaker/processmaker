@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 class ScreenCompiledManagerTest extends TestCase
 {
-    protected $storageDisk = 'local';
+    protected $storageDisk = 's3';
 
     protected $storagePath = 'compiled_screens/';
 

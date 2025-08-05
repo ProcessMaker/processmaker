@@ -12,7 +12,7 @@ class ScreenCompiledManager
      *
      * @var string
      */
-    protected $storageDisk = 'local';
+    protected $storageDisk = 's3';
 
     /**
      * The directory where compiled screens are stored.
