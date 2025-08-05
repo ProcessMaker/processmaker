@@ -13,5 +13,6 @@ class TenantResolved
 {
     public function __construct(public ?IsTenant $tenant = null)
     {
+        app()->instance('tenant-resolved', true);
     }
 }

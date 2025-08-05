@@ -85,16 +85,6 @@ class TenantsCreate extends Command
             mkdir($tenantStoragePath, 0755, true);
         }
 
-        // Setup lang folder
-        $tenantLangPath = $tenantStoragePath . '/lang';
-        if (File::isDirectory($tenantLangPath)) {
-            $this->error('Tenant lang path already exists: ' . $tenantLangPath);
-
-            return 1;
-        } else {
-            // Lang folder will be initialized later
-        }
-
         // Check if an existing storage folder is provided
         $storageFolderOption = $this->option('storage-folder', null);
         if ($storageFolderOption) {
@@ -117,12 +107,18 @@ class TenantsCreate extends Command
         }
 
         // Check if an existing lang folder is provided
-        // WIP: Does not take into consideration package lang folders
         $langFolderOption = $this->option('lang-folder', null);
+        $tenantLangPath = resource_path('lang/tenant_' . $tenant->id);
         if ($langFolderOption) {
             if (File::isDirectory($langFolderOption)) {
                 $this->info('Moving lang folder to ' . $tenantLangPath);
-                rename($langFolderOption, $tenantLangPath);
+                if (File::isDirectory($tenantLangPath)) {
+                    $this->error('Tenant lang path already exists: ' . $tenantLangPath);
+
+                    return 1;
+                } else {
+                    rename($langFolderOption, $tenantLangPath);
+                }
             } else {
                 $this->error('Lang folder does not exist: ' . $langFolderOption);
 
@@ -130,11 +126,8 @@ class TenantsCreate extends Command
             }
         } else {
             // Initialize lang folder
-            $exitCode = $this->tenantArtisan('tenants:init-translations', $tenant->id);
-            if ($exitCode !== 0) {
-                $this->error('Failed to initialize lang folder');
-
-                return 1;
+            if (!File::isDirectory($tenantLangPath)) {
+                mkdir($tenantLangPath, 0755, true);
             }
         }
 
@@ -182,9 +175,17 @@ class TenantsCreate extends Command
         // Hold off on this for now.
         // $this->tenantArtisan('tenant:storage-link', $tenant->id);
 
-        $this->tenantArtisan('passport:keys --force', $tenant->id);
+        // Must be run after migrations so skip it. (provider somewhere complains about a table missing)
+        // $this->tenantArtisan('passport:keys --force', $tenant->id);
 
-        $this->info('Tenant created successfully. You need to run migrations, upgrades, and package install commands. Every command should be run with TENANT=' . $tenant->id);
+        $this->info("Empty tenant created.\n");
+        $this->info("With the tenant set (using TENANT={$tenant->id} env prefix) you must now:");
+        $this->line('- Run migrations');
+        $this->line('- Seed the database');
+        $this->line('- Run the install command for each package');
+        $this->line('- Run artisan upgrade');
+        $this->line('- Generate passport keys with artisan passport:keys');
+        $this->info("For example, `TENANT={$tenant->id} php artisan migrate:fresh --seed`");
     }
 
     private function tenantArtisan($command, $tenantId)

@@ -263,6 +263,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton('currentTenant', function () {
             return null;
         });
+
+        $this->app->instance('tenant-resolved', false);
     }
 
     /**

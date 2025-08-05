@@ -93,6 +93,12 @@ class TenantsTransition extends Command
             }
         }
 
+        $appName = $envVars['PROCESS_INTELLIGENCE_COMPANY_NAME'];
+        if (!$appName) {
+            // Get the app name from the folder name
+            $appName = basename($clientFolder);
+        }
+
         // Create the tenant
         $domain = parse_url($envVars['APP_URL'], PHP_URL_HOST);
 
@@ -100,7 +106,7 @@ class TenantsTransition extends Command
 
         // Call tenants:create command
         $command = [
-            '--name' => $envVars['APP_NAME'],
+            '--name' => $appName,
             '--url' => $envVars['APP_URL'],
             '--database' => $envVars['DB_DATABASE'],
             '--username' => $envVars['DB_USERNAME'],
