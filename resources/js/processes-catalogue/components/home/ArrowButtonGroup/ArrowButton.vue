@@ -15,7 +15,7 @@
           </div>
         </slot>
         <slot name="helper">
-          <div class="tw-text-sm tw-truncate">
+          <div v-if="helper" class="tw-text-sm tw-truncate">
             {{ helper }}
           </div>
         </slot>
