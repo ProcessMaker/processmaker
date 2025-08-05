@@ -80,4 +80,13 @@ class JsonColumnIndexTest extends TestCase
             $processRequest
         );
     }
+
+    public function testCustomMysqlGrammarWithTableName()
+    {
+        $processRequest = ProcessRequest::pmql('table_name.data.firstname = "Marco"')->toSql();
+        $this->assertEquals(
+            'select * from `process_requests` where (LEFT(table_name.data->>"$.firstname", 255) = ?)',
+            $processRequest
+        );
+    }
 }
