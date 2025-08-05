@@ -11,6 +11,7 @@ use ProcessMaker\Events\CustomizeUiUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Jobs\CompileSass;
+use ProcessMaker\Jobs\CompileUI;
 use ProcessMaker\Models\Setting;
 
 class CssOverrideController extends Controller
@@ -97,9 +98,8 @@ class CssOverrideController extends Controller
 
         $this->setLoginFooter($request);
         $this->setAltText($request);
-        $this->writeColors(json_decode($request->input('variables', '[]'), true));
-        $this->writeFonts(json_decode($request->input('sansSerifFont', '')));
-        $this->compileSass($request->user('api')->id, json_decode($request->input('variables', '[]'), true));
+
+        CompileUI::dispatch($request->user('api')->id);
 
         // Register the Event
         CustomizeUiUpdated::dispatch([], [], $reset);
@@ -167,67 +167,10 @@ class CssOverrideController extends Controller
 
         $this->setLoginFooter($request);
         $this->setAltText($request);
-        $this->writeColors(json_decode($request->input('variables', '[]'), true));
-        $this->writeFonts(json_decode($request->input('sansSerifFont', '')));
-        $this->compileSass($request->user('api')->id, json_decode($request->input('variables', '[]'), true));
+
+        CompileUI::dispatch($request->user('api')->id);
 
         return response([], 204);
-    }
-
-    /**
-     * Write variables in file
-     *
-     * @param $request
-     */
-    private function writeColors($data)
-    {
-        // Now generate the _colors.scss file
-        $contents = "// Changed theme colors\n";
-        foreach ($data as $key => $value) {
-            $contents .= $value['id'] . ': ' . $value['value'] . ";\n";
-        }
-        File::put(app()->resourcePath('sass') . '/_colors.scss', $contents);
-    }
-
-    /**
-     * Write variables font in file
-     *
-     * @param $sansSerif
-     * @param $serif
-     */
-    private function writeFonts($sansSerif)
-    {
-        $sansSerif = $sansSerif ? $sansSerif : $this->sansSerifFontDefault();
-        // Generate the _fonts.scss file
-        $contents = "// Changed theme fonts\n";
-        $contents .= '$font-family-sans-serif: ' . $sansSerif->id . " !default;\n";
-        File::put(app()->resourcePath('sass') . '/_fonts.scss', $contents);
-    }
-
-    /**
-     * run jobs compile
-     */
-    private function compileSass($userId)
-    {
-        // Compile the Sass files
-        $this->dispatch(new CompileSass([
-            'tag' => 'sidebar',
-            'origin' => 'resources/sass/sidebar/sidebar.scss',
-            'target' => 'public/css/sidebar.css',
-            'user' => $userId,
-        ]));
-        $this->dispatch(new CompileSass([
-            'tag' => 'app',
-            'origin' => 'resources/sass/app.scss',
-            'target' => 'public/css/app.css',
-            'user' => $userId,
-        ]));
-        $this->dispatch(new CompileSass([
-            'tag' => 'queues',
-            'origin' => 'resources/sass/admin/queues.scss',
-            'target' => 'public/css/admin/queues.css',
-            'user' => $userId,
-        ]));
     }
 
     /**
