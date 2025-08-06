@@ -596,6 +596,7 @@ In that folder create a new folder for each instance you want to migrate.
 The folder should contain exactly 2 things:
 - the .env from the instance you want to migrate
 - the storage folder from the instance you want to migrate, named `storage`
+- the resources/lang folder for custom translations named `lang`
 
 Run the following command to migrate the instance(s) to a tenant:
 ```

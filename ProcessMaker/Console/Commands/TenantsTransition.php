@@ -93,7 +93,7 @@ class TenantsTransition extends Command
             }
         }
 
-        $appName = $envVars['PROCESS_INTELLIGENCE_COMPANY_NAME'];
+        $appName = $envVars['PROCESS_INTELLIGENCE_COMPANY_NAME'] ?? null;
         if (!$appName) {
             // Get the app name from the folder name
             $appName = basename($clientFolder);
@@ -129,6 +129,13 @@ class TenantsTransition extends Command
         // Delete the client folder
         File::deleteDirectory($clientFolder);
 
+        // Regenerate CSS
+        $this->tenantArtisan('processmaker:regenerate-css', $tenant->id);
+
+        // Generate passport keys
+        // Shouldn't the keys have been copied over in the storage folder?
+        // $this->tenantArtisan('passport:keys --force', $tenant->id);
+
         $this->info("Successfully transitioned client {$clientName} to tenant.");
     }
 
@@ -141,5 +148,17 @@ class TenantsTransition extends Command
     private function parseEnvFile(string $contents): array
     {
         return Dotenv::parse($contents);
+    }
+
+    /**
+     * Call an artisan command for a tenant
+     *
+     * @param string $command
+     * @param int $tenantId
+     * @return void
+     */
+    private function tenantArtisan($command, $tenantId)
+    {
+        Artisan::call('tenants:artisan', ['artisanCommand' => $command, '--tenant' => $tenantId], $this->output);
     }
 }

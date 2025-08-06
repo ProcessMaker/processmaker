@@ -32,11 +32,11 @@ class TenantsEnable extends Command
         $migrate = $this->option('migrate', false);
 
         // Check if multitenancy is enabled
-        if (config('app.multitenancy')) {
-            $this->error('Multitenancy is already enabled. Remove or set MULTITENANCY=false in .env then run this command again.');
+        // if (config('app.multitenancy')) {
+        //     $this->error('Multitenancy is already enabled. Remove or set MULTITENANCY=false in .env then run this command again.');
 
-            return 1;
-        }
+        //     return 1;
+        // }
 
         if ($migrate) {
             // check if the config cache file exists
@@ -84,14 +84,14 @@ class TenantsEnable extends Command
             return 1;
         }
 
-        if (!$migrate) {
-            // Add or update the MULTITENANCY env var
-            $this->addOrUpdateEnvVar('MULTITENANCY', 'true');
+        // if (!$migrate) {
+        //     // Add or update the MULTITENANCY env var
+        //     $this->addOrUpdateEnvVar('MULTITENANCY', 'true');
 
-            $this->info('Tenant support enabled successfully');
+        //     $this->info('Tenant support enabled successfully');
 
-            return;
-        }
+        //     return;
+        // }
 
         /**
          * Begin migration if the --migrate option is provided.
