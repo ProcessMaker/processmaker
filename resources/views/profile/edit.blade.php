@@ -269,6 +269,10 @@
                             this.originalEmail = this.formData.email;
                             this.emailHasChanged = false;
                             this.formData.valpassword = "";
+                            // Update the data to reflect the updated connected accounts
+                            if (document.querySelector('#nav-accounts-tab').classList.contains('active')) {
+                              window.location.reload();
+                            }
                         })
                         .catch(error => {
                             if (error.response?.data?.errors) {
