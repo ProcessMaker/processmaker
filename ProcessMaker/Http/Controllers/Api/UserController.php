@@ -204,7 +204,17 @@ class UserController extends Controller
             $include_ids = explode(',', $include_ids_string);
         } elseif ($request->has('assignable_for_task_id')) {
             $processRequestToken = ProcessRequestToken::findOrFail($request->input('assignable_for_task_id'));
-            $include_ids = $processRequestToken->process->getAssignableUsersByAssignmentType($processRequestToken);
+            if (config('app.reassign_restrict_to_assignable_users', true)) {
+                $include_ids = $processRequestToken->process->getAssignableUsersByAssignmentType($processRequestToken);
+            }
+
+            // Exclude the current assigned user from the list
+            $currentUserId = $processRequestToken->user_id;
+            if ($currentUserId) {
+                $include_ids = array_filter($include_ids, function ($id) use ($currentUserId) {
+                    return $id != $currentUserId;
+                });
+            }
         }
 
         if (!empty($include_ids)) {
