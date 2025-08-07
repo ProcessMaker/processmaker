@@ -51,12 +51,10 @@ class Kernel extends ConsoleKernel
 
             // Only schedule if interval is valid
             if ($slackOverDueTaskInterval > 0) {
-                $slackOverDueTaskCommand = "connector-slack:check-overdue-tasks --batch-size={$slackOverDueTaskBatchSize}";
+                $slackOverDueTaskCommand = "connector-slack:check-overdue-tasks --batch-size={$slackOverDueTaskBatchSize} --queue";
                 $command = $schedule->command($slackOverDueTaskCommand);
 
-                $command->cron("*/{$slackOverDueTaskInterval} * * * *")
-                    ->withoutOverlapping()
-                    ->runInBackground();
+                $command->cron("*/{$slackOverDueTaskInterval} * * * *");
             }
         }
 
