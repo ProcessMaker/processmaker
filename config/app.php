@@ -292,4 +292,6 @@ return [
     'json_optimization_decode' => env('JSON_OPTIMIZATION_DECODE', false),
 
     'multitenancy' => env('MULTITENANCY', false),
+
+    'reassign_restrict_to_assignable_users' => env('REASSIGN_RESTRICT_TO_ASSIGNABLE_USERS', true),
 ];
