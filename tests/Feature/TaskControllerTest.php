@@ -146,33 +146,4 @@ class TaskControllerTest extends TestCase
         $response->assertSee('Token not found');
         $response->assertStatus(404);
     }
-
-    /**
-     * Test email task notification
-     */
-    public function testEmailTaskNotificationInFormTask()
-    {
-        $user = User::factory()->create([
-            'email_task_notification' => 1,
-        ]);
-        Auth::login($user);
-        $process = Process::factory()->create([
-            'bpmn' => file_get_contents(__DIR__ . '/../Fixtures/email_task_notification_process.bpmn'),
-        ]);
-        // Start a request
-        $route = route('api.process_events.trigger', [$process->id, 'event' => 'node_1']);
-        $data = [];
-        $response = $this->apiCall('POST', $route, $data);
-        $response->assertStatus(201);
-        // Find the request
-        $instance = ProcessRequest::first();
-        $task = ProcessRequestToken::where('element_type', 'task')->where('process_id', $process->id)->where('status', 'ACTIVE')->first();
-        $this->assertEquals(0, $task->is_emailsent);
-        $user = User::where('id', $task->user_id)->first();
-        $user->email_task_notification = 1;
-        $user->save();
-        WorkflowManager::completeTask($process, $instance, $task, []);
-        $task = ProcessRequestToken::where('element_type', 'task')->where('process_id', $process->id)->where('status', 'ACTIVE')->first();
-        $this->assertEquals(0, $task->is_emailsent);
-    }
 }

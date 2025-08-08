@@ -482,6 +482,14 @@ class ScreenController extends Controller
      */
     public function destroy(Screen $screen)
     {
+        // Check if the screen is a default screen
+        if ($screen->is_default == 1) {
+            return response([
+                'message' => 'Cannot delete a default screen',
+                'errors' => ['is_default' => 'Default screens cannot be deleted'],
+            ], 422);
+        }
+
         $screen->delete();
         // Call new event to store changes in LOG
         ScreenDeleted::dispatch($screen);
