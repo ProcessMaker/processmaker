@@ -17,7 +17,7 @@
 @endsection
 
 @section('content')
-    <div id="tasks">
+    <div id="tasks" class="tw-w-full tw-h-full">
         <div v-if="showOldTaskScreen" class="process-catalog-main" :class="{ 'menu-open': showMenu }">
             <div class="px-3 page-content mb-0">
                 <div class="row">
@@ -130,23 +130,21 @@
                 </div>
             </div>
         </div>
-        <div v-else>
-            <participant-home-screen :task-drafts-enabled="{{ json_encode($taskDraftsEnabled) }}"
-                :user-filter="{{ json_encode($userFilter) }}"
-                :default-columns="{{ json_encode($defaultColumns ?? []) }}"
-                :user-configuration="{{ $userConfiguration ?? [] }}"
-                :user-permissions="{{ json_encode([
-                    'hasPermissionsForUsersGroups' => Auth::user()->hasPermissionsFor('users', 'groups'),
-                    'isAdministrator' => Auth::user()->is_administrator,
-                    'canEditScreens' => Auth::user()->hasPermission('edit-screens'),
-                ]) }}"
-                :savedsearch-defaults-edit-route="{{ Route::has('package.savedsearch.defaults.edit') ? json_encode(
-                    route('package.savedsearch.defaults.edit', [
-                        'type' => 'task',
-                        'key' => 'tasks',
-                    ])
-                ) : 'null' }}"></participant-home-screen>
-        </div>
+        <participant-home-screen v-else :task-drafts-enabled="{{ json_encode($taskDraftsEnabled) }}"
+            :user-filter="{{ json_encode($userFilter) }}"
+            :default-columns="{{ json_encode($defaultColumns ?? []) }}"
+            :user-configuration="{{ $userConfiguration ?? [] }}"
+            :user-permissions="{{ json_encode([
+                'hasPermissionsForUsersGroups' => Auth::user()->hasPermissionsFor('users', 'groups'),
+                'isAdministrator' => Auth::user()->is_administrator,
+                'canEditScreens' => Auth::user()->hasPermission('edit-screens'),
+            ]) }}"
+            :savedsearch-defaults-edit-route="{{ Route::has('package.savedsearch.defaults.edit') ? json_encode(
+                route('package.savedsearch.defaults.edit', [
+                    'type' => 'task',
+                    'key' => 'tasks',
+                ])
+            ) : 'null' }}"></participant-home-screen>
     </div>
 @endsection
 

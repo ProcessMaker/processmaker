@@ -1,4 +1,4 @@
-import Echo from "laravel-echo";
+import TenantAwareEcho from "../../common/TenantAwareEcho";
 import { setGlobalVariables } from "../globalVariables";
 
 export default () => {
@@ -13,7 +13,7 @@ export default () => {
     }
 
     setGlobalVariables({
-      Echo: new Echo(config),
+      Echo: new TenantAwareEcho(config),
       Pusher,
     });
   }

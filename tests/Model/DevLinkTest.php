@@ -57,7 +57,7 @@ class DevLinkTest extends TestCase
 
     public function testInstallRemoteBundle()
     {
-        Storage::fake('local');
+        Storage::fake('root');
 
         $screen1 = Screen::factory()->create(['title' => 'Screen 1']);
         $screen2 = Screen::factory()->create(['title' => 'Screen 2']);
@@ -152,7 +152,7 @@ class DevLinkTest extends TestCase
 
     public function testUpdateBundle()
     {
-        Storage::fake('local');
+        Storage::fake('root');
 
         // Remote Instance
         $screen = Screen::factory()->create(['title' => 'Screen Name']);

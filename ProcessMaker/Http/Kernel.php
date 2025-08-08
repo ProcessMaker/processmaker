@@ -15,6 +15,8 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
+        // \Spatie\Multitenancy\Http\Middleware\NeedsTenant::class,
+        // \Spatie\Multitenancy\Http\Middleware\EnsureValidTenantSession::class,
         \Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         Middleware\TrimStrings::class,
@@ -24,6 +26,7 @@ class Kernel extends HttpKernel
         Middleware\BrowserCache::class,
         ServerTimingMiddleware::class,
         Middleware\FileSizeCheck::class,
+        Middleware\AddTenantHeaders::class,
     ];
 
     /**
@@ -89,7 +92,7 @@ class Kernel extends HttpKernel
         'no-cache' => Middleware\NoCache::class,
         'admin' => Middleware\IsAdmin::class,
         'etag' => Middleware\Etag\HandleEtag::class,
-        'file_size_check' => Middleware\FileSizeCheck::class
+        'file_size_check' => Middleware\FileSizeCheck::class,
     ];
 
     /**
