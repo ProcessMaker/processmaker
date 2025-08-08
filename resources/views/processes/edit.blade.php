@@ -164,6 +164,20 @@
                                       </div>
                                     </b-col>
                                     <b-col>
+                                        <label class="typo__label">{{__('Process Owner')}}</label>
+                                        <select-user
+                                          data-cy="process-owner"
+                                          v-model="owner"
+                                          :multiple="false"
+                                          :class="{'is-invalid': errors.user_id}"
+                                          />
+                                        <div
+                                          v-if="errors.user_id"
+                                          class="invalid-feedback"
+                                          role="alert"
+                                          >
+                                          @{{errors.user_id[0]}}
+                                        </div>
                                     </b-col>
                                   </b-row>
                                 </div>
@@ -536,6 +550,7 @@
                     activeUsersAndGroups: @json($list),
                     pause_timer_start_events: false,
                     manager: @json($process->manager),
+                    owner: @json($process->user),
                     activeTab: "",
                     noElementsFoundMsg: 'Oops! No elements found. Consider changing the search query.',
                     reassignmentPermissions: {
@@ -651,6 +666,7 @@
                     this.formData.cancel_screen_id = this.formatValueScreen(this.screenCancel);
                     this.formData.request_detail_screen_id = this.formatValueScreen(this.screenRequestDetail);
                     this.formData.manager_id = this.formatValueScreen(this.manager);
+                    this.formData.user_id = this.formatValueScreen(this.owner);
                     this.formData.reassignment_permissions = this.reassignmentPermissions;
                     
                     ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)

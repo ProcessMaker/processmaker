@@ -1554,6 +1554,7 @@
   "Process Launchpad": "Lanzador de Procesos",
   "Process Manager not configured.": "El administrador de procesos no está configurado.",
   "Process Manager": "Administrador de procesos",
+  "Process Owner": "Propietario del proceso",
   "Process Name": "Nombre del Proceso",
   "Process was successfully imported": "El proceso fue importado exitosamente",
   "Process_category_id": "ID de Categoría de Proceso",
