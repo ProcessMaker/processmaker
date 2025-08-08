@@ -16,6 +16,7 @@
     ])
 @endsection
 
+
 @section('content')
     <div id="tasks">
         <div v-if="showOldTaskScreen" class="process-catalog-main" :class="{ 'menu-open': showMenu }">
