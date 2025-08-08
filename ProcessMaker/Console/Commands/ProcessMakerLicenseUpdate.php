@@ -40,7 +40,7 @@ class ProcessMakerLicenseUpdate extends Command
                 return 1;
             }
 
-            Storage::disk('local')->put('license.json', $content);
+            Storage::disk('root')->put('license.json', $content);
 
             $this->info('Calling package:discover to update the package cache with enabled packages');
             Artisan::call('package:discover');

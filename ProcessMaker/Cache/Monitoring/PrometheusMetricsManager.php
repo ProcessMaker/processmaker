@@ -4,6 +4,7 @@ namespace ProcessMaker\Cache\Monitoring;
 
 use Illuminate\Support\Facades\Redis;
 use ProcessMaker\Facades\Metrics;
+use ProcessMaker\Services\MetricsService;
 use Prometheus\CollectorRegistry;
 
 class PrometheusMetricsManager implements CacheMetricsInterface
@@ -25,7 +26,7 @@ class PrometheusMetricsManager implements CacheMetricsInterface
      */
     public function __construct(string $namespace = 'cache')
     {
-        $this->metrics = Metrics::getFacadeRoot();
+        $this->metrics = app(MetricsService::class);
         $this->namespace = $namespace;
     }
 
