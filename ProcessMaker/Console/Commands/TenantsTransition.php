@@ -116,7 +116,7 @@ class TenantsTransition extends Command
             '--app-key' => $envVars['APP_KEY'],
         ];
 
-        Artisan::call('tenants:create', $command);
+        Artisan::call('tenants:create', $command, $this->output);
 
         // Find the newly created tenant
         $tenant = Tenant::where('domain', $domain)->first();
@@ -131,10 +131,6 @@ class TenantsTransition extends Command
 
         // Regenerate CSS
         $this->tenantArtisan('processmaker:regenerate-css', $tenant->id);
-
-        // Generate passport keys
-        // Shouldn't the keys have been copied over in the storage folder?
-        // $this->tenantArtisan('passport:keys --force', $tenant->id);
 
         $this->info("Successfully transitioned client {$clientName} to tenant.");
     }

@@ -99,6 +99,10 @@ class TenantsCreate extends Command
                     $this->info('Moving ' . $subfolder . ' to ' . $tenantStoragePath);
                     rename($subfolder, $tenantStoragePath . '/' . basename($subfolder));
                 }
+                foreach (File::files($storageFolderOption) as $file) {
+                    $this->info('Moving ' . $file . ' to ' . $tenantStoragePath);
+                    rename($file, $tenantStoragePath . '/' . basename($file));
+                }
             } else {
                 $this->error('Storage folder does not exist: ' . $storageFolderOption);
 
