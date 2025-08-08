@@ -82,7 +82,7 @@ const disabled = computed(() => !selectedUser.value || !comments.value?.trim());
 
 // Load the reassign users
 const loadReassignUsers = async (filter) => {
-  const response = await getReassignUsers(filter, props.task.id);
+  const response = await getReassignUsers(filter, props.task.id, props.task.user_id);
 
   reassignUsers.value = [];
   response.data.forEach((user) => {
