@@ -320,7 +320,7 @@ if (!function_exists('calculateProgressById')) {
         if ($currentStageOrder === 0) {
             return 0.0;
         }
-        $progress = ($currentStageOrder / $totalStages) * 100;
+        $progress = ($currentStageOrder / $totalStages + 1) * 100;
 
         return round($progress, 2);
     }
