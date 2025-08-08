@@ -248,9 +248,9 @@ Route::get('password/success', function () {
 
 Route::get('/unavailable', [UnavailableController::class, 'show'])->name('error.unavailable');
 
-Route::get('/unassigned-user', function () {
-    return view('errors.unassigned-user');
-})->name('errors.unassigned-user');
+Route::get('/not-authorized', function () {
+    return view('errors.not-authorized');
+})->name('errors.not-authorized');
 
 // SAML Metadata Route
 Route::resource('/saml/metadata', MetadataController::class)->only('index');

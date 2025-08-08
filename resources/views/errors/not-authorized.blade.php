@@ -1,7 +1,7 @@
 @extends('layouts.minimal')
 
 @section('title')
-  {{__('Unauthorized - ProcessMaker')}}
+  {{__('Unauthorized')}}
 @endsection
 
 @section('content')
@@ -10,7 +10,7 @@
       <img src="/img/robot.png"/>
     </div>
     <div class="error-content">
-        <h1>{{__('Server Errors')}}</h1>
+        <h1>{{__('Unauthorized')}}</h1>
         <p>{{__('This form is assigned to someone else, so it’s not available under your account.')}}</p>
         <p>{{__('If you think this is a mistake or need help, reach out to your admin or support team.')}}</p>
     </div>
