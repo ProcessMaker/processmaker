@@ -335,7 +335,8 @@ class TaskController extends Controller
             return new Resource($task->refresh());
         } elseif (!empty($request->input('user_id'))) {
             $userToAssign = $request->input('user_id');
-            $task->reassign($userToAssign, $request->user());
+            $comments = $request->input('comments');
+            $task->reassign($userToAssign, $request->user(), $comments);
 
             $taskRefreshed = $task->refresh();
 
@@ -420,7 +421,7 @@ class TaskController extends Controller
     }
 
     /**
-     * Only send data for a screen’s fields
+     * Only send data for a screen's fields
      *
      * @param ProcessRequestToken $task
      *
