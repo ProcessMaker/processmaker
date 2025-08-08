@@ -160,6 +160,7 @@
                 "package-data-sources": "1.34.1",
                 "package-decision-engine": "1.16.1",
                 "package-dynamic-ui": "1.28.1",
+                "package-email-start-event": "1.0.0",
                 "package-files": "1.23.0",
                 "package-googleplaces": "1.12.0",
                 "package-photo-video": "1.6.1",
@@ -179,7 +180,8 @@
                 "package-vocabularies": "2.17.0",
                 "package-webentry": "2.29.2",
                 "package-api-testing": "1.3.1",
-                "package-variable-finder": "1.0.4",
+                "package-variable-finder": "1.0.3",
+                "package-email-start-event": "1.0.0",
                 "packages": "^0"
             },
             "docker-executors": {
