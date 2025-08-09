@@ -303,13 +303,12 @@ if (!function_exists('calculateProgressById')) {
      */
     function calculateProgressById(int|null $id, array|null $stages = [])
     {
-        if (is_null($stages)) {
+        if (empty($stages)) {
             return 0.0;
         }
         $totalStages = count($stages);
-        if ($totalStages === 0) {
-            return 0.0;
-        }
+        // Consider the completed stage as the last one
+        $totalStages++;
         $currentStageOrder = 0;
         foreach ($stages as $stage) {
             if ($stage['id'] === $id) {
