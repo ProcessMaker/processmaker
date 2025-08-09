@@ -33,6 +33,7 @@ use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessLaunchpad;
 use ProcessMaker\Models\ProcessPermission;
+use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\Template;
@@ -49,12 +50,12 @@ class ProcessController extends Controller
 {
     use ProjectAssetTrait;
 
-    const CAROUSEL_TYPES = [
+    public const CAROUSEL_TYPES = [
         'IMAGE' => 'image',
         'EMBED' => 'embed',
     ];
 
-    const STAGES_STRUCTURE = [
+    public const STAGES_STRUCTURE = [
         'id',
         'name',
         'order',
@@ -149,7 +150,7 @@ class ProcessController extends Controller
             $modifiedCollection = $processes->map(function ($item) {
                 return [
                     'id' => $item['id'],
-                    'events'=> $item['start_events']];
+                    'events' => $item['start_events']];
             });
 
             return new ApiCollection($modifiedCollection);
@@ -1965,6 +1966,13 @@ class ProcessController extends Controller
      *         description="ID of the process",
      *         @OA\Schema(type="integer")
      *     ),
+     *     @OA\Parameter(
+     *         name="alternative",
+     *         in="query",
+     *         required=false,
+     *         description="Alternative version (A or B)",
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="List of stages",
@@ -1981,9 +1989,23 @@ class ProcessController extends Controller
      *     )
      * )
      */
-    public function getStages(Process $process)
+    public function getStages(Process $process, Request $request)
     {
-        $stages = $process->stages ?? [];
+        $alternative = $request->input('alternative', 'A');
+        $stages = [];
+        if ($alternative === 'B') {
+            // Get the alternative B version
+            $alternativeVersion = ProcessVersion::where('process_id', $process->id)
+                ->where('alternative', 'B')
+                ->first();
+
+            if ($alternativeVersion) {
+                $stages = $alternativeVersion->stages ?? [];
+            }
+        } else {
+            // Default to alternative A or get from main process
+            $stages = $process->stages ?? [];
+        }
 
         return new ApiCollection($stages);
     }
@@ -2001,6 +2023,13 @@ class ProcessController extends Controller
      *         required=true,
      *         description="ID of the process",
      *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="alternative",
+     *         in="query",
+     *         required=false,
+     *         description="Alternative version (A or B)",
+     *         @OA\Schema(type="string")
      *     ),
      *     @OA\RequestBody(
      *         required=true,
@@ -2033,10 +2062,28 @@ class ProcessController extends Controller
      */
     public function saveStages(Request $request, Process $process)
     {
-        $process->stages = $request->input('stages');
-        $process->save();
+        $alternative = $request->input('alternative', 'A');
+        $stages = $request->input('stages');
 
-        return new ApiCollection($process->stages);
+        if ($alternative === 'B') {
+
+            // Get or create alternative B version
+            $alternativeVersion = ProcessVersion::where('process_id', $process->id)
+                ->where('alternative', 'B')
+                ->first();
+
+            // Save stages to alternative B version
+            $alternativeVersion->stages = $stages;
+            $alternativeVersion->save();
+
+            return new ApiCollection($alternativeVersion->stages);
+        } else {
+            // Save stages to main process (alternative A)
+            $process->stages = $stages;
+            $process->save();
+
+            return new ApiCollection($process->stages);
+        }
     }
 
     /**
