@@ -73,6 +73,7 @@ const onChangeFilter = (column, val, index) => {
   filters.value.push({
     ...val,
     field: column.field,
+    id: column?.id,
   });
 
   emit("changeFilter", filters.value);

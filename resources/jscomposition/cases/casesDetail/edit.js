@@ -1,19 +1,22 @@
 import CaseDetail from "./components/CaseDetail.vue";
 import Tabs from "./components/Tabs.vue";
 import Timeline from "../../../js/components/Timeline.vue";
+import StageBar from "./components/StageBar.vue";
 import { CollapsableContainer } from "../../base";
 import { cases } from "./store";
 import {
   updateUserConfiguration, getUserConfiguration, getCommentsData, updateRequest,
 } from "./api";
-import { useStore, getRequest, getRequestId } from "./variables";
+import {
+  useStore, getRequest, getRequestId, getStageName, getProgressStage,
+} from "./variables";
 
 Vue.globalStore.registerModule("core:cases", cases);
 
 const caseDetail = new Vue({
   el: "#case-detail",
   components: {
-    CaseDetail, Tabs, CollapsableContainer, Timeline,
+    CaseDetail, Tabs, CollapsableContainer, Timeline, StageBar,
   },
   data() {
     return {
@@ -48,6 +51,8 @@ const caseDetail = new Vue({
         },
       ],
       headerModel: false,
+      progressStage: getProgressStage(),
+      stageName: getStageName(),
     };
   },
   computed: {

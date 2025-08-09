@@ -1,48 +1,51 @@
 <template>
   <div
-    class="process-catalog-main-participant"
     id="tasks"
-    :class="{ 'menu-open': showMenu }"
-  >
-    <div class="menu">
-      <button 
-        class="pl-3 menu-title button-class d-flex align-items-center" 
-        :class="{ 'button-transparent': selectedProcess !== 'inbox', 'menu-title-inbox': selectedProcess !== 'inbox' }"
-        @click="getAllTasks"
-      >
-        <i class="fp-inbox me-2" style="color: #2773f3; font-size: 20px;"></i>
-        <span>{{ $t("Inbox") }}</span>
-      </button>
-      <ProcessesDashboardsMenu
-        ref="processesDashboardsMenu"
-        @processDashboardSelected="processDashboardSelected"
-        @get-all-tasks="getAllTasks"
-      />
-    </div>
+    class="tw-flex tw-w-full tw-h-full tw-px-4">
+    <CollapsableContainer
+      v-model="showMenu"
+      class="tw-w-80"
+      position="right"
+      @change="toggleMenu">
+      <template #default>
+        <div class="tw-flex tw-flex-col tw-h-full tw-w-full tw-pr-4">
+          <button
+            class="menu-title button-class d-flex align-items-center"
+            :class="{
+              'button-transparent': selectedProcess !== 'inbox',
+              'menu-title-inbox': selectedProcess !== 'inbox',
+            }"
+            @click="getAllTasks">
+            <i
+              class="fp-inbox me-2"
+              style="color: #2773f3; font-size: 20px" />
+            <span>{{ $t("Inbox") }}</span>
+          </button>
+          <ProcessesDashboardsMenu
+            ref="processesDashboardsMenu"
+            @processDashboardSelected="processDashboardSelected"
+            @get-all-tasks="getAllTasks" />
+        </div>
+      </template>
+    </CollapsableContainer>
 
-    <div class="slide-control">
-      <a href="#" @click.prevent="hideMenu">
-        <i
-          class="fa"
-          :class="{ 'fa-caret-right': !showMenu, 'fa-caret-left': showMenu }"
-        ></i>
-      </a>
-    </div>
-
-    <div ref="processInfo" class="home-screen-inbox">
+    <div
+      ref="processInfo"
+      class="tw-overflow-hidden tw-flex-1 tw-pb-4">
       <div v-if="selectedProcess === 'inbox'">
         <div class="px-3 page-content mb-0">
           <div class="row">
-            <div class="col" align="right">
+            <div
+              class="col"
+              align="right">
               <b-alert
                 v-if="inOverdueMessage.length > 0"
+                v-cloak
                 class="align-middle"
                 show
                 variant="danger"
-                v-cloak
                 style="text-align: center"
-                data-cy="tasks-alert"
-              >
+                data-cy="tasks-alert">
                 {{ inOverdueMessage }}
               </b-alert>
             </div>
@@ -50,66 +53,73 @@
 
           <div class="row">
             <div class="col-sm-12">
-              <ul class="nav nav-tabs task-nav" id="requestTab" role="tablist">
+              <ul
+                id="requestTab"
+                class="nav nav-tabs task-nav"
+                role="tablist">
                 <li class="nav-item">
                   <a
-                    class="nav-link task-nav-link"
                     id="inbox-tab"
+                    class="nav-link task-nav-link"
                     :data-toggle="isDataLoading ? '' : 'tab'"
                     href="#"
                     role="tab"
                     aria-controls="inbox"
-                    @click.prevent="!isDataLoading ? switchTab('inbox') : null"
                     aria-selected="true"
                     :class="{ active: tab === 'inbox' }"
-                  >
+                    @click.prevent="
+                      !isDataLoading ? switchTab('inbox') : null
+                    ">
                     {{ $t("Inbox") }}
                   </a>
                 </li>
                 <li class="nav-item">
                   <a
-                    class="nav-link task-nav-link"
                     id="priority-tab"
+                    class="nav-link task-nav-link"
                     :data-toggle="isDataLoading ? '' : 'tab'"
                     href="#"
                     role="tab"
                     aria-controls="inbox"
-                    @click.prevent="
-                      !isDataLoading ? switchTab('priority') : null
-                    "
                     aria-selected="true"
                     :class="{ active: tab === 'priority' }"
-                  >
+                    @click.prevent="
+                      !isDataLoading ? switchTab('priority') : null
+                    ">
                     {{ $t("Priority") }}
                   </a>
                 </li>
                 <li class="nav-item">
                   <a
-                    class="nav-link task-nav-link"
+                    v-if="taskDraftsEnabled"
                     id="drafts-tab"
+                    class="nav-link task-nav-link"
                     :data-toggle="isDataLoading ? '' : 'tab'"
                     href="#"
                     role="tab"
                     aria-controls="inbox"
-                    @click.prevent="!isDataLoading ? switchTab('draft') : null"
                     aria-selected="true"
                     :class="{ active: tab === 'draft' }"
-                    v-if="taskDraftsEnabled"
-                  >
+                    @click.prevent="
+                      !isDataLoading ? switchTab('draft') : null
+                    ">
                     {{ $t("Drafts") }}
                   </a>
                 </li>
               </ul>
 
-              <div class="tab-content" id="task-tabContent">
+              <div
+                id="task-tabContent"
+                class="tab-content">
                 <div
-                  class="tab-pane fade show active"
                   id="inbox"
+                  class="tab-pane fade show active"
                   role="tabpanel"
-                  aria-labelledby="inbox-tab"
-                >
+                  aria-labelledby="inbox-tab">
                   <div class="card card-body task-list-body">
-                    <div id="search-bar" class="search advanced-search mb-2">
+                    <div
+                      id="search-bar"
+                      class="search advanced-search mb-2">
                       <div class="d-flex">
                         <div class="flex-grow-1">
                           <pmql-input
@@ -126,45 +136,39 @@
                               userPermissions.hasPermissionsForUsersGroups
                             "
                             @submit="onNLQConversion"
-                            @filterspmqlchange="onFiltersPmqlChange"
-                          >
-                            <template v-slot:left-buttons>
+                            @filterspmqlchange="onFiltersPmqlChange">
+                            <template #left-buttons>
                               <div class="d-flex">
                                 <div
-                                  class="d-flex mr-1"
                                   v-for="addition in additions"
-                                >
+                                  class="d-flex mr-1">
                                   <component
-                                    class="d-flex"
                                     :is="addition"
+                                    class="d-flex"
                                     :permission="
                                       userPermissions.hasPermissionsForUsersGroups
-                                    "
-                                  ></component>
+                                    " />
                                 </div>
                               </div>
                             </template>
 
-                            <template v-slot:right-buttons>
+                            <template #right-buttons>
                               <b-button
                                 id="idPopoverInboxRules"
                                 class="ml-md-1 task-inbox-rules"
                                 variant="primary"
-                                @click="onInboxRules"
-                              >
+                                @click="onInboxRules">
                                 {{ $t("Inbox Rules") }}
                               </b-button>
                               <b-popover
                                 target="idPopoverInboxRules"
                                 triggers="hover focus"
-                                placement="bottomleft"
-                              >
+                                placement="bottomleft">
                                 <div class="task-inbox-rules-content">
                                   <div>
                                     <img
                                       src="/img/inbox-rule-suggest.svg"
-                                      :alt="$t('Inbox Rules')"
-                                    />
+                                      :alt="$t('Inbox Rules')">
                                   </div>
                                   <span
                                     class="task-inbox-rules-content-text"
@@ -172,20 +176,17 @@
                                       $t(
                                         'Inbox Rules act as your personal task manager. You tell them what to look for, and they <strong>take care of things automatically.</strong>'
                                       )
-                                    "
-                                  >
-                                  </span>
+                                    " />
                                 </div>
                               </b-popover>
                               <b-button
                                 v-if="
                                   userPermissions.isAdministrator ||
-                                  userPermissions.canEditScreens
+                                    userPermissions.canEditScreens
                                 "
                                 class="ml-md-2"
-                                :href="savedsearchDefaultsEditRoute"
-                              >
-                                <i class="fas fw fa-cog"></i>
+                                :href="savedsearchDefaultsEditRoute">
+                                <i class="fas fw fa-cog" />
                               </b-button>
                             </template>
                           </pmql-input>
@@ -200,12 +201,11 @@
                       :disable-tooltip="false"
                       :disable-quick-fill-tooltip="false"
                       :fetch-on-created="false"
+                      :show-recommendations="true"
                       @in-overdue="setInOverdueMessage"
                       @data-loading="dataLoading"
                       @tab-count="handleTabCount"
-                      @on-fetch-task="onFetchTask"
-                      :show-recommendations="true"
-                    ></tasks-list>
+                      @on-fetch-task="onFetchTask" />
                   </div>
                 </div>
               </div>
@@ -213,7 +213,9 @@
           </div>
         </div>
       </div>
-      <router-view v-else :key="$route.fullPath"></router-view>
+      <router-view
+        v-else
+        :key="$route.fullPath" />
     </div>
   </div>
 </template>
@@ -224,14 +226,16 @@ import TasksMixin from "../mixins/TasksMixin";
 import TasksList from "./TasksList.vue";
 import ProcessesDashboardsMenu from "./ProcessesDashboardsMenu.vue";
 import router from "../router";
+import CollapsableContainer from "../../../jscomposition/base/ui/CollapsableContainer.vue";
 
 export default {
   name: "ParticipantHomeScreen",
-  mixins: [TasksMixin, ListMixin],
   components: {
     TasksList,
     ProcessesDashboardsMenu,
+    CollapsableContainer,
   },
+  mixins: [TasksMixin, ListMixin],
   router,
   props: {
     taskDraftsEnabled: {
@@ -257,7 +261,7 @@ export default {
     savedsearchDefaultsEditRoute: {
       type: String,
       required: true,
-    }
+    },
   },
   data() {
     return {
@@ -277,8 +281,12 @@ export default {
     // Set the default tab based on the advanced filter
     setDefaultTab() {
       const advancedFilter = window.ProcessMaker.advanced_filter?.filters;
-      const draft = advancedFilter.find((filter) => filter._column_field === "draft");
-      const priority = advancedFilter.find((filter) => filter._column_field === "is_priority");
+      const draft = advancedFilter.find(
+        (filter) => filter._column_field === "draft",
+      );
+      const priority = advancedFilter.find(
+        (filter) => filter._column_field === "is_priority",
+      );
       if (draft) {
         this.tab = "draft";
       } else if (priority) {
@@ -293,10 +301,10 @@ export default {
       taskListComponent.advancedFilter[this.draftField] = [];
       switch (tab) {
         case "priority":
-          taskListComponent.advancedFilter["is_priority"] = this.priorityFilter;
+          taskListComponent.advancedFilter.is_priority = this.priorityFilter;
           break;
         case "draft":
-          taskListComponent.advancedFilter["draft"] = this.draftFilter;
+          taskListComponent.advancedFilter.draft = this.draftFilter;
           break;
       }
       taskListComponent.markStyleWhenColumnSetAFilter();
@@ -323,7 +331,7 @@ export default {
     },
     getAllTasks() {
       this.selectedProcess = "inbox";
-      if (this.$route.name !== 'inbox') {
+      if (this.$route.name !== "inbox") {
         this.$router.push({
           name: "inbox",
         });
@@ -344,6 +352,10 @@ export default {
           query: { dashboard: id },
         });
       }
+    },
+    toggleMenu(value) {
+      this.showMenu = value;
+      this.updateUserConfiguration();
     },
   },
 };
@@ -424,18 +436,9 @@ export default {
   max-width: 450px;
 }
 
-
 @media (max-width: 639px) {
   .breadcrum-main {
     display: none;
-  }
-}
-
-.process-catalog-main-participant {
-  display: flex;
-
-  @media (max-width: 639px) {
-    display: block;
   }
 }
 
@@ -621,14 +624,6 @@ export default {
 
   @media (max-width: 639px) {
     display: none;
-  }
-}
-.home-screen-inbox {
-  width: 100%;
-  margin-right: 0px;
-  overflow-x: hidden;
-  @media (max-width: 639px) {
-    padding-left: 0;
   }
 }
 

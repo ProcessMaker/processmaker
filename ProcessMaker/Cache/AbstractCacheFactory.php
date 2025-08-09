@@ -10,6 +10,7 @@ use ProcessMaker\Cache\Monitoring\PrometheusMetricsManager;
 abstract class AbstractCacheFactory implements CacheFactoryInterface
 {
     protected static ?CacheInterface $testInstance = null;
+
     protected static bool $storeMetrics = true;
 
     /**
