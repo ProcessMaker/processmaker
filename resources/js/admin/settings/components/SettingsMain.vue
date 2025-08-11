@@ -9,9 +9,9 @@
         @selectGroup="selectGroup"
       />
     </div>
-    <div class="setting-info pl-3">
+    <div :class="customConfigurationComponent ? 'setting-info-custom mr-3' :'setting-info pl-3'">
       <settings-listing
-        v-if="selectedItem && !emailListenerConfigurationComponent"
+        v-if="selectedItem && !customConfigurationComponent"
         :key="setListingKey"
         ref="listings"
         :group="group"
@@ -19,8 +19,8 @@
         @refresh-all="refreshAll"
       />
       <component
-        :is="emailListenerConfigurationComponent"
-        ref="emailListenerConfiguration"
+        :is="customConfigurationComponent"
+        ref="customConfiguration"
         :setting-id="settingId"
       />
     </div>
@@ -41,25 +41,15 @@ export default {
       group: "",
       setListingKey: 0,
       selectedItem: false,
-      isEmailStartEventInstalled: false,
+      customConfigurationComponent: null,
     };
-  },
-  computed: {
-    emailListenerConfigurationComponent() {
-      if (this.isEmailStartEventInstalled && this.settingKey.includes('email_start_event')) {
-        return window.ProcessMaker.EmailStartEvent.EmailListenerConfiguration;
-      }
-
-      return null;
-    },
   },
   methods: {
     selectGroup(item) {
-      this.isEmailStartEventInstalled = !!window.ProcessMaker.EmailStartEvent;
-
       this.group = item.name;
       this.settingId = item.setting_id;
       this.settingKey = item.setting_key;
+      this.customConfigurationComponent = item.ui.custom_component ?? null;
       this.selectedItem = true;
       this.reRender();
     },
@@ -101,5 +91,10 @@ export default {
   padding: 16px 16px 106px 16px;
   border-radius: 4px;
   border: 1px solid var(--borders, #CDDDEE);
+}
+.setting-info-custom {
+  width: 100%;
+  height: calc(100vh - 150px);
+  overflow-y: auto;
 }
 </style>
