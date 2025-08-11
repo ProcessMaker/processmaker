@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta name="i18n-mdate" content='{!! json_encode(ProcessMaker\i18nHelper::mdates()) !!}'>
+  <meta name="settings-translations-enabled" content="{{ config('translations.enabled') ? 'true' : 'false' }}">
   <title>{{ __('Login') }} - {{ __('ProcessMaker') }}</title>
   <link href="{{ mix('css/app.css') }}" rel="stylesheet">
   <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
@@ -27,7 +28,8 @@
           class="d-flex justify-content-end position-absolute language-button-container">
           <language-selector-button
             id="language-login"
-            :type="'login'">
+            :type="'login'"
+            :show-language-code="true">
           </language-selector-button>
         </div>
         <div class="d-flex justify-content-center align-items-center h-100-vh" align-v="center">
@@ -190,26 +192,26 @@
     left: 0;
     width: 100%;
   }
-  
+
   .form-control-login {
     height: 45px;
     padding-bottom: 0;
     padding-top: 0;
   }
-  
+
   .background-wave-left {
       position: fixed;
       bottom: 0;
       left: 0;
   }
-  
+
   .background-wave-right {
       position: fixed;
       top: 0;
       right: 0;
       height: 50%;
   }
-  
+
   body {
     background: transparent;
   }
@@ -228,11 +230,11 @@
     font-weight: 900;
     color: #ffffff;
   }
-  
+
   .slogan h2.title {
       font-size: 1.4rem;
   }
-  
+
   .slogan h1.title {
       font-size: 3.4rem;
   }
@@ -282,7 +284,7 @@
     font-size: 24.017px;
     font-family: 'Poppins', sans-serif;
   }
-  
+
   .button-login {
       text-transform: none;
   }

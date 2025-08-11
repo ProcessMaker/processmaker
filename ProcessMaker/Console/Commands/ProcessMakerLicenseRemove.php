@@ -34,9 +34,9 @@ class ProcessMakerLicenseRemove extends Command
      */
     public function handle()
     {
-        if (Storage::disk('local')->exists('license.json')) {
+        if (Storage::disk('root')->exists('license.json')) {
             if ($this->option('force') || $this->confirm('Are you sure you want to remove the license.json file?')) {
-                Storage::disk('local')->delete('license.json');
+                Storage::disk('root')->delete('license.json');
                 $this->info('license.json removed successfully!');
 
                 $this->info('Calling package:discover to update the package cache with enabled packages');

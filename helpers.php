@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Auth;
 use Laravel\Horizon\Repositories\RedisJobRepository;
 use ProcessMaker\Events\MarkArtisanCachesAsInvalid;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\SanitizeHelper;
 use ProcessMaker\Support\JsonOptimizer;
 
@@ -75,8 +76,8 @@ if (!function_exists('color')) {
      */
     function color($key)
     {
-        if ($colors = config('css-override.variables')) {
-            $colors = json_decode($colors);
+        if ($setting = Setting::byKey('css-override')) {
+            $colors = json_decode($setting->config['variables']);
             foreach ($colors as $color) {
                 if ($color->id === '$' . $key) {
                     return $color->value;
@@ -96,7 +97,7 @@ if (!function_exists('sidebar_class')) {
      */
     function sidebar_class()
     {
-        if (config('css-override.variables')) {
+        if (Setting::byKey('css-override')) {
             $defaults = ['#0872C2', '#2773F3'];
             if (!in_array(color('primary'), $defaults)) {
                 return 'sidebar-custom';
@@ -302,13 +303,12 @@ if (!function_exists('calculateProgressById')) {
      */
     function calculateProgressById(int|null $id, array|null $stages = [])
     {
-        if (is_null($stages)) {
+        if (empty($stages)) {
             return 0.0;
         }
         $totalStages = count($stages);
-        if ($totalStages === 0) {
-            return 0.0;
-        }
+        // Consider the completed stage as the last one
+        $totalStages++;
         $currentStageOrder = 0;
         foreach ($stages as $stage) {
             if ($stage['id'] === $id) {

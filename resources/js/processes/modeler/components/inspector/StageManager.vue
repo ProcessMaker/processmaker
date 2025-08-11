@@ -32,9 +32,12 @@ const isLoading = ref(true);
 
 const loadStagesFromApi = () => {
   const { id } = window.ProcessMaker.modeler.process;
+  const params = {
+    alternative: window.ProcessMaker.AbTesting?.alternative || window.ProcessMaker.modeler.draftAlternative || "A",
+  };
   ProcessMaker
     .apiClient
-    .get(`/processes/${id}/stages`)
+    .get(`/processes/${id}/stages`, { params })
     .then((response) => {
       const stages = response.data.data;
       selectItemFromDefinition(stages);
@@ -53,6 +56,7 @@ const saveStagesToApi = (stages) => {
   const { id } = window.ProcessMaker.modeler.process;
   const params = {
     stages: copy,
+    alternative: window.ProcessMaker.AbTesting?.alternative || window.ProcessMaker.modeler.draftAlternative || "A",
   };
   ProcessMaker
     .apiClient
