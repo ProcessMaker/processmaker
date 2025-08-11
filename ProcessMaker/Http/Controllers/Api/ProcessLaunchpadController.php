@@ -202,6 +202,7 @@ class ProcessLaunchpadController extends Controller
         $userId = $user->id;
 
         $processes = Process::select('processes.*')
+            ->notArchived()
             ->distinct()
             ->whereHas('requests', function ($query) use ($userId) {
                 $query->where('user_id', $userId)

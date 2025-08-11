@@ -95,18 +95,6 @@
         @endif
     </div>
 
-    <div class="card card-body mt-3">
-        <h5 class="mb-3 font-weight-bold">
-            {{__('Task Notifications Email')}}
-        </h5>
-        <div class="form-group">
-            <div class="custom-control custom-switch">
-                {{ html()->checkbox('email_task_notification', 1, false)->id('email_task_notification')->class('custom-control-input')->attribute('v-model', 'formData.email_task_notification') }}
-                <label class="custom-control-label" for="email_task_notification">{{__('Forward notifications to my email address')}}</label>
-            </div>
-        </div>
-    </div>
-
     @isset($addons)
         @foreach ($addons as $addon)
             {!! $addon['content'] ?? '' !!}
