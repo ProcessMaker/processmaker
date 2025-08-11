@@ -82,7 +82,7 @@ const disabled = computed(() => !selectedUser.value || !comments.value?.trim());
 
 // Load the reassign users
 const loadReassignUsers = async (filter) => {
-  const response = await getReassignUsers(filter, props.task.id);
+  const response = await getReassignUsers(filter, props.task.id, props.task.user_id);
 
   reassignUsers.value = [];
   response.data.forEach((user) => {
@@ -126,12 +126,14 @@ const reassignUser = async () => {
   disabledAssign.value = true;
   if (selectedUser.value) {
     try {
-      const response = await updateReassignUser(props.task.id, selectedUser.value, comments.value);
-      const commentResponse = await prepareToUpdateComment();
+      // First create the comment only if comments.value is not empty
+      comments.value && comments.value.trim() && await prepareToUpdateComment();
 
-      if (response && commentResponse) {
-        emit("on-reassign-user", selectedUser.value);
-      }
+      // Then reassign the task
+      const response = await updateReassignUser(props.task.id, selectedUser.value, comments.value);
+
+      // Emit success even if comment creation fails (comments package might not be active)
+      response && emit("on-reassign-user", selectedUser.value);
 
       nextTick(() => {
         selectedUser.value = null;
