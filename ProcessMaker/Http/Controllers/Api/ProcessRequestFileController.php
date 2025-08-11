@@ -289,14 +289,14 @@ class ProcessRequestFileController extends Controller
             } catch (FileIsTooBig $e) {
                 return response()->json([
                     'errors' => [
-                        'file' => ['file may not be greater than ' . (config('media-library.max_file_size') / 1024) . ' kilobytes']
-                    ]
+                        'file' => ['file may not be greater than ' . (config('media-library.max_file_size') / 1024) . ' kilobytes'],
+                    ],
                 ], 422);
             } catch (Exception $e) {
                 return response()->json([
                     'errors' => [
-                        'message' => $e->getMessage()
-                    ]
+                        'message' => $e->getMessage(),
+                    ],
                 ], 500);
             }
         }
@@ -440,13 +440,146 @@ class ProcessRequestFileController extends Controller
         return response([], 204);
     }
 
+    /**
+     * Validate uploaded file for security and type restrictions
+     *
+     * @param UploadedFile $file
+     * @param array $errors
+     * @return array
+     */
     private function validateFile(UploadedFile $file, &$errors)
     {
-        if (strtolower($file->getClientOriginalExtension() === 'pdf')) {
+        // Explicitly reject archive files for security
+        $this->rejectArchiveFiles($file, $errors);
+
+        // Validate file extension if enabled
+        if (config('files.enable_extension_validation', true)) {
+            $this->validateFileExtension($file, $errors);
+        }
+
+        // Validate MIME type if enabled
+        if (config('files.enable_mime_validation', true)) {
+            $this->validateMimeType($file, $errors);
+        }
+
+        // Validate specific file types (e.g., PDF for JavaScript content)
+        if (strtolower($file->getClientOriginalExtension()) === 'pdf') {
             $this->validatePDFFile($file, $errors);
         }
 
         return $errors;
+    }
+
+    /**
+     * Explicitly reject archive files for security reasons
+     *
+     * @param UploadedFile $file
+     * @param array $errors
+     * @return void
+     */
+    private function rejectArchiveFiles(UploadedFile $file, &$errors)
+    {
+        $dangerousExtensions = [
+            'zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz', 'lzma',
+            'cab', 'ar', 'iso', 'dmg', 'pkg', 'deb', 'rpm',
+        ];
+
+        $fileExtension = strtolower($file->getClientOriginalExtension());
+
+        if (in_array($fileExtension, $dangerousExtensions)) {
+            $errors[] = __('File extension not allowed', [
+                'extension' => $fileExtension,
+            ]);
+        }
+
+        // Also check MIME types for archive files
+        $dangerousMimeTypes = [
+            'application/zip',
+            'application/x-rar-compressed',
+            'application/x-7z-compressed',
+            'application/x-tar',
+            'application/gzip',
+            'application/x-bzip2',
+            'application/x-xz',
+            'application/x-lzma',
+            'application/vnd.ms-cab-compressed',
+            'application/x-iso9660-image',
+        ];
+
+        $fileMimeType = $file->getMimeType();
+
+        if (in_array($fileMimeType, $dangerousMimeTypes)) {
+            $errors[] = __('Mime type not allowed', [
+                'mime_type' => $fileMimeType,
+            ]);
+        }
+    }
+
+    /**
+     * Validate file extension against allowed extensions
+     *
+     * @param UploadedFile $file
+     * @param array $errors
+     * @return void
+     */
+    private function validateFileExtension(UploadedFile $file, &$errors)
+    {
+        $allowedExtensions = config('files.allowed_extensions', [
+            'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
+            'txt', 'csv', 'jpg', 'jpeg', 'png', 'gif', 'mp3', 'mp4',
+        ]);
+
+        $fileExtension = strtolower($file->getClientOriginalExtension());
+
+        if (!in_array($fileExtension, $allowedExtensions)) {
+            $errors[] = __('File extension not allowed', [
+                'extension' => $fileExtension,
+                'allowed' => implode(', ', $allowedExtensions),
+            ]);
+        }
+    }
+
+    /**
+     * Validate MIME type against allowed MIME types
+     *
+     * @param UploadedFile $file
+     * @param array $errors
+     * @return void
+     */
+    private function validateMimeType(UploadedFile $file, &$errors)
+    {
+        $allowedMimeTypes = config('files.allowed_mime_types', [
+            // Documents
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.ms-powerpoint',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'text/plain',
+            'text/csv',
+
+            // Images
+            'image/jpeg',
+            'image/png',
+            'image/gif',
+
+            // Audio
+            'audio/mpeg',
+
+            // Video
+            'video/mp4',
+        ]);
+
+        $fileMimeType = $file->getMimeType();
+
+        if (!in_array($fileMimeType, $allowedMimeTypes)) {
+            $errors[] = __('Mime type not allowed', [
+                'mime_type' => $fileMimeType,
+                'allowed' => implode(', ', $allowedMimeTypes),
+            ]);
+        }
     }
 
     private function validatePDFFile(UploadedFile $file, &$errors)
