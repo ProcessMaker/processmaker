@@ -87,4 +87,15 @@ class EnvironmentVariable extends ProcessMakerModel
             'name.regex' => trans('environmentVariables.validation.name.invalid_variable_name'),
         ];
     }
+
+    public static function getMetricsApiEndpoint()
+    {
+        $variable = self::where('name', 'METRICS_API_ENDPOINT')->first();
+
+        if ($variable) {
+            return $variable->value;
+        }
+
+        return '/api/1.0/processes/{process}/metrics';
+    }
 }

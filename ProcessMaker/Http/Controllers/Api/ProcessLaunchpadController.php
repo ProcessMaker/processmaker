@@ -56,6 +56,8 @@ class ProcessLaunchpadController extends Controller
             $process->bookmark_id = Bookmark::getBookmarked($bookmark, $process->id, $user->id);
             // Get the launchpad configuration
             $process->launchpad = ProcessLaunchpad::getLaunchpad($launchpad, $process->id);
+            // Load Stages
+            $process->stagesSummary = $process->getStagesSummary($process->stages);
         }
 
         $process = $processes->map(function ($process) {
@@ -94,6 +96,7 @@ class ProcessLaunchpadController extends Controller
             ->get()
             ->map(function ($process) use ($request) {
                 $process->counts = $process->getCounts();
+                $process->stagesSummary = $process->getStagesSummary($process->stages);
                 $process->bookmark_id = Bookmark::getBookmarked(true, $process->id, $request->user()->id);
 
                 return $process;
@@ -201,14 +204,14 @@ class ProcessLaunchpadController extends Controller
         $processes = Process::select('processes.*')
             ->notArchived()
             ->distinct()
-            ->whereHas('requests', function($query) use ($userId) {
+            ->whereHas('requests', function ($query) use ($userId) {
                 $query->where('user_id', $userId)
-                    ->orWhereHas('tokens', function($query) use ($userId) {
+                    ->orWhereHas('tokens', function ($query) use ($userId) {
                         $query->where('user_id', $userId);
                     });
             })
-            ->where('asset_type', NULL)
-            ->where('package_key', '=', NULL)
+            ->where('asset_type', null)
+            ->where('package_key', '=', null)
             ->orderBy('processes.name', 'asc')
             ->get();
 

@@ -84,6 +84,17 @@ class CasesController extends Controller
         } else {
             $request->summary_screen = $request->getSummaryScreen();
         }
+        // Stage information
+        if ($request->status === 'COMPLETED') {
+            $currentStages = [
+                'stage_name' => __('Completed'),
+            ];
+            $progressStage = 100.0; // 100% completed
+        } else {
+            $currentStages = $this->formatCurrentStage($request->last_stage_id, $request->last_stage_name);
+            $allStages = $this->getStagesByProcessId($request->process_id);
+            $progressStage = calculateProgressById($request->last_stage_id, $allStages);
+        }
         // Load the screen configured in "Request Detail Screen"
         $request->request_detail_screen = Screen::find($request->process->request_detail_screen_id);
         // The user canCancel if has the processPermission and the case has only one request
@@ -109,6 +120,9 @@ class CasesController extends Controller
         $modelerController = new ModelerController();
         $pmBlockList = $modelerController->getPmBlockList();
 
+        // Is TCE Customization
+        $isTceCustomization = config('app.tce_customization_enable');
+
         // Return the view
         return view('cases.edit', compact(
             'request',
@@ -122,7 +136,10 @@ class CasesController extends Controller
             'managerModelerScripts',
             'bpmn',
             'inflightData',
-            'pmBlockList'
+            'pmBlockList',
+            'progressStage',
+            'currentStages',
+            'isTceCustomization',
         ));
     }
 
@@ -170,5 +187,32 @@ class CasesController extends Controller
                 $request->summary_screen['config'] = $screenTranslation->applyTranslations($request->summary_screen);
             }
         }
+    }
+
+    /**
+     * Get the current stages from a JSON string.
+     *
+     * This method decodes a JSON string representing stages into an associative array.
+     * If the input is null or not a valid JSON string, it returns an empty array.
+     *
+     * @param int|null $id The ID of the stage.
+     * @param string|null $name The name of the stage.
+     * @return array An associative array of stages if the JSON is valid;
+     *               otherwise, an empty array.
+     */
+    public static function formatCurrentStage(?int $id, ?string $name): array
+    {
+        // Initialize currentStages as an empty array
+        $currentStages = [];
+
+        // Check if $id is not null and $name is a valid string
+        if (!is_null($id) && is_string($name)) {
+            $currentStages = [
+                'stage_id' => $id,
+                'stage_name' => $name,
+            ];
+        }
+
+        return $currentStages;
     }
 }

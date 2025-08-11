@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use ProcessMaker\Http\Controllers\Admin\TenantQueueController;
 use ProcessMaker\Http\Controllers\Api\BookmarkController;
+use ProcessMaker\Http\Controllers\Api\CaseController;
 use ProcessMaker\Http\Controllers\Api\ChangePasswordController;
 use ProcessMaker\Http\Controllers\Api\CommentController;
 use ProcessMaker\Http\Controllers\Api\CssOverrideController;
@@ -155,6 +156,14 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::delete('processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy')->middleware('can:archive-processes,process');
     Route::put('processes/{process}/restore', [ProcessController::class, 'restore'])->name('processes.restore')->middleware('can:archive-processes,process');
     Route::put('processes/{process}/duplicate', [ProcessController::class, 'duplicate'])->name('processes.duplicate')->middleware('can:create-processes,process');
+    // Stages
+    Route::get('processes/{process}/stages', [ProcessController::class, 'getStages'])->name('processes.getStages')->middleware('can:view-processes,process');
+    Route::post('processes/{process}/stages', [ProcessController::class, 'saveStages'])->name('processes.saveStages')->middleware('can:create-processes');
+    Route::get('processes/{process}/aggregation', [ProcessController::class, 'getAggregation'])->name('processes.get-aggregation')->middleware('can:view-processes,process');
+    Route::post('processes/{process}/aggregation', [ProcessController::class, 'saveAggregation'])->name('processes.save-aggregation')->middleware('can:create-processes');
+    Route::get('processes/{process}/default-stages', [ProcessController::class, 'getDefaultStagesPerProcess'])->name('processes.default-stages');
+    Route::get('processes/{process}/stage-mapping', [ProcessController::class, 'getStageMapping'])->name('processes.stage-mapping');
+    Route::get('processes/{process}/metrics', [ProcessController::class, 'getMetricsPerProcess'])->name('processes.metrics');
 
     // Process Bookmark
     $middlewareCatalog = 'can:view-process-catalog';
@@ -221,6 +230,9 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('tasks/{task}/setPriority', [TaskController::class, 'setPriority'])->name('tasks.priority');
     Route::put('tasks/updateReassign', [TaskController::class, 'updateReassign'])->name('tasks.updateReassign');
     Route::get('tasks/user-can-reassign', [TaskController::class, 'userCanReassign'])->name('tasks.user_can_reassign');
+
+    // Cases
+    Route::get('cases/stages_bar/{case_number?}', [CaseController::class, 'getStagePerCase'])->name('cases.stage');
 
     // TaskDrafts
     Route::put('drafts/{task}', [TaskDraftController::class, 'update'])->name('taskdraft.update');
