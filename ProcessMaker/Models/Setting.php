@@ -399,19 +399,26 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
     public static function groupsByMenu($menuId)
     {
         $query = self::query()
-            ->select('group')
+            ->select([
+                \DB::raw('MAX(id) as id'),
+                \DB::raw('MAX(`key`) as setting_key'),
+                \DB::raw('MAX(`ui`) as ui'),
+                'group',
+            ])
             ->groupBy('group')
             ->where('group_id', $menuId)
             ->orderBy('group', 'ASC')
             ->notHidden()
-            ->pluck('group');
-        $response = $query->toArray();
+            ->get();
+
         $result = [];
-        foreach ($response as &$value) {
-            // Technical debts: we need to add int key to identify a group, currently this is a label
+        foreach ($query as $setting) {
             $result[] = [
-                'id' => $value,
-                'name' => $value,
+                'id' => $setting->group,
+                'name' => $setting->group,
+                'setting_id' => $setting->id,
+                'setting_key' => $setting->setting_key,
+                'ui' => $setting->ui,
             ];
         }
 
@@ -451,6 +458,7 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
                 // Define the value of 'menu_group' based on 'group'
                 switch ($setting->group) {
                     case 'Actions By Email':
+                    case 'Email Start Event':
                     case 'Email Default Settings':
                         $id = SettingsMenus::getId(SettingsMenus::EMAIL_MENU_GROUP);
                         break;
