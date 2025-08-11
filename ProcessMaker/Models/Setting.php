@@ -402,6 +402,7 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
             ->select([
                 \DB::raw('MAX(id) as id'),
                 \DB::raw('MAX(`key`) as setting_key'),
+                \DB::raw('MAX(`ui`) as ui'),
                 'group',
             ])
             ->groupBy('group')
@@ -417,6 +418,7 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
                 'name' => $setting->group,
                 'setting_id' => $setting->id,
                 'setting_key' => $setting->setting_key,
+                'ui' => $setting->ui,
             ];
         }
 
@@ -476,7 +478,8 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
                         $id = SettingsMenus::getId(SettingsMenus::LOG_IN_AUTH_MENU_GROUP);
                         break;
                     case 'User Signals':
-                    case 'Users': // Additional Properties
+                    case 'Users':
+                    case 'Translations': // Additional Properties
                         $id = SettingsMenus::getId(SettingsMenus::USER_SETTINGS_MENU_GROUP);
                         break;
                     case 'IDP': // Intelligent Document Processing
