@@ -51,7 +51,7 @@
             id="language-screen-builder"
             class="ml-2"
             :type="'screen-builder'"
-            :show-language-code="false">
+            :show-language-code="true">
           </language-selector-button>
       </div>
       <b-col

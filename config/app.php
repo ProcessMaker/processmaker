@@ -170,6 +170,7 @@ return [
     'login_view' => env('LOGIN_VIEW', 'auth.newLogin'),
 
     'providers' => ServiceProvider::defaultProviders()->merge([
+        Spatie\Multitenancy\MultitenancyServiceProvider::class,
         /**
          * Package Service Providers
          */
@@ -195,6 +196,9 @@ return [
         ProcessMaker\Providers\OpenAiServiceProvider::class,
         ProcessMaker\Providers\LicenseServiceProvider::class,
         ProcessMaker\Providers\MetricsServiceProvider::class,
+        ProcessMaker\Providers\MixServiceProvider::class,
+        ProcessMaker\Providers\TenantQueueServiceProvider::class,
+        ProcessMaker\Providers\JsonOptimizerServiceProvider::class,
     ])->toArray(),
 
     'aliases' => Facade::defaultAliases()->merge([
@@ -209,6 +213,7 @@ return [
         'Theme' => Igaster\LaravelTheme\Facades\Theme::class,
         'WorkspaceManager' => ProcessMaker\Facades\WorkspaceManager::class,
         'SettingCache' => ProcessMaker\Cache\Settings\SettingCacheFacade::class,
+        'Tenant' => ProcessMaker\Multitenancy\Tenant::class,
     ])->toArray(),
 
     'debug_blacklist' => [
@@ -275,7 +280,7 @@ return [
 
     'custom_executors' => env('CUSTOM_EXECUTORS', false),
 
-    'prometheus_namespace' => env('PROMETHEUS_NAMESPACE', 'processmaker'),
+    'prometheus_namespace' => env('PROMETHEUS_NAMESPACE', strtolower(preg_replace('/[^a-zA-Z0-9_]+/', '_', env('APP_NAME', 'processmaker')))),
 
     'server_timing' => [
         'enabled' => env('SERVER_TIMING_ENABLED', true),
@@ -283,4 +288,8 @@ return [
     ],
 
     'editor' => null,
+
+    'json_optimization_decode' => env('JSON_OPTIMIZATION_DECODE', false),
+
+    'multitenancy' => env('MULTITENANCY', false),
 ];
