@@ -111,7 +111,7 @@
               "config": {
                 "icon": "fas fa-pencil-ruler",
                 "label": null,
-                "content": "<p style=\"color: #20242a; text-align: center; font-family: Inter, sans-serif; font-size: 24px; font-style: normal; font-weight: 600; line-height: 32px; letter-spacing: -0.24px;\"><strong>You have been assigned a task: {{_task_name}}</strong></p>",
+                "content": "<p style=\"color: #20242a; text-align: center; font-family: Inter, sans-serif; font-size: 24px; font-style: normal; font-weight: 600; line-height: 32px; letter-spacing: -0.24px;\"><strong>You have been assigned to a new task: {{_task_name}} <br> Please log in to your account to review and complete the task.</strong></p> ",
                 "interactive": true,
                 "renderVarHtml": false
               },
