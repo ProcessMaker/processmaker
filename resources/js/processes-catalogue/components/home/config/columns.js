@@ -50,7 +50,7 @@ export const caseNumberColumn = ({
   header,
   resizable,
   width,
-  formatter: (row, column, columns) => `# ${row.id}`,
+  formatter: (row, column, columns) => `# ${row.case_number}`,
   filter: {
     dataType: "string",
     operators: ["=", ">", ">=", "in", "between"],
