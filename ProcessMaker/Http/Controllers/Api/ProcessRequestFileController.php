@@ -457,9 +457,9 @@ class ProcessRequestFileController extends Controller
             $this->validateFileExtension($file, $errors);
         }
 
-        // Validate MIME type if enabled
+        // Validate MIME type vs extension if enabled
         if (config('files.enable_mime_validation', true)) {
-            $this->validateMimeType($file, $errors);
+            $this->validateExtensionMimeTypeMatch($file, $errors);
         }
 
         // Validate specific file types (e.g., PDF for JavaScript content)
@@ -479,39 +479,51 @@ class ProcessRequestFileController extends Controller
      */
     private function rejectArchiveFiles(UploadedFile $file, &$errors)
     {
-        $dangerousExtensions = [
-            'zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz', 'lzma',
-            'cab', 'ar', 'iso', 'dmg', 'pkg', 'deb', 'rpm',
-        ];
+        $dangerousExtensions = config('files.dangerous_extensions');
 
         $fileExtension = strtolower($file->getClientOriginalExtension());
 
         if (in_array($fileExtension, $dangerousExtensions)) {
-            $errors[] = __('File extension not allowed', [
-                'extension' => $fileExtension,
-            ]);
+            $errors['message'] = __('Uploaded file type is not allowed');
+
+            return;
         }
 
         // Also check MIME types for archive files
-        $dangerousMimeTypes = [
-            'application/zip',
-            'application/x-rar-compressed',
-            'application/x-7z-compressed',
-            'application/x-tar',
-            'application/gzip',
-            'application/x-bzip2',
-            'application/x-xz',
-            'application/x-lzma',
-            'application/vnd.ms-cab-compressed',
-            'application/x-iso9660-image',
-        ];
+        $dangerousMimeTypes = config('files.dangerous_mime_types');
 
         $fileMimeType = $file->getMimeType();
 
         if (in_array($fileMimeType, $dangerousMimeTypes)) {
-            $errors[] = __('Mime type not allowed', [
-                'mime_type' => $fileMimeType,
-            ]);
+            $errors['message'] = __('Uploaded mime file type is not allowed');
+        }
+    }
+
+    /**
+     * Validate that file extension matches the MIME type
+     *
+     * @param UploadedFile $file
+     * @param array $errors
+     * @return void
+     */
+    private function validateExtensionMimeTypeMatch(UploadedFile $file, &$errors)
+    {
+        $fileExtension = strtolower($file->getClientOriginalExtension());
+        $fileMimeType = $file->getMimeType();
+
+        // Get extension to MIME type mapping from configuration
+        $extensionMimeMap = config('files.extension_mime_map');
+
+        // Check if extension exists in our map
+        if (!isset($extensionMimeMap[$fileExtension])) {
+            $errors['message'] = __('File extension not allowed');
+
+            return;
+        }
+
+        // Check if MIME type matches any of the expected types for this extension
+        if (!in_array($fileMimeType, $extensionMimeMap[$fileExtension])) {
+            $errors['message'] = __('The file extension does not match the actual file content');
         }
     }
 
@@ -524,61 +536,11 @@ class ProcessRequestFileController extends Controller
      */
     private function validateFileExtension(UploadedFile $file, &$errors)
     {
-        $allowedExtensions = config('files.allowed_extensions', [
-            'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
-            'txt', 'csv', 'jpg', 'jpeg', 'png', 'gif', 'mp3', 'mp4',
-        ]);
-
+        $allowedExtensions = config('files.allowed_extensions');
         $fileExtension = strtolower($file->getClientOriginalExtension());
 
         if (!in_array($fileExtension, $allowedExtensions)) {
-            $errors[] = __('File extension not allowed', [
-                'extension' => $fileExtension,
-                'allowed' => implode(', ', $allowedExtensions),
-            ]);
-        }
-    }
-
-    /**
-     * Validate MIME type against allowed MIME types
-     *
-     * @param UploadedFile $file
-     * @param array $errors
-     * @return void
-     */
-    private function validateMimeType(UploadedFile $file, &$errors)
-    {
-        $allowedMimeTypes = config('files.allowed_mime_types', [
-            // Documents
-            'application/pdf',
-            'application/msword',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'application/vnd.ms-powerpoint',
-            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-            'text/plain',
-            'text/csv',
-
-            // Images
-            'image/jpeg',
-            'image/png',
-            'image/gif',
-
-            // Audio
-            'audio/mpeg',
-
-            // Video
-            'video/mp4',
-        ]);
-
-        $fileMimeType = $file->getMimeType();
-
-        if (!in_array($fileMimeType, $allowedMimeTypes)) {
-            $errors[] = __('Mime type not allowed', [
-                'mime_type' => $fileMimeType,
-                'allowed' => implode(', ', $allowedMimeTypes),
-            ]);
+            $errors['message'] = __('File extension not allowed');
         }
     }
 
