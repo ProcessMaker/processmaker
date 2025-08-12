@@ -121,6 +121,7 @@
                 icon: 'slack-color-logo',
                 enabled: false,
                 channel_id: null,
+                enabled_at: null,
                 ui_options: {
                     show_toggle: true,
                     show_edit_modal: false
@@ -301,13 +302,21 @@
                     
                     const index = accounts.findIndex(acc => acc.name === account.name);
                     if (index !== -1) {
-                      accounts[index] = { ...accounts[index], enabled: $event };
+                      // Update existing account
+                      accounts[index] = { 
+                        ...accounts[index], 
+                        enabled: $event,
+                        // Update enabled_at when re-enabling
+                        enabled_at: $event ? new Date().toISOString() : accounts[index].enabled_at
+                      };
                     } else {
+                      // Create new account
                       const newAccount = {
                         name: account.name,
                         description: account.description,
                         icon: account.icon,
                         enabled: $event,
+                        enabled_at: new Date().toISOString(),
                         channel_id: null,
                         ui_options: {
                           show_toggle: true,
