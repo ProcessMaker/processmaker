@@ -160,7 +160,7 @@
                 "package-data-sources": "1.34.1",
                 "package-decision-engine": "1.16.1",
                 "package-dynamic-ui": "1.28.1",
-                "package-email-start-event": "0.0.1",
+                "package-email-start-event": "1.0.0",
                 "package-files": "1.23.0",
                 "package-googleplaces": "1.12.0",
                 "package-photo-video": "1.6.1",
