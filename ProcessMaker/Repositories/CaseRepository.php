@@ -53,6 +53,11 @@ class CaseRepository implements CaseRepositoryInterface
             $processData = CaseUtils::extractData($instance->process, 'PROCESS');
             $requestData = CaseUtils::extractData($instance, 'REQUEST');
             $dataKeywords = CaseUtils::extractData($instance, 'KEYWORD');
+            // Check the case status
+            if (is_null($instance->last_stage_id)) {
+                $instance->last_stage_name = $instance->case_status;
+                $instance->progress = 50;
+            }
 
             CaseStarted::create([
                 'case_number' => $instance->case_number,
@@ -68,6 +73,9 @@ class CaseRepository implements CaseRepositoryInterface
                 'initiated_at' => $instance->initiated_at,
                 'completed_at' => null,
                 'keywords' => CaseUtils::getKeywords($dataKeywords),
+                'last_stage_id' => $instance->last_stage_id,
+                'last_stage_name' => $instance->last_stage_name,
+                'progress' => 0,
             ]);
         } catch (\Exception $e) {
             Log::error('CaseException: ' . $e->getMessage());
@@ -98,6 +106,9 @@ class CaseRepository implements CaseRepositoryInterface
             $this->case->request_tokens = CaseUtils::storeRequestTokens($this->case->request_tokens, $token->getKey());
             $this->case->tasks = CaseUtils::storeTasks($this->case->tasks, $taskData);
             $this->case->keywords = CaseUtils::getKeywords($dataKeywords);
+            $this->case->last_stage_id = $token->stage_id;
+            $this->case->last_stage_name = $token->stage_name;
+            $this->case->progress = calculateProgressById($token->stage_id, $instance?->process?->stages);
 
             $this->updateParticipants($token);
 
@@ -134,6 +145,8 @@ class CaseRepository implements CaseRepositoryInterface
 
             if (in_array($caseStatus, [CaseStatusConstants::COMPLETED, CaseStatusConstants::CANCELED])) {
                 $data['completed_at'] = $instance->completed_at;
+                $data['last_stage_name'] = $caseStatus;
+                $data['progress'] = 100;
             }
 
             // Update the case started and case participated

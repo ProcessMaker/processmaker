@@ -19,7 +19,7 @@ class ScreenCacheTest extends TestCase
             base_path('tests/Fixtures/processes/screen_process_v1.json'),
             [
                 'name' => 'Screen Process Test',
-                'status' => 'ACTIVE'
+                'status' => 'ACTIVE',
             ]
         );
 
@@ -54,7 +54,7 @@ class ScreenCacheTest extends TestCase
             base_path('tests/Fixtures/processes/screen_process_v2.json'),
             [
                 'name' => 'Screen Process Test',
-                'status' => 'ACTIVE'
+                'status' => 'ACTIVE',
             ]
         );
 
@@ -78,7 +78,7 @@ class ScreenCacheTest extends TestCase
             base_path('tests/Fixtures/processes/screen_process_v3.json'),
             [
                 'name' => 'Screen Process Test',
-                'status' => 'ACTIVE'
+                'status' => 'ACTIVE',
             ]
         );
 
@@ -100,7 +100,7 @@ class ScreenCacheTest extends TestCase
             base_path('tests/Fixtures/processes/screen_process_v4.json'),
             [
                 'name' => 'Screen Process Test',
-                'status' => 'ACTIVE'
+                'status' => 'ACTIVE',
             ]
         );
 
@@ -123,7 +123,7 @@ class ScreenCacheTest extends TestCase
             base_path('tests/Fixtures/processes/screen_process_v4.json'),
             [
                 'name' => 'Screen Process Test',
-                'status' => 'ACTIVE'
+                'status' => 'ACTIVE',
             ]
         );
 

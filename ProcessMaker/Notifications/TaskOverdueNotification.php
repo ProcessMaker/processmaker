@@ -55,7 +55,7 @@ class TaskOverdueNotification extends Notification
      * Get the mail representation of the notification.
      *
      * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @return MailMessage
      */
     public function toMail($notifiable)
     {
@@ -105,6 +105,8 @@ class TaskOverdueNotification extends Notification
                 '/tasks/%s/edit',
                 $token->id
             ),
+            'due_notified' => $token->due_notified,
+            'slack_notified' => $token->slack_notified ?? false,
         ];
     }
 

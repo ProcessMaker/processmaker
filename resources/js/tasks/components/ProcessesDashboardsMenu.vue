@@ -1,9 +1,9 @@
 <template>
-  <div class="inbox-process-menu">
+  <div class="tw-w-full tw-rounded-lg`">
     <div class="menu-sections">
       <div class="divider-custom">
         <span class="divider-text">{{ $t("Processes") }}</span>
-        <div class="divider-line"></div>
+        <div class="divider-line" />
       </div>
       <div class="buttons-list-process">
         <button
@@ -14,14 +14,14 @@
             selected:
               selectedItem.id === process.id && selectedItem.type === 'process',
           }"
-          @click="openProcessDashboard(process.id, 'process')"
-        >
+          @click="openProcessDashboard(process.id, 'process')">
           <img
             class="icon-process small-icon"
             :src="getIconProcess(process)"
-            :alt="$t(labelIcon)"
-          />
-          <span :id="`title-${process.id}`" class="title-process">
+            :alt="$t(labelIcon)">
+          <span
+            :id="`title-${process.id}`"
+            class="title-process">
             {{ process.name }}
           </span>
         </button>
@@ -29,7 +29,7 @@
 
       <div class="divider-custom">
         <span class="divider-text">{{ $t("Dashboards") }}</span>
-        <div class="divider-line"></div>
+        <div class="divider-line" />
       </div>
 
       <div class="buttons-list-dashboard">
@@ -42,14 +42,14 @@
               selectedItem.id === dashboard.id &&
               selectedItem.type === 'dashboard',
           }"
-          @click="openProcessDashboard(dashboard.id, 'dashboard')"
-        >
+          @click="openProcessDashboard(dashboard.id, 'dashboard')">
           <img
             class="icon-size"
             :src="`/img/launchpad-images/icons/Launchpad.svg`"
-            :alt="$t('No Image')"
-          />
-          <span :id="`dashboard-${dashboard.id}`" class="title-dashboard">
+            :alt="$t('No Image')">
+          <span
+            :id="`dashboard-${dashboard.id}`"
+            class="title-dashboard">
             {{ dashboard.title }}
           </span>
         </button>
@@ -120,8 +120,8 @@ export default {
           name: "dashboard",
           params: {
             dashboardId: id.toString(),
-            screen: screen,
-            formData: formData,
+            screen,
+            formData,
           },
         })
         .catch((err) => {
@@ -138,11 +138,14 @@ export default {
       });
     },
     loadDashboards() {
-      const url = this.buildURLDashboards();
-
-      ProcessMaker.apiClient.get(url).then((response) => {
-        this.dashboards = this.dashboards.concat(response.data);
-      });
+      try {
+        const url = this.buildURLDashboards();
+        ProcessMaker.apiClient.get(url).then((response) => {
+          this.dashboards = this.dashboards.concat(response.data);
+        });
+      } catch (error) {
+        console.error(error);
+      }
     },
     /**
      * Build URL for Process Cards
@@ -155,7 +158,7 @@ export default {
         &include=user,categories,category`;
     },
     buildURLDashboards() {
-      return `/dynamic-ui/custom-dashboards`;
+      return "/dynamic-ui/custom-dashboards";
     },
     buildURLDashboardsScreen(id) {
       return `/dynamic-ui/custom-dashboards/screen/${id}`;
@@ -175,7 +178,7 @@ export default {
       ProcessMaker.apiClient.get(url).then((response) => {
         if (!response.data.dashboard) {
           this.clearSelection();
-          this.$emit('get-all-tasks');
+          this.$emit("get-all-tasks");
           return;
         }
         this.screen = response.data.screen;
@@ -184,11 +187,11 @@ export default {
         // Saved in sessionStorage (data is deleted when the browser is closed)
         sessionStorage.setItem(
           "dashboard_screen",
-          JSON.stringify(response.data.screen)
+          JSON.stringify(response.data.screen),
         );
         sessionStorage.setItem(
           "dashboard_formData",
-          JSON.stringify(response.data.formData)
+          JSON.stringify(response.data.formData),
         );
 
         this.callDashboardViewScreen(id, this.screen, this.formData);
@@ -203,11 +206,6 @@ export default {
 </script>
 
 <style scoped>
-.inbox-process-menu {
-  padding: 1rem;
-  border-radius: 4px;
-}
-
 .menu-sections {
   display: flex;
   flex-direction: column;

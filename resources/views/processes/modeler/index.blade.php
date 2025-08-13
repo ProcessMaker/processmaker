@@ -61,6 +61,8 @@ a {
     },
   ]
 
+  window.ProcessMaker.defaultEmailNotification = @json($defaultEmailNotification);
+
   window.ProcessMaker.multiplayer = {
     broadcaster: "{{config('multiplayer.default')}}",
     host: "{{config('multiplayer.url')}}",

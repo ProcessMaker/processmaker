@@ -62,6 +62,12 @@
                   <div :class="classStatusCard" data-test="case-status">
                     <span style="margin:0; padding:0; line-height:1">@{{ $t(statusLabel) }}</span>
                   </div>
+                  <div>
+                    <stage-bar
+                      :title="stageName"
+                      :percentage="progressStage"
+                    />
+                  </div>
                   <li class="tw-px-4 tw-py-3 tw-border-b tw-border-gray-300" data-test="case-since-date">
                     <p class="section-title">@{{ $t(labelDate) }}:</p>
                     <i class="far fa-calendar-alt"></i>
@@ -140,12 +146,16 @@
     const requestCount = @json($requestCount);
     const screenBuilderScripts = @json($manager->getScripts());
     const inflightData = @json($inflightData);
+    const currentStages = @json($currentStages);
+    const progressStage = @json($progressStage);
+    const tceCustomizationEnable = @json($isTceCustomization);
     window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
   </script>
   <script src="{{mix('js/composition/cases/casesDetail/loader.js')}}"></script>
   <script src="{{mix('js/initialLoad.js')}}"></script>
 
   <script>
+    window.ProcessMaker.caseNumber = request.case_number;
     window.ProcessMaker.modeler = {
       xml: @json($bpmn),
       configurables: [],

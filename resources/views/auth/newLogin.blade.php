@@ -309,8 +309,9 @@ body {
   height: 100vh;
 }
 .language-button-container {
-  right: 0;
-  margin: 3rem 4rem;
+  right: 2.4rem;
+  top: 2.4rem;
+  z-index: 1041;
 }
 </style>
 </html>
