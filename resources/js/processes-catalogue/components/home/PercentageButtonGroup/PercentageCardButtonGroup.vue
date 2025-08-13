@@ -7,8 +7,8 @@
       :style="{ width: `${item.percentage}%` }"
       class=" tw-w-auto tw-flex tw-flex-col sm:tw-space-y-0 sm:tw-py-0
         first:tw-rounded-l-lg last:tw-rounded-r-lg tw-border-y tw-border-gray-200
-        first:tw-overflow-hidden first:tw-border-l
-        last:tw-overflow-hidden last:tw-border-r">
+        first:tw-border-l
+        tw-overflow-hidden last:tw-border-r">
       <PercentageCardButton
         :id="item.id"
         :header="item.body"
