@@ -1039,6 +1039,40 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     }
 
     /**
+     * This method is used to get the assignable users for a task based on the assignment rule.
+     * The assignment rule can be:
+     * - user_group: would assign it to those in the group or the Process Manager.
+     * - process_variable: would assign it to those in the group or the Process Manager.
+     * - rule_expression: would assign it to those in the group or the Process Manager.
+     * - previous_task_assignee: would assign it to the Process Manager.
+     * - requester: would assign it to the Process Manager.
+     * - process_manager: would assign it to the same Process Manager.
+     * 
+     * @param ProcessRequestToken $processRequestToken
+     * @return array
+     */
+    public function getAssignableUsersByAssignmentType(ProcessRequestToken $processRequestToken): array
+    {
+        $users = [];
+        switch ($processRequestToken->getAssignmentRule()) {
+            case 'user_group':
+            case 'process_variable':
+            case 'rule_expression':
+                $users = $this->getAssignableUsers($processRequestToken->element_id);
+                $users[] = $processRequestToken->process->properties["manager_id"];
+                break;
+            case 'previous_task_assignee':
+            case 'requester':
+                $users[] = $processRequestToken->process->properties["manager_id"];
+                break;
+            case 'process_manager':
+                $users[] = $processRequestToken->process->properties["manager_id"];
+                break;
+        }
+        return $users;
+    }
+
+    /**
      * Get a consolidated list of users within groups.
      *
      * @param mixed $group_id
