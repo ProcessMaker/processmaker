@@ -2,7 +2,7 @@
   <div class="tw-flex tw-items-center tw-space-x-2 tw-w-full tw-py-1">
     <span class="tw-w-6 text-center stage-item-number">{{ order }}</span>
     <i class="fas fa-grip-vertical stage-item-grip-vertical tw-cursor-move" />
-    <div class="tw-flex-1 tw-cursor-pointer">
+    <div class="tw-flex-1 tw-cursor-pointer tw-overflow-hidden">
       <template v-if="editing">
         <input
           v-model="localName"
