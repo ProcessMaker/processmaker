@@ -5,51 +5,55 @@
       ref="breadcrumb"
       :category="category ? category.name : ''"
       :process="selectedProcess ? selectedProcess.name : ''"
-      :template="guidedTemplates ? 'Guided Templates' : ''" />
+      :template="guidedTemplates ? 'Guided Templates' : ''"
+    />
     <div class="tw-flex tw-h-full">
       <CollapsableContainer
         v-model="showMenu"
         class="tw-w-80"
         position="right"
-        @change="hideMenu">
-        <template>
-          <MenuCatologue
-            ref="categoryList"
-            title="Available Processes"
-            preicon="fas fa-play-circle"
-            class="pt-3 menu-catalog"
-            show-bookmark="true"
-            :category-count="categoryCount"
-            :data="listCategories"
-            :from-process-list="fromProcessList"
-            :filter-categories="filterCategories"
-            @categorySelected="selectCategory"
-            @addCategories="addCategories" />
-        </template>
+        @change="hideMenu"
+      >
+        <MenuCatologue
+          ref="categoryList"
+          title="Available Processes"
+          preicon="fas fa-play-circle"
+          class="pt-3 menu-catalog"
+          show-bookmark="true"
+          :category-count="categoryCount"
+          :data="listCategories"
+          :from-process-list="fromProcessList"
+          :filter-categories="filterCategories"
+          @categorySelected="selectCategory"
+          @addCategories="addCategories"
+        />
       </CollapsableContainer>
 
       <div
         ref="processInfo"
-        class="tw-overflow-hidden tw-flex-1">
+        class="processes-info tw-overflow-auto tw-flex-1"
+      >
         <div
           v-show="showMobileMenuControl"
-          class="mobile-menu-control">
+          class="mobile-menu-control"
+        >
           <div
             class="menu-button"
-            @click="hideMenu">
+            @click="hideMenu"
+          >
             <i class="fa fa-bars" />
             {{ category?.name || "" }}
           </div>
           <div
             class="bookmark-button"
-            @click="showBookmarks">
+            @click="showBookmarks"
+          >
             <i class="fas fa-bookmark" />
           </div>
           <div
             class="search-button"
-            @click="
-              $root.mobileSearchVisible = !$root.mobileSearchVisible
-            ">
+            @click="$root.mobileSearchVisible = !$root.mobileSearchVisible"
+          >
             <i class="fas fa-search" />
           </div>
         </div>

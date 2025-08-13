@@ -124,10 +124,10 @@ export default {
     },
   },
   mounted() {
-    this.loadCard(()=>{
-      this.$nextTick(()=>{
-          const listCard = document.querySelector(".processes-info");
-          listCard.addEventListener("scrollend", () => this.handleScroll());
+    this.loadCard(() => {
+      this.$nextTick(() => {
+        const listCard = document.querySelector(".processes-info");
+        listCard.addEventListener("scrollend", () => this.handleScroll());
       });
     }, null);
     this.$root.$on("sizeChanged", (val) => {
@@ -254,7 +254,7 @@ export default {
       this.loadCard();
     },
     handleScroll() {
-      const container =  document.querySelector(".processes-info");
+      const container = document.querySelector(".processes-info");
       if ((container.scrollTop + container.clientHeight >= container.scrollHeight - 5) && this.isCardProcess) {
         this.cardMessage = "show-page";
         this.onPageChanged(this.currentPage + 1);
@@ -273,6 +273,7 @@ export default {
   position: relative;
   overflow: unset;
   justify-content: flex-start;
+  padding: 30px;
 
   @media (max-width: $lp-breakpoint) {
     display: block;
