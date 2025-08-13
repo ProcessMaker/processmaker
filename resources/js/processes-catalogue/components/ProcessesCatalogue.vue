@@ -52,9 +52,7 @@
           </div>
           <div
             class="search-button"
-            @click="
-              $root.mobileSearchVisible = !$root.mobileSearchVisible
-            "
+            @click="$root.mobileSearchVisible = !$root.mobileSearchVisible"
           >
             <i class="fas fa-search" />
           </div>
