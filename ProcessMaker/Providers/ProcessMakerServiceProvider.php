@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Providers;
 
+use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Database\Console\Migrations\MigrateCommand;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Filesystem\Filesystem;
@@ -60,6 +61,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
     // Track the query time for each request
     private static $queryTime = 0;
+
+    // If we are running an artisan command
+    private static $runningArtisanCommand = false;
 
     public function boot(): void
     {
@@ -319,9 +323,17 @@ class ProcessMakerServiceProvider extends ServiceProvider
             event(new TenantResolved($event->tenant));
         });
 
+        Facades\Event::listen(CommandStarting::class, function () {
+            self::$runningArtisanCommand = true;
+        });
+
         Facades\Event::listen(TenantNotFoundForRequestEvent::class, function ($event) {
-            if (config('app.multitenancy') === false) {
+            if (config('app.multitenancy') === false || self::$runningArtisanCommand) {
                 // This is expected if multitenancy is disabled.
+                // We also need to check if we are running an artisan command because sometimes
+                // we run them with APP_RUNNING_IN_CONSOLE=false and we don't want to
+                // show the landlord landing page in that case.
+
                 // Call the TenantResolved event with null to continue loading the app.
                 event(new TenantResolved(null));
             } else {
