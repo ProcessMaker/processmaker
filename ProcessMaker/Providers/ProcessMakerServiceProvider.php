@@ -320,8 +320,13 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         Facades\Event::listen(TenantNotFoundForRequestEvent::class, function ($event) {
-            if (config('app.multitenancy') === false) {
+            if (config('app.multitenancy') === false || self::actuallyRunningInConsole()) {
                 // This is expected if multitenancy is disabled.
+                // We also need to check if we are running in a console command because
+                // sometimes we run them with APP_RUNNING_IN_CONSOLE=false which will
+                // trigger TenantNotFoundForRequestEvent and we don't want to
+                // stop execution because of that.
+
                 // Call the TenantResolved event with null to continue loading the app.
                 event(new TenantResolved(null));
             } else {
@@ -568,5 +573,20 @@ class ProcessMakerServiceProvider extends ServiceProvider
             // Call the TenantResolved event with null to continue loading the app.
             event(new TenantResolved(null));
         }
+    }
+
+    /**
+     * Check if we are actually running in a console command.
+     *
+     * Sometimes we run console commands with APP_RUNNING_IN_CONSOLE=false
+     * so I took this form the framework to see if we are actually running
+     * in a console command. We can't NOT use APP_RUNNING_IN_CONSOLE=true
+     * because some routes are only registered when app()->runningInConsole()
+     * is false.
+     * @return bool
+     */
+    private static function actuallyRunningInConsole(): bool
+    {
+        return PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg';
     }
 }
