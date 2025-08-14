@@ -634,6 +634,9 @@ export default {
         .get("saved-searches/columns")
         .then((response) => {
           this.columnListing.currentColumns = type === "tasks" ? this.myTasksColumns : this.myCasesColumns;
+          if (this.columnListing.currentColumns.length === 0) {
+              this.columnListing.currentColumns = this.getDefaultColumns();
+          }
           if (this.isTCEScreen) {
             if (response.data) {
               if (response.data.default) {
@@ -703,7 +706,7 @@ export default {
         this.myCases.currentColumns = this.getTceGrants();
         return;
       }
-      this.myCases.currentColumns = this.getDefaultColumns(); 
+      this.myTasks.currentColumns = this.getDefaultColumns();
     },
     getDefaultColumns() {
       return [
