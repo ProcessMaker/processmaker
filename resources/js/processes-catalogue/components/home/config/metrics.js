@@ -52,6 +52,17 @@ export const buildStages = (stages) => stages.map((stage, index) => ({
   color: stagesColors.at(index),
 }));
 
+export const updateActiveStage = (arrayStages, stage) => {
+  arrayStages.forEach((s) => {
+    s.active = false;
+  });
+
+  const stg = arrayStages.find((s) => s.id === stage?.id);
+  if (stg) {
+    stg.active = true;
+  }
+};
+
 export const verifyResponseMetrics = (response) => {
   let isValid = true;
   response.forEach((metric) => {

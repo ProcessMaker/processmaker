@@ -65,7 +65,7 @@ import ArrowButtonGroup from "./ArrowButtonGroup/ArrowButtonGroup.vue";
 import ProcessInfo from "./ProcessInfo.vue";
 import { ellipsisPermission } from "../variables";
 import { getStages } from "../api";
-import { buildStages } from "./config/metrics";
+import { buildStages, updateActiveStage } from "./config/metrics";
 
 const childRef = ref(null)
 
@@ -141,18 +141,21 @@ const buildAdvancedFilters = (stage) => {
   ];
 };
 
-const updateDataStages = (data) => {
+const updateDataStages = async (data) => {
+  await hookStages();
+
+  updateActiveStage(dataStages.value, data.find((stage) => stage.active));
+
   lastStage.value.active = false;
   firstStage.value.active = false;
-  dataStages.value = data;
   dataStagesKey.value += 1;
   buildAdvancedFilters(dataStages.value.find((stage) => stage.active));
 };
 
-const onClickLastStage = () => {
-  dataStages.value.forEach((stage) => {
-    stage.active = false;
-  });
+const onClickLastStage = async () => {
+  await hookStages();
+
+  updateActiveStage(dataStages.value, null);
   firstStage.value.active = false;
   lastStage.value.active = true;
   buildAdvancedFilters(lastStage.value);
@@ -160,10 +163,10 @@ const onClickLastStage = () => {
   dataStagesKey.value += 1;
 };
 
-const onClickFirstStage = () => {
-  dataStages.value.forEach((stage) => {
-    stage.active = false;
-  });
+const onClickFirstStage = async () => {
+  await hookStages();
+
+  updateActiveStage(dataStages.value, null);
   firstStage.value.active = true;
   dataStagesKey.value += 1;
   lastStage.value.active = false;

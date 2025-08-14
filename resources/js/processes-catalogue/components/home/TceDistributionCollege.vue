@@ -44,7 +44,7 @@ import PercentageCardButtonGroup from "./PercentageButtonGroup/PercentageCardBut
 import { ellipsisPermission } from "../variables";
 import ProcessInfo from "./ProcessInfo.vue";
 import { getMetrics, getStages } from "../api";
-import { buildMetrics, buildStages, verifyResponseMetrics } from "./config/metrics";
+import { buildMetrics, buildStages, updateActiveStage, verifyResponseMetrics } from "./config/metrics";
 
 const childRef = ref(null)
 
@@ -101,6 +101,30 @@ const toggleInfo = () => {
 const buildAdvancedFilter = () => {
   const stage = stages.value.find((item) => item.active);
 
+  if (stage.id === "in_progress") {
+    return [
+      {
+        subject: {
+          type: "Status",
+        },
+        operator: "=",
+        value: "In Progress",
+      },
+    ];
+  }
+
+  if (stage.id === "completed") {
+    return [
+      {
+        subject: {
+          type: "Status",
+        },
+        operator: "=",
+        value: "Completed",
+      },
+    ];
+  }
+
   return [{
     subject: {
       type: "Stage",
@@ -110,10 +134,12 @@ const buildAdvancedFilter = () => {
   }];
 };
 
-const onChangeStage = (stage, idxItem) => {
-  stages.value.forEach((item, index) => {
-    index === idxItem ? item.active = true : item.active = false;
-  });
+const onChangeStage = async (stage, idxItem) => {
+  hookMetrics();
+  await hookStages();
+
+  updateActiveStage(stages.value, stage);
+
   dataKey.value += 1;
   advancedFilter.value = buildAdvancedFilter();
 };
