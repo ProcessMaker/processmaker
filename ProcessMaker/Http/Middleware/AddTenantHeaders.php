@@ -19,7 +19,7 @@ class AddTenantHeaders
     {
         $response = $next($request);
 
-        $tenant = Tenant::current();
+        $tenant = app('currentTenant');
 
         if ($tenant) {
             $response->headers->set('x-tenant-id', $tenant->id);
