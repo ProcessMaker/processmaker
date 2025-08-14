@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 use ProcessMaker\Facades\Metrics;
 use ProcessMaker\Http\Controllers\AboutController;
@@ -14,6 +15,7 @@ use ProcessMaker\Http\Controllers\Admin\SettingsController;
 use ProcessMaker\Http\Controllers\Admin\TenantQueueController;
 use ProcessMaker\Http\Controllers\Admin\UserController;
 use ProcessMaker\Http\Controllers\AdminController;
+use ProcessMaker\Http\Controllers\Api\FileController as ApiFileController;
 use ProcessMaker\Http\Controllers\Auth\ChangePasswordController;
 use ProcessMaker\Http\Controllers\Auth\ClientController;
 use ProcessMaker\Http\Controllers\Auth\ForgotPasswordController;
@@ -49,6 +51,10 @@ Route::get('storage/{path}', [StorageController::class, 'serve'])
     ->name('storage.serve');
 
 Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '2fa')->group(function () {
+    Route::get('files/{file}/contents', [ApiFileController::class, 'download'])
+        ->name('web.files.download')
+        ->middleware('can:view,file');
+
     // Routes related to Authentication (password reset, etc)
     // Auth::routes();
     Route::prefix('admin')->group(function () {
