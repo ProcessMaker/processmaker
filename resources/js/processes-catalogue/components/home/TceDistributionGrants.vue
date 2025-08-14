@@ -12,7 +12,7 @@
       <ArrowButtonHome
         v-if="firstStage"
         :key="dataStagesKey + 'first'"
-        class="tw-w-60 !tw-bg-[#FEE5FB]"
+        class="tw-w-60 !tw-bg-[#FEE5FB] hover:tw-cursor-pointer"
         color="red"
         :header="firstStage.header"
         :body="firstStage.body"
@@ -31,7 +31,7 @@
       <ArrowButtonHome
         v-if="lastStage"
         :key="dataStagesKey + 'last'"
-        class="tw-w-60"
+        class="tw-w-60 hover:tw-cursor-pointer"
         color="emerald"
         :header="lastStage.header"
         :body="lastStage.body"
@@ -65,7 +65,7 @@ import ArrowButtonGroup from "./ArrowButtonGroup/ArrowButtonGroup.vue";
 import ProcessInfo from "./ProcessInfo.vue";
 import { ellipsisPermission } from "../variables";
 import { getStages } from "../api";
-import { buildStages } from "./config/metrics";
+import { buildStages, updateActiveStage, buildAdvancedFilter} from "./config/metrics";
 
 const childRef = ref(null)
 
@@ -103,67 +103,32 @@ const hookStages = async () => {
   [firstStage.value] = buildStages([stagesResponse.data.total]);
 };
 
-const buildAdvancedFilters = (stage) => {
-  //TODO Use case : when there arent any stages, the stages by default are in progress (id:in_progress) and completed (id:completed)
-  if (stage.id === "in_progress") {
-    advancedFilter.value = [
-      {
-        subject: {
-          type: "Status",
-        },
-        operator: "=",
-        value: "In Progress",
-      },
-    ];
-    return;
-  }
+const updateDataStages = async (data) => {
+  await hookStages();
 
-  if (stage.id === "completed") {
-    advancedFilter.value = [
-      {
-        subject: {
-          type: "Status",
-        },
-        operator: "=",
-        value: "Completed",
-      },
-    ];
-    return;
-  }
+  updateActiveStage(dataStages.value, data.find((stage) => stage.active));
 
-  advancedFilter.value = [{
-    subject: {
-      type: "Stage",
-    },
-    operator: "=",
-    value: stage.id,
-  },
-  ];
-};
-
-const updateDataStages = (data) => {
   lastStage.value.active = false;
   firstStage.value.active = false;
-  dataStages.value = data;
   dataStagesKey.value += 1;
-  buildAdvancedFilters(dataStages.value.find((stage) => stage.active));
+  advancedFilter.value = buildAdvancedFilter(dataStages.value);
 };
 
-const onClickLastStage = () => {
-  dataStages.value.forEach((stage) => {
-    stage.active = false;
-  });
+const onClickLastStage = async () => {
+  await hookStages();
+
+  updateActiveStage(dataStages.value, null);
   firstStage.value.active = false;
   lastStage.value.active = true;
-  buildAdvancedFilters(lastStage.value);
+  advancedFilter.value = buildAdvancedFilter([lastStage.value]);
 
   dataStagesKey.value += 1;
 };
 
-const onClickFirstStage = () => {
-  dataStages.value.forEach((stage) => {
-    stage.active = false;
-  });
+const onClickFirstStage = async () => {
+  await hookStages();
+
+  updateActiveStage(dataStages.value, null);
   firstStage.value.active = true;
   dataStagesKey.value += 1;
   lastStage.value.active = false;
