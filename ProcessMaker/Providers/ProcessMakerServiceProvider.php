@@ -587,8 +587,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
      */
     private static function actuallyRunningInConsole(): bool
     {
-        dd('ACTUALLY RUNNING IN CONSOLE', PHP_SAPI);
-
         return PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg';
     }
 }
