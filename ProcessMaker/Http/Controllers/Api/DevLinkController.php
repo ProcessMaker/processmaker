@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Validation\Rule;
 use ProcessMaker\Events\CustomizeUiUpdated;
 use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Http\Controllers\Controller;
