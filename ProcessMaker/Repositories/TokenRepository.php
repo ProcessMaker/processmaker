@@ -356,6 +356,8 @@ class TokenRepository implements TokenRepositoryInterface
 
         $request = $token->getInstance();
         $request->notifyProcessUpdated('ACTIVITY_COMPLETED', $token);
+        $request->last_stage_name = 'Completed';
+        $request->progress = 100;
     }
 
     /**
