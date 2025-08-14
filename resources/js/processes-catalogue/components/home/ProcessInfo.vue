@@ -5,17 +5,19 @@
     :process="process"
     :full-carousel="fullCarousel"
     @closeCarousel="closeFullCarousel"
-    @close="closeProcessInfo">
+    @close="closeProcessInfo"
+  >
     <div class="tw-flex tw-flex-col tw-gap-4 tw-pl-10 tw-pr-10">
       <carousel-slide
         :process="process"
-        @full-carousel="showFullCarousel" />
+        @full-carousel="showFullCarousel"
+      />
       <div v-show="!fullCarousel">
         <process-options
           class="tw-w-full"
           :process="process"
-          :collapsed="collapsed" />
-        <progress-bar-section :stages-summary="process.stagesSummary" />
+          :collapsed="collapsed"
+        />
       </div>
     </div>
   </slide-process-info>
@@ -27,7 +29,6 @@ import { t } from "../variables/index";
 import SlideProcessInfo from "../slideProcessInfo/SlideProcessInfo.vue";
 import CarouselSlide from "../CarouselSlide.vue";
 import ProcessOptions from "../ProcessOptions.vue";
-import ProgressBarSection from "../progressBar/ProgressBarSection.vue";
 
 const props = defineProps({
   showProcessInfo: {
