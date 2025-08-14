@@ -12,6 +12,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessLaunchpad;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenType;
 use ProcessMaker\Models\ScriptCategory;
@@ -125,6 +126,8 @@ class ModelerController extends Controller
             $process->load('alternativeInfo');
         }
 
+        $defaultEmailNotification = $this->getDefaultEmailNotification();
+
         return [
             'process' => $process,
             'manager' => $manager,
@@ -147,6 +150,34 @@ class ModelerController extends Controller
             'alternative' => $alternative,
             'abPublish' => PackageHelper::isPackageInstalled('ProcessMaker\Package\PackageABTesting\PackageServiceProvider'),
             'launchpad' => ProcessLaunchpad::getLaunchpad(true, $process->id),
+            'defaultEmailNotification' => $defaultEmailNotification,
+        ];
+    }
+
+    /**
+     * Get the default email notification configuration for tasks
+     *
+     * Returns an array containing the default email notification settings including:
+     * - subject: The default email subject template
+     * - type: The notification type (screen)
+     * - screenRef: The ID of the default email notification screen
+     * - toRecipients: Array of default recipients (assigned user)
+     * @return array{screenRef: mixed, subject: string, toRecipients: array, type: string}
+     */
+    private function getDefaultEmailNotification(): array
+    {
+        $screen = Screen::getScreenByKey('default-email-task-notification');
+
+        return [
+            'subject' => 'RE: {{_user.firstname}} assigned you in "{{_task_name}}"',
+            'type' => 'screen',
+            'screenRef' => $screen->id,
+            'toRecipients' => [
+                [
+                    'type' => 'assignedUser',
+                    'value' => null,
+                ],
+            ],
         ];
     }
 

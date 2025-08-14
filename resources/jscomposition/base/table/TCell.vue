@@ -11,7 +11,7 @@
         <div
           :style="{ width: width }"
           class="tw-p-3 tw-text-ellipsis tw-text-nowrap tw-overflow-hidden">
-          {{ getValue() }}
+          {{ value }}
         </div>
       </slot>
     </template>
@@ -52,18 +52,18 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-    const getValue = () => {
+    const value = computed(() => {
       if (isFunction(props.column?.formatter)) {
         return props.column?.formatter(props.row, props.column, props.columns);
       }
       return get(props.row, props.column?.field) || "";
-    };
+    });
 
     const getComponent = () => props.column.cellRenderer().component || props.column.cellRenderer();
 
     const getParams = () => props.column.cellRenderer().params || {};
 
-    const collapseContainer = (value) => emit("toogleContainer", value);
+    const collapseContainer = (val) => emit("toogleContainer", val);
 
     const index = computed(() => props.columns.findIndex((column) => column.field === props.column.field));
 
@@ -77,7 +77,7 @@ export default defineComponent({
     return {
       getComponent,
       getParams,
-      getValue,
+      value,
       collapseContainer,
       width,
     };

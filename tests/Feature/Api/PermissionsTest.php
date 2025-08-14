@@ -263,7 +263,7 @@ class PermissionsTest extends TestCase
         // Test 1: Regular user cannot assign admin role
         $this->user = $regularUser;
         $this->user->save();
-        
+
         $response = $this->apiCall('PUT', '/permissions', [
             'user_id' => $targetUser->id,
             'is_administrator' => true,
@@ -276,13 +276,13 @@ class PermissionsTest extends TestCase
         // Test 2: Regular user cannot modify existing admin
         $targetUser->is_administrator = true;
         $targetUser->save();
-        
+
         $response = $this->apiCall('PUT', '/permissions', [
             'user_id' => $targetUser->id,
             'is_administrator' => false,
             'permission_names' => [],
         ]);
-        
+
         $response->assertStatus(403);
         $targetUser->refresh();
         $this->assertTrue($targetUser->is_administrator);
@@ -290,13 +290,13 @@ class PermissionsTest extends TestCase
         // Test 3: Admin can assign admin role
         $this->user = $adminUser;
         $this->user->save();
-        
+
         $response = $this->apiCall('PUT', '/permissions', [
             'user_id' => $targetUser->id,
             'is_administrator' => false,
             'permission_names' => [],
         ]);
-        
+
         $response->assertStatus(204);
         $targetUser->refresh();
         $this->assertFalse($targetUser->is_administrator);
@@ -305,9 +305,9 @@ class PermissionsTest extends TestCase
         $response = $this->apiCall('PUT', '/permissions', [
             'user_id' => $targetUser->id,
             'is_administrator' => true,
-            'permission_names' => []
+            'permission_names' => [],
         ]);
-        
+
         $response->assertStatus(204);
         $targetUser->refresh();
         $this->assertTrue($targetUser->is_administrator);

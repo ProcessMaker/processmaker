@@ -53,7 +53,7 @@ class ProcessHtmlTest extends TestCase
         $fixedBpmn = BpmnDocument::replaceHtmlEntities($process->bpmn);
         $this->assertEquals($fixedBpmn, $process->bpmn);
     }
-    
+
     /**
      * A process with html entities in the documentation field should be able to be updated.
      */
@@ -70,7 +70,7 @@ class ProcessHtmlTest extends TestCase
         $response->assertStatus(201);
         $data = $response->json();
         $process = Process::where('id', $data['id'])->first();
-        
+
         // Now update the process
         $bpmn = file_get_contents(base_path('tests/Fixtures/process_with_html.bpmn'));
         $updateRoute = route('api.processes.update', ['process' => $process->id]);
@@ -81,13 +81,13 @@ class ProcessHtmlTest extends TestCase
         ];
         $updateResponse = $this->apiCall('PUT', $updateRoute, $updateData);
         $updateResponse->assertStatus(200);
-        
+
         // Reload the process from database
         $updatedProcess = Process::where('id', $process->id)->first();
-        
+
         // Check if the process was updated correctly
         $this->assertEquals($process->name . ' Updated', $updatedProcess->name);
-        
+
         // Fix bpmn content to remove the html entities
         $fixedBpmn = BpmnDocument::replaceHtmlEntities($updatedProcess->bpmn);
         $this->assertEquals($fixedBpmn, $updatedProcess->bpmn);
@@ -110,7 +110,7 @@ class ProcessHtmlTest extends TestCase
         $response->assertStatus(201);
         $data = $response->json();
         $process = Process::where('id', $data['id'])->first();
-        
+
         // Now update the process
         $bpmn = file_get_contents(base_path('tests/Fixtures/process_with_html.bpmn'));
         $updateRoute = route('api.processes.update_bpmn', ['process' => $process->id]);
@@ -121,13 +121,13 @@ class ProcessHtmlTest extends TestCase
         ];
         $updateResponse = $this->apiCall('PUT', $updateRoute, $updateData);
         $updateResponse->assertStatus(200);
-        
+
         // Reload the process from database
         $updatedProcess = Process::where('id', $process->id)->first();
-        
+
         // Check if the process was updated correctly
         $this->assertEquals($process->name . ' Updated', $updatedProcess->name);
-        
+
         // Fix bpmn content to remove the html entities
         $fixedBpmn = BpmnDocument::replaceHtmlEntities($updatedProcess->bpmn);
         $this->assertEquals($fixedBpmn, $updatedProcess->bpmn);

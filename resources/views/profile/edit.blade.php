@@ -114,6 +114,20 @@
 	<script src="{{mix('js/admin/profile/edit.js')}}"></script>
 
 <script>
+        const DEFAULT_ACCOUNTS = {
+            connectorSlack: {
+                name: 'Slack',
+                description: 'Send ProcessMaker notifications to Slack',
+                icon: 'slack-color-logo',
+                enabled: false,
+                channel_id: null,
+                enabled_at: null,
+                ui_options: {
+                    show_toggle: true,
+                    show_edit_modal: false
+                }
+            }
+        };
         let formVueInstance = new Vue({
             el: '#editProfile',
             mixins:addons,
@@ -147,7 +161,6 @@
                     }
                 ],
                 focusErrors: 'errors',
-                accounts: @json($currentUser['connected_accounts']) === null ? []  : @json(json_decode($currentUser['connected_accounts'], true)),
             },
             created() {
               if (this.meta) {
@@ -257,9 +270,22 @@
                             this.originalEmail = this.formData.email;
                             this.emailHasChanged = false;
                             this.formData.valpassword = "";
+                            // Update the data to reflect the updated connected accounts
+                            if (document.querySelector('#nav-accounts-tab').classList.contains('active')) {
+                              window.location.reload();
+                            }
                         })
                         .catch(error => {
-                            this.errors = error.response.data.errors;
+                            if (error.response?.data?.errors) {
+                                this.errors = error.response.data.errors;
+                            }
+                            
+                            // Handle Slack notification errors
+                            if (error.response?.data?.message?.includes('Slack')) {
+                                ProcessMaker.alert(this.$t(error.response.data.message), 'danger');
+                                // Need to ensure the slack toggle is now disabled in the ui
+                                this.handleConnectedAccountToggle(DEFAULT_ACCOUNTS.connectorSlack, false, true);
+                            }
                         });
 
                   this.closeModal();
@@ -267,6 +293,57 @@
                 checkEmailChange() {
                   this.emailHasChanged = this.formData.email !== this.originalEmail;
                 },
+                handleConnectedAccountToggle(account, $event, error) {
+                  try {
+                    let accounts = [];
+                    if (this.formData.connected_accounts) {
+                      accounts = JSON.parse(this.formData.connected_accounts);
+                    }
+                    
+                    const index = accounts.findIndex(acc => acc.name === account.name);
+                    if (index !== -1) {
+                      // Update existing account
+                      accounts[index] = { 
+                        ...accounts[index], 
+                        enabled: $event,
+                        // Update enabled_at when re-enabling
+                        enabled_at: $event ? new Date().toISOString() : accounts[index].enabled_at
+                      };
+                    } else {
+                      // Create new account
+                      const newAccount = {
+                        name: account.name,
+                        description: account.description,
+                        icon: account.icon,
+                        enabled: $event,
+                        enabled_at: new Date().toISOString(),
+                        channel_id: null,
+                        ui_options: {
+                          show_toggle: true,
+                          show_edit_modal: false
+                        }
+                      };
+                      accounts.push(newAccount);
+                    }
+                    
+                    // Ensure the JSON is properly formatted
+                    const jsonString = JSON.stringify(accounts, null, 2);
+                
+                    // Verify the JSON is valid
+                    JSON.parse(jsonString);
+                    
+                    this.formData.connected_accounts = jsonString;
+                    if(!error) {
+                      this.saveProfileChanges();
+                    }
+                  } catch (error) {
+                    console.error('Error handling connected account toggle:', error);
+                    ProcessMaker.alert(this.$t('Error updating connected account'), 'danger');
+                  }
+                },
+                formatIcon(icon) {
+                  return `/img/connected-account-images/${icon}.svg`;
+                }
             },
             computed: {
                 state2FA() {
@@ -287,6 +364,19 @@
                       this.$delete(this.formData.meta, 'disableRecommendations');
                     }
                   }
+                },
+                accounts() {
+                  let accounts = this.formData.connected_accounts
+                    ? JSON.parse(this.formData.connected_accounts) 
+                    : [];
+
+                  if (window.ProcessMaker.packages.includes('connector-slack')) {
+                    if (!accounts.some(account => account.name === 'Slack')) {
+                      accounts.push(DEFAULT_ACCOUNTS.connectorSlack);
+                    }
+                  }
+
+                  return accounts;
                 }
             }
         });

@@ -226,7 +226,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         'assigned',
         'completed',
         'due',
-        'default'
+        'default',
     ];
 
     protected $appends = [
@@ -241,6 +241,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         'signal_events' => 'array',
         'conditional_events' => 'array',
         'properties' => 'array',
+        'stages' => 'array',
     ];
 
     public static function boot()
@@ -1852,6 +1853,234 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     public function hasAlternative()
     {
         return true;
+    }
+
+    /**
+     * Provides default stage data when no configuration exists.
+     *
+     * @param int $processId The process_id.
+     * @return array The default formatted array of stages.
+     */
+    protected static function getDefaultStagesData(int $processId): array
+    {
+        $totalCount = 0;
+        $activeCount = 0;
+        $completedCount = 0;
+        $activePercentage = 0;
+        $completedPercentage = 0;
+        $defaultCounts = self::getProcessDefaultStageCounts($processId);
+        if ($defaultCounts) {
+            $totalCount = $defaultCounts['total_count'] ?? 0;
+            $activeCount = $defaultCounts['active_count'] ?? 0;
+            $completedCount = $defaultCounts['completed_count'] ?? 0;
+            $activePercentage = ($totalCount > 0) ? (($activeCount / $totalCount) * 100) : 0;
+            $completedPercentage = ($totalCount > 0) ? (($completedCount / $totalCount) * 100) : 0;
+        }
+
+        return [
+            'total' => [
+                'stage_id' => 0,
+                'stage_name' => 'Total Cases',
+                'percentage' => 100,
+                'percentage_format' => '100%',
+                'agregation_sum' => 0,
+                'agregation_count' => $totalCount,
+            ],
+            'stages' => [
+                [
+                    'stage_id' => 'in_progress',
+                    'stage_name' => 'In progress',
+                    'percentage' => $activePercentage,
+                    'percentage_format' => $activePercentage . '%',
+                    'agregation_sum' => 0,
+                    'agregation_count' => $activeCount,
+                ],
+                [
+                    'stage_id' => 'completed',
+                    'stage_name' => 'Completed',
+                    'percentage' => $completedPercentage,
+                    'percentage_format' => $completedPercentage . '%',
+                    'agregation_sum' => 0,
+                    'agregation_count' => $completedCount,
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Maps the stages configuration with the counts from the database.
+     *
+     * @param array $stagesConf The decoded stages configuration.
+     * @param array $stageCounts The counts of process requests by last_stage_id.
+     * @return array The formatted array of stages with counts.
+     */
+    protected static function mapStagesWithCounts(array $stagesConfig, array $stageCounts): array
+    {
+        $stages = collect($stagesConfig)->map(function ($stage, $index) use ($stageCounts) {
+            $stageId = $stage['id'] ?? 0;
+            $totalCount = $stageCounts['total_count'] ?? 0;
+            $stageCount = $stageCounts[$stageId]['count'] ?? 0;
+            $stageSum = $stageCounts[$stageId]['total_aggregation_sum'] ?? 0;
+            $stagePercentage = ($totalCount > 0) ? ($stageCount / $totalCount * 100) : 0;
+
+            return [
+                'stage_id' => $stage['id'] ?? 0,
+                'stage_name' => $stage['name'] ?? 'Unknown Stage ' . ($index + 1),
+                'percentage' => $stagePercentage,
+                'percentage_format' => $stagePercentage . '%',
+                'agregation_sum' => $stageSum,
+                'agregation_count' => $stageCount,
+            ];
+        })->toArray();
+
+        $totalCount = $stageCounts['total_count'] ?? 0;
+        $totalSum = collect($stages)->sum('agregation_sum') ?? 0;
+
+        return [
+            'total' => [
+                'stage_id' => 0,
+                'stage_name' => 'Total Cases',
+                'percentage' => 100,
+                'percentage_format' => '100%',
+                'agregation_sum' => $totalCount,
+                'agregation_count' => $totalSum,
+            ],
+            'stages' => $stages,
+        ];
+    }
+
+    protected static function getProcessDefaultStageCounts(int $processId): array
+    {
+        return ProcessRequest::where('process_id', $processId)
+            ->whereIn('status', ['ACTIVE', 'COMPLETED', 'ERROR', 'CANCELED'])
+            ->selectRaw("
+                COUNT(CASE WHEN status = 'ACTIVE' THEN 1 END) AS active_count,
+                COUNT(CASE WHEN status = 'ERROR' THEN 1 END) AS error_count,
+                COUNT(CASE WHEN status = 'CANCELED' THEN 1 END) AS cancel_count,
+                COUNT(CASE WHEN status = 'COMPLETED' THEN 1 END) AS completed_count,
+                COUNT(*) AS total_count
+            ")
+            ->first()
+            ->toArray();
+    }
+
+    protected static function getProcessStageCounts(int $processId, string $amountKey = 'amount'): array
+    {
+        $rawSql = sprintf('last_stage_id, COUNT(*) AS count, SUM(CAST(JSON_EXTRACT(data, \'$.%s\') AS DECIMAL(10, 2))) AS var_aggregation_sum', $amountKey);
+
+        $results = ProcessRequest::where('process_id', $processId)
+            ->groupBy('last_stage_id')
+            ->selectRaw($rawSql)
+            ->get()
+            ->toArray();
+
+        $stageData = [];
+        $totalCount = 0;
+        foreach ($results as $result) {
+            $stageData[$result['last_stage_id']] = [
+                'count' => $result['count'],
+                'total_aggregation_sum' => $result['var_aggregation_sum'],
+            ];
+            // We will consider only the request with stages related
+            if (!empty($result['last_stage_id'])) {
+                $totalCount += $result['count'];
+            }
+        }
+        $stageData['total_count'] = $totalCount;
+
+        return $stageData;
+    }
+
+    /**
+     * Formats the stages configuration for the API response.
+     *
+     * @param int $processId The process_id
+     * @param array $stages The stages configuration.
+     * @param string $varAggregation The aggregation var configuration.
+     * @return array The formatted array of stages.
+     */
+    public static function formatStages($processId, $stages = [], ?string $varAggregation = ''): array
+    {
+        if (empty($stages)) {
+            // If not exist stages we will return the default stages
+            return self::getDefaultStagesData($processId);
+        } else {
+            // Get the stages
+            $stageCounts = self::getProcessStageCounts($processId, $varAggregation);
+
+            return self::mapStagesWithCounts($stages, $stageCounts);
+        }
+    }
+
+    /**
+     * Formats the stages configuration for the API response.
+     *
+     * @param Process $process The process to get metrics for
+     * @param string|null $stagesJson The JSON string of the stages configuration.
+     * @return array The formatted array of stages.
+     */
+    public static function formatMetrics(self $process, $format = 'student'): array
+    {
+        // Get user authenticated
+        $user = Auth::user();
+        // Create a base query for process requests
+        $baseQuery = ProcessRequest::query()
+            ->where('process_id', $process->id)
+            ->forUser($user);
+        // Count the number of process requests in different states
+        $counts = [
+            'started_me' => (clone $baseQuery)
+                ->startedMe($user->id)
+                ->notCompleted()
+                ->count(),
+            'in_progress' => (clone $baseQuery)
+                ->inProgress()
+                ->count(),
+            'completed' => (clone $baseQuery)
+                ->completed()
+                ->count(),
+        ];
+
+        $totalRequests = array_sum($counts);
+        $startedPercentage = $totalRequests > 0 ? round(($counts['started_me'] / $totalRequests) * 100) : 0;
+        $inProgressPercentage = $totalRequests > 0 ? round(($counts['in_progress'] / $totalRequests) * 100) : 0;
+        $completedPercentage = $totalRequests > 0 ? round(($counts['completed'] / $totalRequests) * 100) : 0;
+
+        switch ($format) {
+            case 'student':
+            case 'college':
+                $metrics = [
+                    [
+                        'id' => 1,
+                        'metric_description' => sprintf('Cases Started by me (%d%%)', $startedPercentage),
+                        'metric_count' => 40,
+                        'metric_count_description' => 'Applications started by me',
+                        'metric_value' => $counts['started_me'],
+                        'metric_value_unit' => '',
+                    ],
+                    [
+                        'id' => 2,
+                        'metric_description' => sprintf('Cases In progress (%d%%)', $inProgressPercentage),
+                        'metric_count' => 0,
+                        'metric_count_description' => 'Applications are currently being reviewed',
+                        'metric_value' => $counts['in_progress'],
+                        'metric_value_unit' => '',
+                    ],
+                    [
+                        'id' => 3,
+                        'metric_description' => sprintf('Completed Cases (%d%%)', $completedPercentage),
+                        'metric_count' => 0,
+                        'metric_count_description' => 'Applications have been processed',
+                        'metric_value' => $counts['completed'],
+                        'metric_value_unit' => '',
+                    ],
+                ];
+                break;
+            default:
+                // Default format for metrics
+        }
+
+        return $metrics;
     }
 
     public function scopeOrderByRecentRequests($query)
