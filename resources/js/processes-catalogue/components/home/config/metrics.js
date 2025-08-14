@@ -63,6 +63,42 @@ export const updateActiveStage = (arrayStages, stage) => {
   }
 };
 
+export const buildAdvancedFilter = (stages) => {
+  const stage = stages.find((item) => item.active);
+
+  if (stage.id === "in_progress") {
+    return [
+      {
+        subject: {
+          type: "Status",
+        },
+        operator: "=",
+        value: "In Progress",
+      },
+    ];
+  }
+
+  if (stage.id === "completed") {
+    return [
+      {
+        subject: {
+          type: "Status",
+        },
+        operator: "=",
+        value: "Completed",
+      },
+    ];
+  }
+
+  return [{
+    subject: {
+      type: "Stage",
+    },
+    operator: "=",
+    value: stage.id,
+  }];
+};
+
 export const verifyResponseMetrics = (response) => {
   let isValid = true;
   response.forEach((metric) => {
