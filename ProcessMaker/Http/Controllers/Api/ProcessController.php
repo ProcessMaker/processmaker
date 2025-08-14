@@ -528,6 +528,10 @@ class ProcessController extends Controller
             $process->manager_id = $request->input('manager_id', null);
         }
 
+        if ($request->has('user_id')) {
+            $process->user_id = $request->input('user_id', null);
+        }
+
         if ($request->has('reassignment_permissions')) {
             $process->setProperty('reassignment_permissions', $request->get('reassignment_permissions'));
         }
