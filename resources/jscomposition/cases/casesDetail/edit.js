@@ -8,7 +8,7 @@ import {
   updateUserConfiguration, getUserConfiguration, getCommentsData, updateRequest,
 } from "./api";
 import {
-  useStore, getRequest, getRequestId, getStageName, getProgressStage, isTceCustomization,
+  useStore, getRequest, getRequestId, getStageName, getProgressStage,
 } from "./variables";
 
 Vue.globalStore.registerModule("core:cases", cases);
@@ -53,7 +53,6 @@ const caseDetail = new Vue({
       headerModel: false,
       progressStage: getProgressStage(),
       stageName: getStageName(),
-      isTceCustomization: isTceCustomization(),
     };
   },
   computed: {
