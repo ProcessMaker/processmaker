@@ -1939,11 +1939,11 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         return [
             'total' => [
                 'stage_id' => 0,
-                'stage_name' => 'Total Cases',
+                'stage_name' => 'Total Identified Grants',
                 'percentage' => 100,
                 'percentage_format' => '100%',
-                'agregation_sum' => $totalCount,
-                'agregation_count' => $totalSum,
+                'agregation_sum' => $totalSum,
+                'agregation_count' => $totalCount,
             ],
             'stages' => $stages,
         ];
