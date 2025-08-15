@@ -310,12 +310,14 @@ class Screen extends ProcessMakerModel implements ScreenInterface, PrometheusMet
         $screen = self::firstWhere('key', $key);
         if (!$screen) {
             $screen = self::createScreenByKey($key, false, null, 1);
+        } else {
+            $screen = self::createScreenByKey($key, false, null, 1, 'key');
         }
 
         return $screen;
     }
 
-    private static function createScreenByKey(string $key, bool $isSystem = true, string $path = null, $isDefault = 0): self
+    private static function createScreenByKey(string $key, bool $isSystem = true, string $path = null, $isDefault = 0, $columnKey = null): self
     {
         // If no path is provided, use the default path
         if (!$path) {
@@ -345,7 +347,8 @@ class Screen extends ProcessMakerModel implements ScreenInterface, PrometheusMet
         }
 
         // Look for existing screen by title
-        $newScreen = self::firstWhere('title', $screen['title']);
+        $newScreen = is_null($columnKey) ? self::firstWhere('title', $screen['title']) : self::firstWhere($columnKey, $screen[$columnKey]);
+
         // Create new screen
         unset($screen['categories']);
         $screen['screen_category_id'] = null;
@@ -371,5 +374,42 @@ class Screen extends ProcessMakerModel implements ScreenInterface, PrometheusMet
         }
 
         return $newScreen;
+    }
+
+    private static function updateScreenByKey(string $key, $isDefault = 0): self
+    {
+        // If no path is provided, use the default path
+        $path = database_path('processes/screens/' . "{$key}.json");
+
+        // Check if file exists
+        if (!file_exists($path)) {
+            throw new \RuntimeException("Screen configuration file not found: {$path}");
+        }
+
+        // Read and decode JSON with validation
+        $jsonContent = file_get_contents($path);
+        $json = json_decode($jsonContent, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \RuntimeException('Invalid JSON in screen configuration: ' . json_last_error_msg());
+        }
+
+        if (!isset($json['screens']) || !is_array($json['screens'])) {
+            throw new \RuntimeException("Invalid screen configuration format: 'screens' array is required");
+        }
+
+        $screen = collect($json['screens'])->first();
+        if (!$screen) {
+            throw new \RuntimeException('No screen configuration found in JSON');
+        }
+
+        $updateScreen = self::updateOrCreate(
+            ['key' => $screen['key']],
+            $screen
+        );
+
+        // Assign system category if needed
+
+        return $updateScreen;
     }
 }
