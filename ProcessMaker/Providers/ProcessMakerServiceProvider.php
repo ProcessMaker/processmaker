@@ -99,7 +99,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
             $tenants = Tenant::all();
             $config = config('horizon.environments');
             $config = $this->addTenantSupervisors($config, $tenants);
-            dump($config);
             config(['horizon.environments' => $config]);
         }
     }
