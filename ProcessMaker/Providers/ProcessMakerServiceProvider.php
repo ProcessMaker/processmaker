@@ -9,6 +9,7 @@ use Illuminate\Foundation\PackageManifest;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Env;
 use Illuminate\Support\Facades;
 use Illuminate\Support\Facades\DB;
@@ -43,6 +44,7 @@ use ProcessMaker\Repositories\SettingsConfigRepository;
 use RuntimeException;
 use Spatie\Multitenancy\Events\MadeTenantCurrentEvent;
 use Spatie\Multitenancy\Events\TenantNotFoundForRequestEvent;
+use Spatie\Multitenancy\TenantCollection;
 
 /**
  * Provide our ProcessMaker specific services.
@@ -94,24 +96,39 @@ class ProcessMakerServiceProvider extends ServiceProvider
         // the queue for another tenant. This must be done here instead of SwitchTenant.php because
         // there is a single horizon instance for all tenants.
         if ($this->app->runningInConsole() && config('app.multitenancy')) {
-            $tenantIds = Tenant::all()->pluck('id')->toArray();
+            $tenants = Tenant::all();
             $config = config('horizon.environments');
-            $config = $this->addTenantSupervisors($config, $tenantIds);
+            $config = $this->addTenantSupervisors($config, $tenants);
+            dump($config);
             config(['horizon.environments' => $config]);
         }
     }
 
-    private function addTenantSupervisors(array $config, array $tenantIds): array
+    private function addTenantSupervisors(array $config, TenantCollection $tenants): array
     {
+        $tenantsConfigById = $tenants->mapWithKeys(function ($tenant) {
+            return [$tenant->id => $tenant->config];
+        });
+
         foreach ($config as $env => &$supervisors) {
             $newSupervisors = [];
 
             foreach ($supervisors as $supervisorName => $settings) {
-                foreach ($tenantIds as $tenantId) {
+                foreach ($tenants as $tenant) {
+                    $tenantId = $tenant->id;
                     $tenantSupervisorName = "tenant-{$tenantId}-{$supervisorName}";
 
                     // Copy original settings
                     $tenantSettings = $settings;
+
+                    // Set tenant-specific settings
+                    $tenantConfig = $tenantsConfigById[$tenantId];
+                    foreach (['balance', 'tries', 'timeout', 'minProcesses', 'maxProcesses'] as $key) {
+                        $value = Arr::get($tenantConfig, "horizon.{$supervisorName}.{$key}", null);
+                        if ($value !== null) {
+                            $tenantSettings[$key] = $value;
+                        }
+                    }
 
                     // Prepend tenant ID to each queue
                     if (isset($tenantSettings['queue']) && is_array($tenantSettings['queue'])) {
