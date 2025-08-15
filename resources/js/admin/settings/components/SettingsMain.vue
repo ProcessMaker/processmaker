@@ -49,7 +49,7 @@ export default {
       this.group = item.name;
       this.settingId = item.setting_id;
       this.settingKey = item.setting_key;
-      this.customConfigurationComponent = item.ui.custom_component ?? null;
+      this.customConfigurationComponent = item.ui?.custom_component ?? null;
       this.selectedItem = true;
       this.reRender();
     },
