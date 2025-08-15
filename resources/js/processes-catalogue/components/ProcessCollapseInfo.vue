@@ -26,7 +26,6 @@
                 >
                   {{ process.name }}
                 </div>
-
                 <div class="d-flex align-items-center flex-shrink-0 tw-text-xs">
                   <mini-pie-chart
                     :count="process.counts.in_progress"
