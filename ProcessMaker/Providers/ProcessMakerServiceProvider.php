@@ -9,6 +9,7 @@ use Illuminate\Foundation\PackageManifest;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
+use Illuminate\Support\Env;
 use Illuminate\Support\Facades;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -22,6 +23,9 @@ use ProcessMaker\Cache\Settings\SettingCacheManager;
 use ProcessMaker\Console\Migration\ExtendedMigrateCommand;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Events\TenantResolved;
+use ProcessMaker\Exception\MultitenancyAccessedLandlord;
+use ProcessMaker\Exception\MultitenancyNoTenantFound;
 use ProcessMaker\Helpers\PmHash;
 use ProcessMaker\Http\Middleware\Etag\HandleEtag;
 use ProcessMaker\ImportExport\Extension;
@@ -32,10 +36,13 @@ use ProcessMaker\Managers;
 use ProcessMaker\Managers\MenuManager;
 use ProcessMaker\Managers\ScreenCompiledManager;
 use ProcessMaker\Models;
+use ProcessMaker\Multitenancy\Tenant;
 use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
 use ProcessMaker\Repositories\SettingsConfigRepository;
 use RuntimeException;
+use Spatie\Multitenancy\Events\MadeTenantCurrentEvent;
+use Spatie\Multitenancy\Events\TenantNotFoundForRequestEvent;
 
 /**
  * Provide our ProcessMaker specific services.
@@ -59,6 +66,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
         // Track the start time for service providers boot
         self::$bootStart = microtime(true);
 
+        // Set the current tenant
+        $this->setCurrentTenantForConsoleCommands();
+
         $this->app->singleton(Menu::class, function ($app) {
             return new MenuManager();
         });
@@ -78,6 +88,46 @@ class ProcessMakerServiceProvider extends ServiceProvider
         Route::pushMiddlewareToGroup('api', HandleEtag::class);
         // Hook after service providers boot
         self::$bootTime = (microtime(true) - self::$bootStart) * 1000; // Convert to milliseconds
+
+        // Only run this for console commands so we dont query the Tenants database for each request.
+        // This sets up individual supervisors for each tenant so that one tenant does not block
+        // the queue for another tenant. This must be done here instead of SwitchTenant.php because
+        // there is a single horizon instance for all tenants.
+        if ($this->app->runningInConsole() && config('app.multitenancy')) {
+            $tenantIds = Tenant::all()->pluck('id')->toArray();
+            $config = config('horizon.environments');
+            $config = $this->addTenantSupervisors($config, $tenantIds);
+            config(['horizon.environments' => $config]);
+        }
+    }
+
+    private function addTenantSupervisors(array $config, array $tenantIds): array
+    {
+        foreach ($config as $env => &$supervisors) {
+            $newSupervisors = [];
+
+            foreach ($supervisors as $supervisorName => $settings) {
+                foreach ($tenantIds as $tenantId) {
+                    $tenantSupervisorName = "tenant-{$tenantId}-{$supervisorName}";
+
+                    // Copy original settings
+                    $tenantSettings = $settings;
+
+                    // Prepend tenant ID to each queue
+                    if (isset($tenantSettings['queue']) && is_array($tenantSettings['queue'])) {
+                        $tenantSettings['queue'] = array_map(function ($queue) use ($tenantId) {
+                            return "tenant-{$tenantId}-{$queue}";
+                        }, $tenantSettings['queue']);
+                    }
+
+                    $newSupervisors[$tenantSupervisorName] = $tenantSettings;
+                }
+            }
+
+            $supervisors = $newSupervisors;
+        }
+
+        return $config;
     }
 
     public function register(): void
@@ -209,6 +259,12 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->extend('config', function ($originalConfig) {
             return new SettingsConfigRepository($originalConfig->all());
         });
+
+        $this->app->singleton('currentTenant', function () {
+            return null;
+        });
+
+        $this->app->instance('tenant-resolved', false);
     }
 
     /**
@@ -257,6 +313,35 @@ class ProcessMakerServiceProvider extends ServiceProvider
             $task_id = $event->getProcessRequestToken()->id;
             // Dispatch the SmartInbox job with the processRequestToken as parameter
             SmartInbox::dispatch($task_id);
+        });
+
+        Facades\Event::listen(MadeTenantCurrentEvent::class, function ($event) {
+            event(new TenantResolved($event->tenant));
+        });
+
+        Facades\Event::listen(TenantNotFoundForRequestEvent::class, function ($event) {
+            if (config('app.multitenancy') === false || self::actuallyRunningInConsole()) {
+                // This is expected if multitenancy is disabled.
+                // We also need to check if we are running in a console command because
+                // sometimes we run them with APP_RUNNING_IN_CONSOLE=false which will
+                // trigger TenantNotFoundForRequestEvent and we don't want to
+                // stop execution because of that.
+
+                // Call the TenantResolved event with null to continue loading the app.
+                event(new TenantResolved(null));
+            } else {
+                // Multitenancy is enabled, but no tenant was found.
+                // Check if we are attempting to access the landlord directly (by comparing app.url)
+                // If so, show thelandlord landing page.
+                $requestHost = $event->request->getHost();
+                $appHost = parse_url(config('app.url'), PHP_URL_HOST);
+                if ($appHost === $requestHost) {
+                    throw new MultitenancyAccessedLandlord();
+                }
+
+                // Otherwise, show a 404 page.
+                throw new MultitenancyNoTenantFound();
+            }
         });
     }
 
@@ -466,5 +551,42 @@ class ProcessMakerServiceProvider extends ServiceProvider
     public static function getPackageBootTiming(): array
     {
         return self::$packageBootTiming;
+    }
+
+    /**
+     * Find the tenant based on the environment variable
+     */
+    private function setCurrentTenantForConsoleCommands(): void
+    {
+        // See ProcessMaker\Multitenancy\TenantFinder::findForRequest() for disguised console commands (APP_RUNNING_IN_CONSOLE=false)
+        // We need to do this in 2 places because laravel-multitenancy skips the tenant finder when running in console
+        if (!app()->runningInConsole()) {
+            return;
+        }
+
+        $tenantId = Env::get('TENANT');
+        if ($tenantId) {
+            $tenant = Tenant::findOrFail($tenantId);
+            $tenant->makeCurrent();
+        } elseif (config('app.multitenancy') === false) {
+            // This is expected if multitenancy is disabled.
+            // Call the TenantResolved event with null to continue loading the app.
+            event(new TenantResolved(null));
+        }
+    }
+
+    /**
+     * Check if we are actually running in a console command.
+     *
+     * Sometimes we run console commands with APP_RUNNING_IN_CONSOLE=false
+     * so I took this form the framework to see if we are actually running
+     * in a console command. We can't NOT use APP_RUNNING_IN_CONSOLE=true
+     * because some routes are only registered when app()->runningInConsole()
+     * is false.
+     * @return bool
+     */
+    private static function actuallyRunningInConsole(): bool
+    {
+        return PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg';
     }
 }

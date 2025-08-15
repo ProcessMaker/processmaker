@@ -1,0 +1,1 @@
+<meta name="tenant-id" content="{{ app('currentTenant')?->id }}">

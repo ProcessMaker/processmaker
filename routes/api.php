@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use ProcessMaker\Http\Controllers\Admin\TenantQueueController;
 use ProcessMaker\Http\Controllers\Api\BookmarkController;
+use ProcessMaker\Http\Controllers\Api\CaseController;
 use ProcessMaker\Http\Controllers\Api\ChangePasswordController;
 use ProcessMaker\Http\Controllers\Api\CommentController;
 use ProcessMaker\Http\Controllers\Api\CssOverrideController;
@@ -154,6 +156,14 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::delete('processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy')->middleware('can:archive-processes,process');
     Route::put('processes/{process}/restore', [ProcessController::class, 'restore'])->name('processes.restore')->middleware('can:archive-processes,process');
     Route::put('processes/{process}/duplicate', [ProcessController::class, 'duplicate'])->name('processes.duplicate')->middleware('can:create-processes,process');
+    // Stages
+    Route::get('processes/{process}/stages', [ProcessController::class, 'getStages'])->name('processes.getStages')->middleware('can:view-processes,process');
+    Route::post('processes/{process}/stages', [ProcessController::class, 'saveStages'])->name('processes.saveStages')->middleware('can:create-processes');
+    Route::get('processes/{process}/aggregation', [ProcessController::class, 'getAggregation'])->name('processes.get-aggregation')->middleware('can:view-processes,process');
+    Route::post('processes/{process}/aggregation', [ProcessController::class, 'saveAggregation'])->name('processes.save-aggregation')->middleware('can:create-processes');
+    Route::get('processes/{process}/default-stages', [ProcessController::class, 'getDefaultStagesPerProcess'])->name('processes.default-stages');
+    Route::get('processes/{process}/stage-mapping', [ProcessController::class, 'getStageMapping'])->name('processes.stage-mapping');
+    Route::get('processes/{process}/metrics', [ProcessController::class, 'getMetricsPerProcess'])->name('processes.metrics');
 
     // Process Bookmark
     $middlewareCatalog = 'can:view-process-catalog';
@@ -200,6 +210,14 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('permissions', [PermissionController::class, 'index'])->name('permissions.index');
     Route::put('permissions', [PermissionController::class, 'update'])->name('permissions.update')->middleware('can:edit-users');
 
+    // Tenant Jobs Dashboard API
+    Route::get('tenant-queues/tenants', [TenantQueueController::class, 'getTenants'])->name('tenant-queue.tenants');
+    Route::get('tenant-queues/overall-stats', [TenantQueueController::class, 'getOverallStats'])->name('tenant-queue.overall-stats');
+    Route::get('tenant-queues/{tenantId}/jobs', [TenantQueueController::class, 'getTenantJobs'])->name('tenant-queue.jobs');
+    Route::get('tenant-queues/{tenantId}/stats', [TenantQueueController::class, 'getTenantStats'])->name('tenant-queue.stats');
+    Route::get('tenant-queues/{tenantId}/jobs/{jobId}', [TenantQueueController::class, 'getJobDetails'])->name('tenant-queue.job-details');
+    Route::delete('tenant-queues/{tenantId}/clear', [TenantQueueController::class, 'clearTenantJobs'])->name('tenant-queue.clear');
+
     // Tasks
     Route::get('tasks', [TaskController::class, 'index'])->name('tasks.index'); // Already filtered in controller
     Route::get('tasks-by-case', [TaskController::class, 'getTasksByCase'])->name('tasks.index.case');
@@ -212,6 +230,9 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('tasks/{task}/setPriority', [TaskController::class, 'setPriority'])->name('tasks.priority');
     Route::put('tasks/updateReassign', [TaskController::class, 'updateReassign'])->name('tasks.updateReassign');
     Route::get('tasks/user-can-reassign', [TaskController::class, 'userCanReassign'])->name('tasks.user_can_reassign');
+
+    // Cases
+    Route::get('cases/stages_bar/{case_number?}', [CaseController::class, 'getStagePerCase'])->name('cases.stage');
 
     // TaskDrafts
     Route::put('drafts/{task}', [TaskDraftController::class, 'update'])->name('taskdraft.update');

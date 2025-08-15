@@ -15,6 +15,7 @@
     <meta name="i18n-mdate" content='{!! json_encode(ProcessMaker\i18nHelper::mdates()) !!}'>
     <meta name="screen-cache-enabled" content="{{ config('app.screen.cache_enabled') ? 'true' : 'false' }}">
     <meta name="screen-cache-timeout" content="{{ config('app.screen.cache_timeout') }}">
+    <meta name="settings-translations-enabled" content="{{ config('translations.enabled') ? 'true' : 'false' }}">
     @if(Auth::user())
     <meta name="user-id" content="{{ Auth::user()->id }}">
     <meta name="user-full-name" content="{{ Auth::user()->fullname }}">
@@ -35,6 +36,7 @@
       <meta name="alertVariant" content="{{$type}}">
       <meta name="alertMessage" content="{{$message}}">
     @endif
+    @include('layouts.common-meta')
     <title>@yield('title',__('Welcome')) - {{ __('ProcessMaker') }}</title>
     <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
@@ -48,7 +50,8 @@
         csrfToken: "{{csrf_token()}}",
         userId: "{{\Auth::user()->id}}",
         messages: [],
-        apiTimeout: {{config('app.api_timeout')}}
+        apiTimeout: {{config('app.api_timeout')}},
+        notificationMessages: {!! json_encode(config('notifications.messages')) !!}
       };
       @if(config('broadcasting.default') == 'redis')
         window.Processmaker.broadcasting = {

@@ -88,6 +88,7 @@ class SettingsConfigRepository extends Repository
 
         if ($setting !== null) {
             Arr::set($this->items, $key, $setting->config);
+
             return $setting->config;
         }
 
@@ -111,6 +112,7 @@ class SettingsConfigRepository extends Repository
     {
         if (!$this->readyToUseSettingsDatabase) {
             $this->readyToUseSettingsDatabase =
+                app('tenant-resolved') &&
                 $this->databaseAvailable() &&
                 $this->redisAvailable() &&
                 $this->settingsTableExists();

@@ -21,7 +21,10 @@
         </p>
         <div class="row">
           <div class="col-sm-12 col-lg-6">
-            <div md="12" class="no-padding">
+            <div
+              md="12"
+              class="no-padding"
+            >
               <label>{{ $t("Launchpad Carousel") }}</label>
               <input-image-carousel ref="image-carousel" />
             </div>
@@ -43,6 +46,7 @@
                   :allow-empty="false"
                   @open="retrieveDisplayScreen"
                   @search-change="retrieveDisplayScreen"
+                  @input="changeSelectedScreen"
                 >
                   <template slot="noResult">
                     {{
@@ -91,11 +95,24 @@
                 </multiselect>
               </b-input-group>
             </div>
-            <label></label>
-            <div>
-              <a href="#" @click.prevent="showEditTaskColumn"
-                >{{ $t("Edit Task Column") }} <i class="fp-box-arrow-up-right"
-              /></a>
+            <label />
+            <div v-if="showTasks">
+              <a
+                href="#"
+                @click.prevent="showEditColumn('tasks')"
+              >
+                {{ $t("Edit Task Column") }}
+                <i class="fp-box-arrow-up-right" />
+              </a>
+            </div>
+            <div v-if="showCases">
+              <a
+                href="#"
+                @click.prevent="showEditColumn('cases')"
+              >
+                {{ $t("Edit Cases Column") }}
+                <i class="fp-box-arrow-up-right" />
+              </a>
             </div>
           </div>
         </div>
@@ -113,53 +130,26 @@
         />
       </div>
       <template #modal-footer>
-        <b-button variant="outline-secondary" @click="hideModal">
+        <b-button
+          variant="outline-secondary"
+          @click="hideModal"
+        >
           Cancel 2
         </b-button>
-        <b-button variant="secondary" @click="saveModal"> Save 1 </b-button>
+        <b-button
+          variant="secondary"
+          @click="saveModal"
+        >
+          Save 1
+        </b-button>
       </template>
     </modal>
-    <b-modal
-      ref="editTaskColumn"
-      size="lg"
-      class="modal-dialog modal-dialog-centered"
-      hide-footer
-      scrollable
-      :title="$t('Edit Task Column')"
-    >
-      <div class="modal-content-custom">
-        <column-chooser
-          v-model="myTasks.currentColumns"
-          :available-columns="myTasks.availableColumns"
-          :default-columns="myTasks.defaultColumns"
-          :data-columns="myTasks.dataColumns"
-        >
-          <template #title1>
-            <small class="form-text text-muted">
-              <a href="#" @click.prevent="$refs['editTaskColumn'].hide()">
-                <i class="fp-arrow-left" />
-                {{ $t("Go back to Launchpad Settings") }}
-              </a>
-            </small>
-          </template>
-          <template #footer>
-            <b-button
-              variant="outline-secondary"
-              @click="$refs['editTaskColumn'].hide()"
-              class="mr-1"
-            >
-              {{ $t("Cancel and go back") }}
-            </b-button>
-            <b-button
-              variant="secondary"
-              @click="$refs['editTaskColumn'].hide()"
-            >
-              {{ $t("Save columns") }}
-            </b-button>
-          </template>
-        </column-chooser>
-      </div>
-    </b-modal>
+    <edit-column-modal
+      ref="editColumnModal"
+      :data-columns="columnListing"
+      :type="typeListing"
+      @updateColumns="updateColumns"
+    />
   </div>
 </template>
 
@@ -167,17 +157,21 @@
 import Modal from "./Modal.vue";
 import IconDropdown from "./IconDropdown.vue";
 import InputImageCarousel from "./InputImageCarousel.vue";
-import ColumnChooser from "./ColumnChooser.vue";
+import EditColumnModal from "./EditColumnModal.vue";
+
+const isTceCustomization = () => window.ProcessMaker?.isTceCustomization;
 
 export default {
-  components: { Modal, IconDropdown, InputImageCarousel, ColumnChooser },
+  components: {
+    Modal, IconDropdown, InputImageCarousel, EditColumnModal,
+  },
   props: {
     options: {
       type: Object,
-      default: {
+      default: () => ({
         id: "",
         type: "",
-      },
+      }),
     },
     filter: {
       type: String,
@@ -199,6 +193,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    myCasesColumns: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -208,6 +206,23 @@ export default {
       description: "",
       errors: "",
       selectedSavedChart: null,
+      tceScreens: [
+        {
+          id: "tce-student",
+          uuid: "",
+          title: this.$t("Distribution Bar Fin Aid Student"),
+        },
+        {
+          id: "tce-college",
+          uuid: "",
+          title: this.$t("Distribution Bar Fin Aid College"),
+        },
+        {
+          id: "tce-grants",
+          uuid: "",
+          title: this.$t("Distribution Bar Grants"),
+        },
+      ],
       defaultScreen: {
         id: 0,
         uuid: "",
@@ -248,13 +263,55 @@ export default {
         },
       ],
       tabs: [],
+      columnListing: {},
+      typeListing: "",
       myTasks: {
         currentColumns: [],
         availableColumns: [],
         defaultColumns: [],
         dataColumns: [],
       },
+      myCases: {
+        currentColumns: [],
+        availableColumns: [],
+        defaultColumns: [],
+        dataColumns: [],
+      },
+      ScreenDefaultId: [0, "tce-student", "tce-college", "tce-grants"],
     };
+  },
+  computed: {
+    isEditColumns() {
+      if (this.ScreenDefaultId.includes(this.selectedScreen?.id)) {
+        return true;
+      }
+      return false;
+    },
+    isTCEScreen() {
+      if (this.selectedScreen?.id === 0) {
+        return false;
+      }
+      if (this.ScreenDefaultId.includes(this.selectedScreen?.id)) {
+        return true;
+      }
+      return false;
+    },
+    showTasks() {
+      if (this.isEditColumns && !this.isTCEScreen) {
+        return true;
+      }
+      return false;
+    },
+    showCases() {
+      if (this.isEditColumns && this.isTCEScreen) {
+        return true;
+      }
+      if (this.isEditColumns && !this.isTCEScreen) {
+        // This was not implemented now
+        return false;
+      }
+      return false;
+    },
   },
   mounted() {
     this.retrieveSavedSearchCharts();
@@ -275,44 +332,29 @@ export default {
         .then((response) => {
           const firstResponse = response.data.shift();
           const unparseProperties = firstResponse?.launchpad?.properties;
-          const launchpadProperties = unparseProperties
-            ? JSON.parse(unparseProperties)
-            : "";
+          const launchpadProperties = unparseProperties ? JSON.parse(unparseProperties) : "";
           if (launchpadProperties !== "" && "tabs" in launchpadProperties) {
             this.tabs = launchpadProperties.tabs;
           }
-          if (
-            launchpadProperties !== "" &&
-            "my_tasks_columns" in launchpadProperties
-          ) {
+          if (launchpadProperties !== "" && "my_tasks_columns" in launchpadProperties) {
             this.myTasks.currentColumns = launchpadProperties.my_tasks_columns;
           }
-          if (
-            launchpadProperties &&
-            Object.keys(launchpadProperties).length > 0
-          ) {
-            this.selectedSavedChart =
-              this.getSelectedSavedChartJSONFromResult(launchpadProperties);
-            this.selectedLaunchpadIcon = this.verifyProperty(
-              launchpadProperties.icon
-            )
+          if (launchpadProperties !== "" && "my_cases_columns" in launchpadProperties) {
+            this.myCases.currentColumns = launchpadProperties.my_cases_columns;
+          }
+          if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
+            this.selectedSavedChart = this.getSelectedSavedChartJSONFromResult(launchpadProperties);
+            this.selectedLaunchpadIcon = this.verifyProperty(launchpadProperties.icon)
               ? this.defaultIcon
               : launchpadProperties.icon;
-            this.selectedLaunchpadIconLabel = this.verifyProperty(
-              launchpadProperties.icon_label
-            )
+            this.selectedLaunchpadIconLabel = this.verifyProperty(launchpadProperties.icon_label)
               ? this.defaultIcon
               : launchpadProperties.icon_label;
-            this.selectedScreen =
-              this.getSelectedScreenJSONFromResult(launchpadProperties);
+            this.selectedScreen = this.getSelectedScreenJSONFromResult(launchpadProperties);
             this.$refs["icon-dropdown"].setIcon(this.selectedLaunchpadIcon);
           } else {
-            this.selectedSavedChart = this.getSelectedSavedChartJSON(
-              this.defaultChart
-            );
-            this.selectedScreen = this.getSelectedScreenJSON(
-              this.defaultScreen
-            );
+            this.selectedSavedChart = this.getSelectedSavedChartJSON(this.defaultChart);
+            this.selectedScreen = this.getSelectedScreenJSON(this.defaultScreen);
           }
           this.oldScreen = this.selectedScreen.id;
           // Load media into Carousel Container
@@ -414,8 +456,7 @@ export default {
      */
     saveProcessDescription() {
       if (!this.$refs["image-carousel"].checkImages()) return;
-      this.dataProcess.imagesCarousel =
-        this.$refs["image-carousel"].getImages();
+      this.dataProcess.imagesCarousel = this.$refs["image-carousel"].getImages();
       this.dataProcess.properties = JSON.stringify(
         {
           saved_chart_id: this.selectedSavedChart.id,
@@ -427,9 +468,10 @@ export default {
           icon_label: this.selectedLaunchpadIconLabel,
           tabs: this.tabs,
           my_tasks_columns: this.myTasks.currentColumns,
+          my_cases_columns: this.myCases.currentColumns,
         },
         null,
-        1
+        1,
       );
 
       ProcessMaker.apiClient
@@ -443,7 +485,7 @@ export default {
             this.$t("The launchpad settings were saved."),
             "success",
             5,
-            true
+            true,
           );
           const params = {
             indexImage: null,
@@ -452,13 +494,14 @@ export default {
           if (this.oldScreen !== this.selectedScreen.id) {
             ProcessMaker.EventBus.$emit(
               "reloadByNewScreen",
-              this.selectedScreenId
+              this.selectedScreenId,
             );
           }
           ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
           ProcessMaker.EventBus.$emit("getChartId", this.selectedSavedChart.id);
           this.customModalButtons[1].disabled = false;
           this.$emit("updateMyTasksColumns", this.myTasks.currentColumns);
+          this.$emit("updateMyCasesColumns", this.myCases.currentColumns);
           this.saveLaunchpadSettings(response.data);
           this.hideModal();
         })
@@ -484,9 +527,9 @@ export default {
       const filter = query === "" || query === null ? "" : `&filter=${query}`;
       ProcessMaker.apiClient
         .get(
-          "saved-searches?page=1&per_page=10&order_by=title&order_direction=asc" +
-            "&has=charts&include=charts&get=id,title,charts.id,charts.title,charts.saved_search_id,type" +
-            `${filter}`
+          "saved-searches?page=1&per_page=10&order_by=title&order_direction=asc"
+            + "&has=charts&include=charts&get=id,title,charts.id,charts.title,charts.saved_search_id,type"
+            + `${filter}`,
         )
         .then((response) => {
           if (response.data.data[0].charts) {
@@ -514,7 +557,7 @@ export default {
       const filter = query === "" || query === null ? "" : `&filter=${query}`;
       ProcessMaker.apiClient
         .get(
-          `screens?page=1&per_page=10&order_by=title&order_direction=asc&include=categories,category&exclude=config&type=DISPLAY${filter}`
+          `screens?page=1&per_page=10&order_by=title&order_direction=asc&include=categories,category&exclude=config&type=DISPLAY${filter}`,
         )
         .then((response) => {
           if (response.data.data) {
@@ -523,7 +566,12 @@ export default {
               title: item.title,
               uuid: item.uuid,
             }));
-            this.dropdownSavedScreen = [this.defaultScreen].concat(resultArray);
+
+            this.dropdownSavedScreen = [this.defaultScreen];
+            if (isTceCustomization()) {
+              this.dropdownSavedScreen = this.dropdownSavedScreen.concat(this.tceScreens);
+            }
+            this.dropdownSavedScreen = this.dropdownSavedScreen.concat(resultArray);
           }
         })
         .catch((error) => {
@@ -536,8 +584,7 @@ export default {
     getDescriptionInitial() {
       if (this.origin !== "core") {
         if (ProcessMaker.modeler?.process) {
-          this.processDescriptionInitial =
-            ProcessMaker.modeler.process.description;
+          this.processDescriptionInitial = ProcessMaker.modeler.process.description;
         }
       } else {
         this.processDescriptionInitial = this.descriptionSettings;
@@ -571,49 +618,474 @@ export default {
      * This method shows a modal window to edit the columns of the My Tasks list.
      * If you don't use the nextTick method, the modal will not be displayed correctly.
      */
-    showEditTaskColumn() {
-      this.$refs["editTaskColumn"].show();
+    showEditColumn(type) {
+      this.columnListing = type === "tasks" ? this.myTasks : this.myCases;
+      this.typeListing = type;
+      this.$refs.editColumnModal.showModal();
       this.$nextTick(() => {
-        this.getMyTasksColumns();
+        this.getMyColumns(type);
       });
     },
-    async getMyTasksColumns() {
-      this.myTasks.currentColumns = this.myTasksColumns;
-
+    async getMyColumns(type) {
+      if (this.isTCEScreen) {
+        this.changeSelectedScreen();
+      }
       await ProcessMaker.apiClient
-          .get(`saved-searches/columns`)
-          .then((response) => {
-            if (response.data && response.data.default) {
-              this.myTasks.defaultColumns = response.data.default;
-              this.myTasks.defaultColumns.push({
+        .get("saved-searches/columns")
+        .then((response) => {
+          this.columnListing.currentColumns = type === "tasks" ? this.myTasksColumns : this.myCasesColumns;
+          if (this.isTCEScreen) {
+            if (response.data) {
+              if (response.data.default) {
+                this.columnListing.defaultColumns = response.data.default;
+              }
+              if (response.data.available) {
+                const current = this.columnListing.currentColumns;
+                const available = response.data.available;
+                const result = available.filter(b => !current.some(a => a.field === b.field));
+                this.columnListing.availableColumns = result;
+              }
+              if (response.data.data) {
+                this.columnListing.dataColumns = response.data.data;
+              }
+            }
+          } else {
+            if (response.data) {
+              if (response.data.default) {
+                this.columnListing.defaultColumns = response.data.default;
+                this.columnListing.defaultColumns.push({
                   field: "options",
                   label: "",
                   sortable: false,
-                  width: 180
-              });
-            }
-            if (response.data) {
+                  width: 180,
+                });
+              }
               if (response.data.available) {
-                this.myTasks.availableColumns = response.data.available;
+                this.columnListing.availableColumns = response.data.available;
 
-                //Merge all available and default columns; we use map to avoid duplicates.
+                // Merge all available and default columns; we use map to avoid duplicates.
                 const allColumns = new Map([
-                  ...this.myTasks.defaultColumns.map(col => [col.field, col]),
-                  ...this.myTasks.availableColumns.map(col => [col.field, col])
+                  ...this.columnListing.defaultColumns.map((col) => [col.field, col]),
+                  ...this.columnListing.availableColumns.map((col) => [col.field, col]),
                 ]);
 
-                //Filter only those that are not in `currentColumns`.
-                this.myTasks.availableColumns = [...allColumns.values()].filter(
-                  column => !this.myTasks.currentColumns.some(
-                    currentColumn => currentColumn.field === column.field
-                  )
+                // Filter only those that are not in `currentColumns`.
+                this.columnListing.availableColumns = [...allColumns.values()].filter(
+                  (column) => !this.columnListing.currentColumns.some(
+                    (currentColumn) => currentColumn.field === column.field,
+                  ),
                 );
               }
               if (response.data.data) {
-                this.myTasks.dataColumns = response.data.data;
+                this.columnListing.dataColumns = response.data.data;
               }
             }
-          });
+          }
+        });
+    },
+    updateColumns(columns, type) {
+      if (type === "tasks") {
+        this.myTasks.currentColumns = columns;
+      } else {
+        this.myCases.currentColumns = columns;
+      }
+    },
+    changeSelectedScreen() {
+      if (this.selectedScreen.id === 'tce-student') {
+        this.myCases.currentColumns = this.getTceStudent();
+        return;
+      }
+      if (this.selectedScreen.id === 'tce-college') {
+        this.myCases.currentColumns = this.getTceCollege();
+        return;
+      }
+      if (this.selectedScreen.id === 'tce-grants') {
+        this.myCases.currentColumns = this.getTceGrants();
+        return;
+      }
+      this.myCases.currentColumns = this.getDefaultColumns(); 
+    },
+    getDefaultColumns() {
+      return [
+        {
+          label: "Case #",
+          field: "case_number",
+          sortable: true,
+          default: true,
+          width: 80,
+        },
+        {
+          label: "Case title",
+          field: "case_title",
+          sortable: true,
+          default: true,
+          truncate: true,
+          width: 220,
+        },
+        {
+          label: "Status",
+          field: "status",
+          sortable: true,
+          default: true,
+          width: 100,
+          filter_subject: { type: "Status" },
+        },
+        {
+          label: "Started",
+          field: "initiated_at",
+          format: "datetime",
+          sortable: true,
+          default: true,
+          width: 160,
+        },
+        {
+          label: "Completed",
+          field: "completed_at",
+          format: "datetime",
+          sortable: true,
+          default: true,
+          width: 160,
+        },
+      ];
+    },
+    /**
+     * column = [
+     *   'case_number'
+     *   'case_title'
+     *   'tasks'
+     *   'status'
+     *   'last_stage_name'
+     *   'progress'
+     *   'data.program.name'
+     *   'data.program.type'
+     *   'data.program.source'
+     *   'data.program.deadline'
+     *   'data.program.amount'
+     *   'data.program.status'
+     *  ];
+     * @returns {Array}
+     */
+    getTceStudent() {
+      return [
+        {
+          label: "Case #",
+          field: "case_number",
+          sortable: true,
+          default: true,
+          width: 80,
+        },
+        {
+          label: "Case title",
+          field: "case_title",
+          sortable: true,
+          default: true,
+          truncate: true,
+          width: 220,
+        },
+        {
+          label: "Tasks",
+          field: "active_tasks",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Status",
+          field: "status",
+          sortable: true,
+          default: true,
+          width: 80,
+          filter_subject: { type: "Status" },
+        },
+        {
+          label: "Last Stage Name",
+          field: "last_stage_name",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 110,
+        },
+        {
+          label: "Progress",
+          field: "progress",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Name",
+          field: "data.name",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Type",
+          field: "data.type",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Source",
+          field: "data.source",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Deadline",
+          field: "data.deadline",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Amount",
+          field: "data.amount",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Status",
+          field: "data.status",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+      ];
+    },
+    /**
+     * column = [
+     *   'case_number'
+     *   'case_title'
+     *   'tasks'
+     *   'status'
+     *   'last_stage_name'
+     *   'progress'
+     *   'data.program'
+     *   'data.type'
+     *   'data.source'
+     *   'data.deadline'
+     *   'data.amount'
+     *  ];
+     * @returns {Array}
+     */
+    getTceCollege() {
+      return [
+        {
+          label: "Case #",
+          field: "case_number",
+          sortable: true,
+          default: true,
+          width: 80,
+        },
+        {
+          label: "Case title",
+          field: "case_title",
+          sortable: true,
+          default: true,
+          truncate: true,
+          width: 220,
+        },
+        {
+          label: "Tasks",
+          field: "active_tasks",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Status",
+          field: "status",
+          sortable: true,
+          default: true,
+          width: 80,
+          filter_subject: { type: "Status" },
+        },
+        {
+          label: "Last Stage Name",
+          field: "last_stage_name",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 110,
+        },
+        {
+          label: "Progress",
+          field: "progress",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Program",
+          field: "data.program",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Type",
+          field: "data.type",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Source",
+          field: "data.source",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Deadline",
+          field: "data.deadline",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Amount",
+          field: "data.amount",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+      ];
+    },
+    /**
+     * column = [
+     *   'case_number'
+     *   'case_title'
+     *   'tasks'
+     *   'status'
+     *   'last_stage_name'
+     *   'progress'
+     *   'data.applicationId'
+     *   'data.title'
+     *   'data.department'
+     *   'data.primaryInvestigator'
+     *   'data.agency'
+     *   'data.dueDate'
+     * ];
+     * @returns {Array}
+     */
+    getTceGrants() {
+      return [
+        {
+          label: "Case #",
+          field: "case_number",
+          sortable: true,
+          default: true,
+          width: 80,
+        },
+        {
+          label: "Case title",
+          field: "case_title",
+          sortable: true,
+          default: true,
+          truncate: true,
+          width: 220,
+        },
+        {
+          label: "Tasks",
+          field: "active_tasks",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Status",
+          field: "status",
+          sortable: true,
+          default: true,
+          width: 80,
+          filter_subject: { type: "Status" },
+        },
+        {
+          label: "Last Stage Name",
+          field: "last_stage_name",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 110,
+        },
+        {
+          label: "Progress",
+          field: "progress",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Application Id",
+          field: "data.applicationId",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Title",
+          field: "data.title",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Department",
+          field: "data.department",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Primary Investigator",
+          field: "data.primaryInvestigator",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Agency",
+          field: "data.agency",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+        {
+          label: "Due Date",
+          field: "data.dueDate",
+          sortable: false,
+          default: true,
+          truncate: true,
+          width: 100,
+        },
+      ];
     },
   },
 };
