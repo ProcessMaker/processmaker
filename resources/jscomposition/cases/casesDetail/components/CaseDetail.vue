@@ -10,6 +10,7 @@
       :tab-default="tabDefault"
       :tabs="tabs"
       :keep-alive="['NewOverview']"
+      :is-tce-customization="isTceCustomization()"
     />
   </div>
 </template>
