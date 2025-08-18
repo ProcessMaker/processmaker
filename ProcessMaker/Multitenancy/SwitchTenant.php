@@ -49,7 +49,7 @@ class SwitchTenant implements SwitchTenantTask
         // the worker queue jobs since it reuses the same process.
         self::$originalConfig = self::$originalConfig ?? [];
         self::$originalConfig[$tenant->id] = self::$originalConfig[$tenant->id] ?? [
-            'host' => parse_url(config('app.url'), PHP_URL_HOST),
+            'app.url' => config('app.url'),
             'cache.stores.cache_settings.prefix' => config('cache.stores.cache_settings.prefix'),
             'app.instance' => config('app.instance') ?? config('database.connections.landlord.database'),
             'script-runner-microservice.callback' => config('script-runner-microservice.callback'),
@@ -73,10 +73,27 @@ class SwitchTenant implements SwitchTenantTask
                 'root' => storage_path('lang'),
             ],
             'l5-swagger.defaults.paths.docs' => storage_path('api-docs'),
-            'cache.stores.cache_settings.prefix' =>  'tenant_id_' . $tenant->id . ':' . self::$originalConfig[$tenant->id]['cache.stores.cache_settings.prefix'],
             'app.instance' => self::$originalConfig[$tenant->id]['app.instance'] . '_' . $tenant->id,
-            'script-runner-microservice.callback' => str_replace(self::$originalConfig[$tenant->id]['host'], $tenant->domain, self::$originalConfig[$tenant->id]['script-runner-microservice.callback']),
         ];
+
+        if (!isset($tenant->config['cache.stores.cache_settings.prefix'])) {
+            $newConfig['cache.stores.cache_settings.prefix'] =
+                'tenant_id_' . $tenant->id . ':' . self::$originalConfig[$tenant->id]['cache.stores.cache_settings.prefix'];
+        }
+
+        if (!isset($tenant->config['script-runner-microservice.callback'])) {
+            $newConfig['script-runner-microservice.callback'] = str_replace(
+                self::$originalConfig[$tenant->id]['app.url'],
+                $tenant->config['app.url'],
+                self::$originalConfig[$tenant->id]['script-runner-microservice.callback']
+            );
+        }
+
+        if (!isset($tenant->config['app.docker_host_url'])) {
+            // There is no specific override in the tenant's config so set it to the app url
+            $newConfig['app.docker_host_url'] = $tenant->config['app.url'];
+        }
+
         config($newConfig);
 
         // Set config from the entry in the tenants table
