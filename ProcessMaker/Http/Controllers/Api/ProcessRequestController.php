@@ -43,6 +43,7 @@ use Throwable;
 class ProcessRequestController extends Controller
 {
     use ProcessMapTrait;
+
     const DOMAIN_CACHE_TIME = 86400;
 
     /**
@@ -194,6 +195,9 @@ class ProcessRequestController extends Controller
         } else {
             $response = collect([]);
         }
+
+        // Add process_request field for frontend compatibility
+        $response = $this->addExtraFieldForCompatibility($response);
 
         return new ApiCollection($response, $total);
     }
@@ -903,5 +907,25 @@ class ProcessRequestController extends Controller
                 ->first();
 
         return new ApiResource($response);
+    }
+
+    /**
+     * Add process_request field for frontend compatibility
+     * This is only for compatibility purposes - many frontend views read the process_request field
+     * The correct approach would be for the frontend to read the id and name fields directly from each element
+     *
+     * @param \Illuminate\Support\Collection $response
+     * @return \Illuminate\Support\Collection
+     */
+    private function addExtraFieldForCompatibility($response)
+    {
+        return $response->map(function ($processRequest) {
+            $processRequest->setAttribute('process_request', [
+                'id' => $processRequest->id,
+                'name' => $processRequest->name,
+            ]);
+
+            return $processRequest;
+        });
     }
 }
