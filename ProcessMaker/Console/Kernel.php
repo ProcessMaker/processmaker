@@ -45,6 +45,19 @@ class Kernel extends ConsoleKernel
         $schedule->command('cache:metrics --format=json > storage/logs/processmaker-cache-metrics.json')
                  ->daily();
 
+        if (class_exists('\ProcessMaker\Packages\Connectors\Slack\Services\SlackNotificationService')) {
+            $slackOverDueTaskInterval = config('slack.overdue_tasks.check_interval');
+            $slackOverDueTaskBatchSize = config('slack.overdue_tasks.batch_size');
+
+            // Only schedule if interval is valid
+            if ($slackOverDueTaskInterval > 0) {
+                $slackOverDueTaskCommand = "connector-slack:check-overdue-tasks --batch-size={$slackOverDueTaskBatchSize} --queue";
+                $command = $schedule->command($slackOverDueTaskCommand);
+
+                $command->cron("*/{$slackOverDueTaskInterval} * * * *");
+            }
+        }
+
         $clearInterval = config('metrics.clear_interval', 10);
         switch ((int) $clearInterval) {
             case 1:

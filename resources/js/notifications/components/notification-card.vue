@@ -9,7 +9,7 @@
         <notification-user :notification="notification" />
         <notification-message
           :notification="notification"
-          :show-time="showTime"
+          :show-time="showTime" 
         />
       </b-row>
     </b-container>

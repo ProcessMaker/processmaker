@@ -5,7 +5,7 @@
     <ul v-else class="accounts-list w-100 pl-0">
       <li class="accounts-list-item d-flex align-items-start py-3 mt-3" v-for="(account, index) in accounts" :key="index" >
         <div class="d-flex align-items-start mr-3">
-          <img :src="account.icon" :alt="account.name + 'icon'" width="45px"/>
+          <img :src="formatIcon(account.icon)" :alt="account.name + 'icon'" width="45px"/>
         </div>
         <div class="d-flex flex-column flex-grow-1">
           <div class="d-flex align-items-center justify-content-between mb-2">
@@ -14,11 +14,12 @@
               <p class="account-description mb-0">@{{account.description}}</p>
             </div>
               <div class="d-flex align-items-center">
-              <button class="edit-btn" @click="showAccountsModal()">{{__('Edit')}}</button>
-              <b-badge pill variant="success" class="ml-3 connection-status">
+              <button v-if="!account.ui_options || account.ui_options.show_edit_modal" class="edit-btn" @click="showAccountsModal()">{{__('Edit')}}</button>
+              <b-badge v-if="!account.ui_options || !account.ui_options.show_toggle" pill variant="success" class="ml-3 connection-status">
                 <i class="fa fa-check"></i>
                 {{__('Connected')}}
               </b-badge>
+              <b-form-checkbox v-if="account?.ui_options?.show_toggle" @input="handleConnectedAccountToggle(account, $event)" v-model="account.enabled" switch></b-form-checkbox>
             </div>
           </div>
         </div>

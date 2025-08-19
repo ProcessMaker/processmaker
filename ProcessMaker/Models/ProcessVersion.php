@@ -49,6 +49,7 @@ class ProcessVersion extends ProcessMakerModel implements ProcessModelInterface
         'signal_events' => 'array',
         'conditional_events' => 'array',
         'properties' => 'array',
+        'stages' => 'array',
     ];
 
     /**

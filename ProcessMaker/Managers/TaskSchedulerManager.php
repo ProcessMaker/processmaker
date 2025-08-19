@@ -31,6 +31,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\JobManagerInterface;
 use ProcessMaker\Nayra\Contracts\EventBusInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
+use stdClass;
 
 class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 {
@@ -160,7 +161,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                         continue;
                     }
                     $owner = $task->processRequestToken ?: $task->processRequest ?: $task->process;
-                    $ownerDateTime = $owner->created_at;
+                    $ownerDateTime = $owner?->created_at;
                     $nextDate = $this->nextDate($today, $config, $lastExecution, $ownerDateTime);
 
                     // if no execution date exists we go to the next task
@@ -194,6 +195,11 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                                     $task->save();
                                 }
                                 break;
+                             case 'SCHEDULED_JOB':
+                                $this->executeScheduledJob($config);
+                                $task->last_execution = $today->format('Y-m-d H:i:s');
+                                $task->save();
+                                break;
                             default:
                                 throw new Exception('Unknown timer event: ' . $task->type);
                         }
@@ -208,6 +214,17 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         } catch (PDOException $e) {
             Log::error('The connection to the database had problems (scheduleTasks): ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Create a scheduled job
+     *
+     * @param stdClass $config
+     */
+    public function executeScheduledJob(stdClass $config)
+    {
+        $job = $config->job;
+        $job::dispatch($config);
     }
 
     /**
@@ -545,6 +562,32 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         if ($token || ($this->registerStartEvents && !$token)) {
             $this->scheduleTask($cycle, $element, $token);
         }
+    }
+
+    /**
+     * Schedule cycle interval for a job
+     *
+     * @param string $interval in ISO-8601 format
+     * @param array $config configuration
+     *
+     * @return ScheduledTask
+     */
+    public function scheduleCycleJob($interval, array $config): ScheduledTask
+    {
+        $configuration = [
+            'type' => 'TimeCycle',
+            'interval' => $interval,
+            ...$config,
+        ];
+        $scheduledTask = new ScheduledTask();
+        $scheduledTask->configuration = json_encode($configuration);
+        $scheduledTask->type = 'SCHEDULED_JOB';
+        $scheduledTask->last_execution = $this->today()
+            ->setTimezone(new DateTimeZone('UTC'))
+            ->format('Y-m-d H:i:s');
+        $scheduledTask->save();
+
+        return $scheduledTask;
     }
 
     /**

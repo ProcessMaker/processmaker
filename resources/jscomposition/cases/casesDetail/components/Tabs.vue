@@ -1,8 +1,12 @@
 <template>
-  <div class="tw-flex tw-flex-col tw-pointer-events-auto">
+  <div
+    class="tw-flex tw-flex-col tw-pointer-events-auto"
+    :class="isTceCustomization() ? 'tw-h-[calc(100vh-480px)]' : 'tw-h-full'"
+  >
     <nav
       class="tw-mb-px tw-flex tw-space-x-2 tw-border-b tw-border-gray-300"
-      aria-label="Tabs">
+      aria-label="Tabs"
+    >
       <template v-for="(tab, index) in tabs">
         <a
           v-if="tab.show"
@@ -13,7 +17,8 @@
             : 'tw-border-transparent tw-text-gray-500 hover:tw-border-gray-600 hover:tw-text-gray-600'
           ]"
           :aria-current="tab.current ? 'page' : undefined"
-          @click="selectTab(tab)">
+          @click="selectTab(tab)"
+        >
           {{ tab.name }}
         </a>
       </template>
@@ -30,6 +35,7 @@
 
 <script>
 import { defineComponent, ref, onMounted } from "vue";
+import { isTceCustomization } from "../variables/index";
 
 export default defineComponent({
   props: {
@@ -53,7 +59,7 @@ export default defineComponent({
     const selectTab = (tab) => {
       content.value = tab.content;
       tabSelected.value = tab.current;
-      ProcessMaker.EventBus.$emit('case-tab-switched', tab);
+      ProcessMaker.EventBus.$emit("case-tab-switched", tab);
     };
 
     const defaultTab = () => props.tabs.find((tab) => tab.current === tabSelected.value);
@@ -66,6 +72,7 @@ export default defineComponent({
       content,
       selectTab,
       tabSelected,
+      isTceCustomization,
     };
   },
 });

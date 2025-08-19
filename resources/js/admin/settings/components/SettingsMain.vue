@@ -9,14 +9,19 @@
         @selectGroup="selectGroup"
       />
     </div>
-    <div class="setting-info pl-3">
+    <div :class="customConfigurationComponent ? 'setting-info-custom mr-3' :'setting-info pl-3'">
       <settings-listing
-        v-if="selectedItem"
+        v-if="selectedItem && !customConfigurationComponent"
         :key="setListingKey"
         ref="listings"
         :group="group"
         @refresh="refresh"
         @refresh-all="refreshAll"
+      />
+      <component
+        :is="customConfigurationComponent"
+        ref="customConfiguration"
+        :setting-id="settingId"
       />
     </div>
   </div>
@@ -31,14 +36,20 @@ export default {
   data() {
     return {
       currentTab: 0,
+      settingId: null,
+      settingKey: null,
       group: "",
       setListingKey: 0,
       selectedItem: false,
+      customConfigurationComponent: null,
     };
   },
   methods: {
     selectGroup(item) {
       this.group = item.name;
+      this.settingId = item.setting_id;
+      this.settingKey = item.setting_key;
+      this.customConfigurationComponent = item.ui.custom_component ?? null;
       this.selectedItem = true;
       this.reRender();
     },
@@ -80,5 +91,10 @@ export default {
   padding: 16px 16px 106px 16px;
   border-radius: 4px;
   border: 1px solid var(--borders, #CDDDEE);
+}
+.setting-info-custom {
+  width: 100%;
+  height: calc(100vh - 150px);
+  overflow-y: auto;
 }
 </style>

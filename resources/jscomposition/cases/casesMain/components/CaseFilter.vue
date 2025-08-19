@@ -6,8 +6,7 @@
         placeholder="Search here"
         data-test="search-cases-list"
         @change="onChange"
-        @keypress="onKeypress"
-      />
+        @keypress="onKeypress" />
     </div>
   </div>
 </template>

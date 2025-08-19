@@ -1,5 +1,5 @@
 <template>
-  <div class="tw-w-full tw-h-fit tw-border tw-border-gray-300 tw-rounded-xl tw-overflow-hidden">
+  <div class="tw-w-full tw-h-fit tw-border tw-border-gray-300 tw-rounded-xl tw-overflow-hidden tw-overflow-x-auto">
     <table
       class="tw-divide-y tw-w-full tw-text-sm ">
       <thead class="tw-bg-gray-100 tw-text-left  tw-font-semibold tw-border-b">

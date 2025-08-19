@@ -32,6 +32,9 @@ class CaseApiRepository implements CaseApiRepositoryInterface
         'participants',
         'initiated_at',
         'completed_at',
+        'last_stage_id',
+        'last_stage_name',
+        'progress'
     ];
 
     protected $sortableFields = [
@@ -66,7 +69,7 @@ class CaseApiRepository implements CaseApiRepositoryInterface
         'updated_at',
     ];
 
-    const DEFAULT_SORT_DIRECTION = 'asc';
+    public const DEFAULT_SORT_DIRECTION = 'asc';
 
     /**
      * Get all cases
