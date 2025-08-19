@@ -197,7 +197,9 @@ class ProcessRequestController extends Controller
         }
 
         // Add process_request field for frontend compatibility
-        $response = $this->addExtraFieldForCompatibility($response);
+        if ($request->input('extra_fields') === 'process_request') {
+            $response = $this->addExtraFieldForCompatibility($response);
+        }
 
         return new ApiCollection($response, $total);
     }
