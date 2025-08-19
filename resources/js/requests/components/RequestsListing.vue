@@ -498,8 +498,7 @@ export default {
             this.orderDirection +
             this.additionalParams +
             advancedFilter +
-            "&row_format=" +
-            "&extra_fields=process_request",
+            "&row_format=",
             {
               cancelToken: new CancelToken((c) => {
                 this.cancelToken = c;
