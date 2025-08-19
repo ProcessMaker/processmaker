@@ -95,12 +95,23 @@ class ProcessMakerServiceProvider extends ServiceProvider
         // This sets up individual supervisors for each tenant so that one tenant does not block
         // the queue for another tenant. This must be done here instead of SwitchTenant.php because
         // there is a single horizon instance for all tenants.
-        if ($this->app->runningInConsole() && config('app.multitenancy')) {
+        if ($this->app->runningInConsole() && config('app.multitenancy') && $this->horizonTenantsNotSet()) {
             $tenants = Tenant::all();
             $config = config('horizon.environments');
             $config = $this->addTenantSupervisors($config, $tenants);
             config(['horizon.environments' => $config]);
         }
+    }
+
+    private function horizonTenantsNotSet(): bool
+    {
+        $firstKey = array_keys(config('horizon.environments.production'))[0];
+        if (str_starts_with($firstKey, 'tenant')) {
+            // Already cached
+            return false;
+        }
+
+        return true;
     }
 
     private function addTenantSupervisors(array $config, TenantCollection $tenants): array
