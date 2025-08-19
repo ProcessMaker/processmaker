@@ -284,7 +284,19 @@ class FileController extends Controller
     {
         $path = Storage::disk('public')->path($file->id . '/' . $file->file_name);
 
-        // Register the Event
+        // Inline preview when requested
+        if (request()->boolean('inline', false)) {
+            if (!empty($file->file_name)) {
+                FilesDownloaded::dispatch($file);
+            }
+
+            return response()->file($path, [
+                'Content-Type' => $file->mime_type,
+                'Content-Disposition' => 'inline; filename="' . addslashes($file->file_name) . '"',
+            ]);
+        }
+
+        // Default: force download
         if (!empty($file->file_name)) {
             FilesDownloaded::dispatch($file);
         }
