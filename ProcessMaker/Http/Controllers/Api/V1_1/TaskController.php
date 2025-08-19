@@ -14,6 +14,7 @@ use ProcessMaker\Http\Resources\V1_1\TaskResource;
 use ProcessMaker\Http\Resources\V1_1\TaskScreen;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\ProcessTranslations\TranslationManager;
 
 class TaskController extends Controller
@@ -150,5 +151,28 @@ class TaskController extends Controller
         $response = response($response->toArray(request())['screen'], 200);
 
         return $response;
+    }
+
+    /**
+     * Move a token to a different task
+     * @param Request $request
+     * @param int $taskId
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function moveToken(Request $request, $taskId)
+    {
+        $task = ProcessRequestToken::findOrFail($taskId);
+        // find element id from process request
+        $targetTaskId = $request->input('target_task_id');
+        $defs = $task->processRequest->getVersionDefinitions();
+        $targetTask = $defs->getElementInstanceById($targetTaskId);
+        if (!($targetTask && $targetTask instanceof ActivityInterface)) {
+            return response()->json(['message' => 'Task not found'], 404);
+        }
+
+        $task->update(['element_id' => $targetTask->getId(), 'element_name' => $targetTask->getName()]);
+
+        return response()->json(['message' => 'Token moved successfully']);
     }
 }
