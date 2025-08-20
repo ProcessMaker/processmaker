@@ -18,12 +18,28 @@
                 class="fas fa-chevron-left mr-2 custom-color hover:tw-cursor-pointer"
                 @click="goBack()"
               />
+              <div>
               <div
                 v-b-tooltip.hover
                 class="title text-truncate"
                 :title="process.name"
-              >
-                {{ process.name }}
+                >
+                  {{ process.name }}
+                </div>
+                <div class="d-flex align-items-center flex-shrink-0 tw-text-xs">
+                  <mini-pie-chart
+                    :count="process.counts.in_progress"
+                    :total="process.counts.total"
+                    :name="$t('In Progress')"
+                    color="#4EA075"
+                  />
+                  <mini-pie-chart
+                    :count="process.counts.completed"
+                    :total="process.counts.total"
+                    :name="$t('Completed')"
+                    color="#478FCC"
+                  />
+                </div>
               </div>
             </div>
             <div class="d-flex align-items-center flex-shrink-0">
@@ -109,6 +125,7 @@ import ProcessesMixin from "./mixins/ProcessesMixin";
 import ButtonsStart from "./optionsMenu/ButtonsStart.vue";
 import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 import Bookmark from "./Bookmark.vue";
+import MiniPieChart from "./MiniPieChart.vue";
 
 export default {
   components: {
@@ -119,6 +136,7 @@ export default {
     ButtonsStart,
     EllipsisMenu,
     Bookmark,
+    MiniPieChart,
   },
   mixins: [ProcessesMixin, ellipsisMenuMixin, processNavigationMixin],
   props: ["process", "currentUserId", "ellipsisPermission", "myTasksColumns", "myCasesColumns"],
