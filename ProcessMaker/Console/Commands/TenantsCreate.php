@@ -4,7 +4,6 @@ namespace ProcessMaker\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Encryption\Encrypter;
-use Illuminate\Support\Env;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
@@ -32,13 +31,6 @@ class TenantsCreate extends Command
      */
     public function handle()
     {
-        // Datbase name should be .env DB_DATABASE + -tenant-<id>
-        // For example pm4_ci-003c0e7501-tenant-1
-
-        // For CI Instnaces, Domain is https://t1.ci-003c0e7501.engk8s.processmaker.net
-
-        // In prod, domain won't change
-
         $requiredOptions = ['name', 'database', 'url'];
 
         foreach ($requiredOptions as $option) {
@@ -98,6 +90,12 @@ class TenantsCreate extends Command
                     }
                     $this->info('Moving ' . $subfolder . ' to ' . $tenantStoragePath);
                     rename($subfolder, $tenantStoragePath . '/' . basename($subfolder));
+                }
+
+                // Move all files from the root storage folder to the tenant storage folder
+                foreach (File::files($storageFolderOption) as $file) {
+                    $this->info('Moving ' . $file . ' to ' . $tenantStoragePath);
+                    rename($file, $tenantStoragePath . '/' . basename($file));
                 }
             } else {
                 $this->error('Storage folder does not exist: ' . $storageFolderOption);
@@ -184,7 +182,7 @@ class TenantsCreate extends Command
         $this->line('- Seed the database');
         $this->line('- Run the install command for each package');
         $this->line('- Run artisan upgrade');
-        $this->line('- Generate passport keys with artisan passport:install');
+        $this->line('- Generate passport keys with artisan passport:keys');
         $this->info("For example, `TENANT={$tenant->id} php artisan migrate:fresh --seed`");
     }
 

@@ -530,15 +530,13 @@ You can provide an optional description, for example `Metrics::gauge('active_tas
 
 Go to Grafana and import the dashboards from the `resources/grafana` folder. Each JSON file represents a configured dashboard that can be imported into Grafana to visualize metrics and data.
 
-# Multitenancy (Alpha)
+# Multitenancy
 
-**Note that this feature is disabled for clients. It's not fully implemented yet.**
-
-ProcessMaker is now set up as a multitenant application. By default, there is one tenant.
+ProcessMaker can now be set up as a multitenant application.
 
 ## Requirements
 
-- Your MySql user `DB_USERNAME` will need to be able to create databases.
+- Create an empty datbase named `landlord`. Your `DB_USERNAME` should have permission to write to this table.
 
 ## Transition your dev instnace to multitenancy
 
@@ -547,10 +545,15 @@ ProcessMaker is now set up as a multitenant application. By default, there is on
    php artisan tenants:enable --migrate
    ```
    This command will
-   - Create the landlord database
    - Set your existing database as the tenant database
-   - Move your existing storage folder to `storage/tenant_1`
-   - Update your .env DB_DATABASE to the new landlord database name
+   - Move your existing `storage` folder to `storage/tenant_1`
+   - Move your existing `resources/lang` folder to `resources/lang/tenant_1`
+   - Enable multitenancy in your .env
+
+## Using `valet share` for the script microservice
+
+In the landlord tenant's table you will need to set the domain to the ngroc domain (without https://) and, in the config, column
+you will need to set the `app.url` to the ngroc domain (including the https://)  
 
 ## Add another tenant
 
@@ -593,9 +596,10 @@ Create a folder `storage/transitions` if it doesn't exist.
 
 In that folder create a new folder for each instance you want to migrate.
 
-The folder should contain exactly 2 things:
+The folder should contain exactly 3 things:
 - the .env from the instance you want to migrate
 - the storage folder from the instance you want to migrate, named `storage`
+- the resources/lang folder, named `lang`
 
 Run the following command to migrate the instance(s) to a tenant:
 ```
