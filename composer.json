@@ -115,7 +115,7 @@
                 "pps-adsync": "dev-fall",
                 "ps_ethos": "dev-fall",
                 "package-irisbank": "dev-fall",
-                "package-pinnacle": "dev-fall",
+                "package-pinnacle": "1.0.9",
                 "package-esign": "dev-fall",
                 "package-thermofisher": "dev-fall",
                 "package-zj-adoa": "dev-fall",
