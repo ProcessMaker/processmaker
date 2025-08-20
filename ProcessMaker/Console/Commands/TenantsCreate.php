@@ -106,6 +106,7 @@ class TenantsCreate extends Command
 
         // Check if an existing lang folder is provided
         $langFolderOption = $this->option('lang-folder', null);
+        $sourceLangPath = resource_path('lang');
         $tenantLangPath = resource_path('lang/tenant_' . $tenant->id);
         if ($langFolderOption) {
             if (File::isDirectory($langFolderOption)) {
@@ -127,6 +128,18 @@ class TenantsCreate extends Command
             if (!File::isDirectory($tenantLangPath)) {
                 mkdir($tenantLangPath, 0755, true);
             }
+        }
+
+        $cmd = sprintf(
+            "rsync -azv --ignore-existing --exclude='tenant_*' %s %s",
+            escapeshellarg($sourceLangPath . '/'),
+            escapeshellarg($tenantLangPath)
+        );
+        exec($cmd, $output, $returnVar);
+        if ($returnVar !== 0) {
+            $this->error('Failed to rsync lang folder to tenant: ' . implode(PHP_EOL, $output));
+
+            return 1;
         }
 
         $subfolders = [
