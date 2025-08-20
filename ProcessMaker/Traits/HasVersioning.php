@@ -84,7 +84,7 @@ trait HasVersioning
             $alternative = $alternative ?: $this->alternative;
             $attributes['alternative'] = $alternative;
 
-            $processVersion = ProcessVersion::where('process_id', $this->id)->where('alternative', $attributes['alternative'])->where('draft', false)->first();
+            $processVersion = ProcessVersion::where('process_id', $this->id)->where('alternative', $attributes['alternative'])->first();
             if ($processVersion) {
                 $attributes['stages'] =  $processVersion->stages;
             }
