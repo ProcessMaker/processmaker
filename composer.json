@@ -149,7 +149,7 @@
                 "connector-slack": "1.9.2",
                 "docker-executor-node-ssr": "1.7.1",
                 "package-ab-testing": "1.4.0",
-                "package-actions-by-email": "1.22.4",
+                "package-actions-by-email": "1.22.5",
                 "package-advanced-user-manager": "1.13.0",
                 "package-ai": "1.16.5",
                 "package-analytics-reporting": "1.11.1",
