@@ -760,7 +760,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
                 if ($user) {
                     $taskIds = $user->availableSelfServiceTaskIds();
-                    $query->whereIn('id', $taskIds);
+                    $query->whereIn('process_request_tokens.id', $taskIds);
                 } else {
                     $query->where('is_self_service', 1);
                 }
