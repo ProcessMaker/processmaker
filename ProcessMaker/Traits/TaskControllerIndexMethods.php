@@ -33,14 +33,14 @@ trait TaskControllerIndexMethods
                     return $q->exclude(['data']);
                 }
             },
-            // review if bpmn is reuiqred here process
+            // review if bpmn is required here process
             'process' => fn ($q) => $q->exclude(['svg', 'warnings']),
-            // review if bpmn is reuiqred here processRequest.process
+            // review if bpmn is required here processRequest.process
             'processRequest.process' => fn ($q) => $q->exclude(['svg', 'warnings']),
             // The following lines use to much memory but reduce the number of queries
             // bpmn is required here in processRequest.processVersion
             // 'processRequest.processVersion' => fn($q) => $q->exclude(['svg', 'warnings']),
-            // review if bpmn is reuiqred here processRequest.processVersion.process
+            // review if bpmn is required here processRequest.processVersion.process
             // 'processRequest.processVersion.process' => fn($q) => $q->exclude(['svg', 'warnings']),
             'user',
             'draft',
