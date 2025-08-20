@@ -18,7 +18,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted, getCurrentInstance } from "vue";
+import {
+  ref, onMounted, getCurrentInstance, nextTick,
+} from "vue";
 import StageList from "./StageList.vue";
 import AgregationProperty from "./AgregationProperty.vue";
 
@@ -109,15 +111,16 @@ const updateStagesForAllFlowConfigs = (stages) => {
 
 const removeStageInAllFlowConfig = (stage) => {
   const links = getModeler().graph.getLinks();
-  for (const link of links) {
+  links.forEach((link) => {
     const config = getConfigFromDefinition(link.component.node.definition);
     if (config?.stage?.id === stage.id) {
       delete config.stage;
       Vue.set(link.component.node.definition, "config", JSON.stringify(config));
+      nextTick(() => {
+        link.component.removeStageLabels();
+      });
     }
-    link.component.removeStageLabels();
-    removeStageToFlow();
-  }
+  });
 };
 
 const applyStageToFlow = (stage) => {
