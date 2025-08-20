@@ -44,7 +44,7 @@ import PercentageCardButtonGroup from "./PercentageButtonGroup/PercentageCardBut
 import { ellipsisPermission } from "../variables";
 import ProcessInfo from "./ProcessInfo.vue";
 import { getMetrics, getStages } from "../api";
-import { buildMetrics, buildStages, verifyResponseMetrics } from "./config/metrics";
+import { buildMetrics, buildStages, updateActiveStage, verifyResponseMetrics, buildAdvancedFilter } from "./config/metrics";
 
 const childRef = ref(null);
 
@@ -67,17 +67,6 @@ const advancedFilter = ref([]);
 const dataKey = ref(0);
 const toggleInfo = () => {
   showProcessInfo.value = !showProcessInfo.value;
-};
-
-const buildAdvancedFilter = () => {
-  const stage = stages.value.find((item) => item.active);
-  return [{
-    subject: {
-      type: "Stage",
-    },
-    operator: "=",
-    value: stage.id,
-  }];
 };
 
 const hookMetrics = async () => {
@@ -107,12 +96,13 @@ const hookStages = async () => {
   stages.value = buildStages(stagesResponse.data.stages);
 };
 
-const onChangeStage = (stage, idxItem) => {
-  stages.value.forEach((item, index) => {
-    index === idxItem ? item.active = true : item.active = false;
-  });
+const onChangeStage = async (stage, idxItem) => {
+  hookMetrics();
+  await hookStages();
+
+  updateActiveStage(stages.value, stage);
   dataKey.value += 1;
-  advancedFilter.value = buildAdvancedFilter();
+  advancedFilter.value = buildAdvancedFilter(stages.value);
 };
 
 onMounted(() => {

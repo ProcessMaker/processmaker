@@ -52,6 +52,53 @@ export const buildStages = (stages) => stages.map((stage, index) => ({
   color: stagesColors.at(index),
 }));
 
+export const updateActiveStage = (arrayStages, stage) => {
+  arrayStages.forEach((s) => {
+    s.active = false;
+  });
+
+  const stg = arrayStages.find((s) => s.id === stage?.id);
+  if (stg) {
+    stg.active = true;
+  }
+};
+
+export const buildAdvancedFilter = (stages) => {
+  const stage = stages.find((item) => item.active);
+
+  if (stage.id === "in_progress") {
+    return [
+      {
+        subject: {
+          type: "Status",
+        },
+        operator: "=",
+        value: "In Progress",
+      },
+    ];
+  }
+
+  if (stage.id === "completed") {
+    return [
+      {
+        subject: {
+          type: "Status",
+        },
+        operator: "=",
+        value: "Completed",
+      },
+    ];
+  }
+
+  return [{
+    subject: {
+      type: "Stage",
+    },
+    operator: "=",
+    value: stage.id,
+  }];
+};
+
 export const verifyResponseMetrics = (response) => {
   let isValid = true;
   response.forEach((metric) => {
