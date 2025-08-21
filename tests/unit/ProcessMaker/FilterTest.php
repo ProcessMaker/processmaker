@@ -228,7 +228,7 @@ class FilterTest extends TestCase
         ], ProcessRequestToken::class);
 
         $this->assertEquals(
-            "select * from `process_request_tokens` where ((`id` in ({$selfServiceTask->id})))",
+            "select * from `process_request_tokens` where ((`process_request_tokens`.`id` in ({$selfServiceTask->id})))",
             $sql
         );
     }
