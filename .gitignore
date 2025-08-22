@@ -13,14 +13,13 @@
 npm-debug.log
 yarn-error.log
 .env
-/public/hot
-/public/storage
 /public/*.js
 /public/modeler
 /public/img
 /public/fonts
 /public/mix-manifest.json
 /public/stats.json
+/public/builds
 tests/js/coverage
 tests/coverage-report
 tests/coverage-report/*
@@ -40,7 +39,6 @@ public/.htaccess
 coverage
 .phpunit.result.cache
 .php-cs-fixer.cache
-.phpunit.result.cache
 .editorconfig
 resources/lang/de
 resources/lang/es
