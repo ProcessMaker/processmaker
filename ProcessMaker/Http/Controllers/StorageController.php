@@ -34,13 +34,6 @@ class StorageController extends Controller
             // Get tenant context
             $tenant = app()->bound('currentTenant') ? app('currentTenant') : null;
 
-            if ($tenant) {
-                $tenantId = $tenant->id;
-
-                // Handle tenant path
-                $path = $this->handleTenantPath($path, $tenantId);
-            }
-
             // Get storage disk
             // If there were no tenant, the default storage disk is used
             $disk = Storage::disk('public');
@@ -88,23 +81,6 @@ class StorageController extends Controller
         }
 
         return $path;
-    }
-
-    /**
-     * Handle tenant-specific path logic
-     *
-     * @param string $path
-     * @param int $tenantId
-     *
-     * @return string
-     */
-    private function handleTenantPath(string $path, int $tenantId): string
-    {
-        if (preg_match('/^tenant_\d+\//', $path)) {
-            return str_replace('tenant_' . $tenantId . '/', '', $path);
-        }
-
-        return 'tenant_' . $tenantId . '/' . $path;
     }
 
     /**
