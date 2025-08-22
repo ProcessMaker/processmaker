@@ -43,9 +43,7 @@
         "php-http/promise": "~1.2.0",
         "pion/laravel-chunk-upload": "^1.5",
         "predis/predis": "^2.3",
-        "processmaker/docker-executor-lua": "^1.0",
         "processmaker/docker-executor-node": "1.1.0",
-        "processmaker/docker-executor-php": "1.4.0",
         "processmaker/laravel-i18next": "dev-master",
         "processmaker/nayra": "1.12.4",
         "processmaker/pmql": "1.13.1",
@@ -105,6 +103,10 @@
         },
         "google/apiclient-services": [
             "Gmail"
+        ],
+        "aws/aws-sdk-php": [
+          "S3",
+          "Sqs"
         ],
         "processmaker": {
             "build": "a3e2fbea",
@@ -207,7 +209,10 @@
             "@php artisan package:discover",
             "@php artisan processmaker:install-pre-commit-hooks"
         ],
-        "pre-autoload-dump": "Google\\Task\\Composer::cleanup",
+        "pre-autoload-dump": [
+          "Google\\Task\\Composer::cleanup",
+          "Aws\\Script\\Composer\\Composer::removeUnusedServices"
+        ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
             "@php artisan vendor:publish --provider=\"OpenAI\\Laravel\\ServiceProvider\""

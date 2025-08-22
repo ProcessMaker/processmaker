@@ -99,6 +99,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         $this->setupFactories();
 
+        if (!empty($keysPath = env('SERVERLESS_PASSPORT_PATH'))) {
+            Passport::loadKeysFrom($keysPath);
+        }
+
         parent::boot();
 
         Route::pushMiddlewareToGroup('api', HandleEtag::class);
