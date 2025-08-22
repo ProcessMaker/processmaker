@@ -4,7 +4,7 @@
   "screens": [
     {
       "screen_category_id": null,
-      "title": "Default Email Task Notification",
+      "title": "Default Email Task Notification v2",
       "description": "Screen for the email task notification",
       "type": "EMAIL",
       "config": [
@@ -532,7 +532,7 @@
       "computed": [],
       "custom_css": ".link-button {\n    max-width: max-content;\n    margin-left: auto;\n    margin-right: auto;\n}\n.email-wrapper {\n    background-color: #F3F5F7;\n}",
       "status": "ACTIVE",
-      "key": "default-email-task-notification",
+      "key": "default-email-task-notification-v2",
       "watchers": [],
       "translations": null,
       "is_template": 0,

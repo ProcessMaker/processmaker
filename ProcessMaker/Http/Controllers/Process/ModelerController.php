@@ -166,7 +166,7 @@ class ModelerController extends Controller
      */
     private function getDefaultEmailNotification(): array
     {
-        $screen = Screen::getScreenByKey('default-email-task-notification');
+        $screen = Screen::getScreenByKey('default-email-task-notification-v2');
 
         return [
             'subject' => 'RE: {{_user.firstname}} assigned you in "{{_task_name}}"',
