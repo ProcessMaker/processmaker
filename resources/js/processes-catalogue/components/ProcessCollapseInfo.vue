@@ -18,11 +18,11 @@
                 class="fas fa-chevron-left mr-2 custom-color hover:tw-cursor-pointer"
                 @click="goBack()"
               />
-              <div>
-              <div
-                v-b-tooltip.hover
-                class="title text-truncate"
-                :title="process.name"
+              <div class="tw-grid">
+                <div
+                  v-b-tooltip.hover
+                  class="title text-truncate"
+                  :title="process.name"
                 >
                   {{ process.name }}
                 </div>
