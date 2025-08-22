@@ -444,6 +444,7 @@
                 showSlackErrorMessage(message) {
                   this.hideSlackMessages();
                   
+                  //adding validation Card
                   const errorCard = document.createElement('div');
                   errorCard.id = 'slack-error-card';
                   errorCard.className = 'slack-config-card mt-3';
