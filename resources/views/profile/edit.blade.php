@@ -161,6 +161,7 @@
                     }
                 ],
                 focusErrors: 'errors',
+                slackConfigurationError: false,
             },
             created() {
               if (this.meta) {
@@ -265,6 +266,9 @@
                     }
                     ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
                         .then((response) => {
+                            // reset the slack configuration error
+                            this.slackConfigurationError = false;
+                            
                             ProcessMaker.alert(this.$t('Your profile was saved.'), 'success')
                             window.ProcessMaker.events.$emit('update-profile-avatar');
                             this.originalEmail = this.formData.email;
@@ -283,6 +287,8 @@
                             // Handle Slack notification errors
                             if (error.response?.data?.message?.includes('Slack')) {
                                 ProcessMaker.alert(this.$t(error.response.data.message), 'danger');
+                                // Mark the configuration error state
+                                this.slackConfigurationError = true;
                                 // Need to ensure the slack toggle is now disabled in the ui
                                 this.handleConnectedAccountToggle(DEFAULT_ACCOUNTS.connectorSlack, false, true);
                             }
@@ -299,6 +305,12 @@
                     if (account.name === 'Slack' && $event === true) {
                       this.validateSlackToken(account, $event);
                       return;
+                    }
+                    
+                    // If the Slack account is being manually disabled, reset the configuration error flag
+                    if (account.name === 'Slack' && $event === false && this.slackConfigurationError) {
+                      this.slackConfigurationError = false;
+                      this.hideSlackMessages();
                     }
                     
                     let accounts = [];
@@ -357,6 +369,7 @@
                       if (response.data.success) {
                         // Token is valid, proceed with enabling
                         this.hideSlackMessages();
+                        
                         this.enableSlackAccount(account, $event);
                         ProcessMaker.alert(this.$t('Slack configuration validated successfully'), 'success');
                       } else {
@@ -373,6 +386,7 @@
                       let errorMessage = 'Error validating Slack configuration';
                       let isAdmin = false;
                       
+                      // Handle both HTTP errors and validation errors
                       if (error.response?.data?.error) {
                         errorMessage = error.response.data.error;
                       } else if (error.response?.data?.message) {
@@ -385,9 +399,8 @@
                       }
                       
                       this.showSlackErrorMessage(errorMessage, isAdmin);
-                      // Ensure the toggle stays disabled
+                      // Ensure the toggle stays disabled and is hidden
                       account.enabled = false;
-                      this.$forceUpdate();
                     });
                 },
                 enableSlackAccount(account, $event) {
@@ -450,64 +463,101 @@
                   
                   this.insertSlackMessage(loadingCard);
                 },
+                
                 showSlackErrorMessage(message, isAdmin = false) {
                   this.hideSlackMessages();
                   
-                  //adding validation Card
+                  // Mark the configuration error state
+                  this.slackConfigurationError = true;
+                  
+                  const cardContent = isAdmin ? this.getAdminCardContent() : this.getUserCardContent();
+                  const errorCard = this.createErrorCard(cardContent);
+                  
+                  this.insertSlackMessage(errorCard);
+                },
+                
+                // Alternative method
+                showSlackErrorMessageSimple(message, isAdmin = false) {
+                  this.hideSlackMessages();
+                  
+                  const cardContent = isAdmin ? this.getAdminCardContent() : this.getUserCardContent();
+                  const errorCard = this.createErrorCard(cardContent);
+                  
+                  this.insertSlackMessage(errorCard);
+                },
+                
+                getAdminCardContent() {
+                  const envVariables = [
+                    'SLACK_BOT_OAUTH_ACCESS_TOKEN',
+                    'SLACK_OAUTH_ACCESS_TOKEN'
+                  ];
+                  
+                  const envVariablesHTML = envVariables.map(variable => `
+                    <div class="env-variable-box">
+                      <code class="env-variable-name">${variable}</code>
+                      <button class="copy-btn" onclick="this.copyToClipboard('${variable}')" title="${this.$t('Copy to clipboard')}">
+                        <i class="fas fa-copy"></i>
+                      </button>
+                    </div>
+                  `).join('');
+                  
+                  return `
+                    <p class="card-text mb-3">${this.$t('To enable notifications you need to add the appropriate API keys. Please follow these steps to configure it:')}</p>
+                    <ol class="steps-list mb-0">
+                      <li class="mb-2">${this.$t('Go to the')} <strong>${this.$t('Designer')}</strong> ${this.$t('tab and open the')} 
+                        <a href="/designer/environment-variables" target="_blank" class="env-link">
+                          ${this.$t('Environment Variables')} <i class="fas fa-external-link-alt"></i>
+                        </a> ${this.$t('section.')}
+                      </li>
+                      <li class="mb-2">${this.$t('Create the following environment variables with your Slack information:')}</li>
+                      <li class="mb-2">
+                        <div class="env-variables-container">
+                          ${envVariablesHTML}
+                        </div>
+                      </li>
+                      <li class="mb-0">${this.$t('After doing it once it will be available for all your users to enable.')}</li>
+                    </ol>
+                  `;
+                },
+                
+                getUserCardContent() {
+                  return `
+                    <p class="card-text mb-0">${this.$t('Once a PM Admin configures the integration, you will be able to enable this option to receive your PM notifications in Slack.')}</p>
+                  `;
+                },
+                
+                createErrorCard(content) {
                   const errorCard = document.createElement('div');
                   errorCard.id = 'slack-error-card';
                   errorCard.className = 'slack-config-card mt-3';
-                  
-                  if (isAdmin === true) {
-                    // Admin message with configuration steps
-                    errorCard.innerHTML = `
-                      <div class="d-flex align-items-start">
-                        <div class="warning-icon mr-3">
-                          <span class="exclamation-mark">!</span>
-                        </div>
-                        <div class="flex-grow-1">
-                          <h6 class="card-title mb-2">${this.$t('Slack API Keys required')}</h6>
-                          <p class="card-text mb-3">${this.$t('To enable notifications you need to add the appropriate API keys. Please follow these steps to configure it:')}</p>
-                          <ol class="steps-list mb-0">
-                            <li class="mb-2">${this.$t('Go to the')} <strong>${this.$t('Designer')}</strong> ${this.$t('tab and open the')} <a href="/designer/environment-variables" target="_blank" class="env-link">${this.$t('Environment Variables')} <i class="fas fa-external-link-alt"></i></a> ${this.$t('section.')}</li>
-                            <li class="mb-2">${this.$t('Create the following environment variables with your Slack information:')}</li>
-                            <li class="mb-2">
-                              <div class="env-variables-container">
-                                <div class="env-variable-box">
-                                  <code class="env-variable-name">SLACK_BOT_OAUTH_ACCESS_TOKEN</code>
-                                  <button class="copy-btn" onclick="navigator.clipboard.writeText('SLACK_BOT_OAUTH_ACCESS_TOKEN')" title="${this.$t('Copy to clipboard')}">
-                                    <i class="fas fa-copy"></i>
-                                  </button>
-                                </div>
-                                <div class="env-variable-box">
-                                  <code class="env-variable-name">SLACK_OAUTH_ACCESS_TOKEN</code>
-                                  <button class="copy-btn" onclick="navigator.clipboard.writeText('SLACK_OAUTH_ACCESS_TOKEN')" title="${this.$t('Copy to clipboard')}">
-                                    <i class="fas fa-copy"></i>
-                                  </button>
-                                </div>
-                              </div>
-                            </li>
-                            <li class="mb-0">${this.$t('After doing it once it will be available for all your users to enable.')}</li>
-                          </ol>
-                        </div>
+                  errorCard.innerHTML = `
+                    <div class="d-flex align-items-start">
+                      <div class="warning-icon mr-3">
+                        <span class="exclamation-mark">!</span>
                       </div>
-                    `;
-                  } else {
-                    // Non-admin message - simple notification
-                    errorCard.innerHTML = `
-                      <div class="d-flex align-items-start">
-                        <div class="warning-icon mr-3">
-                          <span class="exclamation-mark">!</span>
-                        </div>
-                        <div class="flex-grow-1">
-                          <h6 class="card-title mb-2">${this.$t('Slack API Keys required')}</h6>
-                          <p class="card-text mb-0">${this.$t('Once a PM Admin configures the integration, you will be able to enable this option to receive your PM notifications in Slack.')}</p>
-                        </div>
+                      <div class="flex-grow-1">
+                        <h6 class="card-title mb-2">${this.$t('Slack API Keys required')}</h6>
+                        ${content}
                       </div>
-                    `;
-                  }
+                    </div>
+                  `;
                   
-                  this.insertSlackMessage(errorCard);
+                  // Add copy method to global context
+                  window.copyToClipboard = (text) => {
+                    navigator.clipboard.writeText(text).then(() => {
+                      // Feedback visual
+                      const btn = event.target.closest('.copy-btn');
+                      const icon = btn.querySelector('i');
+                      const originalClass = icon.className;
+                      
+                      icon.className = 'fas fa-check text-success';
+                      setTimeout(() => {
+                        icon.className = originalClass;
+                      }, 1000);
+                    });
+                  };
+                  
+                  return errorCard;
                 },
                 hideSlackMessages() {
                   const existingLoading = document.getElementById('slack-loading-card');
@@ -578,6 +628,14 @@
                   if (window.ProcessMaker.packages.includes('connector-slack')) {
                     if (!accounts.some(account => account.name === 'Slack')) {
                       accounts.push(DEFAULT_ACCOUNTS.connectorSlack);
+                    }
+                  }
+
+                  // Apply configuration error state from the reactive property
+                  if (this.slackConfigurationError) {
+                    const slackAccount = accounts.find(account => account.name === 'Slack');
+                    if (slackAccount) {
+                      slackAccount.hasConfigurationError = true;
                     }
                   }
 
