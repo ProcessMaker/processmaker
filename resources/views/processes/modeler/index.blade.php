@@ -104,6 +104,7 @@ a {
     launchpad: @json($launchpad),
   }
   const warnings = @json($process->warnings);
+  window.ProcessMaker.tceCustomizationEnable = @json($isTceCustomization);
 
   window.ProcessMaker.EventBus.$on('modeler-start', ({ loadXML, addWarnings, addBreadcrumbs }) => {
     loadXML(window.ProcessMaker.modeler.xml);

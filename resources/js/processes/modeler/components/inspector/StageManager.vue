@@ -13,13 +13,13 @@
       @onClickCheckbox="onClickCheckbox"
       @onClickSelected="onClickSelected"
     />
-    <AgregationProperty />
+    <AgregationProperty v-if="isTCECustomization" />
   </div>
 </template>
 
 <script setup>
 import {
-  ref, onMounted, getCurrentInstance, nextTick,
+  ref, computed, onMounted, getCurrentInstance, nextTick,
 } from "vue";
 import StageList from "./StageList.vue";
 import AgregationProperty from "./AgregationProperty.vue";
@@ -31,6 +31,8 @@ const props = defineProps({
 const defaultStages = ref([]);
 const currentInstance = getCurrentInstance();
 const isLoading = ref(true);
+
+const isTCECustomization = computed(() => window.ProcessMaker.tceCustomizationEnable);
 
 const loadStagesFromApi = () => {
   const { id } = window.ProcessMaker.modeler.process;
