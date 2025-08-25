@@ -6,15 +6,28 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
+use ProcessMaker\Services\PermissionServiceManager;
 
 trait HasAuthorization
 {
+    private ?PermissionServiceManager $permissionService = null;
+
+    /**
+     * Get or create permission service manager
+     */
+    private function getPermissionService(): PermissionServiceManager
+    {
+        if ($this->permissionService === null) {
+            $this->permissionService = app(PermissionServiceManager::class);
+        }
+
+        return $this->permissionService;
+    }
+
     public function loadPermissions()
     {
-        return array_merge(
-            $this->loadUserPermissions(),
-            $this->loadGroupPermissions()
-        );
+        // Use the new optimized service
+        return $this->getPermissionService()->getUserPermissions($this->id);
     }
 
     public function loadUserPermissions()
@@ -74,9 +87,40 @@ trait HasAuthorization
 
     public function hasPermission($permissionString)
     {
-        $permissionStrings = $this->loadPermissions();
+        // Use the new optimized service for permission checking
+        return $this->getPermissionService()->userHasPermission($this->id, $permissionString);
+    }
 
-        return in_array($permissionString, $permissionStrings);
+    /**
+     * Check if user has any of the given permissions
+     */
+    public function hasAnyPermission(array $permissions): bool
+    {
+        return $this->getPermissionService()->userHasAnyPermission($this->id, $permissions);
+    }
+
+    /**
+     * Check if user has all of the given permissions
+     */
+    public function hasAllPermissions(array $permissions): bool
+    {
+        return $this->getPermissionService()->userHasAllPermissions($this->id, $permissions);
+    }
+
+    /**
+     * Warm up permission cache for this user
+     */
+    public function warmUpPermissionCache(): void
+    {
+        $this->getPermissionService()->warmUpUserCache($this->id);
+    }
+
+    /**
+     * Invalidate permission cache for this user
+     */
+    public function invalidatePermissionCache(): void
+    {
+        $this->getPermissionService()->invalidateUserCache($this->id);
     }
 
     /**
@@ -113,5 +157,8 @@ trait HasAuthorization
             $permissionId = Permission::byName($permissionName)->id;
             $this->permissions()->attach($permissionId);
         }
+
+        // Invalidate cache after giving new permissions
+        $this->invalidatePermissionCache();
     }
 }
