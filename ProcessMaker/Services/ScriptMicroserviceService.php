@@ -34,7 +34,7 @@ class ScriptMicroserviceService
             $instance = ProcessRequest::find($response['metadata']['script_task']['instance_id']);
             $token = ProcessRequestToken::find($response['metadata']['script_task']['token_id']);
             if ($response['status'] === 'success') {
-                CompleteActivity::dispatch($definitions, $instance, $token, $response['output'])->onQueue('bpmn');
+                CompleteActivity::dispatch($definitions, $instance, $token, $response['output']);
             }
         }
     }

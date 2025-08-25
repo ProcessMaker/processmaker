@@ -36,9 +36,9 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param \ProcessMaker\Models\Process $definitions
-     * @param \ProcessMaker\Models\ProcessRequest $instance
-     * @param \ProcessMaker\Models\ProcessRequestToken $token
+     * @param Definitions $definitions
+     * @param ProcessRequest $instance
+     * @param ProcessRequestToken $token
      * @param array $data
      */
     public function __construct(Definitions $definitions, ProcessRequest $instance, ProcessRequestToken $token, array $data, $attemptNum = 1)
@@ -48,7 +48,6 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
         } else {
             $pmConfig = [];
         }
-        $this->onQueue($pmConfig['queue'] ?? 'bpmn');
         $this->definitionsId = $definitions->getKey();
         $this->instanceId = $instance->getKey();
         $this->tokenId = $token->getKey();
