@@ -73,6 +73,10 @@ const getHighlightedNode = () => getModeler().highlightedNode;
 
 const getDefinition = () => getHighlightedNode().definition;
 
+const saveProcess = () => {
+  currentInstance.proxy.$root.$children[0].$refs["external-ModalSaveVersion"]?.[0]?.saveModal?.();
+}
+
 const getConfigFromDefinition = (definition) => {
   let config = {};
   try {
@@ -150,14 +154,17 @@ const onChange = (stages) => {
 
 const onUpdate = (stages, index, val, Oldal) => {
   updateStagesForAllFlowConfigs(stages);
+  saveProcess();
 };
 
 const onRemove = (stages, index, removed) => {
   removeStageInAllFlowConfig(removed);
+  saveProcess();
 };
 
 const onClickCheckbox = (stage) => {
   applyStageToFlow(stage);
+  saveProcess();
 };
 
 const onClickSelected = (stage) => {
