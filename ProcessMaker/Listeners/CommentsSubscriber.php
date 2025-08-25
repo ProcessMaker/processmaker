@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Listeners;
 
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -26,11 +27,26 @@ class CommentsSubscriber
         $user_id = $token->user ? $token->user_id : null;
         $user_name = $token->user ? $token->user->fullname : __('The System');
 
+        // Check the authenticated user
+        $executer_user_id = null;
+        $executer_user = __('The System');
+        if (Auth::check()) {
+            $executer_user_id = Auth::user() ? Auth::user()?->id : null;
+            $executer_user = Auth::user() ? Auth::user()?->fullname : __('The System');
+        }
+
         if (!is_int($token->process_request_id)) {
             return;
         }
 
-        $message = ':user has completed the task :task_name';
+        if (!is_null($executer_user_id) && $user_id !== $executer_user_id) {
+            $subject = 'Task Completed by Different User';
+            $message = ':executer_user has completed the task :task_name (assigned to: :user)';
+        } else {
+            $subject = 'Task Complete';
+            $message = ':user has completed the task :task_name';
+        }
+
         if ($token->is_actionbyemail) {
             $message = $message . ' via email';
         }
@@ -42,8 +58,8 @@ class CommentsSubscriber
             'user_id' => $user_id,
             'commentable_type' => ProcessRequest::class,
             'commentable_id' => $token->process_request_id,
-            'subject' => 'Task Complete',
-            'body' => __($message, ['user' => $user_name, 'task_name' => $token->element_name]),
+            'subject' => $subject,
+            'body' => __($message, ['user' => $user_name, 'task_name' => $token->element_name, 'executer_user' => $executer_user]),
             'case_number' => $caseNumber,
         ]);
     }
