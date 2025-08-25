@@ -12,27 +12,41 @@ use ProcessMaker\Models\User;
 class PermissionRepository implements PermissionRepositoryInterface
 {
     /**
-     * Get all permissions for a user (direct + group permissions)
+     * Get all permissions for a user (optimized)
      */
     public function getUserPermissions(int $userId): array
     {
-        // Use Eloquent relationships instead of raw SQL
-        $user = User::find($userId);
+        // Use Eloquent relationships with eager loading to avoid N+1 queries
+        $user = User::with([
+            'permissions',
+            'groupMembersFromMemberable.group.permissions',
+        ])->find($userId);
+
         if (!$user) {
             return [];
         }
 
-        // Get direct user permissions
-        $userPermissions = $user->permissions()->pluck('name')->toArray();
+        $permissions = [];
 
-        // Get group permissions
-        $groupPermissions = $this->getGroupPermissions($userId);
+        // Get direct user permissions (already loaded)
+        foreach ($user->permissions as $permission) {
+            $permissions[] = $permission->name;
+        }
 
-        // Merge and deduplicate
-        $allPermissions = array_merge($userPermissions, $groupPermissions);
-        $allPermissions = array_unique($allPermissions);
+        // Get group permissions (already loaded)
+        foreach ($user->groupMembersFromMemberable as $groupMember) {
+            $group = $groupMember->group;
+            if ($group && $group->permissions) {
+                foreach ($group->permissions as $permission) {
+                    $permissions[] = $permission->name;
+                }
+            }
+        }
 
-        return $this->addCategoryViewPermissions($allPermissions);
+        // Remove duplicates and add category permissions
+        $permissions = array_unique($permissions);
+
+        return $this->addCategoryViewPermissions($permissions);
     }
 
     /**

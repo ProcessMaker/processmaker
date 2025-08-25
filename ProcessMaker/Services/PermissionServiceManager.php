@@ -14,8 +14,6 @@ class PermissionServiceManager
 
     private PermissionCacheInterface $cacheService;
 
-    private array $strategies = [];
-
     private ?PermissionStrategyInterface $defaultStrategy = null;
 
     public function __construct(
@@ -26,20 +24,7 @@ class PermissionServiceManager
         $this->cacheService = $cacheService;
 
         // Register default strategy
-        $this->registerStrategy(new CachedPermissionStrategy($cacheService, $repository));
-        $this->defaultStrategy = $this->strategies['cached'] ?? null;
-    }
-
-    /**
-     * Register a permission strategy
-     */
-    public function registerStrategy(PermissionStrategyInterface $strategy): void
-    {
-        $this->strategies[$strategy->getStrategyName()] = $strategy;
-
-        if ($this->defaultStrategy === null) {
-            $this->defaultStrategy = $strategy;
-        }
+        $this->defaultStrategy = new CachedPermissionStrategy($cacheService, $repository);
     }
 
     /**
@@ -66,11 +51,6 @@ class PermissionServiceManager
      */
     public function userHasPermission(int $userId, string $permission): bool
     {
-        if ($this->defaultStrategy === null) {
-            // Fallback to repository if no strategy available
-            return $this->repository->userHasPermission($userId, $permission);
-        }
-
         return $this->defaultStrategy->hasPermission($userId, $permission);
     }
 
@@ -118,69 +98,11 @@ class PermissionServiceManager
     }
 
     /**
-     * Warm up cache for a group
-     */
-    public function warmUpGroupCache(int $groupId): void
-    {
-        try {
-            $permissions = $this->repository->getGroupPermissionsById($groupId);
-            $this->cacheService->cacheGroupPermissions($groupId, $permissions);
-
-            Log::info("Warmed up permission cache for group {$groupId}");
-        } catch (\Exception $e) {
-            Log::error("Failed to warm up permission cache for group {$groupId}: " . $e->getMessage());
-        }
-    }
-
-    /**
      * Invalidate cache for a user
      */
     public function invalidateUserCache(int $userId): void
     {
         $this->cacheService->invalidateUserPermissions($userId);
         Log::info("Invalidated permission cache for user {$userId}");
-    }
-
-    /**
-     * Invalidate cache for a group
-     */
-    public function invalidateGroupCache(int $groupId): void
-    {
-        $this->cacheService->invalidateGroupPermissions($groupId);
-        Log::info("Invalidated permission cache for group {$groupId}");
-    }
-
-    /**
-     * Get cache statistics
-     */
-    public function getCacheStats(): array
-    {
-        return $this->cacheService->getCacheStats();
-    }
-
-    /**
-     * Get registered strategies
-     */
-    public function getRegisteredStrategies(): array
-    {
-        return array_keys($this->strategies);
-    }
-
-    /**
-     * Get default strategy
-     */
-    public function getDefaultStrategy(): ?PermissionStrategyInterface
-    {
-        return $this->defaultStrategy;
-    }
-
-    /**
-     * Set default strategy
-     */
-    public function setDefaultStrategy(string $strategyName): void
-    {
-        if (isset($this->strategies[$strategyName])) {
-            $this->defaultStrategy = $this->strategies[$strategyName];
-        }
     }
 }
