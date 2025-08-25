@@ -73,7 +73,7 @@ class ThrowSignalEvent implements ShouldQueue
                     $chunk,
                     $this->signalRef,
                     $this->data
-                )->onQueue('bpmn');
+                );
             }
         }
         removeTemporalData($this->data_uid);
