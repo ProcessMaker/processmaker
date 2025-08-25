@@ -192,7 +192,7 @@ class ScriptController extends Controller
         $code = $request->get('code');
         $nonce = $request->get('nonce');
 
-        TestScript::dispatch($script, $request->user(), $code, $data, $config, $nonce)->onQueue('bpmn');
+        TestScript::dispatch($script, $request->user(), $code, $data, $config, $nonce);
 
         return ['status' => 'success'];
     }
@@ -253,7 +253,7 @@ class ScriptController extends Controller
         if ($request->get('sync') === true) {
             return (new ExecuteScript($script, $request->user(), $code, $data, $watcher, $config, true))->handle();
         } else {
-            ExecuteScript::dispatch($script, $request->user(), $code, $data, $watcher, $config)->onQueue('bpmn');
+            ExecuteScript::dispatch($script, $request->user(), $code, $data, $watcher, $config);
         }
 
         return ['status' => 'success', 'key' => $watcher];
