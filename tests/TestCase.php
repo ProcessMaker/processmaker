@@ -260,10 +260,6 @@ abstract class TestCase extends BaseTestCase
     {
         $filename = 'snapshot_' . $id . '.db';
 
-        if (!file_exists(base_path($filename))) {
-            throw new \Exception("Database snapshot not found: $filename");
-        }
-
         if (!$this->populateDatabase()) {
             return;
         }
