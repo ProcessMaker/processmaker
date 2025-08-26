@@ -26,6 +26,11 @@ trait HasAuthorization
 
     public function loadPermissions()
     {
+        // return array_merge(
+        //     $this->loadUserPermissions(),
+        //     $this->loadGroupPermissions()
+        // );
+
         // Use the new optimized service
         return $this->getPermissionService()->getUserPermissions($this->id);
     }
@@ -87,6 +92,8 @@ trait HasAuthorization
 
     public function hasPermission($permissionString)
     {
+        // $permissionStrings = $this->loadPermissions();
+        // return in_array($permissionString, $permissionStrings);
         // Use the new optimized service for permission checking
         return $this->getPermissionService()->userHasPermission($this->id, $permissionString);
     }
@@ -94,26 +101,26 @@ trait HasAuthorization
     /**
      * Check if user has any of the given permissions
      */
-    public function hasAnyPermission(array $permissions): bool
-    {
-        return $this->getPermissionService()->userHasAnyPermission($this->id, $permissions);
-    }
+    // public function hasAnyPermission(array $permissions): bool
+    // {
+    //     return $this->getPermissionService()->userHasAnyPermission($this->id, $permissions);
+    // }
 
     /**
      * Check if user has all of the given permissions
      */
-    public function hasAllPermissions(array $permissions): bool
-    {
-        return $this->getPermissionService()->userHasAllPermissions($this->id, $permissions);
-    }
+    // public function hasAllPermissions(array $permissions): bool
+    // {
+    //     return $this->getPermissionService()->userHasAllPermissions($this->id, $permissions);
+    // }
 
     /**
      * Warm up permission cache for this user
      */
-    public function warmUpPermissionCache(): void
-    {
-        $this->getPermissionService()->warmUpUserCache($this->id);
-    }
+    // public function warmUpPermissionCache(): void
+    // {
+    //     $this->getPermissionService()->warmUpUserCache($this->id);
+    // }
 
     /**
      * Invalidate permission cache for this user
