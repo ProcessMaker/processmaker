@@ -118,7 +118,7 @@ trait LoggingHelper
     {
         $records = app('log')->getHandlers()[0]->getRecords();
 
-        return $this->assertEquals(0, count($records), 'Failed asserting that the log is empty.');
+        return $this->assertEquals(0, count($records), 'Failed asserting that the log is empty: ' . print_r($records, true));
     }
 
     /**

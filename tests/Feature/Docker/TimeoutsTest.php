@@ -26,18 +26,11 @@ class TimeoutsTest extends TestCase
     const SLEEP_NOT_EXCEED = 1;
 
     /**
-     * Make sure we have a personal access client set up
-     */
-    public function setUpWithPersonalAccessClient()
-    {
-        $this->withPersonalAccessClient();
-    }
-
-    /**
      * Run a test script and assert that the specified timeout is exceeded
      */
     private function assertTimeoutExceeded($data)
     {
+        $this->withPersonalAccessClient();
         Event::fake([
             ScriptResponseEvent::class,
         ]);
@@ -95,6 +88,7 @@ class TimeoutsTest extends TestCase
      */
     public function testPhpScriptTimeoutExceeded()
     {
+        $this->withPersonalAccessClient();
         config(['simulate_timeout' => true]);
         $this->assertTimeoutExceeded([
             'language' => 'php',
@@ -107,6 +101,7 @@ class TimeoutsTest extends TestCase
      */
     public function testPhpScriptTimeoutNotExceeded()
     {
+        $this->withPersonalAccessClient();
         $this->assertTimeoutNotExceeded([
             'language' => 'php',
             'timeout' => self::TIMEOUT_LENGTH,
