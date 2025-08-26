@@ -284,10 +284,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         $this->app->extend('config', function ($originalConfig) {
-            $config = $originalConfig->all();
-            unset($config['session']['lifetime']);
-
-            return new SettingsConfigRepository($config);
+            return new SettingsConfigRepository($originalConfig->all());
         });
 
         $this->app->singleton('currentTenant', function () {
