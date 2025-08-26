@@ -74,6 +74,7 @@ const getHighlightedNode = () => getModeler().highlightedNode;
 const getDefinition = () => getHighlightedNode().definition;
 
 const saveProcess = () => {
+  currentInstance.proxy.$root.$children[0]?.autosaveApiCall?.();
   currentInstance.proxy.$root.$children[0].$refs["external-ModalSaveVersion"]?.[0]?.saveModal?.();
 }
 
