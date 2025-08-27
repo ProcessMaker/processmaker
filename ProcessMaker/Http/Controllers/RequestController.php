@@ -180,9 +180,10 @@ class RequestController extends Controller
         event(new ModelerStarting($managerModeler));
 
         $scriptsEnabled = ['package-slideshow', 'package-process-optimization', 'package-ab-testing', 'package-testing'];
-        $managerModelerScripts = array_filter($managerModeler->getScripts(), function ($script) use ($scriptsEnabled) {
+        //dd($managerModeler->getScripts(), count($managerModeler->getScriptWithParams()), array_keys($managerModeler->getScriptWithParams()[0]));
+        $managerModelerScripts = array_filter($managerModeler->getScriptWithParams(), function ($script) use ($scriptsEnabled) {
             foreach ($scriptsEnabled as $enabledScript) {
-                if (strpos($script, $enabledScript) !== false) {
+                if (strpos($script['src'], $enabledScript) !== false) {
                     return false;
                 }
             }
