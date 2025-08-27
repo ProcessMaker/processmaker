@@ -93,7 +93,7 @@ class TenantsTransition extends Command
             }
         }
 
-        $appName = $envVars['PROCESS_INTELLIGENCE_COMPANY_NAME'];
+        $appName = $envVars['PROCESS_INTELLIGENCE_COMPANY_NAME'] ?? null;
         if (!$appName) {
             // Get the app name from the folder name
             $appName = basename($clientFolder);
@@ -116,7 +116,12 @@ class TenantsTransition extends Command
             '--app-key' => $envVars['APP_KEY'],
         ];
 
-        Artisan::call('tenants:create', $command);
+        $exitCode = Artisan::call('tenants:create', $command, $this->output);
+        if ($exitCode !== 0) {
+            $this->error("Failed to create tenant for domain: {$domain}");
+
+            return;
+        }
 
         // Find the newly created tenant
         $tenant = Tenant::where('domain', $domain)->first();

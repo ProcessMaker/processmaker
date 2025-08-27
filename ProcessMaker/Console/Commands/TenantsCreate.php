@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Process;
 use ProcessMaker\Multitenancy\Tenant;
 
 class TenantsCreate extends Command
@@ -31,6 +32,17 @@ class TenantsCreate extends Command
      */
     public function handle()
     {
+        $infoCallback = function ($type, $message) {
+            if ($type === 'out') {
+                $this->info($message);
+            } else {
+                $this->error($message);
+            }
+        };
+
+        // Check if rsync exists
+        Process::run('which rsync', $infoCallback)->throw();
+
         $requiredOptions = ['name', 'database', 'url'];
 
         foreach ($requiredOptions as $option) {
@@ -82,21 +94,8 @@ class TenantsCreate extends Command
         if ($storageFolderOption) {
             if (File::isDirectory($storageFolderOption)) {
                 $this->info('Moving storage folder to ' . $tenantStoragePath);
-                $subfoldersToExclude = '/^(tenant_\d+|logs|transitions)$/i';
-                foreach (File::directories($storageFolderOption) as $subfolder) {
-                    if (preg_match($subfoldersToExclude, basename($subfolder))) {
-                        $this->info('Skipping ' . $subfolder);
-                        continue;
-                    }
-                    $this->info('Moving ' . $subfolder . ' to ' . $tenantStoragePath);
-                    rename($subfolder, $tenantStoragePath . '/' . basename($subfolder));
-                }
-
-                // Move all files from the root storage folder to the tenant storage folder
-                foreach (File::files($storageFolderOption) as $file) {
-                    $this->info('Moving ' . $file . ' to ' . $tenantStoragePath);
-                    rename($file, $tenantStoragePath . '/' . basename($file));
-                }
+                $cmd = "rsync -avz --exclude='tenant_*' --exclude='logs' --exclude='transitions' " . $storageFolderOption . '/ ' . $tenantStoragePath;
+                Process::run($cmd, $infoCallback)->throw();
             } else {
                 $this->error('Storage folder does not exist: ' . $storageFolderOption);
 
@@ -110,13 +109,15 @@ class TenantsCreate extends Command
         $tenantLangPath = resource_path('lang/tenant_' . $tenant->id);
         if ($langFolderOption) {
             if (File::isDirectory($langFolderOption)) {
-                $this->info('Moving lang folder to ' . $tenantLangPath);
+                $this->info('Copying lang folder to ' . $tenantLangPath);
                 if (File::isDirectory($tenantLangPath)) {
                     $this->error('Tenant lang path already exists: ' . $tenantLangPath);
 
                     return 1;
                 } else {
-                    rename($langFolderOption, $tenantLangPath);
+                    // rename($langFolderOption, $tenantLangPath);
+                    $cmd = "rsync -avz --exclude='tenant_*' " . $langFolderOption . '/ ' . $tenantLangPath;
+                    Process::run($cmd, $infoCallback)->throw();
                 }
             } else {
                 $this->error('Lang folder does not exist: ' . $langFolderOption);
@@ -135,12 +136,7 @@ class TenantsCreate extends Command
             escapeshellarg($sourceLangPath . '/'),
             escapeshellarg($tenantLangPath)
         );
-        exec($cmd, $output, $returnVar);
-        if ($returnVar !== 0) {
-            $this->error('Failed to rsync lang folder to tenant: ' . implode(PHP_EOL, $output));
-
-            return 1;
-        }
+        Process::run($cmd, $infoCallback)->throw();
 
         $subfolders = [
             'app',
