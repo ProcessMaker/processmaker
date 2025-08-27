@@ -173,6 +173,7 @@ export default {
     },
   },
   mounted() {
+    window.$modelerApp = this;
     ProcessMaker.$modeler = this.$refs.modeler;
     window.ProcessMaker.EventBus.$emit("modeler-app-init", this);
 
