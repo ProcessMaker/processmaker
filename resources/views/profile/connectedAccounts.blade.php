@@ -19,7 +19,7 @@
                 <i class="fa fa-check"></i>
                 {{__('Connected')}}
               </b-badge>
-              <b-form-checkbox v-if="account?.ui_options?.show_toggle && !account.hasConfigurationError" @input="handleConnectedAccountToggle(account, $event)" v-model="account.enabled" switch></b-form-checkbox>
+              <b-form-checkbox v-if="account?.ui_options?.show_toggle" @input="handleConnectedAccountToggle(account, $event)" v-model="account.enabled" switch></b-form-checkbox>
             </div>
           </div>
         </div>
