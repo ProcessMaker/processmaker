@@ -186,12 +186,12 @@ class TenantsCreate extends Command
         // $this->tenantArtisan('passport:keys --force', $tenant->id);
 
         $this->info("Empty tenant created.\n");
-        $this->info("With the tenant set (using TENANT={$tenant->id} env prefix) you must now:");
+        $this->info("Unless you ran `tenants:enable --migrate`, you will need to run the following using TENANT={$tenant->id} env prefix");
         $this->line('- Run migrations');
         $this->line('- Seed the database');
         $this->line('- Run the install command for each package');
         $this->line('- Run artisan upgrade');
-        $this->line('- Generate passport keys with artisan passport:keys');
+        $this->line('- Install passport with artisan passport:install');
         $this->info("For example, `TENANT={$tenant->id} php artisan migrate:fresh --seed`");
     }
 

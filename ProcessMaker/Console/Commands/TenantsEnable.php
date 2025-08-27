@@ -95,8 +95,8 @@ class TenantsEnable extends Command
         $exitCode = Artisan::call('tenants:create', [
             '--database' => config('database.connections.processmaker.database'),
             '--url' => config('app.url'),
-            '--storage-folder' => $tempStorageFolder,
-            '--lang-folder' => $tempLangFolder,
+            '--storage-folder' => storage_path(),
+            '--lang-folder' => lang_path(),
             '--name' => config('app.name'),
             '--app-key' => config('app.key'),
         ], $this->output);
