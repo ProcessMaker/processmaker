@@ -110,10 +110,10 @@ class GenerateMenus
                     'icon' => 'fa-palette',
                 ]);
 
-                $submenu->add(__('Queue Management'), [
-                    'route' => 'queues.index',
-                    'icon' => 'fa-infinity',
-                ]);
+                //$submenu->add(__('Queue Management'), [
+                //    'route' => 'queues.index',
+                //    'icon' => 'fa-infinity',
+                //]);
 
                 if (config('app.custom_executors')) {
                     $submenu->add(__('Script Executors'), [
