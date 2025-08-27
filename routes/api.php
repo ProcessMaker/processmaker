@@ -446,8 +446,5 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         // Put these last to avoid conflicts with the other devlink routes
         Route::get('devlink/{devLink}', [DevLinkController::class, 'show'])->name('devlink.show');
     });
-
-    // Slack Connector Validation
-    Route::post('connector-slack/validate-token', [\ProcessMaker\Packages\Connectors\Slack\Controllers\SlackController::class, 'validateToken'])->name('connector-slack.validate-token');
 });
 Route::post('devlink/bundle-updated/{bundle}/{token}', [DevLinkController::class, 'bundleUpdated'])->name('devlink.bundle-updated');
