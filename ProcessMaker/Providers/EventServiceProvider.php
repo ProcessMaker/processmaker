@@ -65,6 +65,7 @@ use ProcessMaker\Events\UserUpdated;
 use ProcessMaker\Listeners\HandleActivityAssignedInterstitialRedirect;
 use ProcessMaker\Listeners\HandleActivityCompletedRedirect;
 use ProcessMaker\Listeners\HandleEndEventRedirect;
+use ProcessMaker\Listeners\InvalidatePermissionCacheOnUpdate;
 use ProcessMaker\Listeners\InvalidateScreenCacheOnTranslationChange;
 use ProcessMaker\Listeners\SecurityLogger;
 use ProcessMaker\Listeners\SessionControlSettingsUpdated;
@@ -114,6 +115,9 @@ class EventServiceProvider extends ServiceProvider
         TranslationChanged::class => [
             InvalidateScreenCacheOnTranslationChange::class,
         ],
+        PermissionUpdated::class => [
+            InvalidatePermissionCacheOnUpdate::class,
+        ],
     ];
 
     /**
@@ -146,7 +150,6 @@ class EventServiceProvider extends ServiceProvider
             $this->app['events']->listen(GroupDeleted::class, SecurityLogger::class);
             $this->app['events']->listen(GroupUpdated::class, SecurityLogger::class);
             $this->app['events']->listen(GroupUsersUpdated::class, SecurityLogger::class);
-            $this->app['events']->listen(PermissionUpdated::class, SecurityLogger::class);
             $this->app['events']->listen(ProcessCreated::class, SecurityLogger::class);
             $this->app['events']->listen(ProcessArchived::class, SecurityLogger::class);
             $this->app['events']->listen(ProcessPublished::class, SecurityLogger::class);

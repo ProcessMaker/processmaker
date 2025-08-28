@@ -105,4 +105,12 @@ class PermissionServiceManager
         $this->cacheService->invalidateUserPermissions($userId);
         Log::info("Invalidated permission cache for user {$userId}");
     }
+
+    /**
+     * Invalidate all permission caches
+     */
+    public function invalidateAll(): void
+    {
+        $this->cacheService->clearAll();
+    }
 }
