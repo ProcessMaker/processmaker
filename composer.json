@@ -106,7 +106,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "0c41da8a",
+            "build": "8c08f440",
             "cicd-enabled": true,
             "custom": {
                 "package-ellucian-ethos": "1.19.5",
@@ -145,7 +145,7 @@
                 "connector-docusign": "1.11.0",
                 "connector-idp": "1.14.0",
                 "connector-pdf-print": "1.23.0",
-                "connector-send-email": "1.32.6",
+                "connector-send-email": "1.32.7",
                 "connector-slack": "1.9.2",
                 "docker-executor-node-ssr": "1.7.1",
                 "package-ab-testing": "1.4.0",
