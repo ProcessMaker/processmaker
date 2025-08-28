@@ -36,7 +36,7 @@ export default {
           delete params.form_data._process;
         }
       }
-      console.log('getReassignUsers:', JSON.stringify(this.formData, null, 2));
+
       ProcessMaker.apiClient.get('users_task_count', { params }).then(response => {
         this.reassignUsers = [];
         response.data.data.forEach((user) => {
