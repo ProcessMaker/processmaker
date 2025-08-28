@@ -32,6 +32,9 @@ class SwitchTenant implements SwitchTenantTask
 
         $this->setTenantDatabaseConnection($tenant);
 
+        // Set the tenant's domain in the request headers. Used for things like the global url() helper.
+        request()->headers->set('host', $tenant->domain);
+
         // Set the tenant-specific storage path
         $tenantStoragePath = base_path('storage/tenant_' . $tenant->id);
 
