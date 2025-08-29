@@ -35,6 +35,7 @@ class ProfileTest extends TestCase
         $user->is_administrator = true;
         $user->save();
         $user->refresh();
+        $user->invalidatePermissionCache(); // ✅ Invalidar cache para que los permisos tomen efecto
 
         // Our user now has permissions, so this should return 200.
         $this->assertTrue($user->hasPermission('edit-personal-profile'));
@@ -83,6 +84,7 @@ class ProfileTest extends TestCase
         $user->is_administrator = true;
         $user->save();
         $user->refresh();
+        $user->invalidatePermissionCache();
 
         // Our group now has permission, so this should return 200.
         $this->assertTrue($user->hasPermission('edit-personal-profile'));

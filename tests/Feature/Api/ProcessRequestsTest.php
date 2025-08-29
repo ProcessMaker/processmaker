@@ -313,6 +313,7 @@ class ProcessRequestsTest extends TestCase
 
         $this->user->giveDirectPermission('view-all_requests');
         $this->user->refresh();
+        $this->user->invalidatePermissionCache();
 
         $response = $this->apiCall('GET', self::API_TEST_URL);
         $json = $response->json();
@@ -565,6 +566,7 @@ class ProcessRequestsTest extends TestCase
         $response->assertStatus(204);
 
         $request->refresh();
+        $this->user->invalidatePermissionCache();
         $this->assertEquals('COMPLETED', $request->status);
 
         // Verify comment added
@@ -814,6 +816,7 @@ class ProcessRequestsTest extends TestCase
         $editAllRequestsData = Permission::where('name', 'edit-request_data')->first();
         $this->user->permissions()->attach($editAllRequestsData);
         $this->user->refresh();
+        $this->user->invalidatePermissionCache();
         session()->forget('permissions');
         $response = $this->apiCall('put', $url, ['data' => ['foo' => '123']]);
 
@@ -823,6 +826,7 @@ class ProcessRequestsTest extends TestCase
 
         $this->user->permissions()->detach($editAllRequestsData);
         $this->user->refresh();
+        $this->user->invalidatePermissionCache();
         session()->forget('permissions');
         $response = $this->apiCall('put', $url, ['data' => ['foo' => '123']]);
 
@@ -980,6 +984,7 @@ class ProcessRequestsTest extends TestCase
 
         $this->user->giveDirectPermission('view-all_requests');
         $this->user->refresh();
+        $this->user->invalidatePermissionCache();
 
         // Verify with other user with permissions
         $response = $this->apiCall('GET', route('api.requests.getRequestToken', ['request' => $request->id, 'element_id' => $token->element_id]));
