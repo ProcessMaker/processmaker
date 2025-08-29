@@ -53,9 +53,9 @@ class CasesController extends Controller
         // "Initialload.js" file causes an issue related to SVG in the modeler
         // The other scripts are not needed in the case detail
         $scriptsDisabled = ['package-slideshow', 'package-process-optimization', 'package-ab-testing', 'package-testing', 'initialLoad'];
-        $managerModelerScripts = array_filter($managerModeler->getScripts(), function ($script) use ($scriptsDisabled) {
+        $managerModelerScripts = array_filter($managerModeler->getScriptWithParams(), function ($script) use ($scriptsDisabled) {
             foreach ($scriptsDisabled as $enabledScript) {
-                if (strpos($script, $enabledScript) !== false) {
+                if (strpos($script['src'], $enabledScript) !== false) {
                     return false;
                 }
             }
