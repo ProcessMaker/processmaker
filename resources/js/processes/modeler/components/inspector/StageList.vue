@@ -35,7 +35,9 @@
           :placeholder="$t('Enter name')"
           maxlength="200"
           @keyup.enter="onKeyupEnter"
-          @paste="onPaste" />
+          @input="onInput"
+          @paste="onPaste"
+        >
       </div>
     </div>
     <div class="tw-flex tw-justify-end tw-mt-2">
@@ -79,6 +81,13 @@ const stages = ref([...props.initialStages]);
 const totalStages = computed(() => stages.value.length);
 const disableButton = computed(() => totalStages.value >= 8);
 const stateNewStage = ref(true);
+
+const onInput = (event) => {
+  // Limit to 200 characters
+  if (newStage.value.length > 200) {
+    newStage.value = newStage.value.substring(0, 200);
+  }
+};
 
 const onPaste = (event) => {
   // Handle paste event to ensure proper character counting
