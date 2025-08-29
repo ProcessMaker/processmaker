@@ -38,7 +38,7 @@ class InvalidatePermissionCacheOnGroupHierarchyChange
                 'group_id' => $event->getGroup()->id ?? 'unknown',
                 'action' => $event->getAction(),
             ]);
-            throw $e; // Re-throw to ensure error is properly handled
+            throw $e;
         }
     }
 }
