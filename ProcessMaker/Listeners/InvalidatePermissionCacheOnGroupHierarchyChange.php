@@ -26,23 +26,9 @@ class InvalidatePermissionCacheOnGroupHierarchyChange
             $group = $event->getGroup();
             $action = $event->getAction();
 
-            Log::info("Group hierarchy changed: {$action} for group {$group->id} ({$group->name})");
-
-            if ($action === 'removed') {
-                // When a group is removed from another group, we need to invalidate cache for:
-                // 1. All users directly in the removed group
-                // 2. All users in groups that inherit from the removed group
-                $this->invalidateCacheForGroupAndDescendants($group);
-            } elseif ($action === 'added') {
-                // When a group is added to another group, we need to invalidate cache for:
-                // 1. All users in the added group
-                // 2. All users in groups that inherit from the added group
-                $this->invalidateCacheForGroupAndDescendants($group);
-            } elseif ($action === 'updated') {
-                // When a group membership is updated, invalidate cache for all affected users
-                $this->invalidateCacheForGroupAndDescendants($group);
-            }
-
+            // All actions (added, removed, updated) require the same cache invalidation logic
+            // because they all affect the permission hierarchy for the group and its descendants
+            $this->invalidateCacheForGroupAndDescendants($group);
             Log::info("Successfully invalidated permission cache for group hierarchy change: {$action} for group {$group->id}");
         } catch (\Exception $e) {
             Log::error('Failed to invalidate permission cache on group hierarchy change', [

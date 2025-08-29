@@ -47,6 +47,7 @@ class ProcessesTest extends TestCase
         // Attach the permission to our user.
         $this->user->permissions()->attach(Permission::byName($permission)->id);
         $this->user->refresh();
+        $this->user->invalidatePermissionCache(); // ✅ Invalidar cache para que los cambios tomen efecto
 
         // Our user now has permissions, so this should return 200.
         $response = $this->webCall('GET', $url);
@@ -73,6 +74,7 @@ class ProcessesTest extends TestCase
         // Attach the permission to our user.
         $this->user->permissions()->attach(Permission::byName($permission)->id);
         $this->user->refresh();
+        $this->user->invalidatePermissionCache(); // ✅ Invalidar cache para que los cambios tomen efecto
 
         // Our user now has permissions, so this should return 200.
         $response = $this->webCall('GET', $url);
@@ -99,6 +101,7 @@ class ProcessesTest extends TestCase
         // Attach the permission to our user.
         $this->user->permissions()->attach(Permission::byName($permission)->id);
         $this->user->refresh();
+        $this->user->invalidatePermissionCache(); // ✅ Invalidar cache para que los cambios tomen efecto
 
         // Our user now has permissions, so this should return 200.
         $response = $this->webCall('GET', $url);
@@ -129,6 +132,7 @@ class ProcessesTest extends TestCase
         // Attach the permission to our user.
         $this->user->permissions()->attach(Permission::byName($permission)->id);
         $this->user->refresh();
+        $this->user->invalidatePermissionCache(); // ✅ Invalidar cache para que los cambios tomen efecto
 
         // Our user now has permissions, so this should return 200.
         $response = $this->webCall('POST', $url, $data);
@@ -158,6 +162,7 @@ class ProcessesTest extends TestCase
         // Attach the permission to our user.
         $this->user->permissions()->attach(Permission::byName($permission)->id);
         $this->user->refresh();
+        $this->user->invalidatePermissionCache(); // ✅ Invalidar cache para que los cambios tomen efecto
 
         // Our user now has permissions, so this should return 200.
         $response = $this->webCall('PUT', $url, $data);
@@ -183,6 +188,7 @@ class ProcessesTest extends TestCase
         // Attach the permission to our user.
         $this->user->permissions()->attach(Permission::byName($permission)->id);
         $this->user->refresh();
+        $this->user->invalidatePermissionCache(); // ✅ Invalidar cache para que los cambios tomen efecto
 
         // Our user now has permissions, so this should return 200.
         $response = $this->webCall('DELETE', $url);
@@ -202,6 +208,7 @@ class ProcessesTest extends TestCase
             $this->user->permissions()->attach(Permission::byName($perm));
         }
         $this->user->refresh();
+        $this->user->invalidatePermissionCache(); // ✅ Invalidar cache después de asignar permisos
 
         $response = $this->webCall('GET', '/processes');
         $response->assertViewIs('processes.index');
@@ -209,6 +216,7 @@ class ProcessesTest extends TestCase
         $checkNextAuth = function ($perm, $nextRoute) {
             $this->user->permissions()->detach(Permission::byName($perm));
             $this->user->refresh();
+            $this->user->invalidatePermissionCache(); // ✅ Invalidar cache después de remover permisos
             $this->flushSession();
             $response = $this->webCall('GET', '/processes');
             $response->assertRedirect(route($nextRoute));
