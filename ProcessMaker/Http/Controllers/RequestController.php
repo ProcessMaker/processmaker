@@ -182,6 +182,9 @@ class RequestController extends Controller
         $scriptsEnabled = ['package-slideshow', 'package-process-optimization', 'package-ab-testing', 'package-testing'];
         $managerModelerScripts = array_filter($managerModeler->getScriptWithParams(), function ($script) use ($scriptsEnabled) {
             foreach ($scriptsEnabled as $enabledScript) {
+                if (empty($script['src'])) {
+                    continue;
+                }
                 if (strpos($script['src'], $enabledScript) !== false) {
                     return false;
                 }
