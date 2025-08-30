@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Laravel\Horizon\Repositories\RedisJobRepository;
 use ProcessMaker\Events\MarkArtisanCachesAsInvalid;
 use ProcessMaker\Models\Setting;
@@ -357,5 +359,75 @@ if (!function_exists('json_optimize_decode')) {
     function json_optimize_decode(string $json, bool $assoc = false, int $depth = 512, int $options = 0)
     {
         return JsonOptimizer::decode($json, $assoc, $depth, $options);
+    }
+}
+
+if (!function_exists('buildEnvFileAndArgs')) {
+    /**
+     * Builds a temporary Docker env file from a string of parameters containing `-e KEY=VALUE` entries
+     * and returns a command-line argument string including the env file and any extra parameters.
+     *
+     * Only `-e KEY=VALUE` pairs are written to the env file; all other parameters are preserved separately.
+     * Values with line breaks are sanitized to prevent invalid env files.
+     *
+     * @param string $parameters The string containing Docker parameters, e.g. "-e 'FOO'='bar' --shm-size=256m".
+     * @param int $maxFileAgeMinutes Maximum age of temporary env files before cleanup (default: 60 minutes).
+     *
+     * @return string A command-line string like "--env-file '/path/to/tmp.env' --shm-size=256m".
+     */
+    function buildEnvFileAndArgs(string $parameters, int $maxFileAgeMinutes = 60): string
+    {
+        $tmpDir = storage_path('app/docker_envs');
+        File::ensureDirectoryExists($tmpDir, 0755);
+
+        // Clean old env files
+        collect(File::files($tmpDir))
+            ->filter(fn($file) => now()->diffInMinutes(date('Y-m-d H:i:s', File::lastModified($file))) > $maxFileAgeMinutes)
+            ->each(fn($file) => File::delete($file));
+
+        $envLines = [];
+        $rest = [];
+
+        $normalizePair = function (string $pair): string {
+            if (str_contains($pair, '=')) {
+                [$key, $value] = explode('=', $pair, 2);
+                $key = trim($key, "'"); // Remove quotes only from the key
+
+                // Sanitize value: replace line breaks with literal \n
+                $value = str_replace(["\r\n", "\r", "\n"], '\\n', $value);
+
+                return $key . '=' . $value;
+            }
+            return $pair;
+        };
+
+        // Tokenize input respecting single quotes
+        preg_match_all("/(?:[^\s']+|'[^']*')+/", $parameters, $matches);
+        $tokens = $matches[0];
+
+        $i = 0;
+        while ($i < count($tokens)) {
+            $token = $tokens[$i];
+
+            if ($token === '-e') {
+                $pair = $tokens[++$i] ?? '';
+                if ($pair !== '') {
+                    $envLines[] = $normalizePair($pair);
+                }
+            } elseif (Str::startsWith($token, '-e')) {
+                $envLines[] = $normalizePair(substr($token, 2));
+            } else {
+                // All other parameters (extras) go to $rest
+                $rest[] = $token;
+            }
+
+            $i++;
+        }
+
+        // Create unique temporary env file
+        $tmpFile = $tmpDir . '/' . Str::random(12) . '.env';
+        File::put($tmpFile, implode(PHP_EOL, $envLines) . PHP_EOL);
+
+        return '--env-file ' . escapeshellarg($tmpFile) . ' ' . implode(' ', $rest);
     }
 }
