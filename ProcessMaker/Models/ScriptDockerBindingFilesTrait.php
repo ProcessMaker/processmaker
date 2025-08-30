@@ -60,7 +60,7 @@ trait ScriptDockerBindingFilesTrait
     {
         $cmd = Docker::command($timeout) . sprintf(
             ' run --rm %s %s %s %s 2>&1',
-            buildEnvFileAndArgs($parameters, 1),
+            buildEnvFileAndArgs($parameters, 30),
             $bindings,
             $image,
             $command

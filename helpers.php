@@ -382,8 +382,8 @@ if (!function_exists('buildEnvFileAndArgs')) {
 
         // Clean old env files
         collect(File::files($tmpDir))
-            ->filter(fn($file) => now()->diffInMinutes(date('Y-m-d H:i:s', File::lastModified($file))) > $maxFileAgeMinutes)
-            ->each(fn($file) => File::delete($file));
+            ->filter(fn ($file) => now()->diffInMinutes(date('Y-m-d H:i:s', File::lastModified($file))) > $maxFileAgeMinutes)
+            ->each(fn ($file) => File::delete($file));
 
         $envLines = [];
         $rest = [];
@@ -398,6 +398,7 @@ if (!function_exists('buildEnvFileAndArgs')) {
 
                 return $key . '=' . $value;
             }
+
             return $pair;
         };
 
