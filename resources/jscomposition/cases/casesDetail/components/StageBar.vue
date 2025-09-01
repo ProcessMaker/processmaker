@@ -1,5 +1,5 @@
 <template>
-  <div v-if="percentage > 0 && title !== ''">
+  <div v-if="title !== ''">
     <span class="tw-text-[#3C3C3C] tw-font-sans tw-text-sm tw-font-normal tw-leading-normal tw-tracking-[-0.014em]">
       {{ title }}
     </span>
