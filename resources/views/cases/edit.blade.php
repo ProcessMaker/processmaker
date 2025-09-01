@@ -16,7 +16,7 @@
 @endsection
 
 @section('meta')
-  <meta name="request-id" content="">
+  <meta name="request-id" content="{{ $request->getKey() }}">
 @endsection
 
 @section('content')
