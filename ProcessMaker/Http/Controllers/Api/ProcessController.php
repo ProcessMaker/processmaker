@@ -336,14 +336,20 @@ class ProcessController extends Controller
         $currentUser = Auth::user();
         foreach ($process->start_events as $event) {
             if (count($event['eventDefinitions']) === 0) {
+                $isEmailStartEvent = false;
+
                 if (array_key_exists('config', $event)) {
-                    $webEntry = json_decode($event['config'])->web_entry;
+                    $config = json_decode($event['config']);
+                    $webEntry = $config->web_entry ?? null;
                     $event['webEntry'] = $webEntry;
+
+                    $isEmailStartEvent = is_object($config) && property_exists($config, 'email_start');
                 }
-                if (
-                    $this->checkUserCanStartProcess($event, $currentUser->id, $process, $request) ||
-                    Auth::user()->is_administrator
-                ) {
+
+                $canStart = $this->checkUserCanStartProcess($event, $currentUser->id, $process, $request);
+                $isAdmin = Auth::user()->is_administrator;
+
+                if (($canStart || $isAdmin) && !$isEmailStartEvent) {
                     $startEvents[] = $event;
                 }
             }
