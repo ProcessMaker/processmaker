@@ -75,6 +75,10 @@ const getHighlightedNode = () => getModeler().highlightedNode;
 
 const getDefinition = () => getHighlightedNode().definition;
 
+const saveProcess = () => {
+  window.$modelerApp?.autosaveApiCall?.();
+}
+
 const getConfigFromDefinition = (definition) => {
   let config = {};
   try {
@@ -148,18 +152,22 @@ const removeStageToFlow = () => {
 const onChange = (stages) => {
   updateStagesForAllFlowConfigs(stages);
   saveStagesToApi(stages);
+  saveProcess();
 };
 
 const onUpdate = (stages, index, val, Oldal) => {
   updateStagesForAllFlowConfigs(stages);
+  saveProcess();
 };
 
 const onRemove = (stages, index, removed) => {
   removeStageInAllFlowConfig(removed);
+  saveProcess();
 };
 
 const onClickCheckbox = (stage) => {
   applyStageToFlow(stage);
+  saveProcess();
 };
 
 const onClickSelected = (stage) => {
