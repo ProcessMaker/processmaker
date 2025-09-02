@@ -203,16 +203,19 @@ class ProcessController extends Controller
                             return $eventDefinition['$type'] == 'timerEventDefinition';
                         })->count() > 0;
 
-                // Filter out web entry start events
+                // Filter out web entry start events and email start events
                 $eventIsWebEntry = false;
+                $eventIsEmailStart = false;
                 if (isset($event['config'])) {
                     $config = json_decode($event['config'], true);
                     if (isset($config['web_entry']) && $config['web_entry'] !== null) {
                         $eventIsWebEntry = true;
+                    } elseif (isset($config['email_start']) && $config['email_start'] !== null) {
+                        $eventIsEmailStart = true;
                     }
                 }
 
-                return !$eventIsTimerStart && !$eventIsWebEntry;
+                return !$eventIsTimerStart && !$eventIsWebEntry && !$eventIsEmailStart;
             })->values();
 
             // Get the id bookmark related
@@ -1026,16 +1029,19 @@ class ProcessController extends Controller
                             return $eventDefinition['$type'] == 'timerEventDefinition';
                         })->count() > 0;
 
-                // Filter out web entry start events
+                // Filter out web entry start events and email start events
                 $eventIsWebEntry = false;
+                $eventIsEmailStart = false;
                 if (isset($event['config'])) {
                     $config = json_decode($event['config'], true);
                     if (isset($config['web_entry']) && $config['web_entry'] !== null) {
                         $eventIsWebEntry = true;
+                    } elseif (isset($config['email_start']) && $config['email_start'] !== null) {
+                        $eventIsEmailStart = true;
                     }
                 }
 
-                return !$eventIsTimerStart && !$eventIsWebEntry;
+                return !$eventIsTimerStart && !$eventIsWebEntry && !$eventIsEmailStart;
             })->values();
 
             // Filter all processes that have event definitions (start events like message event, conditional event, signal event, timer event)
