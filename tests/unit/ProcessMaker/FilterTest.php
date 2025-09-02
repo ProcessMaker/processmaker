@@ -206,7 +206,7 @@ class FilterTest extends TestCase
         );
     }
 
-    public function testTaskStatus()
+    public function testTaskStatusSelfservice()
     {
         $user = User::factory()->create();
 
@@ -228,7 +228,33 @@ class FilterTest extends TestCase
         ], ProcessRequestToken::class);
 
         $this->assertEquals(
-            "select * from `process_request_tokens` where ((`id` in ({$selfServiceTask->id})))",
+            "select * from `process_request_tokens` where ((`process_request_tokens`.`id` in ({$selfServiceTask->id})))",
+            $sql
+        );
+    }
+
+    public function testTaskStatusActive()
+    {
+        $user = User::factory()->create();
+
+        $selfServiceTask = ProcessRequestToken::factory()->create([
+            'is_self_service' => false,
+            'status' => 'ACTIVE',
+            'user_id' => $user->id,
+        ]);
+
+        Auth::shouldReceive('user')->andReturn($user);
+
+        $sql = $this->filter([
+            [
+                'subject' => ['type' => 'Status'],
+                'operator' => '=',
+                'value' => 'ACTIVE',
+            ],
+        ], ProcessRequestToken::class);
+
+        $this->assertEquals(
+            "select * from `process_request_tokens` where ((`process_request_tokens`.`status` = 'active' and `process_request_tokens`.`is_self_service` = 0))",
             $sql
         );
     }
