@@ -1,12 +1,14 @@
 <template>
   <div class="tw-flex tw-flex-col tw-space-y-4 tw-h-full tw-w-full">
     <process-collapse-info
+      ref="processCollapseInfo"
       :process="process"
       :ellipsis-permission="ellipsisPermission"
       :my-tasks-columns="myTasksColumns"
       :my-cases-columns="myCasesColumns"
       @toggle-info="toggleInfo"
-      @goBackCategory="emit('goBackCategory')" />
+      @goBackCategory="emit('goBackCategory')"
+    />
 
     <div class="tw-w-full tw-flex tw-flex-row tw-space-x-4">
       <ArrowButtonHome
@@ -17,7 +19,8 @@
         :header="firstStage.header"
         :body="firstStage.body"
         :active="firstStage.active"
-        @click="onClickFirstStage" />
+        @click="onClickFirstStage"
+      />
 
       <ArrowButtonGroup
         v-if="dataStages.length > 0"
@@ -26,7 +29,8 @@
         :data="dataStages"
         active-color="orange"
         color="tangerine"
-        @change="updateDataStages" />
+        @change="updateDataStages"
+      />
 
       <ArrowButtonHome
         v-if="lastStage"
@@ -37,7 +41,8 @@
         :body="lastStage.body"
         :helper="lastStage.helper"
         :active="lastStage.active"
-        @click="onClickLastStage" />
+        @click="onClickLastStage"
+      />
     </div>
 
     <CustomHomeTableSection
@@ -46,13 +51,16 @@
       class="tw-w-full tw-flex tw-flex-col
       tw-overflow-hidden tw-grow tw-p-4 tw-bg-white tw-rounded-lg tw-shadow-md tw-border tw-border-gray-200"
       :advanced-filter="advancedFilter"
-      :process="process" />
+      :process="process"
+    />
 
     <ProcessInfo
       :process="process"
       :show-process-info="showProcessInfo"
       :ellipsis-permission="ellipsisPermission"
-      @update:showProcessInfo="showProcessInfo = $event" />
+      @update:showProcessInfo="showProcessInfo = $event"
+      @closeProcessInfo="closeProcessInfo(processCollapseInfo)"
+    />
   </div>
 </template>
 
@@ -65,9 +73,10 @@ import ArrowButtonGroup from "./ArrowButtonGroup/ArrowButtonGroup.vue";
 import ProcessInfo from "./ProcessInfo.vue";
 import { ellipsisPermission } from "../variables";
 import { getStages } from "../api";
-import { buildStages, updateActiveStage, buildAdvancedFilter} from "./config/metrics";
+import { buildStages, updateActiveStage, buildAdvancedFilter } from "./config/metrics";
+import { closeProcessInfo } from "./utils/processInfo";
 
-const childRef = ref(null)
+const childRef = ref(null);
 
 const props = defineProps({
   process: {
@@ -81,12 +90,15 @@ const emit = defineEmits(["goBackCategory"]);
 const myTasksColumns = ref([]);
 const myCasesColumns = ref([]);
 
+const processCollapseInfo = ref(null);
+
 const stages = ref();
 const dataStages = ref([]);
 const lastStage = ref();
 const firstStage = ref();
 const showProcessInfo = ref(false);
 const dataStagesKey = ref(0);
+
 const toggleInfo = () => {
   showProcessInfo.value = !showProcessInfo.value;
 };
