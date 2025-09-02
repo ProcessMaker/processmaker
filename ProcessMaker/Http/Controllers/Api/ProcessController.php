@@ -484,8 +484,6 @@ class ProcessController extends Controller
         $process->bpmn = $lastVersion->bpmn;
         $process->alternative = $lastVersion->alternative;
         $process->stages = $lastVersion->stages;
-        logger('update alternative:' .  json_encode($lastVersion->alternative));
-        logger('update stages:' .  json_encode($lastVersion->stages));
 
         $rules = Process::rules($process);
         if (!$request->has('name')) {
@@ -2083,6 +2081,7 @@ class ProcessController extends Controller
             $process->stages = $stages;
             $process->save();
         }
+
         return new ApiCollection($stages);
     }
 
