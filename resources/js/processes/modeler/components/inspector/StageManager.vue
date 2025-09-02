@@ -75,8 +75,6 @@ const getDefinition = () => getHighlightedNode().definition;
 
 const saveProcess = () => {
   window.$modelerApp?.autosaveApiCall?.();
-  //Index 0 implies that the component is in a loop; therefore, it will exist anyway, and its existence is validated.
-  window.$modelerApp?.$refs["external-ModalSaveVersion"]?.[0]?.saveModal?.();
 }
 
 const getConfigFromDefinition = (definition) => {
@@ -152,6 +150,7 @@ const removeStageToFlow = () => {
 const onChange = (stages) => {
   updateStagesForAllFlowConfigs(stages);
   saveStagesToApi(stages);
+  saveProcess();
 };
 
 const onUpdate = (stages, index, val, Oldal) => {

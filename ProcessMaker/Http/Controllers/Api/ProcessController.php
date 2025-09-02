@@ -483,6 +483,7 @@ class ProcessController extends Controller
         $lastVersion = $process->getDraftOrPublishedLatestVersion();
         $process->bpmn = $lastVersion->bpmn;
         $process->alternative = $lastVersion->alternative;
+        $process->stages = $lastVersion->stages;
 
         $rules = Process::rules($process);
         if (!$request->has('name')) {
@@ -2066,24 +2067,22 @@ class ProcessController extends Controller
         $stages = $request->input('stages');
 
         if ($alternative === 'B') {
-
-            // Get or create alternative B version
-            $alternativeVersion = ProcessVersion::where('process_id', $process->id)
+            ProcessVersion::where('process_id', $process->id)
                 ->where('alternative', 'B')
-                ->first();
-
-            // Save stages to alternative B version
-            $alternativeVersion->stages = $stages;
-            $alternativeVersion->save();
-
-            return new ApiCollection($alternativeVersion->stages);
+                ->update([
+                    'stages' => $stages,
+                ]);
         } else {
-            // Save stages to main process (alternative A)
+            ProcessVersion::where('process_id', $process->id)
+                ->where('alternative', 'A')
+                ->update([
+                    'stages' => $stages,
+                ]);
             $process->stages = $stages;
             $process->save();
-
-            return new ApiCollection($process->stages);
         }
+
+        return new ApiCollection($stages);
     }
 
     /**
