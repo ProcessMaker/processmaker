@@ -35,6 +35,7 @@ class SyncJsonTranslations extends SyncTranslationsBase
             'action' => 'none',
             'new_keys' => 0,
             'total_keys' => 0,
+            'backup_created' => false,
             'error' => null,
         ];
 
@@ -97,11 +98,18 @@ class SyncJsonTranslations extends SyncTranslationsBase
 
             // Only update if there are new keys
             if ($newKeysCount > 0) {
+                // Create backup before modifying the file
+                $backupCreated = $this->createBackup($filename);
+                $result['backup_created'] = $backupCreated;
+
                 $mergedContent = json_encode($mergedTranslations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
                 if ($this->saveToDestination($filename, $mergedContent)) {
                     $result['action'] = 'merged';
                     $result['new_keys'] = $newKeysCount;
                     $result['total_keys'] = count($mergedTranslations);
+
+                    // Clean up old backups after successful save
+                    $this->cleanupOldBackups($filename);
                 } else {
                     $result['error'] = 'Failed to save merged translations';
                 }

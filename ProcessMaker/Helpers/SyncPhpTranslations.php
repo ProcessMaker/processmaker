@@ -92,6 +92,7 @@ class SyncPhpTranslations extends SyncTranslationsBase
             'action' => 'none',
             'new_keys' => 0,
             'total_keys' => 0,
+            'backup_created' => false,
             'error' => null,
         ];
 
@@ -162,11 +163,18 @@ class SyncPhpTranslations extends SyncTranslationsBase
 
             // Only update if there are new keys
             if ($newKeysCount > 0) {
+                // Create backup before modifying the file
+                $backupCreated = $this->createBackup($destinationPath);
+                $fileResult['backup_created'] = $backupCreated;
+
                 $mergedContent = $this->generatePhpArray($mergedTranslations, $sourceContent);
                 if ($this->saveToDestination($destinationPath, $mergedContent)) {
                     $fileResult['action'] = 'merged';
                     $fileResult['new_keys'] = $newKeysCount;
                     $fileResult['total_keys'] = count($mergedTranslations);
+
+                    // Clean up old backups after successful save
+                    $this->cleanupOldBackups($destinationPath);
                 } else {
                     $fileResult['error'] = 'Failed to save merged translations';
                     $fileResult['action'] = 'error';

@@ -18,12 +18,77 @@ abstract class SyncTranslationsBase
     protected $resourcesCorePath;
 
     /**
+     * Maximum number of backup files to keep
+     */
+    protected const MAX_BACKUPS = 3;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
         $this->langDisk = Storage::disk('lang');
         $this->resourcesCorePath = Config::get('app.resources_core_path') . '/lang';
+    }
+
+    /**
+     * Create a backup of a file before modification
+     *
+     * @param string $filepath
+     * @return bool
+     */
+    protected function createBackup(string $filepath): bool
+    {
+        if (!$this->langDisk->exists($filepath)) {
+            return false;
+        }
+
+        $timestamp = microtime(true);
+        $backupPath = $filepath . '.bak.' . $timestamp;
+
+        $content = $this->langDisk->get($filepath);
+        $success = $this->langDisk->put($backupPath, $content);
+
+        return $success;
+    }
+
+    /**
+     * Clean up old backup files, keeping only the most recent MAX_BACKUPS
+     *
+     * @param string $filepath
+     * @return void
+     */
+    protected function cleanupOldBackups(string $filepath): void
+    {
+        $backupPattern = $filepath . '.bak.*';
+        $backups = [];
+
+        // Get all backup files for this file
+        $files = $this->langDisk->files();
+        foreach ($files as $file) {
+            if (preg_match('/^' . preg_quote($filepath, '/') . '\.bak\.(\d+(?:\.\d+)?)$/', $file, $matches)) {
+                $backups[] = [
+                    'path' => $file,
+                    'timestamp' => (float) $matches[1],
+                ];
+            }
+        }
+
+        // Only cleanup if we have more than MAX_BACKUPS
+        if (count($backups) <= self::MAX_BACKUPS) {
+            return;
+        }
+
+        // Sort by timestamp (oldest first)
+        usort($backups, function ($a, $b) {
+            return $a['timestamp'] - $b['timestamp'];
+        });
+
+        // Remove oldest backups, keeping only the most recent MAX_BACKUPS
+        $toRemove = array_slice($backups, 0, count($backups) - self::MAX_BACKUPS);
+        foreach ($toRemove as $backup) {
+            $this->langDisk->delete($backup['path']);
+        }
     }
 
     /**

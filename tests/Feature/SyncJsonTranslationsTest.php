@@ -255,6 +255,148 @@ class SyncJsonTranslationsTest extends TestCase
     }
 
     /**
+     * Test backup creation when merging translations
+     */
+    public function testBackupCreationWhenMerging()
+    {
+        // Create existing translations in destination
+        $existingTranslations = [
+            'hello' => 'Hello',
+            'world' => 'World',
+        ];
+        Storage::disk('lang')->put('en.json', json_encode($existingTranslations, JSON_PRETTY_PRINT));
+
+        // Create resources-core with additional translations
+        $resourcesCoreTranslations = [
+            'hello' => 'Hello',
+            'world' => 'World',
+            'welcome' => 'Welcome',
+        ];
+        $this->createTestFile('en.json', $resourcesCoreTranslations);
+
+        // Run sync
+        $results = $this->syncTranslations->sync();
+
+        // Assert results
+        $this->assertEquals('merged', $results['en']['action']);
+        $this->assertTrue($results['en']['backup_created']);
+
+        // Verify backup file was created
+        $backupFiles = $this->getBackupFiles('en.json');
+        $this->assertCount(1, $backupFiles);
+
+        // Verify backup content matches original
+        $backupContent = Storage::disk('lang')->get($backupFiles[0]);
+        $backupTranslations = json_decode($backupContent, true);
+        $this->assertEquals($existingTranslations, $backupTranslations);
+    }
+
+    /**
+     * Test no backup creation when no changes are made
+     */
+    public function testNoBackupCreationWhenNoChanges()
+    {
+        // Create existing translations in destination
+        $existingTranslations = [
+            'hello' => 'Hello',
+            'world' => 'World',
+        ];
+        Storage::disk('lang')->put('en.json', json_encode($existingTranslations, JSON_PRETTY_PRINT));
+
+        // Create resources-core with same translations
+        $this->createTestFile('en.json', $existingTranslations);
+
+        // Run sync
+        $results = $this->syncTranslations->sync();
+
+        // Assert results
+        $this->assertEquals('no_changes', $results['en']['action']);
+        $this->assertFalse($results['en']['backup_created']);
+
+        // Verify no backup files were created
+        $backupFiles = $this->getBackupFiles('en.json');
+        $this->assertCount(0, $backupFiles);
+    }
+
+    /**
+     * Test backup rotation (keeping only 3 most recent backups)
+     */
+    public function testBackupRotation()
+    {
+        // Create existing translations in destination
+        $existingTranslations = [
+            'hello' => 'Hello',
+            'world' => 'World',
+        ];
+        Storage::disk('lang')->put('en.json', json_encode($existingTranslations, JSON_PRETTY_PRINT));
+
+        // Run sync multiple times to create multiple backups
+        for ($i = 0; $i < 5; $i++) {
+            // Create resources-core with additional translations (different each time)
+            $resourcesCoreTranslations = [
+                'hello' => 'Hello',
+                'world' => 'World',
+                'welcome' => 'Welcome',
+            ];
+
+            // Add a new key each time to ensure changes are detected
+            $resourcesCoreTranslations['new_key_' . $i] = 'Value ' . $i;
+
+            $this->createTestFile('en.json', $resourcesCoreTranslations);
+
+            $results = $this->syncTranslations->sync();
+
+            // Small delay to ensure different timestamps
+            usleep(1000);
+        }
+
+        // Verify only 3 backup files exist
+        $backupFiles = $this->getBackupFiles('en.json');
+        $this->assertCount(3, $backupFiles);
+    }
+
+    /**
+     * Test backup creation when copying new files
+     */
+    public function testNoBackupCreationWhenCopying()
+    {
+        // Create a test JSON file in resources-core
+        $testTranslations = [
+            'hello' => 'Hello',
+            'world' => 'World',
+        ];
+        $this->createTestFile('en.json', $testTranslations);
+
+        // Run sync
+        $results = $this->syncTranslations->sync();
+
+        // Assert results
+        $this->assertEquals('copied', $results['en']['action']);
+        $this->assertFalse($results['en']['backup_created']);
+
+        // Verify no backup files were created
+        $backupFiles = $this->getBackupFiles('en.json');
+        $this->assertCount(0, $backupFiles);
+    }
+
+    /**
+     * Helper method to get backup files for a given file
+     */
+    private function getBackupFiles(string $filename): array
+    {
+        $backupFiles = [];
+        $files = Storage::disk('lang')->files();
+
+        foreach ($files as $file) {
+            if (preg_match('/^' . preg_quote($filename, '/') . '\.bak\.\d+(?:\.\d+)?$/', $file)) {
+                $backupFiles[] = $file;
+            }
+        }
+
+        return $backupFiles;
+    }
+
+    /**
      * Helper method to create test files
      */
     private function createTestFile(string $filename, array $translations): void
