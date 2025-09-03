@@ -30,9 +30,10 @@ class CommentsSubscriber
         // Check the authenticated user
         $executer_user_id = null;
         $executer_user = __('The System');
-        if (Auth::check()) {
-            $executer_user_id = Auth::user() ? Auth::user()?->id : null;
-            $executer_user = Auth::user() ? Auth::user()?->fullname : __('The System');
+        $user = Auth::user();
+        if ($user) {
+            $executer_user_id = $user->id;
+            $executer_user = $user->fullname;
         }
 
         if (!is_int($token->process_request_id)) {
