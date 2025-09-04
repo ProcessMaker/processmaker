@@ -15,7 +15,20 @@ class SyncJsonTranslations extends SyncTranslationsBase
         $languageCodes = $this->getLanguageCodes();
 
         foreach ($languageCodes as $languageCode) {
-            $results[$languageCode] = $this->processLanguageFile($languageCode);
+            $fileResult = $this->processLanguageFile($languageCode);
+
+            // Handle both old format (direct result) and new format (wrapped result)
+            if (isset($fileResult['result'])) {
+                $results[$languageCode] = $fileResult['result'];
+
+                // If processing en.json and there were other language updates, merge those results
+                if ($languageCode === 'en' && isset($fileResult['otherLanguageResults'])) {
+                    $results[$languageCode]['otherLanguageResults'] = $fileResult['otherLanguageResults'];
+                }
+            } else {
+                // Handle old format for backward compatibility
+                $results[$languageCode] = $fileResult;
+            }
         }
 
         return $results;
@@ -120,13 +133,18 @@ class SyncJsonTranslations extends SyncTranslationsBase
 
             // If processing en.json, sync missing keys to other language files
             if ($languageCode === 'en' && $result['action'] !== 'none' && $result['error'] === null) {
-                $this->syncMissingKeysToOtherLanguages($mergedTranslations);
+                $otherLanguageResults = $this->syncMissingKeysToOtherLanguages($mergedTranslations);
+
+                return [
+                    'result' => $result,
+                    'otherLanguageResults' => $otherLanguageResults,
+                ];
             }
         } catch (\Exception $e) {
             $result['error'] = 'Exception occurred: ' . $e->getMessage();
         }
 
-        return $result;
+        return ['result' => $result];
     }
 
     /**
@@ -152,10 +170,11 @@ class SyncJsonTranslations extends SyncTranslationsBase
      * Sync missing keys from en.json to other language files
      *
      * @param array $enTranslations
-     * @return void
+     * @return array
      */
-    protected function syncMissingKeysToOtherLanguages(array $enTranslations): void
+    protected function syncMissingKeysToOtherLanguages(array $enTranslations): array
     {
+        $results = [];
         $languageFiles = $this->getLanguageFilesFromLangDisk();
 
         foreach ($languageFiles as $languageCode) {
@@ -165,41 +184,66 @@ class SyncJsonTranslations extends SyncTranslationsBase
             }
 
             $filename = $languageCode . '.json';
+            $result = [
+                'filename' => $filename,
+                'action' => 'no_changes',
+                'new_keys' => 0,
+                'total_keys' => 0,
+                'backup_created' => false,
+                'error' => null,
+            ];
 
             // Get existing content
             $existingContent = $this->getDestinationContent($filename);
             if (!$existingContent) {
+                $result['error'] = 'File not found';
+                $results[$languageCode] = $result;
                 continue; // Skip if file doesn't exist
             }
 
             // Decode existing content
             $existingTranslations = json_decode($existingContent, true);
             if (json_last_error() !== JSON_ERROR_NONE) {
+                $result['error'] = 'Invalid JSON in destination file: ' . json_last_error_msg();
+                $results[$languageCode] = $result;
                 continue; // Skip if invalid JSON
             }
 
             // Check for missing keys and add them with empty strings
-            $hasNewKeys = false;
+            $newKeysCount = 0;
             $updatedTranslations = $existingTranslations;
 
             foreach ($enTranslations as $key => $value) {
                 if (!array_key_exists($key, $updatedTranslations)) {
                     $updatedTranslations[$key] = '';
-                    $hasNewKeys = true;
+                    $newKeysCount++;
                 }
             }
 
             // Save updated translations if there are new keys
-            if ($hasNewKeys) {
+            if ($newKeysCount > 0) {
                 // Create backup before modifying the file
-                $this->createBackup($filename);
+                $backupCreated = $this->createBackup($filename);
+                $result['backup_created'] = $backupCreated;
 
                 $updatedContent = json_encode($updatedTranslations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
                 if ($this->saveToDestination($filename, $updatedContent)) {
+                    $result['action'] = 'updated';
+                    $result['new_keys'] = $newKeysCount;
+                    $result['total_keys'] = count($updatedTranslations);
+
                     // Clean up old backups after successful save
                     $this->cleanupOldBackups($filename);
+                } else {
+                    $result['error'] = 'Failed to save updated translations';
                 }
+            } else {
+                $result['total_keys'] = count($updatedTranslations);
             }
+
+            $results[$languageCode] = $result;
         }
+
+        return $results;
     }
 }
