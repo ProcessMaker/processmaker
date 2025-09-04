@@ -51,11 +51,17 @@ class SyncPhpTranslationsTest extends TestCase
             'failed' => 'These credentials do not match our records.',
             'password' => 'The provided password is incorrect.',
             'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
+            'nested' => [
+                'key' => 'Nested key',
+            ],
         ]);
 
         $this->createTestPhpFile('en/validation.php', [
             'required' => 'The :attribute field is required.',
             'email' => 'The :attribute must be a valid email address.',
+            'nested' => [
+                'key' => 'Nested key',
+            ],
         ]);
 
         // Run sync
@@ -73,11 +79,13 @@ class SyncPhpTranslationsTest extends TestCase
         $this->assertTrue(Storage::disk('lang')->exists('en/validation.php'));
 
         // Verify content was copied correctly
-        $authContent = Storage::disk('lang')->get('en/auth.php');
-        $this->assertStringContainsString("'failed' => 'These credentials do not match our records.'", $authContent);
+        $authContent = require Storage::disk('lang')->path('en/auth.php');
+        $this->assertEquals('These credentials do not match our records.', $authContent['failed']);
+        $this->assertEquals('Nested key', $authContent['nested']['key']);
 
-        $validationContent = Storage::disk('lang')->get('en/validation.php');
-        $this->assertStringContainsString("'required' => 'The :attribute field is required.'", $validationContent);
+        $validationContent = require Storage::disk('lang')->path('en/validation.php');
+        $this->assertEquals('The :attribute field is required.', $validationContent['required']);
+        $this->assertEquals('Nested key', $validationContent['nested']['key']);
     }
 
     /**
@@ -89,6 +97,9 @@ class SyncPhpTranslationsTest extends TestCase
         $existingAuth = [
             'failed' => 'Custom failed message.',
             'password' => 'The provided password is incorrect.',
+            'nested' => [
+                'key' => 'Custom nested key value',
+            ],
         ];
         Storage::disk('lang')->put('en/auth.php', $this->generatePhpContent($existingAuth));
 
@@ -98,6 +109,9 @@ class SyncPhpTranslationsTest extends TestCase
             'password' => 'The provided password is incorrect.',
             'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
             'new_key' => 'New translation value.',
+            'nested' => [
+                'key' => 'A different nested key value',
+            ],
         ];
         $this->createTestPhpFile('en/auth.php', $resourcesCoreAuth);
 
@@ -112,10 +126,12 @@ class SyncPhpTranslationsTest extends TestCase
         $this->assertEmpty($results['en']['errors']);
 
         // Verify merged content
-        $mergedContent = Storage::disk('lang')->get('en/auth.php');
-        $this->assertStringContainsString("'failed' => 'Custom failed message.'", $mergedContent); // Preserved custom value
-        $this->assertStringContainsString("'throttle' => 'Too many login attempts. Please try again in :seconds seconds.'", $mergedContent); // New from resources-core
-        $this->assertStringContainsString("'new_key' => 'New translation value.'", $mergedContent); // New from resources-core
+        $mergedContent = require Storage::disk('lang')->path('en/auth.php');
+        $this->assertEquals('Custom failed message.', $mergedContent['failed']); // Preserved custom value
+        $this->assertEquals('Too many login attempts. Please try again in :seconds seconds.', $mergedContent['throttle']); // New from resources-core
+        $this->assertEquals('New translation value.', $mergedContent['new_key']); // New from resources-core
+        // Does not overwrite custom nested key value
+        $this->assertEquals('Custom nested key value', $mergedContent['nested']['key']); // New from resources-core
     }
 
     /**
@@ -453,12 +469,55 @@ class SyncPhpTranslationsTest extends TestCase
         $content = "<?php\n\nreturn [\n";
 
         foreach ($translations as $key => $value) {
-            $content .= "    '{$key}' => '{$value}',\n";
+            $escapedKey = $this->escapePhpString($key);
+            $formattedValue = $this->formatPhpValue($value, 1);
+            $content .= "    {$escapedKey} => {$formattedValue},\n";
         }
 
         $content .= "\n];\n";
 
         return $content;
+    }
+
+    /**
+     * Format PHP value for output (handles strings and arrays)
+     */
+    private function formatPhpValue($value, int $indentLevel = 0): string
+    {
+        if (is_array($value)) {
+            return $this->formatPhpArray($value, $indentLevel);
+        }
+
+        return $this->escapePhpString($value);
+    }
+
+    /**
+     * Format PHP array for output
+     */
+    private function formatPhpArray(array $array, int $indentLevel = 0): string
+    {
+        $indent = str_repeat('    ', $indentLevel);
+        $nextIndent = str_repeat('    ', $indentLevel + 1);
+
+        $content = "[\n";
+
+        foreach ($array as $key => $value) {
+            $escapedKey = $this->escapePhpString($key);
+            $formattedValue = $this->formatPhpValue($value, $indentLevel + 1);
+            $content .= "{$nextIndent}{$escapedKey} => {$formattedValue},\n";
+        }
+
+        $content .= "{$indent}]";
+
+        return $content;
+    }
+
+    /**
+     * Escape PHP string for output
+     */
+    private function escapePhpString(string $string): string
+    {
+        return "'" . str_replace("'", "\\'", $string) . "'";
     }
 
     /**

@@ -240,11 +240,52 @@ class SyncPhpTranslations extends SyncTranslationsBase
 
         foreach ($translations as $key => $value) {
             $escapedKey = $this->escapePhpString($key);
-            $escapedValue = $this->escapePhpString($value);
+            $escapedValue = $this->formatPhpValue($value, 1);
             $content .= "    {$escapedKey} => {$escapedValue},\n";
         }
 
         $content .= "\n];\n";
+
+        return $content;
+    }
+
+    /**
+     * Format PHP value for output (handles strings and arrays)
+     *
+     * @param mixed $value
+     * @param int $indentLevel
+     * @return string
+     */
+    private function formatPhpValue($value, int $indentLevel = 0): string
+    {
+        if (is_array($value)) {
+            return $this->formatPhpArray($value, $indentLevel);
+        }
+
+        return $this->escapePhpString($value);
+    }
+
+    /**
+     * Format PHP array for output
+     *
+     * @param array $array
+     * @param int $indentLevel
+     * @return string
+     */
+    private function formatPhpArray(array $array, int $indentLevel = 0): string
+    {
+        $indent = str_repeat('    ', $indentLevel);
+        $nextIndent = str_repeat('    ', $indentLevel + 1);
+
+        $content = "[\n";
+
+        foreach ($array as $key => $value) {
+            $escapedKey = $this->escapePhpString($key);
+            $formattedValue = $this->formatPhpValue($value, $indentLevel + 1);
+            $content .= "{$nextIndent}{$escapedKey} => {$formattedValue},\n";
+        }
+
+        $content .= "{$indent}]";
 
         return $content;
     }
