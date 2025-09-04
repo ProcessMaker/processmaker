@@ -278,6 +278,7 @@ export default {
         dataColumns: [],
       },
       ScreenDefaultId: [0, "tce-student", "tce-college", "tce-grants"],
+      refresh: false, // This is used to check if the columns are updated
     };
   },
   computed: {
@@ -491,11 +492,15 @@ export default {
             indexImage: null,
             type: "add",
           };
-          if (this.oldScreen !== this.selectedScreen.id) {
+          
+          if (this.oldScreen !== this.selectedScreen.id || this.refresh) {
             ProcessMaker.EventBus.$emit(
               "reloadByNewScreen",
               this.selectedScreenId,
             );
+
+            // Reset the updateColumns flag
+            this.refresh = false;
           }
           ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
           ProcessMaker.EventBus.$emit("getChartId", this.selectedSavedChart.id);
@@ -687,6 +692,7 @@ export default {
         });
     },
     updateColumns(columns, type) {
+      this.refresh = true;
       if (type === "tasks") {
         this.myTasks.currentColumns = columns;
       } else {

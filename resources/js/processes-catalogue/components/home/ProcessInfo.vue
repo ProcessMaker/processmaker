@@ -41,7 +41,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["update:showProcessInfo"]);
+const emit = defineEmits(["update:showProcessInfo", "closeProcessInfo"]);
 const showProcessInfo = computed({
   get() {
     return props.showProcessInfo;
@@ -62,6 +62,7 @@ const closeFullCarousel = () => {
 
 const closeProcessInfo = () => {
   showProcessInfo.value = false;
+  emit("closeProcessInfo");
 };
 
 const showFullCarousel = () => {

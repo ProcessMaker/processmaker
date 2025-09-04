@@ -10,7 +10,6 @@ export default () => {
   const closeSessionModal = getGlobalPMVariable("closeSessionModal");
   const alert = getGlobalPMVariable("alert");
   const user = getGlobalPMVariable("user");
-  const sessionModal = getGlobalPMVariable("sessionModal");
 
   const isSameDevice = (e) => {
     const localDeviceId = Vue.$cookies.get(e.device_variable);
@@ -26,6 +25,7 @@ export default () => {
     const AccountTimeoutWorker = new Worker(timeoutScript);
 
     AccountTimeoutWorker.addEventListener("message", (e) => {
+      const sessionModal = getGlobalPMVariable("sessionModal");
       if (e.data.method === "countdown") {
         sessionModal(
           "Session Warning",

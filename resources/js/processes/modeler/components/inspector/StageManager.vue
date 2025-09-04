@@ -13,13 +13,13 @@
       @onClickCheckbox="onClickCheckbox"
       @onClickSelected="onClickSelected"
     />
-    <AgregationProperty />
+    <AgregationProperty v-if="isTCECustomization" />
   </div>
 </template>
 
 <script setup>
 import {
-  ref, onMounted, getCurrentInstance, nextTick,
+  ref, computed, onMounted, getCurrentInstance, nextTick,
 } from "vue";
 import StageList from "./StageList.vue";
 import AgregationProperty from "./AgregationProperty.vue";
@@ -31,6 +31,8 @@ const props = defineProps({
 const defaultStages = ref([]);
 const currentInstance = getCurrentInstance();
 const isLoading = ref(true);
+
+const isTCECustomization = computed(() => window.ProcessMaker.tceCustomizationEnable);
 
 const loadStagesFromApi = () => {
   const { id } = window.ProcessMaker.modeler.process;
@@ -72,6 +74,10 @@ const getModeler = () => currentInstance.proxy.$root.$children[0].$refs.modeler;
 const getHighlightedNode = () => getModeler().highlightedNode;
 
 const getDefinition = () => getHighlightedNode().definition;
+
+const saveProcess = () => {
+  window.$modelerApp?.autosaveApiCall?.();
+}
 
 const getConfigFromDefinition = (definition) => {
   let config = {};
@@ -146,18 +152,22 @@ const removeStageToFlow = () => {
 const onChange = (stages) => {
   updateStagesForAllFlowConfigs(stages);
   saveStagesToApi(stages);
+  saveProcess();
 };
 
 const onUpdate = (stages, index, val, Oldal) => {
   updateStagesForAllFlowConfigs(stages);
+  saveProcess();
 };
 
 const onRemove = (stages, index, removed) => {
   removeStageInAllFlowConfig(removed);
+  saveProcess();
 };
 
 const onClickCheckbox = (stage) => {
   applyStageToFlow(stage);
+  saveProcess();
 };
 
 const onClickSelected = (stage) => {

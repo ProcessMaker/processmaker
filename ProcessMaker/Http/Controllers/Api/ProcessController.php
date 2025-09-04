@@ -38,6 +38,7 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\Template;
 use ProcessMaker\Nayra\Exceptions\ElementNotFoundException;
+use ProcessMaker\Nayra\Services\FixBpmnSchemaService;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Package\Translations\Models\Language;
 use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
@@ -203,16 +204,19 @@ class ProcessController extends Controller
                             return $eventDefinition['$type'] == 'timerEventDefinition';
                         })->count() > 0;
 
-                // Filter out web entry start events
+                // Filter out web entry start events and email start events
                 $eventIsWebEntry = false;
+                $eventIsEmailStart = false;
                 if (isset($event['config'])) {
                     $config = json_decode($event['config'], true);
                     if (isset($config['web_entry']) && $config['web_entry'] !== null) {
                         $eventIsWebEntry = true;
+                    } elseif (isset($config['email_start']) && $config['email_start'] !== null) {
+                        $eventIsEmailStart = true;
                     }
                 }
 
-                return !$eventIsTimerStart && !$eventIsWebEntry;
+                return !$eventIsTimerStart && !$eventIsWebEntry && !$eventIsEmailStart;
             })->values();
 
             // Get the id bookmark related
@@ -332,14 +336,20 @@ class ProcessController extends Controller
         $currentUser = Auth::user();
         foreach ($process->start_events as $event) {
             if (count($event['eventDefinitions']) === 0) {
+                $isEmailStartEvent = false;
+
                 if (array_key_exists('config', $event)) {
-                    $webEntry = json_decode($event['config'])->web_entry;
+                    $config = json_decode($event['config']);
+                    $webEntry = $config->web_entry ?? null;
                     $event['webEntry'] = $webEntry;
+
+                    $isEmailStartEvent = is_object($config) && property_exists($config, 'email_start');
                 }
-                if (
-                    $this->checkUserCanStartProcess($event, $currentUser->id, $process, $request) ||
-                    Auth::user()->is_administrator
-                ) {
+
+                $canStart = $this->checkUserCanStartProcess($event, $currentUser->id, $process, $request);
+                $isAdmin = Auth::user()->is_administrator;
+
+                if (($canStart || $isAdmin) && !$isEmailStartEvent) {
                     $startEvents[] = $event;
                 }
             }
@@ -386,6 +396,12 @@ class ProcessController extends Controller
         // Validate if exists file bpmn
         if ($request->has('file')) {
             $data['bpmn'] = $request->file('file')->get();
+
+            // Some BPMN definitions created in others modelers doesn't comply BPMN 2.0
+            // So, should be fixed
+            $fixBpmnSchemaService = app(FixBpmnSchemaService::class);
+            $data['bpmn'] = $fixBpmnSchemaService->fix($data['bpmn']);
+
             $request->merge(['bpmn' => $data['bpmn']]);
             $request->offsetUnset('file');
             unset($data['file']);
@@ -483,6 +499,7 @@ class ProcessController extends Controller
         $lastVersion = $process->getDraftOrPublishedLatestVersion();
         $process->bpmn = $lastVersion->bpmn;
         $process->alternative = $lastVersion->alternative;
+        $process->stages = $lastVersion->stages;
 
         $rules = Process::rules($process);
         if (!$request->has('name')) {
@@ -526,6 +543,10 @@ class ProcessController extends Controller
         $process->fill($request->except('notifications', 'task_notifications', 'notification_settings', 'cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id', 'projects'));
         if ($request->has('manager_id')) {
             $process->manager_id = $request->input('manager_id', null);
+        }
+
+        if ($request->has('user_id')) {
+            $process->user_id = $request->input('user_id', null);
         }
 
         if ($request->has('reassignment_permissions')) {
@@ -1026,16 +1047,19 @@ class ProcessController extends Controller
                             return $eventDefinition['$type'] == 'timerEventDefinition';
                         })->count() > 0;
 
-                // Filter out web entry start events
+                // Filter out web entry start events and email start events
                 $eventIsWebEntry = false;
+                $eventIsEmailStart = false;
                 if (isset($event['config'])) {
                     $config = json_decode($event['config'], true);
                     if (isset($config['web_entry']) && $config['web_entry'] !== null) {
                         $eventIsWebEntry = true;
+                    } elseif (isset($config['email_start']) && $config['email_start'] !== null) {
+                        $eventIsEmailStart = true;
                     }
                 }
 
-                return !$eventIsTimerStart && !$eventIsWebEntry;
+                return !$eventIsTimerStart && !$eventIsWebEntry && !$eventIsEmailStart;
             })->values();
 
             // Filter all processes that have event definitions (start events like message event, conditional event, signal event, timer event)
@@ -2066,24 +2090,22 @@ class ProcessController extends Controller
         $stages = $request->input('stages');
 
         if ($alternative === 'B') {
-
-            // Get or create alternative B version
-            $alternativeVersion = ProcessVersion::where('process_id', $process->id)
+            ProcessVersion::where('process_id', $process->id)
                 ->where('alternative', 'B')
-                ->first();
-
-            // Save stages to alternative B version
-            $alternativeVersion->stages = $stages;
-            $alternativeVersion->save();
-
-            return new ApiCollection($alternativeVersion->stages);
+                ->update([
+                    'stages' => $stages,
+                ]);
         } else {
-            // Save stages to main process (alternative A)
+            ProcessVersion::where('process_id', $process->id)
+                ->where('alternative', 'A')
+                ->update([
+                    'stages' => $stages,
+                ]);
             $process->stages = $stages;
             $process->save();
-
-            return new ApiCollection($process->stages);
         }
+
+        return new ApiCollection($stages);
     }
 
     /**

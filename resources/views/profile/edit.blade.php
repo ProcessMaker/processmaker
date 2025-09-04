@@ -161,6 +161,7 @@
                     }
                 ],
                 focusErrors: 'errors',
+                slackConfigurationError: false,
             },
             created() {
               if (this.meta) {
@@ -265,6 +266,9 @@
                     }
                     ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
                         .then((response) => {
+                            // reset the slack configuration error
+                            this.slackConfigurationError = false;
+                            
                             ProcessMaker.alert(this.$t('Your profile was saved.'), 'success')
                             window.ProcessMaker.events.$emit('update-profile-avatar');
                             this.originalEmail = this.formData.email;
@@ -283,6 +287,8 @@
                             // Handle Slack notification errors
                             if (error.response?.data?.message?.includes('Slack')) {
                                 ProcessMaker.alert(this.$t(error.response.data.message), 'danger');
+                                // Mark the configuration error state
+                                this.slackConfigurationError = true;
                                 // Need to ensure the slack toggle is now disabled in the ui
                                 this.handleConnectedAccountToggle(DEFAULT_ACCOUNTS.connectorSlack, false, true);
                             }
@@ -295,6 +301,18 @@
                 },
                 handleConnectedAccountToggle(account, $event, error) {
                   try {
+                    // If this is a Slack account and we're trying to enable it, validate first
+                    if (account.name === 'Slack' && $event === true) {
+                      this.validateSlackToken(account, $event);
+                      return;
+                    }
+                    
+                    // If the Slack account is being manually disabled, reset the configuration error flag
+                    if (account.name === 'Slack' && $event === false && this.slackConfigurationError) {
+                      this.slackConfigurationError = false;
+                      this.hideSlackMessages();
+                    }
+                    
                     let accounts = [];
                     if (this.formData.connected_accounts) {
                       accounts = JSON.parse(this.formData.connected_accounts);
@@ -341,6 +359,243 @@
                     ProcessMaker.alert(this.$t('Error updating connected account'), 'danger');
                   }
                 },
+                validateSlackToken(account, $event) {
+                  // Show loading state
+                  this.showSlackLoadingMessage();
+                  
+                  // Call the validation endpoint
+                  ProcessMaker.apiClient.post('/api/1.0/connector-slack/validate-token')
+                    .then((response) => {
+                      if (response.data.success) {
+                        // Token is valid, proceed with enabling
+                        this.hideSlackMessages();
+                        
+                        this.enableSlackAccount(account, $event);
+                        ProcessMaker.alert(this.$t('Slack configuration validated successfully'), 'success');
+                      } else {
+                        // Token validation failed - check if user is admin based on response
+                        const isAdmin = response.data.isAdmin || false;
+                        this.showSlackErrorMessage(response.data.error || 'Slack configuration validation failed', isAdmin);
+                        // Ensure the toggle stays disabled
+                        account.enabled = false;
+                        this.$forceUpdate();
+                      }
+                    })
+                    .catch((error) => {
+                      console.error('Error validating Slack token:', error);
+                      let errorMessage = 'Error validating Slack configuration';
+                      let isAdmin = false;
+                      
+                      // Handle both HTTP errors and validation errors
+                      if (error.response?.data?.error) {
+                        errorMessage = error.response.data.error;
+                      } else if (error.response?.data?.message) {
+                        errorMessage = error.response.data.message;
+                      }
+                      
+                      // Check if user is admin based on error response
+                      if (error.response?.data?.isAdmin !== undefined) {
+                        isAdmin = error.response.data.isAdmin;
+                      }
+                      
+                      this.showSlackErrorMessage(errorMessage, isAdmin);
+                      // Ensure the toggle stays disabled and is hidden
+                      account.enabled = false;
+                    });
+                },
+                enableSlackAccount(account, $event) {
+                  try {
+                    let accounts = [];
+                    if (this.formData.connected_accounts) {
+                      accounts = JSON.parse(this.formData.connected_accounts);
+                    }
+                    
+                    const index = accounts.findIndex(acc => acc.name === account.name);
+                    if (index !== -1) {
+                      // Update existing account
+                      accounts[index] = { 
+                        ...accounts[index], 
+                        enabled: $event,
+                        enabled_at: $event ? new Date().toISOString() : accounts[index].enabled_at
+                      };
+                    } else {
+                      // Create new account
+                      const newAccount = {
+                        name: account.name,
+                        description: account.description,
+                        icon: account.icon,
+                        enabled: $event,
+                        enabled_at: new Date().toISOString(),
+                        channel_id: null,
+                        ui_options: {
+                          show_toggle: true,
+                          show_edit_modal: false
+                        }
+                      };
+                      accounts.push(newAccount);
+                    }
+                    
+                    // Ensure the JSON is properly formatted
+                    const jsonString = JSON.stringify(accounts, null, 2);
+                
+                    // Verify the JSON is valid
+                    JSON.parse(jsonString);
+                    
+                    this.formData.connected_accounts = jsonString;
+                    this.saveProfileChanges();
+                  } catch (error) {
+                    console.error('Error enabling Slack account:', error);
+                    ProcessMaker.alert(this.$t('Error updating Slack account'), 'danger');
+                  }
+                },
+                showSlackLoadingMessage() {
+                  this.hideSlackMessages();
+                  
+                  const loadingCard = document.createElement('div');
+                  loadingCard.id = 'slack-loading-card';
+                  loadingCard.className = 'alert alert-info mt-3';
+                  loadingCard.innerHTML = `
+                    <div class="d-flex align-items-center">
+                      <i class="fas fa-spinner fa-spin mr-2"></i>
+                      <span>${this.$t('Validating Slack configuration...')}</span>
+                    </div>
+                  `;
+                  
+                  this.insertSlackMessage(loadingCard);
+                },
+                
+                showSlackErrorMessage(message, isAdmin = false) {
+                  this.hideSlackMessages();
+                  
+                  // Mark the configuration error state
+                  this.slackConfigurationError = true;
+                  
+                  const cardContent = isAdmin ? this.getAdminCardContent() : this.getUserCardContent();
+                  const errorCard = this.createErrorCard(cardContent);
+                  
+                  this.insertSlackMessage(errorCard);
+                },
+                
+                // Alternative method
+                showSlackErrorMessageSimple(message, isAdmin = false) {
+                  this.hideSlackMessages();
+                  
+                  const cardContent = isAdmin ? this.getAdminCardContent() : this.getUserCardContent();
+                  const errorCard = this.createErrorCard(cardContent);
+                  
+                  this.insertSlackMessage(errorCard);
+                },
+                
+                getAdminCardContent() {
+                  const envVariables = [
+                    'SLACK_BOT_OAUTH_ACCESS_TOKEN',
+                    'SLACK_OAUTH_ACCESS_TOKEN'
+                  ];
+                  
+                  const envVariablesHTML = envVariables.map(variable => `
+                    <div class="env-variable-box">
+                      <code class="env-variable-name">${variable}</code>
+                      <button class="copy-btn" onclick="this.copyToClipboard('${variable}')" title="${this.$t('Copy to clipboard')}">
+                        <i class="fas fa-copy"></i>
+                      </button>
+                    </div>
+                  `).join('');
+                  
+                  return `
+                    <p class="card-text mb-3">${this.$t('To enable notifications you need to add the appropriate API keys. Please follow these steps to configure it:')}</p>
+                    <ol class="steps-list mb-0">
+                      <li class="mb-2">${this.$t('Go to the')} <strong>${this.$t('Designer')}</strong> ${this.$t('tab and open the')} 
+                        <a href="/designer/environment-variables" target="_blank" class="env-link">
+                          ${this.$t('Environment Variables')} <i class="fas fa-external-link-alt"></i>
+                        </a> ${this.$t('section.')}
+                      </li>
+                      <li class="mb-2">${this.$t('Create the following environment variables with your Slack information:')}</li>
+                      <li class="mb-2">
+                        <div class="env-variables-container">
+                          ${envVariablesHTML}
+                        </div>
+                      </li>
+                      <li class="mb-0">${this.$t('After doing it once it will be available for all your users to enable.')}</li>
+                    </ol>
+                  `;
+                },
+                
+                getUserCardContent() {
+                  return `
+                    <p class="card-text mb-0">${this.$t('Once a PM Admin configures the integration, you will be able to enable this option to receive your PM notifications in Slack.')}</p>
+                  `;
+                },
+                
+                createErrorCard(content) {
+                  const errorCard = document.createElement('div');
+                  errorCard.id = 'slack-error-card';
+                  errorCard.className = 'slack-config-card mt-3';
+                  errorCard.innerHTML = `
+                    <div class="d-flex align-items-start">
+                      <div class="warning-icon mr-3">
+                        <span class="exclamation-mark">!</span>
+                      </div>
+                      <div class="flex-grow-1">
+                        <h6 class="card-title mb-2">${this.$t('Slack API Keys required')}</h6>
+                        ${content}
+                      </div>
+                    </div>
+                  `;
+                  
+                  // Add copy method to global context
+                  window.copyToClipboard = (text) => {
+                    navigator.clipboard.writeText(text).then(() => {
+                      // Feedback visual
+                      const btn = event.target.closest('.copy-btn');
+                      const icon = btn.querySelector('i');
+                      const originalClass = icon.className;
+                      
+                      icon.className = 'fas fa-check text-success';
+                      setTimeout(() => {
+                        icon.className = originalClass;
+                      }, 1000);
+                    });
+                  };
+                  
+                  return errorCard;
+                },
+                hideSlackMessages() {
+                  const existingLoading = document.getElementById('slack-loading-card');
+                  const existingError = document.getElementById('slack-error-card');
+                  
+                  if (existingLoading) {
+                    existingLoading.remove();
+                  }
+                  if (existingError) {
+                    existingError.remove();
+                  }
+                },
+                insertSlackMessage(messageElement) {
+                  // Find the Slack account item in the accounts list
+                  const accountsList = document.querySelector('.accounts-list');
+                  if (!accountsList) {
+                    // Fallback: append to the connected accounts container
+                    const container = document.querySelector('#nav-accounts');
+                    if (container) {
+                      container.appendChild(messageElement);
+                    }
+                    return;
+                  }
+                  
+                  // Find the Slack account item
+                  const slackItem = Array.from(accountsList.children).find(item => {
+                    const accountName = item.querySelector('.account-name');
+                    return accountName && accountName.textContent.trim() === 'Slack';
+                  });
+                  
+                  if (slackItem) {
+                    // Insert the message after the Slack item
+                    slackItem.parentNode.insertBefore(messageElement, slackItem.nextSibling);
+                  } else {
+                    // Fallback: append to the accounts list
+                    accountsList.appendChild(messageElement);
+                  }
+                },
                 formatIcon(icon) {
                   return `/img/connected-account-images/${icon}.svg`;
                 }
@@ -373,6 +628,14 @@
                   if (window.ProcessMaker.packages.includes('connector-slack')) {
                     if (!accounts.some(account => account.name === 'Slack')) {
                       accounts.push(DEFAULT_ACCOUNTS.connectorSlack);
+                    }
+                  }
+
+                  // Apply configuration error state from the reactive property
+                  if (this.slackConfigurationError) {
+                    const slackAccount = accounts.find(account => account.name === 'Slack');
+                    if (slackAccount) {
+                      slackAccount.hasConfigurationError = true;
                     }
                   }
 
@@ -498,4 +761,111 @@
         }
       });
     </script>
+
+<style>
+  /* Slack Configuration Card Styles */
+  .slack-config-card {
+    background-color: #fdfcf0;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .warning-icon {
+    width: 24px;
+    height: 24px;
+    background-color: #ffc107;
+    border: 1px solid #e0a800;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .exclamation-mark {
+    color: #856404;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .card-title {
+    color: #333;
+    font-weight: bold;
+    font-size: 16px;
+    margin: 0;
+  }
+
+  .card-text {
+    color: #333;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .steps-list {
+    color: #333;
+    font-size: 14px;
+    line-height: 1.5;
+    padding-left: 20px;
+  }
+
+  .steps-list li {
+    margin-bottom: 8px;
+  }
+
+  .env-link {
+    color: #007bff;
+    text-decoration: underline;
+  }
+
+  .env-link:hover {
+    color: #0056b3;
+    text-decoration: underline;
+  }
+
+  .env-variables-container {
+    margin-top: 8px;
+  }
+
+  .env-variable-box {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .env-variable-name {
+    color: #333;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+
+  .copy-btn {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+
+  .copy-btn:hover {
+    background-color: #e9ecef;
+  }
+
+  .copy-btn i {
+    font-size: 12px;
+  }
+</style>
 @endsection

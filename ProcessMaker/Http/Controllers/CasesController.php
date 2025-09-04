@@ -53,9 +53,9 @@ class CasesController extends Controller
         // "Initialload.js" file causes an issue related to SVG in the modeler
         // The other scripts are not needed in the case detail
         $scriptsDisabled = ['package-slideshow', 'package-process-optimization', 'package-ab-testing', 'package-testing', 'initialLoad'];
-        $managerModelerScripts = array_filter($managerModeler->getScripts(), function ($script) use ($scriptsDisabled) {
+        $managerModelerScripts = array_filter($managerModeler->getScriptWithParams(), function ($script) use ($scriptsDisabled) {
             foreach ($scriptsDisabled as $enabledScript) {
-                if (strpos($script, $enabledScript) !== false) {
+                if (strpos($script['src'], $enabledScript) !== false) {
                     return false;
                 }
             }
@@ -85,16 +85,9 @@ class CasesController extends Controller
             $request->summary_screen = $request->getSummaryScreen();
         }
         // Stage information
-        if ($request->status === 'COMPLETED') {
-            $currentStages = [
-                'stage_name' => __('Completed'),
-            ];
-            $progressStage = 100.0; // 100% completed
-        } else {
-            $currentStages = $this->formatCurrentStage($request->last_stage_id, $request->last_stage_name);
-            $allStages = $this->getStagesByProcessId($request->process_id);
-            $progressStage = calculateProgressById($request->last_stage_id, $allStages);
-        }
+        $stageInfo = $this->getStageInfoByStatus($request);
+        $currentStages = $stageInfo['currentStages'];
+        $progressStage = $stageInfo['progressStage'];
         // Load the screen configured in "Request Detail Screen"
         $request->request_detail_screen = Screen::find($request->process->request_detail_screen_id);
         // The user canCancel if has the processPermission and the case has only one request
@@ -214,5 +207,53 @@ class CasesController extends Controller
         }
 
         return $currentStages;
+    }
+
+    /**
+     * Get stage information based on request status
+     *
+     * @param ProcessRequest $request
+     * @return array
+     */
+    private function getStageInfoByStatus(ProcessRequest $request): array
+    {
+        switch ($request->status) {
+            case 'COMPLETED':
+                return [
+                    'currentStages' => [
+                        'stage_name' => __('Completed'),
+                    ],
+                    'progressStage' => 100.0, // 100% completed
+                ];
+            case 'CANCELED':
+                return [
+                    'currentStages' => [
+                        'stage_name' => __('Canceled'),
+                    ],
+                    'progressStage' => 0.0, // 0% progress when canceled
+                ];
+            case 'ERROR':
+                return [
+                    'currentStages' => [
+                        'stage_name' => __('Error'),
+                    ],
+                    'progressStage' => 0.0, // 0% progress when error
+                ];
+            default:
+                $currentStages = $this->formatCurrentStage($request->last_stage_id, $request->last_stage_name);
+                $allStages = $this->getStagesByProcessId($request->process_id);
+                $progressStage = calculateProgressById($request->last_stage_id, $allStages);
+                if (empty($currentStages)) {
+                    $currentStages = [
+                        'stage_name' => __('In Progress'),
+                    ];
+                    $progressStage = 50.0;
+                }
+
+                return [
+                    'currentStages' => $currentStages,
+                    'progressStage' => $progressStage,
+                ];
+        }
     }
 }
