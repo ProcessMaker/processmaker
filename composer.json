@@ -109,11 +109,11 @@
             "build": "8c08f440",
             "cicd-enabled": true,
             "custom": {
-                "package-ellucian-ethos": "1.19.5",
+                "package-ellucian-ethos": "1.19.7",
                 "package-plaid": "1.6.0",
                 "paypal-package": "dev-fall",
                 "pps-adsync": "dev-fall",
-                "ps_ethos": "dev-fall",
+                "ps_ethos": "dev-main",
                 "package-irisbank": "dev-fall",
                 "package-pinnacle": "1.0.9",
                 "package-esign": "dev-fall",
