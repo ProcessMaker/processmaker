@@ -117,10 +117,89 @@ class SyncJsonTranslations extends SyncTranslationsBase
                 $result['action'] = 'no_changes';
                 $result['total_keys'] = count($mergedTranslations);
             }
+
+            // If processing en.json, sync missing keys to other language files
+            if ($languageCode === 'en' && $result['action'] !== 'none' && $result['error'] === null) {
+                $this->syncMissingKeysToOtherLanguages($mergedTranslations);
+            }
         } catch (\Exception $e) {
             $result['error'] = 'Exception occurred: ' . $e->getMessage();
         }
 
         return $result;
+    }
+
+    /**
+     * Get all language files from the lang disk
+     *
+     * @return array
+     */
+    protected function getLanguageFilesFromLangDisk(): array
+    {
+        $languageFiles = [];
+        $files = $this->langDisk->files();
+
+        foreach ($files as $file) {
+            if (preg_match('/^([a-z]{2})\.json$/', $file, $matches)) {
+                $languageFiles[] = $matches[1];
+            }
+        }
+
+        return $languageFiles;
+    }
+
+    /**
+     * Sync missing keys from en.json to other language files
+     *
+     * @param array $enTranslations
+     * @return void
+     */
+    protected function syncMissingKeysToOtherLanguages(array $enTranslations): void
+    {
+        $languageFiles = $this->getLanguageFilesFromLangDisk();
+
+        foreach ($languageFiles as $languageCode) {
+            // Skip en.json as it's the source
+            if ($languageCode === 'en') {
+                continue;
+            }
+
+            $filename = $languageCode . '.json';
+
+            // Get existing content
+            $existingContent = $this->getDestinationContent($filename);
+            if (!$existingContent) {
+                continue; // Skip if file doesn't exist
+            }
+
+            // Decode existing content
+            $existingTranslations = json_decode($existingContent, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                continue; // Skip if invalid JSON
+            }
+
+            // Check for missing keys and add them with empty strings
+            $hasNewKeys = false;
+            $updatedTranslations = $existingTranslations;
+
+            foreach ($enTranslations as $key => $value) {
+                if (!array_key_exists($key, $updatedTranslations)) {
+                    $updatedTranslations[$key] = '';
+                    $hasNewKeys = true;
+                }
+            }
+
+            // Save updated translations if there are new keys
+            if ($hasNewKeys) {
+                // Create backup before modifying the file
+                $this->createBackup($filename);
+
+                $updatedContent = json_encode($updatedTranslations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                if ($this->saveToDestination($filename, $updatedContent)) {
+                    // Clean up old backups after successful save
+                    $this->cleanupOldBackups($filename);
+                }
+            }
+        }
     }
 }

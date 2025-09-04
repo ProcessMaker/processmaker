@@ -20,7 +20,7 @@ abstract class SyncTranslationsBase
     /**
      * Maximum number of backup files to keep
      */
-    protected const MAX_BACKUPS = 3;
+    protected const MAX_BACKUPS = 5;
 
     /**
      * Constructor

@@ -78,10 +78,12 @@ class SyncJsonTranslationsTest extends TestCase
     {
         // Create existing translations in destination
         $existingTranslations = [
-            'hello' => 'Hello',
+            'hello' => 'Hello Customized',
             'world' => 'World',
         ];
-        Storage::disk('lang')->put('en.json', json_encode($existingTranslations, JSON_PRETTY_PRINT));
+        foreach (['en', 'es', 'fr', 'de'] as $language) {
+            Storage::disk('lang')->put($language . '.json', json_encode($existingTranslations, JSON_PRETTY_PRINT));
+        }
 
         // Create resources-core with additional translations
         $resourcesCoreTranslations = [
@@ -106,12 +108,33 @@ class SyncJsonTranslationsTest extends TestCase
         $mergedContent = Storage::disk('lang')->get('en.json');
         $mergedTranslations = json_decode($mergedContent, true);
         $expectedMerged = [
-            'hello' => 'Hello',
+            'hello' => 'Hello Customized',
             'world' => 'World',
             'welcome' => 'Welcome',
             'goodbye' => 'Goodbye',
         ];
         $this->assertEquals($expectedMerged, $mergedTranslations);
+
+        // Verify that the other language files have the new keys
+        // with empty values because the file being merged is en.json.
+
+        $esTranslations = Storage::disk('lang')->get('es.json');
+        $esTranslations = json_decode($esTranslations, true);
+        $this->assertEquals('World', $esTranslations['world']);
+        $this->assertEquals('', $esTranslations['welcome']);
+        $this->assertEquals('', $esTranslations['goodbye']);
+
+        $frTranslations = Storage::disk('lang')->get('fr.json');
+        $frTranslations = json_decode($frTranslations, true);
+        $this->assertEquals('World', $esTranslations['world']);
+        $this->assertEquals('', $frTranslations['welcome']);
+        $this->assertEquals('', $frTranslations['goodbye']);
+
+        $deTranslations = Storage::disk('lang')->get('de.json');
+        $deTranslations = json_decode($deTranslations, true);
+        $this->assertEquals('World', $esTranslations['world']);
+        $this->assertEquals('', $deTranslations['welcome']);
+        $this->assertEquals('', $deTranslations['goodbye']);
     }
 
     /**
@@ -264,7 +287,9 @@ class SyncJsonTranslationsTest extends TestCase
             'hello' => 'Hello',
             'world' => 'World',
         ];
-        Storage::disk('lang')->put('en.json', json_encode($existingTranslations, JSON_PRETTY_PRINT));
+        foreach (['en', 'es', 'fr', 'de'] as $language) {
+            Storage::disk('lang')->put($language . '.json', json_encode($existingTranslations, JSON_PRETTY_PRINT));
+        }
 
         // Create resources-core with additional translations
         $resourcesCoreTranslations = [
@@ -289,6 +314,16 @@ class SyncJsonTranslationsTest extends TestCase
         $backupContent = Storage::disk('lang')->get($backupFiles[0]);
         $backupTranslations = json_decode($backupContent, true);
         $this->assertEquals($existingTranslations, $backupTranslations);
+
+        // Also, verify that the other language files have backups
+        $esBackupFiles = $this->getBackupFiles('es.json');
+        $this->assertCount(1, $esBackupFiles);
+
+        $frBackupFiles = $this->getBackupFiles('fr.json');
+        $this->assertCount(1, $frBackupFiles);
+
+        $deBackupFiles = $this->getBackupFiles('de.json');
+        $this->assertCount(1, $deBackupFiles);
     }
 
     /**
@@ -331,7 +366,7 @@ class SyncJsonTranslationsTest extends TestCase
         Storage::disk('lang')->put('en.json', json_encode($existingTranslations, JSON_PRETTY_PRINT));
 
         // Run sync multiple times to create multiple backups
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < 7; $i++) {
             // Create resources-core with additional translations (different each time)
             $resourcesCoreTranslations = [
                 'hello' => 'Hello',
@@ -352,7 +387,7 @@ class SyncJsonTranslationsTest extends TestCase
 
         // Verify only 3 backup files exist
         $backupFiles = $this->getBackupFiles('en.json');
-        $this->assertCount(3, $backupFiles);
+        $this->assertCount(5, $backupFiles);
     }
 
     /**

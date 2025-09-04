@@ -378,7 +378,7 @@ class SyncPhpTranslationsTest extends TestCase
         Storage::disk('lang')->put('en/auth.php', $this->generatePhpContent($existingTranslations));
 
         // Run sync multiple times to create multiple backups
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < 7; $i++) {
             // Create resources-core with additional translations (different each time)
             $resourcesCoreTranslations = [
                 'failed' => 'These credentials do not match our records.',
@@ -399,10 +399,10 @@ class SyncPhpTranslationsTest extends TestCase
 
         // Verify only 3 backup files exist
         $backupFiles = $this->getBackupFiles('en/auth.php');
-        $this->assertCount(3, $backupFiles);
+        $this->assertCount(5, $backupFiles);
 
         // Verify the backup files have different timestamps
-        $this->assertEquals(3, count(array_unique($backupFiles)));
+        $this->assertEquals(5, count(array_unique($backupFiles)));
     }
 
     /**
