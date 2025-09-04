@@ -64,7 +64,7 @@ abstract class SyncTranslationsBase
         $backups = [];
 
         // Get all backup files for this file
-        $files = $this->langDisk->files();
+        $files = $this->langDisk->allFiles();
         foreach ($files as $file) {
             if (preg_match('/^' . preg_quote($filepath, '/') . '\.bak\.(\d+(?:\.\d+)?)$/', $file, $matches)) {
                 $backups[] = [

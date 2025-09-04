@@ -61,10 +61,6 @@ class SyncPhpTranslationsTest extends TestCase
         // Run sync
         $results = $this->syncTranslations->sync();
 
-        // Debug: Print sync results
-        echo 'Sync results: ';
-        var_dump($results);
-
         // Assert results
         $this->assertArrayHasKey('en', $results);
         $this->assertEquals(2, $results['en']['files_processed']);
@@ -300,14 +296,6 @@ class SyncPhpTranslationsTest extends TestCase
         // Try using a flat filename to avoid nested path issues
         Storage::disk('lang')->put('en/auth.php', $this->generatePhpContent($existingTranslations));
 
-        // Debug: Check if the file was created
-        echo 'File exists after creation: ' . (Storage::disk('lang')->exists('en/auth.php') ? 'yes' : 'no') . "\n";
-        echo 'File content: ' . Storage::disk('lang')->get('en/auth.php') . "\n";
-
-        // Debug: Check what files exist before sync
-        echo 'Files before sync: ';
-        var_dump(Storage::disk('lang')->files());
-
         // Create resources-core with additional translations
         $resourcesCoreTranslations = [
             'failed' => 'These credentials do not match our records.',
@@ -319,23 +307,12 @@ class SyncPhpTranslationsTest extends TestCase
         // Run sync
         $results = $this->syncTranslations->sync();
 
-        // Debug: Check what files exist after sync
-        echo 'Files after sync: ';
-        var_dump(Storage::disk('lang')->files());
-
         // Assert results
-        dump($results);
         $this->assertEquals('merged', $results['en']['details']['auth.php']['action']);
         $this->assertTrue($results['en']['details']['auth.php']['backup_created']);
 
         // Verify backup file was created
         $backupFiles = $this->getBackupFiles('en/auth.php');
-
-        // Debug: Print all files in storage
-        echo 'All files in storage: ';
-        var_dump(Storage::disk('lang')->files());
-        echo 'Backup files found: ';
-        var_dump($backupFiles);
 
         $this->assertCount(1, $backupFiles);
 
@@ -409,15 +386,7 @@ class SyncPhpTranslationsTest extends TestCase
         $this->assertCount(3, $backupFiles);
 
         // Verify the backup files have different timestamps
-        $timestamps = [];
-        foreach ($backupFiles as $backupFile) {
-            if (preg_match('/\.bak\.(\d+)$/', $backupFile, $matches)) {
-                $timestamps[] = (int) $matches[1];
-            }
-        }
-
-        $this->assertCount(3, $timestamps);
-        $this->assertEquals(count($timestamps), count(array_unique($timestamps)));
+        $this->assertEquals(3, count(array_unique($backupFiles)));
     }
 
     /**
@@ -449,7 +418,7 @@ class SyncPhpTranslationsTest extends TestCase
     private function getBackupFiles(string $filepath): array
     {
         $backupFiles = [];
-        $files = Storage::disk('lang')->files();
+        $files = Storage::disk('lang')->allFiles();
 
         foreach ($files as $file) {
             if (preg_match('/^' . preg_quote($filepath, '/') . '\.bak\.\d+(?:\.\d+)?$/', $file)) {
