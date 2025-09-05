@@ -27,7 +27,7 @@ class TenantsCreate extends Command
     {--storage-folder=} 
     {--lang-folder=} 
     {--app-key=}
-    {--skip-initialize-storage-folder}
+    {--skip-initialize-folders}
     {--skip-setup-notifications}';
 
     /**
@@ -140,6 +140,15 @@ class TenantsCreate extends Command
             }
         }
 
+        if (!$this->option('skip-initialize-folders')) {
+            $cmd = sprintf(
+                "rsync -azv --ignore-existing --exclude='tenant_*' %s %s",
+                escapeshellarg($sourceLangPath . '/'),
+                escapeshellarg($tenantLangPath)
+            );
+            Process::run($cmd, $infoCallback)->throw();
+        }
+
         $subfolders = [
             'app',
             'app/private',
@@ -161,7 +170,7 @@ class TenantsCreate extends Command
             'api-docs',
         ];
 
-        if (!$this->option('skip-initialize-storage-folder')) {
+        if (!$this->option('skip-initialize-folders')) {
             foreach ($subfolders as $subfolder) {
                 if (!File::isDirectory($tenantStoragePath . '/' . $subfolder)) {
                     mkdir($tenantStoragePath . '/' . $subfolder, 0755, true);

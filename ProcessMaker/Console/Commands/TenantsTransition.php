@@ -130,7 +130,7 @@ class TenantsTransition extends Command
             '--password' => $envVars['DB_PASSWORD'],
             '--app-key' => $envVars['APP_KEY'],
             '--skip-setup-notifications' => true,
-            '--skip-initialize-storage-folder' => true,
+            '--skip-initialize-folders' => true,
         ];
 
         $exitCode = Artisan::call('tenants:create', $command, $this->output);

@@ -100,7 +100,7 @@ class TenantsEnable extends Command
             '--name' => config('app.name'),
             '--app-key' => config('app.key'),
             '--skip-setup-notifications' => true,
-            '--skip-initialize-storage-folder' => true,
+            '--skip-initialize-folders' => true,
         ], $this->output);
 
         if ($exitCode !== 0) {
