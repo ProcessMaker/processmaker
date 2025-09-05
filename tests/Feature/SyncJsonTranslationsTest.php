@@ -104,24 +104,26 @@ class SyncJsonTranslationsTest extends TestCase
         $this->assertEquals(4, $results['en']['total_keys']);
         $this->assertNull($results['en']['error']);
 
+        $otherLanguageResults = $results['en']['otherLanguageResults'];
+
         // Make sure the results show the other language files were updated
-        $this->assertArrayHasKey('es', $results);
-        $this->assertEquals('updated', $results['es']['action']);
-        $this->assertEquals(2, $results['es']['new_keys']);
-        $this->assertEquals(4, $results['es']['total_keys']);
-        $this->assertNull($results['es']['error']);
+        $this->assertArrayHasKey('es', $otherLanguageResults);
+        $this->assertEquals('updated', $otherLanguageResults['es']['action']);
+        $this->assertEquals(2, $otherLanguageResults['es']['new_keys']);
+        $this->assertEquals(4, $otherLanguageResults['es']['total_keys']);
+        $this->assertNull($otherLanguageResults['es']['error']);
 
-        $this->assertArrayHasKey('fr', $results);
-        $this->assertEquals('updated', $results['fr']['action']);
-        $this->assertEquals(2, $results['fr']['new_keys']);
-        $this->assertEquals(4, $results['fr']['total_keys']);
-        $this->assertNull($results['fr']['error']);
+        $this->assertArrayHasKey('fr', $otherLanguageResults);
+        $this->assertEquals('updated', $otherLanguageResults['fr']['action']);
+        $this->assertEquals(2, $otherLanguageResults['fr']['new_keys']);
+        $this->assertEquals(4, $otherLanguageResults['fr']['total_keys']);
+        $this->assertNull($otherLanguageResults['fr']['error']);
 
-        $this->assertArrayHasKey('de', $results);
-        $this->assertEquals('updated', $results['de']['action']);
-        $this->assertEquals(2, $results['de']['new_keys']);
-        $this->assertEquals(4, $results['de']['total_keys']);
-        $this->assertNull($results['de']['error']);
+        $this->assertArrayHasKey('de', $otherLanguageResults);
+        $this->assertEquals('updated', $otherLanguageResults['de']['action']);
+        $this->assertEquals(2, $otherLanguageResults['de']['new_keys']);
+        $this->assertEquals(4, $otherLanguageResults['de']['total_keys']);
+        $this->assertNull($otherLanguageResults['de']['error']);
 
         // Verify merged content
         $mergedContent = Storage::disk('lang')->get('en.json');
