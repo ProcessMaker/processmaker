@@ -18,7 +18,17 @@ class TenantsCreate extends Command
      *
      * @var string
      */
-    protected $signature = 'tenants:create {--name=} {--url=} {--database=} {--username=} {--password=} {--storage-folder=} {--lang-folder=} {--app-key=}';
+    protected $signature = 'tenants:create 
+    {--name=} 
+    {--url=} 
+    {--database=} 
+    {--username=} 
+    {--password=} 
+    {--storage-folder=} 
+    {--lang-folder=} 
+    {--app-key=}
+    {--skip-initialize-storage-folder}
+    {--skip-setup-notifications}';
 
     /**
      * The console command description.
@@ -41,7 +51,7 @@ class TenantsCreate extends Command
         };
 
         // Check if rsync exists
-        Process::run('which rsync', $infoCallback)->throw();
+        Process::run('which rsync')->throw();
 
         $requiredOptions = ['name', 'database', 'url'];
 
@@ -115,7 +125,6 @@ class TenantsCreate extends Command
 
                     return 1;
                 } else {
-                    // rename($langFolderOption, $tenantLangPath);
                     $cmd = "rsync -avz --exclude='tenant_*' " . $langFolderOption . '/ ' . $tenantLangPath;
                     Process::run($cmd, $infoCallback)->throw();
                 }
@@ -130,13 +139,6 @@ class TenantsCreate extends Command
                 mkdir($tenantLangPath, 0755, true);
             }
         }
-
-        $cmd = sprintf(
-            "rsync -azv --ignore-existing --exclude='tenant_*' %s %s",
-            escapeshellarg($sourceLangPath . '/'),
-            escapeshellarg($tenantLangPath)
-        );
-        Process::run($cmd, $infoCallback)->throw();
 
         $subfolders = [
             'app',
@@ -159,9 +161,11 @@ class TenantsCreate extends Command
             'api-docs',
         ];
 
-        foreach ($subfolders as $subfolder) {
-            if (!File::isDirectory($tenantStoragePath . '/' . $subfolder)) {
-                mkdir($tenantStoragePath . '/' . $subfolder, 0755, true);
+        if (!$this->option('skip-initialize-storage-folder')) {
+            foreach ($subfolders as $subfolder) {
+                if (!File::isDirectory($tenantStoragePath . '/' . $subfolder)) {
+                    mkdir($tenantStoragePath . '/' . $subfolder, 0755, true);
+                }
             }
         }
 
@@ -179,20 +183,15 @@ class TenantsCreate extends Command
         // Setup database
         DB::connection('landlord')->statement("CREATE DATABASE IF NOT EXISTS `{$this->option('database')}`");
 
-        // Hold off on this for now.
-        // $this->tenantArtisan('tenant:storage-link', $tenant->id);
-
-        // Must be run after migrations so skip it. (provider somewhere complains about a table missing)
-        // $this->tenantArtisan('passport:keys --force', $tenant->id);
-
-        $this->info("Empty tenant created.\n");
-        $this->info("Unless you ran `tenants:enable --migrate`, you will need to run the following using TENANT={$tenant->id} env prefix");
-        $this->line('- Run migrations');
-        $this->line('- Seed the database');
-        $this->line('- Run the install command for each package');
-        $this->line('- Run artisan upgrade');
-        $this->line('- Install passport with artisan passport:install');
-        $this->info("For example, `TENANT={$tenant->id} php artisan migrate:fresh --seed`");
+        $this->info("Empty tenant created. ID: {$tenant->id}");
+        if (!$this->option('skip-setup-notifications')) {
+            $this->info("You will need to do the following using TENANT={$tenant->id} env prefix");
+            $this->line('- Run migrations and seed the database');
+            $this->line('- Run the install command for each package');
+            $this->line('- Run artisan upgrade');
+            $this->line('- Install passport by calling passport:install');
+            $this->info("For example, `TENANT={$tenant->id} php artisan migrate:fresh --seed`");
+        }
     }
 
     private function tenantArtisan($command, $tenantId)

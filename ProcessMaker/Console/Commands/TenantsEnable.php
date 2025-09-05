@@ -99,6 +99,8 @@ class TenantsEnable extends Command
             '--lang-folder' => lang_path(),
             '--name' => config('app.name'),
             '--app-key' => config('app.key'),
+            '--skip-setup-notifications' => true,
+            '--skip-initialize-storage-folder' => true,
         ], $this->output);
 
         if ($exitCode !== 0) {
