@@ -85,6 +85,12 @@ class AuthServiceProvider extends ServiceProvider
 
     public function defineGates()
     {
+        // No need to run this in console and it generates
+        // errors in multitenancy mode
+        if (app()->runningInConsole()) {
+            return;
+        }
+
         try {
             // Cache the permissions for a day to improve performance
             $permissions = Cache::remember('permissions', 86400, function () {
