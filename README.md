@@ -425,11 +425,11 @@ npm run dev
 ```
 
 ### RECOMMENDATIONS ABOUT ICONS
-1. We recommend using the file name with '-' for example: 
+1. We recommend using the file name with '-' for example:
 ```text
 "left-arrow.svg"
 ```
-2. To use the icon, we should use the same name of the file,  for example: 
+2. To use the icon, we should use the same name of the file,  for example:
 ```text
 File name: "my-jonas-custom-icon.svg"
 How to use icon: <i class="fp-my-jonas-custom-icon" />
@@ -470,7 +470,7 @@ Now you can use the `Metrics` Facade anywhere in your application to manage metr
 ### **1. Counter**
 A **Counter** only **increases** over time or resets to zero. It is used for cumulative events.
 
-- Total number of HTTP requests:  
+- Total number of HTTP requests:
   ```php
   $counter = Metrics::counter('http_requests_total', 'Total HTTP requests', ['method', 'status']);
   $counter->inc(['GET', '200']);
@@ -481,7 +481,7 @@ A **Counter** only **increases** over time or resets to zero. It is used for cum
 ### **2. Gauge**
 A **Gauge** can **increase or decrease**. It is used for values that fluctuate over time.
 
-- Current number of active jobs in a queue:  
+- Current number of active jobs in a queue:
   ```php
   $gauge = Metrics::gauge('active_jobs', 'Number of active jobs', ['queue']);
   $gauge->set(10, ['queue1']);
@@ -491,7 +491,7 @@ A **Gauge** can **increase or decrease**. It is used for values that fluctuate o
 ### **3. Histogram**
 A **Histogram** measures **value distributions** by organizing them into buckets. It is ideal for latency or size measurements.
 
-- Duration of HTTP requests:  
+- Duration of HTTP requests:
   ```php
   $histogram = Metrics::histogram('http_request_duration_seconds', 'HTTP request duration', ['method'], [0.1, 0.5, 1, 5, 10]);
   $histogram->observe(0.3, ['GET']);
@@ -553,7 +553,7 @@ ProcessMaker can now be set up as a multitenant application.
 ## Using `valet share` for the script microservice
 
 In the landlord tenant's table you will need to set the domain to the ngroc domain (without https://) and, in the config, column
-you will need to set the `app.url` to the ngroc domain (including the https://)  
+you will need to set the `app.url` to the ngroc domain (including the https://)
 
 ## Add another tenant
 
@@ -614,4 +614,4 @@ Distributed under the [AGPL Version 3](https://www.gnu.org/licenses/agpl-3.0.en.
 
 ProcessMaker \(C\) 2002 - 2020 ProcessMaker Inc.
 
-For further information visit: [http://www.processmaker.com/](http://www.processmaker.com/) 
+For further information visit: [http://www.processmaker.com/](http://www.processmaker.com/)
