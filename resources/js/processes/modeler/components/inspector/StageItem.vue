@@ -13,9 +13,6 @@
           @input="onInput"
           @paste="onPaste"
         >
-        <small class="tw-text-gray-500 tw-text-xs">
-          {{ localName.length }}/200 {{ t('characters') }}
-        </small>
       </template>
       <template v-else>
         <div
