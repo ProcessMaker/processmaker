@@ -135,13 +135,14 @@
                 "package-zj-sonymusic": "dev-fall",
                 "pm-platform": "dev-fall",
                 "package-zj-nas": "dev-fall",
-                "package-plg": "0.14.0",
                 "package-accessibility": "1.0.0",
                 "package-zj-birmingham": "dev-main",
                 "package-tce": "dev-master",
                 "package-case-overview": "dev-main"
-            },
+            },,
             "enterprise": {
+                "package-plg": "0.14.0",
+                "package-sis-integration": "epic/FOUR-25787-b",
                 "connector-docusign": "1.11.0",
                 "connector-idp": "1.14.0",
                 "connector-pdf-print": "1.23.0",
