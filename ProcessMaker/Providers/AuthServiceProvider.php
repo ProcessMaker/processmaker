@@ -87,7 +87,7 @@ class AuthServiceProvider extends ServiceProvider
     {
         // No need to run this in console and it generates
         // errors in multitenancy mode
-        if (app()->runningInConsole()) {
+        if (!app()->environment('testing') && app()->runningInConsole()) {
             return;
         }
 

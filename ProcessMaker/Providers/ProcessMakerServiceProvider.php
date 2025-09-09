@@ -259,10 +259,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
         // Miscellaneous vendor customization
         static::configureVendors();
 
-        $this->app->singleton(PackageManifest::class, fn () => new LicensedPackageManifest(
-            new Filesystem, $this->app->basePath(), $this->app->getCachedPackagesPath()
-        ));
-
         $this->app->extend(MigrateCommand::class, function () {
             return new ExtendedMigrateCommand(
                 app('migrator'),
