@@ -139,7 +139,7 @@
                 "package-zj-birmingham": "dev-main",
                 "package-tce": "dev-master",
                 "package-case-overview": "dev-main"
-            },,
+            },
             "enterprise": {
                 "package-plg": "0.14.0",
                 "package-sis-integration": "epic/FOUR-25787-b",
