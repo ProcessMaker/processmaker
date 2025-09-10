@@ -34,6 +34,7 @@ storage/ssl
 storage/api/*
 storage/data-sources/logs/*
 storage/decision-tables/*
+storage/saved_search_advanced_configuration/*
 npm.sh
 laravel-echo-server.lock
 public/.htaccess
