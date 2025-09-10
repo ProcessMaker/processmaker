@@ -68,11 +68,16 @@ return [
         ],
 
         'daily' => [
-            'driver' => 'daily',
-            'path' => base_path('storage/logs/processmaker.log'),
-            'level' => env('LOG_LEVEL', 'debug'),
-            'days' => 7,
-            'replace_placeholders' => true,
+            'driver' => 'monolog',
+            'handler' => \ProcessMaker\Logging\TenantAwareHandler::class,
+            'handler_with' => [
+                'filename' => base_path('storage/logs/processmaker.log'),
+                'maxFiles' => 7,
+                'level' => env('LOG_LEVEL', 'debug'),
+            ],
+            'processors' => [
+                \Monolog\Processor\PsrLogMessageProcessor::class,
+            ],
         ],
 
         'slack' => [
