@@ -141,7 +141,7 @@
                 "package-case-overview": "dev-main"
             },
             "enterprise": {
-                "package-plg": "0.14.0",
+                "package-plg": "dev-epic/FOUR-25749",
                 "package-sis-integration": "dev-feature/tes-anthology-epic-merge",
                 "connector-docusign": "1.11.0",
                 "connector-idp": "1.14.0",
