@@ -47,6 +47,7 @@ import CreatePmBlockModal from "../pm-blocks/CreatePmBlockModal.vue";
 import TasksHome from "../../tasks/components/TasksHome.vue";
 import RequestsListing from "../../requests/components/RequestsListing.vue";
 import FilterTable from "./FilterTable.vue";
+import FilterableTable from "../../../jscomposition/system/table/FilterableTable.vue";
 import TasksList from '../../tasks/components/TasksList';
 import apiDataLoading from '../common/mixins/apiDataLoading';
 import datatableMixin from '../common/mixins/datatable';
@@ -110,6 +111,7 @@ export {
   TasksHome,
   RequestsListing,
   FilterTable,
+  FilterableTable,
   TasksList,
   apiDataLoading,
   datatableMixin,
