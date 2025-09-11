@@ -142,7 +142,7 @@
             },
             "enterprise": {
                 "package-plg": "0.14.0",
-                "package-sis-integration": "1.0",
+                "package-sis-integration": "feature/tes-anthology-epic-merge",
                 "connector-docusign": "1.11.0",
                 "connector-idp": "1.14.0",
                 "connector-pdf-print": "1.23.0",
