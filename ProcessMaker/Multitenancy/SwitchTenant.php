@@ -76,6 +76,8 @@ class SwitchTenant implements SwitchTenantTask
             'filesystems.disks.samlidp.root' => storage_path('samlidp'),
             'filesystems.disks.decision_tables.root' => storage_path('decision-tables'),
             'filesystems.disks.decision_tables.url' => $tenant->config['app.url'] . '/storage/decision-tables',
+            'filesystems.disks.saved_search_advanced_configuration.root' => storage_path('saved_search_advanced_configuration'),
+            'filesystems.disks.decision_tables.url' => $tenant->config['app.url'] . '/storage/saved_search_advanced_configuration',
             'filesystems.disks.tenant_translations' => [
                 'driver' => 'local',
                 'root' => storage_path('lang'),

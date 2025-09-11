@@ -131,6 +131,13 @@ return [
         // Others declared in packages
         // - translations - package-translations
         // - 'filesystems.disks.install' configured on the fly
+
+        'saved_search_advanced_configuration' => [
+            'driver' => 'local',
+            'root' => storage_path('saved_search_advanced_configuration'),
+            'url' => env('APP_URL') . '/storage/saved_search_advanced_configuration',
+            'visibility' => 'private',
+        ],
     ],
 
     /*
