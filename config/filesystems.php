@@ -83,6 +83,13 @@ return [
             'visibility' => 'public',
         ],
 
+        'data_sources' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/data_sources'),
+            'url' => env('APP_URL') . '/storage/data_sources',
+            'visibility' => 'public',
+        ],
+
         'settings' => [
             'driver' => 'local',
             'root' => storage_path('app/public/setting'),
