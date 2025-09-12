@@ -587,6 +587,13 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return;
         }
 
+        if (app()->has(Tenant::BOOTSTRAPPED_TENANT)) {
+            $tenant = Tenant::fromBootstrapper();
+            $tenant->makeCurrent();
+
+            return;
+        }
+
         $tenantId = Env::get('TENANT');
         if ($tenantId) {
             $tenant = Tenant::findOrFail($tenantId);
