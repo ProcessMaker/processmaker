@@ -3,18 +3,17 @@
     <b-carousel
       ref="carousel"
       :interval="0"
+      class="carousel"
     >
-      <div class="tw-flex tw-content-stretch tw-absolute tw-w-full tw-z-10 tw-top-1/2 tw-flex-wrap">
+      <div class="controls tw-flex tw-content-stretch tw-absolute tw-w-full tw-z-10 tw-top-1/2 tw-flex-wrap">
         <button
           class="tw-content-center tw-grow tw-left-0 tw-absolute tw-bg-transparent tw-color-[#556271] tw-text-xl"
-          aria-hidden="false"
           @click="prevSlide()"
         >
           <i class="fas fa-caret-left" />
         </button>
         <button
           class="tw-content-center tw-grow tw-right-0 tw-absolute tw-bg-transparent tw-color-[#556271] tw-text-xl"
-          aria-hidden="false"
           @click="nextSlide()"
         >
           <i class="fas fa-caret-right" />
@@ -101,6 +100,12 @@ export default {
 </script>
 
 <style scoped>
+.controls {
+  display: none;
+}
+.carousel:hover .controls {
+  display: block;
+}
 .carousel-normal {
   width: 100%;
   height: auto;
