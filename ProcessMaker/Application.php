@@ -5,8 +5,10 @@ namespace ProcessMaker;
 use Igaster\LaravelTheme\Facades\Theme;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application as IlluminateApplication;
+use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 use Illuminate\Foundation\PackageManifest;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Multitenancy\TenantBootstrapper;
 
 /**
  * Class Application.
@@ -89,5 +91,16 @@ class Application extends IlluminateApplication
         ));
 
         parent::registerConfiguredProviders();
+    }
+
+    public function bootstrapWith(array $bootstrappers)
+    {
+        // Insert TenantBootstrapper after LoadEnvironmentVariables
+        $index = array_search(LoadEnvironmentVariables::class, $bootstrappers);
+        if ($index !== false) {
+            array_splice($bootstrappers, $index + 1, 0, [TenantBootstrapper::class]);
+        }
+
+        return parent::bootstrapWith($bootstrappers);
     }
 }
