@@ -39,7 +39,7 @@ class SwitchTenant implements SwitchTenantTask
         $tenantStoragePath = base_path('storage/tenant_' . $tenant->id);
 
         $app = app();
-        $app->setStoragePath($tenantStoragePath);
+        $app->useStoragePath($tenantStoragePath);
 
         // Create the tenant storage directory if it doesn't exist
         // TODO: Move these to somewhere else - should not be run on every request
