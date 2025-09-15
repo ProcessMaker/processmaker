@@ -69,10 +69,13 @@
         <create-template-modal
           id="create-template-modal"
           ref="create-template-modal"
-          assetType="process"
+          :assetType="assetType"
           :currentUserId="currentUserId"
-          :assetName="processTemplateName"
+          :assetName="assetName"
           :assetId="assetId"
+          :permission="permission"
+          :types="{[assetType]: assetType}"
+          :screenType="assetType === 'screen' ? screenType : null"
         />
         <create-pm-block-modal
           id="create-pm-block-modal"
@@ -270,6 +273,7 @@ export default {
           break;
         case "Screen":
           this.assetType = "screen";
+          this.screenType = data.type;
           this.onScreenNavigate(action, data);
           break;
         case "Script":
