@@ -41,6 +41,9 @@ class SwitchTenant implements SwitchTenantTask
         $app = app();
         $app->useStoragePath($tenantStoragePath);
 
+        // Use tenant's translation files
+        $app->useLangPath(resource_path('lang/tenant_' . $tenant->id));
+
         // Create the tenant storage directory if it doesn't exist
         // TODO: Move these to somewhere else - should not be run on every request
         if (!file_exists($tenantStoragePath)) {
@@ -76,10 +79,7 @@ class SwitchTenant implements SwitchTenantTask
             'filesystems.disks.samlidp.root' => storage_path('samlidp'),
             'filesystems.disks.decision_tables.root' => storage_path('decision-tables'),
             'filesystems.disks.decision_tables.url' => $tenant->config['app.url'] . '/storage/decision-tables',
-            'filesystems.disks.tenant_translations' => [
-                'driver' => 'local',
-                'root' => storage_path('lang'),
-            ],
+            'filesystems.disks.lang.root' => lang_path(),
             'l5-swagger.defaults.paths.docs' => storage_path('api-docs'),
             'app.instance' => self::$originalConfig[$tenant->id]['app.instance'] . '_' . $tenant->id,
         ];
@@ -122,14 +122,6 @@ class SwitchTenant implements SwitchTenantTask
         $app->extend(Dispatcher::class, function ($dispatcher, $app) use ($tenant) {
             return new TenantAwareDispatcher($app, $dispatcher, $tenant->id);
         });
-
-        // Use tenant's translation files
-        $app->useLangPath(resource_path('lang/tenant_' . $tenant->id));
-
-        // May not be needed anymore
-        // $app->extend('translation.loader', function ($loader, $app) use ($tenant) {
-        //     return new TenantAwareTranslationLoader($loader, $tenant->id);
-        // });
     }
 
     /**
