@@ -101,6 +101,9 @@ class ScriptExporter extends ExporterBase
                 '/\bos\.environ\s*\[\s*[\'"]' . preg_quote($variable->name, '/') . '[\'"]\s*\]/',        // os.environ['VAR']
                 '/\bos\.environ\.get\s*\(\s*[\'"]' . preg_quote($variable->name, '/') . '[\'"]\s*\)/',   // os.environ.get('VAR')
                 '/\bos\.getenv\s*\(\s*[\'"]' . preg_quote($variable->name, '/') . '[\'"]\s*\)/',         // os.getenv('VAR')
+
+                // Additional PHP patterns
+                '/\bgetenv\s*\(\s*[\'"]' . preg_quote($variable->name, '/') . '[\'"]\s*\)/',             // getenv('VAR')
             ];
 
             foreach ($patterns as $pattern) {
