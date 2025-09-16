@@ -33,7 +33,7 @@ class SwitchTenant implements SwitchTenantTask
         $this->setTenantDatabaseConnection($tenant);
 
         // Set the tenant-specific storage path
-        $tenantStoragePath = base_path('storage/tenant_' . $tenant->id);
+        $tenantStoragePath = storage_path('tenant_' . $tenant->id);
 
         $app = app();
         $app->setStoragePath($tenantStoragePath);

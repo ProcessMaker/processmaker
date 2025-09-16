@@ -25,7 +25,14 @@ class TenantFinder extends DomainTenantFinder
 
         if (!$tenant) {
             try {
-                $tenant = parent::findForRequest($request);
+                if (env('SERVERLESS', false)) {
+                    $host = $request->header('X-Forwarded-Host');
+                    \Log::info('Host: ' . $host);
+                    $tenant = app(IsTenant::class)::whereDomain($host)->first();
+                } else {
+                    $tenant = parent::findForRequest($request);
+                }
+
             } catch (\Illuminate\Database\QueryException $_e) {
             }
         }
