@@ -59,7 +59,7 @@
         <div v-if="isPaginated && totalPages > 1" class="d-flex justify-content-between align-items-center mt-3">
           <div class="pagination-info">
             <small class="text-muted">
-              {{ $t('Showing') }} {{ (currentPage - 1) * perPage + 1 }} - {{ Math.min(currentPage * perPage, totalItems) }} 
+              {{ $t('Display') }} {{ (currentPage - 1) * perPage + 1 }} - {{ Math.min(currentPage * perPage, totalItems) }} 
               {{ $t('of') }} {{ totalItems }} {{ $t('items') }}
             </small>
           </div>
@@ -240,12 +240,12 @@ export default {
           if (this.isPaginated) {
             // Handle paginated response
             this.options = data.data || data;
-            this.totalItems = response.data.meta?.total || data.length;
-            this.totalPages = response.data.meta?.total_pages || Math.ceil(this.totalItems / this.perPage);
+            this.totalItems = data.total;
+            this.totalPages = Math.ceil(data.total / this.perPage);
             this.currentPage = page;
           } else {
             // Handle non-paginated response
-            this.options = data;
+            this.options = data.data || data;
             this.totalItems = data.length;
             this.totalPages = 1;
             this.currentPage = 1;
