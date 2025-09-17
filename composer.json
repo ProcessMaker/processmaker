@@ -139,7 +139,8 @@
                 "package-accessibility": "1.0.0",
                 "package-zj-birmingham": "dev-main",
                 "package-tce": "dev-master",
-                "package-case-overview": "dev-main"
+                "package-case-overview": "dev-main",
+                "package-sis-integration": "dev-main"
             },
             "enterprise": {
                 "connector-docusign": "1.11.0",
