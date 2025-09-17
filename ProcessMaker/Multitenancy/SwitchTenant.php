@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\Factory as QueueFactoryContract;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Monolog\Handler\RotatingFileHandler;
 use ProcessMaker\Multitenancy\Broadcasting\TenantAwareBroadcastManager;
 use ProcessMaker\Multitenancy\TenantAwareDispatcher;
 use Spatie\Multitenancy\Concerns\UsesMultitenancyConfig;
@@ -103,6 +104,15 @@ class SwitchTenant implements SwitchTenantTask
         }
 
         config($newConfig);
+
+        // Put tenant logs in their own files
+        $app->make('log')
+            ->driver('daily')
+            ->getHandlers()[0]
+            ->setFileNameFormat(
+                '{filename}-tenant_' . $tenant->id . '-{date}',
+                RotatingFileHandler::FILE_PER_DAY
+            );
 
         // Set config from the entry in the tenants table
         $config = $tenant->config;
