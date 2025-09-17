@@ -20,6 +20,20 @@ class LicensedPackageManifest extends PackageManifest
 
     const LAST_PACKAGE_DISCOVERY = 0;
 
+    /**
+     * Consider this the beginning of licenesing refactor for multitenancy.
+     *
+     * For now, this will just move the Spatie MultitenancyServiceProvider to the beginning of the service providers.
+     */
+    protected function getManifest()
+    {
+        $manifest = parent::getManifest();
+        $multitenancyKey = 'spatie/laravel-multitenancy';
+
+        // Make sure the MultitenancyServiceProvider is at the beginning of the manifest
+        return [$multitenancyKey => $manifest[$multitenancyKey]] + $manifest;
+    }
+
     protected function packagesToIgnore()
     {
         $packagesToIgnore = $this->loadPackagesToIgnore()->all();
