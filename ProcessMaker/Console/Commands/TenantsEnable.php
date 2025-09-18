@@ -45,13 +45,6 @@ class TenantsEnable extends Command
 
                 return 1;
             }
-
-            // Check if rsync exists
-            if (!exec('which rsync')) {
-                $this->error('rsync is not installed');
-
-                return 1;
-            }
         }
 
         // Get the landlord database name
@@ -97,35 +90,17 @@ class TenantsEnable extends Command
          * Begin migration if the --migrate option is provided.
          */
 
-        // First, copy the existing storage folder to a temp location
-        $tempStorageFolder = base_path('storage-temp');
-        exec("rsync -avz --exclude='tenant_*' " . base_path('storage') . '/ ' . $tempStorageFolder, $output, $returnVar);
-        if ($returnVar !== 0) {
-            $this->error('Failed to copy storage folder to temp location');
-            $this->error(implode("\n", $output));
-
-            return 1;
-        }
-        $this->info(implode("\n", $output));
-
-        // Next, do the same thing for the lang folder
-        $tempLangFolder = base_path('lang-temp');
-        exec('rsync -avz ' . resource_path('lang') . '/ ' . $tempLangFolder, $output, $returnVar);
-        if ($returnVar !== 0) {
-            $this->error('Failed to copy lang folder to temp location');
-            $this->error(implode("\n", $output));
-        }
-        $this->info(implode("\n", $output));
-
-        // Now, create the tenant. The folder will be moved to the new tenant after the creation
-        // and the $tempStorageFolder will no longer exist.
+        // Now, create the tenant.
+        // The contents of lang-folder and storage-folder will be copied to the new tenant.
         $exitCode = Artisan::call('tenants:create', [
             '--database' => config('database.connections.processmaker.database'),
             '--url' => config('app.url'),
-            '--storage-folder' => $tempStorageFolder,
-            '--lang-folder' => $tempLangFolder,
+            '--storage-folder' => storage_path(),
+            '--lang-folder' => lang_path(),
             '--name' => config('app.name'),
             '--app-key' => config('app.key'),
+            '--skip-setup-notifications' => true,
+            '--skip-initialize-folders' => true,
         ], $this->output);
 
         if ($exitCode !== 0) {
@@ -133,22 +108,6 @@ class TenantsEnable extends Command
 
             return 1;
         }
-
-        // Remove temp storage folder
-        exec('rm -rf ' . $tempStorageFolder, $output, $returnVar);
-        if ($returnVar !== 0) {
-            $this->error('Failed to remove temp storage folder');
-            $this->error(implode("\n", $output));
-        }
-        $this->info(implode("\n", $output));
-
-        // Remove temp lang folder
-        exec('rm -rf ' . $tempLangFolder, $output, $returnVar);
-        if ($returnVar !== 0) {
-            $this->error('Failed to remove temp lang folder');
-            $this->error(implode("\n", $output));
-        }
-        $this->info(implode("\n", $output));
 
         // Add or update the MULTITENANCY env var
         $this->addOrUpdateEnvVar('MULTITENANCY', 'true');
