@@ -140,7 +140,7 @@
                 "package-zj-birmingham": "dev-main",
                 "package-tce": "dev-master",
                 "package-case-overview": "dev-main",
-                "package-sis-integration": "dev-develop"
+                "package-sis-integration": "1.0.0"
             },
             "enterprise": {
                 "connector-docusign": "1.11.0",
