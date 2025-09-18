@@ -37,11 +37,4 @@ class LicenseServiceProvider extends ServiceProvider
             LicensedPackageManifest::discoverPackagesOnce();
         }
     }
-
-    public function register(): void
-    {
-        $this->app->singleton(PackageManifest::class, fn () => new LicensedPackageManifest(
-            new Filesystem, $this->app->basePath(), $this->app->getCachedPackagesPath()
-        ));
-    }
 }

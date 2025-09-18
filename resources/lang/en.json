@@ -1,5 +1,7 @@
 {
   " pending": " pending",
+  "Test New Language String": "Test New Language String",
+  "Test Another New Language String": "Test Another New Language String",
   ":count tasks were not reassigned because the task settings prevent them from being reassigned": ":count tasks were not reassigned because the task settings prevent them from being reassigned",
   ":user has completed the task :task_name": ":user has completed the task :task_name",
   ":user rolled back :failed_task_name to :new_task_name": ":user rolled back :failed_task_name to :new_task_name",

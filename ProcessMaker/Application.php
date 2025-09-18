@@ -3,7 +3,9 @@
 namespace ProcessMaker;
 
 use Igaster\LaravelTheme\Facades\Theme;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application as IlluminateApplication;
+use Illuminate\Foundation\PackageManifest;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -78,13 +80,14 @@ class Application extends IlluminateApplication
         return $this->basePath . DIRECTORY_SEPARATOR . 'ProcessMaker' . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
 
-    public function setStoragePath($path)
+    public function registerConfiguredProviders()
     {
-        $this->storagePath = $path;
-    }
+        // Must be rebound before registerConfiguredProviders() runs but after bootstrapping is done
+        // so we can access storage and cache facades.
+        $this->singleton(PackageManifest::class, fn () => new LicensedPackageManifest(
+            new Filesystem, $this->basePath(), $this->getCachedPackagesPath()
+        ));
 
-    public function getStoragePath()
-    {
-        return $this->storagePath;
+        parent::registerConfiguredProviders();
     }
 }
