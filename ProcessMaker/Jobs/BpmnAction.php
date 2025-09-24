@@ -248,7 +248,7 @@ abstract class BpmnAction implements ShouldQueue
             }
         }
 
-        throw new Exception("ProcessRequest #{$instanceId} not found after {$totalAttempts} attempts");
+        throw new ModelNotFoundException("ProcessRequest #{$instanceId} not found after {$totalAttempts} attempts");
     }
 
     /**
