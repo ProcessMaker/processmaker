@@ -56,7 +56,7 @@ return [
         'ppt'  => ['application/vnd.ms-powerpoint'],
         'pptx' => ['application/vnd.openxmlformats-officedocument.presentationml.presentation'],
         'txt'  => ['text/plain'],
-        'csv'  => ['text/csv', 'application/csv'],
+        'csv'  => ['text/csv', 'application/csv', 'text/plain'],
 
         // Audio
         'jpg'  => ['image/jpeg'],

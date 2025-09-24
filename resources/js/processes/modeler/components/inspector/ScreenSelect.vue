@@ -159,6 +159,7 @@ export default {
       const params = {
         type: this.type(),
         interactive: this.interactive(),
+        include_system: 1,
         order_direction: "asc",
         status: "active",
         selectList: true,
@@ -187,6 +188,7 @@ export default {
       ProcessMaker.apiClient
         .get("screens", { params: { 
           key: this.defaultKey,
+          include_system: 1,
           order_by: "id",
           order_direction: "ASC",
           per_page: 1,
