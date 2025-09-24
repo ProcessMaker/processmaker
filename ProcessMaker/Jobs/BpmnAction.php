@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -173,7 +174,9 @@ abstract class BpmnAction implements ShouldQueue
     private function lockInstance($instanceId)
     {
         try {
-            $instance = ProcessRequest::findOrFail($instanceId);
+            // First attempt to find the instance with retry logic for race conditions
+            $instance = $this->findInstanceWithRetry($instanceId);
+
             if (config('queue.default') === 'sync') {
                 return $instance;
             }
@@ -209,6 +212,43 @@ abstract class BpmnAction implements ShouldQueue
             throw new Exception('Unable to lock instance #' . $this->instanceId . ': ' . $exception->getMessage());
         }
         throw new Exception('Unable to lock instance #' . $this->instanceId . ": Timeout {$timeout}[ms]");
+    }
+
+    /**
+     * Find ProcessRequest with retry logic to handle race conditions
+     *
+     * @param int $instanceId
+     * @return ProcessRequest
+     * @throws Exception
+     */
+    private function findInstanceWithRetry($instanceId)
+    {
+        $maxRetries = config('app.bpmn_actions_find_retries', 5);
+        $retryDelay = config('app.bpmn_actions_find_retry_delay', 50); // milliseconds
+
+        // Always attempt at least once, regardless of maxRetries value
+        $totalAttempts = max(1, $maxRetries);
+
+        for ($attempt = 0; $attempt < $totalAttempts; $attempt++) {
+            try {
+                $instance = ProcessRequest::findOrFail($instanceId);
+
+                return $instance;
+            } catch (ModelNotFoundException $e) {
+                if ($attempt === $totalAttempts - 1) {
+                    // Last attempt failed, re-throw the exception
+                    throw $e;
+                }
+
+                // Wait before retrying (exponential backoff)
+                $delay = $retryDelay * pow(2, $attempt);
+                $this->mSleep($delay);
+
+                Log::warning("ProcessRequest #{$instanceId} not found, retrying in {$delay}ms (attempt " . ($attempt + 1) . "/{$totalAttempts})");
+            }
+        }
+
+        throw new Exception("ProcessRequest #{$instanceId} not found after {$totalAttempts} attempts");
     }
 
     /**
