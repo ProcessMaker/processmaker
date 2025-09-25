@@ -56,13 +56,24 @@ return [
             'root' => env('PROCESS_TEMPLATES_PATH') ? base_path(env('PROCESS_TEMPLATES_PATH')) : database_path('processes/templates'),
         ],
 
-        'public' => [ // used throught the system
-            'driver' => 'local',
-            'root' => storage_path('app/public'),
-            'url' => env('APP_URL') . '/storage',
-            'visibility' => 'public',
-            'throw' => false,
-        ],
+        'public' => config('app.serverless') ?
+            [
+                'driver' => 's3',
+                'key' => env('AWS_ACCESS_KEY_ID'),
+                'secret' => env('AWS_SECRET_ACCESS_KEY'),
+                'region' => env('AWS_DEFAULT_REGION'),
+                'bucket' => env('AWS_PUBLIC_BUCKET'),
+                'url' => env('AWS_URL'),
+                'visibility' => 'public',
+                'throw' => false,
+            ] :
+            [ // used through the system
+                'driver' => 'local',
+                'root' => storage_path('app/public'),
+                'url' => env('APP_URL') . '/storage',
+                'visibility' => 'public',
+                'throw' => false,
+            ],
 
         's3' => [ // DownloadSecurityLog
             'driver' => 's3',
