@@ -113,6 +113,9 @@ class SwitchTenant implements SwitchTenantTask
         }
         config($config);
 
+        // The previous app key was saved in the singleton, so we need to forget it.
+        $app->forgetInstance('encrypter');
+
         // Extend BroadcastManager to our custom implementation that prefixes the channel names with the tenant id.
         $app->extend(BroadcastManager::class, function ($manager, $app) use ($tenant) {
             return new TenantAwareBroadcastManager($app, $tenant->id);
