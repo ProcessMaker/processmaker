@@ -183,6 +183,7 @@ return [
          * ProcessMaker Service Providers
          */
         ProcessMaker\Providers\ProcessMakerServiceProvider::class,
+        ProcessMaker\Providers\TenantLoggingServiceProvider::class,
         ProcessMaker\Providers\RecommendationsServiceProvider::class,
         ProcessMaker\Providers\AuthServiceProvider::class,
         ProcessMaker\Providers\EventServiceProvider::class,

@@ -118,7 +118,7 @@ class SettingsConfigRepository extends Repository
     {
         if (!$this->readyToUseSettingsDatabase) {
             $this->readyToUseSettingsDatabase =
-                app('tenant-resolved') &&
+                (!config('app.multitenancy') || app('tenant-resolved')) &&
                 $this->databaseAvailable() &&
                 $this->redisAvailable() &&
                 $this->settingsTableExists();
