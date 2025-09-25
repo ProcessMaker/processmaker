@@ -297,4 +297,6 @@ return [
     'multitenancy' => env('MULTITENANCY', false),
 
     'resources_core_path' => base_path('resources-core'),
+
+    'serverless' => env('SERVERLESS', false),
 ];
