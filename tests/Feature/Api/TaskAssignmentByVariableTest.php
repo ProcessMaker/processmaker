@@ -250,6 +250,26 @@ class TaskAssignmentByVariableTest extends TestCase
         $this->assertEquals($users->first()->id, $task->user_id);
     }
 
+    public function testProcessVariableAssignmentWithLiteralId()
+    {
+        // Create users of a group and a user without group
+        $user = User::factory()->create(['status'=>'ACTIVE']);
+        $group = $this->createGroup(5);
+        $process = $this->createProcess('process_variable', $user->id, $group->id, '', false);
+
+        // The first assignment should be to user (is the first created user)
+        $response = $this->startTestProcess($process, []);
+        $requestId = $response['id'];
+        $task = ProcessRequestToken::where(['process_request_id' => $requestId, 'status' => 'ACTIVE'])->firstOrFail();
+        $this->assertEquals($user->id, $task->user_id);
+
+        // The second assignment should be to the first user of the created group
+        $response = $this->startTestProcess($process, []);
+        $requestId = $response['id'];
+        $task = ProcessRequestToken::where(['process_request_id' => $requestId, 'status' => 'ACTIVE'])->firstOrFail();
+        $this->assertEquals($group->users->first()->id, $task->user_id);
+    }
+
     /**
      * Creates a process in which the assignment of the first task is configured based on the parameters of this function
      *
