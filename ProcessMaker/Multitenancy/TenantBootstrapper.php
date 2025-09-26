@@ -68,8 +68,16 @@ class TenantBootstrapper
         $this->set('APP_KEY', $this->decrypt($config['app.key']));
         $this->set('DB_DATABASE', $tenantData['database']);
         $this->set('DB_USERNAME', $tenantData['username'] ?? $this->getOriginalValue('DB_USERNAME'));
-        $encryptedPassword = $tenantData['password'] ?? $this->getOriginalValue('DB_PASSWORD');
-        $this->set('DB_PASSWORD', $encryptedPassword ? $this->decrypt($encryptedPassword) : $encryptedPassword);
+
+        $encryptedPassword = $tenantData['password'];
+        $password = null;
+        if ($encryptedPassword) {
+            $password = $this->decrypt($encryptedPassword);
+        } else {
+            $password = $this->getOriginalValue('DB_PASSWORD');
+        }
+
+        $this->set('DB_PASSWORD', $password);
         $this->set('REDIS_PREFIX', $this->getOriginalValue('REDIS_PREFIX') . 'tenant-' . $tenantId . ':');
         $this->set('LOG_PATH', $app->basePath('storage/tenant_' . $tenantId . '/logs/processmaker.log'));
     }
