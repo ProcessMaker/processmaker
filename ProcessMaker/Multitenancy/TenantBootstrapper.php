@@ -46,7 +46,6 @@ class TenantBootstrapper
 
         if (!$tenantData) {
             Tenant::setBootstrappedTenant($app, null);
-            $this->log('No tenant found');
 
             return;
         }
@@ -161,13 +160,5 @@ class TenantBootstrapper
         $stmt->execute($params);
 
         return $stmt->fetch();
-    }
-
-    private function log($message)
-    {
-        $date = date('Y-m-d');
-        $log_file = "/Users/nolan/src/processmaker-a/storage/logs/processmaker-{$date}.log";
-        file_put_contents($log_file, "Bootstrapper: $message\n", FILE_APPEND);
-        // echo "Bootstrapper: $message\n";
     }
 }
