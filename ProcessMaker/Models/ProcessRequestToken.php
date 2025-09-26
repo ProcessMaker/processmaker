@@ -1313,13 +1313,13 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     {
         $elementDestination = null;
 
-        if (count($conditionalRedirectProp) > 0) {
+        if (!empty($conditionalRedirectProp['isEnabled']) && !empty($conditionalRedirectProp['conditions'])) {
             $result = $this->evaluateConditionalRedirect(app(ConditionalRedirectServiceInterface::class), $conditionalRedirectProp);
             if ($result) {
                 $elementDestinationType = $result['taskDestination']['value'];
                 $elementDestinationProp = [
                     'value' => [
-                        'url' => ($result['customDashboard']['url'] ?? null) ?: ($result['externalURL'] ?? null),
+                        'url' => ($result['customDashboard']['url'] ?? null) ?: ($result['externalUrl'] ?? null),
                     ]
                 ];
             }
