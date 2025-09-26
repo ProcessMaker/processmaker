@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Providers\ProcessMakerServiceProvider;
+use Spatie\Multitenancy\MultitenancyServiceProvider;
 use Throwable;
 
 class LicensedPackageManifest extends PackageManifest
@@ -20,18 +22,13 @@ class LicensedPackageManifest extends PackageManifest
 
     const LAST_PACKAGE_DISCOVERY = 0;
 
-    /**
-     * Consider this the beginning of licenesing refactor for multitenancy.
-     *
-     * For now, this will just move the Spatie MultitenancyServiceProvider to the beginning of the service providers.
-     */
-    protected function getManifest()
+    public function providers()
     {
-        $manifest = parent::getManifest();
-        $multitenancyKey = 'spatie/laravel-multitenancy';
+        $providers = parent::providers();
+        array_unshift($providers, ProcessMakerServiceProvider::class);
+        array_unshift($providers, MultitenancyServiceProvider::class);
 
-        // Make sure the MultitenancyServiceProvider is at the beginning of the manifest
-        return [$multitenancyKey => $manifest[$multitenancyKey]] + $manifest;
+        return $providers;
     }
 
     protected function packagesToIgnore()

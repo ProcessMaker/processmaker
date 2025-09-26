@@ -12,8 +12,8 @@ class TenantFinder extends DomainTenantFinder
 {
     public function findForRequest(Request $request): ?IsTenant
     {
-        if (app()->has(Tenant::BOOTSTRAPPED_TENANT)) {
-            return Tenant::fromBootstrapper();
+        if ($tenant = Tenant::fromBootstrapper()) {
+            return $tenant;
         }
 
         $tenant = null;

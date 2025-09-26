@@ -43,6 +43,11 @@ class Handler extends ExceptionHandler
      */
     public function report(Throwable $exception)
     {
+        if (!App::getFacadeRoot()) {
+            error_log(get_class($exception) . ': ' . $exception->getMessage());
+
+            return;
+        }
         if (App::environment() == 'testing' && env('TESTING_VERBOSE')) {
             // If we're verbose, we should print ALL Exceptions to the screen
             echo $exception->getMessage() . "\n";
