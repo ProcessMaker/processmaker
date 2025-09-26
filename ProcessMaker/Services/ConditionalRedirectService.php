@@ -185,16 +185,29 @@ class ConditionalRedirectService implements ConditionalRedirectServiceInterface
         $data = $this->dataManager->getData($token);
         $result = $this->resolve($conditionalRedirect, $data);
         if ($this->errors) {
+            $case_number = $this->getCaseNumber($token);
             foreach ($this->errors as $error) {
-                $this->addLogComment($token, $error);
+                $this->addLogComment($token, $error, $case_number);
             }
         }
         return $result;
     }
 
-    private function addLogComment(ProcessRequestToken $token, string $error)
+    private function getCaseNumber(ProcessRequestToken $token): ?int
     {
-        $case_number = ProcessRequest::where('id', $token->process_request_id)->value('case_number');
+        // get process request from relationship if loaded, otherwise get from database
+        if ($token->relationLoaded('processRequest')) {
+            $case_number = $token->processRequest->case_number;
+        } else {
+            // get case_number only to avoid to hidrate all the process request data
+            $case_number = ProcessRequest::where('id', $token->process_request_id)->value('case_number');
+        }
+
+        return $case_number;
+    }
+
+    private function addLogComment(ProcessRequestToken $token, string $error, string $case_number)
+    {
         Comment::create([
             'body' => $error,
             'user_id' => null,
