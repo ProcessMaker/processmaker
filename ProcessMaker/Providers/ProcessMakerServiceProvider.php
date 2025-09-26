@@ -539,7 +539,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         $tenantId = Env::get('TENANT');
         if (!$tenantId) {
-            throw new \Exception('Multitenancy is enabled but no tenant ID was found in the environment.');
+            event(new TenantResolved(null));
+
+            return;
         }
 
         $tenant = Tenant::findOrFail($tenantId);
