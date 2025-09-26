@@ -525,6 +525,12 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return;
         }
 
+        if (config('app.multitenancy') === false) {
+            event(new TenantResolved(null));
+
+            return;
+        }
+
         if ($tenant = Tenant::fromBootstrapper()) {
             $tenant->makeCurrent();
 
@@ -532,14 +538,12 @@ class ProcessMakerServiceProvider extends ServiceProvider
         }
 
         $tenantId = Env::get('TENANT');
-        if ($tenantId) {
-            $tenant = Tenant::findOrFail($tenantId);
-            $tenant->makeCurrent();
-        } elseif (config('app.multitenancy') === false) {
-            // This is expected if multitenancy is disabled.
-            // Call the TenantResolved event with null to continue loading the app.
-            event(new TenantResolved(null));
+        if (!$tenantId) {
+            throw new \Exception('Multitenancy is enabled but no tenant ID was found in the environment.');
         }
+
+        $tenant = Tenant::findOrFail($tenantId);
+        $tenant->makeCurrent();
     }
 
     /**

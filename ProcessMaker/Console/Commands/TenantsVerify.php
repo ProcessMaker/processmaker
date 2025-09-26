@@ -3,7 +3,9 @@
 namespace ProcessMaker\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\EnvironmentVariable;
@@ -27,17 +29,6 @@ class TenantsVerify extends Command
     protected $description = 'Verify tenant configuration and storage paths';
 
     /**
-     * Strip protocol from URL
-     *
-     * @param string $url
-     * @return string
-     */
-    private function stripProtocol(string $url): string
-    {
-        return preg_replace('#^https?://#', '', $url);
-    }
-
-    /**
      * Execute the console command.
      *
      * @return int
@@ -49,13 +40,13 @@ class TenantsVerify extends Command
             $currentTenant = app('currentTenant');
         }
 
-        if (!$currentTenant) {
-            $this->error('No current tenant found');
+        if (config('app.multitenancy') && !$currentTenant) {
+            $this->error('Multitenancy enabled but current tenant found.');
 
             return;
         }
 
-        $this->info('Current Tenant ID: ' . $currentTenant->id);
+        $this->info('Current Tenant ID: ' . ($currentTenant?->id ?? 'NONE'));
 
         $paths = [
             ['Storage Path', storage_path()],
@@ -88,14 +79,26 @@ class TenantsVerify extends Command
         // Display configs in a nice table
         $this->table(['Config', 'Value'], $configs);
 
+        $env = EnvironmentVariable::first();
+        if (!$env) {
+            $decrypted = 'No environment variables found to test decryption';
+        }
+        $encryptedValue = $env->getAttributes()['value'];
+        try {
+            Crypt::decryptString($encryptedValue);
+            $decrypted = 'OK';
+        } catch (DecryptException $e) {
+            $decrypted = 'FAILED! ' . $e->getMessage();
+        }
+
         $other = [
             ['Landlord Config Cache Path', base_path('bootstrap/cache/config.php')],
             ['Landlord Config Is Cached', File::exists(base_path('bootstrap/cache/config.php')) ? 'Yes' : 'No'],
             ['Tenant Config Cache Path', app()->getCachedConfigPath()],
             ['Tenant Config Is Cached', File::exists(app()->getCachedConfigPath()) ? 'Yes' : 'No'],
             ['First username (database check)', User::first()->username],
-            ['First environment variable (decrypted check)', substr(EnvironmentVariable::first()->value, 0, 15)],
-            ['Original App URL (landlord)', $currentTenant->getOriginalValue('APP_URL')],
+            ['Decrypted check', substr($decrypted, 0, 50)],
+            ['Original App URL (landlord)', $currentTenant?->getOriginalValue('APP_URL') ?? config('app.url')],
         ];
 
         // Display other in a nice table

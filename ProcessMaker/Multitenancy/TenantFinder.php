@@ -12,6 +12,10 @@ class TenantFinder extends DomainTenantFinder
 {
     public function findForRequest(Request $request): ?IsTenant
     {
+        if (!config('app.multitenancy')) {
+            return null;
+        }
+
         if ($tenant = Tenant::fromBootstrapper()) {
             return $tenant;
         }
