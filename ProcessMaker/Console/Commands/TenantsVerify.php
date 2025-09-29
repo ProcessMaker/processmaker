@@ -67,6 +67,9 @@ class TenantsVerify extends Command
             'script-runner-microservice.callback',
             'database.connections.processmaker.database',
             'logging.channels.daily.path',
+            'filesystems.disks.public.root',
+            'filesystems.disks.local.root',
+            'filesystems.disks.lang.root',
         ];
 
         $configs = array_map(function ($config) {

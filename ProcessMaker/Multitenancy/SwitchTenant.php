@@ -28,9 +28,6 @@ class SwitchTenant implements SwitchTenantTask
         // Set the tenant's domain in the request headers. Used for things like the global url() helper.
         request()->headers->set('host', $tenant->domain);
 
-        // Use tenant's translation files
-        $app->useLangPath(resource_path('lang/tenant_' . $tenant->id));
-
         $this->overrideConfigs($app, $tenant);
 
         // Extend BroadcastManager to our custom implementation that prefixes the channel names with the tenant id.

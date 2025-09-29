@@ -51,6 +51,9 @@ class TenantBootstrapper
         }
         $this->setTenantEnvironmentVariables($app, $tenantData);
 
+        // Use tenant's translation files. Doing this here so it's available in cached filesystems.php
+        $app->useLangPath(resource_path('lang/tenant_' . $tenantData['id']));
+
         $tenantData['original_values'] = $this->getOriginalValue();
         Tenant::setBootstrappedTenant($app, $tenantData);
     }
