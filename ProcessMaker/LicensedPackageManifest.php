@@ -63,14 +63,14 @@ class LicensedPackageManifest extends PackageManifest
         if (!$this->hasLicenseFile()) {
             return null;
         }
-        $license = Storage::disk('root')->get('license.json');
+        $license = Storage::disk('local')->get('license.json');
 
         return json_decode($license, true);
     }
 
     private function licensedPackages()
     {
-        $default = collect(['packages', 'package-api-testing']);
+        $default = collect(['packages','package-api-testing']);
         $data = $this->parseLicense();
         $expires = Carbon::parse($data['expires_at']);
         if ($expires->isPast()) {
@@ -84,7 +84,7 @@ class LicensedPackageManifest extends PackageManifest
 
     private function hasLicenseFile()
     {
-        return Storage::disk('root')->exists('license.json');
+        return Storage::disk('local')->exists('license.json');
     }
 
     private function setExpireCache()
