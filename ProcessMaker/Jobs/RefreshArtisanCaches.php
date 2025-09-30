@@ -42,6 +42,13 @@ class RefreshArtisanCaches implements ShouldQueue
      */
     public function handle()
     {
+        // Skip in testing environment because this reconnects the database
+        // meaning we loose transactions, and sets the console output verbosity
+        // to quiet so we loose expectsOutput assertions.
+        if (app()->environment('testing')) {
+            return;
+        }
+
         $options = [
             '--no-interaction' => true,
             '--quiet' => true,
