@@ -43,6 +43,10 @@ class TenantsList extends Command
         $formattedTenants = $tenants->map(function ($tenant) {
             $config = $tenant->config;
 
+            if (isset($config['app.key'])) {
+                $config['app.key'] = substr($config['app.key'], 0, 30);
+            }
+
             // Json encode, pretty print without slashes
             $config = json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
