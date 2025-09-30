@@ -4,7 +4,6 @@ namespace ProcessMaker\Traits;
 
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
@@ -85,7 +84,7 @@ trait ProcessTrait
     /**
      * Set the manager id
      *
-     * @param int $value
+     * @param int|array $value
      * @return void
      */
     public function setManagerIdAttribute($value)
@@ -96,23 +95,80 @@ trait ProcessTrait
     /**
      * Get the the manager id
      *
-     * @return int|null
+     * @return array|null
      */
     public function getManagerIdAttribute()
     {
         $property = $this->getProperty('manager_id');
 
-        return collect($property)->get('id', $property);
+        // If property is null or undefined, return null
+        if (is_null($property) || $property === 'undefined') {
+            return null;
+        }
+
+        // If it's already an array, return it
+        if (is_array($property)) {
+            return $property;
+        }
+
+        // If it's a single value, return it as an array
+        return [$property];
     }
 
     /**
-     * Get the process manager
+     * Get the process manager relationship
+     * Note: This returns a relationship that works with JSON properties->manager_id
      *
-     * @return User|null
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function manager()
     {
-        return $this->belongsTo(User::class, 'manager_id');
+        return $this->belongsTo(User::class, 'id', 'id')
+            ->where(function ($query) {
+                $processId = $this->id;
+                // Handle both single ID and array of IDs in JSON
+                $query->where(function ($subQuery) use ($processId) {
+                    // For single ID: JSON_EXTRACT(properties, '$.manager_id') = users.id
+                    $subQuery->whereRaw("JSON_EXTRACT((SELECT properties FROM processes WHERE id = ?), '$.manager_id') = users.id", [$processId])
+                        // For array of IDs: JSON_CONTAINS(properties->manager_id, users.id)
+                        ->orWhereRaw("JSON_CONTAINS(JSON_EXTRACT((SELECT properties FROM processes WHERE id = ?), '$.manager_id'), CAST(users.id AS JSON))", [$processId]);
+                });
+            });
+    }
+
+    /**
+     * Set all managers for the process
+     *
+     * @param array $managers Array of User IDs or User models
+     * @return void
+     */
+    public function setManagers(array $managers)
+    {
+        $managerIds = array_map(function ($manager) {
+            return $manager instanceof User ? $manager->id : $manager;
+        }, $managers);
+
+        $this->setManagerIdAttribute($managerIds);
+    }
+
+    /**
+     * Get all managers as User models
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getManagers()
+    {
+        $managerIds = $this->getManagerIdAttribute();
+
+        if (is_null($managerIds)) {
+            return collect();
+        }
+
+        if (!is_array($managerIds)) {
+            $managerIds = [$managerIds];
+        }
+
+        return User::whereIn('id', $managerIds)->get();
     }
 
     /**

@@ -151,7 +151,8 @@
                                         <label class="typo__label">{{__('Process Manager')}}</label>
                                         <select-user
                                           v-model="manager"
-                                          :multiple="false"
+                                          :multiple="true"
+                                          :max-selection="maxManagers"
                                           :class="{'is-invalid': errors.manager_id}"
                                           />
                                         <div
@@ -549,7 +550,7 @@
                     screenCancel: @json($screenCancel),
                     activeUsersAndGroups: @json($list),
                     pause_timer_start_events: false,
-                    manager: @json($process->manager),
+                    manager: @json($process->getManagers()),
                     owner: @json($process->user),
                     activeTab: "",
                     noElementsFoundMsg: 'Oops! No elements found. Consider changing the search query.',
@@ -557,6 +558,7 @@
                         users: [],
                         groups: []
                     },
+                    maxManagers: 10,
                 }
                 },
                 mounted() {
@@ -643,6 +645,13 @@
                 formatValueScreen(item) {
                     return (item && item.id) ? item.id : null
                 },
+                formatManagerId(items) {
+                    let managerIds = [];
+                    for (const item of items) {
+                        managerIds.push(item.id);
+                    }
+                    return managerIds;
+                },
                 onUpdate() {
                     let shouldDelete = false;
                     if (this.isDraft) {
@@ -665,7 +674,7 @@
                     this.formData.edit_data = this.formatAssigneePermissions(this.canEditData);
                     this.formData.cancel_screen_id = this.formatValueScreen(this.screenCancel);
                     this.formData.request_detail_screen_id = this.formatValueScreen(this.screenRequestDetail);
-                    this.formData.manager_id = this.formatValueScreen(this.manager);
+                    this.formData.manager_id = this.formatManagerId(this.manager);
                     this.formData.user_id = this.formatValueScreen(this.owner);
                     this.formData.reassignment_permissions = this.reassignmentPermissions;
                     
