@@ -695,6 +695,9 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                 return null;
             }
             $rule = new ProcessManagerAssigned();
+            if ($token === null) {
+                throw new ThereIsNoProcessManagerAssignedException($activity);
+            }
             $user = $rule->getNextUser($activity, $token, $this, $request);
             if (!$user) {
                 throw new ThereIsNoProcessManagerAssignedException($activity);

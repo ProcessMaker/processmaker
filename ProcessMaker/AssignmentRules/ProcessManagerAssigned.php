@@ -7,6 +7,7 @@ use ProcessMaker\Exception\ThereIsNoProcessManagerAssignedException;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 
@@ -25,7 +26,7 @@ class ProcessManagerAssigned implements AssignmentRuleInterface
      * @param TokenInterface $token
      * @param Process $process
      * @param ProcessRequest $request
-     * @return int
+     * @return User
      * @throws ThereIsNoProcessManagerAssignedException
      */
     public function getNextUser(ActivityInterface $task, TokenInterface $token, Process $process, ProcessRequest $request)
@@ -37,7 +38,7 @@ class ProcessManagerAssigned implements AssignmentRuleInterface
             throw new ThereIsNoProcessManagerAssignedException($task);
         }
 
-        return $user_id;
+        return User::find($user_id);
     }
 
     /**
@@ -60,10 +61,9 @@ class ProcessManagerAssigned implements AssignmentRuleInterface
             return $managers[0];
         }
 
-        // get the last manager assigned to the task
+        // get the last manager assigned to the task across all requests
         $last = ProcessRequestToken::where('process_id', $request->process_id)
             ->where('element_id', $task->getId())
-            ->where('process_request_id', $request->id)
             ->whereIn('user_id', $managers)
             ->orderBy('created_at', 'desc')
             ->first();
@@ -74,10 +74,12 @@ class ProcessManagerAssigned implements AssignmentRuleInterface
 
         $key = array_search($user_id, $managers);
         if ($key === false) {
+            // If no previous manager found, start with the first manager
             $key = 0;
+        } else {
+            // Move to the next manager in the round-robin
+            $key = ($key + 1) % count($managers);
         }
-        $key = $key + 1;
-        $key = $key % count($managers);
         $user_id = $managers[$key];
 
         return $user_id;
