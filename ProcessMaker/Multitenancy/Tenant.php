@@ -39,6 +39,6 @@ class Tenant extends SpatieTenant
 
     public function getOriginalValue($key = null)
     {
-        return $this->originalValues[$key];
+        return $this->originalValues[$key] ?? null;
     }
 }

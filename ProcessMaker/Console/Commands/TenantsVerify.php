@@ -41,7 +41,7 @@ class TenantsVerify extends Command
         }
 
         if (config('app.multitenancy') && !$currentTenant) {
-            $this->error('Multitenancy enabled but current tenant found.');
+            $this->error('Multitenancy enabled but no current tenant found.');
 
             return;
         }
@@ -85,13 +85,14 @@ class TenantsVerify extends Command
         $env = EnvironmentVariable::first();
         if (!$env) {
             $decrypted = 'No environment variables found to test decryption';
-        }
-        $encryptedValue = $env->getAttributes()['value'];
-        try {
-            Crypt::decryptString($encryptedValue);
-            $decrypted = 'OK';
-        } catch (DecryptException $e) {
-            $decrypted = 'FAILED! ' . $e->getMessage();
+        } else {
+            $encryptedValue = $env->getAttributes()['value'];
+            try {
+                Crypt::decryptString($encryptedValue);
+                $decrypted = 'OK';
+            } catch (DecryptException $e) {
+                $decrypted = 'FAILED! ' . $e->getMessage();
+            }
         }
 
         $other = [
@@ -99,7 +100,7 @@ class TenantsVerify extends Command
             ['Landlord Config Is Cached', File::exists(base_path('bootstrap/cache/config.php')) ? 'Yes' : 'No'],
             ['Tenant Config Cache Path', app()->getCachedConfigPath()],
             ['Tenant Config Is Cached', File::exists(app()->getCachedConfigPath()) ? 'Yes' : 'No'],
-            ['First username (database check)', User::first()->username],
+            ['First username (database check)', User::first()?->username ?? 'No users found'],
             ['Decrypted check', substr($decrypted, 0, 50)],
             ['Original App URL (landlord)', $currentTenant?->getOriginalValue('APP_URL') ?? config('app.url')],
         ];
