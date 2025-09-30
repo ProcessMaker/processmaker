@@ -44,6 +44,8 @@ class ProcessManagerAssigned implements AssignmentRuleInterface
      * Get the round robin manager using a true round robin algorithm
      *
      * @param array $managers
+     * @param ActivityInterface $task
+     * @param ProcessRequest $request
      * @return int|null
      */
     private function getNextManagerAssigned($managers, $task, $request)
@@ -59,8 +61,8 @@ class ProcessManagerAssigned implements AssignmentRuleInterface
         }
 
         // get the last manager assigned to the task
-        $last = ProcessRequestToken::where('process_id', $task->process->id)
-            ->where('element_id', $$task->element_id)
+        $last = ProcessRequestToken::where('process_id', $request->process_id)
+            ->where('element_id', $task->getId())
             ->where('process_request_id', $request->id)
             ->whereIn('user_id', $managers)
             ->orderBy('created_at', 'desc')

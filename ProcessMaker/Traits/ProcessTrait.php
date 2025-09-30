@@ -116,24 +116,29 @@ trait ProcessTrait
     }
 
     /**
-     * Get the process manager relationship
-     * Note: This returns a relationship that works with JSON properties->manager_id
+     * Get the first process manager relationship
+     * Note: This returns the first manager from the JSON properties->manager_id array
+     * For multiple managers, use getManagers() method instead
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function manager()
     {
+        $managerIds = $this->getManagerIdAttribute();
+
+        if (empty($managerIds) || !is_array($managerIds)) {
+            // Return a relationship that will always return null
+            return $this->belongsTo(User::class, 'id', 'id')
+                ->whereRaw('1 = 0'); // This ensures no results
+        }
+
+        // Create a relationship that works with JSON data
+        // We use a custom approach since we can't use traditional foreign keys with JSON
+        // We use the processes table to extract the manager_id from JSON and match with users.id
+        $tableName = $this instanceof ProcessVersion ? 'process_versions' : 'processes';
+
         return $this->belongsTo(User::class, 'id', 'id')
-            ->where(function ($query) {
-                $processId = $this->id;
-                // Handle both single ID and array of IDs in JSON
-                $query->where(function ($subQuery) use ($processId) {
-                    // For single ID: JSON_EXTRACT(properties, '$.manager_id') = users.id
-                    $subQuery->whereRaw("JSON_EXTRACT((SELECT properties FROM processes WHERE id = ?), '$.manager_id') = users.id", [$processId])
-                        // For array of IDs: JSON_CONTAINS(properties->manager_id, users.id)
-                        ->orWhereRaw("JSON_CONTAINS(JSON_EXTRACT((SELECT properties FROM processes WHERE id = ?), '$.manager_id'), CAST(users.id AS JSON))", [$processId]);
-                });
-            });
+            ->whereRaw("users.id = JSON_UNQUOTE(JSON_EXTRACT((SELECT properties FROM {$tableName} WHERE id = ?), '$.manager_id[0]'))", [$this->id]);
     }
 
     /**

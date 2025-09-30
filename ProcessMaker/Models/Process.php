@@ -589,7 +589,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      * Get the user to whom to assign a task.
      *
      * @param ActivityInterface $activity
-     * @param TokenInterface $token
+     * @param ProcessRequestToken $token
      *
      * @return User
      */
@@ -613,14 +613,14 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             if ($userByRule !== null) {
                 $user = $this->scalateToManagerIfEnabled($userByRule->id, $activity, $token, $assignmentType);
 
-                return $this->checkAssignment($token->processRequest, $activity, $assignmentType, $escalateToManager, $user ? User::where('id', $user)->first() : null);
+                return $this->checkAssignment($token->processRequest, $activity, $assignmentType, $escalateToManager, $user ? User::where('id', $user)->first() : null, $token);
             }
         }
 
         if (filter_var($assignmentLock, FILTER_VALIDATE_BOOLEAN) === true) {
             $user = $this->getLastUserAssignedToTask($activity->getId(), $token->getInstance()->getId());
             if ($user) {
-                return $this->checkAssignment($token->processRequest, $activity, $assignmentType, $escalateToManager, User::where('id', $user)->first());
+                return $this->checkAssignment($token->processRequest, $activity, $assignmentType, $escalateToManager, User::where('id', $user)->first(), $token);
             }
         }
 
@@ -665,7 +665,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
 
         $user = $this->scalateToManagerIfEnabled($user, $activity, $token, $assignmentType);
 
-        return $this->checkAssignment($token->getInstance(), $activity, $assignmentType, $escalateToManager, $user ? User::where('id', $user)->first() : null);
+        return $this->checkAssignment($token->getInstance(), $activity, $assignmentType, $escalateToManager, $user ? User::where('id', $user)->first() : null, $token);
     }
 
     /**
@@ -676,10 +676,11 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      * @param string $assignmentType
      * @param bool $escalateToManager
      * @param User|null $user
+     * @param ProcessRequestToken $token
      *
      * @return User|null
      */
-    private function checkAssignment(ProcessRequest $request, ActivityInterface $activity, $assignmentType, $escalateToManager, User $user = null)
+    private function checkAssignment(ProcessRequest $request, ActivityInterface $activity, $assignmentType, $escalateToManager, User $user = null, ProcessRequestToken $token = null)
     {
         $config = $activity->getProperty('config') ? json_decode($activity->getProperty('config'), true) : [];
         $selfServiceToggle = array_key_exists('selfService', $config ?? []) ? $config['selfService'] : false;
@@ -694,7 +695,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                 return null;
             }
             $rule = new ProcessManagerAssigned();
-            $user = $rule->getNextUser($activity, $request->token, $this, $request);
+            $user = $rule->getNextUser($activity, $token, $this, $request);
             if (!$user) {
                 throw new ThereIsNoProcessManagerAssignedException($activity);
             }

@@ -760,6 +760,7 @@
 
         .multiselect__tags-wrap {
             display: flex !important;
+            flex-wrap: wrap !important;
         }
 
         .multiselect__tag-icon:after {
@@ -777,7 +778,7 @@
         .multiselect__tags {
             border: 1px solid var(--borders, #cdddee) !important;
             border-radius: 4px !important;
-            height: 40px !important;
+            min-height: 40px !important;
         }
 
         .multiselect__tag {
