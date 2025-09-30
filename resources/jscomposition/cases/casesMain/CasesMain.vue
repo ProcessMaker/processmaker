@@ -5,12 +5,14 @@
     <div
       class="tw-mx-4 tw-p-4 tw-bg-white tw-rounded-2xl
       tw-border-gray-200 tw-border tw-space-y-4 tw-flex
-      tw-flex-col tw-overflow-hidden tw-grow tw-shadow-md">
+      tw-flex-col tw-overflow-hidden tw-grow tw-shadow-md"
+    >
       <AppCounters
         :data="countersData"
         :active="indexCounter"
         class="tw-w-full"
-        @change="onChangeCounter" />
+        @change="onChangeCounter"
+      />
       <RouterView :key="route.fullPath" />
     </div>
   </div>
@@ -20,6 +22,7 @@ import {
   ref, onMounted, watch, onUnmounted,
 } from "vue";
 import { useRouter, useRoute } from "vue-router/composables";
+import { t } from "i18next";
 import AppCounters from "./components/AppCounters.vue";
 import { formatCounters } from "./utils/counters";
 import { getCounters } from "./api";
@@ -55,7 +58,7 @@ const updateBreadcrum = () => {
   const index = indexCounter.value ?? 0;
   pages.value = [
     configHomeBreadcrum(),
-    { name: "Cases", href: "/cases", current: false },
+    { name: t("Cases"), href: "/cases", current: false },
   ];
 
   pages.value.push({ name: countersData.value[index].header, current: true });
