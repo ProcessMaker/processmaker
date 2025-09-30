@@ -135,18 +135,6 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * Calling the real config:cache command reconnects the database
-     * and since we're using transactions for our tests, we lose any data
-     * saved before the command is run. Instead, mock it out here.
-     */
-    public function setUpMockConfigCache(): void
-    {
-        Bus::fake([
-            RefreshArtisanCaches::class,
-        ]);
-    }
-
-    /**
      * Run additional tearDowns from traits.
      */
     protected function tearDown(): void
