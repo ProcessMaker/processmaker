@@ -240,7 +240,7 @@ class FormalExpression implements FormalExpressionInterface
                     $request = ProcessRequest::find($__data['_request']['id']);
                     $process = $request->processVersion;
 
-                    return $process->manager_id;
+                    return array_rand($process->manager_id ?? []);
                 }
 
                 return $user->manager_id;

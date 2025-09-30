@@ -86,7 +86,7 @@ use Throwable;
  *   @OA\Property(property="self_service_tasks", type="object"),
  *   @OA\Property(property="signal_events", type="array", @OA\Items(type="object")),
  *   @OA\Property(property="category", type="object", @OA\Schema(ref="#/components/schemas/ProcessCategory")),
- *   @OA\Property(property="manager_id", type="integer", format="id"),
+ *   @OA\Property(property="manager_id", type="array", @OA\Items(type="integer", format="id")),
  * ),
  * @OA\Schema(
  *   schema="Process",
@@ -693,7 +693,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             if ($isSelfService && !$escalateToManager) {
                 return null;
             }
-            $user = $request->processVersion->manager;
+            $rule = new ProcessManagerAssigned();
+            $user = $rule->getNextUser($activity, $request->token, $this, $request);
             if (!$user) {
                 throw new ThereIsNoProcessManagerAssignedException($activity);
             }
@@ -1147,7 +1148,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                     }
                 }
             } elseif (isset($startEvent['assignment']) && $startEvent['assignment'] === 'process_manager') {
-                $access = $this->manager && $this->manager->id && $this->manager->id === $user->id;
+                $access = in_array($user->id, $this->manager_id ?? []);
             } else {
                 $access = false;
             }

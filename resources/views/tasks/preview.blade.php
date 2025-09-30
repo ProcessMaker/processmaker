@@ -134,7 +134,7 @@
   const task = @json($task);
   const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
   const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
-  const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
+  const userIsProcessManager = {{ in_array(Auth::user()->id, $task->process?->manager_id ?? []) ? "true": "false" }};
   const screenFields = @json($screenFields);
 </script>
 <script src="{{ mix('js/tasks/loaderPreview.js')}}"></script>
