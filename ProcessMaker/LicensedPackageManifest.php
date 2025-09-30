@@ -22,15 +22,6 @@ class LicensedPackageManifest extends PackageManifest
 
     const LAST_PACKAGE_DISCOVERY = 0;
 
-    public function providers()
-    {
-        $providers = parent::providers();
-        array_unshift($providers, ProcessMakerServiceProvider::class);
-        array_unshift($providers, MultitenancyServiceProvider::class);
-
-        return $providers;
-    }
-
     protected function packagesToIgnore()
     {
         $packagesToIgnore = $this->loadPackagesToIgnore()->all();
@@ -70,7 +61,7 @@ class LicensedPackageManifest extends PackageManifest
 
     private function licensedPackages()
     {
-        $default = collect(['packages','package-api-testing']);
+        $default = collect(['packages', 'package-api-testing']);
         $data = $this->parseLicense();
         $expires = Carbon::parse($data['expires_at']);
         if ($expires->isPast()) {
