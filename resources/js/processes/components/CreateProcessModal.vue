@@ -65,7 +65,8 @@
         >
           <select-user
             v-model="manager"
-            :multiple="false"
+            :multiple="true"
+            :max-selection="10"
             name="process_manager_id"
           />
         </b-form-group>
@@ -228,12 +229,14 @@ export default {
       }
       this.disabled = true;
 
+      let managerIds = [...this.manager.map(manager => manager.id)];
       const formData = new FormData();
       formData.append("name", this.name);
       formData.append("description", this.description);
       formData.append("process_category_id", this.process_category_id);
       formData.append("projects", this.projects);
-      formData.append("manager_id", this.manager.id);
+      console.log(managerIds);
+      formData.append("manager_id", JSON.stringify(managerIds));
       if (this.file) {
         formData.append("file", this.file);
       }

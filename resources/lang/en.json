@@ -1254,6 +1254,7 @@
   "Max Input": "Max Input",
   "Max Length": "Max Length",
   "Max": "Max",
+  "Maximum number of managers is {{max}}": "Maximum number of managers is {{max}}",
   "Maximum Date": "Maximum Date",
   "Maximum Iterations": "Maximum Iterations",
   "Maximum of {{max}} users can be selected": "Maximum of {{max}} users can be selected",

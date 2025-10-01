@@ -429,7 +429,7 @@ class ProcessController extends Controller
 
         //set manager id
         if ($request->has('manager_id')) {
-            $process->manager_id = $request->input('manager_id');
+            $process->manager_id = $this->validateMaxManagers($request);
         }
 
         if (isset($data['bpmn'])) {
@@ -542,7 +542,7 @@ class ProcessController extends Controller
 
         $process->fill($request->except('notifications', 'task_notifications', 'notification_settings', 'cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id', 'projects'));
         if ($request->has('manager_id')) {
-            $process->manager_id = $request->input('manager_id', []);
+            $process->manager_id = $this->validateMaxManagers($request);
         }
 
         if ($request->has('user_id')) {
@@ -619,6 +619,24 @@ class ProcessController extends Controller
         ProcessPublished::dispatch($process->refresh(), $changes, $original);
 
         return new Resource($process->refresh());
+    }
+
+    private function validateMaxManagers(Request $request)
+    {
+        $managerIds = json_decode($request->input('manager_id', '[]'), true);
+
+        if (!is_array($managerIds)) {
+            $managerIds = [$managerIds];
+        }
+
+        if (count($managerIds) > 10) {
+            throw new \Illuminate\Validation\ValidationException(
+                validator([], []),
+                ['manager_id' => [__('Maximum number of managers is :max', ['max' => 10])]]
+            );
+        }
+
+        return $managerIds;
     }
 
     /**
