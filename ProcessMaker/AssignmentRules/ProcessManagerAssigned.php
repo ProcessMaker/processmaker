@@ -26,7 +26,7 @@ class ProcessManagerAssigned implements AssignmentRuleInterface
      * @param TokenInterface $token
      * @param Process $process
      * @param ProcessRequest $request
-     * @return User
+     * @return int|null
      * @throws ThereIsNoProcessManagerAssignedException
      */
     public function getNextUser(ActivityInterface $task, TokenInterface $token, Process $process, ProcessRequest $request)
@@ -38,7 +38,7 @@ class ProcessManagerAssigned implements AssignmentRuleInterface
             throw new ThereIsNoProcessManagerAssignedException($task);
         }
 
-        return User::find($user_id);
+        return $user_id;
     }
 
     /**

@@ -702,6 +702,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             if (!$user) {
                 throw new ThereIsNoProcessManagerAssignedException($activity);
             }
+            $user = User::find($user);
         }
 
         return $user;
