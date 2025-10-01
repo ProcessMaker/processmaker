@@ -66,6 +66,8 @@ class TenantBootstrapper
         $config = json_decode($tenantData['config'], true);
 
         $this->set('APP_CONFIG_CACHE', $app->basePath('storage/tenant_' . $tenantId . '/config.php'));
+        // Do not override packages cache path for now. Wait until the License service is updated.
+        // $this->set('APP_PACKAGES_CACHE', $app->basePath('storage/tenant_' . $tenantId . '/packages.php'));
         $this->set('LARAVEL_STORAGE_PATH', $app->basePath('storage/tenant_' . $tenantId));
         $this->set('APP_URL', $config['app.url']);
         $this->set('APP_KEY', $this->decrypt($config['app.key']));
