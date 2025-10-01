@@ -384,7 +384,7 @@ abstract class ExporterBase implements ExporterInterface
     public function getProcessManager(): array
     {
         return [
-            'managerId' => $this->model->manager?->id ? $this->model->manager->id : null,
+            'managerId' => $this->model->manager_id ? $this->model->manager_id : null,
             'managerName' => $this->model->manager?->fullname ? $this->model->manager->fullname : '',
         ];
     }

@@ -38,7 +38,6 @@ class ProcessExporter extends ExporterBase
             $this->addDependent('user', $process->user, UserExporter::class);
         }
 
-        // review
         $managers = $process->getManagers();
 
         if ($managers) {

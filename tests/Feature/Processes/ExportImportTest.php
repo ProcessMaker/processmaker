@@ -797,6 +797,6 @@ class ExportImportTest extends TestCase
 
         $process->refresh();
         $this->assertFalse($process->getProperty('manager_can_cancel_request'));
-        $this->assertEquals($managerUser->id, $process->manager->id);
+        $this->assertContains($managerUser->id, $process->manager_id);
     }
 }
