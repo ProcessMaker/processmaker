@@ -308,8 +308,8 @@ abstract class ExporterBase implements ExporterInterface
             'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
             'name' => $this->getName($this->model),
             'description' => $this->getDescription(),
-            'process_manager' => $this->getProcessManager()['managerName'],
-            'process_manager_id' => $this->getProcessManager()['managerId'],
+            'process_manager' => $this->getProcessManager(),
+            'process_manager_id' => $this->getProcessManager(),
             'attributes' => $this->getExportAttributes(),
             'extraAttributes' => $this->getExtraAttributes($this->model),
             'references' => $this->references,
@@ -383,10 +383,22 @@ abstract class ExporterBase implements ExporterInterface
 
     public function getProcessManager(): array
     {
-        return [
-            'managerId' => $this->model->manager_id ? $this->model->manager_id : null,
-            'managerName' => $this->model->manager?->fullname ? $this->model->manager->fullname : '',
-        ];
+        // Check if the model has the getManagers method
+        if (!method_exists($this->model, 'getManagers')) {
+            return [];
+        }
+
+        $managers = $this->model->getManagers() ?? [];
+
+        $informationManagers = [];
+        foreach ($managers as $manager) {
+            $informationManagers[] = [
+                'managerId' => $manager->id,
+                'managerName' => $manager->fullname,
+            ];
+        }
+
+        return $informationManagers;
     }
 
     public function getLastModifiedBy() : array

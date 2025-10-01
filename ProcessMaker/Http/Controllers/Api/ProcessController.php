@@ -429,7 +429,7 @@ class ProcessController extends Controller
 
         //set manager id
         if ($request->has('manager_id')) {
-            $process->manager_id = $request->input('manager_id', []);
+            $process->manager_id = $request->input('manager_id');
         }
 
         if (isset($data['bpmn'])) {
