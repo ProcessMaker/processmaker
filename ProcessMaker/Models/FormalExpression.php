@@ -245,7 +245,17 @@ class FormalExpression implements FormalExpressionInterface
                         return null;
                     }
 
-                    return $managers[array_rand($managers)];
+                    // Sort managers to ensure consistent round robin distribution
+                    sort($managers);
+
+                    // Use a combination of process ID and request ID for better distribution
+                    // This ensures different processes don't interfere with each other's round robin
+                    $processId = $process->id ?? 0;
+                    $requestId = $__data['_request']['id'] ?? 0;
+                    $seed = $processId + $requestId;
+                    $managerIndex = $seed % count($managers);
+
+                    return $managers[$managerIndex];
                 }
 
                 return $user->manager_id;
