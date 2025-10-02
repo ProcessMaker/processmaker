@@ -5,6 +5,7 @@ namespace ProcessMaker\Observers;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Cache\Settings\SettingCacheFactory;
+use ProcessMaker\Jobs\RefreshArtisanCaches;
 use ProcessMaker\Models\Setting;
 
 class SettingObserver
@@ -89,5 +90,7 @@ class SettingObserver
         // Invalidate the setting cache
         $key = $settingCache->createKey(['key' => $setting->key]);
         $settingCache->invalidate(['key' => $key]);
+
+        RefreshArtisanCaches::dispatch();
     }
 }
