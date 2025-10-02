@@ -71,4 +71,13 @@ export default [
     icon: 'fp-flowgenie-outline',
     nameField: 'name',
   },
+  {
+    type: 'service_task_resource',
+    name: 'Service Task Resources',
+    url: 'package.service-task.resources.fetch',
+    listingUrl: '/designer/service-tasks',
+    class: 'ProcessMaker\\Package\\PackageServiceTask\\Models\\ServiceTaskResource',
+    icon: 'fp-script-outline',
+    nameField: 'name',
+  },
 ];

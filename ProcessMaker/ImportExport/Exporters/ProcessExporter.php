@@ -46,6 +46,8 @@ class ProcessExporter extends ExporterBase
 
         $this->exportScripts();
 
+        $this->exportServiceTaskResources();
+
         $this->exportCategories();
 
         $this->exportSignals();
@@ -435,11 +437,61 @@ class ProcessExporter extends ExporterBase
         }
     }
 
+    private function exportServiceTaskResources()
+    {
+        $tags = [
+            'bpmn:serviceTask',
+        ];
+
+        foreach (Utils::getElementByMultipleTags($this->model->getDefinitions(true), $tags) as $element) {
+            $path = $element->getNodePath();
+            $meta = [
+                'path' => $path,
+            ];
+
+            // Check if it's a package-service-task implementation
+            $implementation = $element->getAttribute('implementation');
+            if ($implementation === 'package-service-task/service-task') {
+                // Get the resource ID from pm:config
+                $config = json_decode($element->getAttribute('pm:config'), true);
+                $resourceId = $config['resource']['id'] ?? null;
+
+                if (is_numeric($resourceId)) {
+                    // Try to load the ServiceTaskResource class
+                    if (class_exists('ProcessMaker\Package\PackageServiceTask\Models\ServiceTaskResource')) {
+                        $resource = \ProcessMaker\Package\PackageServiceTask\Models\ServiceTaskResource::find($resourceId);
+                        if ($resource) {
+                            $this->addDependent('service_task_resource', $resource, 'ProcessMaker\Package\PackageServiceTask\ImportExport\Exporters\ServiceTaskResourceExporter', $meta);
+                        } else {
+                            Log::debug("ServiceTaskResourceId: {$resourceId} not exists");
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private function importScripts()
     {
         foreach ($this->getDependents(DependentType::SCRIPTS) as $dependent) {
             $path = $dependent->meta['path'];
             Utils::setAttributeAtXPath($this->model, $path, 'pm:scriptRef', $dependent->model->id);
+        }
+    }
+
+    private function importServiceTaskResources()
+    {
+        foreach ($this->getDependents('service_task_resource') as $dependent) {
+            $path = $dependent->meta['path'];
+
+            // Get current config
+            $config = json_decode(Utils::getAttributeAtXPath($this->model, $path, 'pm:config'), true);
+
+            // Update resource ID in config
+            $config['resource']['id'] = $dependent->model->id;
+
+            // Set updated config back to BPMN
+            Utils::setAttributeAtXPath($this->model, $path, 'pm:config', json_encode($config));
         }
     }
 
@@ -471,6 +523,7 @@ class ProcessExporter extends ExporterBase
         if ($saveAssetsMode === null || $saveAssetsMode === 'saveAllAssets') {
             $this->importScreens();
             $this->importScripts();
+            $this->importServiceTaskResources();
             $this->importSubprocesses();
             $this->importAssignments();
             $this->importProcessLaunchpad();
