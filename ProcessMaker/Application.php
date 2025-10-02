@@ -5,14 +5,25 @@ namespace ProcessMaker;
 use Igaster\LaravelTheme\Facades\Theme;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application as IlluminateApplication;
+use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
+use Illuminate\Foundation\Bootstrap\RegisterProviders;
 use Illuminate\Foundation\PackageManifest;
+use Illuminate\Support\Env;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
+use ProcessMaker\Multitenancy\Tenant;
+use ProcessMaker\Multitenancy\TenantBootstrapper;
 
 /**
  * Class Application.
  */
 class Application extends IlluminateApplication
 {
+    public $overrideTenantId = null;
+
+    public $skipCacheEvents = false;
+
     /**
      * Sets the timezone for the application and for php with the specified timezone.
      *
@@ -89,5 +100,16 @@ class Application extends IlluminateApplication
         ));
 
         parent::registerConfiguredProviders();
+    }
+
+    public function bootstrapWith(array $bootstrappers)
+    {
+        // Insert TenantBootstrapper after LoadEnvironmentVariables
+        if ($bootstrappers[0] !== LoadEnvironmentVariables::class) {
+            throw new \Exception('LoadEnvironmentVariables is not the first bootstrapper. Did a laravel upgrade change this?');
+        }
+        array_splice($bootstrappers, 1, 0, [TenantBootstrapper::class]);
+
+        return parent::bootstrapWith($bootstrappers);
     }
 }
