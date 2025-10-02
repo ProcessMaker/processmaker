@@ -57,6 +57,8 @@ class RefreshArtisanCaches implements ShouldQueue, ShouldBeUnique
         // Wait 3 seconds before running the job - debounce
         if ($this->queuedAt && $this->queuedAt >= time() - 3) {
             $this->release(3);
+
+            return;
         }
 
         $options = [
