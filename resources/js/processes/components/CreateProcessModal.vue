@@ -235,7 +235,6 @@ export default {
       formData.append("description", this.description);
       formData.append("process_category_id", this.process_category_id);
       formData.append("projects", this.projects);
-      console.log(managerIds);
       formData.append("manager_id", JSON.stringify(managerIds));
       if (this.file) {
         formData.append("file", this.file);
