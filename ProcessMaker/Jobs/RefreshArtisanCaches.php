@@ -47,11 +47,16 @@ class RefreshArtisanCaches implements ShouldQueue, ShouldBeUnique
      */
     public function handle()
     {
+        // Skip in testing environment because this reconnects the database
+        // meaning we loose transactions, and sets the console output verbosity
+        // to quiet so we loose expectsOutput assertions.
+        if (app()->environment('testing')) {
+            return;
+        }
+
         // Wait 3 seconds before running the job - debounce
         if ($this->queuedAt && $this->queuedAt >= time() - 3) {
             $this->release(3);
-
-            return;
         }
 
         $options = [
