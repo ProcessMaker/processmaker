@@ -623,11 +623,29 @@ class ProcessController extends Controller
 
     private function validateMaxManagers(Request $request)
     {
-        $managerIds = json_decode($request->input('manager_id', '[]'), true);
+        $input = $request->input('manager_id', '[]');
+        $managerIds = json_decode($input, true);
 
+        // Handle JSON decode failure
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \Illuminate\Validation\ValidationException(
+                validator([], []),
+                ['manager_id' => [__('Invalid JSON format for manager_id')]]
+            );
+        }
+
+        // Ensure we have an array
         if (!is_array($managerIds)) {
             $managerIds = [$managerIds];
         }
+
+        // Filter out null values and validate each manager ID
+        $managerIds = array_filter($managerIds, function ($id) {
+            return $id !== null && is_numeric($id) && $id > 0;
+        });
+
+        // Re-index the array to remove gaps from filtered null values
+        $managerIds = array_values($managerIds);
 
         if (count($managerIds) > 10) {
             throw new \Illuminate\Validation\ValidationException(

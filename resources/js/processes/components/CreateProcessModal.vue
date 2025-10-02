@@ -143,7 +143,7 @@ export default {
           {"content": "Cancel", "action": "hide()", "variant": "outline-secondary", "disabled": false, "hidden": false},
           {"content": "Create", "action": "createTemplate", "variant": "primary", "disabled": false, "hidden": false},
       ],
-      manager: "",
+      manager: [],
     };
   },
   watch: {
@@ -161,7 +161,7 @@ export default {
     },
     manager() {
       if (!this.manager) {
-        this.manager = "";
+        this.manager = [];
       }
     },
   },
@@ -209,7 +209,7 @@ export default {
       this.addError = {};
       this.selectedFile = "";
       this.file = null;
-      this.manager = "";
+      this.manager = [];
       this.$emit("resetModal");
     },
     onSubmit() {
@@ -229,7 +229,7 @@ export default {
       }
       this.disabled = true;
 
-      let managerIds = [...this.manager.map(manager => manager.id)];
+      let managerIds = this.manager && Array.isArray(this.manager) ? [...this.manager.map(manager => manager.id)] : [];
       const formData = new FormData();
       formData.append("name", this.name);
       formData.append("description", this.description);

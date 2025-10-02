@@ -647,8 +647,10 @@
                 },
                 formatManagerId(items) {
                     let managerIds = [];
-                    for (const item of items) {
-                        managerIds.push(item.id);
+                    if (items && Array.isArray(items)) {
+                        for (const item of items) {
+                            managerIds.push(item.id);
+                        }
                     }
                     return managerIds;
                 },
