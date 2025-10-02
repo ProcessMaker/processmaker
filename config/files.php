@@ -74,6 +74,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Enable DANGEROUS Validation
+    |--------------------------------------------------------------------------
+    |
+    | Whether to enable dangerous file validation that checks against
+    |
+    */
+    'enable_dangerous_validation' => env('ENABLE_DANGEROUS_VALIDATION', true),
+
+    /*
+    |--------------------------------------------------------------------------
     | Enable MIME Type Validation
     |--------------------------------------------------------------------------
     |
