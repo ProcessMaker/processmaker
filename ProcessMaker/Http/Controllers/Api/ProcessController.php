@@ -623,33 +623,43 @@ class ProcessController extends Controller
 
     private function validateMaxManagers(Request $request)
     {
-        $managerIds = $request->input('manager_id', '[]');
+        $managerIds = $request->input('manager_id', []);
 
+        // Handle different input types
         if (is_string($managerIds)) {
-            $managerIds = json_decode($managerIds, true);
+            // If it's a string, try to decode it as JSON
+            if (empty($managerIds)) {
+                $managerIds = [];
+            } else {
+                $decoded = json_decode($managerIds, true);
 
-            // Handle JSON decode failure
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new \Illuminate\Validation\ValidationException(
-                    validator([], []),
-                    ['manager_id' => [__('Invalid JSON format for manager_id')]]
-                );
-            }
+                // Handle JSON decode failure
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    throw new \Illuminate\Validation\ValidationException(
+                        validator([], []),
+                        ['manager_id' => [__('Invalid JSON format for manager_id')]]
+                    );
+                }
 
-            // Ensure we have an array
-            if (!is_array($managerIds)) {
-                $managerIds = [$managerIds];
+                $managerIds = $decoded;
             }
         }
 
-        // Filter out null values and validate each manager ID
+        // Ensure we have an array
+        if (!is_array($managerIds)) {
+            // If it's a single value (not array), convert to array
+            $managerIds = [$managerIds];
+        }
+
+        // Filter out null, empty values and validate each manager ID
         $managerIds = array_filter($managerIds, function ($id) {
-            return $id !== null && is_numeric($id) && $id > 0;
+            return $id !== null && $id !== '' && is_numeric($id) && $id > 0;
         });
 
-        // Re-index the array to remove gaps from filtered null values
+        // Re-index the array to remove gaps from filtered values
         $managerIds = array_values($managerIds);
 
+        // Validate maximum number of managers
         if (count($managerIds) > 10) {
             throw new \Illuminate\Validation\ValidationException(
                 validator([], []),
