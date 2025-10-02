@@ -4,6 +4,7 @@ namespace ProcessMaker\Multitenancy;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Env;
+use ProcessMaker\Multitenancy\Tenant;
 use Spatie\Multitenancy\Contracts\IsTenant;
 use Spatie\Multitenancy\TenantFinder\DomainTenantFinder;
 
@@ -11,6 +12,14 @@ class TenantFinder extends DomainTenantFinder
 {
     public function findForRequest(Request $request): ?IsTenant
     {
+        if (!config('app.multitenancy')) {
+            return null;
+        }
+
+        if ($tenant = Tenant::fromBootstrapper()) {
+            return $tenant;
+        }
+
         $tenant = null;
         $message = null;
 
