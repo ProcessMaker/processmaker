@@ -146,14 +146,14 @@ class TaskController extends Controller
 
         $this->applyAdvancedFilter($query, $request);
 
-        $this->applyForCurrentUser($query, $user);
+        if ($request->input('processesIManage') === 'true') {
+            $this->applyProcessManager($query, $user);
+        } else {
+            $this->applyForCurrentUser($query, $user);
+        }
 
         // Apply filter overdue
         $query->overdue($request->input('overdue'));
-
-        if ($request->input('processesIManage') === 'true') {
-            $this->applyProcessManager($query, $user);
-        }
 
         // If only the total is being requested (by a Saved Search), send it now
         if ($getTotal === true) {
@@ -167,6 +167,11 @@ class TaskController extends Controller
         }
 
         $response = $this->applyUserFilter($response, $request, $user);
+
+        if ($response->total() > 0 && $request->input('processesIManage') === 'true') {
+            // enable user manager in cache
+            $this->enableUserManager($user);
+        }
 
         $inOverdueQuery = ProcessRequestToken::query()
             ->whereIn('id', $response->pluck('id'))
