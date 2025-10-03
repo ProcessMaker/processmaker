@@ -91,6 +91,7 @@ class Kernel extends HttpKernel
         'session_kill' => Middleware\SessionControlKill::class,
         'no-cache' => Middleware\NoCache::class,
         'admin' => Middleware\IsAdmin::class,
+        'manager' => Middleware\IsManager::class,
         'etag' => Middleware\Etag\HandleEtag::class,
         'file_size_check' => Middleware\FileSizeCheck::class,
     ];
