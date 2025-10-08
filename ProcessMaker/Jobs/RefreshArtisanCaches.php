@@ -10,35 +10,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Support\Facades\Artisan;
 
-class RefreshArtisanCaches implements ShouldQueue, ShouldBeUnique
+class RefreshArtisanCaches implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
-
-    public $tries = 2; // One extra try to handle the debounce release
-
-    public $queuedAt;
-
-    /**
-     * Create a new job instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->queuedAt = time();
-    }
-
-    /**
-     * Debounce when multiple Settings are saved at the same time
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [
-            (new WithoutOverlapping('refresh_artisan_caches'))->dontRelease(),
-        ];
-    }
 
     /**
      * Execute the job.
@@ -51,13 +25,6 @@ class RefreshArtisanCaches implements ShouldQueue, ShouldBeUnique
         // meaning we loose transactions, and sets the console output verbosity
         // to quiet so we loose expectsOutput assertions.
         if (app()->environment('testing')) {
-            return;
-        }
-
-        // Wait 3 seconds before running the job - debounce
-        if ($this->queuedAt && $this->queuedAt >= time() - 3) {
-            $this->release(3);
-
             return;
         }
 
