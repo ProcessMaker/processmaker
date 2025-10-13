@@ -1275,11 +1275,7 @@ label {
     text-align: left;
   }
 }
-.multiselect-icons.custom-multiselect {
-  .icon-selected {
-    margin-top: 0;
-  }
-}
+
 .modal-content-custom .column-container {
   overflow-y: auto;
 }
