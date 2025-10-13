@@ -15,7 +15,7 @@ class TenantsList extends Command
      *
      * @var string
      */
-    protected $signature = 'tenants:list {--ids : Only output the ids}';
+    protected $signature = 'tenants:list {--ids : Only output the ids} {--json : Output the tenants as JSON}';
 
     /**
      * The console command description.
@@ -36,6 +36,12 @@ class TenantsList extends Command
             foreach ($tenants as $tenant) {
                 $this->line($tenant->id);
             }
+
+            return;
+        }
+
+        if ($this->option('json')) {
+            $this->line(json_encode($tenants->toArray(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
             return;
         }

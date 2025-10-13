@@ -450,15 +450,17 @@ class ProcessRequestFileController extends Controller
     private function validateFile(UploadedFile $file, &$errors)
     {
         // Explicitly reject archive files for security
-        $this->rejectArchiveFiles($file, $errors);
+        if (config('files.enable_dangerous_validation')) {
+            $this->rejectArchiveFiles($file, $errors);
+        }
 
         // Validate file extension if enabled
-        if (config('files.enable_extension_validation', true)) {
+        if (config('files.enable_extension_validation')) {
             $this->validateFileExtension($file, $errors);
         }
 
         // Validate MIME type vs extension if enabled
-        if (config('files.enable_mime_validation', true)) {
+        if (config('files.enable_mime_validation')) {
             $this->validateExtensionMimeTypeMatch($file, $errors);
         }
 
