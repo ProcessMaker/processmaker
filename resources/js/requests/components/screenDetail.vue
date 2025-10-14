@@ -106,7 +106,6 @@
       printablePages() {
         // New strategy: always return only page 0
         // This avoids any problem with the detection of pages
-        console.log('🔍 printablePages devuelve: [0] (forzado)');
         return [0];
       },
       component() {
