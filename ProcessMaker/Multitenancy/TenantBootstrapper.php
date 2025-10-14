@@ -17,20 +17,33 @@ use ProcessMaker\Multitenancy\Tenant;
  */
 class TenantBootstrapper
 {
+    private static $landlordValues = [];
+
     private $encrypter = null;
 
     private $pdo = null;
 
-    private $originalValues = null;
+    private $app = null;
+
+    public static $landlordKeysToSave = [
+        'APP_URL',
+        'APP_KEY',
+        'LOG_PATH',
+        'DB_USERNAME',
+        'DB_PASSWORD',
+        'REDIS_PREFIX',
+        'CACHE_SETTING_PREFIX',
+        'SCRIPT_MICROSERVICE_CALLBACK',
+    ];
 
     public function bootstrap(Application $app)
     {
         if (!$this->env('MULTITENANCY')) {
             return;
         }
+        $this->app = $app;
 
-        // We need to save the original values for running horizon
-        $this->saveOriginalValues();
+        self::saveLandlordValues($app);
 
         $tenantData = null;
 
@@ -49,29 +62,30 @@ class TenantBootstrapper
 
             return;
         }
-        $this->setTenantEnvironmentVariables($app, $tenantData);
+        $this->setTenantEnvironmentVariables($tenantData);
 
         // Use tenant's translation files. Doing this here so it's available in cached filesystems.php
         $app->useLangPath(resource_path('lang/tenant_' . $tenantData['id']));
 
-        $tenantData['original_values'] = $this->getOriginalValue();
+        $tenantData['original_values'] = self::$landlordValues;
         Tenant::setBootstrappedTenant($app, $tenantData);
     }
 
-    private function setTenantEnvironmentVariables($app, $tenantData)
+    private function setTenantEnvironmentVariables($tenantData)
     {
         // Additional configs are set in SwitchTenant.php
 
         $tenantId = $tenantData['id'];
         $config = json_decode($tenantData['config'], true);
 
-        $this->set('APP_CONFIG_CACHE', $app->basePath('storage/tenant_' . $tenantId . '/config.php'));
+        $this->set('APP_CONFIG_CACHE', $this->app->basePath('storage/tenant_' . $tenantId . '/config.php'));
         // Do not override packages cache path for now. Wait until the License service is updated.
-        // $this->set('APP_PACKAGES_CACHE', $app->basePath('storage/tenant_' . $tenantId . '/packages.php'));
-        $this->set('LARAVEL_STORAGE_PATH', $app->basePath('storage/tenant_' . $tenantId));
+        // $this->set('APP_PACKAGES_CACHE', $this->app->basePath('storage/tenant_' . $tenantId . '/packages.php'));
+        $this->set('LARAVEL_STORAGE_PATH', $this->app->basePath('storage/tenant_' . $tenantId));
         $this->set('APP_URL', $config['app.url']);
         $this->set('APP_KEY', $this->decrypt($config['app.key']));
-        $this->set('DB_DATABASE', $tenantData['database']);
+        $value = $tenantData['database'];
+        $this->set('DB_DATABASE', $value);
         $this->set('DB_USERNAME', $tenantData['username'] ?? $this->getOriginalValue('DB_USERNAME'));
 
         $encryptedPassword = $tenantData['password'];
@@ -83,51 +97,45 @@ class TenantBootstrapper
         }
 
         $this->set('DB_PASSWORD', $password);
-        $this->set('REDIS_PREFIX', $this->getOriginalValue('REDIS_PREFIX') . 'tenant-' . $tenantId . ':');
-        $this->set('LOG_PATH', $app->basePath('storage/tenant_' . $tenantId . '/logs/processmaker.log'));
+        // Commenting this out fixes the redis queue, but what about cache????
+        // $this->set('REDIS_PREFIX', $this->getOriginalValue('REDIS_PREFIX') . 'tenant-' . $tenantId . ':');
+        // $this->debug("Setting log path to " . $this->app->basePath('storage/tenant_' . $tenantId . '/logs/processmaker.log'));
+        $this->set('LOG_PATH', $this->app->basePath('storage/tenant_' . $tenantId . '/logs/processmaker.log'));
     }
 
-    private function saveOriginalValues()
+    public static function saveLandlordValues($app)
     {
-        if ($this->env('ORIGINAL_VALUES')) {
+        if ($app->has('landlordValues')) {
+            self::$landlordValues = $app->make('landlordValues');
+
             return;
         }
-        $toSave = [
-            'APP_URL',
-            'APP_KEY',
-            'DB_USERNAME',
-            'DB_PASSWORD',
-            'REDIS_PREFIX',
-            'CACHE_SETTING_PREFIX',
-            'SCRIPT_MICROSERVICE_CALLBACK',
-        ];
-        $values = [];
-        foreach ($toSave as $key) {
-            $values[$key] = $this->env($key);
+
+        foreach (self::$landlordKeysToSave as $key) {
+            self::$landlordValues[$key] = $_SERVER[$key] ?? '';
         }
-        $this->set('ORIGINAL_VALUES', serialize($values));
     }
 
-    private function getOriginalValue($key = null)
+    private function getOriginalValue($key)
     {
-        if (!$this->originalValues) {
-            $this->originalValues = unserialize($this->env('ORIGINAL_VALUES'));
-        }
-        if (!$key) {
-            return $this->originalValues;
+        if (!isset(self::$landlordValues[$key])) {
+            // throw new \Exception('Landlord value not found in `landlordValues`: ' . $key);
+            return '';
         }
 
-        return $this->originalValues[$key];
+        return self::$landlordValues[$key];
     }
 
     private function env($key, $default = null)
     {
-        return Env::get($key, $default);
+        return $_SERVER[$key] ?? $default;
     }
 
     private function set($key, $value)
     {
-        Env::getRepository()->set($key, $value);
+        // Env::getRepository() is immutable but will use values from $_SERVER and $_ENV
+        $_SERVER[$key] = $value;
+        $_ENV[$key] = $value;
     }
 
     private function decrypt($value)
@@ -173,5 +181,10 @@ class TenantBootstrapper
         $stmt->execute($params);
 
         return $stmt->fetch();
+    }
+
+    private function debug($message)
+    {
+        file_put_contents(base_path('storage/debug.log'), $message . PHP_EOL, FILE_APPEND);
     }
 }

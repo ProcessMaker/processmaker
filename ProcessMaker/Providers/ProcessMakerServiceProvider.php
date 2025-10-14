@@ -9,9 +9,12 @@ use Illuminate\Foundation\PackageManifest;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
+use Illuminate\Queue\Events\JobAttempted;
+use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Env;
 use Illuminate\Support\Facades;
+use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +40,7 @@ use ProcessMaker\Managers\MenuManager;
 use ProcessMaker\Managers\ScreenCompiledManager;
 use ProcessMaker\Models;
 use ProcessMaker\Multitenancy\Tenant;
+use ProcessMaker\Multitenancy\TenantBootstrapper;
 use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
 use ProcessMaker\Repositories\SettingsConfigRepository;
@@ -61,6 +65,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
     // Track the query time for each request
     private static $queryTime = 0;
+
+    // Track the landlord values for multitenancy
+    private static $landlordValues = null;
 
     public function boot(): void
     {
@@ -233,6 +240,50 @@ class ProcessMakerServiceProvider extends ServiceProvider
      */
     protected static function registerEvents(): void
     {
+        Facades\Event::listen(JobProcessing::class, function ($event) {
+            Context::hydrate($event->job->payload()['illuminate:log:context'] ?? null);
+            $tenantId = Context::get(config('multitenancy.current_tenant_context_key'));
+            if ($tenantId) {
+                if (!method_exists($event->job, 'getRedisQueue')) {
+                    // Not a redis job
+                    return;
+                }
+
+                // Save the landlord's config values so we can reset them later
+                if (self::$landlordValues === null) {
+                    foreach (TenantBootstrapper::$landlordKeysToSave as $key) {
+                        self::$landlordValues[$key] = $_SERVER[$key] ?? '';
+                    }
+                }
+
+                // Create a new tenant app instance
+                $_SERVER['TENANT'] = $tenantId;
+                $_ENV['TENANT'] = $tenantId;
+                $tenantApp = require app()->bootstrapPath('app.php');
+                $tenantApp->instance('landlordValues', self::$landlordValues);
+                $tenantApp->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+
+                // Change the job's app service container to the tenant app
+                $event->job->getRedisQueue()->setContainer($tenantApp);
+            }
+        });
+
+        Facades\Event::listen(JobAttempted::class, function ($event) {
+            if (!method_exists($event->job, 'getRedisQueue')) {
+                // Not a redis job
+                return;
+            }
+
+            unset($_SERVER['TENANT']);
+            unset($_ENV['TENANT']);
+
+            // Restore the original values since the tenant boostrapper modified them
+            foreach (self::$landlordValues as $key => $value) {
+                $_SERVER[$key] = $value;
+                $_ENV[$key] = $value;
+            }
+        });
+
         // Listen to the events for our core screen
         // types and add our javascript
         Facades\Event::listen(ScreenBuilderStarting::class, function ($event) {
