@@ -62,6 +62,10 @@ class TenantBootstrapper
 
             return;
         }
+
+        // Set storage path
+        $app->useStoragePath($app->basePath('storage/tenant_' . $tenantData['id']));
+
         $this->setTenantEnvironmentVariables($tenantData);
 
         // Use tenant's translation files. Doing this here so it's available in cached filesystems.php
@@ -75,11 +79,9 @@ class TenantBootstrapper
     {
         // Additional configs are set in SwitchTenant.php
 
-        $tenantId = $tenantData['id'];
         $config = json_decode($tenantData['config'], true);
 
-        $this->set('APP_CONFIG_CACHE', $this->app->basePath('storage/tenant_' . $tenantId . '/config.php'));
-        $this->set('LARAVEL_STORAGE_PATH', $this->app->basePath('storage/tenant_' . $tenantId));
+        $this->set('APP_CONFIG_CACHE', $this->app->storagePath('config.php'));
         $this->set('APP_URL', $config['app.url']);
         $this->set('APP_KEY', $this->decrypt($config['app.key']));
         $value = $tenantData['database'];
@@ -95,7 +97,7 @@ class TenantBootstrapper
         }
 
         $this->set('DB_PASSWORD', $password);
-        $this->set('LOG_PATH', $this->app->basePath('storage/tenant_' . $tenantId . '/logs/processmaker.log'));
+        $this->set('LOG_PATH', $this->app->storagePath('logs/processmaker.log'));
     }
 
     public static function saveLandlordValues($app)
@@ -175,10 +177,5 @@ class TenantBootstrapper
         $stmt->execute($params);
 
         return $stmt->fetch();
-    }
-
-    private function debug($message)
-    {
-        file_put_contents(base_path('storage/debug.log'), $message . PHP_EOL, FILE_APPEND);
     }
 }
