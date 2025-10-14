@@ -192,8 +192,14 @@
                   modalVueInstance.$refs.updateAvatarModal.show();
                 },
                 profileUpdate() {
-                  if(this.emailHasChanged && !this.ssoUser) {
-                    $('#validateModal').modal('show');
+                  if(this.emailHasChanged) {
+                    if (this.ssoUser) {
+                      let message = 'Email address for users created via SAML synchronization cannot be edited manually.';
+                      ProcessMaker.alert(this.$t($message), 'warning');
+                      return;
+                    } else {
+                      $('#validateModal').modal('show');
+                    }
                   } else {
                     this.saveProfileChanges();
                   }
