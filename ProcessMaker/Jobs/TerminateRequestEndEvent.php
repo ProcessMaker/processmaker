@@ -40,5 +40,7 @@ class TerminateRequestEndEvent extends BpmnAction implements ShouldQueue
 
         $instance->status = 'COMPLETED';
         $instance->save();
+
+        CaseUpdateStatus::dispatchSync($instance);
     }
 }

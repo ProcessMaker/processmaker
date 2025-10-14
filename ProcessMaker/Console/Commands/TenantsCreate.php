@@ -198,7 +198,9 @@ class TenantsCreate extends Command
             $this->line('- Run migrations and seed the database');
             $this->line('- Run the install command for each package');
             $this->line('- Run artisan upgrade');
-            $this->line('- Install passport by calling passport:install');
+            $this->line('- Install passport by calling passport:install (create the default clients');
+            $this->line('- Reset the admin password with auth:set-password');
+            $this->line('- Run processmaker:initialize-script-microservice');
             $this->info("For example, `TENANT={$tenant->id} php artisan migrate:fresh --seed`");
         }
     }

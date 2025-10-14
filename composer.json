@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.15.9",
+    "version": "4.15.9+beta-2",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -106,7 +106,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "f1a10afe",
+            "build": "4a22a442",
             "cicd-enabled": true,
             "custom": {
                 "package-ellucian-ethos": "1.19.7",
@@ -154,14 +154,14 @@
                 "package-advanced-user-manager": "1.13.0",
                 "package-ai": "1.16.8",
                 "package-analytics-reporting": "1.11.1",
-                "package-auth": "1.24.9",
+                "package-auth": "1.24.10",
                 "package-collections": "2.27.0",
                 "package-comments": "1.16.0",
                 "package-conversational-forms": "1.15.0",
                 "package-data-sources": "1.34.2",
                 "package-decision-engine": "1.16.1",
                 "package-dynamic-ui": "1.28.2",
-                "package-email-start-event": "1.0.6",
+                "package-email-start-event": "1.0.7",
                 "package-files": "1.23.0",
                 "package-googleplaces": "1.12.0",
                 "package-photo-video": "1.6.1",
@@ -179,9 +179,9 @@
                 "package-translations": "2.14.4",
                 "package-versions": "1.13.0",
                 "package-vocabularies": "2.17.0",
-                "package-webentry": "2.29.7",
+                "package-webentry": "2.29.8",
                 "package-api-testing": "1.3.1",
-                "package-variable-finder": "1.0.3",
+                "package-variable-finder": "1.0.5",
                 "packages": "^0"
             },
             "docker-executors": {
