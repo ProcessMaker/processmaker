@@ -66,7 +66,7 @@
         "@processmaker/vue-form-elements": "0.65.4",
         "@processmaker/vue-multiselect": "2.3.0",
         "@tinymce/tinymce-vue": "2.0.0",
-        "axios": "^0.27.2",
+        "axios": "^0.30.2",
         "bootstrap": "^4.5.3",
         "bootstrap-vue": "^2.18.1",
         "bpmn-font": "^0.10.0",
