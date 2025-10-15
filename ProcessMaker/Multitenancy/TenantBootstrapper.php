@@ -84,8 +84,7 @@ class TenantBootstrapper
         $this->set('APP_CONFIG_CACHE', $this->app->storagePath('config.php'));
         $this->set('APP_URL', $config['app.url']);
         $this->set('APP_KEY', $this->decrypt($config['app.key']));
-        $value = $tenantData['database'];
-        $this->set('DB_DATABASE', $value);
+        $this->set('DB_DATABASE', $tenantData['database']);
         $this->set('DB_USERNAME', $tenantData['username'] ?? $this->getOriginalValue('DB_USERNAME'));
 
         $encryptedPassword = $tenantData['password'];
@@ -124,7 +123,14 @@ class TenantBootstrapper
 
     private function env($key, $default = null)
     {
-        return $_SERVER[$key] ?? $default;
+        $value = $_SERVER[$key] ?? $default;
+        if ($value === 'true') {
+            $value = true;
+        } elseif ($value === 'false') {
+            $value = false;
+        }
+
+        return $value;
     }
 
     private function set($key, $value)
