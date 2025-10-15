@@ -11,6 +11,7 @@ use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Queue\Events\JobAttempted;
 use Illuminate\Queue\Events\JobProcessing;
+use Illuminate\Queue\Events\JobRetryRequested;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Env;
 use Illuminate\Support\Facades;
@@ -236,52 +237,75 @@ class ProcessMakerServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register app-level events.
+     * In multitenancy, we need to bootstrap a new app with the tenant id set.
+     * This is because queue workers are long-running processes that are not
+     * tenant aware.
      */
-    protected static function registerEvents(): void
+    private static function bootstrapTenantApp(JobProcessing|JobRetryRequested $event): void
     {
-        Facades\Event::listen(JobProcessing::class, function ($event) {
-            Context::hydrate($event->job->payload()['illuminate:log:context'] ?? null);
-            $tenantId = Context::get(config('multitenancy.current_tenant_context_key'));
-            if ($tenantId) {
-                if (!method_exists($event->job, 'getRedisQueue')) {
-                    // Not a redis job
-                    return;
-                }
-
-                // Save the landlord's config values so we can reset them later
-                if (self::$landlordValues === null) {
-                    foreach (TenantBootstrapper::$landlordKeysToSave as $key) {
-                        self::$landlordValues[$key] = $_SERVER[$key] ?? '';
-                    }
-                }
-
-                // Create a new tenant app instance
-                $_SERVER['TENANT'] = $tenantId;
-                $_ENV['TENANT'] = $tenantId;
-                $tenantApp = require app()->bootstrapPath('app.php');
-                $tenantApp->instance('landlordValues', self::$landlordValues);
-                $tenantApp->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
-
-                // Change the job's app service container to the tenant app
-                $event->job->getRedisQueue()->setContainer($tenantApp);
-            }
-        });
-
-        Facades\Event::listen(JobAttempted::class, function ($event) {
+        Context::hydrate($event->job->payload()['illuminate:log:context'] ?? null);
+        $tenantId = Context::get(config('multitenancy.current_tenant_context_key'));
+        if ($tenantId) {
             if (!method_exists($event->job, 'getRedisQueue')) {
                 // Not a redis job
                 return;
             }
 
-            unset($_SERVER['TENANT']);
-            unset($_ENV['TENANT']);
-
-            // Restore the original values since the tenant boostrapper modified them
-            foreach (self::$landlordValues as $key => $value) {
-                $_SERVER[$key] = $value;
-                $_ENV[$key] = $value;
+            // Save the landlord's config values so we can reset them later
+            if (self::$landlordValues === null) {
+                foreach (TenantBootstrapper::$landlordKeysToSave as $key) {
+                    self::$landlordValues[$key] = $_SERVER[$key] ?? '';
+                }
             }
+
+            // Create a new tenant app instance
+            $_SERVER['TENANT'] = $tenantId;
+            $_ENV['TENANT'] = $tenantId;
+            $tenantApp = require app()->bootstrapPath('app.php');
+            $tenantApp->instance('landlordValues', self::$landlordValues);
+            $tenantApp->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+
+            // Change the job's app service container to the tenant app
+            $event->job->getRedisQueue()->setContainer($tenantApp);
+        }
+    }
+
+    private static function resetTenantApp($event): void
+    {
+        if (!method_exists($event->job, 'getRedisQueue')) {
+            // Not a redis job
+            return;
+        }
+
+        unset($_SERVER['TENANT']);
+        unset($_ENV['TENANT']);
+
+        if (!self::$landlordValues) {
+            return;
+        }
+
+        // Restore the original values since the tenant boostrapper modified them
+        foreach (self::$landlordValues as $key => $value) {
+            $_SERVER[$key] = $value;
+            $_ENV[$key] = $value;
+        }
+    }
+
+    /**
+     * Register app-level events.
+     */
+    protected static function registerEvents(): void
+    {
+        Facades\Event::listen(JobProcessing::class, function (JobProcessing $event) {
+            self::bootstrapTenantApp($event);
+        });
+
+        Facades\Event::listen(JobRetryRequested::class, function (JobRetryRequested $event) {
+            self::bootstrapTenantApp($event);
+        });
+
+        Facades\Event::listen(JobAttempted::class, function (JobAttempted $event) {
+            self::resetTenantApp($event);
         });
 
         // Listen to the events for our core screen
