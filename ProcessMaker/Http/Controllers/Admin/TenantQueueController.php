@@ -20,7 +20,7 @@ class TenantQueueController extends Controller
     public function __construct()
     {
         // Check if tenant job tracking is enabled
-        $enabled = config('queue.tenant_tracking_enabled', false);
+        $enabled = TenantQueueServiceProvider::enabled();
 
         if (!$enabled) {
             if (!app()->runningInConsole()) {

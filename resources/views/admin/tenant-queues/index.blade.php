@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-    {{__('Tenant Jobs Dashboard')}}
+    {{__('Jobs Dashboard')}}
 @endsection
 
 @section('sidebar')
@@ -11,7 +11,7 @@
 @section('breadcrumbs')
     @include('shared.breadcrumbs', ['routes' => [
         __('Admin') => route('admin.index'),
-        __('Tenant Jobs') => null,
+        __('Jobs') => null,
     ]])
 @endsection
 

@@ -6,10 +6,14 @@ use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
+use Illuminate\Queue\Events\JobQueued;
+use Illuminate\Queue\Events\JobQueueing;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Horizon\Events\JobPushed;
 
 class TenantQueueServiceProvider extends ServiceProvider
 {
@@ -27,9 +31,7 @@ class TenantQueueServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Only register queue event listeners if tenant job tracking is enabled
-        $enabled = config('queue.tenant_tracking_enabled', false);
-
-        if ($enabled) {
+        if (self::enabled()) {
             $this->registerQueueEventListeners();
         }
     }
@@ -39,6 +41,10 @@ class TenantQueueServiceProvider extends ServiceProvider
      */
     protected function registerQueueEventListeners(): void
     {
+        Event::listen(JobQueued::class, function (JobQueued $event) {
+            $this->trackJobByTenant($event, 'pushed', $event->id, $event->queue);
+        });
+
         // Job pending
         Queue::before(function (JobProcessing $event) {
             $this->trackJobByTenant($event->job, 'pending');
@@ -63,7 +69,7 @@ class TenantQueueServiceProvider extends ServiceProvider
     /**
      * Track job by tenant in Redis.
      */
-    protected function trackJobByTenant($job, string $status): void
+    protected function trackJobByTenant($job, string $status, $jobId = null, $queue = null): void
     {
         try {
             $tenantId = $this->extractTenantIdFromJob($job);
@@ -72,7 +78,7 @@ class TenantQueueServiceProvider extends ServiceProvider
                 return;
             }
 
-            $jobId = $job->getJobId();
+            $jobId = $jobId ?? $job->getJobId();
             if (!$jobId) {
                 return;
             }
@@ -82,19 +88,23 @@ class TenantQueueServiceProvider extends ServiceProvider
             $jobData = [
                 'id' => $jobId,
                 'name' => $this->getJobName($job),
-                'queue' => $job->getQueue() ?? 'default',
+                'queue' => ($queue ?? $job->getQueue()) ?? 'default',
                 'status' => $status,
-                'created_at' => $payload['pushedAt'],
+                'created_at' => $status === 'pushed' ? str_replace(',', '.', microtime(true)) : $payload['pushedAt'],
                 'completed_at' => $status === 'completed' ? str_replace(',', '.', microtime(true)) : null,
                 'failed_at' => $status === 'failed' ? str_replace(',', '.', microtime(true)) : null,
                 'updated_at' => str_replace(',', '.', microtime(true)),
                 'tenant_id' => $tenantId,
-                'attempts' => $job->attempts(),
+                'attempts' => $status === 'pushed' ? 0 : $job->attempts(),
                 'payload' => json_encode($payload['data']),
             ];
 
             if ($status === 'pending') {
                 $jobData['queued_at'] = str_replace(',', '.', microtime(true));
+            }
+
+            if ($status === 'pushed') {
+                $jobData['pushed_at'] = str_replace(',', '.', microtime(true));
             }
 
             // Check if job already exists
@@ -230,7 +240,7 @@ class TenantQueueServiceProvider extends ServiceProvider
      */
     protected function handleStatusTransition(string $tenantId, string $jobId, string $newStatus): void
     {
-        $statuses = ['pending', 'completed', 'failed', 'exception'];
+        $statuses = ['pushed', 'pending', 'completed', 'failed', 'exception'];
 
         foreach ($statuses as $status) {
             if ($status === $newStatus) {
@@ -306,7 +316,7 @@ class TenantQueueServiceProvider extends ServiceProvider
             $jobIds = Redis::lrange($listKey, 0, $limit - 1);
         } else {
             // Get jobs from all statuses
-            $statuses = ['pending', 'completed', 'failed', 'exception'];
+            $statuses = ['pushed', 'pending', 'completed', 'failed', 'exception'];
             $jobIds = [];
 
             foreach ($statuses as $status) {
@@ -345,6 +355,7 @@ class TenantQueueServiceProvider extends ServiceProvider
 
         return [
             'total' => (int) ($counters['total'] ?? 0),
+            'pushed' => (int) ($counters['pushed'] ?? 0),
             'pending' => (int) ($counters['pending'] ?? 0),
             'completed' => (int) ($counters['completed'] ?? 0),
             'failed' => (int) ($counters['failed'] ?? 0),
@@ -362,7 +373,7 @@ class TenantQueueServiceProvider extends ServiceProvider
 
         $tenants = [];
         foreach ($keys as $key) {
-            $tenantId = str_replace('tenant_job_counters:', '', $key);
+            $tenantId = preg_replace('/^.*:/', '', $key);
             $stats = self::getTenantJobStats($tenantId);
 
             if ($stats['total'] > 0) {
@@ -374,5 +385,14 @@ class TenantQueueServiceProvider extends ServiceProvider
         }
 
         return $tenants;
+    }
+
+    public static function enabled(): bool
+    {
+        if (!config('app.multitenancy')) {
+            return false;
+        }
+
+        return !config('queue.disable_tenant_tracking');
     }
 }
