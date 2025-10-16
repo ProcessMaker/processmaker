@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Auth;
 use Lavary\Menu\Facade as Menu;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Setting;
-use ProcessMaker\Providers\TenantQueueServiceProvider;
 
 class GenerateMenus
 {
@@ -111,13 +110,8 @@ class GenerateMenus
                     'icon' => 'fa-palette',
                 ]);
 
-                $url = 'admin/queues';
-                if (TenantQueueServiceProvider::enabled() && $tenantid = app('currentTenant')?->id) {
-                    $url = 'admin/tenant-queues#/tenant/' . $tenantid . '/jobs';
-                }
-
                 $submenu->add(__('Queue Management'), [
-                    'url' => $url,
+                    'route' => 'queues.index',
                     'icon' => 'fa-infinity',
                 ]);
 

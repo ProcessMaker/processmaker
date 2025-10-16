@@ -395,4 +395,14 @@ class TenantQueueServiceProvider extends ServiceProvider
 
         return !config('queue.disable_tenant_tracking');
     }
+
+    public static function allowAllTenats(): bool
+    {
+        if (!config('app.multitenancy')) {
+            // Only restricted in multitenant environments
+            return true;
+        }
+
+        return config('queue.ui_allow_all_tenants');
+    }
 }

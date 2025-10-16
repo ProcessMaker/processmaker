@@ -27,6 +27,13 @@ class TenantQueueController extends Controller
                 abort(404, 'Tenant queue tracking is disabled');
             }
         }
+
+        // If the route binding has a tenant id, check if the user is allowed to access the tenant queue
+        if ($id = (int) request()->route('tenantId')) {
+            if (!TenantQueueServiceProvider::allowAllTenats() && $id !== app('currentTenant')?->id) {
+                throw new AuthorizationException();
+            }
+        }
     }
 
     /**
@@ -51,6 +58,12 @@ class TenantQueueController extends Controller
         }
 
         $tenantsWithJobs = TenantQueueServiceProvider::getTenantsWithJobs();
+
+        if (!TenantQueueServiceProvider::allowAllTenats()) {
+            $tenantsWithJobs = array_filter($tenantsWithJobs, function ($tenantData) {
+                return (int) $tenantData['id'] === app('currentTenant')?->id;
+            });
+        }
 
         // Enrich with tenant information
         $tenants = [];
@@ -117,6 +130,12 @@ class TenantQueueController extends Controller
         }
 
         $tenantsWithJobs = TenantQueueServiceProvider::getTenantsWithJobs();
+
+        if (!TenantQueueServiceProvider::allowAllTenats()) {
+            $tenantsWithJobs = array_filter($tenantsWithJobs, function ($tenantData) {
+                return (int) $tenantData['id'] === app('currentTenant')?->id;
+            });
+        }
 
         $overallStats = [
             'total_tenants' => count($tenantsWithJobs),
