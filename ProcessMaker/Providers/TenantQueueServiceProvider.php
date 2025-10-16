@@ -42,7 +42,7 @@ class TenantQueueServiceProvider extends ServiceProvider
     protected function registerQueueEventListeners(): void
     {
         Event::listen(JobQueued::class, function (JobQueued $event) {
-            $this->trackJobByTenant($event, 'pushed', $event->id, $event->queue);
+            $this->trackJobByTenant($event, 'pushed', $event->id, $event->queue ?? 'default');
         });
 
         // Job pending
