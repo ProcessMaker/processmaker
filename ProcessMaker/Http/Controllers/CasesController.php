@@ -53,9 +53,9 @@ class CasesController extends Controller
         // "Initialload.js" file causes an issue related to SVG in the modeler
         // The other scripts are not needed in the case detail
         $scriptsDisabled = ['package-slideshow', 'package-process-optimization', 'package-ab-testing', 'package-testing', 'initialLoad'];
-        $managerModelerScripts = array_filter($managerModeler->getScripts(), function ($script) use ($scriptsDisabled) {
+        $managerModelerScripts = array_filter($managerModeler->getScriptWithParams(), function ($script) use ($scriptsDisabled) {
             foreach ($scriptsDisabled as $enabledScript) {
-                if (strpos($script, $enabledScript) !== false) {
+                if (strpos($script['src'], $enabledScript) !== false) {
                     return false;
                 }
             }
@@ -84,6 +84,10 @@ class CasesController extends Controller
         } else {
             $request->summary_screen = $request->getSummaryScreen();
         }
+        // Stage information
+        $stageInfo = $this->getStageInfoByStatus($request);
+        $currentStages = $stageInfo['currentStages'];
+        $progressStage = $stageInfo['progressStage'];
         // Load the screen configured in "Request Detail Screen"
         $request->request_detail_screen = Screen::find($request->process->request_detail_screen_id);
         // The user canCancel if has the processPermission and the case has only one request
@@ -109,6 +113,9 @@ class CasesController extends Controller
         $modelerController = new ModelerController();
         $pmBlockList = $modelerController->getPmBlockList();
 
+        // Is TCE Customization
+        $isTceCustomization = config('app.tce_customization_enable');
+
         // Return the view
         return view('cases.edit', compact(
             'request',
@@ -122,7 +129,10 @@ class CasesController extends Controller
             'managerModelerScripts',
             'bpmn',
             'inflightData',
-            'pmBlockList'
+            'pmBlockList',
+            'progressStage',
+            'currentStages',
+            'isTceCustomization',
         ));
     }
 
@@ -169,6 +179,81 @@ class CasesController extends Controller
             } else {
                 $request->summary_screen['config'] = $screenTranslation->applyTranslations($request->summary_screen);
             }
+        }
+    }
+
+    /**
+     * Get the current stages from a JSON string.
+     *
+     * This method decodes a JSON string representing stages into an associative array.
+     * If the input is null or not a valid JSON string, it returns an empty array.
+     *
+     * @param int|null $id The ID of the stage.
+     * @param string|null $name The name of the stage.
+     * @return array An associative array of stages if the JSON is valid;
+     *               otherwise, an empty array.
+     */
+    public static function formatCurrentStage(?int $id, ?string $name): array
+    {
+        // Initialize currentStages as an empty array
+        $currentStages = [];
+
+        // Check if $id is not null and $name is a valid string
+        if (!is_null($id) && is_string($name)) {
+            $currentStages = [
+                'stage_id' => $id,
+                'stage_name' => $name,
+            ];
+        }
+
+        return $currentStages;
+    }
+
+    /**
+     * Get stage information based on request status
+     *
+     * @param ProcessRequest $request
+     * @return array
+     */
+    private function getStageInfoByStatus(ProcessRequest $request): array
+    {
+        switch ($request->status) {
+            case 'COMPLETED':
+                return [
+                    'currentStages' => [
+                        'stage_name' => __('Completed'),
+                    ],
+                    'progressStage' => 100.0, // 100% completed
+                ];
+            case 'CANCELED':
+                return [
+                    'currentStages' => [
+                        'stage_name' => __('Canceled'),
+                    ],
+                    'progressStage' => 0.0, // 0% progress when canceled
+                ];
+            case 'ERROR':
+                return [
+                    'currentStages' => [
+                        'stage_name' => __('Error'),
+                    ],
+                    'progressStage' => 0.0, // 0% progress when error
+                ];
+            default:
+                $currentStages = $this->formatCurrentStage($request->last_stage_id, $request->last_stage_name);
+                $allStages = $this->getStagesByProcessId($request->process_id);
+                $progressStage = calculateProgressById($request->last_stage_id, $allStages);
+                if (empty($currentStages)) {
+                    $currentStages = [
+                        'stage_name' => __('In Progress'),
+                    ];
+                    $progressStage = 50.0;
+                }
+
+                return [
+                    'currentStages' => $currentStages,
+                    'progressStage' => $progressStage,
+                ];
         }
     }
 }

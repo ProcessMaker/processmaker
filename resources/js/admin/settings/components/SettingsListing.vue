@@ -500,7 +500,17 @@ export default {
       }
     },
     onEdit(row) {
-      this.$refs[`settingComponent_${row.index}`].onEdit(row);
+      this.$nextTick(() => {
+        const componentRef = this.$refs[`settingComponent_${row.index}`];
+        if (componentRef && typeof componentRef.onEdit === 'function') {
+          componentRef.onEdit(row);
+        } else {
+          console.warn(`Component ref not found or onEdit method not available for row ${row.index}`, {
+            componentRef,
+            hasOnEdit: componentRef && typeof componentRef.onEdit === 'function'
+          });
+        }
+      });
     },
     onNLQConversion(pmql) {
       this.searchQuery = pmql;

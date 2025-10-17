@@ -242,6 +242,7 @@ return [
     'screen' => [
         'cache_enabled' => env('SCREEN_CACHE_ENABLED', false),
         'cache_timeout' => env('SCREEN_CACHE_TIMEOUT', 5000), // timeout in milliseconds
+        'show_secure_handler_toggle' => filter_var(env('SCREEN_SECURE_HANDLER_TOGGLE_VISIBLE', false), FILTER_VALIDATE_BOOLEAN),
     ],
 
     'queue_imports' => env('QUEUE_IMPORTS', true),
@@ -280,6 +281,9 @@ return [
 
     'custom_executors' => env('CUSTOM_EXECUTORS', false),
 
+    // Enable or disable TCE customization feature
+    'tce_customization_enable' => env('TCE_CUSTOMIZATION_ENABLED', false),
+
     'prometheus_namespace' => env('PROMETHEUS_NAMESPACE', strtolower(preg_replace('/[^a-zA-Z0-9_]+/', '_', env('APP_NAME', 'processmaker')))),
 
     'server_timing' => [
@@ -292,4 +296,6 @@ return [
     'json_optimization_decode' => env('JSON_OPTIMIZATION_DECODE', false),
 
     'multitenancy' => env('MULTITENANCY', false),
+
+    'resources_core_path' => base_path('resources-core'),
 ];

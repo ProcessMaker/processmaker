@@ -58,6 +58,8 @@ import processNavigationMixin from "../../components/shared/processNavigation";
 import ProcessesMixin from "./mixins/ProcessesMixin";
 import ProcessHeaderStart from "./ProcessHeaderStart.vue";
 
+const tceValidScreen = ["tce-student", "tce-college", "tce-grants"];
+
 export default {
   components: {
     DisplayScreen,
@@ -96,6 +98,11 @@ export default {
         .then((response) => {
           this.screen = response.data;
           this.showScreen = response.data.config !== null;
+        })
+        .catch(() => {
+          if(tceValidScreen.includes(this.screen_id)){
+            window.ProcessMaker.alert(this.$t("TCE dashboards are currently unavailable, please contact with the administrator in order to enable"), "danger");
+          }
         });
     },
   },

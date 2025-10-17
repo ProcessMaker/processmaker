@@ -15,6 +15,7 @@
     <meta name="i18n-mdate" content='{!! json_encode(ProcessMaker\i18nHelper::mdates()) !!}'>
     <meta name="screen-cache-enabled" content="{{ config('app.screen.cache_enabled') ? 'true' : 'false' }}">
     <meta name="screen-cache-timeout" content="{{ config('app.screen.cache_timeout') }}">
+    <meta name="screen-secure-handler-toggle-visible" content="{{ config('app.screen.show_secure_handler_toggle') }}">
     <meta name="settings-translations-enabled" content="{{ config('translations.enabled') ? 'true' : 'false' }}">
     @if(Auth::user())
     <meta name="user-id" content="{{ Auth::user()->id }}">
@@ -50,7 +51,8 @@
         csrfToken: "{{csrf_token()}}",
         userId: "{{\Auth::user()->id}}",
         messages: [],
-        apiTimeout: {{config('app.api_timeout')}}
+        apiTimeout: {{config('app.api_timeout')}},
+        notificationMessages: {!! json_encode(config('notifications.messages')) !!}
       };
       @if(config('broadcasting.default') == 'redis')
         window.Processmaker.broadcasting = {

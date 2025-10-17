@@ -62,14 +62,14 @@ return [
 
         'single' => [
             'driver' => 'single',
-            'path' => base_path('storage/logs/processmaker.log'),
+            'path' => env('LOG_PATH', base_path('storage/logs/processmaker.log')),
             'level' => env('LOG_LEVEL', 'debug'),
             'replace_placeholders' => true,
         ],
 
         'daily' => [
             'driver' => 'daily',
-            'path' => base_path('storage/logs/processmaker.log'),
+            'path' => env('LOG_PATH', base_path('storage/logs/processmaker.log')),
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => 7,
             'replace_placeholders' => true,

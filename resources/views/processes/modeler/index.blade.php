@@ -61,6 +61,8 @@ a {
     },
   ]
 
+  window.ProcessMaker.defaultEmailNotification = @json($defaultEmailNotification);
+
   window.ProcessMaker.multiplayer = {
     broadcaster: "{{config('multiplayer.default')}}",
     host: "{{config('multiplayer.url')}}",
@@ -102,6 +104,7 @@ a {
     launchpad: @json($launchpad),
   }
   const warnings = @json($process->warnings);
+  window.ProcessMaker.tceCustomizationEnable = @json($isTceCustomization);
 
   window.ProcessMaker.EventBus.$on('modeler-start', ({ loadXML, addWarnings, addBreadcrumbs }) => {
     loadXML(window.ProcessMaker.modeler.xml);

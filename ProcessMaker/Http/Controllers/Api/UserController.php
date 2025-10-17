@@ -472,7 +472,20 @@ class UserController extends Controller
             $user->meta = null;
         }
 
-        $user->saveOrFail();
+        try {
+            $user->saveOrFail();
+        } catch (\Exception $e) {
+            $slackExceptionClass = 'ProcessMaker\Packages\Connectors\Slack\Exceptions\SlackConfigurationException';
+
+            if (class_exists($slackExceptionClass) && $e instanceof $slackExceptionClass) {
+                return response([
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+
+            throw $e;
+        }
+
         $changes = $user->getChanges();
 
         //Call new Event to store User Changes into LOG

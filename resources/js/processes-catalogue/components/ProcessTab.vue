@@ -1,437 +1,480 @@
 <template>
   <div :class="{'mt-3': !mobileApp}">
-    <PMTabs v-show="!bTabsHide"
-            ref="bTabs"
-            v-model="activeTab"
-            @input="onTabsInput"
-            @changed="onTabsChanged">
-      <b-tab v-if="mobileApp && item?.seeTabOnMobile===true"
-             v-for="(item, index) in tabsList"
-             :key="index"
-             :title="formatItemName(item.name)"
-             @hook:mounted="checkTabsMounted">
+    <PMTabs
+      v-show="!bTabsHide"
+      ref="bTabs"
+      v-model="activeTab"
+      @input="onTabsInput"
+      @changed="onTabsChanged"
+    >
+      <b-tab
+        v-for="(item, index) in tabsList"
+        v-if="mobileApp && item?.seeTabOnMobile===true"
+        :key="index"
+        :title="formatItemName(item.name)"
+        @hook:mounted="checkTabsMounted"
+      >
         <template v-if="item.type==='myCases'">
-          <filter-mobile type="requests"
-                         :outRef="$refs"
-                         :outName="'listMobile'+index">
-          </filter-mobile>
-          <mobile-requests :ref="'listMobile'+index"
-                           :filter="item.filter"
-                           :process="process">
-          </mobile-requests>
+          <filter-mobile
+            type="requests"
+            :out-ref="$refs"
+            :out-name="'listMobile'+index"
+          />
+          <mobile-requests
+            :ref="'listMobile'+index"
+            :filter="item.filter"
+            :process="process"
+          />
         </template>
         <template v-else-if="item.type==='myTasks'">
-          <filter-mobile type="tasks"
-                         :outRef="$refs"
-                         :outName="'listMobile'+index">
-          </filter-mobile>
-          <mobile-tasks :ref="'listMobile'+index"
-                        :filter="item.filter"
-                        :process="process">
-          </mobile-tasks>
+          <filter-mobile
+            type="tasks"
+            :out-ref="$refs"
+            :out-name="'listMobile'+index"
+          />
+          <mobile-tasks
+            :ref="'listMobile'+index"
+            :filter="item.filter"
+            :process="process"
+          />
         </template>
         <template v-else>
-          <filter-mobile type="tasks"
-                         :outRef="$refs"
-                         :outName="'listMobile'+index">
-          </filter-mobile>
+          <filter-mobile
+            type="tasks"
+            :out-ref="$refs"
+            :out-name="'listMobile'+index"
+          />
           <mobile-tasks
             :ref="'listMobile'+index"
             :filter="item.filter"
             :process="process"
             :advanced-filter="item.advanced_filter"
-          >
-          </mobile-tasks>
+          />
         </template>
       </b-tab>
-      <b-tab v-if="!mobileApp"
-             v-for="(item, index) in tabsList"
-             :key="index"
-             :title="formatItemName(item.name)"
-             @hook:mounted="checkTabsMounted">
+      <b-tab
+        v-for="(item, index) in tabsList"
+        v-if="!mobileApp"
+        :key="index"
+        :title="formatItemName(item.name)"
+        @hook:mounted="checkTabsMounted"
+      >
         <PMSearchBar v-model="item.filter">
-          <template v-slot:right-content>
-            <TabOptions @onTabSettings="onTabSettings"
-                         @onDelete="onDelete">
-            </TabOptions>
+          <template #right-content>
+            <TabOptions
+              @onTabSettings="onTabSettings"
+              @onDelete="onDelete"
+            />
           </template>
         </PMSearchBar>
         <template v-if="item.type==='myCases'">
-          <requests-listing :ref="'list'+index"
-                            :columns="item.columns"
-                            :filter="item.filter"
-                            :pmql="item.pmql"
-                            :autosaveFilter="false"
-                            :fetch-on-created="false"
-                            no-results-message="launchpad"
-                            :advancedFilterProp="advancedFilterProp">
-          </requests-listing>
+          <requests-listing
+            :ref="'list'+index"
+            :columns="item.columns"
+            :filter="item.filter"
+            :pmql="item.pmql"
+            :autosave-filter="false"
+            :fetch-on-created="false"
+            no-results-message="launchpad"
+            :advanced-filter-prop="advancedFilterProp"
+          />
         </template>
         <template v-else-if="item.type==='myTasks'">
-          <tasks-list :ref="'list'+index"
-                      :columns="item.columns"
-                      :filter="item.filter"
-                      :pmql="item.pmql"
-                      :autosaveFilter="false"
-                      :fetch-on-created="false"
-                      :disable-tooltip="false"
-                      :disable-quick-fill-tooltip="false"
-                      no-results-message="launchpad"
-                      :advancedFilterProp="advancedFilterProp">
-          </tasks-list>
+          <tasks-list
+            :ref="'list'+index"
+            :columns="item.columns"
+            :filter="item.filter"
+            :pmql="item.pmql"
+            :autosave-filter="false"
+            :fetch-on-created="false"
+            :disable-tooltip="false"
+            :disable-quick-fill-tooltip="false"
+            no-results-message="launchpad"
+            :advanced-filter-prop="advancedFilterProp"
+          />
         </template>
         <template v-else>
-          <tasks-list :ref="'list'+index"
-                      :columns="item.columns"
-                      :filter="item.filter"
-                      :pmql="item.pmql"
-                      :autosaveFilter="false"
-                      :fetch-on-created="false"
-                      :saved-search="item.idSavedSearch"
-                      no-results-message="launchpad"
-                      :advancedFilterProp="item.advanced_filter"
-                      @in-overdue="setInOverdueMessage">
-          </tasks-list>
+          <tasks-list
+            :ref="'list'+index"
+            :columns="item.columns"
+            :filter="item.filter"
+            :pmql="item.pmql"
+            :autosave-filter="false"
+            :fetch-on-created="false"
+            :saved-search="item.idSavedSearch"
+            no-results-message="launchpad"
+            :advanced-filter-prop="item.advanced_filter"
+            @in-overdue="setInOverdueMessage"
+          />
         </template>
       </b-tab>
-      <template #tabs-end
-                v-if="!mobileApp">
-        <b-nav-item id="pt-b-nav-item-id"
-                    role="presentation"
-                    href="#">
+      <template
+        v-if="!mobileApp"
+        #tabs-end
+      >
+        <b-nav-item
+          id="pt-b-nav-item-id"
+          role="presentation"
+          href="#"
+        >
           <b>+</b>
         </b-nav-item>
       </template>
     </PMTabs>
-    <b-popover :ref="'tabCreate'"
-               :target="'pt-b-nav-item-id'"
-               :triggers="'click'"
-               :container="''"
-               :boundary="'viewport'"
-               :placement="'bottom'"
-               :custom-class="'pt-popover-body'"
-               @shown="onShown">
-      <CreateSavedSearchTab :ref="'createSavedSearchTab'"
-                            :tabsList="tabsList"
-                            @onCancel="onCancelCreateSavedSerchTab"
-                            @onOk="onOkCreateSavedSerchTab">
-      </CreateSavedSearchTab>
+    <b-popover
+      :ref="'tabCreate'"
+      :target="'pt-b-nav-item-id'"
+      :triggers="'click'"
+      :container="''"
+      :boundary="'viewport'"
+      :placement="'bottom'"
+      :custom-class="'pt-popover-body'"
+      @shown="onShown"
+    >
+      <CreateSavedSearchTab
+        :ref="'createSavedSearchTab'"
+        :tabs-list="tabsList"
+        @onCancel="onCancelCreateSavedSerchTab"
+        @onOk="onOkCreateSavedSerchTab"
+      />
     </b-popover>
-    <b-modal :ref="'tabSetting'"
-             :title="$t('Tab Settings')"
-             :button-size="'sm'"
-             :centered="true"
-             @ok="onOkModal">
-      <CreateSavedSearchTab :ref="'tabSettingForm'"
-                            :hideFormsButton="true"
-                            :showOptionSeeTabOnMobile="true"
-                            :tabsList="tabsList"
-                            @onOk="onOkTabSetting">
-      </CreateSavedSearchTab>
+    <b-modal
+      :ref="'tabSetting'"
+      :title="$t('Tab Settings')"
+      :button-size="'sm'"
+      :centered="true"
+      @ok="onOkModal"
+    >
+      <CreateSavedSearchTab
+        :ref="'tabSettingForm'"
+        :hide-forms-button="true"
+        :show-option-see-tab-on-mobile="true"
+        :tabs-list="tabsList"
+        @onOk="onOkTabSetting"
+      />
     </b-modal>
-    <b-modal :ref="'tabDeletion'"
-             :button-size="'sm'"
-             :centered="true"
-             :title="$t('Confirmation')"
-             :ok-title="$t('Delete')"
-             :ok-variant="'danger'"
-             :cancel-title="$t('Cancel')"
-             @ok="onOkDelete">
+    <b-modal
+      :ref="'tabDeletion'"
+      :button-size="'sm'"
+      :centered="true"
+      :title="$t('Confirmation')"
+      :ok-title="$t('Delete')"
+      :ok-variant="'danger'"
+      :cancel-title="$t('Cancel')"
+      @ok="onOkDelete"
+    >
       {{ removalMessage }}
     </b-modal>
   </div>
 </template>
 
 <script>
-  import RequestsListing from "../../requests/components/RequestsListing.vue";
-  import TasksList from "../../tasks/components/TasksList.vue";
-  import CreateSavedSearchTab from "./CreateSavedSearchTab.vue";
-  import PMTabs from "../../components/PMTabs.vue";
-  import PMSearchBar from "../../components/PMSearchBar.vue";
-  import TabOptions from "./TabOptions.vue";
-  import FilterMobile from "../../Mobile/FilterMobile.vue";
-  import MobileRequests from "../../requests/components/MobileRequests.vue";
-  import MobileTasks from "../../tasks/components/MobileTasks.vue";
-  export default {
-    components: {
-      RequestsListing,
-      TasksList,
-      CreateSavedSearchTab,
-      PMTabs,
-      PMSearchBar,
-      TabOptions,
-      FilterMobile,
-      MobileRequests,
-      MobileTasks
+import RequestsListing from "../../requests/components/RequestsListing.vue";
+import TasksList from "../../tasks/components/TasksList.vue";
+import CreateSavedSearchTab from "./CreateSavedSearchTab.vue";
+import PMTabs from "../../components/PMTabs.vue";
+import PMSearchBar from "../../components/PMSearchBar.vue";
+import TabOptions from "./TabOptions.vue";
+import FilterMobile from "../../Mobile/FilterMobile.vue";
+import MobileRequests from "../../requests/components/MobileRequests.vue";
+import MobileTasks from "../../tasks/components/MobileTasks.vue";
+
+export default {
+  components: {
+    RequestsListing,
+    TasksList,
+    CreateSavedSearchTab,
+    PMTabs,
+    PMSearchBar,
+    TabOptions,
+    FilterMobile,
+    MobileRequests,
+    MobileTasks,
+  },
+  props: {
+    currentUser: {
+      type: Object,
     },
-    props: {
-      currentUser: {
-        type: Object
+    process: {
+      type: Object,
+    },
+  },
+  data() {
+    return {
+      tabsList: [{
+        type: "myTasks",
+        name: this.$t("My Tasks"),
+        filter: "",
+        pmql: `(user_id = ${ProcessMaker.user.id}) AND (process_id = ${this.process.id})`,
+        advanced_filter: null,
+        columns: window.Processmaker.defaultColumns || [],
+        seeTabOnMobile: true,
       },
-      process: {
-        type: Object
-      }
-    },
-    data() {
-      return {
-        tabsList: [{
-            type: "myTasks",
-            name: this.$t("My Tasks"),
-            filter: "",
-            pmql: `(user_id = ${ProcessMaker.user.id}) AND (process_id = ${this.process.id})`,
-            advanced_filter: null,
-            columns: window.Processmaker.defaultColumns || [],
-            seeTabOnMobile: true
+      {
+        type: "myCases",
+        name: this.$t("My Cases"),
+        filter: "",
+        pmql: `(user_id = ${ProcessMaker.user.id}) AND (process_id = ${this.process.id})`,
+        advanced_filter: null,
+        columns: [
+          {
+            label: "Case #",
+            field: "case_number",
+            sortable: true,
+            default: true,
+            width: 80,
           },
           {
-            type: "myCases",
-            name: this.$t("My Cases"),
-            filter: "",
-            pmql: `(user_id = ${ProcessMaker.user.id}) AND (process_id = ${this.process.id})`,
-            advanced_filter: null,
-            columns: [
-              {
-                label: "Case #",
-                field: "case_number",
-                sortable: true,
-                default: true,
-                width: 80
-              },
-              {
-                label: "Case title",
-                field: "case_title",
-                sortable: true,
-                default: true,
-                truncate: true,
-                width: 220
-              },
-              {
-                label: "Status",
-                field: "status",
-                sortable: true,
-                default: true,
-                width: 100,
-                filter_subject: {type: 'Status'}
-              },
-              {
-                label: "Started",
-                field: "initiated_at",
-                format: "datetime",
-                sortable: true,
-                default: true,
-                width: 160
-              },
-              {
-                label: "Completed",
-                field: "completed_at",
-                format: "datetime",
-                sortable: true,
-                default: true,
-                width: 160
-              }
-            ],
-            seeTabOnMobile: true
-          }
+            label: "Case title",
+            field: "case_title",
+            sortable: true,
+            default: true,
+            truncate: true,
+            width: 220,
+          },
+          {
+            label: "Status",
+            field: "status",
+            sortable: true,
+            default: true,
+            width: 100,
+            filter_subject: { type: "Status" },
+          },
+          {
+            label: "Started",
+            field: "initiated_at",
+            format: "datetime",
+            sortable: true,
+            default: true,
+            width: 160,
+          },
+          {
+            label: "Completed",
+            field: "completed_at",
+            format: "datetime",
+            sortable: true,
+            default: true,
+            width: 160,
+          },
         ],
-        bTabsHide: false,
-        advancedFilterProp: {
-          filters: [
-            {
-              subject: {type: "Status"},
-              operator: "=",
-              value: "In Progress",
-              _column_field: "status",
-              _column_label: "Status"
-            }
-          ]
-        },
-        activeTab: 0,
-        selectTab: "",
-        removalMessage: "",
-        mobileApp: window.ProcessMaker.mobileApp
-      };
+        seeTabOnMobile: true,
+      },
+      ],
+      bTabsHide: false,
+      advancedFilterProp: {
+        filters: [
+          {
+            subject: { type: "Status" },
+            operator: "=",
+            value: "In Progress",
+            _column_field: "status",
+            _column_label: "Status",
+          },
+        ],
+      },
+      activeTab: 0,
+      selectTab: "",
+      removalMessage: "",
+      mobileApp: window.ProcessMaker.mobileApp,
+    };
+  },
+  mounted() {
+    this.requestTabConfiguration();
+    this.requestMyTasksColumns();
+    this.requestMyCasesColumns();
+    this.verifyTabsLength();
+  },
+  methods: {
+    onTabsInput(activeTabIndex) {
+      this.$nextTick(() => {
+        if (this.$refs[`list${activeTabIndex}`]
+                  && this.$refs[`list${activeTabIndex}`][0]) {
+          this.$refs[`list${activeTabIndex}`][0].fetch();
+        }
+      });
     },
-    mounted() {
-      this.requestTabConfiguration();
-      this.requestMyTasksColumns();
-      this.verifyTabsLength();
-    },
-    methods: {
-      onTabsInput(activeTabIndex) {
-        this.$nextTick(() => {
-          if (this.$refs["list" + activeTabIndex] &&
-                  this.$refs["list" + activeTabIndex][0]) {
-            this.$refs["list" + activeTabIndex][0].fetch();
-          }
-        });
-      },
-      onTabsChanged() {
-        if (this.selectTab === "last") {
-          let index = this.$refs.bTabs.getTabs().length;
-          this.activeTab = index - 1;
-        }
-      },
-      onCancelCreateSavedSerchTab() {
-        this.$refs.tabCreate.$emit("close");
-      },
-      onOkCreateSavedSerchTab(tab) {
-        this.selectTab = "last";
-        this.$refs.tabCreate.$emit("close");
-        this.tabsList.push(tab);
-        this.saveTabConfiguration();
-      },
-      onOkModal(evt) {
-        evt.preventDefault();
-        this.$refs.tabSettingForm.onOk();
-      },
-      onOkTabSetting(tab) {
-        this.$set(this.tabsList, this.activeTab, tab);
-        this.saveTabConfiguration();
-        this.$nextTick(() => {
-          this.$refs.tabSetting.hide();
-        });
-      },
-      onTabSettings() {
-        this.$refs.tabSetting.show();
-        this.$refs.tabSetting.$nextTick(() => {
-          this.$refs.tabSettingForm.set(this.tabsList[this.activeTab], this.activeTab);
-        });
-      },
-      onDelete() {
-        let tabName = {name: this.tabsList[this.activeTab].name};
-        this.removalMessage = this.$t("Do you want to delete the tab {{name}}?", tabName);
-        this.$refs.tabDeletion.show();
-      },
-      onOkDelete() {
-        if (this.tabsList.length > 1) {
-          this.tabsList.splice(this.activeTab, 1);
-          this.saveTabConfiguration();
-        }
-      },
-      setInOverdueMessage() {
-        return "";
-      },
-      onShown() {
-        this.closeOnBlur();
-      },
-      closeOnBlur() {
-        let area = this.$refs.createSavedSearchTab.$el.parentNode;
-        area.addEventListener('mouseenter', () => {
-          window.removeEventListener('click', this.onCancelCreateSavedSerchTab);
-        });
-        area.addEventListener('mouseleave', () => {
-          window.addEventListener('click', this.onCancelCreateSavedSerchTab);
-        });
-      },
-      setDragDrop() {
-        this.$refs.bTabs.getButtons().forEach((button, index) => {
-          let el = button.$el;
-          el.setAttribute('draggable', true);
-          el.ondragstart = (event) => {
-            event.dataTransfer.setData("text/plain", index);
-          };
-          el.ondragover = (event) => {
-            event.preventDefault();
-          };
-          el.ondrop = (event) => {
-            event.preventDefault();
-            let fromIndex = event.dataTransfer.getData("text/plain");
-            if (!/^\d+$/.test(fromIndex)) {
-              return;
-            }
-            fromIndex = parseInt(fromIndex);
-            if (fromIndex === index) {
-              return;
-            }
-            let movedTab = this.tabsList.splice(fromIndex, 1)[0];
-            this.tabsList.splice(index, 0, movedTab);
-            this.saveTabConfiguration();
-            this.$nextTick(() => {
-              this.activeTab = index;
-              this.onTabsInput(index);
-            });
-          };
-        });
-      },
-      checkTabsMounted() {
-        this.$nextTick(() => {
-          this.setDragDrop();
-        });
-      },
-      requestTabConfiguration() {
-        if (this.process.launchpad) {
-          let properties = JSON.parse(this.process.launchpad.properties);
-          if ("tabs" in properties && properties.tabs.length > 0) {
-            const formatedTabs = properties.tabs.map(tab => {
-              return {
-                ...tab,
-                pmql: `(user_id = ${ProcessMaker.user.id}) AND (process_id = ${this.process.id})`
-              };
-            });
-            this.tabsList = formatedTabs;
-          }
-        }
-        this.onTabsInput(0);
-      },
-      requestMyTasksColumns() {
-        if (this.process.launchpad) {
-          let properties = JSON.parse(this.process.launchpad.properties);
-          if ("my_tasks_columns" in properties && properties.my_tasks_columns.length > 0) {
-            this.updateColumnsByType("myTasks", _.cloneDeep(properties.my_tasks_columns));
-          }
-        }
-      },
-      saveTabConfiguration() {
-        let properties = {};
-        if (this.process.launchpad) {
-          properties = JSON.parse(this.process.launchpad.properties);
-          properties.tabs = this.tabsList;
-        } else {
-          //If launchpad does not exist, this conversion is necessary. We need to 
-          //review this behavior of the inherited methods.
-          properties.tabs = this.tabsList;
-          properties = JSON.stringify(properties);
-        }
-        ProcessMaker.apiClient
-                .put(`process_launchpad/${this.process.id}`, {
-                  properties: properties
-                })
-                .then((response) => {
-                  ProcessMaker.alert(this.$t("The launchpad settings were saved."), "success");
-                })
-                .catch((error) => {
-                  ProcessMaker.alert(this.$t("The launchpad settings could not be saved due to an error."), "danger");
-                });
-      },
-      formatItemName(string) {
-        if (string.length > 25) {
-          string = string.slice(0, 25) + "...";
-        }
-        return string;
-      },
-      verifyTabsLength() {
-        this.$nextTick(() => {
-          if (this.mobileApp && this.$refs.bTabs.getTabs().length === 0) {
-            this.bTabsHide = true;
-          }
-        });
-      },
-      updateColumnsByType(type, columns) {
-        this.tabsList.forEach(tab => {
-          if (tab.type === type) {
-            tab.columns = _.cloneDeep(columns);
-          }
-        });
-      },
-      getDefaultColumnsByType(type) {
-        const index = this.tabsList.findIndex(tab => tab.type === type);
-        if (index !== -1) {
-          return _.cloneDeep(this.$refs["list" + index][0].visibleHeaders);
-        }
-        return [];
+    onTabsChanged() {
+      if (this.selectTab === "last") {
+        const index = this.$refs.bTabs.getTabs().length;
+        this.activeTab = index - 1;
       }
-    }
-  };
+    },
+    onCancelCreateSavedSerchTab() {
+      this.$refs.tabCreate.$emit("close");
+    },
+    onOkCreateSavedSerchTab(tab) {
+      this.selectTab = "last";
+      this.$refs.tabCreate.$emit("close");
+      this.tabsList.push(tab);
+      this.saveTabConfiguration();
+    },
+    onOkModal(evt) {
+      evt.preventDefault();
+      this.$refs.tabSettingForm.onOk();
+    },
+    onOkTabSetting(tab) {
+      this.$set(this.tabsList, this.activeTab, tab);
+      this.saveTabConfiguration();
+      this.$nextTick(() => {
+        this.$refs.tabSetting.hide();
+      });
+    },
+    onTabSettings() {
+      this.$refs.tabSetting.show();
+      this.$refs.tabSetting.$nextTick(() => {
+        this.$refs.tabSettingForm.set(this.tabsList[this.activeTab], this.activeTab);
+      });
+    },
+    onDelete() {
+      const tabName = { name: this.tabsList[this.activeTab].name };
+      this.removalMessage = this.$t("Do you want to delete the tab {{name}}?", tabName);
+      this.$refs.tabDeletion.show();
+    },
+    onOkDelete() {
+      if (this.tabsList.length > 1) {
+        this.tabsList.splice(this.activeTab, 1);
+        this.saveTabConfiguration();
+      }
+    },
+    setInOverdueMessage() {
+      return "";
+    },
+    onShown() {
+      this.closeOnBlur();
+    },
+    closeOnBlur() {
+      const area = this.$refs.createSavedSearchTab.$el.parentNode;
+      area.addEventListener("mouseenter", () => {
+        window.removeEventListener("click", this.onCancelCreateSavedSerchTab);
+      });
+      area.addEventListener("mouseleave", () => {
+        window.addEventListener("click", this.onCancelCreateSavedSerchTab);
+      });
+    },
+    setDragDrop() {
+      this.$refs.bTabs.getButtons().forEach((button, index) => {
+        const el = button.$el;
+        el.setAttribute("draggable", true);
+        el.ondragstart = (event) => {
+          event.dataTransfer.setData("text/plain", index);
+        };
+        el.ondragover = (event) => {
+          event.preventDefault();
+        };
+        el.ondrop = (event) => {
+          event.preventDefault();
+          let fromIndex = event.dataTransfer.getData("text/plain");
+          if (!/^\d+$/.test(fromIndex)) {
+            return;
+          }
+          fromIndex = parseInt(fromIndex);
+          if (fromIndex === index) {
+            return;
+          }
+          const movedTab = this.tabsList.splice(fromIndex, 1)[0];
+          this.tabsList.splice(index, 0, movedTab);
+          this.saveTabConfiguration();
+          this.$nextTick(() => {
+            this.activeTab = index;
+            this.onTabsInput(index);
+          });
+        };
+      });
+    },
+    checkTabsMounted() {
+      this.$nextTick(() => {
+        this.setDragDrop();
+      });
+    },
+    requestTabConfiguration() {
+      if (this.process.launchpad) {
+        const properties = JSON.parse(this.process.launchpad.properties);
+        if ("tabs" in properties && properties.tabs.length > 0) {
+          const formatedTabs = properties.tabs.map(tab => {
+            return {
+              ...tab,
+              pmql: `(user_id = ${ProcessMaker.user.id}) AND (process_id = ${this.process.id})`
+            };
+          });
+          this.tabsList = formatedTabs;
+        }
+      }
+      this.onTabsInput(0);
+    },
+    requestMyTasksColumns() {
+      if (this.process.launchpad) {
+        const properties = JSON.parse(this.process.launchpad.properties);
+        if ("my_tasks_columns" in properties && properties.my_tasks_columns.length > 0) {
+          this.updateColumnsByType("myTasks", _.cloneDeep(properties.my_tasks_columns));
+        }
+      }
+    },
+    requestMyCasesColumns() {
+      if (this.process.launchpad) {
+        const properties = JSON.parse(this.process.launchpad.properties);
+        if ("my_cases_columns" in properties && properties.my_cases_columns.length > 0) {
+          this.updateColumnsByType("myCases", _.cloneDeep(properties.my_cases_columns));
+        }
+      }
+    },
+    saveTabConfiguration() {
+      let properties = {};
+      if (this.process.launchpad) {
+        properties = JSON.parse(this.process.launchpad.properties);
+        properties.tabs = this.tabsList;
+      } else {
+        // If launchpad does not exist, this conversion is necessary. We need to
+        // review this behavior of the inherited methods.
+        properties.tabs = this.tabsList;
+        properties = JSON.stringify(properties);
+      }
+      ProcessMaker.apiClient
+        .put(`process_launchpad/${this.process.id}`, {
+          properties,
+        })
+        .then((response) => {
+          ProcessMaker.alert(this.$t("The launchpad settings were saved."), "success");
+        })
+        .catch((error) => {
+          ProcessMaker.alert(this.$t("The launchpad settings could not be saved due to an error."), "danger");
+        });
+    },
+    formatItemName(string) {
+      if (string.length > 25) {
+        string = `${string.slice(0, 25)}...`;
+      }
+      return string;
+    },
+    verifyTabsLength() {
+      this.$nextTick(() => {
+        if (this.mobileApp && this.$refs.bTabs.getTabs().length === 0) {
+          this.bTabsHide = true;
+        }
+      });
+    },
+    updateColumnsByType(type, columns) {
+      this.tabsList.forEach((tab) => {
+        if (tab.type === type) {
+          tab.columns = _.cloneDeep(columns);
+        }
+      });
+    },
+    getDefaultColumnsByType(type) {
+      const index = this.tabsList.findIndex((tab) => tab.type === type);
+      if (index !== -1) {
+        return _.cloneDeep(this.$refs[`list${index}`][0].visibleHeaders);
+      }
+      return [];
+    },
+    getDefaultColumns(type) {
+      const index = this.tabsList.findIndex((tab) => tab.type === type);
+      if (index !== -1) {
+        return structuredClone(this.tabsList[index].columns);
+      }
+      return [];
+    },
+  },
+};
 </script>
 
 <style>

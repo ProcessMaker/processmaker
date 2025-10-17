@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Auth;
 use Laravel\Horizon\Repositories\RedisJobRepository;
 use ProcessMaker\Events\MarkArtisanCachesAsInvalid;
+use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\SanitizeHelper;
 use ProcessMaker\Support\JsonOptimizer;
@@ -279,6 +280,52 @@ if (!function_exists('shouldShow')) {
     }
 }
 
+if (!function_exists('calculateProgressById')) {
+    /**
+     * Calculates the progress percentage of a stage based on its order
+     * within the total number of stages.
+     *
+     * This function searches for the stage with the given ID in the provided list
+     * of stages. Each stage must contain at least 'id' and 'order' keys.
+     * If the stage is found, it calculates the progress as:
+     *     (stage_order / total_stages) * 100
+     *
+     * The result is rounded to two decimal places.
+     *
+     * If the list of stages is `null` or empty, or if the stage with the given ID
+     * is not found, the function returns 0.0.
+     *
+     * @param int|null $id The ID of the stage to calculate progress for.
+     * @param array|null $stages An array of stages, where each stage is an associative array
+     *                           containing at least the keys 'id' and 'order'.
+     *                           This parameter can be null.
+     *
+     * @return float The progress percentage (0.0 to 100.0), rounded to two decimal places.
+     */
+    function calculateProgressById(int|null $id, array|null $stages = [])
+    {
+        if (empty($stages)) {
+            return 0.0;
+        }
+        $totalStages = count($stages);
+        // Consider the completed stage as the last one
+        $totalStages++;
+        $currentStageOrder = 0;
+        foreach ($stages as $stage) {
+            if ($stage['id'] === $id) {
+                $currentStageOrder = $stage['order'];
+                break;
+            }
+        }
+        if ($currentStageOrder === 0) {
+            return 0.0;
+        }
+        $progress = ($currentStageOrder / $totalStages) * 100;
+
+        return round($progress, 2);
+    }
+}
+
 if (!function_exists('validateURL')) {
     /**
      * Validate the URL
@@ -311,5 +358,22 @@ if (!function_exists('json_optimize_decode')) {
     function json_optimize_decode(string $json, bool $assoc = false, int $depth = 512, int $options = 0)
     {
         return JsonOptimizer::decode($json, $assoc, $depth, $options);
+    }
+}
+
+if (!function_exists('feelExpression')) {
+    /**
+     * Evaluate a BPMN FEEL expression
+     *
+     * @param string $expression
+     * @param array $data
+     * @return mixed
+     */
+    function feelExpression(string $expression, array $data)
+    {
+        $formalExp = new FormalExpression();
+        $formalExp->setLanguage('FEEL');
+        $formalExp->setBody($expression);
+        return $formalExp($data);
     }
 }

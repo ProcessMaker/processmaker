@@ -9,15 +9,19 @@ use Illuminate\Foundation\PackageManifest;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
+use Illuminate\Queue\Events\JobAttempted;
+use Illuminate\Queue\Events\JobProcessing;
+use Illuminate\Queue\Events\JobRetryRequested;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Env;
 use Illuminate\Support\Facades;
+use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
-use Laravel\Passport\Passport;
 use Lavary\Menu\Menu;
 use ProcessMaker\Cache\Settings\SettingCacheManager;
 use ProcessMaker\Console\Migration\ExtendedMigrateCommand;
@@ -37,12 +41,14 @@ use ProcessMaker\Managers\MenuManager;
 use ProcessMaker\Managers\ScreenCompiledManager;
 use ProcessMaker\Models;
 use ProcessMaker\Multitenancy\Tenant;
+use ProcessMaker\Multitenancy\TenantBootstrapper;
 use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
 use ProcessMaker\Repositories\SettingsConfigRepository;
 use RuntimeException;
 use Spatie\Multitenancy\Events\MadeTenantCurrentEvent;
 use Spatie\Multitenancy\Events\TenantNotFoundForRequestEvent;
+use Spatie\Multitenancy\TenantCollection;
 
 /**
  * Provide our ProcessMaker specific services.
@@ -60,6 +66,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
     // Track the query time for each request
     private static $queryTime = 0;
+
+    // Track the landlord values for multitenancy
+    private static $landlordValues = null;
 
     public function boot(): void
     {
@@ -88,46 +97,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
         Route::pushMiddlewareToGroup('api', HandleEtag::class);
         // Hook after service providers boot
         self::$bootTime = (microtime(true) - self::$bootStart) * 1000; // Convert to milliseconds
-
-        // Only run this for console commands so we dont query the Tenants database for each request.
-        // This sets up individual supervisors for each tenant so that one tenant does not block
-        // the queue for another tenant. This must be done here instead of SwitchTenant.php because
-        // there is a single horizon instance for all tenants.
-        if ($this->app->runningInConsole() && config('app.multitenancy')) {
-            $tenantIds = Tenant::all()->pluck('id')->toArray();
-            $config = config('horizon.environments');
-            $config = $this->addTenantSupervisors($config, $tenantIds);
-            config(['horizon.environments' => $config]);
-        }
-    }
-
-    private function addTenantSupervisors(array $config, array $tenantIds): array
-    {
-        foreach ($config as $env => &$supervisors) {
-            $newSupervisors = [];
-
-            foreach ($supervisors as $supervisorName => $settings) {
-                foreach ($tenantIds as $tenantId) {
-                    $tenantSupervisorName = "tenant-{$tenantId}-{$supervisorName}";
-
-                    // Copy original settings
-                    $tenantSettings = $settings;
-
-                    // Prepend tenant ID to each queue
-                    if (isset($tenantSettings['queue']) && is_array($tenantSettings['queue'])) {
-                        $tenantSettings['queue'] = array_map(function ($queue) use ($tenantId) {
-                            return "tenant-{$tenantId}-{$queue}";
-                        }, $tenantSettings['queue']);
-                    }
-
-                    $newSupervisors[$tenantSupervisorName] = $tenantSettings;
-                }
-            }
-
-            $supervisors = $newSupervisors;
-        }
-
-        return $config;
     }
 
     public function register(): void
@@ -268,10 +237,77 @@ class ProcessMakerServiceProvider extends ServiceProvider
     }
 
     /**
+     * In multitenancy, we need to bootstrap a new app with the tenant id set.
+     * This is because queue workers are long-running processes that are not
+     * tenant aware.
+     */
+    private static function bootstrapTenantApp(JobProcessing|JobRetryRequested $event): void
+    {
+        Context::hydrate($event->job->payload()['illuminate:log:context'] ?? null);
+        $tenantId = Context::get(config('multitenancy.current_tenant_context_key'));
+        if ($tenantId) {
+            if (!method_exists($event->job, 'getRedisQueue')) {
+                // Not a redis job
+                return;
+            }
+
+            // Save the landlord's config values so we can reset them later
+            if (self::$landlordValues === null) {
+                foreach (TenantBootstrapper::$landlordKeysToSave as $key) {
+                    self::$landlordValues[$key] = $_SERVER[$key] ?? '';
+                }
+            }
+
+            // Create a new tenant app instance
+            $_SERVER['TENANT'] = $tenantId;
+            $_ENV['TENANT'] = $tenantId;
+            $tenantApp = require app()->bootstrapPath('app.php');
+            $tenantApp->instance('landlordValues', self::$landlordValues);
+            $tenantApp->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+
+            // Change the job's app service container to the tenant app
+            $event->job->getRedisQueue()->setContainer($tenantApp);
+        }
+    }
+
+    private static function resetTenantApp($event): void
+    {
+        if (!method_exists($event->job, 'getRedisQueue')) {
+            // Not a redis job
+            return;
+        }
+
+        unset($_SERVER['TENANT']);
+        unset($_ENV['TENANT']);
+
+        if (!self::$landlordValues) {
+            return;
+        }
+
+        // Restore the original values since the tenant boostrapper modified them
+        foreach (self::$landlordValues as $key => $value) {
+            $_SERVER[$key] = $value;
+            $_ENV[$key] = $value;
+        }
+    }
+
+    /**
      * Register app-level events.
      */
     protected static function registerEvents(): void
     {
+        Facades\Event::listen(JobProcessing::class, function (JobProcessing $event) {
+            self::bootstrapTenantApp($event);
+        });
+
+        Facades\Event::listen(JobRetryRequested::class, function (JobRetryRequested $event) {
+            self::bootstrapTenantApp($event);
+        });
+
+        Facades\Event::listen(JobAttempted::class, function (JobAttempted $event) {
+            self::resetTenantApp($event);
+        });
+
         // Listen to the events for our core screen
         // types and add our javascript
         Facades\Event::listen(ScreenBuilderStarting::class, function ($event) {
@@ -320,8 +356,13 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         Facades\Event::listen(TenantNotFoundForRequestEvent::class, function ($event) {
-            if (config('app.multitenancy') === false) {
+            if (config('app.multitenancy') === false || self::actuallyRunningInConsole()) {
                 // This is expected if multitenancy is disabled.
+                // We also need to check if we are running in a console command because
+                // sometimes we run them with APP_RUNNING_IN_CONSOLE=false which will
+                // trigger TenantNotFoundForRequestEvent and we don't want to
+                // stop execution because of that.
+
                 // Call the TenantResolved event with null to continue loading the app.
                 event(new TenantResolved(null));
             } else {
@@ -559,14 +600,41 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return;
         }
 
-        $tenantId = Env::get('TENANT');
-        if ($tenantId) {
-            $tenant = Tenant::findOrFail($tenantId);
-            $tenant->makeCurrent();
-        } elseif (config('app.multitenancy') === false) {
-            // This is expected if multitenancy is disabled.
-            // Call the TenantResolved event with null to continue loading the app.
+        if (config('app.multitenancy') === false) {
             event(new TenantResolved(null));
+
+            return;
         }
+
+        if ($tenant = Tenant::fromBootstrapper()) {
+            $tenant->makeCurrent();
+
+            return;
+        }
+
+        $tenantId = Env::get('TENANT');
+        if (!$tenantId) {
+            event(new TenantResolved(null));
+
+            return;
+        }
+
+        $tenant = Tenant::findOrFail($tenantId);
+        $tenant->makeCurrent();
+    }
+
+    /**
+     * Check if we are actually running in a console command.
+     *
+     * Sometimes we run console commands with APP_RUNNING_IN_CONSOLE=false
+     * so I took this form the framework to see if we are actually running
+     * in a console command. We can't NOT use APP_RUNNING_IN_CONSOLE=true
+     * because some routes are only registered when app()->runningInConsole()
+     * is false.
+     * @return bool
+     */
+    private static function actuallyRunningInConsole(): bool
+    {
+        return PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg';
     }
 }

@@ -11,6 +11,7 @@ use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessMakerModel;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessVersion;
 
 trait HasVersioning
 {
@@ -77,10 +78,19 @@ trait HasVersioning
     public function saveDraft(string $alternative = null)
     {
         $attributes = $this->getModelAttributes();
+
         $attributes['draft'] = true;
         if ($this->hasAlternative()) {
             $alternative = $alternative ?: $this->alternative;
             $attributes['alternative'] = $alternative;
+
+            $processVersion = ProcessVersion::where('process_id', $this->id)
+                ->where('alternative', $attributes['alternative'])
+                ->where('draft', 1)
+                ->first();
+            if ($processVersion) {
+                $attributes['stages'] = $processVersion->stages;
+            }
         }
 
         return $this->versions()->updateOrCreate(
