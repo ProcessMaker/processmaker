@@ -41,8 +41,6 @@ class HideServerHeaders
         'X-Cache-Status',
         'X-Served-From',
         'X-Content-Source',
-        'X-Request-ID',
-        'X-Request-Id',
 
         // PHP specific headers
         'X-PHP-Version',
@@ -71,7 +69,7 @@ class HideServerHeaders
             }
 
             // Set a generic server header to avoid revealing the absence
-            $response->headers->set('Server', 'Web Server');
+            $response->headers->set('Server', 'ProcessMaker Server');
         }
 
         return $response;
