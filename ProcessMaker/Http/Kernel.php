@@ -27,6 +27,7 @@ class Kernel extends HttpKernel
         ServerTimingMiddleware::class,
         Middleware\FileSizeCheck::class,
         Middleware\AddTenantHeaders::class,
+        Middleware\HideServerHeaders::class,
     ];
 
     /**
