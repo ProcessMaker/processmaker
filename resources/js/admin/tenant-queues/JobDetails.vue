@@ -105,6 +105,13 @@
                 </dd>
 
                 <dt class="col-sm-4">
+                  Pushed At:
+                </dt>
+                <dd class="col-sm-8">
+                  {{ formatTimestamp(job.pushed_at) }}
+                </dd>
+
+                <dt class="col-sm-4">
                   Queued At:
                 </dt>
                 <dd class="col-sm-8">
