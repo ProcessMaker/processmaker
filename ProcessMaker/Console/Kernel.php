@@ -88,6 +88,8 @@ class Kernel extends ConsoleKernel
                 $schedule->command('metrics:clear')->cron("*/{$clearInterval} * * * *");
                 break;
         }
+
+        $schedule->command('horizon:snapshot')->everyFiveMinutes();
     }
 
     /**

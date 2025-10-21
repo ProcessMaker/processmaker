@@ -257,6 +257,8 @@ Route::resource('/saml/metadata', MetadataController::class)->only('index');
 
 // Metrics Route
 Route::get('/metrics', function () {
+    Metrics::collectRealTimeMetrics();
+
     return response(Metrics::renderMetrics(), 200, [
         'Content-Type' => 'text/plain; version=0.0.4',
     ]);

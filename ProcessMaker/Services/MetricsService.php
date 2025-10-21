@@ -3,6 +3,9 @@
 namespace ProcessMaker\Services;
 
 use Exception;
+use Laravel\Horizon\Contracts\JobRepository;
+use Laravel\Horizon\Contracts\MetricsRepository;
+use Laravel\Horizon\Contracts\WorkloadRepository;
 use ProcessMaker\Facades\Metrics;
 use Prometheus\CollectorRegistry;
 use Prometheus\Counter;
@@ -65,7 +68,7 @@ class MetricsService
      * @param array $labels The labels of the counter.
      * @return Counter The registered or retrieved counter.
      */
-    public function counter(string $name, string $help = null, array $labels = []): Counter
+    public function counter(string $name, string|null $help = null, array $labels = []): Counter
     {
         $help = $help ?? $name;
 
@@ -85,7 +88,7 @@ class MetricsService
      * @param array $labels The labels of the gauge.
      * @return Gauge The registered or retrieved gauge.
      */
-    public function gauge(string $name, string $help = null, array $labels = []): Gauge
+    public function gauge(string $name, string|null $help = null, array $labels = []): Gauge
     {
         $help = $help ?? $name;
 
@@ -201,7 +204,9 @@ class MetricsService
         // Add system labels
         $labels['app_version'] = $this->getApplicationVersion();
         $labels['app_name'] = config('app.name');
-        $labels['app_custom_label'] = config('app.prometheus_custom_label');
+        if (config('app.custom_label')) {
+            $labels['app_custom_label'] = config('app.custom_label');
+        }
 
         return $labels;
     }
@@ -222,5 +227,30 @@ class MetricsService
         $composer_json_path = json_decode(file_get_contents($root));
 
         return $composer_json_path->version ?? '4.0.0';
+    }
+
+    /**
+     * These are collected every time the /metrics route is accessed.
+     *
+     * @return void
+     */
+    public function collectRealTimeMetrics(): void
+    {
+        $metricsRepository = app(MetricsRepository::class);
+        $jobsRepository = app(JobRepository::class);
+        $workloadRepository = app(WorkloadRepository::class);
+
+        $this->gauge('horizon_jobs_per_minute', 'Jobs processed per minute')->set($metricsRepository->jobsProcessedPerMinute());
+        $this->gauge('horizon_failed_jobs_per_hour', 'Failed jobs per hour')->set($jobsRepository->countRecentlyFailed());
+
+        foreach ($workloadRepository->get() as $workload) {
+            $name = $workload['name'];
+            foreach (['length', 'wait', 'processes'] as $type) {
+                $this->gauge(
+                    'horizon_workload_' . $name . '_' . $type,
+                    'Workload ' . $name . ' ' . $type
+                )->set($workload[$type]);
+            }
+        }
     }
 }
