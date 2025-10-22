@@ -34,6 +34,7 @@ class TenantBootstrapper
         'REDIS_PREFIX',
         'CACHE_SETTING_PREFIX',
         'SCRIPT_MICROSERVICE_CALLBACK',
+        'CACHE_PREFIX',
     ];
 
     public function bootstrap(Application $app)
@@ -86,6 +87,7 @@ class TenantBootstrapper
         $this->set('APP_KEY', $this->decrypt($config['app.key']));
         $this->set('DB_DATABASE', $tenantData['database']);
         $this->set('DB_USERNAME', $tenantData['username'] ?? $this->getOriginalValue('DB_USERNAME'));
+        $this->set('CACHE_PREFIX', $this->getOriginalValue('CACHE_PREFIX') . 'tenant_' . $tenantData['id'] . ':');
 
         $encryptedPassword = $tenantData['password'];
         $password = null;

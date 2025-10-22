@@ -34,7 +34,6 @@ return [
      */
     'switch_tenant_tasks' => [
         SwitchTenant::class,
-        Spatie\Multitenancy\Tasks\PrefixCacheTask::class,
     ],
 
     /*
