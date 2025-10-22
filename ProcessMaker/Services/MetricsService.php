@@ -7,12 +7,14 @@ use Laravel\Horizon\Contracts\JobRepository;
 use Laravel\Horizon\Contracts\MetricsRepository;
 use Laravel\Horizon\Contracts\WorkloadRepository;
 use ProcessMaker\Facades\Metrics;
+use ProcessMaker\Multitenancy\Tenant;
 use Prometheus\CollectorRegistry;
 use Prometheus\Counter;
 use Prometheus\Gauge;
 use Prometheus\Histogram;
 use Prometheus\RenderTextFormat;
-use Prometheus\Storage\Redis;
+use Prometheus\Storage\Redis as PrometheusRedis;
+use Redis;
 use RuntimeException;
 
 class MetricsService
@@ -42,7 +44,12 @@ class MetricsService
         try {
             // Set up Redis as the adapter if none is provided
             if ($adapter === null) {
-                $adapter = Redis::fromExistingConnection(app('redis')->client());
+                $redis = app('redis')->client();
+                $adapter = PrometheusRedis::fromExistingConnection($redis);
+                if (app()->has(Tenant::BOOTSTRAPPED_TENANT)) {
+                    $tenantInfo = app(Tenant::BOOTSTRAPPED_TENANT);
+                    $adapter->setPrefix('tenant_' . $tenantInfo['id'] . ':PROMETHEUS_');
+                }
             }
             $this->collectionRegistry = new CollectorRegistry($adapter);
         } catch (Exception $e) {
@@ -234,7 +241,7 @@ class MetricsService
      *
      * @return void
      */
-    public function collectRealTimeMetrics(): void
+    public function collectQueueMetrics(): void
     {
         $metricsRepository = app(MetricsRepository::class);
         $jobsRepository = app(JobRepository::class);
