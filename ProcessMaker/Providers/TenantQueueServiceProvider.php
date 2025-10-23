@@ -286,7 +286,7 @@ class TenantQueueServiceProvider extends ServiceProvider
         } else {
             // If job is already in the list, move it to the front (most recent)
             Redis::pipeline(function ($pipe) use ($listKey, $jobId) {
-                $pipe->lrem($listKey, 0, $jobId);
+                $pipe->lrem($listKey, $jobId, 0);
                 $pipe->lpush($listKey, $jobId);
                 $pipe->expire($listKey, 86400); // Expire in 24 hours
             });
