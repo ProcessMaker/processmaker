@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Multitenancy;
 
+use Dotenv\Dotenv;
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Env;
@@ -43,8 +44,6 @@ class TenantBootstrapper
             return;
         }
         $this->app = $app;
-
-        self::saveLandlordValues($app);
 
         $tenantData = null;
 
@@ -101,21 +100,12 @@ class TenantBootstrapper
         $this->set('LOG_PATH', $this->app->storagePath('logs/processmaker.log'));
     }
 
-    public static function saveLandlordValues($app)
-    {
-        if ($app->has('landlordValues')) {
-            self::$landlordValues = $app->make('landlordValues');
-
-            return;
-        }
-
-        foreach (self::$landlordKeysToSave as $key) {
-            self::$landlordValues[$key] = $_SERVER[$key] ?? '';
-        }
-    }
-
     private function getOriginalValue($key)
     {
+        if (self::$landlordValues === []) {
+            self::$landlordValues = Dotenv::parse(file_get_contents(base_path('.env')));
+        }
+
         if (!isset(self::$landlordValues[$key])) {
             return '';
         }
