@@ -65,7 +65,7 @@ class SwitchTenant implements SwitchTenantTask
 
         if (!isset($tenant->config['app.docker_host_url'])) {
             // There is no specific override in the tenant's config so set it to the app url
-            $newConfig['app.docker_host_url'] = config('app.docker_host_url', config('app.url'));
+            $newConfig['app.docker_host_url'] = config('app.url');
         }
 
         // Set config from the entry in the tenants table
