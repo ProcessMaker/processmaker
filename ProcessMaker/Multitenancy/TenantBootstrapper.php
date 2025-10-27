@@ -86,7 +86,10 @@ class TenantBootstrapper
         $this->set('APP_KEY', $this->decrypt($config['app.key']));
         $this->set('DB_DATABASE', $tenantData['database']);
         $this->set('DB_USERNAME', $tenantData['username'] ?? $this->getOriginalValue('DB_USERNAME'));
-        $this->set('CACHE_PREFIX', $this->getOriginalValue('CACHE_PREFIX') . 'tenant_' . $tenantData['id'] . ':');
+
+        // Do not set REDIS_PREFIX because it is used by the queue (not tenant specific)
+        $this->set('CACHE_PREFIX', 'tenant_' . $tenantData['id'] . ':' . $this->getOriginalValue('CACHE_PREFIX'));
+        $this->set('CACHE_SETTING_PREFIX', 'tenant_' . $tenantData['id'] . ':' . $this->getOriginalValue('CACHE_SETTING_PREFIX'));
 
         $encryptedPassword = $tenantData['password'];
         $password = null;

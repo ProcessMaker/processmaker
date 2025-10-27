@@ -55,11 +55,6 @@ class SwitchTenant implements SwitchTenantTask
             'app.instance' => config('app.instance') . '_' . $tenant->id,
         ];
 
-        if (!isset($tenant->config['cache.stores.cache_settings.prefix'])) {
-            $newConfig['cache.stores.cache_settings.prefix'] =
-                'tenant_id_' . $tenant->id . ':' . $tenant->getOriginalValue('CACHE_SETTING_PREFIX');
-        }
-
         if (!isset($tenant->config['script-runner-microservice.callback'])) {
             $newConfig['script-runner-microservice.callback'] = str_replace(
                 $tenant->getOriginalValue('APP_URL'),
@@ -70,7 +65,7 @@ class SwitchTenant implements SwitchTenantTask
 
         if (!isset($tenant->config['app.docker_host_url'])) {
             // There is no specific override in the tenant's config so set it to the app url
-            $newConfig['app.docker_host_url'] = config('app.docker_host_url', config('app.url'));
+            $newConfig['app.docker_host_url'] = config('app.url');
         }
 
         // Set config from the entry in the tenants table
