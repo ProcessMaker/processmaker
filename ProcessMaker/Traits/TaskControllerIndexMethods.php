@@ -6,6 +6,7 @@ use Auth;
 use DB;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use ProcessMaker\Filters\Filter;
 use ProcessMaker\Managers\DataManager;
@@ -344,8 +345,14 @@ trait TaskControllerIndexMethods
         });
     }
 
+    private function enableUserManager($user)
+    {
+        // enable user in cache
+        Cache::put("user_{$user->id}_manager", true);
+    }
+
     /**
-     * Get the ID of the default saved search for tasks.
+     * Get the ID of the default saved search for tasks
      *
      * @return int|null
      */

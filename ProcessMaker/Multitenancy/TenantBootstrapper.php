@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Multitenancy;
 
+use Dotenv\Dotenv;
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Env;
@@ -34,6 +35,7 @@ class TenantBootstrapper
         'REDIS_PREFIX',
         'CACHE_SETTING_PREFIX',
         'SCRIPT_MICROSERVICE_CALLBACK',
+        'CACHE_PREFIX',
     ];
 
     public function bootstrap(Application $app)
@@ -42,8 +44,6 @@ class TenantBootstrapper
             return;
         }
         $this->app = $app;
-
-        self::saveLandlordValues($app);
 
         $tenantData = null;
 
@@ -87,6 +87,10 @@ class TenantBootstrapper
         $this->set('DB_DATABASE', $tenantData['database']);
         $this->set('DB_USERNAME', $tenantData['username'] ?? $this->getOriginalValue('DB_USERNAME'));
 
+        // Do not set REDIS_PREFIX because it is used by the queue (not tenant specific)
+        $this->set('CACHE_PREFIX', 'tenant_' . $tenantData['id'] . ':' . $this->getOriginalValue('CACHE_PREFIX'));
+        $this->set('CACHE_SETTING_PREFIX', 'tenant_' . $tenantData['id'] . ':' . $this->getOriginalValue('CACHE_SETTING_PREFIX'));
+
         $encryptedPassword = $tenantData['password'];
         $password = null;
         if ($encryptedPassword) {
@@ -99,21 +103,12 @@ class TenantBootstrapper
         $this->set('LOG_PATH', $this->app->storagePath('logs/processmaker.log'));
     }
 
-    public static function saveLandlordValues($app)
-    {
-        if ($app->has('landlordValues')) {
-            self::$landlordValues = $app->make('landlordValues');
-
-            return;
-        }
-
-        foreach (self::$landlordKeysToSave as $key) {
-            self::$landlordValues[$key] = $_SERVER[$key] ?? '';
-        }
-    }
-
     private function getOriginalValue($key)
     {
+        if (self::$landlordValues === []) {
+            self::$landlordValues = Dotenv::parse(file_get_contents(base_path('.env')));
+        }
+
         if (!isset(self::$landlordValues[$key])) {
             return '';
         }

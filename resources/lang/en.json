@@ -773,6 +773,7 @@
   "Element is not connected": "Element is not connected",
   "Element": "Element",
   "Email Address": "Email Address",
+  "Email address for users created via SAML synchronization cannot be edited manually.": "Email address for users created via SAML synchronization cannot be edited manually.",
   "Email": "Email",
   "Embed Media": "Embed Media",
   "Embed URL": "Embed URL",
