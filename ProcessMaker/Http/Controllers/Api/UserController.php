@@ -209,9 +209,13 @@ class UserController extends Controller
             $include_ids = explode(',', $include_ids_string);
         } elseif ($request->has('assignable_for_task_id')) {
             $task = ProcessRequestToken::findOrFail($request->input('assignable_for_task_id'));
-            if ($task->getAssignmentRule() === 'user_group') {
+            $assignmentRule = $task->getAssignmentRule();
+            if ($assignmentRule === 'user_group') {
                 // Limit the list of users to those that can be assigned to the task
                 $include_ids = $task->process->getAssignableUsers($task->element_id);
+            }
+            if ($assignmentRule === 'rule_expression' && $request->has('form_data')) {
+                $include_ids = $task->getAssigneesFromExpression($request->input('form_data'));
             }
         }
 
