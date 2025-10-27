@@ -107,6 +107,7 @@ class TaskResource extends ApiResource
             'case_number',
             'callable_id',
             'process_version_id',
+            'name',
         ],
         'draft' => ['id', 'task_id', 'data'],
         'screen' => ['id', 'config'],

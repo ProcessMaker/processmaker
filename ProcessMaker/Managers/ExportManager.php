@@ -83,13 +83,11 @@ class ExportManager
         $newReferences = $this->uniqueDiff($newReferences, $references);
         $references = array_merge($references, $newReferences);
         // Find recursively dependencies
-        if ($recursive) {
-            foreach ($newReferences as $ref) {
-                list($class, $id) = $ref;
-                $nextOwner = $class::find($id);
-                if ($nextOwner) {
-                    $references = $this->reviewDependenciesOf($nextOwner, $references, $reviewed, $recursive);
-                }
+        foreach ($newReferences as $ref) {
+            list($class, $id) = $ref;
+            $nextOwner = $class::find($id);
+            if ($nextOwner) {
+                $references = $this->reviewDependenciesOf($nextOwner, $references, $reviewed, $recursive);
             }
         }
 

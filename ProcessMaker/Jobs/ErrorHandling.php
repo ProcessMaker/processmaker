@@ -214,7 +214,7 @@ class ErrorHandling
             if (str_starts_with($result['message'], 'Command exceeded timeout of')) {
                 throw new ScriptTimeoutException($result['message']);
             }
-            throw new ScriptException($result['message']);
+            throw new ScriptException(json_encode($result, JSON_PRETTY_PRINT));
         }
     }
 }

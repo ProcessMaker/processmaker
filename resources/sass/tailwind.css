@@ -23,3 +23,11 @@
       padding: 0;
     }
   }
+
+  /* Reset the list style for the vue-form-renderer and screen-container */
+  #screen-container ul,
+  #vue-form-renderer ul {
+    list-style: revert;
+    margin: revert;
+    padding: revert;
+  }

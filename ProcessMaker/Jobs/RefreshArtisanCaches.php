@@ -3,6 +3,7 @@
 namespace ProcessMaker\Jobs;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -12,28 +13,6 @@ use Illuminate\Support\Facades\Artisan;
 class RefreshArtisanCaches implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
-
-    public $tries = 1;
-
-    /**
-     * Create a new job instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
-     * Debounce when multiple Settings are saved at the same time
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [(new WithoutOverlapping('refresh_artisan_caches'))->dontRelease()];
-    }
 
     /**
      * Execute the job.
@@ -56,7 +35,12 @@ class RefreshArtisanCaches implements ShouldQueue
 
         if (app()->configurationIsCached()) {
             Artisan::call('config:cache', $options);
+        } else {
+            Artisan::call('queue:restart', $options);
+
+            // We call this manually here since this job is dispatched
+            // automatically when the config *is* cached
+            RestartMessageConsumers::dispatchSync();
         }
-        Artisan::call('queue:restart', $options);
     }
 }
