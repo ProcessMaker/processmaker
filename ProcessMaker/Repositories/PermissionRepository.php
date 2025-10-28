@@ -181,31 +181,6 @@ class PermissionRepository implements PermissionRepositoryInterface
     }
 
     /**
-     * Add category view permissions based on create/edit permissions
-     */
-    private function addCategoryViewPermissions(array $permissions): array
-    {
-        $addFor = [
-            'processes' => 'view-process-categories',
-            'scripts' => 'view-script-categories',
-            'screens' => 'view-screen-categories',
-        ];
-
-        foreach ($addFor as $resource => $categoryPermission) {
-            if (
-                in_array('create-' . $resource, $permissions) ||
-                in_array('edit-' . $resource, $permissions)
-            ) {
-                if (!in_array($categoryPermission, $permissions)) {
-                    $permissions[] = $categoryPermission;
-                }
-            }
-        }
-
-        return $permissions;
-    }
-
-    /**
      * Get nested group permissions recursively with protection against infinite loops
      */
     private function getNestedGroupPermissionsOptimized(Group $group, array $visitedGroups = [], int $maxDepth = 10): array

@@ -28,15 +28,4 @@ class PermissionServiceProvider extends ServiceProvider
             );
         });
     }
-
-    /**
-     * Bootstrap services.
-     */
-    public function boot(): void
-    {
-        // Publish configuration if needed
-        // $this->publishes([
-        //     __DIR__.'/../config/permissions.php' => config_path('permissions.php'),
-        // ], 'permissions');
-    }
 }
