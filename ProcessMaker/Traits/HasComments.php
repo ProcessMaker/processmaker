@@ -25,7 +25,7 @@ trait HasComments
      * @param string|null $subject
      * @param string $type
      * @param string|null $caseNumber
-     * @return \ProcessMaker\Models\Comment
+     * @return Comment
      */
     public function addComment(string $body, ?User $user = null, ?string $subject = null, string $type = 'LOG', ?string $caseNumber = null)
     {

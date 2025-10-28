@@ -34,7 +34,7 @@ class CaseApiRepository implements CaseApiRepositoryInterface
         'completed_at',
         'last_stage_id',
         'last_stage_name',
-        'progress'
+        'progress',
     ];
 
     protected $sortableFields = [
