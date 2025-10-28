@@ -182,7 +182,7 @@ class PermissionRepositoryTest extends TestCase
     }
 
     /**
-     * Test that getGroupPermissions includes nested group permissions
+     * Test that getNestedGroupPermissions includes nested group permissions
      */
     public function test_get_group_permissions_includes_nested_permissions()
     {
@@ -205,7 +205,7 @@ class PermissionRepositoryTest extends TestCase
         $this->group3->permissions()->attach($this->permission3->id);
 
         // Get Group1 permissions (should include nested)
-        $permissions = $this->repository->getGroupPermissions($this->group1->id);
+        $permissions = $this->repository->getNestedGroupPermissions($this->group1->id);
 
         // Assert that all permissions are included
         $this->assertContains('permission-1', $permissions);

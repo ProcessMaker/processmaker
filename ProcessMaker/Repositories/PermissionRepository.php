@@ -67,29 +67,31 @@ class PermissionRepository implements PermissionRepositoryInterface
     /**
      * Get group permissions for a user (optimized with hierarchical inheritance)
      */
-    public function getGroupPermissions(int $groupId): array
+    public function getGroupPermissions(int $userId): array
     {
-        $group = Group::with([
-            'permissions',
+        $user = User::with([
             'groupMembersFromMemberable.group.permissions',
-        ])->find($groupId);
+        ])->find($userId);
 
-        if (!$group) {
+        if (!$user) {
             return [];
         }
 
         $permissions = [];
 
-        // Add direct group permissions
-        if ($group->permissions) {
-            foreach ($group->permissions as $permission) {
-                $permissions[] = $permission->name;
+        // Add group permissions (including nested groups through recursion)
+        foreach ($user->groupMembersFromMemberable as $groupMember) {
+            $group = $groupMember->group;
+            if ($group && $group->permissions) {
+                foreach ($group->permissions as $permission) {
+                    $permissions[] = $permission->name;
+                }
+
+                // Get nested group permissions recursively
+                $nestedPermissions = $this->getNestedGroupPermissionsOptimized($group);
+                $permissions = array_merge($permissions, $nestedPermissions);
             }
         }
-
-        // Add nested group permissions recursively
-        $nestedPermissions = $this->getNestedGroupPermissionsOptimized($group);
-        $permissions = array_merge($permissions, $nestedPermissions);
 
         return array_unique($permissions);
     }
@@ -169,10 +171,11 @@ class PermissionRepository implements PermissionRepositoryInterface
         $groupPermissions = $group->permissions()->pluck('name')->toArray();
         $permissions = array_merge($permissions, $groupPermissions);
 
-        // Get nested group permissions recursively
+        // Get nested group permissions recursively from parent groups
         foreach ($group->groupMembersFromMemberable as $member) {
-            if ($member->member_type === Group::class) {
-                $nestedPermissions = $this->getNestedGroupPermissions($member->member_id);
+            if ($member->member_type === Group::class && $member->group) {
+                // Recurse on the parent group (group_id), not the current group (member_id)
+                $nestedPermissions = $this->getNestedGroupPermissions($member->group->id);
                 $permissions = array_merge($permissions, $nestedPermissions);
             }
         }
