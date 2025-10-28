@@ -10,12 +10,12 @@
                 <li>{{ $t('Description') }}: <span class="fw-semibold">{{ processInfo.description }}</span></li>
                 <li>{{ $t('Categories') }}: <span class="fw-semibold">{{ processInfo.categories }}</span></li>
                 <li>{{ $t('Process Manager') }}:
-                    <span class="fw-semibold">
-                        <b-link v-if="processInfo.processManagerId"
-                            :href="`/profile/${processInfo.processManagerId}`"
-                            target="_blank">{{ processInfo.processManager }}</b-link>
-                        <span v-else>{{ processInfo.processManager }}</span>
-                    </span>
+                    <span v-if="!processInfo.processManager || processInfo.processManager.length === 0 || processInfo.processManager === 'N/A'" class="fw-semibold">N/A</span>
+                    <ul v-else class="process-manager-list">
+                        <li v-for="manager in processInfo.processManager" :key="manager.managerId" class="process-manager-item">
+                            <b-link :href="`/profile/${manager.managerId}`" target="_blank">{{ manager.managerName }}</b-link>
+                        </li>
+                    </ul>
                 </li>
                 <li>{{ $t('Created') }}: <span class="fw-semibold">{{ processInfo.created_at }}</span></li>
                 <li>{{ $t('Last Modified') }}:
@@ -285,6 +285,17 @@ export default {
 .process-summary {
     padding-left: 0;
     list-style: none;
+}
+
+.process-manager-list {
+    padding-left: 20px;
+    margin-top: 5px;
+    margin-bottom: 0;
+    list-style: disc;
+}
+
+.process-manager-item {
+    margin-bottom: 2px;
 }
 
 .process-options-helper-text {

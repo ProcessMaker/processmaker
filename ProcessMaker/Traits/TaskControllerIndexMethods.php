@@ -334,7 +334,11 @@ trait TaskControllerIndexMethods
     public function applyProcessManager($query, $user)
     {
         $ids = Process::select(['id'])
-            ->where('properties->manager_id', $user->id)
+            ->where(function ($subQuery) use ($user) {
+                // Handle both single ID and array of IDs in JSON
+                $subQuery->whereRaw("JSON_EXTRACT(properties, '$.manager_id') = ?", [$user->id])
+                    ->orWhereRaw("JSON_CONTAINS(JSON_EXTRACT(properties, '$.manager_id'), CAST(? AS JSON))", [$user->id]);
+            })
             ->where('status', 'ACTIVE')
             ->get()
             ->toArray();

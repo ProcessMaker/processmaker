@@ -257,7 +257,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             case 'manager':
                 $process = $this->process()->first();
 
-                return collect([$process?->manager_id]);
+                return collect($process?->manager_id ?? []);
                 break;
             default:
                 return collect([]);

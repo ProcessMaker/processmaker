@@ -142,7 +142,7 @@ class TaskAssignmentTest extends TestCase
         $process->manager_id = User::factory()->create()->id;
         $process->save();
         $instance = $this->startProcess($process, 'node_1');
-        $this->assertEquals($process->manager_id, $instance->tokens()->where('status', 'ACTIVE')->first()->user_id);
+        $this->assertContains($instance->tokens()->where('status', 'ACTIVE')->first()->user_id, $process->manager_id);
     }
 
     /**
@@ -161,7 +161,7 @@ class TaskAssignmentTest extends TestCase
         ]);
         $this->assertEquals(0, $group->groupMembers()->count());
         $instance = $this->startProcess($process, 'node_1');
-        $this->assertEquals($process->manager_id, $instance->tokens()->where('status', 'ACTIVE')->first()->user_id);
+        $this->assertContains($instance->tokens()->where('status', 'ACTIVE')->first()->user_id, $process->manager_id);
     }
 
     /**
@@ -176,7 +176,7 @@ class TaskAssignmentTest extends TestCase
         $process->manager_id = User::factory()->create()->id;
         $process->save();
         $instance = $this->startProcess($process, 'node_1');
-        $this->assertEquals($process->manager_id, $instance->tokens()->where('status', 'ACTIVE')->first()->user_id);
+        $this->assertContains($instance->tokens()->where('status', 'ACTIVE')->first()->user_id, $process->manager_id);
     }
 
     /**
@@ -191,7 +191,7 @@ class TaskAssignmentTest extends TestCase
         $process->manager_id = User::factory()->create()->id;
         $process->save();
         $instance = $this->startProcess($process, 'node_1');
-        $this->assertEquals($process->manager_id, $instance->tokens()->where('status', 'ACTIVE')->first()->user_id);
+        $this->assertContains($instance->tokens()->where('status', 'ACTIVE')->first()->user_id, $process->manager_id);
     }
 
     /**
@@ -206,6 +206,6 @@ class TaskAssignmentTest extends TestCase
         $process->manager_id = User::factory()->create()->id;
         $process->save();
         $instance = $this->startProcess($process, 'node_1');
-        $this->assertEquals($process->manager_id, $instance->tokens()->where('status', 'ACTIVE')->first()->user_id);
+        $this->assertContains($instance->tokens()->where('status', 'ACTIVE')->first()->user_id, $process->manager_id);
     }
 }

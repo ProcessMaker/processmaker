@@ -146,7 +146,7 @@ export default {
          // TODO: Complete Changelog
         // created_at: asset.attributes.created_at || "N/A",
         // updated_at: asset.attributes.updated_at || "N/A",
-        processManager: asset.process_manager || "N/A",
+        processManager: this.buildProcessManagerInfo(asset.process_manager, asset.process_manager_id),
         processManagerId: asset.process_manager_id || null,
         lastModifiedBy: asset.last_modified_by || "N/A",
         lastModifiedById: asset.last_modified_by_id || null,
@@ -252,5 +252,23 @@ export default {
         break;
     }
     return route;
+  },
+
+  buildProcessManagerInfo(managerNames, managerIds) {
+    // Handle legacy format or empty data
+    if (!managerNames || managerNames === "N/A" || !Array.isArray(managerNames)) {
+      return "N/A";
+    }
+
+    // If we have both names and IDs, combine them
+    if (Array.isArray(managerIds) && managerIds.length > 0) {
+      return managerNames.map((name, index) => ({
+        managerId: managerIds[index] || null,
+        managerName: name
+      }));
+    }
+
+    // If we only have names, return them as simple strings
+    return managerNames;
   },
 };

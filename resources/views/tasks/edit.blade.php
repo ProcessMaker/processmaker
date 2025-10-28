@@ -433,7 +433,7 @@
     let draftTask = task.draft;
     const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
-    const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
+    const userIsProcessManager = {{ in_array(Auth::user()->id, $task->process?->manager_id ?? []) ? "true": "false" }};
     const userConfiguration = @json($userConfiguration);
     let screenFields = @json($screenFields);
     window.Processmaker.user = @json($currentUser);

@@ -65,7 +65,8 @@
         >
           <select-user
             v-model="manager"
-            :multiple="false"
+            :multiple="true"
+            :max-selection="10"
             name="process_manager_id"
           />
         </b-form-group>
@@ -142,7 +143,7 @@ export default {
           {"content": "Cancel", "action": "hide()", "variant": "outline-secondary", "disabled": false, "hidden": false},
           {"content": "Create", "action": "createTemplate", "variant": "primary", "disabled": false, "hidden": false},
       ],
-      manager: "",
+      manager: [],
     };
   },
   watch: {
@@ -160,7 +161,7 @@ export default {
     },
     manager() {
       if (!this.manager) {
-        this.manager = "";
+        this.manager = [];
       }
     },
   },
@@ -208,7 +209,7 @@ export default {
       this.addError = {};
       this.selectedFile = "";
       this.file = null;
-      this.manager = "";
+      this.manager = [];
       this.$emit("resetModal");
     },
     onSubmit() {
@@ -228,12 +229,13 @@ export default {
       }
       this.disabled = true;
 
+      let managerIds = this.manager && Array.isArray(this.manager) ? [...this.manager.map(manager => manager.id)] : [];
       const formData = new FormData();
       formData.append("name", this.name);
       formData.append("description", this.description);
       formData.append("process_category_id", this.process_category_id);
       formData.append("projects", this.projects);
-      formData.append("manager_id", this.manager.id);
+      formData.append("manager_id", JSON.stringify(managerIds));
       if (this.file) {
         formData.append("file", this.file);
       }
