@@ -155,6 +155,7 @@ class EventServiceProvider extends ServiceProvider
             $this->app['events']->listen(GroupDeleted::class, SecurityLogger::class);
             $this->app['events']->listen(GroupUpdated::class, SecurityLogger::class);
             $this->app['events']->listen(GroupUsersUpdated::class, SecurityLogger::class);
+            $this->app['events']->listen(PermissionUpdated::class, SecurityLogger::class);
             $this->app['events']->listen(ProcessCreated::class, SecurityLogger::class);
             $this->app['events']->listen(ProcessArchived::class, SecurityLogger::class);
             $this->app['events']->listen(ProcessPublished::class, SecurityLogger::class);
