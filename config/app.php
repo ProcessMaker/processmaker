@@ -41,6 +41,9 @@ return [
     // The timeout length for API calls, in milliseconds (0 for no timeout)
     'api_timeout' => env('API_TIMEOUT', 5000),
 
+    // Hide server headers for security (prevents information disclosure)
+    'hide_server_headers' => env('HIDE_SERVER_HEADERS', true),
+
     // Disables PHP execution in the storage directory
     // TODO Is this config value still used anywhere? :)
     'disable_php_upload_execution' => env('DISABLE_PHP_UPLOAD_EXECUTION', 0),
