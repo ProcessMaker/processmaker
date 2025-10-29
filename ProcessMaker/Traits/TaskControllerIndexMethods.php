@@ -154,6 +154,7 @@ trait TaskControllerIndexMethods
     {
         $nonSystem = filter_var($request->input('non_system'), FILTER_VALIDATE_BOOLEAN);
         $allTasks = filter_var($request->input('all_tasks'), FILTER_VALIDATE_BOOLEAN);
+        $hitlEnabled = filter_var(config('smart-extract.hitl_enabled'), FILTER_VALIDATE_BOOLEAN);
         $query->when(!$allTasks, function ($query) {
             $query->where(function ($query) {
                 $query->where('element_type', '=', 'task');
@@ -163,7 +164,7 @@ trait TaskControllerIndexMethods
                 });
             });
         })
-            ->when($nonSystem, function ($query) {
+            ->when($nonSystem && !$hitlEnabled, function ($query) {
                 $query->nonSystem();
             });
     }
