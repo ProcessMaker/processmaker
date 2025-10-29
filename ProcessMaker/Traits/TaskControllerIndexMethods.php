@@ -164,8 +164,20 @@ trait TaskControllerIndexMethods
                 });
             });
         })
-            ->when($nonSystem && !$hitlEnabled, function ($query) {
-                $query->nonSystem();
+            ->when($nonSystem, function ($query) use ($hitlEnabled) {
+                if (!$hitlEnabled) {
+                    $query->nonSystem();
+
+                    return;
+                }
+
+                $query->where(function ($query) {
+                    $query->nonSystem();
+                    $query->orWhere(function ($query) {
+                        $query->where('element_type', '=', 'task');
+                        $query->where('element_name', '=', 'Manual Document Review');
+                    });
+                });
             });
     }
 
