@@ -8,11 +8,10 @@ return new class extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
-        Schema::table('process_request_tokens', function (Blueprint $table) {
-            $table->index('created_at', 'idx_process_request_tokens_created_at');
-        });
+        // Create descending index on created_at for optimized queries
+        DB::statement('CREATE INDEX idx_process_request_tokens_created_at_desc ON process_request_tokens (created_at DESC)');
     }
 
     /**
@@ -21,7 +20,7 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('process_request_tokens', function (Blueprint $table) {
-            $table->dropIndex('idx_process_request_tokens_created_at');
+            $table->dropIndex('idx_process_request_tokens_created_at_desc');
         });
     }
 };
