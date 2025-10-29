@@ -32,6 +32,9 @@ class TenantBootstrapper
         'LOG_PATH',
         'DB_USERNAME',
         'DB_PASSWORD',
+        'DB_HOSTNAME',
+        'DB_PORT',
+        'LANDLORD_DB_DATABASE',
         'REDIS_PREFIX',
         'CACHE_SETTING_PREFIX',
         'SCRIPT_MICROSERVICE_CALLBACK',
@@ -39,6 +42,16 @@ class TenantBootstrapper
     ];
 
     public function bootstrap(Application $app)
+    {
+        try {
+            $this->bootstrapRun($app);
+        } catch (\Exception $e) {
+            file_put_contents(storage_path('logs/tenant_bootstrapper_error.log'), date('Y-m-d H:i:s') . ' ' . get_class($e) . ' in ' . $e->getFile() . ':' . $e->getLine() . ' ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+            throw $e;
+        }
+    }
+
+    public function bootstrapRun(Application $app)
     {
         if (!$this->env('MULTITENANCY')) {
             return;
@@ -100,14 +113,14 @@ class TenantBootstrapper
         $this->set('LOG_PATH', $this->app->storagePath('logs/processmaker.log'));
     }
 
-    private function getOriginalValue($key)
+    private function getOriginalValue($key, $default = '')
     {
         if (self::$landlordValues === []) {
             self::$landlordValues = Dotenv::parse(file_get_contents(base_path('.env')));
         }
 
         if (!isset(self::$landlordValues[$key])) {
-            return '';
+            return $default;
         }
 
         return self::$landlordValues[$key];
@@ -146,11 +159,11 @@ class TenantBootstrapper
     private function getLandlordDbConfig(): array
     {
         return [
-            'host' => $this->env('DB_HOSTNAME', 'localhost'),
-            'port' => $this->env('DB_PORT', '3306'),
-            'database' => $this->env('LANDLORD_DB_DATABASE', 'landlord'),
-            'username' => $this->env('DB_USERNAME'),
-            'password' => $this->env('DB_PASSWORD'),
+            'host' => $this->getOriginalValue('DB_HOSTNAME', 'localhost'),
+            'port' => $this->getOriginalValue('DB_PORT', '3306'),
+            'database' => $this->getOriginalValue('LANDLORD_DB_DATABASE', 'landlord'),
+            'username' => $this->getOriginalValue('DB_USERNAME'),
+            'password' => $this->getOriginalValue('DB_PASSWORD'),
             'charset' => 'utf8mb4',
         ];
     }
