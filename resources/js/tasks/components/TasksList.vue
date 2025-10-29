@@ -496,7 +496,7 @@ export default {
       return `
       <a href="${this.openTask(record, 1)}"
          class="text-nowrap">
-         # ${processRequest.case_number || record.case_number}
+         # ${processRequest.case_number || record.case_number || ""}
       </a>`;
     },
     formatCaseTitle(processRequest, record) {
