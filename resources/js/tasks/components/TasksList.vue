@@ -493,9 +493,6 @@ export default {
       return `/requests/${data.id}`;
     },
     formatCaseNumber(processRequest, record) {
-      // const href = this.shouldRedirectToSmartExtract(record)
-      //   ? "/admin/smart-extract?iframe=true&documentToken=6519c0f184aa123baaee296111e5247c&fileId=nOh7qKiHnLL3786w3N3QUu1u7RI3p_6b02cbd0-7551-446b-9b57-5cb931037845"
-      //   : this.openTask(record, 1);
       const href = this.openTask(record, 1);
       return `
       <a href="${href}"
@@ -510,9 +507,6 @@ export default {
           ${this.$t("Draft")}
         </span>`;
       }
-      // const href = this.shouldRedirectToSmartExtract(record)
-      //   ? "/admin/smart-extract?iframe=true&documentToken=6519c0f184aa123baaee296111e5247c&fileId=nOh7qKiHnLL3786w3N3QUu1u7RI3p_6b02cbd0-7551-446b-9b57-5cb931037845"
-      //   : this.openTask(record, 1);
       const href = this.openTask(record, 1);
       return `
       ${draftBadge}
@@ -527,9 +521,6 @@ export default {
       </a>`;
     },
     formatActiveTask(row) {
-      // const href = this.shouldRedirectToSmartExtract(row)
-      //   ? "/admin/smart-extract?iframe=true&documentToken=6519c0f184aa123baaee296111e5247c&fileId=nOh7qKiHnLL3786w3N3QUu1u7RI3p_6b02cbd0-7551-446b-9b57-5cb931037845"
-      //   : this.openTask(row);
       const href = this.openTask(row);
       return `
       <a href="${href}"

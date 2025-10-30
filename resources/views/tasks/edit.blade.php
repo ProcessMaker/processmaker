@@ -82,7 +82,8 @@
                     {{__('Data')}}
                   </a>
                 </li>
-                @if(isset($hitl) && $hitl === true)
+                {{-- Manual Edit tab removed - content now shows in Form tab when $hitl is true --}}
+                {{-- @if(isset($hitl) && $hitl === true)
                 <li class="nav-item">
                   <a
                     id="manual-edit-tab"
@@ -95,39 +96,61 @@
                     {{__('Manual Edit')}}
                   </a>
                 </li>
-                @endif
+                @endif --}}
               </ul>
             @endcan
             <div id="tabContent" class="tab-content tw-flex tw-flex-col tw-grow tw-overflow-y-scroll">
               <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show">
-                @can('update', $task)
-                <task
-                  ref="task"
-                  class="card border-0"
-                  v-model="formData"
-                  :initial-task-id="{{ $task->id }}"
-                  :initial-request-id="{{ $task->process_request_id }}"
-                  :screen-version="{{ $task->screen['id'] ?? null }}"
-                  :user-id="{{ Auth::user()->id }}"
-                  csrf-token="{{ csrf_token() }}"
-                  initial-loop-context="{{ $task->getLoopContext() }}"
-                  :wait-loading-listeners="true"
-                  @task-updated="taskUpdated"
-                  @updated-page-core="updatePage"
-                  @submit="submit"
-                  @completed="completed"
-                  @@error="error"
-                  @closed="closed"
-                  @redirect="redirectToTask"
-                  @form-data-changed="handleFormDataChange" />
-                @endcan
-                <div v-if="taskHasComments">
-                  <timeline :commentable_id="task.id"
-                    commentable_type="ProcessMaker\Models\ProcessRequestToken"
-                    :adding="false"
-                    :readonly="task.status === 'CLOSED'"
-                    :timeline="false" />
-                </div>
+                @if(isset($hitl) && $hitl === true)
+                  <!-- Manual Edit content when $hitl is true -->
+                  @if(isset($iframe_src))
+                    <div id="manual-edit-iframe-container" style="position: relative; width: 100%; height: calc(100vh - 200px); border: none; margin: 0; padding: 0;">
+                      <iframe
+                        id="manual-edit-iframe"
+                        src="{{ $iframe_src }}"
+                        title="{{__('Manual Edit')}}"
+                        width="100%"
+                        height="100%"
+                        style="border: none; display: block;"
+                        allowfullscreen
+                      ></iframe>
+                    </div>
+                  @else
+                    <div class="alert alert-warning">
+                      {{__('No iframe source provided for Manual Edit.')}}
+                    </div>
+                  @endif
+                @else
+                  <!-- Original Form content when $hitl is false or not set -->
+                  @can('update', $task)
+                  <task
+                    ref="task"
+                    class="card border-0"
+                    v-model="formData"
+                    :initial-task-id="{{ $task->id }}"
+                    :initial-request-id="{{ $task->process_request_id }}"
+                    :screen-version="{{ $task->screen['id'] ?? null }}"
+                    :user-id="{{ Auth::user()->id }}"
+                    csrf-token="{{ csrf_token() }}"
+                    initial-loop-context="{{ $task->getLoopContext() }}"
+                    :wait-loading-listeners="true"
+                    @task-updated="taskUpdated"
+                    @updated-page-core="updatePage"
+                    @submit="submit"
+                    @completed="completed"
+                    @@error="error"
+                    @closed="closed"
+                    @redirect="redirectToTask"
+                    @form-data-changed="handleFormDataChange" />
+                  @endcan
+                  <div v-if="taskHasComments">
+                    <timeline :commentable_id="task.id"
+                      commentable_type="ProcessMaker\Models\ProcessRequestToken"
+                      :adding="false"
+                      :readonly="task.status === 'CLOSED'"
+                      :timeline="false" />
+                  </div>
+                @endif
               </div>
               @can('editData', $task->processRequest)
               <div v-if="task.process_request.status === 'ACTIVE'" id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="card card-body border-top-0 tab-pane p-3">
@@ -159,7 +182,8 @@
                   </div>
               </div>
               @endcan
-              @if(isset($hitl) && $hitl === true)
+              {{-- Manual Edit tab content moved to Form tab when $hitl is true --}}
+              {{-- @if(isset($hitl) && $hitl === true)
               <div id="tab-manual-edit" role="tabpanel" aria-labelledby="tab-manual-edit" class="tab-pane">
                 <!-- Manual Edit tab content -->
                 @if(isset($iframe_src))
@@ -180,7 +204,7 @@
                   </div>
                 @endif
               </div>
-              @endif
+              @endif --}}
             </div>
           </div>
         </div>
