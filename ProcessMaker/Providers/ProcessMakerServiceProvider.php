@@ -44,6 +44,7 @@ use ProcessMaker\Multitenancy\Tenant;
 use ProcessMaker\Multitenancy\TenantBootstrapper;
 use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
+use ProcessMaker\Providers\PermissionServiceProvider;
 use ProcessMaker\Repositories\SettingsConfigRepository;
 use RuntimeException;
 use Spatie\Multitenancy\Events\MadeTenantCurrentEvent;
@@ -113,6 +114,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
         if (!$this->app->environment('production')) {
             $this->app->register(DuskServiceProvider::class);
         }
+
+        // Register our permission services
+        $this->app->register(PermissionServiceProvider::class);
 
         $this->app->singleton(Managers\PackageManager::class, function () {
             return new Managers\PackageManager();
