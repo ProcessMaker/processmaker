@@ -82,38 +82,19 @@
                     {{__('Data')}}
                   </a>
                 </li>
-                {{-- Manual Edit tab removed - content now shows in Form tab when $hitl is true --}}
-                {{-- @if(isset($hitl) && $hitl === true)
-                <li class="nav-item">
-                  <a
-                    id="manual-edit-tab"
-                    data-toggle="tab"
-                    href="#tab-manual-edit"
-                    role="tab"
-                    aria-controls="tab-manual-edit"
-                    aria-selected="false"
-                    class="nav-link">
-                    {{__('Manual Edit')}}
-                  </a>
-                </li>
-                @endif --}}
               </ul>
             @endcan
             <div id="tabContent" class="tab-content tw-flex tw-flex-col tw-grow tw-overflow-y-scroll">
               <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show">
                 @if(isset($hitl) && $hitl === true)
-                  <!-- Manual Edit content when $hitl is true -->
+                  <!-- Smart Extract Manual Edit content when $hitl is true -->
                   @if(isset($iframe_src))
                     <div id="manual-edit-iframe-container" style="position: relative; width: 100%; height: calc(100vh - 200px); border: none; margin: 0; padding: 0;">
-                      <iframe
-                        id="manual-edit-iframe"
-                        src="{{ $iframe_src }}"
-                        title="{{__('Manual Edit')}}"
-                        width="100%"
-                        height="100%"
-                        style="border: none; display: block;"
-                        allowfullscreen
-                      ></iframe>
+                      <x-package-smart-extract::iframe-loader
+                      :src="$iframe_src"
+                      :title="__('Smart Extract')"
+                      loading-message="{{ __('Loading dashboard') }}"
+                    />
                     </div>
                   @else
                     <div class="alert alert-warning">
@@ -182,29 +163,6 @@
                   </div>
               </div>
               @endcan
-              {{-- Manual Edit tab content moved to Form tab when $hitl is true --}}
-              {{-- @if(isset($hitl) && $hitl === true)
-              <div id="tab-manual-edit" role="tabpanel" aria-labelledby="tab-manual-edit" class="tab-pane">
-                <!-- Manual Edit tab content -->
-                @if(isset($iframe_src))
-                  <div id="manual-edit-iframe-container" style="position: relative; width: 100%; height: calc(100vh - 200px); border: none; margin: 0; padding: 0;">
-                    <iframe
-                      id="manual-edit-iframe"
-                      src="{{ $iframe_src }}"
-                      title="{{__('Manual Edit')}}"
-                      width="100%"
-                      height="100%"
-                      style="border: none; display: block;"
-                      allowfullscreen
-                    ></iframe>
-                  </div>
-                @else
-                  <div class="alert alert-warning">
-                    {{__('No iframe source provided for Manual Edit.')}}
-                  </div>
-                @endif
-              </div>
-              @endif --}}
             </div>
           </div>
         </div>
