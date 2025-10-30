@@ -86,7 +86,7 @@
             @endcan
             <div id="tabContent" class="tab-content tw-flex tw-flex-col tw-grow tw-overflow-y-scroll">
               <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show">
-                @if(isset($hitl) && $hitl === true)
+                @if(isset($is_hitl_task) && $is_hitl_task === true)
                   <!-- Smart Extract Manual Edit content when $hitl is true -->
                   @if(isset($iframe_src))
                     <div id="manual-edit-iframe-container" style="position: relative; width: 100%; height: calc(100vh - 200px); border: none; margin: 0; padding: 0;">
