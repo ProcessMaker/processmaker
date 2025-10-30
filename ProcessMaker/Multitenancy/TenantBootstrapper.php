@@ -100,6 +100,7 @@ class TenantBootstrapper
         $this->set('DB_DATABASE', $tenantData['database']);
         $this->set('DB_USERNAME', $tenantData['username'] ?? $this->getOriginalValue('DB_USERNAME'));
         $this->set('CACHE_PREFIX', $this->getOriginalValue('CACHE_PREFIX') . 'tenant_' . $tenantData['id'] . ':');
+        $this->set('CACHE_SETTING_PREFIX', $this->getOriginalValue('CACHE_SETTING_PREFIX') . 'tenant_' . $tenantData['id'] . ':');
 
         $encryptedPassword = $tenantData['password'];
         $password = null;
