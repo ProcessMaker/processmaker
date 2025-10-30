@@ -497,7 +497,7 @@ export default {
       return `
       <a href="${href}"
          class="text-nowrap">
-         # ${processRequest.case_number || record.case_number}
+         # ${processRequest.case_number || record.case_number || ""}
       </a>`;
     },
     formatCaseTitle(processRequest, record) {

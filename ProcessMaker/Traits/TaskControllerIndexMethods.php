@@ -157,6 +157,7 @@ trait TaskControllerIndexMethods
         //$nonSystem = filter_var($request->input('non_system'), FILTER_VALIDATE_BOOLEAN);
         $nonSystem = false;
         $allTasks = filter_var($request->input('all_tasks'), FILTER_VALIDATE_BOOLEAN);
+        $hitlEnabled = filter_var(config('smart-extract.hitl_enabled'), FILTER_VALIDATE_BOOLEAN);
         $query->when(!$allTasks, function ($query) {
             $query->where(function ($query) {
                 $query->where('element_type', '=', 'task');
@@ -166,8 +167,20 @@ trait TaskControllerIndexMethods
                 });
             });
         })
-            ->when($nonSystem, function ($query) {
-                $query->nonSystem();
+            ->when($nonSystem, function ($query) use ($hitlEnabled) {
+                if (!$hitlEnabled) {
+                    $query->nonSystem();
+
+                    return;
+                }
+
+                $query->where(function ($query) {
+                    $query->nonSystem();
+                    $query->orWhere(function ($query) {
+                        $query->where('element_type', '=', 'task');
+                        $query->where('element_name', '=', 'Manual Document Review');
+                    });
+                });
             });
     }
 
