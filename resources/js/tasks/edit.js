@@ -509,8 +509,10 @@ window.toggleNavbar = function() {
   }
 };
 
-// Listen for messages from the iframe
 window.addEventListener('message', function(event) {
+  // Get reference to the iframe
+  var iframe = document.querySelector('iframe');
+  
   // Only process messages from the iframe
   if (event.source === iframe.contentWindow) {
     var messageData = event.data;
@@ -518,10 +520,10 @@ window.addEventListener('message', function(event) {
     // Only show alert and console.log when status is "MarkedAsCorrect"
     if (messageData && messageData.status === 'MarkedAsCorrect') {
       // Log all messages for debugging
-      console.log('Received message from iframe:', event);
+      console.log('Received message from iframe Edit.js:', event);
       
       // Show alert with the message data (remove later)
-      var alertMessage = 'Message received from iframe:\n';
+      var alertMessage = 'Message received from iframe Edit.js:\n';
       
       if (typeof messageData === 'object') {
         alertMessage += JSON.stringify(messageData, null, 2);

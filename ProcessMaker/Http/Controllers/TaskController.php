@@ -192,7 +192,8 @@ class TaskController extends Controller
             $userConfiguration = (new UserConfigurationController())->index();
 
             $hitl = true;
-            $iframe_src = '/admin/smart-extract?iframe=true&documentToken=6519c0f184aa123baaee296111e5247c&fileId=nOh7qKiHnLL3786w3N3QUu1u7RI3p_6b02cbd0-7551-446b-9b57-5cb931037845';
+            //$iframe_src = '/admin/smart-extract?iframe=true&documentToken=6519c0f184aa123baaee296111e5247c&fileId=nOh7qKiHnLL3786w3N3QUu1u7RI3p_6b02cbd0-7551-446b-9b57-5cb931037845';
+            $iframe_src = 'https://assets.processmaker.net/tces/edit.html?documentToken=6519c0f184aa123baaee296111e5247c&fileId=nOh7qKiHnLL3786w3N3QUu1u7RI3p_6b02cbd0-7551-446b-9b57-5cb931037845';
             // if ($task->element_name === 'Send Document to Smart Extract') {
             //     $hitl = true;
             //     $iframe_src = '/admin/smart-extract?iframe=true&documentToken=6519c0f184aa123baaee296111e5247c&fileId=nOh7qKiHnLL3786w3N3QUu1u7RI3p_6b02cbd0-7551-446b-9b57-5cb931037845';
