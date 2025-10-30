@@ -160,17 +160,18 @@
               </div>
               @endcan
               @if(isset($hitl) && $hitl === true)
-              <div id="tab-manual-edit" role="tabpanel" aria-labelledby="tab-manual-edit" class="card card-body border-top-0 tab-pane p-3">
+              <div id="tab-manual-edit" role="tabpanel" aria-labelledby="tab-manual-edit" class="tab-pane">
                 <!-- Manual Edit tab content -->
                 @if(isset($iframe_src))
-                  <div id="manual-edit-iframe-container" style="position: relative; width: 100%; height: 700px; border: 1px solid #ddd;">
+                  <div id="manual-edit-iframe-container" style="position: relative; width: 100%; height: calc(100vh - 200px); border: none; margin: 0; padding: 0;">
                     <iframe
                       id="manual-edit-iframe"
                       src="{{ $iframe_src }}"
                       title="{{__('Manual Edit')}}"
                       width="100%"
                       height="100%"
-                      style="border: none;"
+                      style="border: none; display: block;"
+                      allowfullscreen
                     ></iframe>
                   </div>
                 @else
