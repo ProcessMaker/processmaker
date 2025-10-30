@@ -82,6 +82,20 @@
                     {{__('Data')}}
                   </a>
                 </li>
+                @if(isset($hitl) && $hitl === true)
+                <li class="nav-item">
+                  <a
+                    id="manual-edit-tab"
+                    data-toggle="tab"
+                    href="#tab-manual-edit"
+                    role="tab"
+                    aria-controls="tab-manual-edit"
+                    aria-selected="false"
+                    class="nav-link">
+                    {{__('Manual Edit')}}
+                  </a>
+                </li>
+                @endif
               </ul>
             @endcan
             <div id="tabContent" class="tab-content tw-flex tw-flex-col tw-grow tw-overflow-y-scroll">
@@ -145,6 +159,27 @@
                   </div>
               </div>
               @endcan
+              @if(isset($hitl) && $hitl === true)
+              <div id="tab-manual-edit" role="tabpanel" aria-labelledby="tab-manual-edit" class="card card-body border-top-0 tab-pane p-3">
+                <!-- Manual Edit tab content -->
+                @if(isset($iframe_src))
+                  <div id="manual-edit-iframe-container" style="position: relative; width: 100%; height: 700px; border: 1px solid #ddd;">
+                    <iframe
+                      id="manual-edit-iframe"
+                      src="{{ $iframe_src }}"
+                      title="{{__('Manual Edit')}}"
+                      width="100%"
+                      height="100%"
+                      style="border: none;"
+                    ></iframe>
+                  </div>
+                @else
+                  <div class="alert alert-warning">
+                    {{__('No iframe source provided for Manual Edit.')}}
+                  </div>
+                @endif
+              </div>
+              @endif
             </div>
           </div>
         </div>
@@ -445,6 +480,15 @@
   @endforeach
 
   <script src="{{mix('js/tasks/edit.js')}}"></script>
+  <script>
+    // Simple iframe setup for Manual Edit
+    document.addEventListener('DOMContentLoaded', function() {
+      const iframe = document.getElementById('manual-edit-iframe');
+      if (iframe) {
+        console.log('Manual Edit iframe loaded and ready');
+      }
+    });
+  </script>
 @endsection
 
 @section('css')

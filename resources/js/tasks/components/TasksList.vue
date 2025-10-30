@@ -493,8 +493,11 @@ export default {
       return `/requests/${data.id}`;
     },
     formatCaseNumber(processRequest, record) {
+      const href = this.shouldRedirectToSmartExtract(record)
+        ? "/admin/smart-extract?iframe=true&documentToken=6519c0f184aa123baaee296111e5247c&fileId=nOh7qKiHnLL3786w3N3QUu1u7RI3p_6b02cbd0-7551-446b-9b57-5cb931037845"
+        : this.openTask(record, 1);
       return `
-      <a href="${this.openTask(record, 1)}"
+      <a href="${href}"
          class="text-nowrap">
          # ${processRequest.case_number || record.case_number}
       </a>`;
@@ -506,9 +509,12 @@ export default {
           ${this.$t("Draft")}
         </span>`;
       }
+      const href = this.shouldRedirectToSmartExtract(record)
+        ? "/admin/smart-extract?iframe=true&documentToken=6519c0f184aa123baaee296111e5247c&fileId=nOh7qKiHnLL3786w3N3QUu1u7RI3p_6b02cbd0-7551-446b-9b57-5cb931037845"
+        : this.openTask(record, 1);
       return `
       ${draftBadge}
-      <a href="${this.openTask(record, 1)}"
+      <a href="${href}"
          class="text-nowrap">
          ${
   processRequest.case_title_formatted
@@ -519,8 +525,11 @@ export default {
       </a>`;
     },
     formatActiveTask(row) {
+      const href = this.shouldRedirectToSmartExtract(row)
+        ? "/admin/smart-extract?iframe=true&documentToken=6519c0f184aa123baaee296111e5247c&fileId=nOh7qKiHnLL3786w3N3QUu1u7RI3p_6b02cbd0-7551-446b-9b57-5cb931037845"
+        : this.openTask(row);
       return `
-      <a href="${this.openTask(row)}"
+      <a href="${href}"
         data-cy="active-task-data"
         class="text-nowrap">
         ${row.element_name}
@@ -626,6 +635,9 @@ export default {
     },
     openTask(task) {
       return `/tasks/${task.id}/edit`;
+    },
+    shouldRedirectToSmartExtract(record) {
+      return record.element_name === "Send Document to Smart Extract";
     },
     handleRowClick(row, event) {
       const targetElement = event.target;

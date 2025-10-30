@@ -63,6 +63,7 @@ const main = new Vue({
     userConfiguration,
     urlConfiguration: "users/configuration",
     showTabs: true,
+    isNavbarExpanded: false,
   },
   computed: {
     taskDefinitionConfig() {
@@ -493,5 +494,47 @@ const main = new Vue({
 
       return response;
     },
+    toggleNavbar() {
+      this.isNavbarExpanded = !this.isNavbarExpanded;
+    },
   },
+});
+
+// Make toggleNavbar available globally for the navbar component
+window.toggleNavbar = function() {
+  if (window.ProcessMaker.navbar && window.ProcessMaker.navbar.toggleNavbar) {
+    window.ProcessMaker.navbar.toggleNavbar();
+  } else if (main && main.toggleNavbar) {
+    main.toggleNavbar();
+  }
+};
+
+// Listen for messages from the iframe
+window.addEventListener('message', function(event) {
+  // Only process messages from the iframe
+  if (event.source === iframe.contentWindow) {
+    var messageData = event.data;
+    
+    // Only show alert and console.log when status is "MarkedAsCorrect"
+    if (messageData && messageData.status === 'MarkedAsCorrect') {
+      // Log all messages for debugging
+      console.log('Received message from iframe:', event);
+      
+      // Show alert with the message data (remove later)
+      var alertMessage = 'Message received from iframe:\n';
+      
+      if (typeof messageData === 'object') {
+        alertMessage += JSON.stringify(messageData, null, 2);
+      } else {
+        alertMessage += messageData;
+      }
+      
+      alert(alertMessage);
+      
+      // Also log to console (remove later)
+      console.log('Message data:', messageData);
+      console.log('Message origin:', event.origin);
+      console.log('Message source:', event.source);
+    }
+  }
 });
