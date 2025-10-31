@@ -204,6 +204,7 @@ class TaskController extends Controller
                 'screenFields' => $screenFields,
                 'taskDraftsEnabled' => $taskDraftsEnabled,
                 'userConfiguration' => $userConfiguration,
+                'hitlEnabled' => config('smart-extract.hitl_enabled', false),
             ]);
         }
     }
