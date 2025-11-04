@@ -140,7 +140,7 @@ class TaskController extends Controller
         $element = $task->getDefinition(true);
         $screenFields = $screenVersion ? $screenVersion->screenFilteredFields() : [];
         $taskDraftsEnabled = TaskDraft::draftsEnabled();
-
+        $is_smart_extract_task = $task->element_name === 'Manual Document Review';
         // Remove screen parent to reduce the size of the response
         $screen = $task->screen;
         $screen['parent'] = null;
@@ -205,6 +205,7 @@ class TaskController extends Controller
                 'taskDraftsEnabled' => $taskDraftsEnabled,
                 'userConfiguration' => $userConfiguration,
                 'hitlEnabled' => config('smart-extract.hitl_enabled', false),
+                'is_smart_extract_task' => $is_smart_extract_task,
             ]);
         }
     }
