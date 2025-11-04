@@ -71,6 +71,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
     // Track the landlord values for multitenancy
     private static $landlordValues = null;
 
+    // Cache tenant app containers to save memory
+    private static $tenantAppContainers = [];
+
     public function boot(): void
     {
         // Track the start time for service providers boot
@@ -265,12 +268,16 @@ class ProcessMakerServiceProvider extends ServiceProvider
             // Create a new tenant app instance
             $_SERVER['TENANT'] = $tenantId;
             $_ENV['TENANT'] = $tenantId;
-            $tenantApp = require app()->bootstrapPath('app.php');
-            $tenantApp->instance('landlordValues', self::$landlordValues);
-            $tenantApp->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+
+            if (!isset(self::$tenantAppContainers[$tenantId])) {
+                $tenantApp = require app()->bootstrapPath('app.php');
+                $tenantApp->instance('landlordValues', self::$landlordValues);
+                $tenantApp->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+                self::$tenantAppContainers[$tenantId] = $tenantApp;
+            }
 
             // Change the job's app service container to the tenant app
-            $event->job->getRedisQueue()->setContainer($tenantApp);
+            $event->job->getRedisQueue()->setContainer(self::$tenantAppContainers[$tenantId]);
         }
     }
 
