@@ -289,6 +289,20 @@ trait TaskControllerIndexMethods
             } catch (SyntaxError $e) {
                 abort('Your PMQL contains invalid syntax.', 400);
             }
+
+            // After PMQL is applied, if processesIManage is active, add self-service tasks
+            // This is done after PMQL to avoid the is_self_service = 0 filter that PMQL might add
+            if ($request->input('processesIManage') === 'true' && isset($query->getQuery()->processManagerIds)) {
+                $ids = $query->getQuery()->processManagerIds;
+                $selfServiceTaskIds = ProcessRequestToken::select(['id'])
+                    ->whereIn('process_id', $ids)
+                    ->where('is_self_service', 1)
+                    ->whereNull('user_id')
+                    ->where('status', 'ACTIVE');
+
+                // Add self-service tasks using orWhereIn to override PMQL's is_self_service = 0 filter
+                $query->orWhereIn('process_request_tokens.id', $selfServiceTaskIds);
+            }
         }
     }
 
@@ -340,11 +354,26 @@ trait TaskControllerIndexMethods
                     ->orWhereRaw("JSON_CONTAINS(JSON_EXTRACT(properties, '$.manager_id'), CAST(? AS JSON))", [$user->id]);
             })
             ->where('status', 'ACTIVE')
-            ->get()
+            ->pluck('id')
             ->toArray();
 
+        if (empty($ids)) {
+            // If user is not a manager of any process, return no results
+            $query->whereRaw('1 = 0');
+
+            return;
+        }
+
+        // Show tasks from processes the user manages that are ACTIVE
+        // OR show self-service tasks from those processes
+        // Store the process IDs in the query so we can use them later to add self-service tasks
+        // We'll add self-service tasks after PMQL is applied to avoid the is_self_service = 0 filter
+        $query->getQuery()->processManagerIds = $ids;
+
+        // Apply condition for regular tasks from managed processes
+        // Self-service tasks will be added after PMQL to avoid conflicts
         $query->where(function ($query) use ($ids) {
-            $query->whereIn('process_request_tokens.process_id', array_column($ids, 'id'))
+            $query->whereIn('process_request_tokens.process_id', $ids)
                 ->where('process_request_tokens.status', 'ACTIVE');
         });
     }
