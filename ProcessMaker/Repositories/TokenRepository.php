@@ -176,7 +176,7 @@ class TokenRepository implements TokenRepositoryInterface
 
         CaseUpdate::dispatchSync($request, $token);
 
-        if (!is_null($user)) {
+        if (!is_null($user) && is_string($user->email)) {
             // Review if the task has enable the action by email
             $this->validateAndSendActionByEmail($activity, $token, $user->email);
         }
