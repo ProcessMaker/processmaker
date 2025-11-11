@@ -146,6 +146,7 @@ class TenantBootstrapper
         // Env::getRepository() is immutable but will use values from $_SERVER and $_ENV
         $_SERVER[$key] = $value;
         $_ENV[$key] = $value;
+        putenv("$key=$value");
     }
 
     private function decrypt($value)
