@@ -299,6 +299,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         foreach (self::$landlordValues as $key => $value) {
             $_SERVER[$key] = $value;
             $_ENV[$key] = $value;
+            putenv("$key=$value");
         }
     }
 
