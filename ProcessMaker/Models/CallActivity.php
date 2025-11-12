@@ -94,8 +94,13 @@ class CallActivity implements CallActivityInterface
      */
     protected function completeSubprocess(TokenInterface $token, ExecutionInstanceInterface $closedInstance, ExecutionInstanceInterface $instance)
     {
-        // Copy data from subprocess to main process
-        $data = $closedInstance->getDataStore()->getData();
+        // Copy only the data updated by the subprocess
+        $store = $closedInstance->getDataStore();
+        $data = $store->getData();
+        $updatedKeys = method_exists($store, 'getUpdated') ? $store->getUpdated() : array_keys($data);
+        if (!empty($updatedKeys)) {
+            $data = array_intersect_key($data, array_flip($updatedKeys));
+        }
         $dataManager = new DataManager();
         $dataManager->updateData($token, $data);
         $token->getInstance()->getProcess()->getEngine()->runToNextState();
