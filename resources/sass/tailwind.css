@@ -18,9 +18,9 @@
       with no bullets/numbers and no margin or padding. */
     .form-group ol,
     .form-group ul {
-      list-style: revert-layer !important;
-      margin: 0 !important;
-      padding: revert-layer !important;
+      list-style: revert-layer;
+      margin: 0;
+      padding: revert-layer;
     }
   }
 
