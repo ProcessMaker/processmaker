@@ -113,6 +113,13 @@ class ProcessController extends Controller
             $isDraft = $lastDraftOrPublishedVersion->draft;
         }
 
+        // search if user  exists
+        $user = User::where('id', $process->user_id)->exists();
+        if (!$user) {
+            // if user not exists, set the first administrator as the process owner
+            $process->user_id = User::where('is_administrator', true)->first()->id;
+        }
+
         return view('processes.edit', compact([
             'process',
             'categories',
