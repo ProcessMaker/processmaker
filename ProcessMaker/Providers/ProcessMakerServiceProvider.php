@@ -268,9 +268,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
             if (!isset(self::$tenantAppContainers[$tenantId])) {
                 $tenantApp = require app()->bootstrapPath('app.php');
                 $tenantApp->instance('landlordValues', self::$landlordValues);
-                $tenantApp->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
                 self::$tenantAppContainers[$tenantId] = $tenantApp;
             }
+            self::$tenantAppContainers[$tenantId]->resetHasBeenBootstrapped();
+            self::$tenantAppContainers[$tenantId]->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
             // Change the job's app service container to the tenant app
             $event->job->getRedisQueue()->setContainer(self::$tenantAppContainers[$tenantId]);

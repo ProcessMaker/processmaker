@@ -112,4 +112,9 @@ class Application extends IlluminateApplication
 
         return parent::bootstrapWith($bootstrappers);
     }
+
+    public function resetHasBeenBootstrapped()
+    {
+        $this->hasBeenBootstrapped = false;
+    }
 }
