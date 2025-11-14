@@ -94,13 +94,26 @@ class CallActivity implements CallActivityInterface
      */
     protected function completeSubprocess(TokenInterface $token, ExecutionInstanceInterface $closedInstance, ExecutionInstanceInterface $instance)
     {
-        // Copy only the data updated by the subprocess
         $store = $closedInstance->getDataStore();
-        $data = $store->getData();
-        $updatedKeys = method_exists($store, 'getUpdated') ? $store->getUpdated() : array_keys($data);
-        if (!empty($updatedKeys)) {
-            $data = array_intersect_key($data, array_flip($updatedKeys));
+        $allData = $store->getData();
+
+        // Determine which data should be merged back from the subprocess.
+        $updatedKeys = method_exists($store, 'getUpdated')
+            ? $store->getUpdated()
+            : null;
+
+        if ($updatedKeys === null) {
+            // Legacy behavior or no tracking available: copy all data.
+            $data = $allData;
+        } elseif ($updatedKeys === []) {
+            // Nothing was updated in the subprocess: do not merge anything.
+            $data = [];
+        } else {
+            // Merge only the explicitly updated keys.
+            $updatedKeys = array_values((array) $updatedKeys);
+            $data = array_intersect_key($allData, array_flip($updatedKeys));
         }
+
         $dataManager = new DataManager();
         $dataManager->updateData($token, $data);
         $token->getInstance()->getProcess()->getEngine()->runToNextState();
