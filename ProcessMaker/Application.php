@@ -3,6 +3,7 @@
 namespace ProcessMaker;
 
 use Igaster\LaravelTheme\Facades\Theme;
+use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application as IlluminateApplication;
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
@@ -12,6 +13,7 @@ use Illuminate\Support\Env;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
+use ProcessMaker\Console\Kernel;
 use ProcessMaker\Multitenancy\Tenant;
 use ProcessMaker\Multitenancy\TenantBootstrapper;
 
@@ -113,8 +115,10 @@ class Application extends IlluminateApplication
         return parent::bootstrapWith($bootstrappers);
     }
 
-    public function resetHasBeenBootstrapped()
+    public function reactivateConsoleApp()
     {
+        Container::setInstance($this);
         $this->hasBeenBootstrapped = false;
+        $this->make(Kernel::class)->bootstrap();
     }
 }

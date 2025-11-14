@@ -254,49 +254,16 @@ class ProcessMakerServiceProvider extends ServiceProvider
                 return;
             }
 
-            // Save the landlord's config values so we can reset them later
-            if (self::$landlordValues === null) {
-                foreach (TenantBootstrapper::$landlordKeysToSave as $key) {
-                    self::$landlordValues[$key] = $_SERVER[$key] ?? '';
-                }
-            }
-
             // Create a new tenant app instance
             $_SERVER['TENANT'] = $tenantId;
-            $_ENV['TENANT'] = $tenantId;
 
             if (!isset(self::$tenantAppContainers[$tenantId])) {
-                $tenantApp = require app()->bootstrapPath('app.php');
-                $tenantApp->instance('landlordValues', self::$landlordValues);
-                self::$tenantAppContainers[$tenantId] = $tenantApp;
+                self::$tenantAppContainers[$tenantId] = require base_path('bootstrap/app.php');
             }
-            self::$tenantAppContainers[$tenantId]->resetHasBeenBootstrapped();
-            self::$tenantAppContainers[$tenantId]->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+            self::$tenantAppContainers[$tenantId]->reactivateConsoleApp();
 
             // Change the job's app service container to the tenant app
             $event->job->getRedisQueue()->setContainer(self::$tenantAppContainers[$tenantId]);
-        }
-    }
-
-    private static function resetTenantApp($event): void
-    {
-        if (!method_exists($event->job, 'getRedisQueue')) {
-            // Not a redis job
-            return;
-        }
-
-        unset($_SERVER['TENANT']);
-        unset($_ENV['TENANT']);
-
-        if (!self::$landlordValues) {
-            return;
-        }
-
-        // Restore the original values since the tenant boostrapper modified them
-        foreach (self::$landlordValues as $key => $value) {
-            $_SERVER[$key] = $value;
-            $_ENV[$key] = $value;
-            putenv("$key=$value");
         }
     }
 
@@ -311,10 +278,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         Facades\Event::listen(JobRetryRequested::class, function (JobRetryRequested $event) {
             self::bootstrapTenantApp($event);
-        });
-
-        Facades\Event::listen(JobAttempted::class, function (JobAttempted $event) {
-            self::resetTenantApp($event);
         });
 
         // Listen to the events for our core screen
