@@ -25,8 +25,8 @@
   }
 
   /* Reset the list style for the vue-form-renderer and screen-container */
-  #screen-container ul,
-  #vue-form-renderer ul {
+  #screen-container ul:not(.nav-tabs):not(.nav-tabs ul),
+  #vue-form-renderer ul:not(.nav-tabs):not(.nav-tabs ul) {
     list-style: revert;
     margin: revert;
     padding: revert;
