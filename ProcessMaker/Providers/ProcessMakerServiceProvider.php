@@ -243,11 +243,11 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         $this->app->instance('tenant-resolved', false);
 
+        $this->app->when(HorizonListen::class)->needs(Listener::class)->give(function ($app) {
+            return new Listener(base_path());
+        });
+
         if (config('app.multitenancy')) {
-            // Use queue:listen for multitenancy
-            $this->app->when(HorizonListen::class)->needs(Listener::class)->give(function ($app) {
-                return new Listener(base_path());
-            });
             WorkerCommandString::$command = 'exec @php artisan horizon:listen';
             SystemProcessCounter::$command = 'horizon:listen';
         }
