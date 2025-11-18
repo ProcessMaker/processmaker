@@ -26,21 +26,6 @@ class TenantBootstrapper
 
     private $app = null;
 
-    public static $landlordKeysToSave = [
-        'APP_URL',
-        'APP_KEY',
-        'LOG_PATH',
-        'DB_USERNAME',
-        'DB_PASSWORD',
-        'DB_HOSTNAME',
-        'DB_PORT',
-        'LANDLORD_DB_DATABASE',
-        'REDIS_PREFIX',
-        'CACHE_SETTING_PREFIX',
-        'SCRIPT_MICROSERVICE_CALLBACK',
-        'CACHE_PREFIX',
-    ];
-
     public function bootstrap(Application $app)
     {
         try {
@@ -114,6 +99,14 @@ class TenantBootstrapper
 
         $this->set('DB_PASSWORD', $password);
         $this->set('LOG_PATH', $this->app->storagePath('logs/processmaker.log'));
+    }
+
+    // Used for debugging
+    public static function log($message)
+    {
+        $message = '[TenantBootstrapper] ' . $message;
+        $today = date('Y-m-d');
+        file_put_contents(base_path('storage/logs/processmaker-' . $today . '.log'), date('Y-m-d H:i:s') . ' ' . $message . PHP_EOL, FILE_APPEND);
     }
 
     private function getOriginalValue($key, $default = '')
