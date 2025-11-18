@@ -694,13 +694,25 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             if ($isSelfService && !$escalateToManager) {
                 return null;
             }
+            // Don't fallback to Process Manager for process_variable assignment when no users found
+            // This preserves the original behavior where invalid users result in no task assignment
+            if ($assignmentType === 'process_variable') {
+                return null;
+            }
             $rule = new ProcessManagerAssigned();
             if ($token === null) {
-                throw new ThereIsNoProcessManagerAssignedException($activity);
+                // Return null instead of throwing exception when no token is available
+                return null;
             }
             $user = $rule->getNextUser($activity, $token, $this, $request);
             if (!$user) {
-                throw new ThereIsNoProcessManagerAssignedException($activity);
+                // Log error when no manager is found, but don't throw exception
+                // This allows the process to continue without crashing
+                // but still records the issue for visibility
+                $exception = new ThereIsNoProcessManagerAssignedException($activity);
+                $request->logError($exception, $activity);
+
+                return null;
             }
             $user = User::find($user);
         }
@@ -806,6 +818,12 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         foreach ($assignedGroups as $groupId) {
             // getConsolidatedUsers already removes inactive users
             $this->getConsolidatedUsers($groupId, $users);
+        }
+
+        // If no valid users found, throw exception to prevent token creation
+        // This preserves the original behavior where invalid users result in no task
+        if (empty($users)) {
+            throw new TaskDoesNotHaveUsersException($activity->getId());
         }
 
         return $this->getNextUserFromGroupAssignment($activity->getId(), $users);
