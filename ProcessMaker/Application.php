@@ -114,11 +114,4 @@ class Application extends IlluminateApplication
 
         return parent::bootstrapWith($bootstrappers);
     }
-
-    public function reactivateConsoleApp()
-    {
-        Container::setInstance($this);
-        $this->hasBeenBootstrapped = false;
-        $this->make(Kernel::class)->bootstrap();
-    }
 }
