@@ -20,78 +20,39 @@ class ProcessManagerAssigned implements AssignmentRuleInterface
      * The task is assigned to the Manager of the Process.
      *
      * It takes in count the process version of the request.
-     * If the process does not have assigned a Manager, it returns null instead of throwing an exception.
+     * If the process does not have assigned a Manager, it throws an exception.
      *
      * @param ActivityInterface $task
      * @param TokenInterface $token
      * @param Process $process
      * @param ProcessRequest $request
      * @return int|null
+     * @throws ThereIsNoProcessManagerAssignedException
      */
     public function getNextUser(ActivityInterface $task, TokenInterface $token, Process $process, ProcessRequest $request)
     {
         // review for multiple managers
         $managers = $request->processVersion->manager_id;
-
-        // Normalize: treat empty array as null
-        if (is_array($managers) && empty($managers)) {
-            $managers = null;
+        $user_id = $this->getNextManagerAssigned($managers, $task, $request);
+        if (!$user_id) {
+            throw new ThereIsNoProcessManagerAssignedException($task);
         }
 
-        $user_id = $this->getNextManagerAssigned($managers, $task, $request);
-
-        // Return null instead of throwing exception when no manager is found
-        // This allows the process to continue without crashing
         return $user_id;
     }
 
     /**
      * Get the round robin manager using a true round robin algorithm
      *
-     * @param array|int|null $managers Manager ID(s) - can be array, single int, or null
+     * @param array $managers
      * @param ActivityInterface $task
      * @param ProcessRequest $request
      * @return int|null
      */
     private function getNextManagerAssigned($managers, $task, $request)
     {
-        // Handle null case
-        if (is_null($managers)) {
-            return null;
-        }
-
-        // Convert single value to array for backward compatibility
-        if (!is_array($managers)) {
-            // If it's a valid integer, convert to array
-            if (is_numeric($managers) && $managers > 0) {
-                $managers = [(int) $managers];
-            } else {
-                // Invalid single value (0, empty string, 'undefined', etc.)
-                return null;
-            }
-        }
-
-        // Validate array is not empty
-        if (empty($managers)) {
-            return null;
-        }
-
-        // Filter out invalid values (null, 0, empty strings, 'undefined', false, etc.)
-        $managers = array_filter($managers, function ($id) {
-            // Only accept positive integers
-            if (!is_numeric($id)) {
-                return false;
-            }
-            $id = (int) $id;
-
-            return $id > 0;
-        });
-
-        // Re-index array after filtering
-        $managers = array_values($managers);
-
-        // Check if we have any valid managers after filtering
-        if (empty($managers)) {
+        // Validate input
+        if (empty($managers) || !is_array($managers)) {
             return null;
         }
 
