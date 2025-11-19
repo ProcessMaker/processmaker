@@ -31,6 +31,13 @@
     padding: 0;
   }
 
+  .form-group ol.dropdown-menu,
+  .form-group ul.dropdown-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
   /* Reset the list style for the form-group */
   .form-group ol,
   .form-group ul {
