@@ -16,18 +16,18 @@
 
     /* Ordered and unordered lists are unstyled by default,
       with no bullets/numbers and no margin or padding. */
-    ol,
-    ul {
-      list-style: none;
+    .form-group ol,
+    .form-group ul {
+      list-style: revert-layer;
       margin: 0;
-      padding: 0;
+      padding: revert-layer;
     }
   }
 
   /* Reset the list style for the vue-form-renderer and screen-container */
-  #screen-container ul,
-  #vue-form-renderer ul {
-    list-style: revert;
-    margin: revert;
-    padding: revert;
+  .multiselect__content-wrapper ul,
+  .multiselect__content-wrapper ol {
+    list-style: revert-layer;
+    margin: revert-layer;
+    padding: 0px;
   }
