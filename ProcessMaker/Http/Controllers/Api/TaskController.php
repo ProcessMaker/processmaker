@@ -142,15 +142,16 @@ class TaskController extends Controller
 
         $this->applyStatusFilter($query, $request);
 
-        $this->applyPmql($query, $request, $user);
-
-        $this->applyAdvancedFilter($query, $request);
-
+        // Apply process manager filter BEFORE PMQL to avoid conflicts with is_self_service filtering
         if ($request->input('processesIManage') === 'true') {
             $this->applyProcessManager($query, $user);
         } else {
             $this->applyForCurrentUser($query, $user);
         }
+
+        $this->applyPmql($query, $request, $user);
+
+        $this->applyAdvancedFilter($query, $request);
 
         // Apply filter overdue
         $query->overdue($request->input('overdue'));

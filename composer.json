@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.15.10+beta-2",
+    "version": "4.15.10+beta-3",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -23,7 +23,7 @@
         "guzzlehttp/guzzle": "^7.9",
         "igaster/laravel-theme": "^2.0",
         "jenssegers/agent": "^2.6",
-        "laravel/framework": "^11.0",
+        "laravel/framework": "^11.44.1",
         "laravel/horizon": "^5.30",
         "laravel/pail": "^1.2",
         "laravel/passport": "^12.3",
@@ -33,6 +33,7 @@
         "laravel/ui": "^4.6",
         "lavary/laravel-menu": "^1.8",
         "lcobucci/jwt": "^4.2",
+        "league/commonmark": "^2.7",
         "league/flysystem-aws-s3-v3": "^3.29",
         "mateusjunges/laravel-kafka": "^2.4",
         "mittwald/vault-php": "^2.1",
@@ -63,6 +64,7 @@
         "spatie/laravel-multitenancy": "^4.0",
         "spomky-labs/otphp": "^11.3",
         "symfony/expression-language": "^7.2",
+        "symfony/http-foundation": "^7.3",
         "teamtnt/laravel-scout-tntsearch-driver": "^14.0",
         "twilio/sdk": "^8.3",
         "typo3/class-alias-loader": "^1.2",
@@ -106,7 +108,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "83cb4a38",
+            "build": "f9daa2ac",
             "cicd-enabled": true,
             "custom": {
                 "package-ellucian-ethos": "1.19.7",
@@ -146,11 +148,11 @@
                 "connector-docusign": "1.11.0",
                 "connector-idp": "1.14.0",
                 "connector-pdf-print": "1.23.1",
-                "connector-send-email": "1.32.9",
+                "connector-send-email": "1.32.10",
                 "connector-slack": "1.9.3",
                 "docker-executor-node-ssr": "1.7.2",
                 "package-ab-testing": "1.4.0",
-                "package-actions-by-email": "1.22.8",
+                "package-actions-by-email": "1.22.9",
                 "package-advanced-user-manager": "1.13.1",
                 "package-ai": "1.16.10",
                 "package-analytics-reporting": "1.11.1",
@@ -160,7 +162,7 @@
                 "package-conversational-forms": "1.15.0",
                 "package-data-sources": "1.34.3",
                 "package-decision-engine": "1.16.1",
-                "package-dynamic-ui": "1.28.2",
+                "package-dynamic-ui": "1.28.3",
                 "package-email-start-event": "1.0.8",
                 "package-files": "1.23.1",
                 "package-googleplaces": "1.12.0",
