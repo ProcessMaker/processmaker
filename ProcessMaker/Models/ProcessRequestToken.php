@@ -753,13 +753,35 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
         $value = mb_strtolower($value);
 
-        return function ($query) use ($value, $statusMap, $expression, $user) {
+        // Capture processManagerIds from the builder if it's available
+        // The $callback parameter is actually the $builder from ExtendedPMQL
+        $builder = $callback;
+        $processManagerIds = null;
+        if ($builder && method_exists($builder, 'getQuery')) {
+            $processManagerIds = $builder->getQuery()->processManagerIds ?? null;
+        }
+
+        return function ($query) use ($value, $statusMap, $expression, $user, $processManagerIds) {
+            // Also check in the current query in case it's available there
+            $currentProcessManagerIds = $query->getQuery()->processManagerIds ?? null;
+            $finalProcessManagerIds = $processManagerIds ?? $currentProcessManagerIds;
+            $isProcessManager = !empty($finalProcessManagerIds);
+
             if ($value === 'self service') {
                 if (!$user) {
                     $user = auth()->user();
                 }
 
-                if ($user) {
+                if ($isProcessManager) {
+                    // When processesIManage is active, include self-service tasks from managed processes
+                    $selfServiceTaskIds = ProcessRequestToken::select(['id'])
+                        ->whereIn('process_id', $finalProcessManagerIds)
+                        ->where('is_self_service', 1)
+                        ->whereNull('user_id')
+                        ->where('status', 'ACTIVE');
+
+                    $query->whereIn('process_request_tokens.id', $selfServiceTaskIds);
+                } elseif ($user) {
                     $taskIds = $user->availableSelfServiceTaskIds();
                     $query->whereIn('process_request_tokens.id', $taskIds);
                 } else {
