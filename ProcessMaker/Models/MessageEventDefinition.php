@@ -48,6 +48,6 @@ class MessageEventDefinition extends Base
             }
         }
 
-        return $this;
+        return parent::execute($event, $target, $targetRequest, $token);
     }
 }
