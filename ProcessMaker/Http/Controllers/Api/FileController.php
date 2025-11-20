@@ -13,10 +13,13 @@ use ProcessMaker\Models\Media;
 use ProcessMaker\Models\MediaLog;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\TaskDraft;
+use ProcessMaker\Traits\ValidatesFileTrait;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class FileController extends Controller
 {
+    use ValidatesFileTrait;
+
     /**
      * A whitelist of attributes that should not be
      * sanitized by our SanitizeInput middleware.
@@ -188,7 +191,21 @@ class FileController extends Controller
         }
 
         $mediaCollection = $request->input('collection', 'local');
+
+        // Validate the file before processing
+        $uploadedFile = $request->file('file');
+        if (!$uploadedFile) {
+            return abort(response(['message' => 'No file provided'], 422));
+        }
+
+        $errors = [];
+        $this->validateFile($uploadedFile, $errors);
+        if (count($errors) > 0) {
+            return abort(response($errors, 422));
+        }
+
         $file = $model->addMediaFromRequest('file');
+
         $user = pmUser();
         $originalCreatedBy = $user ? $user->id : null;
         $data_name = $request->input('data_name', '');

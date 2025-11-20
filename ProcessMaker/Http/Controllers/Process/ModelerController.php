@@ -151,6 +151,7 @@ class ModelerController extends Controller
             'abPublish' => PackageHelper::isPackageInstalled('ProcessMaker\Package\PackageABTesting\PackageServiceProvider'),
             'launchpad' => ProcessLaunchpad::getLaunchpad(true, $process->id),
             'defaultEmailNotification' => $defaultEmailNotification,
+            'isTceCustomization' => config('app.tce_customization_enable'),
         ];
     }
 

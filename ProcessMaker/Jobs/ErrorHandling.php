@@ -93,10 +93,11 @@ class ErrorHandling
     public function sendExecutionErrorNotification(string $message)
     {
         if ($this->processRequestToken) {
-            $user = $this->processRequestToken->processRequest->processVersion->manager;
-            if ($user !== null) {
-                Log::info('Send Execution Error Notification: ' . $message);
-                Notification::send($user, new ErrorExecutionNotification($this->processRequestToken, $message, $this->bpmnErrorHandling));
+            // review no multiple managers
+            $mangers = $this->processRequestToken->processRequest->processVersion->getManagers();
+            foreach ($mangers as $manager) {
+                Log::info('Send Execution Error Notification: ' . $message . ' to manager: ' . $manager->username);
+                Notification::send($manager, new ErrorExecutionNotification($this->processRequestToken, $message, $this->bpmnErrorHandling));
             }
         }
     }
@@ -213,7 +214,7 @@ class ErrorHandling
             if (str_starts_with($result['message'], 'Command exceeded timeout of')) {
                 throw new ScriptTimeoutException($result['message']);
             }
-            throw new ScriptException($result['message']);
+            throw new ScriptException(json_encode($result, JSON_PRETTY_PRINT));
         }
     }
 }

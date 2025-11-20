@@ -71,12 +71,18 @@ class PermissionsTest extends TestCase
         $this->user->refresh();
         $this->flushSession();
 
+        // Invalidate permission cache to ensure changes take effect
+        $this->user->invalidatePermissionCache();
+
         $response = $this->apiCall('DELETE', '/processes/' . $process->id);
         $response->assertStatus(403);
 
         $this->user->permissions()->attach($permission->id);
         $this->user->refresh();
         $this->flushSession();
+
+        // Invalidate permission cache to ensure the new permission takes effect
+        $this->user->invalidatePermissionCache();
 
         $response = $this->apiCall('DELETE', '/processes/' . $process->id);
         $response->assertStatus(204);
@@ -152,6 +158,9 @@ class PermissionsTest extends TestCase
             $this->user->refresh();
             $this->flushSession();
 
+            // Invalidate permission cache to ensure the new permission takes effect
+            $this->user->invalidatePermissionCache();
+
             // test create permission
             $response = $this->apiCall('POST', $url, $attrs);
             $response->assertStatus(201);
@@ -167,6 +176,9 @@ class PermissionsTest extends TestCase
             $group->permissions()->attach($permission);
             $this->user->refresh();
             $this->flushSession();
+
+            // Invalidate permission cache to ensure the new permission takes effect
+            $this->user->invalidatePermissionCache();
 
             $response = $this->apiCall('PUT', $url, $attrs);
             $this->assertEquals('Test Category Update', $class::find($id)->name);
@@ -184,6 +196,9 @@ class PermissionsTest extends TestCase
             $group->permissions()->attach($permission);
             $this->user->refresh();
             $this->flushSession();
+
+            // Invalidate permission cache to ensure the new permission takes effect
+            $this->user->invalidatePermissionCache();
 
             $url = route("api.{$type}_categories.index");
             $response = $this->apiCall('GET', $url);

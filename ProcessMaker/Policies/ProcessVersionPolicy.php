@@ -14,7 +14,7 @@ class ProcessVersionPolicy
      * Run before all methods to determine if the
      * user is an admin and can do everything.
      *
-     * @param  \ProcessMaker\Models\User  $user
+     * @param  User  $user
      * @return mixed
      */
     public function before(User $user)
@@ -27,8 +27,8 @@ class ProcessVersionPolicy
     /**
      * Determine whether the user can cancel the process version.
      *
-     * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Models\ProcessVersion  $processVersion
+     * @param  User  $user
+     * @param  ProcessVersion  $processVersion
      *
      * @return bool
      */
@@ -45,7 +45,7 @@ class ProcessVersionPolicy
         }
 
         if (
-            $processVersion->manager_id === $user->id &&
+            in_array($user->id, $processVersion->manager_id ?? []) &&
             $processVersion->getProperty('manager_can_cancel_request') === true
         ) {
             return true;
@@ -57,8 +57,8 @@ class ProcessVersionPolicy
     /**
      * Determine whether the user can edit data
      *
-     * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Models\ProcessVersion  $processVersion
+     * @param  User  $user
+     * @param  ProcessVersion  $processVersion
      *
      * @return bool
      */

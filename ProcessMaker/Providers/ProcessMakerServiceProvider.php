@@ -9,17 +9,25 @@ use Illuminate\Foundation\PackageManifest;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
+use Illuminate\Queue\Events\JobAttempted;
+use Illuminate\Queue\Events\JobProcessing;
+use Illuminate\Queue\Events\JobRetryRequested;
+use Illuminate\Queue\Listener;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Env;
 use Illuminate\Support\Facades;
+use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
-use Laravel\Passport\Passport;
+use Laravel\Horizon\SystemProcessCounter;
+use Laravel\Horizon\WorkerCommandString;
 use Lavary\Menu\Menu;
 use ProcessMaker\Cache\Settings\SettingCacheManager;
+use ProcessMaker\Console\Commands\HorizonListen;
 use ProcessMaker\Console\Migration\ExtendedMigrateCommand;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ScreenBuilderStarting;
@@ -37,12 +45,15 @@ use ProcessMaker\Managers\MenuManager;
 use ProcessMaker\Managers\ScreenCompiledManager;
 use ProcessMaker\Models;
 use ProcessMaker\Multitenancy\Tenant;
+use ProcessMaker\Multitenancy\TenantBootstrapper;
 use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
+use ProcessMaker\Providers\PermissionServiceProvider;
 use ProcessMaker\Repositories\SettingsConfigRepository;
 use RuntimeException;
 use Spatie\Multitenancy\Events\MadeTenantCurrentEvent;
 use Spatie\Multitenancy\Events\TenantNotFoundForRequestEvent;
+use Spatie\Multitenancy\TenantCollection;
 
 /**
  * Provide our ProcessMaker specific services.
@@ -60,6 +71,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
     // Track the query time for each request
     private static $queryTime = 0;
+
+    // Track the landlord values for multitenancy
+    private static $landlordValues = null;
 
     public function boot(): void
     {
@@ -88,46 +102,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
         Route::pushMiddlewareToGroup('api', HandleEtag::class);
         // Hook after service providers boot
         self::$bootTime = (microtime(true) - self::$bootStart) * 1000; // Convert to milliseconds
-
-        // Only run this for console commands so we dont query the Tenants database for each request.
-        // This sets up individual supervisors for each tenant so that one tenant does not block
-        // the queue for another tenant. This must be done here instead of SwitchTenant.php because
-        // there is a single horizon instance for all tenants.
-        if ($this->app->runningInConsole() && config('app.multitenancy')) {
-            $tenantIds = Tenant::all()->pluck('id')->toArray();
-            $config = config('horizon.environments');
-            $config = $this->addTenantSupervisors($config, $tenantIds);
-            config(['horizon.environments' => $config]);
-        }
-    }
-
-    private function addTenantSupervisors(array $config, array $tenantIds): array
-    {
-        foreach ($config as $env => &$supervisors) {
-            $newSupervisors = [];
-
-            foreach ($supervisors as $supervisorName => $settings) {
-                foreach ($tenantIds as $tenantId) {
-                    $tenantSupervisorName = "tenant-{$tenantId}-{$supervisorName}";
-
-                    // Copy original settings
-                    $tenantSettings = $settings;
-
-                    // Prepend tenant ID to each queue
-                    if (isset($tenantSettings['queue']) && is_array($tenantSettings['queue'])) {
-                        $tenantSettings['queue'] = array_map(function ($queue) use ($tenantId) {
-                            return "tenant-{$tenantId}-{$queue}";
-                        }, $tenantSettings['queue']);
-                    }
-
-                    $newSupervisors[$tenantSupervisorName] = $tenantSettings;
-                }
-            }
-
-            $supervisors = $newSupervisors;
-        }
-
-        return $config;
     }
 
     public function register(): void
@@ -144,6 +118,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
         if (!$this->app->environment('production')) {
             $this->app->register(DuskServiceProvider::class);
         }
+
+        // Register our permission services
+        $this->app->register(PermissionServiceProvider::class);
 
         $this->app->singleton(Managers\PackageManager::class, function () {
             return new Managers\PackageManager();
@@ -265,6 +242,40 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         $this->app->instance('tenant-resolved', false);
+
+        $this->app->when(HorizonListen::class)->needs(Listener::class)->give(function ($app) {
+            return new Listener(base_path());
+        });
+
+        if (config('app.multitenancy')) {
+            WorkerCommandString::$command = 'exec @php artisan horizon:listen';
+            SystemProcessCounter::$command = 'horizon:listen';
+        }
+    }
+
+    /**
+     * In multitenancy, we need to bootstrap a new app with the tenant id set.
+     * This is because queue workers are long-running processes that are not
+     * tenant aware.
+     */
+    private static function bootstrapTenantApp(JobProcessing|JobRetryRequested $event): void
+    {
+        Context::hydrate($event->job->payload()['illuminate:log:context'] ?? null);
+        $tenantId = Context::get(config('multitenancy.current_tenant_context_key'));
+        if ($tenantId) {
+            if (!method_exists($event->job, 'getRedisQueue')) {
+                // Not a redis job
+                return;
+            }
+
+            // Create a new tenant app instance
+            $_SERVER['TENANT'] = $tenantId;
+
+            $app = require base_path('bootstrap/app.php');
+            $app->make(\ProcessMaker\Console\Kernel::class)->bootstrap();
+            \Illuminate\Container\Container::setInstance($app);
+            $event->job->getRedisQueue()->setContainer($app);
+        }
     }
 
     /**
@@ -272,6 +283,14 @@ class ProcessMakerServiceProvider extends ServiceProvider
      */
     protected static function registerEvents(): void
     {
+        Facades\Event::listen(JobProcessing::class, function (JobProcessing $event) {
+            self::bootstrapTenantApp($event);
+        });
+
+        Facades\Event::listen(JobRetryRequested::class, function (JobRetryRequested $event) {
+            self::bootstrapTenantApp($event);
+        });
+
         // Listen to the events for our core screen
         // types and add our javascript
         Facades\Event::listen(ScreenBuilderStarting::class, function ($event) {
@@ -564,15 +583,27 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return;
         }
 
-        $tenantId = Env::get('TENANT');
-        if ($tenantId) {
-            $tenant = Tenant::findOrFail($tenantId);
-            $tenant->makeCurrent();
-        } elseif (config('app.multitenancy') === false) {
-            // This is expected if multitenancy is disabled.
-            // Call the TenantResolved event with null to continue loading the app.
+        if (config('app.multitenancy') === false) {
             event(new TenantResolved(null));
+
+            return;
         }
+
+        if ($tenant = Tenant::fromBootstrapper()) {
+            $tenant->makeCurrent();
+
+            return;
+        }
+
+        $tenantId = Env::get('TENANT');
+        if (!$tenantId) {
+            event(new TenantResolved(null));
+
+            return;
+        }
+
+        $tenant = Tenant::findOrFail($tenantId);
+        $tenant->makeCurrent();
     }
 
     /**

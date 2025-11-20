@@ -16,7 +16,7 @@
 @endsection
 
 @section('meta')
-  <meta name="request-id" content="">
+  <meta name="request-id" content="{{ $request->getKey() }}">
 @endsection
 
 @section('content')
@@ -184,8 +184,16 @@
   @endforeach
   
   <!-- Load the modeler scripts -->
-  @foreach($managerModelerScripts as $script)
-    <script src="{{ $script }}"></script>
+  @foreach($managerModelerScripts as $params)
+    <script
+    @foreach ($params as $key => $value)
+      @if (is_bool($value))
+        {{ $key }}
+      @else
+        {{ $key }}="{{ $value }}"
+      @endif
+    @endforeach
+    ></script>
   @endforeach
 
   @if (hasPackage('package-files'))

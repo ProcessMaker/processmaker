@@ -248,11 +248,19 @@ Route::get('password/success', function () {
 
 Route::get('/unavailable', [UnavailableController::class, 'show'])->name('error.unavailable');
 
+Route::get('/not-authorized', function () {
+    return view('errors.not-authorized');
+})->name('errors.not-authorized');
+
 // SAML Metadata Route
 Route::resource('/saml/metadata', MetadataController::class)->only('index');
 
 // Metrics Route
 Route::get('/metrics', function () {
+    if (!config('app.multitenancy')) {
+        Metrics::collectQueueMetrics();
+    }
+
     return response(Metrics::renderMetrics(), 200, [
         'Content-Type' => 'text/plain; version=0.0.4',
     ]);

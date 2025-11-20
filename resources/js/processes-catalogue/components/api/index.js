@@ -13,6 +13,7 @@ export const getRequests = async ({
       order_by: orderBy,
       filter,
       advanced_filter: JSON.stringify(advancedFilter),
+      extra_fields: "process_request",
     },
   });
 

@@ -110,7 +110,7 @@ class BundleAsset extends ProcessMakerModel
 
     public function getOwnerNameAttribute()
     {
-        if ($this->asset && method_exists($this->asset, 'user')) {
+        if ($this->asset && method_exists($this->asset, 'user') && $this->asset->user) {
             return $this->asset->user->firstname . ' ' . $this->asset->user->lastname;
         }
 

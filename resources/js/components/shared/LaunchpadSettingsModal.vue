@@ -278,6 +278,7 @@ export default {
         dataColumns: [],
       },
       ScreenDefaultId: [0, "tce-student", "tce-college", "tce-grants"],
+      refresh: false, // This is used to check if the columns are updated
     };
   },
   computed: {
@@ -491,11 +492,15 @@ export default {
             indexImage: null,
             type: "add",
           };
-          if (this.oldScreen !== this.selectedScreen.id) {
+          
+          if (this.oldScreen !== this.selectedScreen.id || this.refresh) {
             ProcessMaker.EventBus.$emit(
               "reloadByNewScreen",
               this.selectedScreenId,
             );
+
+            // Reset the updateColumns flag
+            this.refresh = false;
           }
           ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
           ProcessMaker.EventBus.$emit("getChartId", this.selectedSavedChart.id);
@@ -634,6 +639,9 @@ export default {
         .get("saved-searches/columns")
         .then((response) => {
           this.columnListing.currentColumns = type === "tasks" ? this.myTasksColumns : this.myCasesColumns;
+          if (this.columnListing.currentColumns.length === 0) {
+              this.columnListing.currentColumns = this.getDefaultColumns();
+          }
           if (this.isTCEScreen) {
             if (response.data) {
               if (response.data.default) {
@@ -684,6 +692,7 @@ export default {
         });
     },
     updateColumns(columns, type) {
+      this.refresh = true;
       if (type === "tasks") {
         this.myTasks.currentColumns = columns;
       } else {
@@ -703,7 +712,7 @@ export default {
         this.myCases.currentColumns = this.getTceGrants();
         return;
       }
-      this.myCases.currentColumns = this.getDefaultColumns(); 
+      this.myTasks.currentColumns = this.getDefaultColumns();
     },
     getDefaultColumns() {
       return [

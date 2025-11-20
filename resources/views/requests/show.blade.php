@@ -472,8 +472,16 @@
     };
   </script>
 
-  @foreach($managerModelerScripts as $script)
-    <script src="{{ $script }}"></script>
+  @foreach($managerModelerScripts as $params)
+    <script
+    @foreach ($params as $key => $value)
+      @if (is_bool($value))
+        {{ $key }}
+      @else
+        {{ $key }}="{{ $value }}"
+      @endif
+    @endforeach
+    ></script>
   @endforeach
   @foreach($manager->getScripts() as $script)
         <script src="{{$script}}"></script>
@@ -978,6 +986,9 @@
   }
   .card-height {
     height: 50vh;
+  }
+  .collapse-content {
+    overflow: auto;
   }
 </style>
 @endsection

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch, onMounted, getCurrentInstance } from 'vue';
-import { useRouter, useRoute } from 'vue-router/composables';
+import { useRoute } from 'vue-router/composables';
 import debounce from 'lodash/debounce';
 import InstanceTabs from './InstanceTabs.vue';
 import types from './assetTypes';
@@ -8,7 +8,6 @@ import moment from 'moment';
 import Header from './Header.vue';
 import InstallProgress from './InstallProgress.vue';
 
-const router = useRouter();
 const route = useRoute();
 const vue = getCurrentInstance().proxy;
 
@@ -18,8 +17,29 @@ const items = ref([]);
 const meta = ref({});
 const filter = ref("");
 const showInstallModal = ref(false);
+const showConfirmModal = ref(false);
+const selectedAsset = ref(null);
+const installMode = ref('update');
 const page = ref(1);
 const perPage = ref(15);
+
+const load = () => {
+  if (!typeConfig) {
+    return;
+  }
+  const queryParams = {
+    url: typeConfig.url,
+    filter: filter.value,
+    per_page: perPage.value,
+    page: page.value
+  };
+  ProcessMaker.apiClient
+    .get(`devlink/${route.params.id}/remote-assets-listing`, { params: queryParams })
+    .then((result) => {
+      items.value = result.data.data;
+      meta.value = result.data.meta;
+    });
+};
 
 watch(page, () => {
   load();
@@ -57,51 +77,41 @@ const fields = [
   },
   {
     key: 'menu',
-    label: ''
+    label: '',
   },
 ];
 
 
 const install = (asset) => {
-  vue.$bvModal.msgBoxConfirm(vue.$t('Are you sure you want to install this asset onto this instance?'), {
-    okTitle: vue.$t('Ok'),
-    cancelTitle: vue.$t('Cancel')
-  }).then((confirm) => {
-    if (confirm) {
-      showInstallModal.value = true;
-      const params = {
-        class: typeConfig.class,
-        id: asset.id
-      };
-      ProcessMaker.apiClient
-        .post(`/devlink/${route.params.id}/install-remote-asset`, params)
-        .then((response) => {
-        });
-    }
-  });
+  selectedAsset.value = asset;
+  showConfirmModal.value = true;
+};
+
+const confirmInstall = () => {
+  if (selectedAsset.value) {
+    showConfirmModal.value = false;
+    showInstallModal.value = true;
+    const params = {
+      class: typeConfig.class,
+      id: selectedAsset.value.id,
+      updateType: installMode.value
+    };
+    ProcessMaker.apiClient
+      .post(`/devlink/${route.params.id}/install-remote-asset`, params)
+      .then(() => {
+        selectedAsset.value = null;
+      });
+  }
+};
+
+const cancelInstall = () => {
+  selectedAsset.value = null;
+  showConfirmModal.value = false;
 };
 
 onMounted(() => {
   load();
 });
-
-const load = () => {
-  if (!typeConfig) {
-    return;
-  }
-  const queryParams = {
-    url: typeConfig.url,
-    filter: filter.value,
-    per_page: perPage.value,
-    page: page.value
-  };
-  ProcessMaker.apiClient
-    .get(`devlink/${route.params.id}/remote-assets-listing`, { params: queryParams })
-    .then((result) => {
-      items.value = result.data.data;
-      meta.value = result.data.meta;
-    });
-};
 
 // Debounced function
 const debouncedLoad = debounce(load, 300);
@@ -152,6 +162,53 @@ const handleFilterChange = () => {
         @page-change="page = $event"
         @per-page-change="perPage = $event"
       />
+    <!-- Confirmation Modal -->
+    <b-modal 
+      id="install-confirm" 
+      v-model="showConfirmModal" 
+      :title="$t('Install Asset')" 
+      @ok="confirmInstall"
+      @cancel="cancelInstall"
+      :ok-title="$t('Install')"
+      :cancel-title="$t('Cancel')"
+    >
+      <div class="mb-3">
+        <p>{{ $t('Do you want to proceed with installing the asset on your instance?') }}</p>
+        <p v-if="selectedAsset" class="font-weight-bold">{{ selectedAsset.name || selectedAsset.title }}</p>
+      </div>
+      
+      <div class="form-group">
+        <label class="font-weight-bold mb-2">{{ $t('Installation Mode:') }}</label>
+        <div class="custom-control custom-radio">
+          <input 
+            id="update-mode" 
+            v-model="installMode" 
+            type="radio" 
+            value="update" 
+            class="custom-control-input"
+          >
+          <label for="update-mode" class="custom-control-label">
+            <strong>{{ $t('Update') }}</strong>
+            <div class="text-muted small">{{ $t('Update existing asset with the same name (recommended)') }}</div>
+          </label>
+        </div>
+        <div class="custom-control custom-radio mt-2">
+          <input 
+            id="copy-mode" 
+            v-model="installMode" 
+            type="radio" 
+            value="copy" 
+            class="custom-control-input"
+          >
+          <label for="copy-mode" class="custom-control-label">
+            <strong>{{ $t('Copy') }}</strong>
+            <div class="text-muted small">{{ $t('Create a new asset even if one with the same name exists') }}</div>
+          </label>
+        </div>
+      </div>
+    </b-modal>
+
+    <!-- Progress Modal -->
     <b-modal id="install-progress" size="lg" v-model="showInstallModal" :title="$t('Installation Progress')" hide-footer>
       <install-progress />
     </b-modal>

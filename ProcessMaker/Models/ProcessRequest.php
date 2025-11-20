@@ -280,7 +280,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             case 'participants':
                 return $this->participants()->get()->pluck('id');
             case 'manager':
-                return collect([$this->process()->first()->manager_id]);
+                return collect($this->process()->first()->manager_id ?? []);
             default:
                 return collect([]);
         }

@@ -121,11 +121,9 @@ return [
             'visibility' => 'private',
         ],
 
-        // Note, this storage path is for all tenants. It is not modififed in SwitchTenant.php
-        // Used for license.json since, for now, its the same for all tenants
-        'root' => [
+        'lang' => [
             'driver' => 'local',
-            'root' => storage_path(),
+            'root' => lang_path(),
         ],
 
         // Others declared in packages
