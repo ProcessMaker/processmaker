@@ -74,7 +74,7 @@ class DevLink extends ProcessMakerModel
 
     public function client()
     {
-        return Http::withToken($this->access_token)->baseUrl($this->url)->throw();
+        return Http::timeout(300)->withToken($this->access_token)->baseUrl($this->url)->throw();
     }
 
     private function generateNewState()
