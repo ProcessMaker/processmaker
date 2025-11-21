@@ -547,6 +547,11 @@ class ProcessExporter extends ExporterBase
     public function importProcessLaunchpad(): void
     {
         foreach ($this->getDependents('process_launchpad') as $launchpad) {
+            // Check if we already have a launchpad for this process
+            if (\ProcessMaker\Models\ProcessLaunchpad::where('process_id', $this->model->id)->exists()) {
+                continue;
+            }
+
             $launchpad->model->setAttribute('process_id', $this->model->id);
             $launchpad->model->saveOrFail();
         }
