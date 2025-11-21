@@ -67,6 +67,28 @@ export default {
         this.$set(this.node, "allowInterstitial", value);
       },
     },
+    /**
+     * Get the value of the elementDestination property
+     */
+    elementDestination: {
+      get() {
+        // Get the value of elementDestination or set it to null if it hasn't been defined yet.
+        const value = get(this.node, "elementDestination", "{}");
+        const parsedValue = JSON.parse(value);
+
+        return parsedValue;
+      },
+    },
+    /**
+     * Get the value of the conditionalRedirect property
+     */
+    conditionalRedirect: {
+      get() {
+        const value = get(this.node, "conditionalRedirect", "{}");
+        const parsedValue = JSON.parse(value);
+        return parsedValue;
+      },
+    },
 
     node() {
       return this.$root.$children[0].$refs.modeler.highlightedNode.definition;
@@ -94,13 +116,24 @@ export default {
      *
      * @param {Object} { nodeId, isDisabled }
      */
-    handleInterstitial({ nodeId, show }) {
+    handleInterstitial({ nodeId, show, isConditionalRedirect = false }) {
       if (nodeId !== this.node.id) {
         return;
       }
       if (show) {
         this.$set(this.node, "allowInterstitial", true);
       } else {
+        // Prevent disabling interstitial if displayNextAssignedTask is set via conditional redirect or element destination
+        const isDisplayNextAssignedTask =
+          (isConditionalRedirect && this.elementDestination?.type === "displayNextAssignedTask") ||
+          (!isConditionalRedirect &&
+            Array.isArray(this.conditionalRedirect?.conditions) &&
+            this.conditionalRedirect.conditions.some(
+              (condition) => condition?.taskDestination?.value === "displayNextAssignedTask"
+            ));
+
+        if (isDisplayNextAssignedTask) return;
+
         this.$set(this.node, "allowInterstitial", false);
       }
     },
