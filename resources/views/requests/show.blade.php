@@ -987,5 +987,8 @@
   .card-height {
     height: 50vh;
   }
+  .collapse-content {
+    overflow: auto;
+  }
 </style>
 @endsection

@@ -127,7 +127,7 @@ return [
     |
     */
 
-    'memory_limit' => 256,
+    'memory_limit' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
 
     /*
     |--------------------------------------------------------------------------
@@ -151,6 +151,7 @@ return [
                 'sleep' => intval(env('BPMN_QUEUE_INTERVAL', 3000)) * 0.001,
                 'minProcesses' => env('PM4_HORIZON_SUPERVISOR_BPMN_MIN_PROCESSES', 1),
                 'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_BPMN_MAX_PROCESSES', 1),
+                'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
             ],
             'supervisor-1' => [
                 'connection' => 'redis',
@@ -160,6 +161,7 @@ return [
                 'timeout' => env('PM4_HORIZON_SUPERVISOR_1_TIMEOUT', 600),
                 'minProcesses' => env('PM4_HORIZON_SUPERVISOR_1_MIN_PROCESSES', 1),
                 'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_1_MAX_PROCESSES', 1),
+                'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
             ],
         ],
 
@@ -173,6 +175,7 @@ return [
                 'sleep' => intval(env('BPMN_QUEUE_INTERVAL', 3000)) * 0.001,
                 'minProcesses' => env('PM4_HORIZON_SUPERVISOR_BPMN_MIN_PROCESSES', 1),
                 'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_BPMN_MAX_PROCESSES', 1),
+                'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
             ],
             'supervisor-1' => [
                 'connection' => 'redis',
@@ -182,6 +185,7 @@ return [
                 'timeout' => env('PM4_HORIZON_SUPERVISOR_1_TIMEOUT', 600),
                 'minProcesses' => env('PM4_HORIZON_SUPERVISOR_1_MIN_PROCESSES', 1),
                 'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_1_MAX_PROCESSES', 1),
+                'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
             ],
         ],
 
@@ -195,6 +199,7 @@ return [
                 'sleep' => intval(env('BPMN_QUEUE_INTERVAL', 3000)) * 0.001,
                 'minProcesses' => env('PM4_HORIZON_SUPERVISOR_BPMN_MIN_PROCESSES', 1),
                 'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_BPMN_MAX_PROCESSES', 1),
+                'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
             ],
             'supervisor-1' => [
                 'connection' => 'redis',
@@ -204,6 +209,7 @@ return [
                 'timeout' => env('PM4_HORIZON_SUPERVISOR_1_TIMEOUT', 600),
                 'minProcesses' => env('PM4_HORIZON_SUPERVISOR_1_MIN_PROCESSES', 1),
                 'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_1_MAX_PROCESSES', 1),
+                'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
             ],
         ],
     ],

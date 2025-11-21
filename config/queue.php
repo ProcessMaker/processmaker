@@ -96,11 +96,23 @@ return [
     |--------------------------------------------------------------------------
     |
     | These options configure the behavior of tenant-specific job tracking.
+    | Job tracking is enabled by default when multitenancy is enabled.
     | When enabled, jobs will be tracked per tenant in Redis for monitoring
     | and analytics purposes.
     |
+    | Set this to true to disable job tracking for all tenants.
     */
 
-    'tenant_tracking_enabled' => env('QUEUE_TENANT_TRACKING_ENABLED', false),
+    'disable_tenant_tracking' => env('QUEUE_DISABLE_TENANT_TRACKING', false),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Restrict Queue UI to Tenant
+    |--------------------------------------------------------------------------
+    |
+    | Allow viewing queue info for all tenants in a multitenant environment.
+    | Only enable for debugging!
+    |
+    */
+    'ui_allow_all_tenants' => env('QUEUE_UI_ALLOW_ALL_TENANTS', false),
 ];

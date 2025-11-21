@@ -95,7 +95,7 @@ class CasesController extends Controller
         // The user can see the comments
         $canViewComments = (Auth::user()->hasPermissionsFor('comments')->count() > 0) || class_exists(PackageServiceProvider::class);
         // The user is Manager from the main request
-        $isProcessManager = $request->process?->manager_id === Auth::user()->id;
+        $isProcessManager = in_array(Auth::user()->id, $request->process?->manager_id ?? []);
         // Check if the user has permission print for request
         $canPrintScreens = $canOpenCase = $this->canUserCanOpenCase($allRequests);
         if (!$canOpenCase && !$isProcessManager) {

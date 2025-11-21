@@ -14,6 +14,7 @@
     <meta name="i18n-mdate" content='{!! json_encode(ProcessMaker\i18nHelper::mdates()) !!}'>
     <meta name="screen-cache-enabled" content="{{ config('app.screen.cache_enabled') ? 'true' : 'false' }}">
     <meta name="screen-cache-timeout" content="{{ config('app.screen.cache_timeout') }}">
+    <meta name="screen-secure-handler-toggle-visible" content="{{ config('app.screen.show_secure_handler_toggle') }}">
     @if(Auth::user())
     <meta name="user-id" content="{{ Auth::user()->id }}">
     <meta name="datetime-format" content="{{ Auth::user()->datetime_format ?: config('app.dateformat') }}">
@@ -134,7 +135,7 @@
   const task = @json($task);
   const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
   const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
-  const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
+  const userIsProcessManager = {{ in_array(Auth::user()->id, $task->process?->manager_id ?? []) ? "true": "false" }};
   const screenFields = @json($screenFields);
 </script>
 <script src="{{ mix('js/tasks/loaderPreview.js')}}"></script>

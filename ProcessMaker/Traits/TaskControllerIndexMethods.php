@@ -6,6 +6,7 @@ use Auth;
 use DB;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use ProcessMaker\Filters\Filter;
 use ProcessMaker\Managers\DataManager;
@@ -294,7 +295,50 @@ trait TaskControllerIndexMethods
     private function applyAdvancedFilter($query, $request)
     {
         if ($advancedFilter = $request->input('advanced_filter', '')) {
-            Filter::filter($query, $advancedFilter);
+            // Parse the advanced filter
+            $filterArray = is_string($advancedFilter) ? json_decode($advancedFilter, true) : $advancedFilter;
+
+            // Check if processesIManage is active and we have processManagerIds
+            $processManagerIds = $query->getQuery()->processManagerIds ?? null;
+            $isProcessManager = !empty($processManagerIds) && $request->input('processesIManage') === 'true';
+
+            // If processesIManage is active, handle "Self Service" status filter specially
+            if ($isProcessManager && is_array($filterArray)) {
+                $hasSelfServiceFilter = false;
+                $filteredArray = [];
+
+                foreach ($filterArray as $filter) {
+                    // Check if this is a "Self Service" status filter
+                    if (isset($filter['subject']['type']) &&
+                        $filter['subject']['type'] === 'Status' &&
+                        isset($filter['value']) &&
+                        mb_strtolower($filter['value']) === 'self service') {
+                        $hasSelfServiceFilter = true;
+                        // Don't add this filter to the array - we'll handle it manually
+                        continue;
+                    }
+                    $filteredArray[] = $filter;
+                }
+
+                // Apply the filtered advanced_filter (without Self Service)
+                if (!empty($filteredArray)) {
+                    Filter::filter($query, $filteredArray);
+                }
+
+                // Manually apply the Self Service filter for process managers
+                if ($hasSelfServiceFilter) {
+                    $selfServiceTaskIds = ProcessRequestToken::select(['id'])
+                        ->whereIn('process_id', $processManagerIds)
+                        ->where('is_self_service', 1)
+                        ->whereNull('user_id')
+                        ->where('status', 'ACTIVE');
+
+                    $query->whereIn('process_request_tokens.id', $selfServiceTaskIds);
+                }
+            } else {
+                // Normal behavior - apply the filter as-is
+                Filter::filter($query, $advancedFilter);
+            }
         }
     }
 
@@ -333,19 +377,44 @@ trait TaskControllerIndexMethods
     public function applyProcessManager($query, $user)
     {
         $ids = Process::select(['id'])
-            ->where('properties->manager_id', $user->id)
+            ->where(function ($subQuery) use ($user) {
+                // Handle both single ID and array of IDs in JSON
+                $subQuery->whereRaw("JSON_EXTRACT(properties, '$.manager_id') = ?", [$user->id])
+                    ->orWhereRaw("JSON_CONTAINS(JSON_EXTRACT(properties, '$.manager_id'), CAST(? AS JSON))", [$user->id]);
+            })
             ->where('status', 'ACTIVE')
-            ->get()
+            ->pluck('id')
             ->toArray();
 
+        if (empty($ids)) {
+            // If user is not a manager of any process, return no results
+            $query->whereRaw('1 = 0');
+
+            return;
+        }
+
+        // Show tasks from processes the user manages that are ACTIVE
+        // OR show self-service tasks from those processes
+        // Store the process IDs in the query so we can use them later to add self-service tasks
+        // We'll add self-service tasks after PMQL is applied to avoid the is_self_service = 0 filter
+        $query->getQuery()->processManagerIds = $ids;
+
+        // Apply condition for regular tasks from managed processes
+        // Self-service tasks will be added after PMQL to avoid conflicts
         $query->where(function ($query) use ($ids) {
-            $query->whereIn('process_request_tokens.process_id', array_column($ids, 'id'))
+            $query->whereIn('process_request_tokens.process_id', $ids)
                 ->where('process_request_tokens.status', 'ACTIVE');
         });
     }
 
+    private function enableUserManager($user)
+    {
+        // enable user in cache
+        Cache::put("user_{$user->id}_manager", true);
+    }
+
     /**
-     * Get the ID of the default saved search for tasks.
+     * Get the ID of the default saved search for tasks
      *
      * @return int|null
      */
