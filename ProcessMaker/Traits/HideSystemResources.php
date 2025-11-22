@@ -92,7 +92,11 @@ trait HideSystemResources
             return $query
                 ->where('is_template', false)
                 ->when(CachedSchema::hasColumn('data_sources', 'asset_type'), function ($query) {
-                    return $query->whereNull('asset_type');
+                    // Allow PM Block data connectors to be listed alongside regular ones.
+                    return $query->where(function ($query) {
+                        $query->whereNull('asset_type')
+                            ->orWhere('asset_type', 'PM_BLOCK');
+                    });
                 })
                 ->whereDoesntHave('categories', function ($query) {
                     $query->where('is_system', true);
