@@ -32,8 +32,10 @@ class UserExporter extends ExporterBase
         }
 
         $permissions = $this->getReference('permissions');
-        $permissionIds = Permission::whereIn('name', $permissions)->pluck('id')->toArray();
-        $user->permissions()->sync($permissionIds);
+        if (!empty($permissions)) {
+            $permissionIds = Permission::whereIn('name', $permissions)->pluck('id')->toArray();
+            $user->permissions()->sync($permissionIds);
+        }
 
         return true;
     }
