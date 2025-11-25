@@ -12,6 +12,7 @@ use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Queue\Events\JobAttempted;
 use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Queue\Events\JobRetryRequested;
+use Illuminate\Queue\Listener;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Env;
 use Illuminate\Support\Facades;
@@ -22,9 +23,13 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
+use Laravel\Horizon\SystemProcessCounter;
+use Laravel\Horizon\WorkerCommandString;
 use Lavary\Menu\Menu;
 use ProcessMaker\Cache\Settings\SettingCacheManager;
+use ProcessMaker\Console\Commands\HorizonListen;
 use ProcessMaker\Console\Migration\ExtendedMigrateCommand;
+use ProcessMaker\Contracts\ConditionalRedirectServiceInterface;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Events\TenantResolved;
@@ -46,6 +51,7 @@ use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
 use ProcessMaker\Providers\PermissionServiceProvider;
 use ProcessMaker\Repositories\SettingsConfigRepository;
+use ProcessMaker\Services\ConditionalRedirectService;
 use RuntimeException;
 use Spatie\Multitenancy\Events\MadeTenantCurrentEvent;
 use Spatie\Multitenancy\Events\TenantNotFoundForRequestEvent;
@@ -70,9 +76,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
     // Track the landlord values for multitenancy
     private static $landlordValues = null;
-
-    // Cache tenant app containers to save memory
-    private static $tenantAppContainers = [];
 
     public function boot(): void
     {
@@ -241,6 +244,21 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         $this->app->instance('tenant-resolved', false);
+
+        /**
+         * Conditional Redirect Service
+         * This service is used to evaluate the conditional redirect property of a process request token.
+         */
+        $this->app->bind(ConditionalRedirectServiceInterface::class, ConditionalRedirectService::class);
+
+        $this->app->when(HorizonListen::class)->needs(Listener::class)->give(function ($app) {
+            return new Listener(base_path());
+        });
+
+        if (config('app.multitenancy')) {
+            WorkerCommandString::$command = 'exec @php artisan horizon:listen';
+            SystemProcessCounter::$command = 'horizon:listen';
+        }
     }
 
     /**
@@ -261,13 +279,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
             // Create a new tenant app instance
             $_SERVER['TENANT'] = $tenantId;
 
-            if (!isset(self::$tenantAppContainers[$tenantId])) {
-                self::$tenantAppContainers[$tenantId] = require base_path('bootstrap/app.php');
-            }
-            self::$tenantAppContainers[$tenantId]->reactivateConsoleApp();
-
-            // Change the job's app service container to the tenant app
-            $event->job->getRedisQueue()->setContainer(self::$tenantAppContainers[$tenantId]);
+            $app = require base_path('bootstrap/app.php');
+            $app->make(\ProcessMaker\Console\Kernel::class)->bootstrap();
+            \Illuminate\Container\Container::setInstance($app);
+            $event->job->getRedisQueue()->setContainer($app);
         }
     }
 
