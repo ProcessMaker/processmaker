@@ -3,6 +3,9 @@
 namespace ProcessMaker\Multitenancy;
 
 use Illuminate\Broadcasting\BroadcastManager;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Env;
+use Monolog\Handler\RotatingFileHandler;
 use ProcessMaker\Application;
 use ProcessMaker\Multitenancy\Broadcasting\TenantAwareBroadcastManager;
 use Spatie\Multitenancy\Concerns\UsesMultitenancyConfig;
@@ -12,6 +15,8 @@ use Spatie\Multitenancy\Tasks\SwitchTenantTask;
 class SwitchTenant implements SwitchTenantTask
 {
     use UsesMultitenancyConfig;
+
+    public static $landlordValues = null;
 
     /**
      * Make the given tenant current.
@@ -24,6 +29,11 @@ class SwitchTenant implements SwitchTenantTask
         $app = app();
 
         \Log::debug('SwitchTenant: ' . $tenant->id, ['domain' => request()->getHost()]);
+
+        // Save the landlord values for later use
+        if (!self::$landlordValues) {
+            self::$landlordValues = $app->make('config')->all();
+        }
 
         // Set the tenant's domain in the request headers. Used for things like the global url() helper.
         request()->headers->set('host', $tenant->domain);
@@ -43,29 +53,85 @@ class SwitchTenant implements SwitchTenantTask
      */
     public function forgetCurrent(): void
     {
+        $app = app();
+        $app->useStoragePath(base_path('storage'));
+
+        $this->setConfig('logging.channels.daily.path', storage_path('logs/processmaker.log'));
+        $app->make('log')->reset();
+        $app->forgetInstance('log');
+
+        $app->useLangPath(resource_path('lang'));
+
+        // app key / encrypter
+        $this->setConfig('app.key', $this->landlordConfig('app.key'));
+        $app->forgetInstance('encrypter');
+    }
+
+    private function landlordConfig($key)
+    {
+        return Arr::get(self::$landlordValues, $key);
+    }
+
+    private function setConfig($key, $value)
+    {
+        app()->make('config')->set($key, $value);
+    }
+
+    private function setEnvironmentVariable($key, $value)
+    {
+        putenv("$key=$value");
+        $_SERVER[$key] = $value;
+        $_ENV[$key] = $value;
     }
 
     private function overrideConfigs(Application $app, IsTenant $tenant)
     {
-        if ($app->configurationIsCached()) {
-            return;
-        }
+        $this->setEnvironmentVariable('APP_URL', $tenant->config['app.url']);
 
-        $newConfig = [
-            'app.instance' => config('app.instance') . '_' . $tenant->id,
-        ];
+        $this->setConfig('app.instance', $this->landlordConfig('app.instance') . '_' . $tenant->id);
+        $this->setConfig('app.url', $tenant->config['app.url']);
 
+        // Microservice callback url
         if (!isset($tenant->config['script-runner-microservice.callback'])) {
-            $newConfig['script-runner-microservice.callback'] = str_replace(
-                $tenant->getOriginalValue('APP_URL'),
-                config('app.url'),
-                $tenant->getOriginalValue('SCRIPT_MICROSERVICE_CALLBACK')
-            );
+            $this->setConfig('script-runner-microservice.callback', str_replace(
+                $this->landlordConfig('app.url'),
+                $tenant->config['app.url'],
+                $this->landlordConfig('script-runner-microservice.callback')
+            ));
         }
+
+        // Filesystem roots
+        $newStoragePath = storage_path('tenant_' . $tenant->id);
+        foreach ($this->landlordConfig('filesystems.disks') as $disk => $config) {
+            if (isset($config['root'])) {
+                $this->setConfig('filesystems.disks.' . $disk . '.root', str_replace(
+                    storage_path(),
+                    $newStoragePath,
+                    $config['root']
+                ));
+            }
+        }
+        $app->useStoragePath($newStoragePath);
+
+        // Lang path
+        $app->useLangPath(resource_path('lang/tenant_' . $tenant->id));
+        $this->setConfig('filesystems.disks.lang.root', lang_path());
+
+        // app key / encrypter
+        $landlordEncrypter = $app->make('encrypter');
+        $this->setConfig('app.key', $landlordEncrypter->decryptString($tenant->config['app.key']));
+        $app->forgetInstance('encrypter');
+
+        // Logging
+        $this->setConfig('logging.channels.daily.path', storage_path('logs/processmaker.log'));
+        $app->make('log')->reset();
+        $app->forgetInstance('log');
+
+        // NOTE: Cache prefix and cache settings prefix are handled in PrefixCacheTask
 
         if (!isset($tenant->config['app.docker_host_url'])) {
             // There is no specific override in the tenant's config so set it to the app url
-            $newConfig['app.docker_host_url'] = config('app.url');
+            $this->setConfig('app.docker_host_url', $this->landlordConfig('app.url'));
         }
 
         // Set config from the entry in the tenants table
@@ -74,9 +140,7 @@ class SwitchTenant implements SwitchTenantTask
             if ($key === 'app.key' || $key === 'app.url') {
                 continue;
             }
-            $newConfig[$key] = $value;
+            $this->setConfig($key, $value);
         }
-
-        config($newConfig);
     }
 }

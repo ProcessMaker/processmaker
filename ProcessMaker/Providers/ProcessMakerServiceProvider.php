@@ -250,40 +250,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
          * This service is used to evaluate the conditional redirect property of a process request token.
          */
         $this->app->bind(ConditionalRedirectServiceInterface::class, ConditionalRedirectService::class);
-
-        $this->app->when(HorizonListen::class)->needs(Listener::class)->give(function ($app) {
-            return new Listener(base_path());
-        });
-
-        if (config('app.multitenancy')) {
-            WorkerCommandString::$command = 'exec @php artisan horizon:listen';
-            SystemProcessCounter::$command = 'horizon:listen';
-        }
-    }
-
-    /**
-     * In multitenancy, we need to bootstrap a new app with the tenant id set.
-     * This is because queue workers are long-running processes that are not
-     * tenant aware.
-     */
-    private static function bootstrapTenantApp(JobProcessing|JobRetryRequested $event): void
-    {
-        Context::hydrate($event->job->payload()['illuminate:log:context'] ?? null);
-        $tenantId = Context::get(config('multitenancy.current_tenant_context_key'));
-        if ($tenantId) {
-            if (!method_exists($event->job, 'getRedisQueue')) {
-                // Not a redis job
-                return;
-            }
-
-            // Create a new tenant app instance
-            $_SERVER['TENANT'] = $tenantId;
-
-            $app = require base_path('bootstrap/app.php');
-            $app->make(\ProcessMaker\Console\Kernel::class)->bootstrap();
-            \Illuminate\Container\Container::setInstance($app);
-            $event->job->getRedisQueue()->setContainer($app);
-        }
     }
 
     /**
@@ -291,14 +257,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
      */
     protected static function registerEvents(): void
     {
-        Facades\Event::listen(JobProcessing::class, function (JobProcessing $event) {
-            self::bootstrapTenantApp($event);
-        });
-
-        Facades\Event::listen(JobRetryRequested::class, function (JobRetryRequested $event) {
-            self::bootstrapTenantApp($event);
-        });
-
         // Listen to the events for our core screen
         // types and add our javascript
         Facades\Event::listen(ScreenBuilderStarting::class, function ($event) {

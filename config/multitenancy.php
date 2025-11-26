@@ -7,6 +7,7 @@ use Illuminate\Notifications\SendQueuedNotifications;
 use Illuminate\Queue\CallQueuedClosure;
 use ProcessMaker\Multitenancy\SwitchTenant;
 use Spatie\Multitenancy\Actions\ForgetCurrentTenantAction;
+use Spatie\Multitenancy\Actions\MakeQueueTenantAwareAction;
 use Spatie\Multitenancy\Actions\MakeTenantCurrentAction;
 use Spatie\Multitenancy\Actions\MigrateTenantAction;
 
@@ -34,6 +35,8 @@ return [
      */
     'switch_tenant_tasks' => [
         SwitchTenant::class,
+        ProcessMaker\Multitenancy\PrefixCacheTask::class,
+        Spatie\Multitenancy\Tasks\SwitchTenantDatabaseTask::class,
     ],
 
     /*
@@ -86,7 +89,7 @@ return [
     'actions' => [
         'make_tenant_current_action' => MakeTenantCurrentAction::class,
         'forget_current_tenant_action' => ForgetCurrentTenantAction::class,
-        'make_queue_tenant_aware_action' => ProcessMaker\Multitenancy\MakeQueueTenantAwareAction::class,
+        'make_queue_tenant_aware_action' => MakeQueueTenantAwareAction::class,
         'migrate_tenant' => MigrateTenantAction::class,
     ],
 
