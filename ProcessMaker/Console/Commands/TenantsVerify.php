@@ -37,13 +37,19 @@ class TenantsVerify extends Command
 
     public function handle()
     {
+        if (!config('app.multitenancy')) {
+            $this->info('Multitenancy is disabled');
+
+            return;
+        }
+
         $errors = [];
         $currentTenant = null;
         if (app()->has('currentTenant')) {
             $currentTenant = app('currentTenant');
         }
 
-        if (config('app.multitenancy') && !$currentTenant) {
+        if (!$currentTenant) {
             $this->error('Multitenancy enabled but no current tenant found.');
 
             return;

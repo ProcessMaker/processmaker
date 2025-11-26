@@ -101,11 +101,12 @@ class SwitchTenant implements SwitchTenantTask
         }
 
         // Filesystem roots
-        $newStoragePath = storage_path('tenant_' . $tenant->id);
+        $landlordStoragePath = base_path('storage');
+        $newStoragePath = base_path('storage/tenant_' . $tenant->id);
         foreach ($this->landlordConfig('filesystems.disks') as $disk => $config) {
             if (isset($config['root'])) {
                 $this->setConfig('filesystems.disks.' . $disk . '.root', str_replace(
-                    storage_path(),
+                    $landlordStoragePath,
                     $newStoragePath,
                     $config['root']
                 ));
