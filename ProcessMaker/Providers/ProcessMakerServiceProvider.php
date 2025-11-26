@@ -46,7 +46,6 @@ use ProcessMaker\Managers\MenuManager;
 use ProcessMaker\Managers\ScreenCompiledManager;
 use ProcessMaker\Models;
 use ProcessMaker\Multitenancy\Tenant;
-use ProcessMaker\Multitenancy\TenantBootstrapper;
 use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
 use ProcessMaker\Providers\PermissionServiceProvider;

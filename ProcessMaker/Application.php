@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use ProcessMaker\Console\Kernel;
 use ProcessMaker\Multitenancy\Tenant;
-use ProcessMaker\Multitenancy\TenantBootstrapper;
 
 /**
  * Class Application.
