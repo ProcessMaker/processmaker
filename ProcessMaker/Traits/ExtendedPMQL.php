@@ -3,7 +3,6 @@
 namespace ProcessMaker\Traits;
 
 use Carbon\Carbon;
-use Carbon\CarbonTimeZone;
 use Illuminate\Database\Eloquent\Builder;
 use ProcessMaker\Models\User;
 use ProcessMaker\Query\Expression;
