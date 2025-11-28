@@ -259,6 +259,12 @@ class ProcessMakerServiceProvider extends ServiceProvider
             WorkerCommandString::$command = 'exec @php artisan horizon:listen';
             SystemProcessCounter::$command = 'horizon:listen';
         }
+
+        $this->app->extend(\Illuminate\Bus\Dispatcher::class, function ($dispatcher, $app) {
+            return new \ProcessMaker\Bus\SqsDispatcher($app, function ($connection) use ($app) {
+                return $app['queue']->connection($connection);
+            });
+        });
     }
 
     /**
