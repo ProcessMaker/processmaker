@@ -136,6 +136,8 @@ class ScriptMicroserviceRunner
             $variablesParameter['API_HOST'] = config('app.docker_host_url') . '/api/1.0';
             $variablesParameter['APP_URL'] = config('app.docker_host_url');
             $variablesParameter['API_SSL_VERIFY'] = (config('app.api_ssl_verify') ? '1' : '0');
+            $variablesParameter['SMART_EXTRACT_API_HOST'] = config('app.smart_extract_api_host');
+            $variablesParameter['SMART_EXTRACT_PM_API_TOKEN'] = config('app.smart_extract_api_token');
         }
 
         return $variablesParameter;

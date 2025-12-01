@@ -298,4 +298,7 @@ return [
     'multitenancy' => env('MULTITENANCY', false),
 
     'resources_core_path' => base_path('resources-core'),
+
+    'smart_extract_api_host' => env('SMART_EXTRACT_API_HOST', 'extract-api.processmaker.net'),
+    'smart_extract_api_token' => env('SMART_EXTRACT_PM_API_TOKEN', ''),
 ];
