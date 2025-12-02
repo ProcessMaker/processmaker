@@ -13,12 +13,14 @@
       @onClickCheckbox="onClickCheckbox"
       @onClickSelected="onClickSelected"
     />
-    <AgregationProperty />
+    <AgregationProperty v-if="isTCECustomization" />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, getCurrentInstance } from "vue";
+import {
+  ref, computed, onMounted, getCurrentInstance, nextTick,
+} from "vue";
 import StageList from "./StageList.vue";
 import AgregationProperty from "./AgregationProperty.vue";
 
@@ -29,6 +31,8 @@ const props = defineProps({
 const defaultStages = ref([]);
 const currentInstance = getCurrentInstance();
 const isLoading = ref(true);
+
+const isTCECustomization = computed(() => window.ProcessMaker.tceCustomizationEnable);
 
 const loadStagesFromApi = () => {
   const { id } = window.ProcessMaker.modeler.process;
@@ -71,6 +75,10 @@ const getHighlightedNode = () => getModeler().highlightedNode;
 
 const getDefinition = () => getHighlightedNode().definition;
 
+const saveProcess = () => {
+  window.$modelerApp?.autosaveApiCall?.();
+}
+
 const getConfigFromDefinition = (definition) => {
   let config = {};
   try {
@@ -109,15 +117,16 @@ const updateStagesForAllFlowConfigs = (stages) => {
 
 const removeStageInAllFlowConfig = (stage) => {
   const links = getModeler().graph.getLinks();
-  for (const link of links) {
+  links.forEach((link) => {
     const config = getConfigFromDefinition(link.component.node.definition);
     if (config?.stage?.id === stage.id) {
       delete config.stage;
       Vue.set(link.component.node.definition, "config", JSON.stringify(config));
+      nextTick(() => {
+        link.component.removeStageLabels();
+      });
     }
-    link.component.removeStageLabels();
-    removeStageToFlow();
-  }
+  });
 };
 
 const applyStageToFlow = (stage) => {
@@ -143,18 +152,22 @@ const removeStageToFlow = () => {
 const onChange = (stages) => {
   updateStagesForAllFlowConfigs(stages);
   saveStagesToApi(stages);
+  saveProcess();
 };
 
 const onUpdate = (stages, index, val, Oldal) => {
   updateStagesForAllFlowConfigs(stages);
+  saveProcess();
 };
 
 const onRemove = (stages, index, removed) => {
   removeStageInAllFlowConfig(removed);
+  saveProcess();
 };
 
 const onClickCheckbox = (stage) => {
   applyStageToFlow(stage);
+  saveProcess();
 };
 
 const onClickSelected = (stage) => {

@@ -60,6 +60,9 @@ import Recommendations from "../../components/Recommendations.vue"
 import ProgressLoader from "../common/ProgressLoader.vue";
 import AddToBundle from "./AddToBundle.vue";
 
+export * from "../../../jscomposition/base/table/index";
+export * from "../../../jscomposition/system/index";
+
 export {
   AddToProjectModal,
   BasicSearch,

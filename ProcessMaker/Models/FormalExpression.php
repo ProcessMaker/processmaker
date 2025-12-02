@@ -239,8 +239,23 @@ class FormalExpression implements FormalExpressionInterface
                     // If no manager is found, then assign the task to the Process Manager.
                     $request = ProcessRequest::find($__data['_request']['id']);
                     $process = $request->processVersion;
+                    $managers = $process->manager_id ?? [];
 
-                    return $process->manager_id;
+                    if (empty($managers)) {
+                        return null;
+                    }
+
+                    // Sort managers to ensure consistent round robin distribution
+                    sort($managers);
+
+                    // Use a combination of process ID and request ID for better distribution
+                    // This ensures different processes don't interfere with each other's round robin
+                    $processId = $process->id ?? 0;
+                    $requestId = $__data['_request']['id'] ?? 0;
+                    $seed = $processId + $requestId;
+                    $managerIndex = $seed % count($managers);
+
+                    return $managers[$managerIndex];
                 }
 
                 return $user->manager_id;

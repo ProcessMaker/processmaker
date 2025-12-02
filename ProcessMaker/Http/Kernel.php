@@ -27,6 +27,7 @@ class Kernel extends HttpKernel
         ServerTimingMiddleware::class,
         Middleware\FileSizeCheck::class,
         Middleware\AddTenantHeaders::class,
+        Middleware\HideServerHeaders::class,
     ];
 
     /**
@@ -91,6 +92,7 @@ class Kernel extends HttpKernel
         'session_kill' => Middleware\SessionControlKill::class,
         'no-cache' => Middleware\NoCache::class,
         'admin' => Middleware\IsAdmin::class,
+        'manager' => Middleware\IsManager::class,
         'etag' => Middleware\Etag\HandleEtag::class,
         'file_size_check' => Middleware\FileSizeCheck::class,
     ];

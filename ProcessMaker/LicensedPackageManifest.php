@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Providers\ProcessMakerServiceProvider;
+use Spatie\Multitenancy\MultitenancyServiceProvider;
 use Throwable;
 
 class LicensedPackageManifest extends PackageManifest
@@ -52,7 +54,7 @@ class LicensedPackageManifest extends PackageManifest
         if (!$this->hasLicenseFile()) {
             return null;
         }
-        $license = Storage::disk('root')->get('license.json');
+        $license = Storage::disk('local')->get('license.json');
 
         return json_decode($license, true);
     }
@@ -73,7 +75,7 @@ class LicensedPackageManifest extends PackageManifest
 
     private function hasLicenseFile()
     {
-        return Storage::disk('root')->exists('license.json');
+        return Storage::disk('local')->exists('license.json');
     }
 
     private function setExpireCache()

@@ -1,23 +1,27 @@
 <template>
   <div class="tw-flex tw-flex-col tw-space-y-4 tw-h-full tw-w-full">
     <process-collapse-info
+      ref="processCollapseInfo"
       :process="process"
       :ellipsis-permission="ellipsisPermission"
       :my-tasks-columns="myTasksColumns"
       :my-cases-columns="myCasesColumns"
       @toggle-info="toggleInfo"
-      @goBackCategory="emit('goBackCategory')" />
+      @goBackCategory="emit('goBackCategory')"
+    />
 
     <BaseCardButtonGroup
       v-if="data.length > 0"
       :key="dataKey + 'button'"
       :data="data"
-      @change="onChangeMetric" />
+      @change="onChangeMetric"
+    />
 
     <PercentageCardButtonGroup
       :key="dataKey + 'subpercentage'"
       :data="stages"
-      @change="onChangeStage" />
+      @change="onChangeStage"
+    />
 
     <CustomHomeTableSection
       ref="childRef"
@@ -25,13 +29,16 @@
       :advanced-filter="advancedFilter"
       class="tw-w-full tw-flex tw-flex-col
       tw-overflow-hidden tw-grow tw-p-4 tw-bg-white tw-rounded-lg tw-shadow-md tw-border tw-border-gray-200"
-      :process="process" />
+      :process="process"
+    />
 
     <ProcessInfo
       :process="process"
       :show-process-info="showProcessInfo"
       :ellipsis-permission="ellipsisPermission"
-      @update:showProcessInfo="showProcessInfo = $event" />
+      @update:showProcessInfo="showProcessInfo = $event"
+      @closeProcessInfo="closeProcessInfo(processCollapseInfo)"
+    />
   </div>
 </template>
 
@@ -44,9 +51,12 @@ import PercentageCardButtonGroup from "./PercentageButtonGroup/PercentageCardBut
 import { ellipsisPermission } from "../variables";
 import ProcessInfo from "./ProcessInfo.vue";
 import { getMetrics, getStages } from "../api";
-import { buildMetrics, buildStages, verifyResponseMetrics } from "./config/metrics";
+import {
+  buildMetrics, buildStages, updateActiveStage, verifyResponseMetrics, buildAdvancedFilter,
+} from "./config/metrics";
+import { closeProcessInfo } from "./utils/processInfo";
 
-const childRef = ref(null)
+const childRef = ref(null);
 
 const props = defineProps({
   process: {
@@ -59,6 +69,8 @@ const emit = defineEmits(["goBackCategory"]);
 
 const myTasksColumns = ref([]);
 const myCasesColumns = ref([]);
+
+const processCollapseInfo = ref(null);
 
 const data = ref([]);
 const advancedFilter = ref([]);
@@ -98,24 +110,14 @@ const toggleInfo = () => {
   showProcessInfo.value = !showProcessInfo.value;
 };
 
-const buildAdvancedFilter = () => {
-  const stage = stages.value.find((item) => item.active);
+const onChangeStage = async (stage, idxItem) => {
+  hookMetrics();
+  await hookStages();
 
-  return [{
-    subject: {
-      type: "Stage",
-    },
-    operator: "=",
-    value: stage.id,
-  }];
-};
+  updateActiveStage(stages.value, stage);
 
-const onChangeStage = (stage, idxItem) => {
-  stages.value.forEach((item, index) => {
-    index === idxItem ? item.active = true : item.active = false;
-  });
   dataKey.value += 1;
-  advancedFilter.value = buildAdvancedFilter();
+  advancedFilter.value = buildAdvancedFilter(stages.value);
 };
 
 const onChangeMetric = (stage, idxItem) => {
@@ -123,7 +125,7 @@ const onChangeMetric = (stage, idxItem) => {
     index === idxItem ? item.active = true : item.active = false;
   });
   dataKey.value += 1;
-  advancedFilter.value = buildAdvancedFilter();
+  advancedFilter.value = buildAdvancedFilter(stages.value);
 };
 
 onMounted(() => {

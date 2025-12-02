@@ -118,6 +118,8 @@ trait LoggingHelper
     {
         $records = app('log')->getHandlers()[0]->getRecords();
 
+        $records = $this->removeSwitchTenantMessage($records);
+
         return $this->assertEquals(0, count($records), 'Failed asserting that the log is empty.');
     }
 
@@ -130,6 +132,17 @@ trait LoggingHelper
     {
         $records = app('log')->getHandlers()[0]->getRecords();
 
+        $records = $this->removeSwitchTenantMessage($records);
+
         return $this->assertGreaterThan(0, count($records), 'Failed asserting that the log is not empty.');
+    }
+
+    private function removeSwitchTenantMessage($records)
+    {
+        if (isset($records[0]) && str_contains($records[0]->message, 'SwitchTenant')) {
+            array_shift($records);
+        }
+
+        return $records;
     }
 }

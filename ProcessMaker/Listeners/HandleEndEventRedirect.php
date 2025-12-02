@@ -107,9 +107,16 @@ class HandleEndEventRedirect extends HandleRedirectListener
      */
     private function handleMainProcessRedirect(ProcessRequest $request, ProcessCompleted $event): void
     {
-        // Type hints ensure $request and $event are valid, no need for null check
+        // Type hints ensure $request and $event are valid, no need for null check.
+        // Try to get the authenticated user id (will be null in non-HTTP contexts like queued jobs).
         $userId = Auth::id();
         $requestId = $request->id;
+
+        // Fallback: if there's no authenticated user (Auth::id() is null) use the request owner.
+        // This covers cases where the listener runs in the background and there is no session.
+        if (!$userId && !empty($request->user_id)) {
+            $userId = (int) $request->user_id;
+        }
 
         if ($userId) {
             try {

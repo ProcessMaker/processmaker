@@ -1146,12 +1146,12 @@ class ProcessTest extends TestCase
         $url = route('api.processes.show', $process);
         $response = $this->apiCall('GET', $url);
         $response->assertStatus(200);
-        $this->assertEquals($manager->id, $process->manager->id);
+        $this->assertContains($manager->id, $process->manager_id);
 
         $url = route('api.processes.index', $process);
         $response = $this->apiCall('GET', $url . '?filter=Process+with+manager');
         $processJson = $response->json()['data'][0];
-        $this->assertEquals($processJson['manager_id'], $process->manager->id);
+        $this->assertEquals($processJson['manager_id'], $process->manager_id);
     }
 
     public function testUpdateCancelRequest()

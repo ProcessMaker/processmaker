@@ -355,12 +355,14 @@ class DevLinkController extends Controller
 
     public function installRemoteAsset(Request $request, DevLink $devLink)
     {
+        $updateType = $request->input('updateType', DevLinkInstall::MODE_UPDATE);
+
         DevLinkInstall::dispatch(
             $request->user()->id,
             $devLink->id,
             $request->input('class'),
             $request->input('id'),
-            DevLinkInstall::MODE_UPDATE,
+            $updateType,
             DevLinkInstall::TYPE_IMPORT_ASSET
         );
 

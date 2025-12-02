@@ -11,14 +11,14 @@ const routes = [
     path: "/",
     name: "dashboard",
     component: TenantQueuesDashboard,
-    meta: { title: "Tenant Jobs Dashboard" },
+    meta: { title: "Jobs Dashboard" },
   },
   {
     path: "/tenant/:tenantId/jobs",
     name: "tenant-jobs",
     component: TenantJobs,
     props: true,
-    meta: { title: "Tenant Jobs" },
+    meta: { title: "Jobs" },
   },
   {
     path: "/tenant/:tenantId/jobs/:jobId",

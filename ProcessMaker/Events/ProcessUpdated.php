@@ -26,6 +26,8 @@ class ProcessUpdated implements ShouldBroadcastNow
 
     public $activeTokens;
 
+    public $elementDestination;
+
     /**
      * Create a new event instance.
      *
@@ -41,6 +43,7 @@ class ProcessUpdated implements ShouldBroadcastNow
         if ($token) {
             $this->tokenId = $token->getId();
             $this->elementType = $token->element_type;
+            $this->elementDestination = $token->elementDestination;
         }
     }
 

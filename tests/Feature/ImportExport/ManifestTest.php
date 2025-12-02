@@ -131,7 +131,7 @@ class ManifestTest extends TestCase
         $payload = $exporter->payload();
 
         $processManager = $payload['export'][$process->uuid]['process_manager'];
-        $this->assertEquals('John Doe', $processManager);
+        $this->assertEquals('John Doe', $processManager[0]);
     }
 
     public function testWarningIfExporterClassMissing()

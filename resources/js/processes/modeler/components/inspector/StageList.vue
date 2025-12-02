@@ -38,9 +38,6 @@
           @input="onInput"
           @paste="onPaste"
         >
-        <small class="tw-text-gray-500 tw-text-xs">
-          {{ newStage.length }}/200 {{ $t('characters') }}
-        </small>
       </div>
     </div>
     <div class="tw-flex tw-justify-end tw-mt-2">

@@ -3,13 +3,8 @@
 namespace ProcessMaker\Multitenancy;
 
 use Illuminate\Broadcasting\BroadcastManager;
-use Illuminate\Bus\Dispatcher;
-use Illuminate\Contracts\Queue\Factory as QueueFactoryContract;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\DB;
+use ProcessMaker\Application;
 use ProcessMaker\Multitenancy\Broadcasting\TenantAwareBroadcastManager;
-use ProcessMaker\Multitenancy\TenantAwareDispatcher;
 use Spatie\Multitenancy\Concerns\UsesMultitenancyConfig;
 use Spatie\Multitenancy\Contracts\IsTenant;
 use Spatie\Multitenancy\Tasks\SwitchTenantTask;
@@ -17,8 +12,6 @@ use Spatie\Multitenancy\Tasks\SwitchTenantTask;
 class SwitchTenant implements SwitchTenantTask
 {
     use UsesMultitenancyConfig;
-
-    public static $originalConfig = null;
 
     /**
      * Make the given tenant current.
@@ -28,83 +21,19 @@ class SwitchTenant implements SwitchTenantTask
      */
     public function makeCurrent(IsTenant $tenant): void
     {
+        $app = app();
+
         \Log::debug('SwitchTenant: ' . $tenant->id, ['domain' => request()->getHost()]);
 
-        $this->setTenantDatabaseConnection($tenant);
+        // Set the tenant's domain in the request headers. Used for things like the global url() helper.
+        request()->headers->set('host', $tenant->domain);
 
-        // Set the tenant-specific storage path
-        $tenantStoragePath = base_path('storage/tenant_' . $tenant->id);
-
-        $app = app();
-        $app->setStoragePath($tenantStoragePath);
-
-        // Create the tenant storage directory if it doesn't exist
-        // TODO: Move these to somewhere else - should not be run on every request
-        if (!file_exists($tenantStoragePath)) {
-            mkdir($tenantStoragePath, 0755, true);
-        }
-
-        // Any config that relies on the original value needs to be saved in a static variable.
-        // Otherwise, it will use the last tenant's modified value. This mostly only affects
-        // the worker queue jobs since it reuses the same process.
-        self::$originalConfig = self::$originalConfig ?? [];
-        self::$originalConfig[$tenant->id] = self::$originalConfig[$tenant->id] ?? [
-            'host' => parse_url(config('app.url'), PHP_URL_HOST),
-            'cache.stores.cache_settings.prefix' => config('cache.stores.cache_settings.prefix'),
-            'app.instance' => config('app.instance') ?? config('database.connections.landlord.database'),
-            'script-runner-microservice.callback' => config('script-runner-microservice.callback'),
-        ];
-
-        // We cant reload config here with (new LoadConfiguration())->bootstrap($app);
-        // because it overrides dynamic configs set in packages (like docker-executor-php)
-        // Instead, override each necessary config value on the fly.
-        $newConfig = [
-            'filesystems.disks.local.root' => storage_path('app'),
-            'filesystems.disks.public.root' => storage_path('app/public'),
-            'filesystems.disks.profile.root' => storage_path('app/public/profile'),
-            'filesystems.disks.settings.root' => storage_path('app/public/setting'),
-            'filesystems.disks.private_settings.root' => storage_path('app/private/settings'),
-            'filesystems.disks.web_services.root' => storage_path('app/private/web_services'),
-            'filesystems.disks.tmp.root' => storage_path('app/public/tmp'),
-            'filesystems.disks.samlidp.root' => storage_path('samlidp'),
-            'filesystems.disks.decision_tables.root' => storage_path('decision-tables'),
-            'filesystems.disks.tenant_translations' => [
-                'driver' => 'local',
-                'root' => storage_path('lang'),
-            ],
-            'l5-swagger.defaults.paths.docs' => storage_path('api-docs'),
-            'cache.stores.cache_settings.prefix' =>  'tenant_id_' . $tenant->id . ':' . self::$originalConfig[$tenant->id]['cache.stores.cache_settings.prefix'],
-            'app.instance' => self::$originalConfig[$tenant->id]['app.instance'] . '_' . $tenant->id,
-            'script-runner-microservice.callback' => str_replace(self::$originalConfig[$tenant->id]['host'], $tenant->domain, self::$originalConfig[$tenant->id]['script-runner-microservice.callback']),
-        ];
-        config($newConfig);
-
-        // Set config from the entry in the tenants table
-        $config = $tenant->config;
-        if (isset($config['app.key'])) {
-            // Decrypt using the landlord APP_KEY in the .env file.
-            // All encryption after this will use the tenant's key.
-            $config['app.key'] = Crypt::decryptString($config['app.key']);
-        }
-        config($config);
+        $this->overrideConfigs($app, $tenant);
 
         // Extend BroadcastManager to our custom implementation that prefixes the channel names with the tenant id.
         $app->extend(BroadcastManager::class, function ($manager, $app) use ($tenant) {
             return new TenantAwareBroadcastManager($app, $tenant->id);
         });
-
-        // Extend Dispatcher to our custom implementation that prefixes the queue names with the tenant id.
-        $app->extend(Dispatcher::class, function ($dispatcher, $app) use ($tenant) {
-            return new TenantAwareDispatcher($app, $dispatcher, $tenant->id);
-        });
-
-        // Use tenant's translation files
-        $app->useLangPath(resource_path('lang/tenant_' . $tenant->id));
-
-        // May not be needed anymore
-        // $app->extend('translation.loader', function ($loader, $app) use ($tenant) {
-        //     return new TenantAwareTranslationLoader($loader, $tenant->id);
-        // });
     }
 
     /**
@@ -116,51 +45,38 @@ class SwitchTenant implements SwitchTenantTask
     {
     }
 
-    /**
-     * Set the tenant database connection.
-     *
-     * Copied from laravel-multitenancy's src/Tasks/SwitchTenantDatabaseTask.php
-     *
-     * @param IsTenant $tenant
-     * @return void
-     */
-    private function setTenantDatabaseConnection(IsTenant $tenant): void
+    private function overrideConfigs(Application $app, IsTenant $tenant)
     {
-        $tenantConnectionName = $this->tenantDatabaseConnectionName();
+        if ($app->configurationIsCached()) {
+            return;
+        }
 
-        $tenantDBKey = "database.connections.{$tenantConnectionName}";
-
-        $databaseName = $tenant->getDatabaseName();
-        $username = $tenant->username;
-        $password = $tenant->password;
-
-        $setConfig = [
-            "{$tenantDBKey}.database" => $databaseName,
+        $newConfig = [
+            'app.instance' => config('app.instance') . '_' . $tenant->id,
         ];
-        if ($username) {
-            $setConfig["{$tenantDBKey}.username"] = $username;
+
+        if (!isset($tenant->config['script-runner-microservice.callback'])) {
+            $newConfig['script-runner-microservice.callback'] = str_replace(
+                $tenant->getOriginalValue('APP_URL'),
+                config('app.url'),
+                $tenant->getOriginalValue('SCRIPT_MICROSERVICE_CALLBACK')
+            );
         }
-        if ($password) {
-            $setConfig["{$tenantDBKey}.password"] = $password;
+
+        if (!isset($tenant->config['app.docker_host_url'])) {
+            // There is no specific override in the tenant's config so set it to the app url
+            $newConfig['app.docker_host_url'] = config('app.url');
         }
 
-        config($setConfig);
-
-        app('db')->extend($tenantConnectionName, function ($config, $name) use ($databaseName, $username, $password) {
-            $config['database'] = $databaseName;
-            if ($username) {
-                $config['username'] = $username;
+        // Set config from the entry in the tenants table
+        $config = $tenant->config;
+        foreach ($config as $key => $value) {
+            if ($key === 'app.key' || $key === 'app.url') {
+                continue;
             }
-            if ($password) {
-                $config['password'] = $password;
-            }
+            $newConfig[$key] = $value;
+        }
 
-            return app('db.factory')->make($config, $name);
-        });
-
-        DB::purge($tenantConnectionName);
-
-        // Octane will have an old `db` instance in the Model::$resolver.
-        Model::setConnectionResolver(app('db'));
+        config($newConfig);
     }
 }

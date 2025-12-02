@@ -133,9 +133,13 @@ export default {
     loadProcesses() {
       const url = this.buildURL();
 
-      ProcessMaker.apiClient.get(url).then((response) => {
-        this.processesList = this.processesList.concat(response.data.data);
-      });
+      ProcessMaker.apiClient.get(url)
+        .then((response) => {
+          this.processesList = this.processesList.concat(response.data.data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     },
     loadDashboards() {
       try {
