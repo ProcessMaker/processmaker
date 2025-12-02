@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use ProcessMaker\Console\Kernel;
 use ProcessMaker\Multitenancy\Tenant;
-use ProcessMaker\Multitenancy\TenantBootstrapper;
 
 /**
  * Class Application.
@@ -102,16 +101,5 @@ class Application extends IlluminateApplication
         ));
 
         parent::registerConfiguredProviders();
-    }
-
-    public function bootstrapWith(array $bootstrappers)
-    {
-        // Insert TenantBootstrapper after LoadEnvironmentVariables
-        if ($bootstrappers[0] !== LoadEnvironmentVariables::class) {
-            throw new \Exception('LoadEnvironmentVariables is not the first bootstrapper. Did a laravel upgrade change this?');
-        }
-        array_splice($bootstrappers, 1, 0, [TenantBootstrapper::class]);
-
-        return parent::bootstrapWith($bootstrappers);
     }
 }
