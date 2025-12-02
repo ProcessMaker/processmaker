@@ -186,8 +186,7 @@ class UserController extends Controller
      */
     public function getUsersTaskCount(Request $request)
     {
-        $query = User::nonSystem();
-        $query->select('id', 'username', 'firstname', 'lastname');
+        $query = User::select('id', 'username', 'firstname', 'lastname');
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
@@ -199,23 +198,18 @@ class UserController extends Controller
             });
         }
 
-        $query->where('status', 'ACTIVE');
-
-        $query->withCount('activeTasks');
-
         $include_ids = [];
         $include_ids_string = $request->input('include_ids', '');
         if (!empty($include_ids_string)) {
             $include_ids = explode(',', $include_ids_string);
         } elseif ($request->has('assignable_for_task_id')) {
-            $task = ProcessRequestToken::findOrFail($request->input('assignable_for_task_id'));
-            $assignmentRule = $task->getAssignmentRule();
-            if ($assignmentRule === 'user_group') {
-                // Limit the list of users to those that can be assigned to the task
-                $include_ids = $task->process->getAssignableUsers($task->element_id);
+            $processRequestToken = ProcessRequestToken::findOrFail($request->input('assignable_for_task_id'));
+            $assignmentRule = $processRequestToken->getAssignmentRule();
+            if (config('app.reassign_restrict_to_assignable_users')) {
+                $include_ids = $processRequestToken->process->getAssignableUsersByAssignmentType($processRequestToken);
             }
             if ($assignmentRule === 'rule_expression' && $request->has('form_data')) {
-                $include_ids = $task->getAssigneesFromExpression($request->input('form_data'));
+                $include_ids = $processRequestToken->getAssigneesFromExpression($request->input('form_data'));
             }
         }
 
@@ -223,10 +217,13 @@ class UserController extends Controller
             $query->whereIn('id', $include_ids);
         }
 
-        $response = $query->orderBy(
-            $request->input('order_by', 'username'),
-            $request->input('order_direction', 'ASC')
-        )
+        $response = $query
+            ->where('is_system', false)
+            ->where('status', 'ACTIVE')
+            ->withCount('activeTasks')
+            ->orderBy(
+                $request->input('order_by', 'username'),
+                $request->input('order_direction', 'ASC'))
             ->paginate(50);
 
         return new ApiCollection($response);

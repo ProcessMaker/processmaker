@@ -248,4 +248,18 @@ class TaskControllerTest extends TestCase
         $this->assertEquals($data2['form_input_1'], $responseData[1]['taskData']['form_input_1']);
         $this->assertEquals($data2['form_text_area_1'], $responseData[1]['taskData']['form_text_area_1']);
     }
+
+    public function testShowTaskIncludesNewProperty()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $comments = "This is a comment";
+
+        $task = ProcessRequestToken::factory()->create([
+            "comments" => $comments
+        ]);
+
+        $this->assertEquals($comments, $task->comments);
+    }
 }

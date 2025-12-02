@@ -15,12 +15,12 @@ window.__ = translator;
 
 const main = new Vue({
   el: "#task",
-  mixins: addons,
   components: {
     TaskSaveNotification,
     TaskSavePanel,
     TasksList,
   },
+  mixins: addons,
   data: {
     // Edit data
     fieldsToUpdate: [],
@@ -260,7 +260,7 @@ const main = new Vue({
     show() {
       this.selectedUser = null;
       this.showReassignment = true;
-      this.getReassignUsers();
+      this.getReassignUsers(); // TODO: improve this code
     },
     showQuickFill() {
       this.redirect(`/tasks/${this.task.id}/edit/quickfill`);
