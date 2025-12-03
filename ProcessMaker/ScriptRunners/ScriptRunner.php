@@ -50,7 +50,7 @@ class ScriptRunner
      */
     private function getScriptRunner(ScriptExecutor $executor): Base|ScriptMicroserviceRunner|MockRunner
     {
-        if (!config('script-runner-microservice.enabled') ) {
+        if (!config('script-runner-microservice.enabled')) {
             $language = strtolower($executor->language);
             $runner = config("script-runners.{$language}.runner");
             if (!$runner) {

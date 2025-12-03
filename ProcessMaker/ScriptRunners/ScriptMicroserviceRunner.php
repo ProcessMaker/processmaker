@@ -44,6 +44,7 @@ class ScriptMicroserviceRunner
         $uri = config('script-runner-microservice.base_url') . '/custom/' . config('script-runner-microservice.instance_uuid') . '/scripts';
         $response = Http::withToken(ScriptMicroservicesHelper::getAccessToken())
             ->get($uri)->collect();
+
         return $response->filter(function ($item) {
             return $item['language'] === $this->language && $item['id'] === $this->script->scriptExecutor->uuid;
         })->first();
