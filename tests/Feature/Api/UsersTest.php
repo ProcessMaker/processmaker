@@ -932,6 +932,80 @@ class UsersTest extends TestCase
         $this->assertContains($admin->id, collect($users)->pluck('id')->toArray());
     }
 
+    public function testPostUsersTaskCount()
+    {
+        $admin = $this->user;
+        $user = User::factory()->create();
+        $groupUser = User::factory()->create();
+        $group = Group::factory()->create();
+        GroupMember::factory()->create([
+            'group_id' => $group->id,
+            'member_id' => $groupUser->id,
+            'member_type' => User::class,
+        ]);
+
+        $process = Process::factory()->create([
+            'user_id' => $admin->id,
+            'manager_id' => $admin->id,
+        ]);
+
+        $bpmn = file_get_contents(__DIR__ . '/../../Fixtures/task_with_user_group_assignment.bpmn');
+        $bpmn = str_replace([
+            '[assigned-users]',
+            '[assigned-groups]',
+        ], [
+            $user->id,
+            $group->id,
+        ], $bpmn);
+
+        $process->bpmn = $bpmn;
+        $process->save();
+
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'user_id' => $admin->id,
+        ]);
+
+        $tasks = ProcessRequestToken::factory(3)->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'element_id' => 'node_2',
+            'user_id' => $user->id,
+            'status' => 'ACTIVE',
+        ]);
+
+        // Test POST endpoint with form_data in request body
+        $result = $this->apiCall('POST', route('api.users.users_task_count_post'), [
+            'assignable_for_task_id' => $tasks[0]->id,
+            'form_data' => [
+                'some_field' => 'some_value',
+            ],
+        ]);
+
+        $users = $result->json()['data'];
+
+        // Assert only the $user and $groupUser are in the list
+        $this->assertContains($user->id, array_column($users, 'id'));
+        $this->assertContains($groupUser->id, array_column($users, 'id'));
+
+        // Assert the $user has 3 active tasks
+        $tokenCount = collect($users)->first(fn ($r) => $r['id'] === $user->id)['active_tasks_count'];
+        $this->assertEquals(3, $tokenCount);
+
+        // Test POST endpoint without assignable_for_task_id
+        $result = $this->apiCall('POST', route('api.users.users_task_count_post'));
+        $users = $result->json()['data'];
+
+        // Assert the list of users now contains the admin user
+        $this->assertContains($admin->id, collect($users)->pluck('id')->toArray());
+
+        // Test POST endpoint with filter in request body
+        $result = $this->apiCall('POST', route('api.users.users_task_count_post'), [
+            'filter' => $user->firstname,
+        ]);
+        $result->assertStatus(200);
+    }
+
     /**
      * Test save and get filters per user saved in cache
      */
