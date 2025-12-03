@@ -45,6 +45,12 @@ class SettingsConfigRepository extends Repository
             return $this->getMany($key);
         }
 
+        if ($key === 'session.lifetime') {
+            $settingValue = $this->getFromSettings($key);
+
+            return $settingValue ?? $default;
+        }
+
         if (Arr::has($this->items, $key)) {
             return Arr::get($this->items, $key);
         }
@@ -88,6 +94,7 @@ class SettingsConfigRepository extends Repository
 
         if ($setting !== null) {
             Arr::set($this->items, $key, $setting->config);
+
             return $setting->config;
         }
 
@@ -111,6 +118,7 @@ class SettingsConfigRepository extends Repository
     {
         if (!$this->readyToUseSettingsDatabase) {
             $this->readyToUseSettingsDatabase =
+                app('tenant-resolved') &&
                 $this->databaseAvailable() &&
                 $this->redisAvailable() &&
                 $this->settingsTableExists();

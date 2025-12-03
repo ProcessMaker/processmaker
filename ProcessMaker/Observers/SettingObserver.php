@@ -5,10 +5,13 @@ namespace ProcessMaker\Observers;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Cache\Settings\SettingCacheFactory;
+use ProcessMaker\Jobs\RefreshArtisanCaches;
 use ProcessMaker\Models\Setting;
 
 class SettingObserver
 {
+    private static $added_refresh_artisan_caches = false;
+
     /**
      * Handle the setting "created" event.
      *
@@ -89,5 +92,20 @@ class SettingObserver
         // Invalidate the setting cache
         $key = $settingCache->createKey(['key' => $setting->key]);
         $settingCache->invalidate(['key' => $key]);
+
+        // Check to see if we already added the refresh to the app's terminating queue.
+        // This is important for install commands when multiple settings are being created/updated.
+        if (self::$added_refresh_artisan_caches) {
+            return;
+        }
+
+        // Use app()->terminating to ensure the cache is refreshed after the settings have been saved.
+        app()->terminating(function () {
+            // Do this synchronously so we dont have to wait after settings have been saved.
+            // This command runs pretty fast and only when an admin is updating settings.
+            RefreshArtisanCaches::dispatchSync();
+        });
+
+        self::$added_refresh_artisan_caches = true;
     }
 }

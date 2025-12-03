@@ -41,6 +41,9 @@ return [
     // The timeout length for API calls, in milliseconds (0 for no timeout)
     'api_timeout' => env('API_TIMEOUT', 5000),
 
+    // Hide server headers for security (prevents information disclosure)
+    'hide_server_headers' => env('HIDE_SERVER_HEADERS', true),
+
     // Disables PHP execution in the storage directory
     // TODO Is this config value still used anywhere? :)
     'disable_php_upload_execution' => env('DISABLE_PHP_UPLOAD_EXECUTION', 0),
@@ -170,6 +173,7 @@ return [
     'login_view' => env('LOGIN_VIEW', 'auth.newLogin'),
 
     'providers' => ServiceProvider::defaultProviders()->merge([
+        Spatie\Multitenancy\MultitenancyServiceProvider::class,
         /**
          * Package Service Providers
          */
@@ -195,6 +199,8 @@ return [
         ProcessMaker\Providers\OpenAiServiceProvider::class,
         ProcessMaker\Providers\LicenseServiceProvider::class,
         ProcessMaker\Providers\MetricsServiceProvider::class,
+        ProcessMaker\Providers\MixServiceProvider::class,
+        ProcessMaker\Providers\TenantQueueServiceProvider::class,
         ProcessMaker\Providers\JsonOptimizerServiceProvider::class,
     ])->toArray(),
 
@@ -210,6 +216,7 @@ return [
         'Theme' => Igaster\LaravelTheme\Facades\Theme::class,
         'WorkspaceManager' => ProcessMaker\Facades\WorkspaceManager::class,
         'SettingCache' => ProcessMaker\Cache\Settings\SettingCacheFacade::class,
+        'Tenant' => ProcessMaker\Multitenancy\Tenant::class,
     ])->toArray(),
 
     'debug_blacklist' => [
@@ -238,6 +245,7 @@ return [
     'screen' => [
         'cache_enabled' => env('SCREEN_CACHE_ENABLED', false),
         'cache_timeout' => env('SCREEN_CACHE_TIMEOUT', 5000), // timeout in milliseconds
+        'show_secure_handler_toggle' => filter_var(env('SCREEN_SECURE_HANDLER_TOGGLE_VISIBLE', false), FILTER_VALIDATE_BOOLEAN),
     ],
 
     'queue_imports' => env('QUEUE_IMPORTS', true),
@@ -276,6 +284,9 @@ return [
 
     'custom_executors' => env('CUSTOM_EXECUTORS', false),
 
+    // Enable or disable TCE customization feature
+    'tce_customization_enable' => env('TCE_CUSTOMIZATION_ENABLED', false),
+
     'prometheus_namespace' => env('PROMETHEUS_NAMESPACE', strtolower(preg_replace('/[^a-zA-Z0-9_]+/', '_', env('APP_NAME', 'processmaker')))),
 
     'server_timing' => [
@@ -286,4 +297,8 @@ return [
     'editor' => null,
 
     'json_optimization_decode' => env('JSON_OPTIMIZATION_DECODE', false),
+
+    'multitenancy' => env('MULTITENANCY', false),
+
+    'resources_core_path' => base_path('resources-core'),
 ];

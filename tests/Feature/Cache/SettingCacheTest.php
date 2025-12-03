@@ -172,10 +172,16 @@ class SettingCacheTest extends TestCase
 
     public function testClearByPatternWithFailedDeletion()
     {
+        $tennat = app('currentTenant');
+        $tennatPrefix = '';
+        if ($tennat) {
+            $tennatPrefix = 'tenant_id_' . $tennat->id . ':';
+        }
+
         $pattern = 'test_pattern';
         $keys = [
-            'settings:test_pattern:1',
-            'settings:test_pattern:2',
+            $tennatPrefix . 'settings:test_pattern:1',
+            $tennatPrefix . 'settings:test_pattern:2',
         ];
         \SettingCache::set('test_pattern:1', 1);
         \SettingCache::set('test_pattern:2', 2);
@@ -186,7 +192,7 @@ class SettingCacheTest extends TestCase
             ->andReturnSelf();
 
         Redis::shouldReceive('keys')
-            ->with('phpunit-settings:*')
+            ->with($tennatPrefix . 'phpunit-settings:*')
             ->andReturn($keys);
 
         Redis::shouldReceive('del')

@@ -5,7 +5,13 @@
             $loginLogo = \ProcessMaker\Models\Setting::getLogin();
         @endphp
         <b-navbar-brand href="#" class="d-lg-none pl-2"><img class="navbar-logo" src={{$loginLogo}}></b-navbar-brand>
-        <b-navbar-toggle class="ml-auto" :target="['nav-collapse', 'breadcrumbs-collapse']"></b-navbar-toggle>
+        <b-navbar-toggle class="ml-auto" :target="['nav-collapse', 'breadcrumbs-collapse']" @click="toggleNavbar">
+            <template #default="{ expanded }">
+                <span class="bar" :class="{ 'rotate-top': isNavbarExpanded }"></span>
+                <span class="bar" :class="{ 'fade-out': isNavbarExpanded }"></span>
+                <span class="bar" :class="{ 'rotate-bottom': isNavbarExpanded }"></span>
+            </template>
+        </b-navbar-toggle>
     </div>
 
     <div class="d-flex d-lg-none w-100">
@@ -133,7 +139,11 @@
             <component v-bind:is="'request-modal'" url="{{ route('processes.index') }}" v-bind:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"></component>
             @endif
 
-            <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages">
+            <notifications 
+                id="navbar-notifications-button" 
+                v-bind:is="'notifications'" 
+                v-bind:messages="messages"
+            >
             </notifications>
             <ol class="separator-ol"><li class="separator d-none d-lg-block"></li></ol>
             <ol class="separator-ol">
@@ -151,7 +161,7 @@
                 id="language-navbar"
                 class="ml-2"
                 :type="'navbar'"
-                :show-language-code="false"
+                :show-language-code="true"
                 :language="'{{ $user->language }}'">
             </language-selector-button>
         </b-navbar-nav>
@@ -168,6 +178,27 @@
 
 </div>
 <style lang="scss" scoped>
+    .bar {
+        display: block;
+        width: 25px;
+        height: 3px;
+        margin: 5px auto;
+        background-color: rgba(114, 128, 146, 0.8);
+        transition: all 0.3s ease;
+    }
+
+    .rotate-top {
+        transform: rotate(45deg) translate(7px, 5px);
+    }
+
+    .rotate-bottom {
+        transform: rotate(-45deg) translate(6px, -5px);
+    }
+
+    .fade-out {
+        opacity: 0;
+    }
+
     .separator {
         border-right: 1px solid rgb(227, 231, 236);
         height: 30px;

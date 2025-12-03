@@ -3,17 +3,13 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Exception;
-use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Pion\Laravel\ChunkUpload\Exceptions\UploadMissingFileException;
 use Pion\Laravel\ChunkUpload\Handler\AbstractHandler;
-use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
 use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
 use ProcessMaker\Events\FilesAccessed;
 use ProcessMaker\Events\FilesCreated;
@@ -21,14 +17,16 @@ use ProcessMaker\Events\FilesDeleted;
 use ProcessMaker\Events\FilesDownloaded;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
-use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\TaskDraft;
+use ProcessMaker\Traits\ValidatesFileTrait;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 
 class ProcessRequestFileController extends Controller
 {
+    use ValidatesFileTrait;
+
     /**
      * A whitelist of attributes that should not be
      * sanitized by our SanitizeInput middleware.
@@ -289,14 +287,14 @@ class ProcessRequestFileController extends Controller
             } catch (FileIsTooBig $e) {
                 return response()->json([
                     'errors' => [
-                        'file' => ['file may not be greater than ' . (config('media-library.max_file_size') / 1024) . ' kilobytes']
-                    ]
+                        'file' => ['file may not be greater than ' . (config('media-library.max_file_size') / 1024) . ' kilobytes'],
+                    ],
                 ], 422);
             } catch (Exception $e) {
                 return response()->json([
                     'errors' => [
-                        'message' => $e->getMessage()
-                    ]
+                        'message' => $e->getMessage(),
+                    ],
                 ], 500);
             }
         }
@@ -438,30 +436,5 @@ class ProcessRequestFileController extends Controller
         FilesDeleted::dispatch($fileId, $file->file_name);
 
         return response([], 204);
-    }
-
-    private function validateFile(UploadedFile $file, &$errors)
-    {
-        if (strtolower($file->getClientOriginalExtension() === 'pdf')) {
-            $this->validatePDFFile($file, $errors);
-        }
-
-        return $errors;
-    }
-
-    private function validatePDFFile(UploadedFile $file, &$errors)
-    {
-        $text = $file->get();
-
-        $jsKeywords = ['/JavaScript', '<< /S /JavaScript'];
-
-        foreach ($jsKeywords as $keyword) {
-            if (strpos($text, $keyword) !== false) {
-                $errors[] = __('Dangerous PDF file content');
-                break;
-            }
-        }
-
-        return $errors;
     }
 }

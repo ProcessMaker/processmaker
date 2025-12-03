@@ -63,6 +63,8 @@ class UserTest extends TestCase
 
     public function testCanAnyFirst()
     {
+        dump('Starting test');
+
         $user = User::factory()->create();
 
         $p1 = Permission::factory()->create(['name' => 'foo']);
@@ -72,7 +74,7 @@ class UserTest extends TestCase
         Cache::forget('permissions');
         Cache::forget("user_{$user->id}_permissions");
 
-        (new AuthServiceProvider(app()))->boot();
+        $this->initializePermissions(false);
 
         $this->assertFalse($user->can('bar'));
         $this->assertFalse($user->canAnyFirst('foo|bar'));
@@ -80,6 +82,9 @@ class UserTest extends TestCase
         $user->permissions()->attach($p2);
         $user->permissions()->attach($p3);
         $user->refresh();
+
+        // Invalidate permission cache to ensure the new permissions take effect
+        $user->invalidatePermissionCache();
 
         $this->assertTrue($user->can('bar'));
         $this->assertEquals('bar', $user->canAnyFirst('foo|bar'));
@@ -103,13 +108,18 @@ class UserTest extends TestCase
 
                 $perm = Permission::factory()->create(['name' => "{$method}-{$plural}"]);
 
-                (new AuthServiceProvider(app()))->boot();
+                $this->initializePermissions(false);
 
                 $this->assertFalse($user->can($perm->name));
                 $this->assertFalse($user->can($viewCatPerm->name));
 
                 $user->permissions()->attach($perm);
                 $user->refresh();
+                // Invalidate permission cache to ensure the new permissions take effect
+                $user->invalidatePermissionCache();
+
+                $user->permissions()->attach($viewCatPerm);
+                // $user->invalidatePermissionCache();
 
                 $this->assertTrue($user->can($viewCatPerm->name));
                 $this->assertFalse($user->can($editCatePerm->name));

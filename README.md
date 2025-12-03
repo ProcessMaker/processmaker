@@ -530,6 +530,72 @@ You can provide an optional description, for example `Metrics::gauge('active_tas
 
 Go to Grafana and import the dashboards from the `resources/grafana` folder. Each JSON file represents a configured dashboard that can be imported into Grafana to visualize metrics and data.
 
+# Multitenancy
+
+ProcessMaker can now be set up as a multitenant application.
+
+## Requirements
+
+- Create an empty datbase named `landlord`. Your `DB_USERNAME` should have permission to write to this table.
+
+## Transition your dev instnace to multitenancy
+
+Run the following command to enable multitenancy
+```
+php artisan tenants:enable --migrate
+```
+This command will
+- Setup the landlord database. Make sure you create the empty landlord database first.
+- Set your existing database as the tenant database
+- Copy your existing `storage` folder to `storage/tenant_1`
+- Copy your existing `resources/lang` folder to `resources/lang/tenant_1`
+- Enable multitenancy in your .env
+
+## Using `valet share` for the script microservice
+
+In the landlord tenant's table you will need to set the domain to the ngroc domain (without https://) and, in the config, column
+you will need to set the `app.url` to the ngroc domain (including the https://)  
+
+## Add another tenant
+
+For local development, you will need add another domain to your nginx config. To do this with Valet, run:
+
+```
+valet link another-tenant.test
+```
+
+Run the following command to create another tenant:
+```
+php artisan tenants:create --domain="another-tenant.test" --name="Another Tenant" --database="another_tenant"
+```
+
+This command will
+- Create the required folder structure
+- Create the tenant database
+
+You will need to run migrations, seeders, and package installers with the environment variable prefix TENANT={id}
+
+## `tenants:transition` command
+
+Move multiple instnaces in bulk to a single multitenancy instance.
+
+If this is your local development environment, it's easier to use `tenants:enable --migrate` above.
+
+Create a folder `storage/transitions` if it doesn't exist.
+
+For each instance you want to transition into this multitenancy instance,
+copy the `.env` file into the transitions folder and add the instnace name to the file name.
+For example `.env.my-instance`
+
+Run the following command to migrate the instance(s) to a tenant:
+```
+php artisan tenants:transition
+```
+
+This command will create a new tenant for each .env file in the storage/transitions folder.
+
+You must move the tenants storage folder and the resources/lang folder manually
+
 # License
 
 Distributed under the [AGPL Version 3](https://www.gnu.org/licenses/agpl-3.0.en.html)

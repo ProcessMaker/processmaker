@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns4:definitions xmlns="http://www.omg.org/spec/DD/20100524/DC" xmlns:ns2="http://www.omg.org/spec/DD/20100524/DI" xmlns:ns3="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:ns4="http://www.omg.org/spec/BPMN/20100524/MODEL" exporter="CWA SmartProcess" exporterVersion="25.3">
+    <ns4:process name="Test Process" id="_1446983">
+        <ns4:laneSet id="tls_1446983">
+            <ns4:lane name="Lane 1" id="_1446983_4">
+                <ns4:flowNodeRef>_1446983_5</ns4:flowNodeRef>
+                <ns4:flowNodeRef>_1446983_8</ns4:flowNodeRef>
+                <ns4:flowNodeRef>_1446983_20</ns4:flowNodeRef>
+                <ns4:flowNodeRef>_1446983_29</ns4:flowNodeRef>
+            </ns4:lane>
+            <ns4:lane name="Lane 2" id="_1446983_6">
+                <ns4:flowNodeRef>_1446983_12</ns4:flowNodeRef>
+                <ns4:flowNodeRef>_1446983_14</ns4:flowNodeRef>
+            </ns4:lane>
+        </ns4:laneSet>
+        <ns4:dataObject name="Data Input" id="_1446983_36"/>
+        <ns4:dataObjectReference dataObjectRef="_1446983_36" name="Data Input" id="dor_1446983_36"/>
+        <ns4:dataObject name="Data Output" id="_1446983_38"/>
+        <ns4:dataObjectReference dataObjectRef="_1446983_38" name="Data Output" id="dor_1446983_38"/>
+        <ns4:startEvent name="Start Process" id="_1446983_5"/>
+        <ns4:task name="Task 1" id="_1446983_8">
+            <ns4:dataInputAssociation id="_1446983_40">
+                <ns4:sourceRef>dor_1446983_36</ns4:sourceRef>
+            </ns4:dataInputAssociation>
+        </ns4:task>
+        <ns4:task name="Task 4" id="_1446983_20"/>
+        <ns4:endEvent name="End Process" id="_1446983_29"/>
+        <ns4:task name="Task 2" id="_1446983_12"/>
+        <ns4:task name="Task 3" id="_1446983_14">
+            <ns4:dataOutputAssociation id="_1446983_39">
+                <ns4:targetRef>dor_1446983_38</ns4:targetRef>
+            </ns4:dataOutputAssociation>
+        </ns4:task>
+        <ns4:sequenceFlow sourceRef="_1446983_8" targetRef="_1446983_12" id="_1446983_13"/>
+        <ns4:sequenceFlow sourceRef="_1446983_14" targetRef="_1446983_20" id="_1446983_21"/>
+        <ns4:sequenceFlow sourceRef="_1446983_5" targetRef="_1446983_8" id="_1446983_9"/>
+        <ns4:sequenceFlow sourceRef="_1446983_12" targetRef="_1446983_14" id="_1446983_15"/>
+    </ns4:process>
+    <ns3:BPMNDiagram name="Test Process" resolution="10.0">
+        <ns3:BPMNPlane xmlns:ns5="http://www.omg.org/spec/DD/20100524/DC" xmlns="" bpmnElement="_1446983" id="bp_1446983">
+            <ns3:BPMNShape bpmnElement="_1446983_4" isHorizontal="true">
+                <ns5:Bounds x="10.0" y="60.0" width="1150.0" height="210.0"/>
+                <ns3:BPMNLabel>
+                    <ns5:Bounds x="10.0" y="60.0" width="23.0" height="210.0"/>
+                </ns3:BPMNLabel>
+            </ns3:BPMNShape>
+            <ns3:BPMNShape bpmnElement="_1446983_6" isHorizontal="true">
+                <ns5:Bounds x="10.0" y="270.0" width="1150.0" height="210.0"/>
+                <ns3:BPMNLabel>
+                    <ns5:Bounds x="10.0" y="270.0" width="23.0" height="210.0"/>
+                </ns3:BPMNLabel>
+            </ns3:BPMNShape>
+            <ns3:BPMNShape bpmnElement="dor_1446983_36">
+                <ns5:Bounds x="225.0" y="490.0" width="30.0" height="40.0"/>
+            </ns3:BPMNShape>
+            <ns3:BPMNShape bpmnElement="dor_1446983_38">
+                <ns5:Bounds x="485.0" y="500.0" width="30.0" height="40.0"/>
+            </ns3:BPMNShape>
+            <ns3:BPMNShape bpmnElement="_1446983_5">
+                <ns5:Bounds x="80.0" y="145.0" width="40.0" height="40.0"/>
+            </ns3:BPMNShape>
+            <ns3:BPMNShape bpmnElement="_1446983_8">
+                <ns5:Bounds x="190.0" y="135.0" width="100.0" height="60.0"/>
+            </ns3:BPMNShape>
+            <ns3:BPMNShape bpmnElement="_1446983_20">
+                <ns5:Bounds x="560.0" y="145.0" width="100.0" height="60.0"/>
+            </ns3:BPMNShape>
+            <ns3:BPMNShape bpmnElement="_1446983_29">
+                <ns5:Bounds x="880.0" y="155.0" width="40.0" height="40.0"/>
+            </ns3:BPMNShape>
+            <ns3:BPMNShape bpmnElement="_1446983_12">
+                <ns5:Bounds x="300.0" y="340.0" width="100.0" height="60.0"/>
+            </ns3:BPMNShape>
+            <ns3:BPMNShape bpmnElement="_1446983_14">
+                <ns5:Bounds x="450.0" y="340.0" width="100.0" height="60.0"/>
+            </ns3:BPMNShape>
+            <ns3:BPMNEdge bpmnElement="_1446983_13">
+                <ns2:waypoint x="240.0" y="195.0"/>
+                <ns2:waypoint x="240.0" y="370.0"/>
+                <ns2:waypoint x="300.0" y="370.0"/>
+            </ns3:BPMNEdge>
+            <ns3:BPMNEdge bpmnElement="_1446983_21">
+                <ns2:waypoint x="550.0" y="370.0"/>
+                <ns2:waypoint x="610.0" y="370.0"/>
+                <ns2:waypoint x="610.0" y="272.5"/>
+                <ns2:waypoint x="610.0" y="205.0"/>
+            </ns3:BPMNEdge>
+            <ns3:BPMNEdge bpmnElement="_1446983_39">
+                <ns2:waypoint x="500.0" y="400.0"/>
+                <ns2:waypoint x="500.0" y="450.0"/>
+                <ns2:waypoint x="500.0" y="500.0"/>
+            </ns3:BPMNEdge>
+            <ns3:BPMNEdge bpmnElement="_1446983_40">
+                <ns2:waypoint x="240.0" y="490.0"/>
+                <ns2:waypoint x="240.0" y="342.5"/>
+                <ns2:waypoint x="240.0" y="195.0"/>
+            </ns3:BPMNEdge>
+            <ns3:BPMNEdge bpmnElement="_1446983_9">
+                <ns2:waypoint x="120.0" y="165.0"/>
+                <ns2:waypoint x="155.0" y="165.0"/>
+                <ns2:waypoint x="190.0" y="165.0"/>
+            </ns3:BPMNEdge>
+            <ns3:BPMNEdge bpmnElement="_1446983_15">
+                <ns2:waypoint x="400.0" y="370.0"/>
+                <ns2:waypoint x="425.0" y="370.0"/>
+                <ns2:waypoint x="450.0" y="370.0"/>
+            </ns3:BPMNEdge>
+        </ns3:BPMNPlane>
+    </ns3:BPMNDiagram>
+</ns4:definitions>

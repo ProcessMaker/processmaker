@@ -83,8 +83,15 @@ class ScreenController extends Controller
     {
         $exclusions = ($request->input('exclude', '') ? explode(',', $request->input('exclude', '')) : []);
 
-        $query = Screen::nonSystem()
-            ->leftJoin('screen_categories as category', 'screens.screen_category_id', '=', 'category.id')
+        // Get main query instance
+        $query = Screen::query();
+
+        // Include system srceens if is requested
+        if (!$request->filled('include_system')) {
+            $query->nonSystem();
+        }
+
+        $query->leftJoin('screen_categories as category', 'screens.screen_category_id', '=', 'category.id')
             ->when($request->has('exclude'), function ($query) use ($exclusions) {
                 $query->exclude($exclusions);
             })
@@ -430,7 +437,7 @@ class ScreenController extends Controller
         $request->validate(Screen::rules());
         $newScreen = new Screen();
 
-        $exclude = ['id', 'uuid', 'created_at', 'updated_at', 'key'];
+        $exclude = ['id', 'uuid', 'created_at', 'updated_at', 'key', 'is_default'];
         foreach ($screen->getAttributes() as $attribute => $value) {
             if (!in_array($attribute, $exclude)) {
                 $newScreen->{$attribute} = $screen->{$attribute};
@@ -482,6 +489,14 @@ class ScreenController extends Controller
      */
     public function destroy(Screen $screen)
     {
+        // Check if the screen is a default screen
+        if ($screen->is_default == 1) {
+            return response([
+                'message' => 'Cannot delete a default screen',
+                'errors' => ['is_default' => 'Default screens cannot be deleted'],
+            ], 422);
+        }
+
         $screen->delete();
         // Call new event to store changes in LOG
         ScreenDeleted::dispatch($screen);

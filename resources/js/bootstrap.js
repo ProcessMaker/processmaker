@@ -1,7 +1,7 @@
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 import * as bootstrap from "bootstrap";
-import Echo from "laravel-echo";
+import TenantAwareEcho from "./common/TenantAwareEcho";
 import Router from "vue-router";
 import ScreenBuilder, { initializeScreenCache } from "@processmaker/screen-builder";
 import * as VueDeepSet from "vue-deepset";
@@ -345,7 +345,7 @@ if (window.Processmaker && window.Processmaker.broadcasting) {
     window.Pusher.logToConsole = config.debug;
   }
 
-  window.Echo = new Echo(config);
+  window.Echo = new TenantAwareEcho(config);
 }
 
 if (userID) {
@@ -448,9 +448,11 @@ if (userID) {
 // @link https://processmaker.atlassian.net/browse/FOUR-6833 Cache configuration
 const screenCacheEnabled = document.head.querySelector("meta[name=\"screen-cache-enabled\"]")?.content ?? "false";
 const screenCacheTimeout = document.head.querySelector("meta[name=\"screen-cache-timeout\"]")?.content ?? "5000";
+const screenSecureHandlerToggleVisible = document.head.querySelector("meta[name='screen-secure-handler-toggle-visible']");
 window.ProcessMaker.screen = {
   cacheEnabled: screenCacheEnabled === "true",
   cacheTimeout: Number(screenCacheTimeout),
+  secureHandlerToggleVisible: !!Number(screenSecureHandlerToggleVisible?.content),
 };
 // Initialize screen-builder cache
 initializeScreenCache(window.ProcessMaker.apiClient, window.ProcessMaker.screen);

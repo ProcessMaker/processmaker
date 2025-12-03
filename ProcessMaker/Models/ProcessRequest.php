@@ -25,6 +25,7 @@ use ProcessMaker\Query\Expression;
 use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\ForUserScope;
+use ProcessMaker\Traits\HasComments;
 use ProcessMaker\Traits\HasUuids;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
@@ -105,6 +106,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     use Searchable;
     use SerializeToIso8601;
     use SqlsrvSupportTrait;
+    use HasComments;
 
     /**
      * The attributes that aren't mass assignable.
@@ -278,7 +280,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             case 'participants':
                 return $this->participants()->get()->pluck('id');
             case 'manager':
-                return collect([$this->process()->first()->manager_id]);
+                return collect($this->process()->first()->manager_id ?? []);
             default:
                 return collect([]);
         }

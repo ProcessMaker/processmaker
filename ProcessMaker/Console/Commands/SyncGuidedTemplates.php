@@ -23,27 +23,15 @@ class SyncGuidedTemplates extends Command
     protected $description = 'Synchronize guided templates from a central repository';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
-     *
-     * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         if ($this->option('queue')) {
             $randomDelay = random_int(10, 120);
             Job::dispatch()->delay(now()->addMinutes($randomDelay));
-        } else {
-            Job::dispatchSync();
+
+            return 0;
         }
 
         Job::dispatchSync();

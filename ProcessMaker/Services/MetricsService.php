@@ -3,13 +3,18 @@
 namespace ProcessMaker\Services;
 
 use Exception;
+use Laravel\Horizon\Contracts\JobRepository;
+use Laravel\Horizon\Contracts\MetricsRepository;
+use Laravel\Horizon\Contracts\WorkloadRepository;
 use ProcessMaker\Facades\Metrics;
+use ProcessMaker\Multitenancy\Tenant;
 use Prometheus\CollectorRegistry;
 use Prometheus\Counter;
 use Prometheus\Gauge;
 use Prometheus\Histogram;
 use Prometheus\RenderTextFormat;
-use Prometheus\Storage\Redis;
+use Prometheus\Storage\Redis as PrometheusRedis;
+use Redis;
 use RuntimeException;
 
 class MetricsService
@@ -39,10 +44,12 @@ class MetricsService
         try {
             // Set up Redis as the adapter if none is provided
             if ($adapter === null) {
-                $adapter = new Redis([
-                    'host' => config('database.redis.default.host'),
-                    'port' => config('database.redis.default.port'),
-                ]);
+                $redis = app('redis')->client();
+                $adapter = PrometheusRedis::fromExistingConnection($redis);
+                if (app()->has(Tenant::BOOTSTRAPPED_TENANT)) {
+                    $tenantInfo = app(Tenant::BOOTSTRAPPED_TENANT);
+                    $adapter->setPrefix('tenant_' . $tenantInfo['id'] . ':PROMETHEUS_');
+                }
             }
             $this->collectionRegistry = new CollectorRegistry($adapter);
         } catch (Exception $e) {
@@ -68,7 +75,7 @@ class MetricsService
      * @param array $labels The labels of the counter.
      * @return Counter The registered or retrieved counter.
      */
-    public function counter(string $name, string $help = null, array $labels = []): Counter
+    public function counter(string $name, string|null $help = null, array $labels = []): Counter
     {
         $help = $help ?? $name;
 
@@ -88,7 +95,7 @@ class MetricsService
      * @param array $labels The labels of the gauge.
      * @return Gauge The registered or retrieved gauge.
      */
-    public function gauge(string $name, string $help = null, array $labels = []): Gauge
+    public function gauge(string $name, string|null $help = null, array $labels = []): Gauge
     {
         $help = $help ?? $name;
 
@@ -167,7 +174,7 @@ class MetricsService
 
     /**
      * Histogram observation.
-     * 
+     *
      * @param string $name The name of the histogram.
      * @param string|null $help The help text of the histogram.
      * @param array $labels The labels of the histogram.
@@ -194,7 +201,7 @@ class MetricsService
 
     /**
      * Add system labels to the provided labels.
-     * 
+     *
      * @param array $labels The labels to add system labels to.
      *
      * @return array The keys of the labels.
@@ -204,7 +211,10 @@ class MetricsService
         // Add system labels
         $labels['app_version'] = $this->getApplicationVersion();
         $labels['app_name'] = config('app.name');
-        $labels['app_custom_label'] = config('app.prometheus_custom_label');
+        if (config('app.prometheus_custom_label')) {
+            $labels['app_custom_label'] = config('app.prometheus_custom_label');
+        }
+
         return $labels;
     }
 
@@ -222,6 +232,32 @@ class MetricsService
     {
         $root = base_path('composer.json');
         $composer_json_path = json_decode(file_get_contents($root));
+
         return $composer_json_path->version ?? '4.0.0';
+    }
+
+    /**
+     * These are collected every time the /metrics route is accessed.
+     *
+     * @return void
+     */
+    public function collectQueueMetrics(): void
+    {
+        $metricsRepository = app(MetricsRepository::class);
+        $jobsRepository = app(JobRepository::class);
+        $workloadRepository = app(WorkloadRepository::class);
+
+        $this->gauge('horizon_jobs_per_minute', 'Jobs processed per minute')->set($metricsRepository->jobsProcessedPerMinute());
+        $this->gauge('horizon_failed_jobs_per_hour', 'Failed jobs per hour')->set($jobsRepository->countRecentlyFailed());
+
+        foreach ($workloadRepository->get() as $workload) {
+            $name = $workload['name'];
+            foreach (['length', 'wait', 'processes'] as $type) {
+                $this->gauge(
+                    'horizon_workload_' . $name . '_' . $type,
+                    'Workload ' . $name . ' ' . $type
+                )->set($workload[$type]);
+            }
+        }
     }
 }

@@ -13,7 +13,7 @@
 @endsection
 
 @section('content')
-  <div class="px-3 page-content mb-0" id="processes-catalogue">
+  <div id="processes-catalogue" class="px-3 tw-h-[99%] tw-overflow-hidden">
     <processes-catalogue
       :process="{{$process ?? 0}}"
       :current-user-id="{{ \Auth::user()->id }}"
@@ -33,6 +33,8 @@
       Js::from(\Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'projects', 'documentation'))
     }};
     window.ProcessMaker.defaultSavedSearch = {{{$defaultSavedSearch ?? 'null'}}};
+    window.ProcessMaker.isTceCustomization = {{{config('app.tce_customization_enable') ? 'true' : 'false'}}};
+    window.ProcessMaker.metricsApiEndpoint = `{{{$metricsApiEndpoint}}}`;
   </script>
   @foreach($manager->getScripts() as $script)
     <script src="{{$script}}"></script>

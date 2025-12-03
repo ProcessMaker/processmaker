@@ -11,6 +11,7 @@ use ProcessMaker\Http\Controllers\Admin\LdapLogsController;
 use ProcessMaker\Http\Controllers\Admin\QueuesController;
 use ProcessMaker\Http\Controllers\Admin\ScriptExecutorController;
 use ProcessMaker\Http\Controllers\Admin\SettingsController;
+use ProcessMaker\Http\Controllers\Admin\TenantQueueController;
 use ProcessMaker\Http\Controllers\Admin\UserController;
 use ProcessMaker\Http\Controllers\AdminController;
 use ProcessMaker\Http\Controllers\Auth\ChangePasswordController;
@@ -35,11 +36,17 @@ use ProcessMaker\Http\Controllers\ProcessesCatalogueController;
 use ProcessMaker\Http\Controllers\ProfileController;
 use ProcessMaker\Http\Controllers\RequestController;
 use ProcessMaker\Http\Controllers\Saml\MetadataController;
+use ProcessMaker\Http\Controllers\StorageController;
 use ProcessMaker\Http\Controllers\TaskController;
 use ProcessMaker\Http\Controllers\TemplateController;
 use ProcessMaker\Http\Controllers\TestStatusController;
 use ProcessMaker\Http\Controllers\UnavailableController;
 use ProcessMaker\Http\Middleware\NoCache;
+
+// Public storage route - must be before auth middleware
+Route::get('storage/{path}', [StorageController::class, 'serve'])
+    ->where('path', '.*')  // Allow any characters including slashes for nested paths
+    ->name('storage.serve');
 
 Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '2fa')->group(function () {
     // Routes related to Authentication (password reset, etc)
@@ -61,6 +68,9 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
         Route::get('customize-ui/{tab?}', [CssOverrideController::class, 'edit'])->name('customize-ui.edit');
 
         Route::get('script-executors', [ScriptExecutorController::class, 'index'])->name('script-executors.index');
+
+        // Tenant Jobs Dashboard
+        Route::get('tenant-queues', [TenantQueueController::class, 'index'])->name('tenant-queue.index');
 
         // DevLink
         Route::middleware('admin')->group(function () {
@@ -238,11 +248,19 @@ Route::get('password/success', function () {
 
 Route::get('/unavailable', [UnavailableController::class, 'show'])->name('error.unavailable');
 
+Route::get('/not-authorized', function () {
+    return view('errors.not-authorized');
+})->name('errors.not-authorized');
+
 // SAML Metadata Route
 Route::resource('/saml/metadata', MetadataController::class)->only('index');
 
 // Metrics Route
 Route::get('/metrics', function () {
+    if (!config('app.multitenancy')) {
+        Metrics::collectQueueMetrics();
+    }
+
     return response(Metrics::renderMetrics(), 200, [
         'Content-Type' => 'text/plain; version=0.0.4',
     ]);

@@ -4,7 +4,6 @@ namespace ProcessMaker\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Auth\Access\Response;
-use Illuminate\Support\Facades\Request;
 use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -39,7 +38,7 @@ class ProcessRequestTokenPolicy
     public function view(User $user, ProcessRequestToken $processRequestToken)
     {
         if ($processRequestToken->user_id == $user->id ||
-            $processRequestToken->process?->manager_id === $user->id
+            in_array($user->id, $processRequestToken->process?->manager_id ?? [])
         ) {
             return true;
         }
@@ -60,7 +59,7 @@ class ProcessRequestTokenPolicy
         if (
             $processRequestToken->user_id === $user->id ||
             $processRequestToken->user_id === app(AnonymousUser::class)->id ||
-            $processRequestToken->process?->manager_id === $user->id
+            in_array($user->id, $processRequestToken->process?->manager_id ?? [])
         ) {
             return true;
         }
@@ -74,21 +73,10 @@ class ProcessRequestTokenPolicy
      *
      * @param  User  $user
      * @param  ProcessRequestToken  $processRequestToken
-     * @param  Screen  $screen
-     * @return mixed
      */
-    public function viewScreen(User $user, ProcessRequestToken $task, Screen $screen)
+    public function viewScreen(User $user, ProcessRequestToken $task): bool
     {
-        if (!$user->can('update', $task)) {
-            return false;
-        }
-
-        $screenIds = $task->getScreenAndNestedIds();
-        if (!in_array($screen->id, $screenIds)) {
-            return false;
-        }
-
-        return true;
+        return $user->can('update', $task);
     }
 
     /**
@@ -102,13 +90,13 @@ class ProcessRequestTokenPolicy
     public function rollback(User $user, ProcessRequestToken $task)
     {
         // For now, only the process manager can rollback the request
-        return $user->id === $task->process->managerId;
+        return in_array($user->id, $task->process?->manager_id ?? []);
     }
 
     public function reassign(User $user, ProcessRequestToken $task)
     {
         // If user is process manager
-        if ($user->id === $task->process->managerId) {
+        if (in_array($user->id, $task->process?->manager_id ?? [])) {
             return true;
         }
 

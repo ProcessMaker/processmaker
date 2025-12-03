@@ -9,19 +9,32 @@ use Illuminate\Foundation\PackageManifest;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
+use Illuminate\Queue\Events\JobAttempted;
+use Illuminate\Queue\Events\JobProcessing;
+use Illuminate\Queue\Events\JobRetryRequested;
+use Illuminate\Queue\Listener;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Env;
 use Illuminate\Support\Facades;
+use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
-use Laravel\Passport\Passport;
+use Laravel\Horizon\SystemProcessCounter;
+use Laravel\Horizon\WorkerCommandString;
 use Lavary\Menu\Menu;
 use ProcessMaker\Cache\Settings\SettingCacheManager;
+use ProcessMaker\Console\Commands\HorizonListen;
 use ProcessMaker\Console\Migration\ExtendedMigrateCommand;
+use ProcessMaker\Contracts\ConditionalRedirectServiceInterface;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Events\TenantResolved;
+use ProcessMaker\Exception\MultitenancyAccessedLandlord;
+use ProcessMaker\Exception\MultitenancyNoTenantFound;
 use ProcessMaker\Helpers\PmHash;
 use ProcessMaker\Http\Middleware\Etag\HandleEtag;
 use ProcessMaker\ImportExport\Extension;
@@ -32,10 +45,17 @@ use ProcessMaker\Managers;
 use ProcessMaker\Managers\MenuManager;
 use ProcessMaker\Managers\ScreenCompiledManager;
 use ProcessMaker\Models;
+use ProcessMaker\Multitenancy\Tenant;
+use ProcessMaker\Multitenancy\TenantBootstrapper;
 use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
+use ProcessMaker\Providers\PermissionServiceProvider;
 use ProcessMaker\Repositories\SettingsConfigRepository;
+use ProcessMaker\Services\ConditionalRedirectService;
 use RuntimeException;
+use Spatie\Multitenancy\Events\MadeTenantCurrentEvent;
+use Spatie\Multitenancy\Events\TenantNotFoundForRequestEvent;
+use Spatie\Multitenancy\TenantCollection;
 
 /**
  * Provide our ProcessMaker specific services.
@@ -54,10 +74,16 @@ class ProcessMakerServiceProvider extends ServiceProvider
     // Track the query time for each request
     private static $queryTime = 0;
 
+    // Track the landlord values for multitenancy
+    private static $landlordValues = null;
+
     public function boot(): void
     {
         // Track the start time for service providers boot
         self::$bootStart = microtime(true);
+
+        // Set the current tenant
+        $this->setCurrentTenantForConsoleCommands();
 
         $this->app->singleton(Menu::class, function ($app) {
             return new MenuManager();
@@ -94,6 +120,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
         if (!$this->app->environment('production')) {
             $this->app->register(DuskServiceProvider::class);
         }
+
+        // Register our permission services
+        $this->app->register(PermissionServiceProvider::class);
 
         $this->app->singleton(Managers\PackageManager::class, function () {
             return new Managers\PackageManager();
@@ -209,6 +238,52 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->extend('config', function ($originalConfig) {
             return new SettingsConfigRepository($originalConfig->all());
         });
+
+        $this->app->singleton('currentTenant', function () {
+            return null;
+        });
+
+        $this->app->instance('tenant-resolved', false);
+
+        /**
+         * Conditional Redirect Service
+         * This service is used to evaluate the conditional redirect property of a process request token.
+         */
+        $this->app->bind(ConditionalRedirectServiceInterface::class, ConditionalRedirectService::class);
+
+        $this->app->when(HorizonListen::class)->needs(Listener::class)->give(function ($app) {
+            return new Listener(base_path());
+        });
+
+        if (config('app.multitenancy')) {
+            WorkerCommandString::$command = 'exec @php artisan horizon:listen';
+            SystemProcessCounter::$command = 'horizon:listen';
+        }
+    }
+
+    /**
+     * In multitenancy, we need to bootstrap a new app with the tenant id set.
+     * This is because queue workers are long-running processes that are not
+     * tenant aware.
+     */
+    private static function bootstrapTenantApp(JobProcessing|JobRetryRequested $event): void
+    {
+        Context::hydrate($event->job->payload()['illuminate:log:context'] ?? null);
+        $tenantId = Context::get(config('multitenancy.current_tenant_context_key'));
+        if ($tenantId) {
+            if (!method_exists($event->job, 'getRedisQueue')) {
+                // Not a redis job
+                return;
+            }
+
+            // Create a new tenant app instance
+            $_SERVER['TENANT'] = $tenantId;
+
+            $app = require base_path('bootstrap/app.php');
+            $app->make(\ProcessMaker\Console\Kernel::class)->bootstrap();
+            \Illuminate\Container\Container::setInstance($app);
+            $event->job->getRedisQueue()->setContainer($app);
+        }
     }
 
     /**
@@ -216,6 +291,14 @@ class ProcessMakerServiceProvider extends ServiceProvider
      */
     protected static function registerEvents(): void
     {
+        Facades\Event::listen(JobProcessing::class, function (JobProcessing $event) {
+            self::bootstrapTenantApp($event);
+        });
+
+        Facades\Event::listen(JobRetryRequested::class, function (JobRetryRequested $event) {
+            self::bootstrapTenantApp($event);
+        });
+
         // Listen to the events for our core screen
         // types and add our javascript
         Facades\Event::listen(ScreenBuilderStarting::class, function ($event) {
@@ -257,6 +340,35 @@ class ProcessMakerServiceProvider extends ServiceProvider
             $task_id = $event->getProcessRequestToken()->id;
             // Dispatch the SmartInbox job with the processRequestToken as parameter
             SmartInbox::dispatch($task_id);
+        });
+
+        Facades\Event::listen(MadeTenantCurrentEvent::class, function ($event) {
+            event(new TenantResolved($event->tenant));
+        });
+
+        Facades\Event::listen(TenantNotFoundForRequestEvent::class, function ($event) {
+            if (config('app.multitenancy') === false || self::actuallyRunningInConsole()) {
+                // This is expected if multitenancy is disabled.
+                // We also need to check if we are running in a console command because
+                // sometimes we run them with APP_RUNNING_IN_CONSOLE=false which will
+                // trigger TenantNotFoundForRequestEvent and we don't want to
+                // stop execution because of that.
+
+                // Call the TenantResolved event with null to continue loading the app.
+                event(new TenantResolved(null));
+            } else {
+                // Multitenancy is enabled, but no tenant was found.
+                // Check if we are attempting to access the landlord directly (by comparing app.url)
+                // If so, show thelandlord landing page.
+                $requestHost = $event->request->getHost();
+                $appHost = parse_url(config('app.url'), PHP_URL_HOST);
+                if ($appHost === $requestHost) {
+                    throw new MultitenancyAccessedLandlord();
+                }
+
+                // Otherwise, show a 404 page.
+                throw new MultitenancyNoTenantFound();
+            }
         });
     }
 
@@ -466,5 +578,54 @@ class ProcessMakerServiceProvider extends ServiceProvider
     public static function getPackageBootTiming(): array
     {
         return self::$packageBootTiming;
+    }
+
+    /**
+     * Find the tenant based on the environment variable
+     */
+    private function setCurrentTenantForConsoleCommands(): void
+    {
+        // See ProcessMaker\Multitenancy\TenantFinder::findForRequest() for disguised console commands (APP_RUNNING_IN_CONSOLE=false)
+        // We need to do this in 2 places because laravel-multitenancy skips the tenant finder when running in console
+        if (!app()->runningInConsole()) {
+            return;
+        }
+
+        if (config('app.multitenancy') === false) {
+            event(new TenantResolved(null));
+
+            return;
+        }
+
+        if ($tenant = Tenant::fromBootstrapper()) {
+            $tenant->makeCurrent();
+
+            return;
+        }
+
+        $tenantId = Env::get('TENANT');
+        if (!$tenantId) {
+            event(new TenantResolved(null));
+
+            return;
+        }
+
+        $tenant = Tenant::findOrFail($tenantId);
+        $tenant->makeCurrent();
+    }
+
+    /**
+     * Check if we are actually running in a console command.
+     *
+     * Sometimes we run console commands with APP_RUNNING_IN_CONSOLE=false
+     * so I took this form the framework to see if we are actually running
+     * in a console command. We can't NOT use APP_RUNNING_IN_CONSOLE=true
+     * because some routes are only registered when app()->runningInConsole()
+     * is false.
+     * @return bool
+     */
+    private static function actuallyRunningInConsole(): bool
+    {
+        return PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg';
     }
 }

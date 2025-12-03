@@ -23,6 +23,7 @@ use ProcessMaker\Events\FilesDownloaded;
 use ProcessMaker\Events\FilesUpdated;
 use ProcessMaker\Events\GroupCreated;
 use ProcessMaker\Events\GroupDeleted;
+use ProcessMaker\Events\GroupMembershipChanged;
 use ProcessMaker\Events\GroupUpdated;
 use ProcessMaker\Events\GroupUsersUpdated;
 use ProcessMaker\Events\PermissionUpdated;
@@ -65,6 +66,8 @@ use ProcessMaker\Events\UserUpdated;
 use ProcessMaker\Listeners\HandleActivityAssignedInterstitialRedirect;
 use ProcessMaker\Listeners\HandleActivityCompletedRedirect;
 use ProcessMaker\Listeners\HandleEndEventRedirect;
+use ProcessMaker\Listeners\InvalidatePermissionCacheOnGroupHierarchyChange;
+use ProcessMaker\Listeners\InvalidatePermissionCacheOnUpdate;
 use ProcessMaker\Listeners\InvalidateScreenCacheOnTranslationChange;
 use ProcessMaker\Listeners\SecurityLogger;
 use ProcessMaker\Listeners\SessionControlSettingsUpdated;
@@ -93,6 +96,9 @@ class EventServiceProvider extends ServiceProvider
         'Illuminate\Database\Events\MigrationsEnded' => [
             'ProcessMaker\Listeners\UpdateDataLakeViews',
         ],
+        'Illuminate\Console\Events\CommandStarting' => [
+            'ProcessMaker\Listeners\RegisterTenantScheduleTasks',
+        ],
         'ProcessMaker\Events\SessionStarted' => [
             'ProcessMaker\Listeners\ActiveUserListener',
         ],
@@ -110,6 +116,12 @@ class EventServiceProvider extends ServiceProvider
         ],
         TranslationChanged::class => [
             InvalidateScreenCacheOnTranslationChange::class,
+        ],
+        PermissionUpdated::class => [
+            InvalidatePermissionCacheOnUpdate::class,
+        ],
+        GroupMembershipChanged::class => [
+            InvalidatePermissionCacheOnGroupHierarchyChange::class,
         ],
     ];
 

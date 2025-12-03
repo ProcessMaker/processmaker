@@ -68,6 +68,7 @@ mix
   .copy("resources/img/*", "public/img")
   .copy("resources/img/launchpad-images/*", "public/img/launchpad-images")
   .copy("resources/img/launchpad-images/icons/*", "public/img/launchpad-images/icons")
+  .copy("resources/img/connected-account-images/*", "public/img/connected-account-images")
   .copy("resources/img/smartinbox-images/*", "public/img/smartinbox-images")
   .copy("resources/img/pagination-images/*", "public/img/pagination-images")
   .copy("resources/img/script_lang/*", "public/img/script_lang")
@@ -102,6 +103,7 @@ mix
   .js("resources/js/admin/profile/edit.js", "public/js/admin/profile/edit.js")
   .js("resources/js/admin/cssOverride/edit.js", "public/js/admin/cssOverride/edit.js")
   .js("resources/js/admin/script-executors/index.js", "public/js/admin/script-executors/index.js")
+  .js("resources/js/admin/tenant-queues/index.js", "public/js/admin/tenant-queues/index.js")
 
   .js("resources/js/processes/index.js", "public/js/processes")
   .js("resources/js/processes/edit.js", "public/js/processes")

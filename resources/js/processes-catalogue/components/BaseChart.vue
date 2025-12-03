@@ -310,7 +310,6 @@ export default {
 </script>
 <style scoped>
 .default-chart {
-  width: 325px;
   margin-top: 24px;
   padding: 20px 0;
   border-radius: 16px;

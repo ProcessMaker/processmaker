@@ -38,9 +38,6 @@
               <div class="form-group">
                 <b-form-checkbox value="password_client">{{__('Enable Password Grant')}}</b-form-checkbox>
               </div>
-              <div class="form-group">
-                <b-form-checkbox value="personal_access_client">{{__('Enable Personal Access Tokens')}}</b-form-checkbox>
-              </div>
             </b-form-checkbox-group>
         </pm-modal>
 

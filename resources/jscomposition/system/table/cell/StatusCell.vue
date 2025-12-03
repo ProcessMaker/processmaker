@@ -1,17 +1,17 @@
 <template>
   <div class="tw-flex tw-justify-left">
-    <span
-      :class="`tw-inline-flex tw-items-center tw-text-xs tw-border-1 tw-rounded-lg
+    <span :class="`tw-inline-flex tw-items-center tw-text-xs tw-border-1 tw-rounded-lg
         tw-bg-${color}-100 tw-px-2 tw-py-1 tw-text-${color}-500`">
       {{ label }}
     </span>
   </div>
 </template>
-<script>
-import { defineComponent, computed } from "vue";
+<script setup>
+import { computed } from "vue";
 import { t } from "i18next";
+import { get } from "lodash";
 
-export const statuses = {
+const statuses = {
   DRAFT: {
     color: "red",
     label: `${t("Draft")}`,
@@ -23,6 +23,10 @@ export const statuses = {
   COMPLETED: {
     color: "blue",
     label: `${t("Completed")}`,
+  },
+  CLOSED: {
+    color: "blue",
+    label: `${t("Closed")}`,
   },
   ERROR: {
     color: "red",
@@ -36,40 +40,32 @@ export const statuses = {
     color: "green",
     label: `${t("In Progress")}`,
   },
+  overdue: {
+    color: "red",
+    label: `${t("Overdue")}`,
+  },
 };
 
-export default defineComponent({
-  props: {
-    columns: {
-      type: Array,
-      default: () => [],
-    },
-    column: {
-      type: Object,
-      default: () => ({}),
-    },
-    row: {
-      type: Object,
-      default: () => ({}),
-    },
+const props = defineProps({
+  columns: {
+    type: Array,
+    default: () => [],
   },
-  setup(props, { emit }) {
-    const color = computed(() => {
-      return (
-        statuses[props.row[props.column.field]].color || statuses.IN_PROGRESS.color
-      );
-    });
-
-    const label = computed(() => {
-      return (
-        statuses[props.row[props.column.field]].label || statuses.IN_PROGRESS.label
-      );
-    });
-
-    return {
-      color,
-      label,
-    };
+  column: {
+    type: Object,
+    default: () => ({}),
+  },
+  row: {
+    type: Object,
+    default: () => ({}),
   },
 });
+
+const color = computed(() => (
+  statuses[get(props.row, props.column.field)].color || statuses.IN_PROGRESS.color
+));
+
+const label = computed(() => (
+  statuses[get(props.row, props.column.field)].label || statuses.IN_PROGRESS.label
+));
 </script>

@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
 use DB;
+use DOMXPath;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Arr;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Notification;
 use Laravel\Scout\Searchable;
 use Log;
 use ProcessMaker\Casts\MillisecondsToDateCast;
+use ProcessMaker\Contracts\ConditionalRedirectServiceInterface;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityReassignment;
 use ProcessMaker\Facades\WorkflowUserManager;
@@ -21,6 +23,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\MultiInstanceLoopCharacteristicsInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Managers\WorkflowManagerDefault;
+use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Notifications\ActivityActivatedNotification;
 use ProcessMaker\Notifications\TaskReassignmentNotification;
 use ProcessMaker\Query\Expression;
@@ -28,6 +31,7 @@ use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasUuids;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Throwable;
 
 /**
@@ -254,7 +258,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             case 'manager':
                 $process = $this->process()->first();
 
-                return collect([$process?->manager_id]);
+                return collect($process?->manager_id ?? []);
                 break;
             default:
                 return collect([]);
@@ -750,28 +754,50 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
         $value = mb_strtolower($value);
 
-        return function ($query) use ($value, $statusMap, $expression, $user) {
+        // Capture processManagerIds from the builder if it's available
+        // The $callback parameter is actually the $builder from ExtendedPMQL
+        $builder = $callback;
+        $processManagerIds = null;
+        if ($builder && method_exists($builder, 'getQuery')) {
+            $processManagerIds = $builder->getQuery()->processManagerIds ?? null;
+        }
+
+        return function ($query) use ($value, $statusMap, $expression, $user, $processManagerIds) {
+            // Also check in the current query in case it's available there
+            $currentProcessManagerIds = $query->getQuery()->processManagerIds ?? null;
+            $finalProcessManagerIds = $processManagerIds ?? $currentProcessManagerIds;
+            $isProcessManager = !empty($finalProcessManagerIds);
+
             if ($value === 'self service') {
                 if (!$user) {
                     $user = auth()->user();
                 }
 
-                if ($user) {
+                if ($isProcessManager) {
+                    // When processesIManage is active, include self-service tasks from managed processes
+                    $selfServiceTaskIds = ProcessRequestToken::select(['id'])
+                        ->whereIn('process_id', $finalProcessManagerIds)
+                        ->where('is_self_service', 1)
+                        ->whereNull('user_id')
+                        ->where('status', 'ACTIVE');
+
+                    $query->whereIn('process_request_tokens.id', $selfServiceTaskIds);
+                } elseif ($user) {
                     $taskIds = $user->availableSelfServiceTaskIds();
-                    $query->whereIn('id', $taskIds);
+                    $query->whereIn('process_request_tokens.id', $taskIds);
                 } else {
-                    $query->where('is_self_service', 1);
+                    $query->where('process_request_tokens.is_self_service', 1);
                 }
             } elseif (array_key_exists($value, $statusMap)) {
-                $query->where('is_self_service', 0);
+                $query->where('process_request_tokens.is_self_service', 0);
                 if ($expression->operator == '=') {
                     $query->whereIn('process_request_tokens.status', $statusMap[$value]);
                 } elseif ($expression->operator == '!=') {
                     $query->whereNotIn('process_request_tokens.status', $statusMap[$value]);
                 }
             } else {
-                $query->where('status', $expression->operator, $value)
-                    ->where('is_self_service', 0);
+                $query->where('process_request_tokens.status', $expression->operator, $value)
+                    ->where('process_request_tokens.is_self_service', 0);
             }
         };
     }
@@ -967,6 +993,66 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     }
 
     /**
+     * Get the assignees for the token.
+     *
+     * @param array $assignments
+     * @param array $variables
+     * @return array
+     */
+    public function getAssignees(array $assignments, array $variables): array
+    {
+        $result = [];
+        $language = new ExpressionLanguage();
+
+        foreach ($assignments as $assignment) {
+            $isTrue = false;
+
+            if (!empty($assignment['expression'])) {
+                try {
+                    $isTrue = $language->evaluate($assignment['expression'], $variables);
+                } catch (Throwable $e) {
+                    $isTrue = false;
+                }
+            }
+
+            if ($isTrue) {
+                $result[] = $assignment['assignee'];
+            }
+
+            if (isset($assignment['default']) && $assignment['default'] === true) {
+                $result[] = $assignment['assignee'];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get the assignees from the expression
+     *
+     * @param string $form_data
+     * @return array
+     */
+    public function getAssigneesFromExpression(string $form_data): array
+    {
+        $formData = json_decode($form_data, true);
+
+        $activity = $this->getBpmnDefinition()->getBpmnElementInstance();
+        $assignmentRules = $activity->getProperty('assignmentRules', null);
+        $assignments = json_decode($assignmentRules, true);
+
+        $include_ids = $this->getAssignees($assignments, $formData);
+
+        // we add the manager to the list of assignees
+        $manager_id = $this->process->manager_id;
+        if ($manager_id) {
+            $include_ids[] = $manager_id;
+        }
+
+        return $include_ids;
+    }
+
+    /**
      * Returns if the token has the self service option activated
      */
     public function getSelfServiceAttribute()
@@ -1045,6 +1131,53 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             },
             ARRAY_FILTER_USE_KEY
         );
+
+        $this->setStagePropertiesInRecord();
+    }
+
+    /**
+     * Extracts and assigns stage properties from the BPMN sequence flow configuration.
+     *
+     * This method loads the BPMN XML from the process associated with the current instance
+     * and uses XPath to locate any sequenceFlow elements that target the current element ID.
+     * It iterates over the matching flows and attempts to extract the `pm:config` attribute
+     * from each, which is expected to be a JSON-encoded string.
+     *
+     * If a configuration is found with a defined `stage.id`, the method assigns the `stage_id`
+     * and `stage_name` properties of the current object accordingly.
+     *
+     * Typical use case: setting the stage metadata (ID and name) during execution flow
+     * resolution in a BPMN process.
+     *
+     * @return void
+     */
+    public function setStagePropertiesInRecord()
+    {
+        try {
+            $instance = $this->getInstance();
+            $bpmnDocument = new BpmnDocument();
+            $bpmnDocument->loadXml($instance->process->bpmn);
+            $xpath = new DOMXPath($bpmnDocument);
+            $xpath->registerNamespace('bpmn', BpmnDocument::BPMN_MODEL);
+            $sequenceFlows = $xpath->query("//bpmn:sequenceFlow[@targetRef='$this->element_id']");
+            $config = null;
+            foreach ($sequenceFlows as $flow) {
+                $id = $flow->getAttribute('id');
+                $incomingFlow = $bpmnDocument->findElementById($id);
+                if (!$incomingFlow) {
+                    continue;
+                }
+                $pmConfig = $incomingFlow->getAttribute('pm:config');
+                $config = json_decode($pmConfig ?? '');
+                if (isset($config->stage) && isset($config->stage->id)) {
+                    break;
+                }
+            }
+            $this->stage_id = isset($config->stage) && isset($config->stage->id) ? $config->stage->id : null;
+            $this->stage_name = isset($config->stage) && isset($config->stage->name) ? $config->stage->name : null;
+        } catch (Exception $e) {
+            Log::debug($e->getMessage());
+        }
     }
 
     public function loadTokenProperties()
@@ -1259,10 +1392,28 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
      *
      * @return array|null Returns the destination URL.
      */
-    private function getElementDestination($elementDestinationType, $elementDestinationProp): ?array
+    private function getElementDestination($elementDestinationType, $elementDestinationProp, array $conditionalRedirectProp): ?array
     {
         $elementDestination = null;
 
+        if (!empty($conditionalRedirectProp['isEnabled']) && !empty($conditionalRedirectProp['conditions'])) {
+            $result = $this->evaluateConditionalRedirect(app(ConditionalRedirectServiceInterface::class), $conditionalRedirectProp);
+            if ($result) {
+                $elementDestinationType = $result['taskDestination']['value'];
+
+                $url = match ($elementDestinationType) {
+                    'customDashboard' => $result['customDashboard']['url'] ?? null,
+                    'externalURL' => $result['externalUrl'] ?? null,
+                    default => null,
+                };
+
+                $elementDestinationProp = [
+                    'value' => [
+                        'url' => $url,
+                    ],
+                ];
+            }
+        }
         switch ($elementDestinationType) {
             case 'anotherProcess':
             case 'customDashboard':
@@ -1306,6 +1457,15 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         ];
     }
 
+    private function evaluateConditionalRedirect(ConditionalRedirectServiceInterface $conditionalRedirectService, array $conditionalRedirectProp): ?array
+    {
+        if (!$conditionalRedirectProp['isEnabled']) {
+            return null;
+        }
+
+        return $conditionalRedirectService->resolveForToken($conditionalRedirectProp['conditions'], $this);
+    }
+
     /**
      * Determines the destination URL based on the element destination type specified in the definition.
      *
@@ -1316,6 +1476,8 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         $definition = $this->getDefinition();
         $elementDestinationProp = $definition['elementDestination'] ?? null;
         $elementDestinationType = null;
+        $conditionalRedirectProp = $definition['conditionalRedirect'] ?? '[]';
+        $conditionalRedirectProp = json_decode($conditionalRedirectProp, true);
 
         try {
             $elementDestinationProp = json_decode($elementDestinationProp, true);
@@ -1326,7 +1488,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             return null;
         }
 
-        return $this->getElementDestination($elementDestinationType, $elementDestinationProp);
+        return $this->getElementDestination($elementDestinationType, $elementDestinationProp, $conditionalRedirectProp);
     }
 
     /**

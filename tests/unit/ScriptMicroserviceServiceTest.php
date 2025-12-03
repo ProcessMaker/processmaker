@@ -101,7 +101,12 @@ class ScriptMicroserviceServiceTest extends TestCase
 
         $this->service->handle($request);
 
-        Queue::assertPushedOn('bpmn', CompleteActivity::class, function ($job) use ($definitions, $instance, $token) {
+        $tenantPrefix = '';
+        if (app('currentTenant')) {
+            $tenantPrefix = 'tenant-' . app('currentTenant')->id . '-';
+        }
+
+        Queue::assertPushedOn($tenantPrefix . 'bpmn', CompleteActivity::class, function ($job) use ($definitions, $instance, $token) {
             return $job->definitionsId === $definitions->id
                 && $job->instanceId === $instance->id
                 && $job->tokenId === $token->id

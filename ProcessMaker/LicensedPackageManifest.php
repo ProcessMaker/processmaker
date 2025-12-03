@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Providers\ProcessMakerServiceProvider;
+use Spatie\Multitenancy\MultitenancyServiceProvider;
 use Throwable;
 
 class LicensedPackageManifest extends PackageManifest
@@ -59,7 +61,7 @@ class LicensedPackageManifest extends PackageManifest
 
     private function licensedPackages()
     {
-        $default = collect(['packages','package-api-testing']);
+        $default = collect(['packages', 'package-api-testing']);
         $data = $this->parseLicense();
         $expires = Carbon::parse($data['expires_at']);
         if ($expires->isPast()) {
