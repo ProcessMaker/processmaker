@@ -3,12 +3,14 @@
 namespace ProcessMaker\Jobs;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Console\Application;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Process;
 
 class RefreshArtisanCaches implements ShouldQueue
 {
@@ -34,7 +36,11 @@ class RefreshArtisanCaches implements ShouldQueue
         ];
 
         if (app()->configurationIsCached()) {
-            Artisan::call('config:cache', $options);
+            // Run in a separate process to avoid the tenant being set.
+            // We do not use a tenant-specific config cache file.
+            Process::path(base_path())
+                ->env(['TENANT' => ''])
+                ->run(Application::formatCommandString('config:cache'))->throw();
         } else {
             Artisan::call('queue:restart', $options);
 
