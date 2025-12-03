@@ -17,7 +17,10 @@
 @section('content')
     <div id="script-executors" class="px-3">
         <div class="card card-body">
-            <script-executors></script-executors>
+            <script-executors
+                    :script_microservice_enabled="{{$script_microservice_enabled}}"
+                    :script_microservice_instance_uuid="'{{$script_microservice_instance_uuid}}'"
+            ></script-executors>
         </div>
     </div>
 @endsection

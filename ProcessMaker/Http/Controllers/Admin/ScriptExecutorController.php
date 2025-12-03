@@ -13,6 +13,10 @@ class ScriptExecutorController extends Controller
             abort(404);
         }
 
-        return view('admin.script-executors.index');
+        return view('admin.script-executors.index',
+            [
+                'script_microservice_enabled' => config('script-runner-microservice.enabled'),
+                'script_microservice_instance_uuid' => config('script-runner-microservice.instance_uuid'),
+            ]);
     }
 }

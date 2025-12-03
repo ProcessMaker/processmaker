@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'instance_uuid' => env('SCRIPT_MICROSERVICE_INSTANCE_UUID'),
     'enabled' => env('SCRIPT_MICROSERVICE_ENABLED', true),
     'base_url' => env('SCRIPT_MICROSERVICE_BASE_URL'),
     'callback' => env('SCRIPT_MICROSERVICE_CALLBACK'),

@@ -6,8 +6,10 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\Exception\ConfigurationException;
 use ProcessMaker\GenerateAccessToken;
+use ProcessMaker\Helpers\ScriptMicroservicesHelper;
 use ProcessMaker\Jobs\ErrorHandling;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Script;
@@ -25,31 +27,10 @@ class ScriptMicroserviceRunner
         $this->language = strtolower($script->language ?? $script->scriptExecutor->language);
     }
 
-    public function getAccessToken()
-    {
-        if (Cache::has('keycloak.access_token')) {
-            return Cache::get('keycloak.access_token');
-        }
-
-        $response = Http::asForm()->post(config('script-runner-microservice.keycloak.base_url') ?? '', [
-            'grant_type' => 'password',
-            'client_id' => config('script-runner-microservice.keycloak.client_id'),
-            'client_secret' => config('script-runner-microservice.keycloak.client_secret'),
-            'username' => config('script-runner-microservice.keycloak.username'),
-            'password' => config('script-runner-microservice.keycloak.password'),
-        ]);
-
-        if ($response->successful()) {
-            Cache::put('keycloak.access_token', $response->json()['access_token'], $response->json()['expires_in'] - 60);
-        }
-
-        return Cache::get('keycloak.access_token');
-    }
-
     public function getScriptRunner()
     {
         $response = Cache::remember('script-runner-microservice.script-languages', now()->addDay(), function () {
-            return Http::withToken($this->getAccessToken())
+            return Http::withToken(ScriptMicroservicesHelper::getAccessToken())
                 ->get(config('script-runner-microservice.base_url') . '/scripts')->collect();
         });
 
@@ -58,13 +39,26 @@ class ScriptMicroserviceRunner
         })->first();
     }
 
+    public function getCustomScriptRunner()
+    {
+        $uri = config('script-runner-microservice.base_url') . '/custom/' . config('script-runner-microservice.instance_uuid') . '/scripts';
+        $response = Http::withToken(ScriptMicroservicesHelper::getAccessToken())
+            ->get($uri)->collect();
+        return $response->filter(function ($item) {
+            return $item['language'] === $this->language && $item['id'] === $this->script->scriptExecutor->uuid;
+        })->first();
+    }
+
     public function run($code, array $data, array $config, $timeout, $user, $sync, $metadata)
     {
         Log::debug('Language: ' . $this->language);
         Log::debug('Sync: ' . $sync);
         Log::debug('Metadata: ' . print_r($metadata, true));
+        Log::debug('Script type: ' . $this->script->scriptExecutor->type->value);
 
-        $scriptRunner = $this->getScriptRunner();
+        $scriptRunner = $this->script->scriptExecutor->type === ScriptExecutorType::Custom ?
+            $this->getCustomScriptRunner() :
+            $this->getScriptRunner();
 
         if (!$scriptRunner) {
             throw new ConfigurationException('No exists script executor for this language: ' . $this->language);
@@ -75,7 +69,7 @@ class ScriptMicroserviceRunner
         $payload = [
             'version' => config('script-runner-microservice.version') ?? $this->getProcessMakerVersion(),
             'language' => $scriptRunner['language'],
-            'metadata'=> $metadata,
+            'metadata' => $metadata,
             'data' => !empty($data) ? $this->sanitizeCss($data) : new stdClass(),
             'config' => !empty($config) ? $config : new stdClass(),
             'script' => base64_encode(str_replace("'", '&#39;', $code)),
@@ -96,7 +90,7 @@ class ScriptMicroserviceRunner
         $clientTimeout = 86400;
 
         $response = Http::timeout($clientTimeout)
-            ->withToken($this->getAccessToken())
+            ->withToken(ScriptMicroservicesHelper::getAccessToken())
             ->post(config('script-runner-microservice.base_url') . '/requests/create', $payload);
 
         $response->throw();
@@ -159,7 +153,10 @@ class ScriptMicroserviceRunner
     {
         return [
             'script_id' => $this->script->id,
+            'executor_uuid' => $this->script->scriptExecutor->uuid,
+            'executor_type' => $this->script->scriptExecutor->type->value,
             'instance' => config('app.url'),
+            'instance_uuid' => config('script-runner-microservice.instance_uuid'),
             'user_id' => $user->id,
             'user_email' => $user->email,
         ];

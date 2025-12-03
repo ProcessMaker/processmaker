@@ -1,66 +1,82 @@
 <template>
   <div class="data-table">
-    <div class="d-flex mb-2" v-show="!shouldShowLoader">
-      <div class="mr-auto"></div>
+    <div
+      v-show="!shouldShowLoader"
+      class="d-flex mb-2"
+    >
+      <div class="mr-auto" />
       <div>
-        <b-button :aria-label="$t('Add New Script Executor')" type="button" @click="add()">
+        <b-button
+          :aria-label="$t('Add New Script Executor')"
+          type="button"
+          @click="add()"
+        >
           <i class="fa fa-plus" /> {{ $t("Script Executor") }}
         </b-button>
       </div>
     </div>
     <data-loading
-      :for="/script-executors\?page/"
       v-show="shouldShowLoader"
+      :for="/script-executors\?page/"
       :empty="$t('No Data Available')"
       :empty-desc="$t('')"
       empty-icon="noData"
     />
-    <div v-show="!shouldShowLoader" class="card card-body table-card">
+    <div
+      v-show="!shouldShowLoader"
+      class="card card-body table-card"
+    >
       <vuetable
-        :dataManager="dataManager"
-        :sortOrder="sortOrder"
+        :data-manager="dataManager"
+        :sort-order="sortOrder"
         :css="css"
         :api-mode="false"
-        @vuetable:pagination-data="onPaginationData"
         :fields="fields"
         :data="data"
         data-path="data"
-        :noDataTemplate="$t('No Data Available')"
+        :no-data-template="$t('No Data Available')"
         pagination-path="meta"
+        @vuetable:pagination-data="onPaginationData"
       >
-        <template slot="title" slot-scope="props">
+        <template
+          slot="title"
+          slot-scope="props"
+        >
           <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.title }}</span>
         </template>
 
-        <template slot="actions" slot-scope="props">
+        <template
+          slot="actions"
+          slot-scope="props"
+        >
           <div class="actions">
             <div class="popout">
               <b-btn
-                variant="link"
-                @click="edit(props.rowData)"
                 v-b-tooltip.hover
+                v-uni-aria-describedby="props.rowData.id.toString()"
+                variant="link"
                 :title="$t('Edit')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
+                @click="edit(props.rowData)"
               >
-                <i class="fas fa-pen-square fa-lg fa-fw"></i>
+                <i class="fas fa-pen-square fa-lg fa-fw" />
               </b-btn>
               <b-btn
-                variant="link"
-                @click="deleteExecutor(props.rowData)"
                 v-b-tooltip.hover
+                v-uni-aria-describedby="props.rowData.id.toString()"
+                variant="link"
                 :title="$t('Delete')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
+                @click="deleteExecutor(props.rowData)"
               >
-                <i class="fas fa-trash-alt fa-lg fa-fw"></i>
+                <i class="fas fa-trash-alt fa-lg fa-fw" />
               </b-btn>
               <b-btn
-                variant="link"
-                @click="onAddToBundle(props.rowData)"
                 v-b-tooltip.hover
-                :title="$t('Add to Bundle')"
                 v-uni-aria-describedby="props.rowData.id.toString()"
+                variant="link"
+                :title="$t('Add to Bundle')"
+                @click="onAddToBundle(props.rowData)"
               >
-                <i class="fas fa-folder-plus fa-lg fa-fw"></i>
+                <i class="fas fa-folder-plus fa-lg fa-fw" />
               </b-btn>
             </div>
           </div>
@@ -71,57 +87,56 @@
         :setting="true"
       />
       <pagination
+        ref="pagination"
         :single="$t('Script Executor')"
         :plural="$t('Script Executors')"
-        :perPageSelectEnabled="true"
+        :per-page-select-enabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
-        ref="pagination"
-      ></pagination>
+      />
     </div>
 
     <b-modal
-      ref="edit"
       id="edit"
+      ref="edit"
       :title="modalTitle"
-      @hidden="reset()"
-      @hide="doNotHideIfRunning"
       size="lg"
       header-close-content="&times;"
+      @hidden="reset()"
+      @hide="doNotHideIfRunning"
     >
       <b-container class="mb-2">
-        <required></required>
+        <required />
         <b-row>
           <b-col>
             <b-row>
               <b-col class="p-0">
-              <b-form-group
-                required
-                :label="$t('Name')"
-                :state="!getError('title')"
-                :invalid-feedback="getError('title') || ''"
-                role="alert"
-              >
-                <b-input
+                <b-form-group
                   required
-                  v-model="formData.title"
-                  name="title"
-                ></b-input>
-              </b-form-group>
-              <b-form-group
-                required
-                :label="$t('Language')"
-                :state="!getError('language')"
-                :invalid-feedback="getError('language') || ''"
-              >
-              <b-form-select
-                required
-                v-model="formData.language"
-                :options="languagesSelect"
-                name="language"
-              >
-              </b-form-select>
-              </b-form-group>
+                  :label="$t('Name')"
+                  :state="!getError('title')"
+                  :invalid-feedback="getError('title') || ''"
+                  role="alert"
+                >
+                  <b-input
+                    v-model="formData.title"
+                    required
+                    name="title"
+                  />
+                </b-form-group>
+                <b-form-group
+                  required
+                  :label="$t('Language')"
+                  :state="!getError('language')"
+                  :invalid-feedback="getError('language') || ''"
+                >
+                  <b-form-select
+                    v-model="formData.language"
+                    required
+                    :options="languagesSelect"
+                    name="language"
+                  />
+                </b-form-group>
               </b-col>
             </b-row>
           </b-col>
@@ -131,19 +146,21 @@
               v-model="formData.description"
               class="flex-grow-1"
               name="description"
-            ></b-textarea>
+            />
           </b-col>
         </b-row>
       </b-container>
 
-      <p class="mb-0">{{ $t("Docker file") }}</p>
+      <p class="mb-0">
+        {{ $t("Docker file") }}
+      </p>
 
       <div class="d-flex flex-row mb-1">
         <div class="mr-1">
           <a
-            @click="showDockerfile = !showDockerfile"
             :aria-expanded="showDockerfile ? 'true' : 'false'"
             :title="$t('Display contents of docker file that will be prepended to your customizations below.')"
+            @click="showDockerfile = !showDockerfile"
           >
             <i
               class="fa"
@@ -152,7 +169,7 @@
                 'fa-chevron-down': showDockerfile,
               }"
               style="width: 14px"
-            ></i>
+            />
           </a>
         </div>
         <div class="flex-fill">
@@ -160,8 +177,13 @@
             class="mt-1 mb-0"
             @click="
               showDockerfile = !showDockerfile
-            ">{{ initDockerfile.split("\n")[0] }} <template v-if="!showDockerfile">...</template></pre>
-          <b-collapse id="dockerfile" v-model="showDockerfile" :aria-hidden="showDockerfile ? 'false' : 'true'">
+            "
+          >{{ initDockerfile.split("\n")[0] }} <template v-if="!showDockerfile">...</template></pre>
+          <b-collapse
+            id="dockerfile"
+            v-model="showDockerfile"
+            :aria-hidden="showDockerfile ? 'false' : 'true'"
+          >
             <pre>{{ initDockerfile.split("\n").slice(1).join("\n") }}</pre>
           </b-collapse>
         </div>
@@ -171,20 +193,21 @@
         v-model="formData.config"
         class="mb-3 dockerfile"
         :disabled="isRunning"
-      >
-      </b-form-textarea>
+      />
 
       <div v-if="commandOutput !== '' || isRunning">
         <p>
           {{ $t("Build Command Output") }}
-          <i v-if="isRunning" class="fas fa-spinner fa-spin"></i>
+          <i
+            v-if="isRunning"
+            class="fas fa-spinner fa-spin"
+          />
         </p>
         <pre
           ref="pre"
           class="border command-output pre-scrollable"
           :class="{ error: exitCode !== 0 }"
-          >{{ commandOutput }}</pre
-        >
+        >{{ commandOutput }}</pre>
       </div>
 
       <div v-if="status === 'done'">
@@ -193,12 +216,16 @@
             $t("Executor Successfully Built. You can now close this window. ")
           }}
         </p>
-        <div v-if="exitCode > 0" class="invalid-feedback d-block" role="alert">
+        <div
+          v-if="exitCode > 0"
+          class="invalid-feedback d-block"
+          role="alert"
+        >
           {{ $t("Error Building Executor. See Output Above.") }}
         </div>
       </div>
 
-      <template v-slot:modal-footer>
+      <template #modal-footer>
         <b-button
           v-if="showClose"
           variant="secondary"
@@ -222,26 +249,35 @@
           variant="primary"
           @click="save()"
         >
-          <template v-if="formData.id">{{ $t("Save And Rebuild") }}</template>
-          <template v-else>{{ $t("Save And Build") }}</template>
+          <template v-if="formData.id">
+            {{ $t("Save And Rebuild") }}
+          </template>
+          <template v-else>
+            {{ $t("Save And Build") }}
+          </template>
         </b-button>
       </template>
     </b-modal>
   </div>
 </template>
 
-
 <script>
+import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import AddToBundle from "../../components/shared/AddToBundle.vue";
-import { createUniqIdsMixin } from "vue-uniq-ids";
+
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   components: { AddToBundle },
-  props: ["filter", "permission"],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
+  props: [
+    "filter",
+    "permission",
+    "script_microservice_enabled",
+    "script_microservice_instance_uuid",
+  ],
   data() {
     return {
       commandOutput: "",
@@ -300,54 +336,10 @@ export default {
       ],
     };
   },
-  created() {
-    this.reset();
-  },
-  mounted() {
-    this.loadLanguages();
-
-    const userId = _.get(
-      document.querySelector('meta[name="user-id"]'),
-      "content"
-    );
-    if (userId) {
-      window.Echo.private(`ProcessMaker.Models.User.${userId}`).listen(
-        ".BuildScriptExecutor",
-        (event) => {
-          const status = event.status;
-          this.status = status;
-
-          switch (status) {
-            case "starting":
-              this.pidFile = event.output;
-              this.exitCode = 0;
-              break;
-            case "done":
-              this.pidFile = null;
-              this.exitCode = event.output;
-              break;
-            case "error":
-              this.output(event.output);
-              this.pidFile = null;
-              this.exitCode = 1;
-              this.status = "done";
-              break;
-            default:
-              this.output(event.output);
-          }
-        }
-      );
-    }
-  },
-  watch: {
-    commandOutput() {
-      this.scrollToBottom();
-    },
-  },
   computed: {
     modalTitle() {
       if (this.formData.id) {
-        return this.$t("Edit") + " " + this.formData.title;
+        return `${this.$t("Edit")} ${this.formData.title}`;
       }
       return this.$t("Add New Script Executor");
     },
@@ -375,11 +367,78 @@ export default {
         content = _.get(
           this.languages.find((l) => l.value === this.formData.language),
           "initDockerfile",
-          ""
+          "",
         );
       }
       return content;
     },
+  },
+  watch: {
+    commandOutput() {
+      this.scrollToBottom();
+    },
+  },
+  created() {
+    this.reset();
+  },
+  mounted() {
+    this.loadLanguages();
+
+    const userId = _.get(
+      document.querySelector("meta[name=\"user-id\"]"),
+      "content",
+    );
+    if (userId && !this.script_microservice_enabled) {
+      window.Echo.private(`ProcessMaker.Models.User.${userId}`).listen(
+        ".BuildScriptExecutor",
+        (event) => {
+          const { status } = event;
+          this.status = status;
+
+          switch (status) {
+            case "starting":
+              this.pidFile = event.output;
+              this.exitCode = 0;
+              break;
+            case "done":
+              this.pidFile = null;
+              this.exitCode = event.output;
+              break;
+            case "error":
+              this.output(event.output);
+              this.pidFile = null;
+              this.exitCode = 1;
+              this.status = "done";
+              break;
+            default:
+              this.output(event.output);
+          }
+        },
+      );
+    } else if (this.script_microservice_enabled) {
+      window.Echo
+        .channel(`build-image-${this.script_microservice_instance_uuid}`)
+        .listenToAll((eventName, data) => {
+          console.log(`Received event: ${eventName}`, data);
+          this.status = this.status === "idle" ? "starting" : this.status;
+          switch (eventName) {
+            case ".build-image":
+              this.output(`${data}\n`);
+              break;
+            case ".build-finished":
+              this.pidFile = null;
+              this.exitCode = 0;
+              this.status = "done";
+              break;
+            case ".build-error":
+              this.output(data);
+              this.pidFile = null;
+              this.exitCode = 1;
+              this.status = "done";
+              break;
+          }
+        });
+    }
   },
   methods: {
     deleteExecutor(row) {
@@ -390,7 +449,7 @@ export default {
         }),
         "",
         () => {
-          const path = "/script-executors/" + row.id;
+          const path = `/script-executors/${row.id}`;
           ProcessMaker.apiClient
             .delete(path)
             .then((result) => {
@@ -403,11 +462,11 @@ export default {
             .catch((e) => {
               ProcessMaker.alert(e.response.data.errors.delete[0], "danger");
             });
-        }
+        },
       );
     },
     getError(name) {
-      return _.get(this.errors, name + ".0", false);
+      return _.get(this.errors, `${name}.0`, false);
     },
     setErrors(errors) {
       this.status = "error";
@@ -450,7 +509,7 @@ export default {
       this.resetProcessInfo();
       this.status = "saving";
       if (this.formData.id) {
-        const path = "/script-executors/" + this.formData.id;
+        const path = `/script-executors/${this.formData.id}`;
         ProcessMaker.apiClient
           .put(path, this.formData)
           .then((result) => {
@@ -507,16 +566,16 @@ export default {
       // Load from our api client
       ProcessMaker.apiClient
         .get(
-          "script-executors?page=" +
-            this.page +
-            "&per_page=" +
-            this.perPage +
-            "&filter=" +
-            this.filter +
-            "&order_by=" +
-            this.orderBy +
-            "&order_direction=" +
-            this.orderDirection
+          `script-executors?page=${
+            this.page
+          }&per_page=${
+            this.perPage
+          }&filter=${
+            this.filter
+          }&order_by=${
+            this.orderBy
+          }&order_direction=${
+            this.orderDirection}`,
         )
         .then((response) => {
           this.data = this.transform(response.data);
@@ -524,7 +583,7 @@ export default {
         });
     },
     onAddToBundle(data) {
-      this.$root.$emit('add-to-bundle', data);
+      this.$root.$emit("add-to-bundle", data);
     },
   },
 };
@@ -535,9 +594,11 @@ export default {
   font-size: 0.7em;
   height: 200px;
 }
+
 .dockerfile {
   height: 300px;
 }
+
 .error {
   border-color: red !important;
 }
