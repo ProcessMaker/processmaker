@@ -62,6 +62,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize', 'manager')->p
     Route::put('users/update_language', [UserController::class, 'updateLanguage'])->name('users.updateLanguage');
     Route::get('users_task_count', [UserController::class, 'getUsersTaskCount'])->name('users.users_task_count')
         ->middleware('can:view-users');
+    Route::post('users_task_count', [UserController::class, 'getUsersTaskCount'])->name('users.users_task_count_post')
+        ->middleware('can:view-users');
 
     // User Groups
     Route::put('users/{user}/groups', [UserController::class, 'updateGroups'])->name('users.groups.update')->middleware('can:edit-users');
