@@ -1,7 +1,7 @@
 {{-- Smart Extract Manual Edit content when HITL is enabled --}}
 @php
-  // Note: This URL will be obtained from request data in future implementation.
-  $iframeSrc = null
+  // The $iframeSrc variable is received as a parameter from edit.blade.php
+  $iframeSrc = $iframeSrc ?? null;
 @endphp
 
 @if (!empty($iframeSrc))

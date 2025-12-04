@@ -108,7 +108,7 @@
                       @redirect="redirectToTask"
                       @form-data-changed="handleFormDataChange" />
                   @else
-                    @include('tasks.partials.hitl-iframe')
+                    @include('tasks.partials.hitl-iframe', ['iframeSrc' => $iframeSrc ?? null])
                   @endunless
                 @endcan
                 <div v-if="taskHasComments">
