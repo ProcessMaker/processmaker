@@ -27,39 +27,18 @@ class ScriptMicroserviceRunner
         $this->language = strtolower($script->language ?? $script->scriptExecutor->language);
     }
 
-    public function getScriptRunner()
-    {
-        $response = Cache::remember('script-runner-microservice.script-languages', now()->addDay(), function () {
-            return Http::withToken(ScriptMicroservicesHelper::getAccessToken())
-                ->get(config('script-runner-microservice.base_url') . '/scripts')->collect();
-        });
-
-        return $response->filter(function ($item) {
-            return $item['language'] == $this->language;
-        })->first();
-    }
-
-    public function getCustomScriptRunner()
-    {
-        $uri = config('script-runner-microservice.base_url') . '/custom/' . config('script-runner-microservice.instance_uuid') . '/scripts';
-        $response = Http::withToken(ScriptMicroservicesHelper::getAccessToken())
-            ->get($uri)->collect();
-
-        return $response->filter(function ($item) {
-            return $item['language'] === $this->language && $item['id'] === $this->script->scriptExecutor->uuid;
-        })->first();
-    }
-
     public function run($code, array $data, array $config, $timeout, $user, $sync, $metadata)
     {
         Log::debug('Language: ' . $this->language);
         Log::debug('Sync: ' . $sync);
         Log::debug('Metadata: ' . print_r($metadata, true));
-        Log::debug('Script type: ' . $this->script->scriptExecutor->type->value);
+        Log::debug('Script type: ' . $this->script->scriptExecutor->type?->value);
 
-        $scriptRunner = $this->script->scriptExecutor->type === ScriptExecutorType::Custom ?
-            $this->getCustomScriptRunner() :
-            $this->getScriptRunner();
+        $scriptRunner = ScriptMicroservicesHelper::getScriptRunner(
+            $this->language,
+            $this->script->scriptExecutor->uuid,
+            $this->script->scriptExecutor->type === ScriptExecutorType::Custom
+        );
 
         if (!$scriptRunner) {
             throw new ConfigurationException('No exists script executor for this language: ' . $this->language);
@@ -85,14 +64,7 @@ class ScriptMicroserviceRunner
 
         Log::debug('Payload: ' . print_r($payload, true));
 
-        // Set a theoretical maximum timeout of 1 day (86400 seconds)
-        // since the laravel client must have a timeout set.
-        // The actual script timeout will be handled by the microservice.
-        $clientTimeout = 86400;
-
-        $response = Http::timeout($clientTimeout)
-            ->withToken(ScriptMicroservicesHelper::getAccessToken())
-            ->post(config('script-runner-microservice.base_url') . '/requests/create', $payload);
+        $response = ScriptMicroservicesHelper::sendScriptPayload($payload);
 
         $response->throw();
 
@@ -155,7 +127,7 @@ class ScriptMicroserviceRunner
         return [
             'script_id' => $this->script->id,
             'executor_uuid' => $this->script->scriptExecutor->uuid,
-            'executor_type' => $this->script->scriptExecutor->type->value,
+            'executor_type' => $this->script->scriptExecutor->type?->value,
             'instance' => config('app.url'),
             'instance_uuid' => config('script-runner-microservice.instance_uuid'),
             'user_id' => $user->id,

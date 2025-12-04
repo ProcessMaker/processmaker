@@ -30,6 +30,49 @@ class ScriptMicroservicesHelper
         return $response->json()['access_token'];
     }
 
+    public static function getScriptRunner($language, $executorUuid, $custom = false)
+    {
+        $uri = !$custom ?
+            config('script-runner-microservice.base_url') . '/scripts' :
+            config('script-runner-microservice.base_url') . '/custom/' . config('script-runner-microservice.instance_uuid') . '/scripts';
+
+        if (!$custom && Cache::has('script-runner-microservice.script-runner')) {
+            return Cache::get('script-runner-microservice.script-runner');
+        } elseif ($custom && Cache::has('script-runner-microservice.custom-script-runner.' . $executorUuid)) {
+            return Cache::get('script-runner-microservice.custom-script-runner.' . $executorUuid);
+        }
+
+        $response = Http::withToken(self::getAccessToken())
+                ->get($uri)->collect();
+
+        $result = $response->filter(function ($item) use ($language, $executorUuid, $custom) {
+            return !$custom ?
+                $item['language'] == $language :
+                $item['language'] === $language && $item['id'] === $executorUuid;
+        })->first();
+
+        if (!$custom) {
+            Cache::put('script-runner-microservice.script-runner', $result, now()->addHour());
+        } else {
+            Cache::put('script-runner-microservice.custom-script-runner.' . $executorUuid, $result, now()->addHour());
+        }
+
+        return $result;
+    }
+
+    public static function sendScriptPayload($payload)
+    {
+        $uri = config('script-runner-microservice.base_url') . '/requests/create';
+        // Set a theoretical maximum timeout of 1 day (86400 seconds)
+        // since the laravel client must have a timeout set.
+        // The actual script timeout will be handled by the microservice.
+        $clientTimeout = 86400;
+
+        return Http::timeout($clientTimeout)
+            ->withToken(self::getAccessToken())
+            ->post($uri, $payload);
+    }
+
     public static function createCustomExecutor(ScriptExecutor $scriptExecutor)
     {
         Log::info('Creating custom script executor...');
