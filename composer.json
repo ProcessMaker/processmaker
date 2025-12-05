@@ -173,7 +173,7 @@
                 "package-product-analytics": "1.5.11",
                 "package-projects": "1.12.5",
                 "package-rpa": "1.1.1",
-                "package-savedsearch": "1.43.5",
+                "package-savedsearch": "1.43.5+patch-a1",
                 "package-slideshow": "1.4.3",
                 "package-signature": "1.15.2",
                 "package-testing": "1.8.1",
