@@ -39,7 +39,7 @@ class RefreshArtisanCaches implements ShouldQueue
             // Run in a separate process to avoid the tenant being set.
             // We do not use a tenant-specific config cache file.
             Process::path(base_path())
-                ->env(['TENANT' => ''])
+                ->env(['TENANT' => false, 'APP_URL' => false])
                 ->run(Application::formatCommandString('config:cache'))->throw();
         } else {
             Artisan::call('queue:restart', $options);
