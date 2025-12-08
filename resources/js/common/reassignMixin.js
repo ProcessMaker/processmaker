@@ -37,7 +37,7 @@ export default {
         }
       }
 
-      ProcessMaker.apiClient.post('users_task_count', { params }).then(response => {
+      ProcessMaker.apiClient.post('users_task_count',  params ).then(response => {
         this.reassignUsers = [];
         response.data.data.forEach((user) => {
           this.reassignUsers.push({

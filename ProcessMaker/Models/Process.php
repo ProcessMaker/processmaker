@@ -1053,29 +1053,65 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      * - previous_task_assignee: would assign it to the Process Manager.
      * - requester: would assign it to the Process Manager.
      * - process_manager: would assign it to the same Process Manager.
-     * 
+     *
      * @param ProcessRequestToken $processRequestToken
-     * @return array
+     * @return array Array of user IDs, always returns a flat array (never nested)
      */
     public function getAssignableUsersByAssignmentType(ProcessRequestToken $processRequestToken): array
     {
-        $users = [];
-        switch ($processRequestToken->getAssignmentRule()) {
-            case 'user_group':
-            case 'process_variable':
-            case 'rule_expression':
-                $users = $this->getAssignableUsers($processRequestToken->element_id);
-                $users[] = $processRequestToken->process->properties["manager_id"];
-                break;
-            case 'previous_task_assignee':
-            case 'requester':
-                $users[] = $processRequestToken->process->properties["manager_id"];
-                break;
-            case 'process_manager':
-                $users[] = $processRequestToken->process->properties["manager_id"];
-                break;
+        $assignmentRule = $processRequestToken->getAssignmentRule();
+        $managerIds = $processRequestToken->process->manager_id ?? [];
+        
+        // Rules that only return process managers
+        $managerOnlyRules = ['previous_task_assignee', 'requester', 'process_manager'];
+        if (in_array($assignmentRule, $managerOnlyRules, true)) {
+            return $this->normalizeUserIds($managerIds);
         }
-        return $users;
+        
+        // Rules that return assignable users plus process managers
+        $groupBasedRules = ['user_group', 'process_variable', 'rule_expression'];
+        if (in_array($assignmentRule, $groupBasedRules, true)) {
+            $users = [];
+            
+            // Get assignable users from task assignments
+            if (!empty($processRequestToken->element_id)) {
+                $users = $this->getAssignableUsers($processRequestToken->element_id);
+            }
+            
+            // Merge with manager IDs
+            if (!empty($managerIds)) {
+                $users = array_merge($users, $managerIds);
+            }
+            
+            return $this->normalizeUserIds($users);
+        }
+        
+        // Default: return empty array for unknown rules
+        return [];
+    }
+    
+    /**
+     * Normalize user IDs to ensure a flat array of unique numeric values.
+     *
+     * @param array|null $userIds
+     * @return array
+     */
+    private function normalizeUserIds($userIds): array
+    {
+        if (empty($userIds)) {
+            return [];
+        }
+        
+        // Flatten nested arrays and filter out invalid values
+        $normalized = array_filter(
+            array_values(Arr::flatten($userIds)),
+            function ($id) {
+                return !empty($id) && is_numeric($id);
+            }
+        );
+        
+        // Remove duplicates and return
+        return array_values(array_unique($normalized));
     }
 
     /**
