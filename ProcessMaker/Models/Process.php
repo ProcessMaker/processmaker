@@ -1061,35 +1061,35 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     {
         $assignmentRule = $processRequestToken->getAssignmentRule();
         $managerIds = $processRequestToken->process->manager_id ?? [];
-        
+
         // Rules that only return process managers
         $managerOnlyRules = ['previous_task_assignee', 'requester', 'process_manager'];
         if (in_array($assignmentRule, $managerOnlyRules, true)) {
             return $this->normalizeUserIds($managerIds);
         }
-        
+
         // Rules that return assignable users plus process managers
         $groupBasedRules = ['user_group', 'process_variable', 'rule_expression'];
         if (in_array($assignmentRule, $groupBasedRules, true)) {
             $users = [];
-            
+
             // Get assignable users from task assignments
             if (!empty($processRequestToken->element_id)) {
                 $users = $this->getAssignableUsers($processRequestToken->element_id);
             }
-            
+
             // Merge with manager IDs
             if (!empty($managerIds)) {
                 $users = array_merge($users, $managerIds);
             }
-            
+
             return $this->normalizeUserIds($users);
         }
-        
+
         // Default: return empty array for unknown rules
         return [];
     }
-    
+
     /**
      * Normalize user IDs to ensure a flat array of unique numeric values.
      *
@@ -1101,7 +1101,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         if (empty($userIds)) {
             return [];
         }
-        
+
         // Flatten nested arrays and filter out invalid values
         $normalized = array_filter(
             array_values(Arr::flatten($userIds)),
@@ -1109,7 +1109,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                 return !empty($id) && is_numeric($id);
             }
         );
-        
+
         // Remove duplicates and return
         return array_values(array_unique($normalized));
     }
