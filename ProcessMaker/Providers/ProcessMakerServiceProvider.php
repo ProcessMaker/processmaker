@@ -9,18 +9,25 @@ use Illuminate\Foundation\PackageManifest;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
+use Illuminate\Queue\Events\JobAttempted;
+use Illuminate\Queue\Events\JobProcessing;
+use Illuminate\Queue\Events\JobRetryRequested;
+use Illuminate\Queue\Listener;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Env;
 use Illuminate\Support\Facades;
+use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
-use Laravel\Passport\Passport;
+use Laravel\Horizon\SystemProcessCounter;
+use Laravel\Horizon\WorkerCommandString;
 use Lavary\Menu\Menu;
 use ProcessMaker\Cache\Settings\SettingCacheManager;
+use ProcessMaker\Console\Commands\HorizonListen;
 use ProcessMaker\Console\Migration\ExtendedMigrateCommand;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ScreenBuilderStarting;
@@ -40,6 +47,7 @@ use ProcessMaker\Models;
 use ProcessMaker\Multitenancy\Tenant;
 use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
+use ProcessMaker\Providers\PermissionServiceProvider;
 use ProcessMaker\Repositories\SettingsConfigRepository;
 use RuntimeException;
 use Spatie\Multitenancy\Events\MadeTenantCurrentEvent;
@@ -62,6 +70,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
     // Track the query time for each request
     private static $queryTime = 0;
+
+    // Track the landlord values for multitenancy
+    private static $landlordValues = null;
 
     public function boot(): void
     {
@@ -90,71 +101,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
         Route::pushMiddlewareToGroup('api', HandleEtag::class);
         // Hook after service providers boot
         self::$bootTime = (microtime(true) - self::$bootStart) * 1000; // Convert to milliseconds
-
-        // Only run this for console commands so we dont query the Tenants database for each request.
-        // This sets up individual supervisors for each tenant so that one tenant does not block
-        // the queue for another tenant. This must be done here instead of SwitchTenant.php because
-        // there is a single horizon instance for all tenants.
-        if ($this->app->runningInConsole() && config('app.multitenancy') && $this->horizonTenantsNotSet()) {
-            $tenants = Tenant::all();
-            $config = config('horizon.environments');
-            $config = $this->addTenantSupervisors($config, $tenants);
-            config(['horizon.environments' => $config]);
-        }
-    }
-
-    private function horizonTenantsNotSet(): bool
-    {
-        $firstKey = array_keys(config('horizon.environments.production'))[0];
-        if (str_starts_with($firstKey, 'tenant')) {
-            // Already cached
-            return false;
-        }
-
-        return true;
-    }
-
-    private function addTenantSupervisors(array $config, TenantCollection $tenants): array
-    {
-        $tenantsConfigById = $tenants->mapWithKeys(function ($tenant) {
-            return [$tenant->id => $tenant->config];
-        });
-
-        foreach ($config as $env => &$supervisors) {
-            $newSupervisors = [];
-
-            foreach ($supervisors as $supervisorName => $settings) {
-                foreach ($tenants as $tenant) {
-                    $tenantId = $tenant->id;
-                    $tenantSupervisorName = "tenant-{$tenantId}-{$supervisorName}";
-
-                    // Copy original settings
-                    $tenantSettings = $settings;
-
-                    // Set tenant-specific settings
-                    $tenantConfig = $tenantsConfigById[$tenantId];
-                    foreach (['balance', 'tries', 'timeout', 'minProcesses', 'maxProcesses'] as $key) {
-                        $value = Arr::get($tenantConfig, "horizon.{$supervisorName}.{$key}", null);
-                        if ($value !== null) {
-                            $tenantSettings[$key] = $value;
-                        }
-                    }
-
-                    // Prepend tenant ID to each queue
-                    if (isset($tenantSettings['queue']) && is_array($tenantSettings['queue'])) {
-                        $tenantSettings['queue'] = array_map(function ($queue) use ($tenantId) {
-                            return "tenant-{$tenantId}-{$queue}";
-                        }, $tenantSettings['queue']);
-                    }
-
-                    $newSupervisors[$tenantSupervisorName] = $tenantSettings;
-                }
-            }
-
-            $supervisors = $newSupervisors;
-        }
-
-        return $config;
     }
 
     public function register(): void
@@ -171,6 +117,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
         if (!$this->app->environment('production')) {
             $this->app->register(DuskServiceProvider::class);
         }
+
+        // Register our permission services
+        $this->app->register(PermissionServiceProvider::class);
 
         $this->app->singleton(Managers\PackageManager::class, function () {
             return new Managers\PackageManager();
@@ -258,6 +207,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         // Miscellaneous vendor customization
         static::configureVendors();
+
+        $this->app->singleton(PackageManifest::class, fn () => new LicensedPackageManifest(
+            new Filesystem, $this->app->basePath(), $this->app->getCachedPackagesPath()
+        ));
 
         $this->app->extend(MigrateCommand::class, function () {
             return new ExtendedMigrateCommand(
@@ -587,15 +540,27 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return;
         }
 
-        $tenantId = Env::get('TENANT');
-        if ($tenantId) {
-            $tenant = Tenant::findOrFail($tenantId);
-            $tenant->makeCurrent();
-        } elseif (config('app.multitenancy') === false) {
-            // This is expected if multitenancy is disabled.
-            // Call the TenantResolved event with null to continue loading the app.
+        if (config('app.multitenancy') === false) {
             event(new TenantResolved(null));
+
+            return;
         }
+
+        if ($tenant = Tenant::fromBootstrapper()) {
+            $tenant->makeCurrent();
+
+            return;
+        }
+
+        $tenantId = Env::get('TENANT');
+        if (!$tenantId) {
+            event(new TenantResolved(null));
+
+            return;
+        }
+
+        $tenant = Tenant::findOrFail($tenantId);
+        $tenant->makeCurrent();
     }
 
     /**

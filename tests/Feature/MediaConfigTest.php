@@ -23,7 +23,7 @@ class MediaConfigTest extends TestCase
         $user = $processRequest->user;
 
         // Ensure storage disk is available
-        Storage::fake('root');
+        Storage::fake('local');
 
         // Test file within size limit (500KB)
         $validFilePath = storage_path('app/test_valid.txt');

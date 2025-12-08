@@ -195,7 +195,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                                     $task->save();
                                 }
                                 break;
-                             case 'SCHEDULED_JOB':
+                            case 'SCHEDULED_JOB':
                                 $this->executeScheduledJob($config);
                                 $task->last_execution = $today->format('Y-m-d H:i:s');
                                 $task->save();

@@ -3,16 +3,28 @@
 namespace ProcessMaker;
 
 use Igaster\LaravelTheme\Facades\Theme;
+use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application as IlluminateApplication;
+use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
+use Illuminate\Foundation\Bootstrap\RegisterProviders;
 use Illuminate\Foundation\PackageManifest;
+use Illuminate\Support\Env;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
+use ProcessMaker\Console\Kernel;
+use ProcessMaker\Multitenancy\Tenant;
 
 /**
  * Class Application.
  */
 class Application extends IlluminateApplication
 {
+    public $overrideTenantId = null;
+
+    public $skipCacheEvents = false;
+
     /**
      * Sets the timezone for the application and for php with the specified timezone.
      *

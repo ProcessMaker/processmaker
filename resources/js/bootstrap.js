@@ -449,9 +449,11 @@ if (userID) {
 // @link https://processmaker.atlassian.net/browse/FOUR-6833 Cache configuration
 const screenCacheEnabled = document.head.querySelector("meta[name=\"screen-cache-enabled\"]")?.content ?? "false";
 const screenCacheTimeout = document.head.querySelector("meta[name=\"screen-cache-timeout\"]")?.content ?? "5000";
+const screenSecureHandlerToggleVisible = document.head.querySelector("meta[name='screen-secure-handler-toggle-visible']");
 window.ProcessMaker.screen = {
   cacheEnabled: screenCacheEnabled === "true",
   cacheTimeout: Number(screenCacheTimeout),
+  secureHandlerToggleVisible: !!Number(screenSecureHandlerToggleVisible?.content),
 };
 // Initialize screen-builder cache
 initializeScreenCache(window.ProcessMaker.apiClient, window.ProcessMaker.screen);

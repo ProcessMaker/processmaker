@@ -31,9 +31,11 @@ export default () => {
         // @link https://processmaker.atlassian.net/browse/FOUR-6833 Cache configuration
         const screenCacheEnabled = document.head.querySelector("meta[name=\"screen-cache-enabled\"]")?.content ?? "false";
         const screenCacheTimeout = document.head.querySelector("meta[name=\"screen-cache-timeout\"]")?.content ?? "5000";
+        const screenSecureHandlerToggleVisible = document.head.querySelector("meta[name='screen-secure-handler-toggle-visible']");
         const screen = {
           cacheEnabled: screenCacheEnabled === "true",
           cacheTimeout: Number(screenCacheTimeout),
+          secureHandlerToggleVisible: !!Number(screenSecureHandlerToggleVisible?.content),
         };
 
         setGlobalVariable("ScreenBuilder", ScreenBuilder);

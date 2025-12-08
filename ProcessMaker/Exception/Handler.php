@@ -43,6 +43,11 @@ class Handler extends ExceptionHandler
      */
     public function report(Throwable $exception)
     {
+        if (!App::getFacadeRoot()) {
+            error_log(get_class($exception) . ': ' . $exception->getMessage());
+
+            return;
+        }
         if (App::environment() == 'testing' && env('TESTING_VERBOSE')) {
             // If we're verbose, we should print ALL Exceptions to the screen
             echo $exception->getMessage() . "\n";
@@ -145,19 +150,5 @@ class Handler extends ExceptionHandler
         ] : [
             'message' => $this->isHttpException($e) ? $e->getMessage() : 'Server Error',
         ];
-    }
-
-    /**
-     * Errors in the console must have an exit status > 0 for CI to see it as an error.
-     * This prevents the symfony console from handling the error and returning an
-     * exit status of 0, which it does by default surprisingly.
-     *
-     * @param  \Symfony\Component\Console\Output\OutputInterface  $output
-     * @param  Throwable  $e
-     * @return void
-     */
-    public function renderForConsole($output, Throwable $e)
-    {
-        throw $e;
     }
 }

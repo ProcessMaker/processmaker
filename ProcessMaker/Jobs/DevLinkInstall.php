@@ -67,7 +67,7 @@ class DevLinkInstall implements ShouldQueue
                         $bundle->reinstall($this->importMode, $logger);
                         break;
                     case self::TYPE_IMPORT_ASSET:
-                        $devLink->installRemoteAsset($this->class, $this->id, $logger);
+                        $devLink->installRemoteAsset($this->class, $this->id, $this->importMode, $logger);
                         break;
                     default:
                         break;

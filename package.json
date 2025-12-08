@@ -1,6 +1,6 @@
 {
     "name": "@processmaker/processmaker",
-    "version": "4.15.7",
+    "version": "4.15.11",
     "description": "ProcessMaker 4",
     "author": "DevOps <devops@processmaker.com>",
     "license": "ISC",
@@ -16,6 +16,7 @@
         "prod": "npm run production",
         "production": "mix --production && mix --mix-config=webpack-login.mix.js --production",
         "test": "cross-env NODE_ENV=test jest",
+        "test-submission": "cross-env NODE_ENV=test jest tests/js/SubmissionDataFilter.test.js tests/js/SubmitMethod.test.js",
         "test-watch": "npm run test -- --watch --notify",
         "lint": "eslint --fix --ignore-path .eslintignore resources/",
         "font": "node ./devhub/pm-font/svgtofont.js && cp -f ./devhub/pm-font/dist/*.* ./resources/fonts/pm-font",
@@ -60,10 +61,10 @@
         "@fortawesome/free-solid-svg-icons": "^5.15.1",
         "@fortawesome/vue-fontawesome": "^0.1.9",
         "@panter/vue-i18next": "^0.15.2",
-        "@processmaker/modeler": "1.69.16",
+        "@processmaker/modeler": "1.69.21",
         "@processmaker/processmaker-bpmn-moddle": "0.16.0",
-        "@processmaker/screen-builder": "3.8.7",
-        "@processmaker/vue-form-elements": "0.65.4",
+        "@processmaker/screen-builder": "3.8.16",
+        "@processmaker/vue-form-elements": "0.65.5",
         "@processmaker/vue-multiselect": "2.3.0",
         "@tinymce/tinymce-vue": "2.0.0",
         "axios": "^0.27.2",
@@ -125,24 +126,25 @@
         "setupFiles": [
             "<rootDir>/jest/globals.js"
         ],
-        "testURL": "http://localhost",
+        "testEnvironment": "node",
+        "testEnvironmentOptions": {
+            "url": "http://localhost"
+        },
         "moduleFileExtensions": [
-            "vue",
             "json",
             "js"
         ],
-        "transform": {
-            "^.+\\.js$": "<rootDir>/node_modules/babel-jest",
-            ".*\\.(vue)$": "<rootDir>/node_modules/vue-jest"
-        },
+        "testMatch": [
+            "**/tests/js/SubmissionDataFilter.test.js",
+            "**/tests/js/SubmitMethod.test.js"
+        ],
         "moduleNameMapper": {
             "@pmjs(.*)$": "<rootDir>/resources/js/$1"
         },
         "transformIgnorePatterns": [
-            "node_modules/(?!(vuetable-2)/)"
+            "node_modules/"
         ],
         "roots": [
-            "<rootDir>/resources/js/",
             "<rootDir>/tests/js/"
         ],
         "collectCoverage": true,

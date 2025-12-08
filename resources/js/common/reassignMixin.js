@@ -28,14 +28,18 @@ export default {
       }
       if (this.task?.id) {
         params.assignable_for_task_id = this.task.id;
+        // The variables are needed to calculate the rule expression.
+        if (this?.formData) {
+          params.form_data = this.formData;
+          delete params.form_data._user;
+          delete params.form_data._request;
+          delete params.form_data._process;
+        }
       }
 
-      ProcessMaker.apiClient.get('users_task_count', { params }).then(response => {
+      ProcessMaker.apiClient.post('users_task_count', { params }).then(response => {
         this.reassignUsers = [];
         response.data.data.forEach((user) => {
-          if (this.currentTaskUserId === user.id) {
-            return;
-          }
           this.reassignUsers.push({
             text: user.fullname,
             value: user.id,

@@ -140,6 +140,7 @@ const navbar = new Vue({
       taskTitle: "",
       isMobile: false,
       isMobileDevice: mobileApp,
+      isNavbarExpanded: false,
     };
   },
   watch: {
@@ -212,6 +213,9 @@ const navbar = new Vue({
     },
     onResize() {
       this.isMobile = window.innerWidth < 992;
+    },
+    toggleNavbar() {
+      this.isNavbarExpanded = !this.isNavbarExpanded;
     },
   },
 });
