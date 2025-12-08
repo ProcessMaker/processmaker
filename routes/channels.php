@@ -1,4 +1,5 @@
 <?php
+
 /*
 |--------------------------------------------------------------------------
 | Broadcast Channels
@@ -49,4 +50,27 @@ Broadcast::channel('test.status', function ($user) {
 
 Broadcast::channel('ProcessMaker.Models.Process.{processId}.Language.{language}', function ($user, $processId, $language) {
     return true;
+});
+
+// Package AI - Agent channels (multitenancy aware)
+// The frontend uses TenantAwareEcho which prefixes channels with "tenant_{tenantId}."
+Broadcast::channel('tenant_{tenantId}.agent.{sessionId}', function ($user, $tenantId, $sessionId) {
+    if (!$user) {
+        return false;
+    }
+
+    // Verify tenant context if multitenancy is active
+    if (app()->bound('currentTenant')) {
+        $currentTenant = app('currentTenant');
+        if ($currentTenant && (string) $currentTenant->id !== (string) $tenantId) {
+            return false;
+        }
+    }
+
+    return true;
+});
+
+// Agent channel without tenant prefix (fallback for non-multitenancy)
+Broadcast::channel('agent.{sessionId}', function ($user, $sessionId) {
+    return $user ? true : false;
 });
