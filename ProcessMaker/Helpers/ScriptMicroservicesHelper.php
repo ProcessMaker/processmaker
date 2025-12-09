@@ -37,7 +37,7 @@ class ScriptMicroservicesHelper
             config('script-runner-microservice.base_url') . '/custom/' . config('script-runner-microservice.instance_uuid') . '/scripts';
 
         if (!$custom && Cache::has('script-runner-microservice.script-runner')) {
-            return Cache::get('script-runner-microservice.script-runner');
+            return Cache::get('script-runner-microservice.script-runner.' . $language);
         } elseif ($custom && Cache::has('script-runner-microservice.custom-script-runner.' . $executorUuid)) {
             return Cache::get('script-runner-microservice.custom-script-runner.' . $executorUuid);
         }
@@ -52,7 +52,7 @@ class ScriptMicroservicesHelper
         })->first();
 
         if (!$custom) {
-            Cache::put('script-runner-microservice.script-runner', $result, now()->addHour());
+            Cache::put('script-runner-microservice.script-runner.' . $language, $result, now()->addHour());
         } else {
             Cache::put('script-runner-microservice.custom-script-runner.' . $executorUuid, $result, now()->addHour());
         }
