@@ -15,12 +15,12 @@ window.__ = translator;
 
 const main = new Vue({
   el: "#task",
-  mixins: addons,
   components: {
     TaskSaveNotification,
     TaskSavePanel,
     TasksList,
   },
+  mixins: addons,
   data: {
     // Edit data
     fieldsToUpdate: [],
@@ -260,7 +260,7 @@ const main = new Vue({
     show() {
       this.selectedUser = null;
       this.showReassignment = true;
-      this.getReassignUsers();
+      this.getReassignUsers(); // TODO: improve this code
     },
     showQuickFill() {
       this.redirect(`/tasks/${this.task.id}/edit/quickfill`);
@@ -338,7 +338,7 @@ const main = new Vue({
     isMustache(record) {
       return /\{\{.*\}\}/.test(record);
     },
-    submit(task) {
+    submit(task, dataToSubmit = this.formData) {
       if (this.isSelfService) {
         ProcessMaker.alert(this.$t("Claim the Task to continue."), "warning");
       } else {
@@ -354,8 +354,8 @@ const main = new Vue({
           resultCollectionComponent.forEach((result) => {
             if (result.submitCollectionChecked) {
               const collectionKeys = Object.keys(result.collectionFields);
-              const matchingKeys = _.intersection(Object.keys(this.formData), collectionKeys);
-              const collectionsData = _.pick(this.formData, matchingKeys);
+              const matchingKeys = _.intersection(Object.keys(dataToSubmit), collectionKeys);
+              const collectionsData = _.pick(dataToSubmit, matchingKeys);
 
               ProcessMaker.apiClient
                 .put(`collections/${result.collectionId}/records/${result.recordId}`, {
@@ -373,7 +373,7 @@ const main = new Vue({
         const taskId = task.id;
         this.submitting = true;
         ProcessMaker.apiClient
-          .put(`tasks/${taskId}`, { status: "COMPLETED", data: this.formData })
+          .put(`tasks/${taskId}`, { status: "COMPLETED", data: dataToSubmit })
           .then(() => {
             window.ProcessMaker.alert(message, "success", 5, true);
           })

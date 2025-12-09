@@ -15,35 +15,11 @@ use ReflectionClass;
 class TenantQueueController extends Controller
 {
     /**
-     * Constructor to check if tenant tracking is enabled.
-     */
-    public function __construct()
-    {
-        // Check if tenant job tracking is enabled
-        $enabled = TenantQueueServiceProvider::enabled();
-
-        if (!$enabled) {
-            if (!app()->runningInConsole()) {
-                abort(404, 'Tenant queue tracking is disabled');
-            }
-        }
-
-        // If the route binding has a tenant id, check if the user is allowed to access the tenant queue
-        if ($id = (int) request()->route('tenantId')) {
-            if (!TenantQueueServiceProvider::allowAllTenats() && $id !== app('currentTenant')?->id) {
-                throw new AuthorizationException();
-            }
-        }
-    }
-
-    /**
      * Show the tenant jobs dashboard.
      */
     public function index()
     {
-        if (!Auth::user()->is_administrator) {
-            throw new AuthorizationException();
-        }
+        $this->checkPermissions();
 
         return view('admin.tenant-queues.index');
     }
@@ -53,9 +29,7 @@ class TenantQueueController extends Controller
      */
     public function getTenants(): JsonResponse
     {
-        if (!Auth::user()->is_administrator) {
-            throw new AuthorizationException();
-        }
+        $this->checkPermissions();
 
         $tenantsWithJobs = TenantQueueServiceProvider::getTenantsWithJobs();
 
@@ -87,9 +61,7 @@ class TenantQueueController extends Controller
      */
     public function getTenantJobs(Request $request, string $tenantId): JsonResponse
     {
-        if (!Auth::user()->is_administrator) {
-            throw new AuthorizationException();
-        }
+        $this->checkPermissions();
 
         $status = $request->get('status');
         $limit = min((int) $request->get('limit', 50), 100); // Max 100 jobs
@@ -125,9 +97,7 @@ class TenantQueueController extends Controller
      */
     public function getOverallStats(): JsonResponse
     {
-        if (!Auth::user()->is_administrator) {
-            throw new AuthorizationException();
-        }
+        $this->checkPermissions();
 
         $tenantsWithJobs = TenantQueueServiceProvider::getTenantsWithJobs();
 
@@ -163,9 +133,7 @@ class TenantQueueController extends Controller
      */
     public function getJobDetails(string $tenantId, string $jobId): JsonResponse
     {
-        if (!Auth::user()->is_administrator) {
-            throw new AuthorizationException();
-        }
+        $this->checkPermissions();
 
         $tenantKey = "tenant_jobs:{$tenantId}:{$jobId}";
         $jobData = Redis::hgetall($tenantKey);
@@ -199,9 +167,7 @@ class TenantQueueController extends Controller
      */
     public function clearTenantJobs(string $tenantId): JsonResponse
     {
-        if (!Auth::user()->is_administrator) {
-            throw new AuthorizationException();
-        }
+        $this->checkPermissions();
 
         try {
             $pattern = "tenant_jobs:{$tenantId}:*";
@@ -226,6 +192,27 @@ class TenantQueueController extends Controller
             return response()->json(['message' => 'Tenant job data cleared successfully']);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to clear tenant job data'], 500);
+        }
+    }
+
+    private function checkPermissions(): void
+    {
+        // Check if tenant job tracking is enabled
+        $enabled = TenantQueueServiceProvider::enabled();
+
+        if (!$enabled) {
+            throw new AuthorizationException('Tenant queue tracking is disabled');
+        }
+
+        if (!Auth::user()->is_administrator) {
+            throw new AuthorizationException();
+        }
+
+        // If the route binding has a tenant id, check if the user is allowed to access the tenant queue
+        if ($id = (int) request()->route('tenantId')) {
+            if (!TenantQueueServiceProvider::allowAllTenats() && $id !== app('currentTenant')?->id) {
+                throw new AuthorizationException();
+            }
         }
     }
 }

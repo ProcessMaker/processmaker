@@ -30,6 +30,7 @@ use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasUuids;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Throwable;
 
 /**
@@ -256,7 +257,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             case 'manager':
                 $process = $this->process()->first();
 
-                return collect([$process?->manager_id]);
+                return collect($process?->manager_id ?? []);
                 break;
             default:
                 return collect([]);
@@ -752,13 +753,35 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
         $value = mb_strtolower($value);
 
-        return function ($query) use ($value, $statusMap, $expression, $user) {
+        // Capture processManagerIds from the builder if it's available
+        // The $callback parameter is actually the $builder from ExtendedPMQL
+        $builder = $callback;
+        $processManagerIds = null;
+        if ($builder && method_exists($builder, 'getQuery')) {
+            $processManagerIds = $builder->getQuery()->processManagerIds ?? null;
+        }
+
+        return function ($query) use ($value, $statusMap, $expression, $user, $processManagerIds) {
+            // Also check in the current query in case it's available there
+            $currentProcessManagerIds = $query->getQuery()->processManagerIds ?? null;
+            $finalProcessManagerIds = $processManagerIds ?? $currentProcessManagerIds;
+            $isProcessManager = !empty($finalProcessManagerIds);
+
             if ($value === 'self service') {
                 if (!$user) {
                     $user = auth()->user();
                 }
 
-                if ($user) {
+                if ($isProcessManager) {
+                    // When processesIManage is active, include self-service tasks from managed processes
+                    $selfServiceTaskIds = ProcessRequestToken::select(['id'])
+                        ->whereIn('process_id', $finalProcessManagerIds)
+                        ->where('is_self_service', 1)
+                        ->whereNull('user_id')
+                        ->where('status', 'ACTIVE');
+
+                    $query->whereIn('process_request_tokens.id', $selfServiceTaskIds);
+                } elseif ($user) {
                     $taskIds = $user->availableSelfServiceTaskIds();
                     $query->whereIn('process_request_tokens.id', $taskIds);
                 } else {
@@ -966,6 +989,66 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         }
 
         return $assignment;
+    }
+
+    /**
+     * Get the assignees for the token.
+     *
+     * @param array $assignments
+     * @param array $variables
+     * @return array
+     */
+    public function getAssignees(array $assignments, array $variables): array
+    {
+        $result = [];
+        $language = new ExpressionLanguage();
+
+        foreach ($assignments as $assignment) {
+            $isTrue = false;
+
+            if (!empty($assignment['expression'])) {
+                try {
+                    $isTrue = $language->evaluate($assignment['expression'], $variables);
+                } catch (Throwable $e) {
+                    $isTrue = false;
+                }
+            }
+
+            if ($isTrue) {
+                $result[] = $assignment['assignee'];
+            }
+
+            if (isset($assignment['default']) && $assignment['default'] === true) {
+                $result[] = $assignment['assignee'];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get the assignees from the expression
+     *
+     * @param string $form_data
+     * @return array
+     */
+    public function getAssigneesFromExpression(string $form_data): array
+    {
+        $formData = json_decode($form_data, true);
+
+        $activity = $this->getBpmnDefinition()->getBpmnElementInstance();
+        $assignmentRules = $activity->getProperty('assignmentRules', null);
+        $assignments = json_decode($assignmentRules, true);
+
+        $include_ids = $this->getAssignees($assignments, $formData);
+
+        // we add the manager to the list of assignees
+        $manager_id = $this->process->manager_id;
+        if ($manager_id) {
+            $include_ids[] = $manager_id;
+        }
+
+        return $include_ids;
     }
 
     /**
@@ -1257,7 +1340,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
      * @param User $requestingUser
      * @return void
      */
-    public function reassign($toUserId, User $requestingUser)
+    public function reassign($toUserId, User $requestingUser, $comments = '')
     {
         $sendActivityActivatedNotifications = false;
         $reassingAction = false;
@@ -1281,6 +1364,9 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             $this->reassignTo($toUserId);
             $this->persistUserData($toUserId);
             $reassingAction = true;
+        }
+        if ($comments != null && $comments !== '') {
+            $this->comments = $comments;
         }
         $this->save();
 

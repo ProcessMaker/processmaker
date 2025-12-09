@@ -8,6 +8,7 @@ use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 
@@ -42,8 +43,10 @@ class CompleteActivity extends BpmnAction implements ShouldQueue
     public function action(ProcessRequestToken $token, ActivityInterface $element, array $data)
     {
         //@todo requires a class to manage the data access and control the updates
-        $manager = new DataManager();
-        $manager->updateData($token, $data);
+        if (!($element instanceof CallActivityInterface)) {
+            $manager = new DataManager();
+            $manager->updateData($token, $data);
+        }
         $this->engine->runToNextState();
         $element->complete($token);
 

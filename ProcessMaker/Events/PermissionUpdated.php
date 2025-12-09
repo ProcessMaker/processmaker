@@ -148,4 +148,24 @@ class PermissionUpdated implements SecurityLogEventInterface
     {
         return 'PermissionUpdated';
     }
+
+    /**
+     * Get the user ID
+     *
+     * @return string|null
+     */
+    public function getUserId(): ?string
+    {
+        return $this->userId;
+    }
+
+    /**
+     * Get the group ID
+     *
+     * @return string|null
+     */
+    public function getGroupId(): ?string
+    {
+        return $this->groupId;
+    }
 }

@@ -17,7 +17,7 @@ class ProcessPolicy
      * Run before all methods to determine if the
      * user is an admin and can do everything.
      *
-     * @param  \ProcessMaker\Models\User  $user
+     * @param  User  $user
      * @return mixed
      */
     public function before(User $user)
@@ -39,8 +39,8 @@ class ProcessPolicy
     /**
      * Determine whether the user can start the process.
      *
-     * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Models\Process  $process
+     * @param  User  $user
+     * @param  Process  $process
      * @return mixed
      */
     public function start(User $user, Process $process)
@@ -60,7 +60,7 @@ class ProcessPolicy
         $userCanStartAsProcessManager = array_reduce($process->getStartEvents(),
             function ($carry, $item) use ($process, $user) {
                 if (array_key_exists('assignment', $item)) {
-                    $carry = $carry || ($item['assignment'] === 'process_manager' && $process->manager_id === $user->id);
+                    $carry = $carry || ($item['assignment'] === 'process_manager' && in_array($user->id, $process->manager_id ?? []));
                 }
 
                 return $carry;
@@ -81,8 +81,8 @@ class ProcessPolicy
     /**
      * Determine whether the user can cancel the process.
      *
-     * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Models\Process  $process
+     * @param  User  $user
+     * @param  Process  $process
      *
      * @return bool
      */
@@ -99,7 +99,7 @@ class ProcessPolicy
         }
 
         if (
-            $process->manager_id === $user->id &&
+            in_array($user->id, $process->manager_id ?? []) &&
             $process->getProperty('manager_can_cancel_request') === true
         ) {
             return true;
@@ -111,8 +111,8 @@ class ProcessPolicy
     /**
      * Determine whether the user can edit data.
      *
-     * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Models\Process  $process
+     * @param  User  $user
+     * @param  Process  $process
      *
      * @return bool
      */

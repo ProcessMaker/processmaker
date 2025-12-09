@@ -45,7 +45,7 @@ use ProcessMaker\Http\Controllers\Api\WizardTemplateController;
 use ProcessMaker\Http\Controllers\Auth\TwoFactorAuthController;
 use ProcessMaker\Http\Controllers\TestStatusController;
 
-Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/1.0')->name('api.')->group(function () {
+Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize', 'manager')->prefix('api/1.0')->name('api.')->group(function () {
     // Users
     Route::get('users', [UserController::class, 'index'])->name('users.index'); // Permissions handled in the controller
     Route::get('users/{user}', [UserController::class, 'show'])->name('users.show'); // Permissions handled in the controller
@@ -61,6 +61,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('password/change', [ChangePasswordController::class, 'update'])->name('password.update');
     Route::put('users/update_language', [UserController::class, 'updateLanguage'])->name('users.updateLanguage');
     Route::get('users_task_count', [UserController::class, 'getUsersTaskCount'])->name('users.users_task_count')
+        ->middleware('can:view-users');
+    Route::post('users_task_count', [UserController::class, 'getUsersTaskCount'])->name('users.users_task_count_post')
         ->middleware('can:view-users');
 
     // User Groups
@@ -448,6 +450,6 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     });
 
     // Slack Connector Validation
-    Route::post('connector-slack/validate-token', [\ProcessMaker\Packages\Connectors\Slack\Controllers\SlackController::class, 'validateToken'])->name('connector-slack.validate-token');
+    Route::post('connector-slack/validate-token', [ProcessMaker\Packages\Connectors\Slack\Controllers\SlackController::class, 'validateToken'])->name('connector-slack.validate-token');
 });
 Route::post('devlink/bundle-updated/{bundle}/{token}', [DevLinkController::class, 'bundleUpdated'])->name('devlink.bundle-updated');

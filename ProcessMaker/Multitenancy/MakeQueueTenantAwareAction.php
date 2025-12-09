@@ -7,11 +7,14 @@ use Spatie\Multitenancy\Actions\MakeQueueTenantAwareAction as BaseMakeQueueTenan
 class MakeQueueTenantAwareAction extends BaseMakeQueueTenantAwareAction
 {
     /**
-     * We're handling tenant aware queues manually, however, we still need to implement this because for some
-     * reason the Spatie package calls it in Multitenancy::start(), weather it's a configured action or not.
+     * Non-multitenant environments shouldn't throw an exception if the tenant is not found.
      */
     public function execute() : void
     {
-        // Do nothing
+        if (!config('app.multitenancy')) {
+            return;
+        }
+
+        parent::execute();
     }
 }

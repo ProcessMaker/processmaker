@@ -141,6 +141,7 @@ window.ProcessMaker.navbar = new Vue({
       taskTitle: "",
       isMobile: false,
       isMobileDevice: window.ProcessMaker.mobileApp,
+      isNavbarExpanded: false,
     };
   },
   watch: {
@@ -213,6 +214,9 @@ window.ProcessMaker.navbar = new Vue({
     },
     onResize() {
       this.isMobile = window.innerWidth < 992;
+    },
+    toggleNavbar() {
+      this.isNavbarExpanded = !this.isNavbarExpanded;
     },
   },
 });
