@@ -42,12 +42,12 @@ class ProcessTest extends TestCase
     {
         $manager1 = User::factory()->create(['status' => 'ACTIVE']);
         $manager2 = User::factory()->create(['status' => 'ACTIVE']);
-        
+
         // Create process with multiple managers (array)
         $process = Process::factory()->create([
-            'properties' => ['manager_id' => [$manager1->id, $manager2->id]]
+            'properties' => ['manager_id' => [$manager1->id, $manager2->id]],
         ]);
-        
+
         $request = ProcessRequest::factory()->create(['process_id' => $process->id]);
         $token = ProcessRequestToken::factory()->create([
             'process_id' => $process->id,
@@ -57,13 +57,13 @@ class ProcessTest extends TestCase
 
         // Mock getAssignmentRule to return different manager-only rules
         $managerOnlyRules = ['previous_task_assignee', 'requester', 'process_manager'];
-        
+
         foreach ($managerOnlyRules as $rule) {
             $tokenMock = Mockery::mock($token)->makePartial();
             $tokenMock->shouldReceive('getAssignmentRule')->andReturn($rule);
-            
+
             $result = $process->getAssignableUsersByAssignmentType($tokenMock);
-            
+
             // Should return both managers
             $this->assertIsArray($result);
             $this->assertCount(2, $result);
@@ -78,12 +78,12 @@ class ProcessTest extends TestCase
     public function testGetAssignableUsersByAssignmentTypeWithSingleManager()
     {
         $manager = User::factory()->create(['status' => 'ACTIVE']);
-        
+
         // Create process with single manager (not array)
         $process = Process::factory()->create([
-            'properties' => ['manager_id' => $manager->id]
+            'properties' => ['manager_id' => $manager->id],
         ]);
-        
+
         $request = ProcessRequest::factory()->create(['process_id' => $process->id]);
         $token = ProcessRequestToken::factory()->create([
             'process_id' => $process->id,
@@ -92,9 +92,9 @@ class ProcessTest extends TestCase
 
         $tokenMock = Mockery::mock($token)->makePartial();
         $tokenMock->shouldReceive('getAssignmentRule')->andReturn('process_manager');
-        
+
         $result = $process->getAssignableUsersByAssignmentType($tokenMock);
-        
+
         $this->assertIsArray($result);
         $this->assertCount(1, $result);
         $this->assertContains($manager->id, $result);
@@ -108,14 +108,14 @@ class ProcessTest extends TestCase
         $manager = User::factory()->create(['status' => 'ACTIVE']);
         $assignableUser1 = User::factory()->create(['status' => 'ACTIVE']);
         $assignableUser2 = User::factory()->create(['status' => 'ACTIVE']);
-        
+
         $process = Process::factory()->create([
-            'properties' => ['manager_id' => $manager->id]
+            'properties' => ['manager_id' => $manager->id],
         ]);
-        
+
         $request = ProcessRequest::factory()->create(['process_id' => $process->id]);
         $elementId = 'test_element_' . uniqid();
-        
+
         // Create task assignments
         ProcessTaskAssignment::factory()->create([
             'process_id' => $process->id,
@@ -123,14 +123,14 @@ class ProcessTest extends TestCase
             'assignment_id' => $assignableUser1->id,
             'assignment_type' => User::class,
         ]);
-        
+
         ProcessTaskAssignment::factory()->create([
             'process_id' => $process->id,
             'process_task_id' => $elementId,
             'assignment_id' => $assignableUser2->id,
             'assignment_type' => User::class,
         ]);
-        
+
         $token = ProcessRequestToken::factory()->create([
             'process_id' => $process->id,
             'process_request_id' => $request->id,
@@ -138,13 +138,13 @@ class ProcessTest extends TestCase
         ]);
 
         $groupBasedRules = ['user_group', 'process_variable', 'rule_expression'];
-        
+
         foreach ($groupBasedRules as $rule) {
             $tokenMock = Mockery::mock($token)->makePartial();
             $tokenMock->shouldReceive('getAssignmentRule')->andReturn($rule);
-            
+
             $result = $process->getAssignableUsersByAssignmentType($tokenMock);
-            
+
             // Should return assignable users + manager
             $this->assertIsArray($result);
             $this->assertCount(3, $result);
@@ -160,11 +160,11 @@ class ProcessTest extends TestCase
     public function testGetAssignableUsersByAssignmentTypeWithEmptyElementId()
     {
         $manager = User::factory()->create(['status' => 'ACTIVE']);
-        
+
         $process = Process::factory()->create([
-            'properties' => ['manager_id' => $manager->id]
+            'properties' => ['manager_id' => $manager->id],
         ]);
-        
+
         $request = ProcessRequest::factory()->create(['process_id' => $process->id]);
         $token = ProcessRequestToken::factory()->create([
             'process_id' => $process->id,
@@ -174,9 +174,9 @@ class ProcessTest extends TestCase
 
         $tokenMock = Mockery::mock($token)->makePartial();
         $tokenMock->shouldReceive('getAssignmentRule')->andReturn('user_group');
-        
+
         $result = $process->getAssignableUsersByAssignmentType($tokenMock);
-        
+
         // Should only return manager when element_id is empty
         $this->assertIsArray($result);
         $this->assertCount(1, $result);
@@ -189,9 +189,9 @@ class ProcessTest extends TestCase
     public function testGetAssignableUsersByAssignmentTypeWithNullManager()
     {
         $process = Process::factory()->create([
-            'properties' => ['manager_id' => null]
+            'properties' => ['manager_id' => null],
         ]);
-        
+
         $request = ProcessRequest::factory()->create(['process_id' => $process->id]);
         $token = ProcessRequestToken::factory()->create([
             'process_id' => $process->id,
@@ -200,9 +200,9 @@ class ProcessTest extends TestCase
 
         $tokenMock = Mockery::mock($token)->makePartial();
         $tokenMock->shouldReceive('getAssignmentRule')->andReturn('process_manager');
-        
+
         $result = $process->getAssignableUsersByAssignmentType($tokenMock);
-        
+
         // Should return empty array when manager_id is null
         $this->assertIsArray($result);
         $this->assertEmpty($result);
@@ -214,11 +214,11 @@ class ProcessTest extends TestCase
     public function testGetAssignableUsersByAssignmentTypeWithUnknownRule()
     {
         $manager = User::factory()->create(['status' => 'ACTIVE']);
-        
+
         $process = Process::factory()->create([
-            'properties' => ['manager_id' => $manager->id]
+            'properties' => ['manager_id' => $manager->id],
         ]);
-        
+
         $request = ProcessRequest::factory()->create(['process_id' => $process->id]);
         $token = ProcessRequestToken::factory()->create([
             'process_id' => $process->id,
@@ -227,9 +227,9 @@ class ProcessTest extends TestCase
 
         $tokenMock = Mockery::mock($token)->makePartial();
         $tokenMock->shouldReceive('getAssignmentRule')->andReturn('unknown_rule');
-        
+
         $result = $process->getAssignableUsersByAssignmentType($tokenMock);
-        
+
         // Should return empty array for unknown rules
         $this->assertIsArray($result);
         $this->assertEmpty($result);
@@ -242,13 +242,13 @@ class ProcessTest extends TestCase
     {
         $manager1 = User::factory()->create(['status' => 'ACTIVE']);
         $manager2 = User::factory()->create(['status' => 'ACTIVE']);
-        
+
         // Simulate nested array scenario (shouldn't happen but test the normalization)
         // Note: The accessor will normalize this, but we test the normalization logic
         $process = Process::factory()->create([
-            'properties' => ['manager_id' => [[$manager1->id], [$manager2->id]]]
+            'properties' => ['manager_id' => [[$manager1->id], [$manager2->id]]],
         ]);
-        
+
         $request = ProcessRequest::factory()->create(['process_id' => $process->id]);
         $token = ProcessRequestToken::factory()->create([
             'process_id' => $process->id,
@@ -257,9 +257,9 @@ class ProcessTest extends TestCase
 
         $tokenMock = Mockery::mock($token)->makePartial();
         $tokenMock->shouldReceive('getAssignmentRule')->andReturn('process_manager');
-        
+
         $result = $process->getAssignableUsersByAssignmentType($tokenMock);
-        
+
         // Should flatten and return both managers
         $this->assertIsArray($result);
         $this->assertCount(2, $result);
@@ -278,14 +278,14 @@ class ProcessTest extends TestCase
     {
         $manager = User::factory()->create(['status' => 'ACTIVE']);
         $assignableUser = User::factory()->create(['status' => 'ACTIVE']);
-        
+
         $process = Process::factory()->create([
-            'properties' => ['manager_id' => $manager->id]
+            'properties' => ['manager_id' => $manager->id],
         ]);
-        
+
         $request = ProcessRequest::factory()->create(['process_id' => $process->id]);
         $elementId = 'test_element_' . uniqid();
-        
+
         // Create task assignment with manager as assignable user (duplicate scenario)
         ProcessTaskAssignment::factory()->create([
             'process_id' => $process->id,
@@ -293,14 +293,14 @@ class ProcessTest extends TestCase
             'assignment_id' => $manager->id, // Same as manager
             'assignment_type' => User::class,
         ]);
-        
+
         ProcessTaskAssignment::factory()->create([
             'process_id' => $process->id,
             'process_task_id' => $elementId,
             'assignment_id' => $assignableUser->id,
             'assignment_type' => User::class,
         ]);
-        
+
         $token = ProcessRequestToken::factory()->create([
             'process_id' => $process->id,
             'process_request_id' => $request->id,
@@ -309,9 +309,9 @@ class ProcessTest extends TestCase
 
         $tokenMock = Mockery::mock($token)->makePartial();
         $tokenMock->shouldReceive('getAssignmentRule')->andReturn('user_group');
-        
+
         $result = $process->getAssignableUsersByAssignmentType($tokenMock);
-        
+
         // Should return unique values (manager should appear only once)
         $this->assertIsArray($result);
         $this->assertCount(2, $result); // manager + assignableUser (no duplicates)
