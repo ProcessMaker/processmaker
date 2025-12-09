@@ -1062,8 +1062,14 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         $assignmentRule = $processRequestToken->getAssignmentRule();
         $managerIds = $processRequestToken->process->manager_id ?? [];
 
+        // For compatibility: when assignment rule is 'requester', return empty array
+        // to allow displaying all users instead of restricting to specific assignees.
+        if ($assignmentRule === 'requester') {
+            return [];
+        }
+
         // Rules that only return process managers
-        $managerOnlyRules = ['previous_task_assignee', 'requester', 'process_manager'];
+        $managerOnlyRules = ['previous_task_assignee', 'process_manager'];
         if (in_array($assignmentRule, $managerOnlyRules, true)) {
             return $this->normalizeUserIds($managerIds);
         }
