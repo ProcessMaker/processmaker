@@ -183,11 +183,59 @@ class UserController extends Controller
      *         ),
      *     ),
      * )
+     *
+     * @OA\Post(
+     *     path="/users_task_count",
+     *     summary="Returns all users and their total tasks (POST version for large form_data)",
+     *     operationId="postUsersTaskCount",
+     *     tags={"Users"},
+     *     @OA\RequestBody(
+     *         description="Request body for filtering users",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="filter",
+     *                 type="string",
+     *                 description="Filter results by string. Searches First Name, Last Name, Email, or Username."
+     *             ),
+     *             @OA\Property(
+     *                 property="include_ids",
+     *                 type="string",
+     *                 description="Comma separated list of user IDs to include in the response. Eg. 1,2,3"
+     *             ),
+     *             @OA\Property(
+     *                 property="assignable_for_task_id",
+     *                 type="integer",
+     *                 description="Task ID to get assignable users for"
+     *             ),
+     *             @OA\Property(
+     *                 property="form_data",
+     *                 type="object",
+     *                 description="Form data used to evaluate rule expressions for task assignment"
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of users with task counts",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/users"),
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 ref="#/components/schemas/metadata",
+     *             ),
+     *         ),
+     *     ),
+     * )
      */
     public function getUsersTaskCount(Request $request)
     {
-        $query = User::nonSystem();
-        $query->select('id', 'username', 'firstname', 'lastname');
+        $query = User::select('id', 'username', 'firstname', 'lastname');
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
@@ -199,23 +247,18 @@ class UserController extends Controller
             });
         }
 
-        $query->where('status', 'ACTIVE');
-
-        $query->withCount('activeTasks');
-
         $include_ids = [];
         $include_ids_string = $request->input('include_ids', '');
         if (!empty($include_ids_string)) {
             $include_ids = explode(',', $include_ids_string);
         } elseif ($request->has('assignable_for_task_id')) {
-            $task = ProcessRequestToken::findOrFail($request->input('assignable_for_task_id'));
-            $assignmentRule = $task->getAssignmentRule();
-            if ($assignmentRule === 'user_group') {
-                // Limit the list of users to those that can be assigned to the task
-                $include_ids = $task->process->getAssignableUsers($task->element_id);
+            $processRequestToken = ProcessRequestToken::findOrFail($request->input('assignable_for_task_id'));
+            if (config('app.reassign_restrict_to_assignable_users')) {
+                $include_ids = $processRequestToken->process->getAssignableUsersByAssignmentType($processRequestToken);
             }
+            $assignmentRule = $processRequestToken->getAssignmentRule();
             if ($assignmentRule === 'rule_expression' && $request->has('form_data')) {
-                $include_ids = $task->getAssigneesFromExpression($request->input('form_data'));
+                $include_ids = $processRequestToken->getAssigneesFromExpression($request->input('form_data'));
             }
         }
 
@@ -223,10 +266,14 @@ class UserController extends Controller
             $query->whereIn('id', $include_ids);
         }
 
-        $response = $query->orderBy(
-            $request->input('order_by', 'username'),
-            $request->input('order_direction', 'ASC')
-        )
+        $response = $query
+            ->where('is_system', false)
+            ->where('status', 'ACTIVE')
+            ->withCount('activeTasks')
+            ->orderBy(
+                $request->input('order_by', 'username'),
+                $request->input('order_direction', 'ASC')
+            )
             ->paginate(50);
 
         return new ApiCollection($response);
@@ -362,8 +409,8 @@ class UserController extends Controller
         $meta = $user->meta ? (array) $user->meta : [];
 
         return array_key_exists('pinnedControls', $meta)
-                ? $meta['pinnedControls']
-                : [];
+            ? $meta['pinnedControls']
+            : [];
     }
 
     /**
@@ -777,10 +824,12 @@ class UserController extends Controller
             // Validate image content
             if ($type === 'svg') {
                 // For SVG files, validate against XSS
-                if (preg_match('/<script/i', $data) ||
+                if (
+                    preg_match('/<script/i', $data) ||
                     preg_match('/on\w+\s*=/i', $data) ||
                     preg_match('/javascript:/i', $data) ||
-                    preg_match('/data:/i', $data)) {
+                    preg_match('/data:/i', $data)
+                ) {
                     throw new \Exception('SVG contains potentially malicious content');
                 }
             } else {
@@ -856,7 +905,7 @@ class UserController extends Controller
             // Otherwise, search trashed users
             // for the user to restore
             $user = User::onlyTrashed()->where($input, $request->input($input))
-                                       ->first();
+                ->first();
         }
 
         if ($user instanceof User) {
