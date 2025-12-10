@@ -300,5 +300,6 @@ return [
 
     'multitenancy' => env('MULTITENANCY', false),
 
+    'reassign_restrict_to_assignable_users' => env('REASSIGN_RESTRICT_TO_ASSIGNABLE_USERS', true),
     'resources_core_path' => base_path('resources-core'),
 ];

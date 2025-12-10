@@ -1275,6 +1275,7 @@ label {
     text-align: left;
   }
 }
+
 .modal-content-custom .column-container {
   overflow-y: auto;
 }
