@@ -92,6 +92,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Queue Batching
+    |--------------------------------------------------------------------------
+    |
+    | These options configure the behavior of queue batching. The batching
+    | feature allows you to batch multiple jobs together for processing.
+    |
+    */
+
+    'batching' => [
+        'database' => env('DB_CONNECTION', 'processmaker'),
+        'table' => 'job_batches',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Tenant Job Tracking
     |--------------------------------------------------------------------------
     |
