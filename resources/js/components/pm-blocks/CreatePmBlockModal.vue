@@ -220,6 +220,14 @@ export default {
         formData.append("user_id", this.currentUserId);
         formData.append("pm_block_category_id", this.pm_block_category_id);
         formData.append("meta", JSON.stringify(this.meta));
+        // If AB Testing is installed, send the current alternative (A or B)
+        const isABTestingInstalled = !!window.ProcessMaker.AbTesting;
+        if (isABTestingInstalled) {
+          const alternative = window.ProcessMaker.AbTesting?.alternative
+            || window.ProcessMaker.modeler?.draftAlternative
+            || "A";
+          formData.append("alternative", alternative);
+        }
         this.customModalButtons[1].disabled = true;
         ProcessMaker.apiClient.post("pm-blocks", formData)
         .then(response => {
