@@ -134,7 +134,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 $iconSize: 19px;
 $multiselect-height: 33px;
 
@@ -223,7 +223,7 @@ $multiselect-height: 33px;
   .icon-selected {
     width: 19px;
     height: 19px;
-    margin-top: -4px;
+    margin-top: 0;
   }
 
   .icon-squares {

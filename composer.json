@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.15.10",
+    "version": "4.15.11-RC1",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -49,7 +49,7 @@
         "processmaker/docker-executor-node": "1.1.0",
         "processmaker/docker-executor-php": "1.4.0",
         "processmaker/laravel-i18next": "dev-master",
-        "processmaker/nayra": "1.12.1",
+        "processmaker/nayra": "1.12.4",
         "processmaker/pmql": "1.13.1",
         "promphp/prometheus_client_php": "^2.12",
         "psr/http-message": "^1.1",
@@ -57,6 +57,7 @@
         "psr/simple-cache": "^3.0",
         "pusher/pusher-php-server": "^7.2",
         "ralouphie/getallheaders": "^3.0",
+        "robrichards/xmlseclibs": "^3.1.4",
         "simplesoftwareio/simple-qrcode": "*",
         "spatie/laravel-fractal": "^6.3",
         "spatie/laravel-html": "^3.11",
@@ -108,7 +109,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "8cc2cbb7",
+            "build": "f11bf1b6",
             "cicd-enabled": true,
             "custom": {
                 "package-ellucian-ethos": "1.19.7",
@@ -164,23 +165,23 @@
                 "package-decision-engine": "1.16.1",
                 "package-dynamic-ui": "1.28.3",
                 "package-email-start-event": "1.0.8",
-                "package-files": "1.23.1",
+                "package-files": "1.23.3",
                 "package-googleplaces": "1.12.0",
                 "package-photo-video": "1.6.1",
-                "package-pm-blocks": "1.12.4",
+                "package-pm-blocks": "1.12.6",
                 "package-process-documenter": "1.12.0",
                 "package-process-optimization": "1.10.0",
                 "package-product-analytics": "1.5.11",
                 "package-projects": "1.12.5",
                 "package-rpa": "1.1.1",
-                "package-savedsearch": "1.43.5",
+                "package-savedsearch": "1.43.6",
                 "package-slideshow": "1.4.3",
                 "package-signature": "1.15.2",
                 "package-testing": "1.8.1",
                 "package-translations": "2.14.4",
                 "package-versions": "1.13.0",
                 "package-vocabularies": "2.17.0",
-                "package-webentry": "2.29.9",
+                "package-webentry": "2.29.11",
                 "package-api-testing": "1.3.1",
                 "package-variable-finder": "1.0.5",
                 "packages": "^0"

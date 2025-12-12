@@ -78,5 +78,7 @@
       <!-- Script microservice disabled for this version -->
       <env name="SCRIPT_MICROSERVICE_ENABLED" value="false" />
 
+      <env name="MULTITENANCY" value="false" />
+
     </php>
 </phpunit>
