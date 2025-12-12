@@ -201,6 +201,8 @@
           <TaskPreviewAssignment
             v-if="showReassignment"
             :task="task"
+            :form-data="formData"
+            :current-task-user-id="currentTaskUserId"
             @on-cancel-reassign="showReassignment = false"
             @on-reassign-user="e=> reassignUser(e,false)"
           />
@@ -413,7 +415,6 @@ export default {
     },
     openReassignment() {
       this.showReassignment = !this.showReassignment;
-      this.getReassignUsers();
     },
     getTaskDefinitionForReassignmentPermission() {
       ProcessMaker.apiClient
