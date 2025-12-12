@@ -241,7 +241,12 @@ const uniqIdsMixin = createUniqIdsMixin();
 export default {
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   components: { AddToBundle },
-  props: ["filter", "permission"],
+  props: [
+    "filter",
+    "permission",
+    "script_microservice_enabled",
+    "script_microservice_instance_uuid",
+  ],
   data() {
     return {
       commandOutput: "",
@@ -310,7 +315,7 @@ export default {
       document.querySelector('meta[name="user-id"]'),
       "content"
     );
-    if (userId) {
+    if (userId && !this.script_microservice_enabled) {
       window.Echo.private(`ProcessMaker.Models.User.${userId}`).listen(
         ".BuildScriptExecutor",
         (event) => {
@@ -337,6 +342,28 @@ export default {
           }
         }
       );
+    } else if (this.script_microservice_enabled) {
+      window.Echo
+        .channel(`build-image-${this.script_microservice_instance_uuid}`)
+        .listenToAll((eventName, data) => {
+          this.status = this.status === "idle" ? "starting" : this.status;
+          switch (eventName) {
+            case ".build-image":
+              this.output(`${data}\n`);
+              break;
+            case ".build-finished":
+              this.pidFile = null;
+              this.exitCode = 0;
+              this.status = "done";
+              break;
+            case ".build-error":
+              this.output(data);
+              this.pidFile = null;
+              this.exitCode = 1;
+              this.status = "done";
+              break;
+          }
+        });
     }
   },
   watch: {
@@ -479,7 +506,6 @@ export default {
       this.$refs.edit.show();
     },
     edit(row) {
-      console.log(row);
       this.formData = _.cloneDeep(row);
       this.$refs.edit.show();
     },

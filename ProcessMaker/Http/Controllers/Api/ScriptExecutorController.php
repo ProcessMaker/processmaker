@@ -15,6 +15,7 @@ use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Jobs\BuildScriptExecutor;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptExecutor;
+use ProcessMaker\Services\ScriptMicroserviceService;
 
 class ScriptExecutorController extends Controller
 {
@@ -26,7 +27,7 @@ class ScriptExecutorController extends Controller
      * @return ResponseFactory|Response
      *
      *
-     *     @OA\Get(
+     * @OA\Get(
      *      path="/script-executors",
      *      summary="Returns all script executors that the user has access to",
      *      operationId="getScriptExecutors",
@@ -79,7 +80,7 @@ class ScriptExecutorController extends Controller
      * @return ResponseFactory|Response
      *
      *
-     *     @OA\Post(
+     * @OA\Post(
      *      path="/script-executors",
      *      summary="Create a script executor",
      *      operationId="createScriptExecutor",
@@ -109,7 +110,7 @@ class ScriptExecutorController extends Controller
      *     ),
      * )
      */
-    public function store(Request $request)
+    public function store(Request $request, ScriptMicroserviceService $service)
     {
         $request->request->add(['type' => 'custom']);
         $this->checkAuth($request);
@@ -119,11 +120,14 @@ class ScriptExecutorController extends Controller
             $request->only((new ScriptExecutor())->getFillable())
         );
 
-        ScriptExecutorCreated::dispatch($scriptExecutor->getAttributes());
+        if (!config('script-runner-microservice.enabled')) {
+            ScriptExecutorCreated::dispatch($scriptExecutor->getAttributes());
+            BuildScriptExecutor::dispatch($scriptExecutor->id, $request->user()->id);
+        } else {
+            $service->createCustomExecutor($scriptExecutor);
+        }
 
-        BuildScriptExecutor::dispatch($scriptExecutor->id, $request->user()->id);
-
-        return ['status'=>'started', 'id' => $scriptExecutor->id];
+        return ['status' => 'started', 'id' => $scriptExecutor->id];
     }
 
     /**
@@ -135,7 +139,7 @@ class ScriptExecutorController extends Controller
      * @return ResponseFactory|Response
      *
      *
-     *     @OA\Put(
+     * @OA\Put(
      *      path="/script-executors/{script_executor}",
      *      summary="Update script executor",
      *      operationId="updateScriptExecutor",
@@ -173,7 +177,7 @@ class ScriptExecutorController extends Controller
      * )
      * )
      */
-    public function update(Request $request, ScriptExecutor $scriptExecutor)
+    public function update(Request $request, ScriptExecutor $scriptExecutor, ScriptMicroserviceService $service)
     {
         $this->checkAuth($request);
         $request->validate(ScriptExecutor::rules());
@@ -184,13 +188,16 @@ class ScriptExecutorController extends Controller
             $request->only($scriptExecutor->getFillable())
         );
 
-        if (!empty($scriptExecutor->getChanges())) {
-            ScriptExecutorUpdated::dispatch($scriptExecutor->id, $original, $scriptExecutor->getChanges());
+        if (!config('script-runner-microservice.enabled')) {
+            if (!empty($scriptExecutor->getChanges())) {
+                ScriptExecutorUpdated::dispatch($scriptExecutor->id, $original, $scriptExecutor->getChanges());
+            }
+            BuildScriptExecutor::dispatch($scriptExecutor->id, $request->user()->id);
+        } else {
+            $service->updateCustomExecutor($scriptExecutor);
         }
 
-        BuildScriptExecutor::dispatch($scriptExecutor->id, $request->user()->id);
-
-        return ['status'=>'started'];
+        return ['status' => 'started'];
     }
 
     /**
@@ -202,7 +209,7 @@ class ScriptExecutorController extends Controller
      * @return ResponseFactory|Response
      *
      *
-     *     @OA\Delete(
+     * @OA\Delete(
      *      path="/script-executors/{script_executor}",
      *      summary="Delete a script executor",
      *      operationId="deleteScriptExecutor",
@@ -233,7 +240,7 @@ class ScriptExecutorController extends Controller
      *     ),
      * )
      */
-    public function delete(Request $request, ScriptExecutor $scriptExecutor)
+    public function delete(Request $request, ScriptExecutor $scriptExecutor, ScriptMicroserviceService $service)
     {
         if ($scriptExecutor->scripts()->count() > 0) {
             throw ValidationException::withMessages(['delete' => __('Can not delete executor when it is assigned to scripts.')]);
@@ -254,9 +261,15 @@ class ScriptExecutorController extends Controller
             }
         }
 
+        $scriptExecutorUUID = $scriptExecutor->uuid;
+
         ScriptExecutor::destroy($scriptExecutor->id);
 
-        ScriptExecutorDeleted::dispatch($scriptExecutor->getAttributes());
+        if (!config('script-runner-microservice.enabled')) {
+            ScriptExecutorDeleted::dispatch($scriptExecutor->getAttributes());
+        } else {
+            $service->deleteCustomExecutor($scriptExecutorUUID);
+        }
 
         return ['status' => 'done'];
     }
@@ -280,7 +293,7 @@ class ScriptExecutorController extends Controller
      * @return ResponseFactory|Response
      *
      *
-     *     @OA\Post(
+     * @OA\Post(
      *      path="/script-executors/cancel",
      *      summary="Cancel a script executor",
      *      operationId="cancelScriptExecutor",
@@ -327,7 +340,7 @@ class ScriptExecutorController extends Controller
      * @return ResponseFactory|Response
      *
      *
-     *     @OA\Get(
+     * @OA\Get(
      *      path="/script-executors/available-languages",
      *      summary="Returns all available languages",
      *      operationId="getAvailableLanguages",
