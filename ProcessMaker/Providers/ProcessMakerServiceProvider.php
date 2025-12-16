@@ -16,6 +16,7 @@ use Illuminate\Queue\Listener;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Env;
 use Illuminate\Support\Facades;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -99,6 +100,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
         parent::boot();
 
         Route::pushMiddlewareToGroup('api', HandleEtag::class);
+
+        $this->checkConfigCache();
+
         // Hook after service providers boot
         self::$bootTime = (microtime(true) - self::$bootStart) * 1000; // Convert to milliseconds
     }
@@ -576,5 +580,23 @@ class ProcessMakerServiceProvider extends ServiceProvider
     private static function actuallyRunningInConsole(): bool
     {
         return PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg';
+    }
+
+    /**
+     * Ensure that config:cache is not run for tenant instances.
+     */
+    private function checkConfigCache(): void
+    {
+        // Only if app is running in console
+        if (!app()->runningInConsole()) {
+            return;
+        }
+
+        // Safety check to prevent config:cache from being run for tenant instances.
+        if (config('app.multitenancy') && app('currentTenant')) {
+            Artisan::command('config:cache', function () {
+                throw new \Exception('Cannot cache config for tenant instance. Must be run from landlord instance.');
+            });
+        }
     }
 }
