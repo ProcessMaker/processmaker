@@ -114,6 +114,14 @@ class CallActivity implements CallActivityInterface
             $data = array_intersect_key($allData, array_flip($updatedKeys));
         }
 
+        $parentData = $token->getInstance()->getDataStore()->getData();
+
+        // Ensure new keys created in the subprocess are merged even if getUpdated() missed them.
+        $newKeys = array_diff(array_keys($allData ?? []), array_keys($parentData ?? []));
+        if (!empty($newKeys)) {
+            $data = $data + array_intersect_key($allData, array_flip($newKeys));
+        }
+
         $dataManager = new DataManager();
         $dataManager->updateData($token, $data);
         $token->getInstance()->getProcess()->getEngine()->runToNextState();
