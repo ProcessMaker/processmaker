@@ -116,7 +116,7 @@ class CallActivity implements CallActivityInterface
     /**
      * Decide which data from the subprocess should be merged based on updated keys.
      */
-    private function resolveUpdatedData($store, array $allData): array
+    protected function resolveUpdatedData($store, array $allData): array
     {
         $updatedKeys = method_exists($store, 'getUpdated')
             ? $store->getUpdated()
@@ -138,7 +138,7 @@ class CallActivity implements CallActivityInterface
     /**
      * Merge keys that exist only in the subprocess data.
      */
-    private function mergeNewKeys(array $data, array $allData, array $parentData): array
+    protected function mergeNewKeys(array $data, array $allData, array $parentData): array
     {
         $newKeys = array_diff(array_keys($allData), array_keys($parentData));
         if (empty($newKeys)) {
@@ -151,7 +151,7 @@ class CallActivity implements CallActivityInterface
     /**
      * Merge keys that changed in the subprocess but may not have been tracked.
      */
-    private function mergeChangedKeys(array $data, array $allData, array $parentData): array
+    protected function mergeChangedKeys(array $data, array $allData, array $parentData): array
     {
         $changedKeys = [];
         foreach ($allData as $key => $value) {
