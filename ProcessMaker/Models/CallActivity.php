@@ -97,22 +97,10 @@ class CallActivity implements CallActivityInterface
         $store = $closedInstance->getDataStore();
         $allData = $store->getData();
 
-        // Determine which data should be merged back from the subprocess.
-        $updatedKeys = method_exists($store, 'getUpdated')
-            ? $store->getUpdated()
-            : null;
-
-        if ($updatedKeys === null) {
-            // Legacy behavior or no tracking available: copy all data.
-            $data = $allData;
-        } elseif ($updatedKeys === []) {
-            // Nothing was updated in the subprocess: do not merge anything.
-            $data = [];
-        } else {
-            // Merge only the explicitly updated keys.
-            $updatedKeys = array_values((array) $updatedKeys);
-            $data = array_intersect_key($allData, array_flip($updatedKeys));
-        }
+        $data = $this->resolveUpdatedData($store, $allData);
+        $parentData = $token->getInstance()->getDataStore()->getData();
+        $data = $this->mergeNewKeys($data, $allData, $parentData);
+        $data = $this->mergeChangedKeys($data, $allData, $parentData);
 
         $dataManager = new DataManager();
         $dataManager->updateData($token, $data);
@@ -123,6 +111,62 @@ class CallActivity implements CallActivityInterface
         $this->synchronizeInstances($instance, $token->getInstance());
 
         return $this;
+    }
+
+    /**
+     * Decide which data from the subprocess should be merged based on updated keys.
+     */
+    protected function resolveUpdatedData($store, array $allData): array
+    {
+        $updatedKeys = method_exists($store, 'getUpdated')
+            ? $store->getUpdated()
+            : null;
+
+        if ($updatedKeys === null) {
+            return $allData;
+        }
+
+        if ($updatedKeys === []) {
+            return [];
+        }
+
+        $updatedKeys = array_values((array) $updatedKeys);
+
+        return array_intersect_key($allData, array_flip($updatedKeys));
+    }
+
+    /**
+     * Merge keys that exist only in the subprocess data.
+     */
+    protected function mergeNewKeys(array $data, array $allData, array $parentData): array
+    {
+        $newKeys = array_diff(array_keys($allData), array_keys($parentData));
+        if (empty($newKeys)) {
+            return $data;
+        }
+
+        return $data + array_intersect_key($allData, array_flip($newKeys));
+    }
+
+    /**
+     * Merge keys that changed in the subprocess but may not have been tracked.
+     */
+    protected function mergeChangedKeys(array $data, array $allData, array $parentData): array
+    {
+        $changedKeys = [];
+        foreach ($allData as $key => $value) {
+            if (array_key_exists($key, $parentData) && $parentData[$key] !== $value) {
+                $changedKeys[] = $key;
+            }
+        }
+
+        if (empty($changedKeys)) {
+            return $data;
+        }
+
+        $pendingKeys = array_diff($changedKeys, array_keys($data));
+
+        return $data + array_intersect_key($allData, array_flip($pendingKeys));
     }
 
     /**
