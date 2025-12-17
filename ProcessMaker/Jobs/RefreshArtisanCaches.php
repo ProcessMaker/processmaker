@@ -23,7 +23,30 @@ class RefreshArtisanCaches implements ShouldQueue
      */
     public function handle()
     {
-        // Do not rebuild the cache and restart the queue any more.
-        // This is no longer needed.
+        // Skip in testing environment because this reconnects the database
+        // meaning we loose transactions, and sets the console output verbosity
+        // to quiet so we loose expectsOutput assertions.
+        if (app()->environment('testing')) {
+            return;
+        }
+
+        $options = [
+            '--no-interaction' => true,
+            '--quiet' => true,
+        ];
+
+        if (app()->configurationIsCached()) {
+            // Run in a separate process to avoid the tenant being set.
+            // We do not use a tenant-specific config cache file.
+            Process::path(base_path())
+                ->env(['TENANT' => false, 'APP_URL' => false])
+                ->run(Application::formatCommandString('config:cache'))->throw();
+        } else {
+            Artisan::call('queue:restart', $options);
+
+            // We call this manually here since this job is dispatched
+            // automatically when the config *is* cached
+            RestartMessageConsumers::dispatchSync();
+        }
     }
 }
