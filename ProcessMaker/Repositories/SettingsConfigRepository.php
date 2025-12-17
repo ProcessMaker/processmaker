@@ -4,19 +4,10 @@ namespace ProcessMaker\Repositories;
 
 use Illuminate\Config\Repository;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\Setting;
 
 class SettingsConfigRepository extends Repository
 {
-    private bool $redisAvailable = false;
-
-    private bool $settingsTableExists = false;
-
-    private bool $readyToUseSettingsDatabase = false;
-
     /**
      * Determine if the given configuration value exists.
      *
@@ -86,7 +77,7 @@ class SettingsConfigRepository extends Repository
 
     private function getFromSettings($key)
     {
-        if (!$this->readyToUseSettingsDatabase()) {
+        if (!Setting::readyToUseSettingsDatabase()) {
             return null;
         }
 
@@ -112,52 +103,5 @@ class SettingsConfigRepository extends Repository
         }
 
         return null;
-    }
-
-    private function readyToUseSettingsDatabase()
-    {
-        if (!$this->readyToUseSettingsDatabase) {
-            $this->readyToUseSettingsDatabase =
-                app('tenant-resolved') &&
-                $this->databaseAvailable() &&
-                $this->redisAvailable() &&
-                $this->settingsTableExists();
-        }
-
-        return $this->readyToUseSettingsDatabase;
-    }
-
-    private function databaseAvailable()
-    {
-        try {
-            DB::connection()->getPdo();
-
-            return true;
-        } catch (\PDOException $e) {
-            return false;
-        }
-    }
-
-    private function redisAvailable()
-    {
-        if (!$this->redisAvailable) {
-            try {
-                Redis::connection()->ping();
-                $this->redisAvailable = true;
-            } catch (\Exception $e) {
-                $this->redisAvailable = false;
-            }
-        }
-
-        return $this->redisAvailable;
-    }
-
-    private function settingsTableExists()
-    {
-        if (!$this->settingsTableExists) {
-            $this->settingsTableExists = Schema::hasTable('settings');
-        }
-
-        return $this->settingsTableExists;
     }
 }
