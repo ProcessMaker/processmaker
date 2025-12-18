@@ -166,6 +166,10 @@ export default {
   },
   mounted() {
     this.verifyDescription();
+    // Initialize chart data from process.counts
+    this.inProgress = this.process.counts?.in_progress || 0;
+    this.completed = this.process.counts?.completed || 0;
+    this.total = this.process.counts?.total || 0;
     ProcessMaker.EventBus.$on("reloadByNewScreen", () => {
       window.location.reload();
     });
@@ -177,7 +181,6 @@ export default {
       }
     });
     this.getStartEvents();
-    this.fetchChartData();
   },
   beforeDestroy() {
     ProcessMaker.EventBus.$off("chartDataUpdated");
@@ -240,24 +243,6 @@ export default {
         })
         .catch((err) => {
           ProcessMaker.alert(err, "danger");
-        });
-    },
-    /**
-     * Fetch chart data for mini pie charts
-     */
-    fetchChartData() {
-      ProcessMaker.apiClient
-        .get(`requests/${this.process.id}/default-chart`)
-        .then((response) => {
-          const { data: { datasets: { data: [completedCount, inProgressCount] } } } = response.data;
-          this.completed = completedCount;
-          this.inProgress = inProgressCount;
-          this.total = this.completed + this.inProgress;
-        })
-        .catch(() => {
-          this.inProgress = 0;
-          this.completed = 0;
-          this.total = 0;
         });
     },
   },
