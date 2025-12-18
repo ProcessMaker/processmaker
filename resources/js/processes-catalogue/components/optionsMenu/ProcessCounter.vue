@@ -13,14 +13,14 @@
       class="charts"
     >
       <mini-pie-chart
-        :count="process.counts.in_progress"
-        :total="process.counts.total"
+        :count="inProgress"
+        :total="total"
         :name="$t('In Progress')"
         color="#4EA075"
       />
       <mini-pie-chart
-        :count="process.counts.completed"
-        :total="process.counts.total"
+        :count="completed"
+        :total="total"
         :name="$t('Completed')"
         color="#478FCC"
       />
@@ -38,6 +38,9 @@ export default {
   data() {
     return {
       count: 0,
+      inProgress: 0,
+      completed: 0,
+      total: 0,
     };
   },
   computed: {
@@ -57,6 +60,20 @@ export default {
         })
         .catch(() => {
           this.count = 0;
+        });
+
+      ProcessMaker.apiClient
+        .get(`requests/${this.process.id}/default-chart`)
+        .then((response) => {
+          const { data: { datasets: { data: [completedCount, inProgressCount] } } } = response.data;
+          this.completed = completedCount;
+          this.inProgress = inProgressCount;
+          this.total = this.completed + this.inProgress;
+        })
+        .catch(() => {
+          this.inProgress = 0;
+          this.completed = 0;
+          this.total = 0;
         });
     },
   },
