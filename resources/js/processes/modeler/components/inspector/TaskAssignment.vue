@@ -126,10 +126,18 @@
         return this.$root.$children[0].process;
       },
       assignmentLockGetter () {
-        return _.get(this.node, "assignmentLock");
+        if (this.node.$type === 'bpmn:CallActivity') {
+          return _.get(this.node.config && JSON.parse(this.node.config), "assignmentLock") || false;
+        } else {
+          return _.get(this.node, "assignmentLock") || false;
+        }
       },
       allowReassignmentGetter () {
-        return _.get(this.node, "allowReassignment");
+        if (this.node.$type === 'bpmn:CallActivity') {
+          return _.get(this.node.config && JSON.parse(this.node.config), "allowReassignment") || false;
+        } else {
+          return _.get(this.node, "allowReassignment") || false;
+        }
       },
       assignedUserGetter () {
         let value = _.get(this.node, "assignedUsers");
@@ -295,13 +303,26 @@
        * Update assignmentLock property
        */
       assignmentLockSetter (value) {
-        this.$set(this.node, "assignmentLock", value);
+        console.log('assignmentLockSetter', value, this.node.$type);
+        if (this.node.$type === 'bpmn:CallActivity') {
+          const config = this.node.config && JSON.parse(this.node.config) || {};
+          config.assignmentLock = value;
+          this.$set(this.node, "config", JSON.stringify(config));
+        } else {
+          this.$set(this.node, "assignmentLock", value);
+        }
       },
       /**
        * Update allowReassignment property
        */
       allowReassignmentSetter (value) {
-        this.$set(this.node, "allowReassignment", value);
+        if (this.node.$type === 'bpmn:CallActivity') {
+          const config = this.node.config && JSON.parse(this.node.config) || {};
+          config.allowReassignment = value;
+          this.$set(this.node, "config", JSON.stringify(config));
+        } else {
+          this.$set(this.node, "allowReassignment", value);
+        }
       },
       /**
        * Update the event of the editer property
