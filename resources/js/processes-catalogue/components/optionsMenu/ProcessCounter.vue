@@ -69,6 +69,13 @@ export default {
           this.completed = completedCount;
           this.inProgress = inProgressCount;
           this.total = this.completed + this.inProgress;
+          // Emit event to update other components
+          ProcessMaker.EventBus.$emit("chartDataUpdated", {
+            processId: this.process.id,
+            completed: this.completed,
+            inProgress: this.inProgress,
+            total: this.total,
+          });
         })
         .catch(() => {
           this.inProgress = 0;

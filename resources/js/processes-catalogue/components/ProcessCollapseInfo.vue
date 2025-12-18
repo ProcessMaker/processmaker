@@ -28,14 +28,14 @@
                 </div>
                 <div class="d-flex align-items-center flex-shrink-0 tw-text-xs">
                   <mini-pie-chart
-                    :count="process.counts.in_progress"
-                    :total="process.counts.total"
+                    :count="inProgress"
+                    :total="total"
                     :name="$t('In Progress')"
                     color="#4EA075"
                   />
                   <mini-pie-chart
-                    :count="process.counts.completed"
-                    :total="process.counts.total"
+                    :count="completed"
+                    :total="total"
                     :name="$t('Completed')"
                     color="#478FCC"
                   />
@@ -148,6 +148,9 @@ export default {
       infoCollapsed: true,
       processEvents: [],
       singleStartEvent: null,
+      inProgress: 0,
+      completed: 0,
+      total: 0,
     };
   },
   computed: {
@@ -166,7 +169,18 @@ export default {
     ProcessMaker.EventBus.$on("reloadByNewScreen", () => {
       window.location.reload();
     });
+    ProcessMaker.EventBus.$on("chartDataUpdated", (data) => {
+      if (data.processId === this.process.id) {
+        this.completed = data.completed;
+        this.inProgress = data.inProgress;
+        this.total = data.total;
+      }
+    });
     this.getStartEvents();
+    this.fetchChartData();
+  },
+  beforeDestroy() {
+    ProcessMaker.EventBus.$off("chartDataUpdated");
   },
   methods: {
     /**
@@ -226,6 +240,24 @@ export default {
         })
         .catch((err) => {
           ProcessMaker.alert(err, "danger");
+        });
+    },
+    /**
+     * Fetch chart data for mini pie charts
+     */
+    fetchChartData() {
+      ProcessMaker.apiClient
+        .get(`requests/${this.process.id}/default-chart`)
+        .then((response) => {
+          const { data: { datasets: { data: [completedCount, inProgressCount] } } } = response.data;
+          this.completed = completedCount;
+          this.inProgress = inProgressCount;
+          this.total = this.completed + this.inProgress;
+        })
+        .catch(() => {
+          this.inProgress = 0;
+          this.completed = 0;
+          this.total = 0;
         });
     },
   },
