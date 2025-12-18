@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.15.11+build-0c70fa90",
+    "version": "4.15.11+mt",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -149,7 +149,7 @@
                 "connector-docusign": "1.11.0",
                 "connector-idp": "1.14.0",
                 "connector-pdf-print": "1.23.1",
-                "connector-send-email": "1.32.12",
+                "connector-send-email": "1.32.13",
                 "connector-slack": "1.9.3",
                 "docker-executor-node-ssr": "1.7.2",
                 "package-ab-testing": "1.4.0",
