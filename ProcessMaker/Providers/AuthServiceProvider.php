@@ -101,11 +101,6 @@ class AuthServiceProvider extends ServiceProvider
                     return $user->hasPermission($permission);
                 });
             }
-
-            // Allow project managers to list users for membership without the full view-users permission.
-            Gate::define('view-users', function ($user) {
-                return $user->hasPermission('view-users') || $user->hasPermission('create-projects');
-            });
         } catch (\Exception $e) {
             Log::notice('Unable to register gates. Either no database connection or no permissions table exists.');
         }
