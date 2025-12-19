@@ -176,7 +176,7 @@
                 "package-rpa": "1.1.1",
                 "package-savedsearch": "1.43.6",
                 "package-slideshow": "1.4.3",
-                "package-smart-extract": "0.0.2",
+                "package-smart-extract": "dev-develop",
                 "package-signature": "1.15.2",
                 "package-testing": "1.8.1",
                 "package-translations": "2.14.4",
