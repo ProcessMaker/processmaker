@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.15.11+beta-2",
+    "version": "4.15.11+mt",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -49,7 +49,7 @@
         "processmaker/docker-executor-node": "1.1.0",
         "processmaker/docker-executor-php": "1.4.0",
         "processmaker/laravel-i18next": "dev-master",
-        "processmaker/nayra": "1.12.2",
+        "processmaker/nayra": "1.12.4",
         "processmaker/pmql": "1.13.1",
         "promphp/prometheus_client_php": "^2.12",
         "psr/http-message": "^1.1",
@@ -57,6 +57,7 @@
         "psr/simple-cache": "^3.0",
         "pusher/pusher-php-server": "^7.2",
         "ralouphie/getallheaders": "^3.0",
+        "robrichards/xmlseclibs": "^3.1.4",
         "simplesoftwareio/simple-qrcode": "*",
         "spatie/laravel-fractal": "^6.3",
         "spatie/laravel-html": "^3.11",
@@ -108,7 +109,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "10ea10ed",
+            "build": "1a91bb61",
             "cicd-enabled": true,
             "custom": {
                 "package-ellucian-ethos": "1.19.7",
@@ -148,7 +149,7 @@
                 "connector-docusign": "1.11.0",
                 "connector-idp": "1.14.0",
                 "connector-pdf-print": "1.23.1",
-                "connector-send-email": "1.32.10",
+                "connector-send-email": "1.32.13",
                 "connector-slack": "1.9.3",
                 "docker-executor-node-ssr": "1.7.2",
                 "package-ab-testing": "1.4.0",
@@ -167,7 +168,7 @@
                 "package-files": "1.23.3",
                 "package-googleplaces": "1.12.0",
                 "package-photo-video": "1.6.1",
-                "package-pm-blocks": "1.12.5",
+                "package-pm-blocks": "1.12.6",
                 "package-process-documenter": "1.12.0",
                 "package-process-optimization": "1.10.0",
                 "package-product-analytics": "1.5.11",
