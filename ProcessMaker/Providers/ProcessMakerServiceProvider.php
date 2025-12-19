@@ -16,6 +16,7 @@ use Illuminate\Queue\Listener;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Env;
 use Illuminate\Support\Facades;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -29,7 +30,6 @@ use Lavary\Menu\Menu;
 use ProcessMaker\Cache\Settings\SettingCacheManager;
 use ProcessMaker\Console\Commands\HorizonListen;
 use ProcessMaker\Console\Migration\ExtendedMigrateCommand;
-use ProcessMaker\Contracts\ConditionalRedirectServiceInterface;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Events\TenantResolved;
@@ -50,7 +50,6 @@ use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
 use ProcessMaker\Providers\PermissionServiceProvider;
 use ProcessMaker\Repositories\SettingsConfigRepository;
-use ProcessMaker\Services\ConditionalRedirectService;
 use RuntimeException;
 use Spatie\Multitenancy\Events\MadeTenantCurrentEvent;
 use Spatie\Multitenancy\Events\TenantNotFoundForRequestEvent;
@@ -101,6 +100,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
         parent::boot();
 
         Route::pushMiddlewareToGroup('api', HandleEtag::class);
+
+        $this->checkConfigCache();
+
         // Hook after service providers boot
         self::$bootTime = (microtime(true) - self::$bootStart) * 1000; // Convert to milliseconds
     }
@@ -243,12 +245,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         $this->app->instance('tenant-resolved', false);
-
-        /**
-         * Conditional Redirect Service
-         * This service is used to evaluate the conditional redirect property of a process request token.
-         */
-        $this->app->bind(ConditionalRedirectServiceInterface::class, ConditionalRedirectService::class);
     }
 
     /**
@@ -584,5 +580,23 @@ class ProcessMakerServiceProvider extends ServiceProvider
     private static function actuallyRunningInConsole(): bool
     {
         return PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg';
+    }
+
+    /**
+     * Ensure that config:cache is not run for tenant instances.
+     */
+    private function checkConfigCache(): void
+    {
+        // Only if app is running in console
+        if (!app()->runningInConsole()) {
+            return;
+        }
+
+        // Safety check to prevent config:cache from being run for tenant instances.
+        if (config('app.multitenancy') && app('currentTenant')) {
+            Artisan::command('config:cache', function () {
+                throw new \Exception('Cannot cache config for tenant instance. Must be run from landlord instance.');
+            });
+        }
     }
 }

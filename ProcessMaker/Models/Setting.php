@@ -5,6 +5,8 @@ namespace ProcessMaker\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 use Log;
 use ProcessMaker\Cache\Settings\SettingCacheFactory;
@@ -72,6 +74,12 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
     public const LOGIN_OPTIONS_GROUP = 'Log-In Options';
 
     public const SESSION_CONTROL_GROUP = 'Session Control';
+
+    private static bool $redisAvailable = false;
+
+    private static bool $settingsTableExists = false;
+
+    private static bool $readyToUseSettingsDatabase = false;
 
     /**
      * The attributes that aren't mass assignable.
@@ -150,6 +158,10 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
      */
     public static function byKey(string $key)
     {
+        if (!self::readyToUseSettingsDatabase()) {
+            return null;
+        }
+
         $settingCache = SettingCacheFactory::getSettingsCache();
         $settingKey = $settingCache->createKey([
             'key' => $key,
@@ -519,5 +531,52 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
     public function getPrometheusMetricLabel(): string
     {
         return 'settings.' . $this->key;
+    }
+
+    public static function readyToUseSettingsDatabase()
+    {
+        if (!self::$readyToUseSettingsDatabase) {
+            self::$readyToUseSettingsDatabase =
+                app('tenant-resolved') &&
+                self::databaseAvailable() &&
+                self::redisAvailable() &&
+                self::settingsTableExists();
+        }
+
+        return self::$readyToUseSettingsDatabase;
+    }
+
+    private static function databaseAvailable()
+    {
+        try {
+            DB::connection()->getPdo();
+
+            return true;
+        } catch (\PDOException $e) {
+            return false;
+        }
+    }
+
+    private static function redisAvailable()
+    {
+        if (!self::$redisAvailable) {
+            try {
+                Redis::connection()->ping();
+                self::$redisAvailable = true;
+            } catch (\Exception $e) {
+                self::$redisAvailable = false;
+            }
+        }
+
+        return self::$redisAvailable;
+    }
+
+    private static function settingsTableExists()
+    {
+        if (!self::$settingsTableExists) {
+            self::$settingsTableExists = Schema::hasTable('settings');
+        }
+
+        return self::$settingsTableExists;
     }
 }
