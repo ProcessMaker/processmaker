@@ -1414,8 +1414,8 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 $elementDestination = route('tasks.index');
                 break;
             case 'homepageDashboard':
-                if (hasPackage('package-dynamic-ui')) {
-                    $user = auth()->user();
+                $user = auth()->user();
+                if (hasPackage('package-dynamic-ui') && $user) {
                     $elementDestination = \ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::getHomePage($user);
                 } else {
                     $elementDestination = route('home');
