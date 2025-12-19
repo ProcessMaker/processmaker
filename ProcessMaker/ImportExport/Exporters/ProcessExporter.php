@@ -12,6 +12,7 @@ use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessLaunchpad;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
@@ -547,6 +548,9 @@ class ProcessExporter extends ExporterBase
     public function importProcessLaunchpad(): void
     {
         foreach ($this->getDependents('process_launchpad') as $launchpad) {
+            if (ProcessLaunchpad::where('process_id', $this->model->id)->exists()) {
+                continue;
+            }
             $launchpad->model->setAttribute('process_id', $this->model->id);
             $launchpad->model->saveOrFail();
         }
