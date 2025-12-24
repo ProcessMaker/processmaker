@@ -67,6 +67,14 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  formData: {
+    type: Object,
+    default: null,
+  },
+  currentTaskUserId: {
+    type: Number,
+    default: null,
+  },
 });
 
 const emit = defineEmits(["on-reassign-user"]);
@@ -80,18 +88,29 @@ const disabledAssign = ref(false);
 // Computed properties
 const disabled = computed(() => !selectedUser.value || !comments.value?.trim());
 
-// Load the reassign users
+// Load the reassign users using the centralized function with form_data
 const loadReassignUsers = async (filter) => {
-  const response = await getReassignUsers(filter, props.task.id, props.task.user_id);
+  try {
+    const response = await getReassignUsers(
+      filter,
+      props.task?.id,
+      props.formData,
+      props.currentTaskUserId
+    );
 
-  reassignUsers.value = [];
-  response.data.forEach((user) => {
-    reassignUsers.value.push({
-      text: user.fullname,
-      value: user.id,
-      active_tasks_count: user.active_tasks_count,
-    });
-  });
+    reassignUsers.value = [];
+    if (response?.data) {
+      response.data.forEach((user) => {
+        reassignUsers.value.push({
+          text: user.fullname,
+          value: user.id,
+          active_tasks_count: user.active_tasks_count,
+        });
+      });
+    }
+  } catch (error) {
+    console.error('Error loading reassign users:', error);
+  }
 };
 
 /**
