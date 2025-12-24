@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Services;
 
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
@@ -21,18 +22,61 @@ class ScriptMicroserviceService
 {
     private $client;
 
-    public function __construct()
+    private $tenantChecked = false;
+
+    private function client($includeToken = true)
     {
-        $this->client = Http::withOptions([
-            'verify' => !App::environment('local'),
-        ]);
+        if (!$this->client) {
+            $this->client = Http::withOptions([
+                'verify' => !App::environment('local'),
+            ])->baseUrl(config('script-runner-microservice.base_url'))
+            ->accept('application/json')
+            ->contentType('application/json')
+            ->throw();
+        }
+
+        if ($includeToken) {
+            $this->client->withToken($this->getAccessToken());
+        }
+
+        return $this->client;
+    }
+
+    private function checkTenant()
+    {
+        if ($this->tenantChecked) {
+            return;
+        }
+
+        $instanceUuid = $this->getInstanceUuid();
+        $url = '/tenants/' . $instanceUuid;
+        $client = $this->client();
+
+        try {
+            $response = $client->get($url);
+            // Tenant exists, we're good
+        } catch (RequestException $e) {
+            // If we get a 404, create the tenant
+            if ($e->response && $e->response->status() === 404) {
+                Log::debug('Tenant not found, creating.', ['instanceUuid' => $instanceUuid]);
+                $client->post('/tenants', [
+                    'name' => $instanceUuid,
+                    'id' => $instanceUuid,
+                ]);
+            } else {
+                // Re-throw if it's not a 404
+                Log::error('Error checking tenant', ['error' => $e->getMessage()]);
+                throw $e;
+            }
+        }
+
+        $this->tenantChecked = true;
     }
 
     public function createCustomExecutor(ScriptExecutor $scriptExecutor)
     {
-        Log::info('Creating custom script executor...');
-        $url = config('script-runner-microservice.base_url') . '/custom/' . $this->getInstanceUuid() . '/scripts';
-        Log::debug('Uri: ' . $url);
+        $url = '/custom/' . $this->getInstanceUuid() . '/scripts';
+        Log::debug('Creating custom script executor.', ['url' => $url]);
         $payload = [
             'id' => $scriptExecutor->uuid,
             'name' => $scriptExecutor->title,
@@ -43,17 +87,20 @@ class ScriptMicroserviceService
         ];
         Log::debug('Payload: ', $payload);
 
-        $response = $this->client->withToken($this->getAccessToken())
-            ->post($url, $payload);
+        $this->checkTenant();
+        $response = $this->client()->post($url, $payload);
 
-        return $response->json();
+        $jsonResponse = $response->json();
+        Log::debug('Response', ['response' => $jsonResponse]);
+
+        return $jsonResponse;
     }
 
     public function updateCustomExecutor(ScriptExecutor $scriptExecutor)
     {
-        Log::info('Updating custom script executor...');
-        $url = config('script-runner-microservice.base_url') . '/custom/scripts/' . $scriptExecutor->uuid;
-        Log::debug('Uri: ' . $url);
+        $this->checkTenant();
+        $url = '/custom/scripts/' . $scriptExecutor->uuid;
+        Log::debug('Updating custom script executor.', ['url' => $url]);
         $payload = [
             'name' => $scriptExecutor->title,
             'description' => $scriptExecutor->description,
@@ -63,22 +110,39 @@ class ScriptMicroserviceService
         ];
         Log::debug('Payload: ', $payload);
 
-        $response = $this->client->withToken($this->getAccessToken())
-            ->put($url, $payload);
+        try {
+            $response = $this->client()
+                ->put($url, $payload);
 
-        return $response->json();
+            $jsonResponse = $response->json();
+            Log::debug('Response', ['response' => $jsonResponse]);
+
+            return $jsonResponse;
+        } catch (RequestException $e) {
+            // If we get a 404, create the executor instead
+            if ($e->response && $e->response->status() === 404) {
+                Log::debug('Executor not found (404), creating instead...');
+
+                return $this->createCustomExecutor($scriptExecutor);
+            } else {
+                // Re-throw if it's not a 404
+                throw $e;
+            }
+        }
     }
 
     public function deleteCustomExecutor($scriptExecutorUUID)
     {
-        Log::info('Deleting custom script executor...');
-        $url = config('script-runner-microservice.base_url') . '/custom/scripts/' . $scriptExecutorUUID;
-        Log::debug('Uri: ' . $url);
+        $url = '/custom/scripts/' . $scriptExecutorUUID;
+        Log::debug('Deleting custom script executor.', ['url' => $url]);
 
-        $response = $this->client->withToken($this->getAccessToken())
+        $response = $this->client()
             ->delete($url);
 
-        return $response->json();
+        $jsonResponse = $response->json();
+        Log::debug('Response', ['response' => $jsonResponse]);
+
+        return $jsonResponse;
     }
 
     public function getAccessToken()
@@ -87,7 +151,7 @@ class ScriptMicroserviceService
             return Cache::get('keycloak.access_token');
         }
 
-        $response = $this->client->asForm()->post(config('script-runner-microservice.keycloak.base_url') ?? '', [
+        $response = $this->client(false)->asForm()->post(config('script-runner-microservice.keycloak.base_url') ?? '', [
             'grant_type' => 'password',
             'client_id' => config('script-runner-microservice.keycloak.client_id'),
             'client_secret' => config('script-runner-microservice.keycloak.client_secret'),
@@ -99,14 +163,16 @@ class ScriptMicroserviceService
             Cache::put('keycloak.access_token', $response->json()['access_token'], $response->json()['expires_in'] - 60);
         }
 
-        return $response->json()['access_token'];
+        $responseJson = $response->json();
+
+        return $responseJson['access_token'];
     }
 
     public function getScriptRunner($language, $executorUuid, $custom = false)
     {
         $uri = !$custom ?
-            config('script-runner-microservice.base_url') . '/scripts' :
-            config('script-runner-microservice.base_url') . '/custom/' . $this->getInstanceUuid() . '/scripts';
+            '/scripts' :
+            '/custom/' . $this->getInstanceUuid() . '/scripts';
 
         if (!$custom && Cache::has('script-runner-microservice.script-runner')) {
             return Cache::get('script-runner-microservice.script-runner.' . $language);
@@ -114,7 +180,7 @@ class ScriptMicroserviceService
             return Cache::get('script-runner-microservice.custom-script-runner.' . $executorUuid);
         }
 
-        $response = $this->client->withToken($this->getAccessToken())
+        $response = $this->client()
             ->get($uri)->collect();
 
         $result = $response->filter(function ($item) use ($language, $executorUuid, $custom) {
@@ -134,14 +200,13 @@ class ScriptMicroserviceService
 
     public function sendScriptPayload($payload)
     {
-        $uri = config('script-runner-microservice.base_url') . '/requests/create';
+        $uri = '/requests/create';
         // Set a theoretical maximum timeout of 1 day (86400 seconds)
         // since the laravel client must have a timeout set.
         // The actual script timeout will be handled by the microservice.
         $clientTimeout = 86400;
 
-        return $this->client->timeout($clientTimeout)
-            ->withToken($this->getAccessToken())
+        return $this->client()->timeout($clientTimeout)
             ->post($uri, $payload);
     }
 
