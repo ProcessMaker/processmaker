@@ -16,56 +16,6 @@
       empty-icon="noData"
     />
     <div v-show="!shouldShowLoader" class="card card-body table-card">
-      <vuetable
-        :dataManager="dataManager"
-        :sortOrder="sortOrder"
-        :css="css"
-        :api-mode="false"
-        @vuetable:pagination-data="onPaginationData"
-        :fields="fields"
-        :data="data"
-        data-path="data"
-        :noDataTemplate="$t('No Data Available')"
-        pagination-path="meta"
-      >
-        <template slot="title" slot-scope="props">
-          <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.title }}</span>
-        </template>
-
-        <template slot="actions" slot-scope="props">
-          <div class="actions">
-            <div class="popout">
-              <b-btn
-                variant="link"
-                @click="edit(props.rowData)"
-                v-b-tooltip.hover
-                :title="$t('Edit')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-pen-square fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                @click="deleteExecutor(props.rowData)"
-                v-b-tooltip.hover
-                :title="$t('Delete')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-trash-alt fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                @click="onAddToBundle(props.rowData)"
-                v-b-tooltip.hover
-                :title="$t('Add to Bundle')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-folder-plus fa-lg fa-fw"></i>
-              </b-btn>
-            </div>
-          </div>
-        </template>
-      </vuetable>
       <add-to-bundle
         asset-type="script_executors"
         :setting="true"
@@ -75,7 +25,6 @@
         :plural="$t('Script Executors')"
         :perPageSelectEnabled="true"
         @changePerPage="changePerPage"
-        @vuetable-pagination:change-page="onPageChange"
         ref="pagination"
       ></pagination>
     </div>
@@ -232,14 +181,14 @@
 
 
 <script>
-import datatableMixin from "../../components/common/mixins/datatable";
+// import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import AddToBundle from "../../components/shared/AddToBundle.vue";
-import { createUniqIdsMixin } from "vue-uniq-ids";
-const uniqIdsMixin = createUniqIdsMixin();
+// import { createUniqIdsMixin } from "vue-uniq-ids";
+// const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
+  mixins: [dataLoadingMixin],
   components: { AddToBundle },
   props: ["filter", "permission"],
   data() {

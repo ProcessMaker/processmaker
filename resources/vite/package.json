@@ -1,0 +1,23 @@
+{
+  "name": "ProcessMaker Vite Build",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.3",
+    "laravel-vite-plugin": "^2.0.1",
+    "vite": "^7.3.0"
+  },
+  "type": "module",
+  "dependencies": {
+    "@vue/compat": "^3.5.26",
+    "vue-i18n": "^11.2.7"
+  }
+}
