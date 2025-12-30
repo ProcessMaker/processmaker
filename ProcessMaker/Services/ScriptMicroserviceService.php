@@ -24,19 +24,16 @@ class ScriptMicroserviceService
 
     private $tenantChecked = false;
 
-    private function client($includeToken = true)
+    private function client()
     {
         if (!$this->client) {
             $this->client = Http::withOptions([
                 'verify' => !App::environment('local'),
             ])->baseUrl(config('script-runner-microservice.base_url'))
+            ->withToken($this->getAccessToken())
             ->accept('application/json')
             ->contentType('application/json')
             ->throw();
-        }
-
-        if ($includeToken) {
-            $this->client->withToken($this->getAccessToken());
         }
 
         return $this->client;
@@ -151,7 +148,7 @@ class ScriptMicroserviceService
             return Cache::get('keycloak.access_token');
         }
 
-        $response = $this->client(false)->asForm()->post(config('script-runner-microservice.keycloak.base_url') ?? '', [
+        $response = Http::asForm()->post(config('script-runner-microservice.keycloak.base_url') ?? '', [
             'grant_type' => 'password',
             'client_id' => config('script-runner-microservice.keycloak.client_id'),
             'client_secret' => config('script-runner-microservice.keycloak.client_secret'),
