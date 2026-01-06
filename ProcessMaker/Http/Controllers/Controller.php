@@ -4,7 +4,6 @@ namespace ProcessMaker\Http\Controllers;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use ProcessMaker\Traits\HasControllerAddons;
 
@@ -13,7 +12,7 @@ use ProcessMaker\Traits\HasControllerAddons;
  */
 class Controller extends BaseController
 {
-    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+    use AuthorizesRequests, DispatchesJobs;
 
     /**
      * Our overridden callAction unsets the parameters used by our middleware since

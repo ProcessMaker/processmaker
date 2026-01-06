@@ -239,7 +239,7 @@ class CssOverrideController extends Controller
                 ->toMediaCollection($collectionName, $diskName);
         } elseif (isset($data[$filename]) && !empty($data[$filename]) && $data[$filename] != 'null') {
             $customMessage = ['mimes' => __('The :attribute must be a file of type: jpg, jpeg, png, or gif.')];
-            $this->validate($request, [$filename => '  mimes:jpg,jpeg,png,gif'], $customMessage);
+            $request->validate([$filename => '  mimes:jpg,jpeg,png,gif'], $customMessage);
             $setting->addMedia($request->file($filename))
                 ->toMediaCollection($collectionName, $diskName);
         }
