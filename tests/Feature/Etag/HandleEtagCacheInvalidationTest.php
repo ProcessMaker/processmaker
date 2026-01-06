@@ -18,7 +18,7 @@ class HandleEtagCacheInvalidationTest extends TestCase
 
     private const TEST_ROUTE = '/_test/etag-cache-invalidation';
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 

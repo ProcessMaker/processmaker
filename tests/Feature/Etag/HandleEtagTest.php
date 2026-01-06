@@ -13,7 +13,7 @@ class HandleEtagTest extends TestCase
 
     private const TEST_ROUTE = '/_test/handle-etag';
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 

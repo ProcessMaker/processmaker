@@ -11,14 +11,14 @@ class CaseControllerSearchTest extends TestCase
 {
     use RequestHelper;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->user = CaseControllerTest::createUser('user_a');
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         User::where('id', $this->user->id)->forceDelete();
 
