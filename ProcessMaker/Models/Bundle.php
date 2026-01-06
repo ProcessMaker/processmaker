@@ -25,10 +25,13 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
     protected $appends = ['asset_count'];
 
-    protected $casts = [
-        'published' => 'boolean',
-        'webhook_token' => 'encrypted',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'published' => 'boolean',
+            'webhook_token' => 'encrypted',
+        ];
+    }
 
     #[Scope]
     protected function published($query)

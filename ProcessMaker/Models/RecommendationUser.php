@@ -10,10 +10,13 @@ class RecommendationUser extends ProcessMakerModel
 
     protected $guarded = [];
 
-    protected $casts = [
-        'dismissed_until' => 'datetime',
-        'count' => 'integer',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'dismissed_until' => 'datetime',
+            'count' => 'integer',
+        ];
+    }
 
     public function recommendation()
     {

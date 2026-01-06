@@ -27,13 +27,16 @@ class Clipboard extends ProcessMakerModel
     ];
 
     /**
-     * The attributes that should be cast to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array
+     * @return array<string, string>
      */
-    protected $casts = [
-        'config' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'config' => 'array',
+        ];
+    }
 
     public function user()
     {

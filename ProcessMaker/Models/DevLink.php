@@ -28,12 +28,6 @@ class DevLink extends ProcessMakerModel
 
     protected $appends = ['redirect_uri'];
 
-    protected $casts = [
-        'client_secret' => 'encrypted',
-        'access_token' => 'encrypted',
-        'refresh_token' => 'encrypted',
-    ];
-
     public static function boot()
     {
         parent::boot();
@@ -43,6 +37,15 @@ class DevLink extends ProcessMakerModel
                 $bundle->delete();
             }
         });
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'client_secret' => 'encrypted',
+            'access_token' => 'encrypted',
+            'refresh_token' => 'encrypted',
+        ];
     }
 
     public function getRedirectUriAttribute()

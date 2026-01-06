@@ -86,13 +86,6 @@ class Screen extends ProcessMakerModel implements ScreenInterface, PrometheusMet
      */
     protected $table = 'screens';
 
-    protected $casts = [
-        'config' => 'array',
-        'computed' => 'array',
-        'watchers' => 'array',
-        'translations' => 'array',
-    ];
-
     protected $appends = [
         'projects',
     ];
@@ -118,6 +111,16 @@ class Screen extends ProcessMakerModel implements ScreenInterface, PrometheusMet
 
         static::updating($clearCacheCallback);
         static::deleting($clearCacheCallback);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'config' => 'array',
+            'computed' => 'array',
+            'watchers' => 'array',
+            'translations' => 'array',
+        ];
     }
 
     /**

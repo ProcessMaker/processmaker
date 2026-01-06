@@ -29,19 +29,22 @@ class ScreenVersion extends ProcessMakerModel implements ScreenInterface, Promet
         'updated_at',
     ];
 
-    protected $casts = [
-        'config' => 'array',
-        'computed' => 'array',
-        'watchers' => 'array',
-        'translations' => 'array',
-    ];
-
     /**
      * Boot the model and its events
      */
     public static function boot()
     {
         parent::boot();
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'config' => 'array',
+            'computed' => 'array',
+            'watchers' => 'array',
+            'translations' => 'array',
+        ];
     }
 
     /**

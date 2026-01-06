@@ -12,9 +12,12 @@ class ScriptExecutorVersion extends ProcessMakerModel
         'title', 'description', 'language', 'config', 'draft', 'is_system', 'type',
     ];
 
-    protected $casts = [
-        'type' => ScriptExecutorType::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            'type' => ScriptExecutorType::class,
+        ];
+    }
 
     /**
      * Scope to only return draft versions.

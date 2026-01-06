@@ -15,17 +15,20 @@ class InboxRule extends ProcessMakerModel
 
     protected $table = 'inbox_rules';
 
-    protected $casts = [
-        'data' => 'array',
-        'submit_button' => 'array',
-        'end_date' => 'datetime',
-        'active' => 'boolean',
-        'mark_as_priority' => 'boolean',
-        'make_draft' => 'boolean',
-        'submit_data' => 'boolean',
-    ];
-
     protected $guarded = ['id', 'created_at', 'updated_at'];
+
+    protected function casts(): array
+    {
+        return [
+            'data' => 'array',
+            'submit_button' => 'array',
+            'end_date' => 'datetime',
+            'active' => 'boolean',
+            'mark_as_priority' => 'boolean',
+            'make_draft' => 'boolean',
+            'submit_data' => 'boolean',
+        ];
+    }
 
     /**
      * Delete the saved search when deleting an inbox rule

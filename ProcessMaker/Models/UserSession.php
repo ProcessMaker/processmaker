@@ -21,10 +21,13 @@ class UserSession extends ProcessMakerModel
         'expired_date',
     ];
 
-    protected $casts = [
-        'is_active' => 'boolean',
-        'expired_date' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean',
+            'expired_date' => 'datetime',
+        ];
+    }
 
     public function user()
     {
