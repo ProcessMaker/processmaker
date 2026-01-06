@@ -2,9 +2,9 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Gate;
 use ProcessMaker\Events\ScriptCreated;
 use ProcessMaker\Events\ScriptDeleted;
 use ProcessMaker\Events\ScriptDuplicated;

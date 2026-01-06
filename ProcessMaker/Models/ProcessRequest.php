@@ -2,15 +2,14 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Attributes\Scope;
-use ProcessMaker\Observers\ProcessRequestObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Carbon\Carbon;
 use DB;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -28,6 +27,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\SignalEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
+use ProcessMaker\Observers\ProcessRequestObserver;
 use ProcessMaker\Query\Expression;
 use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Traits\ExtendedPMQL;
@@ -536,7 +536,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Returns the list of users that have participated in the request
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     * @return HasManyThrough
      */
     public function participants(): HasManyThrough
     {
@@ -623,7 +623,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Scheduled task of the request.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function scheduledTasks(): HasMany
     {
@@ -942,7 +942,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Owner task of the sub process
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function ownerTask(): HasOne
     {

@@ -11,7 +11,7 @@ trait HasComments
     /**
      * Get all comments for the model.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     * @return MorphMany
      */
     public function comments(): MorphMany
     {

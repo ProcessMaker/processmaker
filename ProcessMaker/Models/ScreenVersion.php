@@ -2,9 +2,9 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use ProcessMaker\Contracts\PrometheusMetricInterface;
 use ProcessMaker\Contracts\ScreenInterface;
 use ProcessMaker\Events\TranslationChanged;
@@ -61,7 +61,7 @@ class ScreenVersion extends ProcessMakerModel implements ScreenInterface, Promet
     /**
      * Get the associated screen
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function parent(): BelongsTo
     {

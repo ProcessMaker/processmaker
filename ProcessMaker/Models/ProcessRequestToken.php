@@ -2,17 +2,16 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Attributes\Scope;
-use ProcessMaker\Observers\ProcessRequestTokenObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Carbon\Carbon;
 use DB;
 use DOMXPath;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Notification;
@@ -31,6 +30,7 @@ use ProcessMaker\Nayra\Managers\WorkflowManagerDefault;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Notifications\ActivityActivatedNotification;
 use ProcessMaker\Notifications\TaskReassignmentNotification;
+use ProcessMaker\Observers\ProcessRequestTokenObserver;
 use ProcessMaker\Query\Expression;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasUuids;
@@ -609,7 +609,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     /**
      * Scheduled task for this token
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function scheduledTasks(): HasMany
     {

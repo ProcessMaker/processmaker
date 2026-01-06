@@ -10,7 +10,6 @@ use ProcessMaker\Traits\HasControllerAddons;
  */
 class Controller extends BaseController
 {
-
     /**
      * Our overridden callAction unsets the parameters used by our middleware since
      * controllers don't care about them

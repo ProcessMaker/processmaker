@@ -2,11 +2,11 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\EmptyModel;
 use ProcessMaker\Query\Traits\PMQL;
@@ -105,7 +105,7 @@ class Group extends ProcessMakerModel
     /**
      * Manager of the group.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function manager(): BelongsTo
     {
@@ -159,7 +159,7 @@ class Group extends ProcessMakerModel
     /**
      * Group as assigned.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     * @return MorphMany
      */
     public function assigned(): MorphMany
     {

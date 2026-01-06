@@ -319,7 +319,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
      */
     protected static function bootObservers(): void
     {
-
     }
 
     /**

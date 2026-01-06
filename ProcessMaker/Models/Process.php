@@ -2,15 +2,14 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Attributes\Scope;
-use ProcessMaker\Observers\ProcessObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use DOMElement;
 use Exception;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
@@ -37,6 +36,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Managers\WorkflowManagerDefault;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
+use ProcessMaker\Observers\ProcessObserver;
 use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
 use ProcessMaker\Rules\BPMNValidation;
 use ProcessMaker\Traits\Exportable;

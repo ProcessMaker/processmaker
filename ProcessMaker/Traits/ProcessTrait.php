@@ -121,7 +121,7 @@ trait ProcessTrait
      * Note: This returns the first manager from the JSON properties->manager_id array
      * For multiple managers, use getManagers() method instead
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function manager(): BelongsTo
     {

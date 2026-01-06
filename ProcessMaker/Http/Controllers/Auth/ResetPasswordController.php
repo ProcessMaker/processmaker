@@ -2,10 +2,10 @@
 
 namespace ProcessMaker\Http\Controllers\Auth;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\User;
 

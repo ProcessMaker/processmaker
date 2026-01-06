@@ -2,9 +2,9 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use ProcessMaker\Observers\ProcessCollaborationObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use ProcessMaker\Traits\HasUuids;
 
 /**

@@ -2,10 +2,10 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
-use Illuminate\Support\Facades\Gate;
 use Comment as GlobalComment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Comment as CommentResource;

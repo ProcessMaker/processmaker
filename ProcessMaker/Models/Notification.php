@@ -77,7 +77,6 @@ class Notification extends ProcessMakerModel
 
         // The rest of the app expects that data is a json string, all notification uses this format.
         // We need to exclude any spurious notification that does not have a valid json data
-
     }
 
     public static function rules($existing = null)

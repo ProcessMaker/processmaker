@@ -2,8 +2,8 @@
 
 namespace ProcessMaker\Http\Controllers;
 
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;

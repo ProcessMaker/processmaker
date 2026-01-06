@@ -2,10 +2,9 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Attributes\Scope;
-use ProcessMaker\Observers\SettingObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
@@ -14,6 +13,7 @@ use Illuminate\Validation\Rule;
 use Log;
 use ProcessMaker\Cache\Settings\SettingCacheFactory;
 use ProcessMaker\Contracts\PrometheusMetricInterface;
+use ProcessMaker\Observers\SettingObserver;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia;

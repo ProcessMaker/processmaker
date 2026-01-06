@@ -2,9 +2,9 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use ProcessMaker\Contracts\ScriptInterface;
 use ProcessMaker\Traits\HasCategories;
 
@@ -39,7 +39,7 @@ class ScriptVersion extends ProcessMakerModel implements ScriptInterface
     /**
      * Get the associated script
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function parent(): BelongsTo
     {
