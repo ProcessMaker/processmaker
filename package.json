@@ -48,7 +48,8 @@
         "tailwindcss": "^3.4.10",
         "vue-loader": "^15.10.0",
         "vue-template-compiler": "^2.7.16",
-        "webpack-bundle-analyzer": "^4.10.2"
+        "webpack-bundle-analyzer": "^4.10.2",
+        "concurrently": "^9.0.1"
     },
     "dependencies": {
         "@babel/runtime": "^7.23.8",
