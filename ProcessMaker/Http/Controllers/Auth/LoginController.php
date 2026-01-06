@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Http\Controllers\Auth;
 
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use App;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
@@ -18,7 +20,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Package\Auth\Database\Seeds\AuthDefaultSeeder;
 use ProcessMaker\Traits\HasControllerAddons;
 
-class LoginController extends Controller
+class LoginController extends Controller implements HasMiddleware
 {
     use HasControllerAddons;
     /*
@@ -51,9 +53,6 @@ class LoginController extends Controller
     public function __construct()
     {
         // Set middle wares
-        $this->middleware('session_block')->only('loginWithIntendedCheck');
-        $this->middleware('guest')->except(['logout', 'beforeLogout', 'keepAlive']);
-        $this->middleware('saml_request')->only('showLoginForm');
 
         // Set login attempts
         $loginAttempts = (int) config('password-policies.login_attempts', PHP_INT_MAX);
@@ -61,6 +60,15 @@ class LoginController extends Controller
             $loginAttempts = PHP_INT_MAX;
         }
         $this->maxAttempts = $loginAttempts;
+    }
+
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('session_block', only: ['loginWithIntendedCheck']),
+            new Middleware('guest', except: ['logout', 'beforeLogout', 'keepAlive']),
+            new Middleware('saml_request', only: ['showLoginForm']),
+        ];
     }
 
     /**
