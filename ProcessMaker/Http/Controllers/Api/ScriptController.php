@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Events\ScriptCreated;
@@ -240,7 +241,7 @@ class ScriptController extends Controller
     public function execute(Request $request, ...$scriptKey)
     {
         $script = count($scriptKey) === 1 && is_numeric($scriptKey[0]) ? Script::find($scriptKey[0]) : Script::where('key', implode('/', $scriptKey))->first();
-        $this->authorize('execute', $script);
+        Gate::authorize('execute', $script);
         if ($request->task_id) {
             $processRequest = ProcessRequestToken::findOrFail($request->task_id)->processRequest;
             $script = $script->versionFor($processRequest);

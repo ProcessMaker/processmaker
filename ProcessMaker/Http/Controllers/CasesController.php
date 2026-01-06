@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers;
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Events\ScreenBuilderStarting;
@@ -99,7 +100,7 @@ class CasesController extends Controller
         // Check if the user has permission print for request
         $canPrintScreens = $canOpenCase = $this->canUserCanOpenCase($allRequests);
         if (!$canOpenCase && !$isProcessManager) {
-            $this->authorize('view', $request);
+            Gate::authorize('view', $request);
         }
 
         // Get the summary screen tranlations

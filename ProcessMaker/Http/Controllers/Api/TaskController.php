@@ -324,7 +324,7 @@ class TaskController extends Controller
      */
     public function update(Request $request, ProcessRequestToken $task)
     {
-        $this->authorize('update', $task);
+        Gate::authorize('update', $task);
         if ($request->input('status') === 'COMPLETED') {
             if ($task->status === 'CLOSED') {
                 return abort(422, __('Task already closed'));

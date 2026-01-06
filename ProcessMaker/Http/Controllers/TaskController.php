@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers;
 
+use Illuminate\Support\Facades\Gate;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Http\Request as HttpRequest;
@@ -114,7 +115,7 @@ class TaskController extends Controller
                                     ->count() > 0;
 
         if (!\Auth::user()->can('update', $task) && !$userHasComments) {
-            $this->authorize('update', $task);
+            Gate::authorize('update', $task);
         }
 
         //Mark notification as read
