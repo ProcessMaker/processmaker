@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Http\Middleware;
 
-use Tests\TestCase;
-use ProcessMaker\Http\Middleware\TrustHosts;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use ProcessMaker\Http\Middleware\TrustHosts;
+use Tests\TestCase;
 
 class TrustHostsTest extends TestCase
 {
@@ -51,11 +51,11 @@ class TrustHostsTest extends TestCase
     public function test_missing_forwarded_host()
     {
         $request = Request::create('https://example.processmaker.net');
-        
+
         $response = $this->middleware->handle($request, function ($req) {
             return response()->json(['status' => 'success']);
         });
 
         $this->assertEquals(200, $response->status());
     }
-} 
+}

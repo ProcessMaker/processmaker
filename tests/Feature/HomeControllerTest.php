@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
+use ProcessMaker\Models\User;
 use ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class HomeControllerTest extends TestCase
 {
@@ -32,7 +32,7 @@ class HomeControllerTest extends TestCase
     public function testRedirectsToCustomDashboardWhenUserHasDashboard()
     {
         $user = User::factory()->create();
-        
+
         // Create a custom dashboard for the user
         DynamicUI::create([
             'type' => 'DASHBOARD',
@@ -68,7 +68,7 @@ class HomeControllerTest extends TestCase
     public function testRedirectsToTasksOnMobileWithoutCustomDashboard()
     {
         $user = User::factory()->create();
-        
+
         // Mock MobileHelper to return true
         $_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Mobile/15E148 Safari/604.1';
         $_COOKIE['isMobile'] = 'true';
@@ -84,7 +84,7 @@ class HomeControllerTest extends TestCase
     public function testRedirectsToInboxOnDesktopWithoutCustomDashboard()
     {
         $user = User::factory()->create();
-        
+
         // Mock MobileHelper to return false
         $_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36';
         $_COOKIE['isMobile'] = 'false';

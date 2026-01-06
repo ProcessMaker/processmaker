@@ -27,7 +27,7 @@ class ProcessAbeRequestTokenFactory extends Factory
         ]);
         $processRequestToken = ProcessRequestToken::factory()->create([
             'process_id' => $process->getKey(),
-            'process_request_id' => $processRequest->getKey()
+            'process_request_id' => $processRequest->getKey(),
         ]);
 
         return [
@@ -35,7 +35,7 @@ class ProcessAbeRequestTokenFactory extends Factory
             'process_request_token_id' => $processRequestToken->getKey(),
             'completed_screen_id' => $screen->getKey(),
             'is_answered' => 0,
-            'require_login' => 0
+            'require_login' => 0,
         ];
     }
 }

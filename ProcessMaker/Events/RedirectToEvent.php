@@ -45,16 +45,17 @@ class RedirectToEvent implements ShouldBroadcastNow
     {
         $channels = [
             // Current request
-            new PrivateChannel('ProcessMaker.Models.ProcessRequest.' . $this->processRequest->getKey())
+            new PrivateChannel('ProcessMaker.Models.ProcessRequest.' . $this->processRequest->getKey()),
         ];
         // include child requests if any
-        foreach($this->processRequest->childRequests()->pluck('id') as $childRequestId) {
+        foreach ($this->processRequest->childRequests()->pluck('id') as $childRequestId) {
             $channels[] = new PrivateChannel('ProcessMaker.Models.ProcessRequest.' . $childRequestId);
         }
         // include parent request if any
         if ($this->processRequest->parent_request_id) {
             $channels[] = new PrivateChannel('ProcessMaker.Models.ProcessRequest.' . $this->processRequest->parent_request_id);
         }
+
         return $channels;
     }
 }

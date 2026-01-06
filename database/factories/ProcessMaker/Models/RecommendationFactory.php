@@ -2,8 +2,8 @@
 
 namespace Database\Factories\ProcessMaker\Models;
 
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\ProcessMaker\Models\Recommendation>
