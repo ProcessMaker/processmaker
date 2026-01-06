@@ -260,6 +260,9 @@ class UserController extends Controller
             if ($assignmentRule === 'rule_expression' && $request->has('form_data')) {
                 $include_ids = $processRequestToken->getAssigneesFromExpression($request->input('form_data'));
             }
+            if ($assignmentRule === 'process_variable' && $request->has('form_data')) {
+                $include_ids = $processRequestToken->getUsersFromProcessVariable($request->input('form_data'));
+            }
         }
 
         if (!empty($include_ids)) {
