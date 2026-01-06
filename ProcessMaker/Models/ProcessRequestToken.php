@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use AWS\CRT\Log as CRTLog;
 use Carbon\Carbon;
 use DB;
 use DOMXPath;
@@ -1037,9 +1036,9 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
         // Combine direct users with users from groups
         $allUserIds = array_unique(array_merge($usersIds, $usersFromGroups));
-        
+
         // Convert to numeric array and filter valid values
-        $allUserIds = array_values(array_filter($allUserIds, function($id) {
+        $allUserIds = array_values(array_filter($allUserIds, function ($id) {
             return !empty($id) && is_numeric($id) && $id > 0;
         }));
 

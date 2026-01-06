@@ -2,15 +2,12 @@
 
 namespace Tests\Model;
 
-use DOMXPath;
-use Mockery;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
-use ProcessMaker\Nayra\Storage\BpmnDocument;
 use stdClass;
 use Tests\TestCase;
 
@@ -69,6 +66,7 @@ class ProcessRequestTokenTest extends TestCase
                 if ($key === 'assignedGroups') {
                     return null;
                 }
+
                 return $default;
             });
 
@@ -79,12 +77,12 @@ class ProcessRequestTokenTest extends TestCase
         $token = $this->getMockBuilder(ProcessRequestToken::class)
             ->onlyMethods(['getBpmnDefinition'])
             ->getMock();
-        
+
         $token->process_id = $process->id;
         $token->process_request_id = $request->id;
         $token->element_id = 'task_1';
         $token->process = $process;
-        
+
         $token->expects($this->atLeastOnce())
             ->method('getBpmnDefinition')
             ->willReturn($bpmnDefinition);
@@ -147,6 +145,7 @@ class ProcessRequestTokenTest extends TestCase
                 if ($key === 'assignedGroups') {
                     return 'assigned_groups_var';
                 }
+
                 return $default;
             });
 
@@ -157,12 +156,12 @@ class ProcessRequestTokenTest extends TestCase
         $token = $this->getMockBuilder(ProcessRequestToken::class)
             ->onlyMethods(['getBpmnDefinition'])
             ->getMock();
-        
+
         $token->process_id = $process->id;
         $token->process_request_id = $request->id;
         $token->element_id = 'task_1';
         $token->process = $process;
-        
+
         $token->expects($this->atLeastOnce())
             ->method('getBpmnDefinition')
             ->willReturn($bpmnDefinition);
@@ -215,6 +214,7 @@ class ProcessRequestTokenTest extends TestCase
                 if ($key === 'assignedGroups') {
                     return 'assigned_groups_var';
                 }
+
                 return $default;
             });
 
@@ -225,12 +225,12 @@ class ProcessRequestTokenTest extends TestCase
         $token = $this->getMockBuilder(ProcessRequestToken::class)
             ->onlyMethods(['getBpmnDefinition'])
             ->getMock();
-        
+
         $token->process_id = $process->id;
         $token->process_request_id = $request->id;
         $token->element_id = 'task_1';
         $token->process = $process;
-        
+
         $token->expects($this->atLeastOnce())
             ->method('getBpmnDefinition')
             ->willReturn($bpmnDefinition);
@@ -270,6 +270,7 @@ class ProcessRequestTokenTest extends TestCase
                 if ($key === 'assignedGroups') {
                     return 'assigned_groups_var';
                 }
+
                 return $default;
             });
 
@@ -280,12 +281,12 @@ class ProcessRequestTokenTest extends TestCase
         $token = $this->getMockBuilder(ProcessRequestToken::class)
             ->onlyMethods(['getBpmnDefinition'])
             ->getMock();
-        
+
         $token->process_id = $process->id;
         $token->process_request_id = $request->id;
         $token->element_id = 'task_1';
         $token->process = $process;
-        
+
         $token->expects($this->atLeastOnce())
             ->method('getBpmnDefinition')
             ->willReturn($bpmnDefinition);
@@ -320,6 +321,7 @@ class ProcessRequestTokenTest extends TestCase
                 if ($key === 'assignedGroups') {
                     return 'assigned_groups_var';
                 }
+
                 return $default;
             });
 
@@ -330,12 +332,12 @@ class ProcessRequestTokenTest extends TestCase
         $token = $this->getMockBuilder(ProcessRequestToken::class)
             ->onlyMethods(['getBpmnDefinition'])
             ->getMock();
-        
+
         $token->process_id = $process->id;
         $token->process_request_id = $request->id;
         $token->element_id = 'task_1';
         $token->process = $process;
-        
+
         $token->expects($this->atLeastOnce())
             ->method('getBpmnDefinition')
             ->willReturn($bpmnDefinition);
@@ -376,6 +378,7 @@ class ProcessRequestTokenTest extends TestCase
                 if ($key === 'assignedGroups') {
                     return null;
                 }
+
                 return $default;
             });
 
@@ -386,12 +389,12 @@ class ProcessRequestTokenTest extends TestCase
         $token = $this->getMockBuilder(ProcessRequestToken::class)
             ->onlyMethods(['getBpmnDefinition'])
             ->getMock();
-        
+
         $token->process_id = $process->id;
         $token->process_request_id = $request->id;
         $token->element_id = 'task_1';
         $token->process = $process;
-        
+
         $token->expects($this->atLeastOnce())
             ->method('getBpmnDefinition')
             ->willReturn($bpmnDefinition);
