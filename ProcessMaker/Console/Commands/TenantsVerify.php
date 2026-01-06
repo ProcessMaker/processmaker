@@ -78,7 +78,7 @@ class TenantsVerify extends Command
             'logging.channels.daily.path' => base_path() . '/storage/tenant_{tenant_id}/logs/processmaker.log',
             'filesystems.disks.public.root' => base_path() . '/storage/tenant_{tenant_id}/app/public',
             'filesystems.disks.local.root' => base_path() . '/storage/tenant_{tenant_id}/app',
-            'filesystems.disks.lang.root' => base_path() . '/resources/lang/tenant_{tenant_id}',
+            'filesystems.disks.lang.root' => base_path() . '/lang/tenant_{tenant_id}',
         ];
 
         $configs = array_map(function ($config) use ($configs, $currentTenant, &$errors) {
