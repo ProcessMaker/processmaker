@@ -18,7 +18,7 @@ class InboxRuleFactory extends Factory
         //Generates random saved_search_id and process_request_token_id even with null values
         //But never both null
         return [
-            'name' => $this->faker->word,
+            'name' => $this->faker->word(),
             'user_id' => function () {
                 return User::factory()->create()->id;
             },

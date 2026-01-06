@@ -46,7 +46,7 @@ class HandleEtagCacheInvalidationTest extends TestCase
         $this->assertNotNull($initialEtag, 'Initial ETag was set');
 
         // Simulate a database update by changing `updated_at`.
-        $process->update(['name' => $this->faker->name]);
+        $process->update(['name' => $this->faker->name()]);
 
         // Second request: ETag should change due to the database update.
         $responseAfterUpdate = $this->get(self::TEST_ROUTE);

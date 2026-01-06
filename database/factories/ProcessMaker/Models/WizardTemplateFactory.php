@@ -13,8 +13,8 @@ class WizardTemplateFactory extends Factory
     public function definition()
     {
         return [
-            'uuid' => $this->faker->uuid,
-            'unique_template_id' => $this->faker->uuid,
+            'uuid' => $this->faker->uuid(),
+            'unique_template_id' => $this->faker->uuid(),
             'process_template_id' => null,
             'name' => $this->faker->unique()->name(),
             'description' => $this->faker->unique()->name(),
