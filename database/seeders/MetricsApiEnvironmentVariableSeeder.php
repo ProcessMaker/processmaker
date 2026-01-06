@@ -12,7 +12,7 @@ class MetricsApiEnvironmentVariableSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         EnvironmentVariable::firstOrCreate(
             [

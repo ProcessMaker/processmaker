@@ -34,7 +34,7 @@ class SanitizeHelperTest extends TestCase
         $this->user->save();
     }
 
-    public function testSingleRichTextSanitization()
+    public function testSingleRichTextSanitization(): void
     {
         $this->markTestSkipped('FOUR-6653');
 
@@ -61,7 +61,7 @@ class SanitizeHelperTest extends TestCase
         $this->assertEquals('Sanitize', $processRequestData['input_1']);
     }
 
-    public function testRichTextSanitizationInsideNestedScreen()
+    public function testRichTextSanitizationInsideNestedScreen(): void
     {
         $this->markTestSkipped('FOUR-6653');
 
@@ -95,7 +95,7 @@ class SanitizeHelperTest extends TestCase
         $this->assertEquals('Sanitize', $processRequestData['input_1']);
     }
 
-    public function testSingleRichTextSanitizationInsideLoop()
+    public function testSingleRichTextSanitizationInsideLoop(): void
     {
         $this->markTestSkipped('FOUR-6653');
 
@@ -123,7 +123,7 @@ class SanitizeHelperTest extends TestCase
         $this->assertEquals('Sanitize', $processRequestData['loop_1'][0]['form_input_1']);
     }
 
-    public function testRichTextSanitizationInsideLoopInsideNestedScreen()
+    public function testRichTextSanitizationInsideLoopInsideNestedScreen(): void
     {
         $this->markTestSkipped('FOUR-6653');
 
@@ -157,7 +157,7 @@ class SanitizeHelperTest extends TestCase
         $this->assertEquals('Sanitize', $processRequestData['loop_1'][0]['form_input_1']);
     }
 
-    public function testSingleRichTextTwoPagesSanitization()
+    public function testSingleRichTextTwoPagesSanitization(): void
     {
         $this->markTestSkipped('FOUR-6653');
 
@@ -186,7 +186,7 @@ class SanitizeHelperTest extends TestCase
         $this->assertEquals('Sanitize', $processRequestData['input_1']);
     }
 
-    public function testSingleRichTextSanitizationWithNestedVariableName()
+    public function testSingleRichTextSanitizationWithNestedVariableName(): void
     {
         $this->markTestSkipped('FOUR-6653');
 
@@ -213,7 +213,7 @@ class SanitizeHelperTest extends TestCase
         $this->assertEquals('Sanitize', $processRequestData['input_1']);
     }
 
-    public function testSingleRichTextSanitizationSameNameDifferentScope()
+    public function testSingleRichTextSanitizationSameNameDifferentScope(): void
     {
         $this->markTestSkipped('FOUR-6653');
 
@@ -242,7 +242,7 @@ class SanitizeHelperTest extends TestCase
         $this->assertEquals('Sanitize', $processRequestData['form_text_area_1']);
     }
 
-    public function testSingleRichTextSanitizationInsideTableAndLoop()
+    public function testSingleRichTextSanitizationInsideTableAndLoop(): void
     {
         // Prepare scenario ..
         $this->createScreen('tests/Fixtures/sanitize_single_rich_text_inside_table_and_loop_screen.json');
@@ -271,7 +271,7 @@ class SanitizeHelperTest extends TestCase
         $this->assertEquals('<p><strong>Inside loop inside table 2 </strong><strong>do not sanitize</strong></p>', $processRequestData['loop_2'][1]['form_text_area_4']);
     }
 
-    public function testSanitizeDataForScreen()
+    public function testSanitizeDataForScreen(): void
     {
         $content = file_get_contents(__DIR__ . '/../../Fixtures/sanitize_nested_screen.json');
         (new ImportScreen($content))->handle();

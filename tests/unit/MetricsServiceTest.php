@@ -134,7 +134,7 @@ class MetricsServiceTest extends TestCase
     /**
      * Test that counterInc calls Metrics::counter() and then inc() with the correct labels.
      */
-    public function testCounterInc()
+    public function testCounterInc(): void
     {
         // Set configuration values used by addSystemLabels()
         Config::set('app.name', 'TestApp');
@@ -178,7 +178,7 @@ class MetricsServiceTest extends TestCase
     /**
      * Test that histogramObserve calls Metrics::histogram() and then observe() with the correct values.
      */
-    public function testHistogramObserve()
+    public function testHistogramObserve(): void
     {
         // Set configuration values used by addSystemLabels()
         Config::set('app.name', 'TestApp');
@@ -221,7 +221,7 @@ class MetricsServiceTest extends TestCase
     /**
      * Test that addSystemLabels returns the input labels plus the system labels.
      */
-    public function testAddSystemLabels()
+    public function testAddSystemLabels(): void
     {
         // Set configuration values used by addSystemLabels()
         Config::set('app.name', 'TestApp');
@@ -247,7 +247,7 @@ class MetricsServiceTest extends TestCase
     /**
      * Test that clearMetrics calls wipeStorage on the collection registry.
      */
-    public function testClearMetrics()
+    public function testClearMetrics(): void
     {
         $service = new MetricsService();
 

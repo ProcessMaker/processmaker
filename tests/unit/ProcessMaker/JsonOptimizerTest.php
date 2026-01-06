@@ -46,7 +46,7 @@ class JsonOptimizerTest extends TestCase
     /**
      * Test that the json_optimize_decode function decodes JSON correctly.
      */
-    public function test_it_decodes_json_correctly_with_optimizer()
+    public function test_it_decodes_json_correctly_with_optimizer(): void
     {
         $decoded = JsonOptimizer::decode($this->json, true);
 
@@ -58,7 +58,7 @@ class JsonOptimizerTest extends TestCase
     /**
      * Test that the json_optimize_decode function falls back to native decode on invalid JSON.
      */
-    public function test_it_falls_back_to_native_decode_on_invalid_json()
+    public function test_it_falls_back_to_native_decode_on_invalid_json(): void
     {
         $invalidJson = '{"name": "ProcessMaker", "invalid": }'; // malformed JSON
 
@@ -70,7 +70,7 @@ class JsonOptimizerTest extends TestCase
     /**
      * Test that the json_optimize_decode function uses simdjson when available.
      */
-    public function test_it_uses_simdjson_when_available()
+    public function test_it_uses_simdjson_when_available(): void
     {
         if (!extension_loaded('simdjson_plus')) {
             $this->markTestSkipped('SIMDJSON extension not loaded.');
@@ -86,7 +86,7 @@ class JsonOptimizerTest extends TestCase
     /**
      * Test that the config flag json_optimization_decode is respected.
      */
-    public function test_it_respects_config_flag_json_optimization()
+    public function test_it_respects_config_flag_json_optimization(): void
     {
         config(['app.json_optimization_decode' => false]);
 
@@ -98,7 +98,7 @@ class JsonOptimizerTest extends TestCase
     /**
      * Test that the helper function json_optimize_decode decodes valid JSON correctly.
      */
-    public function test_helper_function_decodes_valid_json_correctly()
+    public function test_helper_function_decodes_valid_json_correctly(): void
     {
         $decoded = json_optimize_decode($this->json, true);
 
@@ -110,7 +110,7 @@ class JsonOptimizerTest extends TestCase
     /**
      * Test that the helper function json_optimize_decode returns null on invalid JSON.
      */
-    public function test_helper_function_returns_null_on_invalid_json()
+    public function test_helper_function_returns_null_on_invalid_json(): void
     {
         $invalidJson = '{"type": "workflow", "meta": ['; // malformed JSON
 
@@ -122,7 +122,7 @@ class JsonOptimizerTest extends TestCase
     /**
      * Test that the helper function json_optimize_decode respects the config setting.
      */
-    public function test_helper_respects_config_setting()
+    public function test_helper_respects_config_setting(): void
     {
         config(['app.json_optimization_decode' => false]);
 
@@ -134,7 +134,7 @@ class JsonOptimizerTest extends TestCase
     /**
      * Test that the helper function json_optimize_decode uses simdjson when enabled.
      */
-    public function test_helper_uses_simdjson_when_enabled()
+    public function test_helper_uses_simdjson_when_enabled(): void
     {
         if (!extension_loaded('simdjson_plus')) {
             $this->markTestSkipped('SIMDJSON extension not available');
@@ -150,7 +150,7 @@ class JsonOptimizerTest extends TestCase
     /**
      * Test that the helper function json_optimize_encode encodes data correctly.
      */
-    public function test_it_encodes_data_correctly()
+    public function test_it_encodes_data_correctly(): void
     {
         config(['app.json_optimization_encode' => true]);
 
@@ -167,7 +167,7 @@ class JsonOptimizerTest extends TestCase
     /**
      * Test the performance of the json_decode function.
      */
-    public function test_json_decode_performance()
+    public function test_json_decode_performance(): void
     {
         $json = json_encode($this->testData);
 
@@ -182,7 +182,7 @@ class JsonOptimizerTest extends TestCase
     /**
      * Test the performance of the json_optimize_decode function.
      */
-    public function test_json_optimize_decode_performance()
+    public function test_json_optimize_decode_performance(): void
     {
         if (!extension_loaded('simdjson_plus')) {
             $this->markTestSkipped('SIMDJSON extension not available');
@@ -201,7 +201,7 @@ class JsonOptimizerTest extends TestCase
     /**
      * Test JSON encoding and decoding with edge cases and special characters.
      */
-    public function test_json_decode_edge_cases()
+    public function test_json_decode_edge_cases(): void
     {
         // Test with special characters
         $specialData = [
@@ -245,7 +245,7 @@ class JsonOptimizerTest extends TestCase
     /**
      * Test performance comparison between json_optimize_decode and json_decode using fixture data.
      */
-    public function test_json_optimize_decode_performance_vs_native()
+    public function test_json_optimize_decode_performance_vs_native(): void
     {
         $jsonFixturePath = __DIR__ . '/../../Fixtures/json_optimizer_test_example.json';
 

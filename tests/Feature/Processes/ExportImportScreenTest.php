@@ -23,7 +23,7 @@ class ExportImportScreenTest extends TestCase
      *
      * @return void
      */
-    public function testExportImportProcess()
+    public function testExportImportProcess(): void
     {
         // Create an admin user
         $adminUser = User::factory()->create([
@@ -134,7 +134,7 @@ class ExportImportScreenTest extends TestCase
         $this->assertEquals('Invalid Format', $response->json('message'));
     }
 
-    public function testImportScreenWithWatchers()
+    public function testImportScreenWithWatchers(): void
     {
         // Load the file to test
         $fileName = __DIR__ . '/../../Fixtures/screen_with_watchers.json';
@@ -152,7 +152,7 @@ class ExportImportScreenTest extends TestCase
         $this->assertTrue($response->json('status')['screens']['success']);
     }
 
-    public function testImportNestedScreen()
+    public function testImportNestedScreen(): void
     {
         // Load the file to test
         $fileName = __DIR__ . '/../../Fixtures/nested_screens.json';

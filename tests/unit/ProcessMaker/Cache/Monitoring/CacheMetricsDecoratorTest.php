@@ -34,7 +34,7 @@ class CacheMetricsDecoratorTest extends TestCase
         $this->decorator = new CacheMetricsDecorator($this->cache, $this->metrics);
     }
 
-    public function testGetWithHit()
+    public function testGetWithHit(): void
     {
         // Setup expectations for cache hit
         $this->cache->shouldReceive('has')
@@ -58,7 +58,7 @@ class CacheMetricsDecoratorTest extends TestCase
         $this->assertEquals($this->testValue, $result);
     }
 
-    public function testGetWithMiss()
+    public function testGetWithMiss(): void
     {
         $default = 'default_value';
 
@@ -84,7 +84,7 @@ class CacheMetricsDecoratorTest extends TestCase
         $this->assertEquals($default, $result);
     }
 
-    public function testSetSuccess()
+    public function testSetSuccess(): void
     {
         $ttl = 3600;
 
@@ -105,7 +105,7 @@ class CacheMetricsDecoratorTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testSetFailure()
+    public function testSetFailure(): void
     {
         // Setup expectations
         $this->cache->shouldReceive('set')
@@ -120,7 +120,7 @@ class CacheMetricsDecoratorTest extends TestCase
         $this->assertFalse($result);
     }
 
-    public function testDelete()
+    public function testDelete(): void
     {
         // Setup expectations
         $this->cache->shouldReceive('delete')
@@ -133,7 +133,7 @@ class CacheMetricsDecoratorTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testClear()
+    public function testClear(): void
     {
         // Setup expectations
         $this->cache->shouldReceive('clear')
@@ -145,7 +145,7 @@ class CacheMetricsDecoratorTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testHas()
+    public function testHas(): void
     {
         // Setup expectations
         $this->cache->shouldReceive('has')
@@ -158,7 +158,7 @@ class CacheMetricsDecoratorTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testMissing()
+    public function testMissing(): void
     {
         // Setup expectations
         $this->cache->shouldReceive('missing')
@@ -171,21 +171,21 @@ class CacheMetricsDecoratorTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testCalculateSizeWithString()
+    public function testCalculateSizeWithString(): void
     {
         $value = 'test';
         $result = $this->invokeCalculateSize($value);
         $this->assertEquals(strlen($value), $result);
     }
 
-    public function testCalculateSizeWithArray()
+    public function testCalculateSizeWithArray(): void
     {
         $value = ['test' => 'value'];
         $result = $this->invokeCalculateSize($value);
         $this->assertEquals(strlen(serialize($value)), $result);
     }
 
-    public function testCalculateSizeWithObject()
+    public function testCalculateSizeWithObject(): void
     {
         $value = new \stdClass();
         $value->test = 'value';
@@ -193,28 +193,28 @@ class CacheMetricsDecoratorTest extends TestCase
         $this->assertEquals(strlen(serialize($value)), $result);
     }
 
-    public function testCalculateSizeWithInteger()
+    public function testCalculateSizeWithInteger(): void
     {
         $value = 42;
         $result = $this->invokeCalculateSize($value);
         $this->assertEquals(PHP_INT_SIZE, $result);
     }
 
-    public function testCalculateSizeWithFloat()
+    public function testCalculateSizeWithFloat(): void
     {
         $value = 3.14;
         $result = $this->invokeCalculateSize($value);
         $this->assertEquals(8, $result);
     }
 
-    public function testCalculateSizeWithBoolean()
+    public function testCalculateSizeWithBoolean(): void
     {
         $value = true;
         $result = $this->invokeCalculateSize($value);
         $this->assertEquals(1, $result);
     }
 
-    public function testCalculateSizeWithNull()
+    public function testCalculateSizeWithNull(): void
     {
         $value = null;
         $result = $this->invokeCalculateSize($value);
@@ -229,7 +229,7 @@ class CacheMetricsDecoratorTest extends TestCase
         return $method->invoke($this->decorator, $value);
     }
 
-    public function testCreateKey()
+    public function testCreateKey(): void
     {
         // Setup expectations
         $this->cache->shouldReceive('createKey')
@@ -254,7 +254,7 @@ class CacheMetricsDecoratorTest extends TestCase
         $this->assertEquals('screen_1_2_en_3_4', $key);
     }
 
-    public function testCreateKeyWithNonScreenCache()
+    public function testCreateKeyWithNonScreenCache(): void
     {
         // Create a mock that only implements CacheInterface
         $cache = Mockery::mock(CacheInterface::class);
@@ -277,7 +277,7 @@ class CacheMetricsDecoratorTest extends TestCase
         ]);
     }
 
-    public function testInvalidateSuccess()
+    public function testInvalidateSuccess(): void
     {
         // Test parameters
         $params = ['screen_id' => 5, 'language' => 'es'];
@@ -293,7 +293,7 @@ class CacheMetricsDecoratorTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function testInvalidateFailure()
+    public function testInvalidateFailure(): void
     {
         // Test parameters
         $params = ['screen_id' => 5, 'language' => 'es'];
@@ -309,7 +309,7 @@ class CacheMetricsDecoratorTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function testInvalidateWithNonScreenCache()
+    public function testInvalidateWithNonScreenCache(): void
     {
         // Create a mock that implements CacheInterface
         $cache = Mockery::mock(CacheInterface::class);
@@ -333,7 +333,7 @@ class CacheMetricsDecoratorTest extends TestCase
         parent::tearDown();
     }
 
-    public function testGetWithPrometheusMetricLabel()
+    public function testGetWithPrometheusMetricLabel(): void
     {
         $mockMetric = Mockery::mock(PrometheusMetricInterface::class);
         $mockMetric->shouldReceive('getPrometheusMetricLabel')
@@ -362,7 +362,7 @@ class CacheMetricsDecoratorTest extends TestCase
         $this->assertEquals($mockMetric, $result);
     }
 
-    public function testSetWithPrometheusMetricLabel()
+    public function testSetWithPrometheusMetricLabel(): void
     {
         $mockMetric = new MockMetric();
 

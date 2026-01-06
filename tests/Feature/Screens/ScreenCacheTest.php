@@ -12,7 +12,7 @@ class ScreenCacheTest extends TestCase
 {
     use RequestHelper;
 
-    public function testScreenCache()
+    public function testScreenCache(): void
     {
         // 1. Import a process with a screen with a nested without screen selected
         $process = $this->createProcessFromJSON(

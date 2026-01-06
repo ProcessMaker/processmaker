@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use ProcessMaker\Contracts\ProcessModelInterface;
@@ -126,7 +127,7 @@ class ProcessVersion extends ProcessMakerModel implements ProcessModelInterface
      *
      * @return Process
      */
-    public function process()
+    public function process(): BelongsTo
     {
         return $this->belongsTo(Process::class);
     }
@@ -136,7 +137,7 @@ class ProcessVersion extends ProcessMakerModel implements ProcessModelInterface
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function parent()
+    public function parent(): BelongsTo
     {
         return $this->belongsTo(Process::class, 'process_id', 'id');
     }

@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use ProcessMaker\Filters\Filter;
@@ -43,7 +44,7 @@ class Recommendation extends ProcessMakerModel
         ];
     }
 
-    public function recommendationUsers()
+    public function recommendationUsers(): HasMany
     {
         return $this->hasMany(RecommendationUser::class, 'recommendation_id');
     }

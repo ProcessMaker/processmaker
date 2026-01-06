@@ -24,7 +24,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         Route::pattern('user', '[0-9]+');
         Route::pattern('group', '[0-9]+');

@@ -16,7 +16,7 @@ class ProcessNotificationSettingFactory extends Factory
      *
      * @return array
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             'process_id' => function () {

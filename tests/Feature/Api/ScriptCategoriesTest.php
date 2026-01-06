@@ -34,7 +34,7 @@ class ScriptCategoriesTest extends TestCase
     /**
      * Test the creation of script
      */
-    public function testCreateScriptCategory()
+    public function testCreateScriptCategory(): void
     {
         //Create a script category
         $route = route($this->resource . '.store');
@@ -51,7 +51,7 @@ class ScriptCategoriesTest extends TestCase
     /**
      * Test the required fields
      */
-    public function testCreateNameRequired()
+    public function testCreateNameRequired(): void
     {
         $route = route($this->resource . '.store');
         $base = ScriptCategory::factory()->make(['name' => null]);
@@ -67,7 +67,7 @@ class ScriptCategoriesTest extends TestCase
     /**
      * Test create duplicate name Script Category
      */
-    public function testCreateDuplicateName()
+    public function testCreateDuplicateName(): void
     {
         $route = route($this->resource . '.store');
 
@@ -85,7 +85,7 @@ class ScriptCategoriesTest extends TestCase
     /**
      * Test to verify our script categories listing api endpoint works without any filters
      */
-    public function testScriptsListing()
+    public function testScriptsListing(): void
     {
         $initialCount = ScriptCategory::count();
         // Create some script
@@ -118,7 +118,7 @@ class ScriptCategoriesTest extends TestCase
     /**
      * Test to verify our script categories listing API endpoint works without any filters
      */
-    public function testFiltering()
+    public function testFiltering(): void
     {
         $perPage = 10;
         $initialInactiveCount = ScriptCategory::where('status', 'INACTIVE')->count();
@@ -178,7 +178,7 @@ class ScriptCategoriesTest extends TestCase
     /**
      * Test list categories by status
      */
-    public function testFilteringStatus()
+    public function testFilteringStatus(): void
     {
         $perPage = 10;
         $initialActiveCount = ScriptCategory::where('status', 'ACTIVE')->count();
@@ -219,7 +219,7 @@ class ScriptCategoriesTest extends TestCase
     /**
      * Test to verify our script categories listing api endpoint works with sorting
      */
-    public function testSorting()
+    public function testSorting(): void
     {
         // Create some script
         ScriptCategory::factory()->create([
@@ -268,7 +268,7 @@ class ScriptCategoriesTest extends TestCase
     /**
      * Test pagination of script list
      */
-    public function testPagination()
+    public function testPagination(): void
     {
         // Number of script in the tables at the moment of starting the test
         $initialRows = ScriptCategory::all()->count();
@@ -291,7 +291,7 @@ class ScriptCategoriesTest extends TestCase
     /**
      * Test show script category
      */
-    public function testShowScriptCategory()
+    public function testShowScriptCategory(): void
     {
         //Create a new script category
         $category = ScriptCategory::factory()->create();
@@ -306,7 +306,7 @@ class ScriptCategoriesTest extends TestCase
     /*
     + Test update script category
      */
-    public function testUpdateScript()
+    public function testUpdateScript(): void
     {
         $item = ScriptCategory::factory()->create();
 
@@ -327,7 +327,7 @@ class ScriptCategoriesTest extends TestCase
     /*
     + Test change status
      */
-    public function testChangeStatus()
+    public function testChangeStatus(): void
     {
         $item = ScriptCategory::factory()->create(['status' => 'ACTIVE']);
 
@@ -348,7 +348,7 @@ class ScriptCategoriesTest extends TestCase
     /*
     + Test validate name required
      */
-    public function testValidateNameNotNull()
+    public function testValidateNameNotNull(): void
     {
         $item = ScriptCategory::factory()->create();
 
@@ -367,7 +367,7 @@ class ScriptCategoriesTest extends TestCase
     /*
     + Test validate name unique
      */
-    public function testValidateNameUnique()
+    public function testValidateNameUnique(): void
     {
         $name = 'Some name';
         ScriptCategory::factory()->create(['name' => $name]);
@@ -388,7 +388,7 @@ class ScriptCategoriesTest extends TestCase
     /**
      * Test validate data valid for status
      */
-    public function testValidateStatus()
+    public function testValidateStatus(): void
     {
         $item = ScriptCategory::factory()->create();
 
@@ -406,7 +406,7 @@ class ScriptCategoriesTest extends TestCase
     /**
      * Delete script category
      */
-    public function testDeleteScriptCategory()
+    public function testDeleteScriptCategory(): void
     {
         $scriptCategory = ScriptCategory::factory()->create();
         $route = route($this->resource . '.destroy', [$scriptCategory->id]);
@@ -419,7 +419,7 @@ class ScriptCategoriesTest extends TestCase
     /**
      * test can not delete the category because you have assigned script
      */
-    public function testDeleteFailScriptCategory()
+    public function testDeleteFailScriptCategory(): void
     {
         $script = Script::factory()->create(['language'=>'lua']);
         $route = route($this->resource . '.destroy', [$script->script_category_id]);

@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Traits;
 
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\User;
 
@@ -12,7 +13,7 @@ trait HasComments
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphMany
      */
-    public function comments()
+    public function comments(): MorphMany
     {
         return $this->morphMany(Comment::class, 'commentable');
     }

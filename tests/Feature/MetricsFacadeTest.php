@@ -28,7 +28,7 @@ class MetricsFacadeTest extends TestCase
     /**
      * Test to check if a counter can be registered and incremented using the facade.
      */
-    public function test_facade_can_register_and_increment_counter()
+    public function test_facade_can_register_and_increment_counter(): void
     {
         // Register a counter using the Facade
         $counter = Metrics::counter('facade_counter', 'Test counter via facade');
@@ -43,7 +43,7 @@ class MetricsFacadeTest extends TestCase
     /**
      * Test to check if metrics can be rendered using the facade.
      */
-    public function test_facade_can_render_metrics()
+    public function test_facade_can_render_metrics(): void
     {
         // Register and increment a counter
         $counter = Metrics::counter('facade_render_test', 'Render test via facade');

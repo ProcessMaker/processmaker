@@ -7,7 +7,7 @@ use Tests\TestCase;
 
 class DocumentationTest extends TestCase
 {
-    public function testGenerateSwaggerDocument()
+    public function testGenerateSwaggerDocument(): void
     {
         \Artisan::call('l5-swagger:generate');
         $this->assertJson(

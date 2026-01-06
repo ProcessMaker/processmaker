@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
         // Change the process_id column to helper_process_id
         Schema::table('wizard_templates', function (Blueprint $table) {
@@ -36,7 +36,7 @@ return new class extends Migration
         });
     }
 
-    public function down()
+    public function down(): void
     {
         // Reverse the changes in the down method if needed
         Schema::table('wizard_templates', function (Blueprint $table) {

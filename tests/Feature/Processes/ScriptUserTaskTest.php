@@ -16,7 +16,7 @@ class ScriptUserTaskTest extends TestCase
 {
     use RequestHelper;
 
-    public function testJobThatRunsAScriptTaskWithAUser()
+    public function testJobThatRunsAScriptTaskWithAUser(): void
     {
         $this->markTestSkipped();
 

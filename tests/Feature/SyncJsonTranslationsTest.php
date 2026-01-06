@@ -44,7 +44,7 @@ class SyncJsonTranslationsTest extends TestCase
     /**
      * Test copying a new translation file when destination doesn't exist
      */
-    public function testCopyNewTranslationFile()
+    public function testCopyNewTranslationFile(): void
     {
         // Create a test JSON file in resources-core
         $testTranslations = [
@@ -74,7 +74,7 @@ class SyncJsonTranslationsTest extends TestCase
     /**
      * Test merging new translations into existing file
      */
-    public function testMergeNewTranslations()
+    public function testMergeNewTranslations(): void
     {
         // Create existing translations in destination
         $existingTranslations = [
@@ -161,7 +161,7 @@ class SyncJsonTranslationsTest extends TestCase
     /**
      * Test no changes when all translations already exist
      */
-    public function testNoChangesWhenAllTranslationsExist()
+    public function testNoChangesWhenAllTranslationsExist(): void
     {
         // Create existing translations in destination
         $existingTranslations = [
@@ -188,7 +188,7 @@ class SyncJsonTranslationsTest extends TestCase
     /**
      * Test handling invalid JSON in resources-core
      */
-    public function testInvalidJsonInResourcesCore()
+    public function testInvalidJsonInResourcesCore(): void
     {
         // Create invalid JSON file in resources-core
         file_put_contents($this->tempDir . '/lang/en.json', '{"hello": "Hello", "world":}');
@@ -206,7 +206,7 @@ class SyncJsonTranslationsTest extends TestCase
     /**
      * Test handling invalid JSON in destination
      */
-    public function testInvalidJsonInDestination()
+    public function testInvalidJsonInDestination(): void
     {
         // Create invalid JSON in destination
         Storage::disk('lang')->put('en.json', '{"hello": "Hello", "world":}');
@@ -232,7 +232,7 @@ class SyncJsonTranslationsTest extends TestCase
     /**
      * Test processing multiple language files
      */
-    public function testProcessMultipleLanguages()
+    public function testProcessMultipleLanguages(): void
     {
         // Create multiple language files in resources-core
         $this->createTestFile('en.json', ['hello' => 'Hello', 'world' => 'World']);
@@ -260,7 +260,7 @@ class SyncJsonTranslationsTest extends TestCase
     /**
      * Test preserving existing custom translations
      */
-    public function testPreserveExistingCustomTranslations()
+    public function testPreserveExistingCustomTranslations(): void
     {
         // Create existing translations with custom values
         $existingTranslations = [
@@ -301,7 +301,7 @@ class SyncJsonTranslationsTest extends TestCase
     /**
      * Test backup creation when merging translations
      */
-    public function testBackupCreationWhenMerging()
+    public function testBackupCreationWhenMerging(): void
     {
         // Create existing translations in destination
         $existingTranslations = [
@@ -350,7 +350,7 @@ class SyncJsonTranslationsTest extends TestCase
     /**
      * Test no backup creation when no changes are made
      */
-    public function testNoBackupCreationWhenNoChanges()
+    public function testNoBackupCreationWhenNoChanges(): void
     {
         // Create existing translations in destination
         $existingTranslations = [
@@ -377,7 +377,7 @@ class SyncJsonTranslationsTest extends TestCase
     /**
      * Test backup rotation (keeping only 3 most recent backups)
      */
-    public function testBackupRotation()
+    public function testBackupRotation(): void
     {
         // Create existing translations in destination
         $existingTranslations = [
@@ -414,7 +414,7 @@ class SyncJsonTranslationsTest extends TestCase
     /**
      * Test backup creation when copying new files
      */
-    public function testNoBackupCreationWhenCopying()
+    public function testNoBackupCreationWhenCopying(): void
     {
         // Create a test JSON file in resources-core
         $testTranslations = [

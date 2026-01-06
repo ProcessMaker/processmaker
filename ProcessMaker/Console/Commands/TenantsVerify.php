@@ -35,7 +35,7 @@ class TenantsVerify extends Command
      */
     private $jsonData = [];
 
-    public function handle()
+    public function handle(): void
     {
         if (!config('app.multitenancy')) {
             $this->info('Multitenancy is disabled');

@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -106,12 +107,12 @@ class Template extends ProcessMakerModel
         return (new $this->types[$type][1])->applyTemplate($request);
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function categories()
+    public function categories(): BelongsTo
     {
         $categoryClass = $this->types[$type][2];
         $categoryColumn = $this->types[$type][3];

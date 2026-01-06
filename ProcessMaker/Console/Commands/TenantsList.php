@@ -27,7 +27,7 @@ class TenantsList extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $tenants = Tenant::all();
 

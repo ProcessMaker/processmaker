@@ -104,7 +104,7 @@ class InterstitialTest extends TestCase
     /**
      * Execute a process and check the interstitial redirects
      */
-    public function testExecuteProcessRedirects()
+    public function testExecuteProcessRedirects(): void
     {
         $processes = $this->importProcessPackage('task_subprocess_task.json');
         $process = $processes[0];

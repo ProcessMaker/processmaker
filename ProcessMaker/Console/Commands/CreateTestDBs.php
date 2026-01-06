@@ -37,7 +37,7 @@ class CreateTestDBs extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $processes = env('PARALLEL_TEST_PROCESSES');
         if (!$processes) {

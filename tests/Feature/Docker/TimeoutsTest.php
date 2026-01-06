@@ -93,7 +93,7 @@ class TimeoutsTest extends TestCase
     /**
      * Test to ensure PHP scripts timeout
      */
-    public function testPhpScriptTimeoutExceeded()
+    public function testPhpScriptTimeoutExceeded(): void
     {
         config(['simulate_timeout' => true]);
         $this->assertTimeoutExceeded([
@@ -105,7 +105,7 @@ class TimeoutsTest extends TestCase
     /**
      * Test to ensure PHP scripts do not timeout if they do not exceed limits
      */
-    public function testPhpScriptTimeoutNotExceeded()
+    public function testPhpScriptTimeoutNotExceeded(): void
     {
         $this->assertTimeoutNotExceeded([
             'language' => 'php',

@@ -14,7 +14,7 @@ class ExtendedPMQLTest extends TestCase
 {
     use RequestHelper;
 
-    public function testHandleFieldAlias()
+    public function testHandleFieldAlias(): void
     {
         // Instantiate Faker
         $faker = Factory::create();
@@ -35,7 +35,7 @@ class ExtendedPMQLTest extends TestCase
         $this->assertTrue($processRequest->is($pmqlResult));
     }
 
-    public function testHandleValueAlias()
+    public function testHandleValueAlias(): void
     {
         // Create a process request
         $processRequest = ProcessRequest::factory()->create([
@@ -51,7 +51,7 @@ class ExtendedPMQLTest extends TestCase
         $this->assertContains($processRequest->id, $ids);
     }
 
-    public function testHandleFieldWildcard()
+    public function testHandleFieldWildcard(): void
     {
         $this->markTestSkipped('PMQL does not yet support JSON fields on Microsoft SQL Server.');
 
@@ -82,7 +82,7 @@ class ExtendedPMQLTest extends TestCase
         $this->assertTrue($processRequestToken->is($pmqlResult));
     }
 
-    public function testInUsersTimezone()
+    public function testInUsersTimezone(): void
     {
         // Ensure the mysql server timezone is set to UTC
         $this->assertContains(\DB::select('select @@time_zone as tz')[0]->tz, ['+00:00', 'UTC']);
@@ -106,7 +106,7 @@ class ExtendedPMQLTest extends TestCase
         $this->assertEquals($processRequest2->id, $result->json()['data'][0]['id']);
     }
 
-    public function testRelativeDate()
+    public function testRelativeDate(): void
     {
         $processRequest1 = ProcessRequest::factory()->create([
             'data' => ['date' => Carbon::parse('-10 minutes')->toDateTimeString()],
@@ -121,7 +121,7 @@ class ExtendedPMQLTest extends TestCase
         $this->assertEquals($processRequest1->id, $result->json()['data'][0]['id']);
     }
 
-    public function testCharComparison()
+    public function testCharComparison(): void
     {
         $processRequest1 = ProcessRequest::factory()->create([
             'data' => ['gender' => 'F'],
@@ -137,7 +137,7 @@ class ExtendedPMQLTest extends TestCase
         $this->assertEquals($processRequest1->id, $result->json()['data'][0]['id']);
     }
 
-    public function testFilterUsernameWithNumbers()
+    public function testFilterUsernameWithNumbers(): void
     {
         $user = User::factory()->create([
             'username' => 'W0584',
@@ -152,7 +152,7 @@ class ExtendedPMQLTest extends TestCase
         $this->assertEquals($requesterId, $user->id);
     }
 
-    public function testLowerFunction()
+    public function testLowerFunction(): void
     {
         ProcessRequest::factory()->create([
             'data' => ['YQP_CLIENT_NAME' => 'Teresa Roldan HC'],

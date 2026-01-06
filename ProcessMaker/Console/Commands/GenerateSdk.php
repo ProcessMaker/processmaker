@@ -38,7 +38,7 @@ class GenerateSdk extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $jsonPath = storage_path('api-docs/api-docs.json');
         $builder = new BuildSdk($jsonPath, $this->argument('output'));

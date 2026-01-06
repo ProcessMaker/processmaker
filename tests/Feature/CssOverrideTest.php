@@ -14,7 +14,7 @@ class CssOverrideTest extends TestCase
     /**
      * @test
      */
-    public function test_a_user_can_view_css_override()
+    public function test_a_user_can_view_css_override(): void
     {
         // get the URL
         $response = $this->webcall('GET', route('customize-ui.edit'));

@@ -12,7 +12,7 @@ class GroupTest extends TestCase
      *
      * @return void
      */
-    public function testGroupWithManager()
+    public function testGroupWithManager(): void
     {
         $manager = User::factory()->create();
         $group = Group::factory()->create(['manager_id' => $manager->id]);
@@ -26,7 +26,7 @@ class GroupTest extends TestCase
      *
      * @return void
      */
-    public function testGroupWithoutManager()
+    public function testGroupWithoutManager(): void
     {
         $group = Group::factory()->make([
             'manager_id' => null,

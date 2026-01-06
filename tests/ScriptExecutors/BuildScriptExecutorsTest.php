@@ -8,7 +8,7 @@ use Tests\TestCase;
 
 class BuildScriptExecutorsTest extends TestCase
 {
-    public function testBuildScriptExecutorsDockerfile()
+    public function testBuildScriptExecutorsDockerfile(): void
     {
         $scriptExecutor = ScriptExecutor::factory()->create([
             'language' => 'php-nayra',

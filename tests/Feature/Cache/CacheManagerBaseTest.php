@@ -28,7 +28,7 @@ class CacheManagerBaseTest extends TestCase
         parent::tearDown();
     }
 
-    public function testGetKeysByPatternWithValidConnectionAndMatchingKeys()
+    public function testGetKeysByPatternWithValidConnectionAndMatchingKeys(): void
     {
         $this->cacheManagerBase = Mockery::mock(CacheManagerBase::class)->makePartial();
 
@@ -50,7 +50,7 @@ class CacheManagerBaseTest extends TestCase
         $this->assertEquals($keys, $result);
     }
 
-    public function testGetKeysByPatternWithValidConnectionAndNoMatchingKeys()
+    public function testGetKeysByPatternWithValidConnectionAndNoMatchingKeys(): void
     {
         $this->cacheManagerBase = Mockery::mock(CacheManagerBase::class)->makePartial();
 
@@ -71,7 +71,7 @@ class CacheManagerBaseTest extends TestCase
         $this->assertCount(0, $result);
     }
 
-    public function testGetKeysByPatternWithInvalidConnection()
+    public function testGetKeysByPatternWithInvalidConnection(): void
     {
         config()->set('cache.default', 'array');
 
@@ -83,7 +83,7 @@ class CacheManagerBaseTest extends TestCase
         $this->cacheManagerBase->getKeysByPattern('pattern');
     }
 
-    public function testGetKeysByPatternWithExceptionDuringKeyRetrieval()
+    public function testGetKeysByPatternWithExceptionDuringKeyRetrieval(): void
     {
         $this->cacheManagerBase = Mockery::mock(CacheManagerBase::class)->makePartial();
 
@@ -107,7 +107,7 @@ class CacheManagerBaseTest extends TestCase
         $this->assertCount(0, $result);
     }
 
-    public function testKeyExistsWithValidKey()
+    public function testKeyExistsWithValidKey(): void
     {
         $this->cacheManagerBase = Mockery::mock(CacheManagerBase::class)->makePartial();
 
@@ -128,7 +128,7 @@ class CacheManagerBaseTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testKeyExistsWithInvalidKey()
+    public function testKeyExistsWithInvalidKey(): void
     {
         $this->cacheManagerBase = Mockery::mock(CacheManagerBase::class)->makePartial();
 
@@ -149,7 +149,7 @@ class CacheManagerBaseTest extends TestCase
         $this->assertFalse($result);
     }
 
-    public function testKeyExistsWithInvalidConnection()
+    public function testKeyExistsWithInvalidConnection(): void
     {
         $this->cacheManagerBase = Mockery::mock(CacheManagerBase::class)->makePartial();
 
@@ -161,7 +161,7 @@ class CacheManagerBaseTest extends TestCase
         $this->assertFalse($result);
     }
 
-    public function testKeyExistsWithExceptionDuringRedisCall()
+    public function testKeyExistsWithExceptionDuringRedisCall(): void
     {
         $this->cacheManagerBase = Mockery::mock(CacheManagerBase::class)->makePartial();
 

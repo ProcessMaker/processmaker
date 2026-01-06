@@ -18,7 +18,7 @@ class ProcessHtmlTest extends TestCase
      * A process with html entities in the documentation field should be able to be loaded.
      * By default, the bpmn processes are loaded with the html entities support.
      */
-    public function test_process_with_html_can_be_loaded()
+    public function test_process_with_html_can_be_loaded(): void
     {
         $this->user = User::factory()->create([
             'is_administrator' => false,
@@ -33,7 +33,7 @@ class ProcessHtmlTest extends TestCase
     /**
      * A process with html entities in the documentation field should be able to be stored.
      */
-    public function test_store_process_with_html_entities()
+    public function test_store_process_with_html_entities(): void
     {
         $route = route('api.processes.store');
         $base = Process::factory()->make([
@@ -57,7 +57,7 @@ class ProcessHtmlTest extends TestCase
     /**
      * A process with html entities in the documentation field should be able to be updated.
      */
-    public function test_update_process_with_html_entities()
+    public function test_update_process_with_html_entities(): void
     {
         // First create a process
         $route = route('api.processes.store');
@@ -97,7 +97,7 @@ class ProcessHtmlTest extends TestCase
      * Test updating BPMN content directly via the updateBpmn endpoint.
      * This endpoint allows updating only the BPMN content, not the other process attributes.
      */
-    public function test_update_bpmn_endpoint_with_html_entities()
+    public function test_update_bpmn_endpoint_with_html_entities(): void
     {
         // First create a process
         $route = route('api.processes.store');

@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HasUuids;
@@ -48,12 +49,12 @@ class ProcessLaunchpad extends ProcessMakerModel
         ];
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function process()
+    public function process(): BelongsTo
     {
         return $this->belongsTo(Process::class, 'process_id');
     }

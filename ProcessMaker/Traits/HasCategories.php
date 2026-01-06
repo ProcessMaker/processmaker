@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Traits;
 
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use App\Events\Relations\Attached;
 use App\Events\Relations\Detached;
 use App\Events\Relations\Syncing;
@@ -10,7 +11,7 @@ use ProcessMaker\Models\CategoryAssignment;
 
 trait HasCategories
 {
-    public function assignable()
+    public function assignable(): MorphToMany
     {
         return $this->morphedByMany(CategoryAssignment::class, 'assignable');
     }

@@ -30,7 +30,7 @@ class RequestControllerShowTest extends TestCase
      *
      * @return void
      */
-    public function testShowPageRendersManagerModelerScripts()
+    public function testShowPageRendersManagerModelerScripts(): void
     {
         // Create a process
         $process = Process::factory()->create([

@@ -13,7 +13,7 @@ class GenerateAccessTokenTest extends TestCase
         $this->withPersonalAccessClient();
     }
 
-    public function testGetNewToken()
+    public function testGetNewToken(): void
     {
         $user = User::factory()->create();
         $tokenRef = new GenerateAccessToken($user);
@@ -21,7 +21,7 @@ class GenerateAccessTokenTest extends TestCase
         $this->assertRegExp("/^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+$/", $tokenRef->getToken());
     }
 
-    public function testDeleteToken()
+    public function testDeleteToken(): void
     {
         $user = User::factory()->create();
         $this->assertEquals(0, $user->tokens()->count());

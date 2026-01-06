@@ -40,7 +40,7 @@ class TenantsCreate extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $infoCallback = function ($type, $message) {
             if ($type === 'out') {

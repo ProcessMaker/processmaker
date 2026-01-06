@@ -294,7 +294,7 @@ class ClearRequestsTest extends TestCase
         $this->completeTask($token);
     }
 
-    public function testCommandClearRequests()
+    public function testCommandClearRequests(): void
     {
         $existingProcessIds = Process::pluck('id');
 

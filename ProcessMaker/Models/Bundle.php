@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Http;
@@ -49,22 +51,22 @@ class Bundle extends ProcessMakerModel implements HasMedia
         return $this->dev_link_id === null;
     }
 
-    public function assets()
+    public function assets(): HasMany
     {
         return $this->hasMany(BundleAsset::class);
     }
 
-    public function settings()
+    public function settings(): HasMany
     {
         return $this->hasMany(BundleSetting::class);
     }
 
-    public function instances()
+    public function instances(): HasMany
     {
         return $this->hasMany(BundleInstance::class);
     }
 
-    public function devLink()
+    public function devLink(): BelongsTo
     {
         return $this->belongsTo(DevLink::class, 'dev_link_id');
     }

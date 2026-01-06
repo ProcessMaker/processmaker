@@ -44,7 +44,7 @@ class SyncPhpTranslationsTest extends TestCase
     /**
      * Test copying new PHP translation files when destination doesn't exist
      */
-    public function testCopyNewPhpTranslationFiles()
+    public function testCopyNewPhpTranslationFiles(): void
     {
         // Create test PHP files in resources-core
         $this->createTestPhpFile('en/auth.php', [
@@ -91,7 +91,7 @@ class SyncPhpTranslationsTest extends TestCase
     /**
      * Test merging new translations into existing PHP files
      */
-    public function testMergeNewPhpTranslations()
+    public function testMergeNewPhpTranslations(): void
     {
         // Create existing translations in destination
         $existingAuth = [
@@ -137,7 +137,7 @@ class SyncPhpTranslationsTest extends TestCase
     /**
      * Test no changes when all translations already exist
      */
-    public function testNoChangesWhenAllPhpTranslationsExist()
+    public function testNoChangesWhenAllPhpTranslationsExist(): void
     {
         // Create existing translations in destination
         $existingTranslations = [
@@ -165,7 +165,7 @@ class SyncPhpTranslationsTest extends TestCase
     /**
      * Test handling invalid PHP in resources-core
      */
-    public function testInvalidPhpInResourcesCore()
+    public function testInvalidPhpInResourcesCore(): void
     {
         // Create invalid PHP file in resources-core
         $invalidContent = "<?php\n\nreturn [\n    'failed' => 'These credentials do not match our records.',\n    'password' =>\n];\n";
@@ -185,7 +185,7 @@ class SyncPhpTranslationsTest extends TestCase
     /**
      * Test handling invalid PHP in destination
      */
-    public function testInvalidPhpInDestination()
+    public function testInvalidPhpInDestination(): void
     {
         // Create invalid PHP in destination
         $invalidContent = "<?php\n\nreturn [\n    'failed' => 'These credentials do not match our records.',\n    'password' =>\n];\n";
@@ -212,7 +212,7 @@ class SyncPhpTranslationsTest extends TestCase
     /**
      * Test processing multiple language files
      */
-    public function testProcessMultiplePhpLanguages()
+    public function testProcessMultiplePhpLanguages(): void
     {
         // Create multiple language files in resources-core
         $this->createTestPhpFile('en/auth.php', ['failed' => 'These credentials do not match our records.']);
@@ -240,7 +240,7 @@ class SyncPhpTranslationsTest extends TestCase
     /**
      * Test preserving existing custom translations
      */
-    public function testPreserveExistingCustomPhpTranslations()
+    public function testPreserveExistingCustomPhpTranslations(): void
     {
         // Create existing translations with custom values
         $existingTranslations = [
@@ -277,7 +277,7 @@ class SyncPhpTranslationsTest extends TestCase
     /**
      * Test processing multiple PHP files in same language
      */
-    public function testProcessMultiplePhpFilesInSameLanguage()
+    public function testProcessMultiplePhpFilesInSameLanguage(): void
     {
         // Create multiple PHP files in resources-core
         $this->createTestPhpFile('en/auth.php', ['failed' => 'These credentials do not match our records.']);
@@ -301,7 +301,7 @@ class SyncPhpTranslationsTest extends TestCase
     /**
      * Test backup creation when merging PHP translations
      */
-    public function testBackupCreationWhenMergingPhp()
+    public function testBackupCreationWhenMergingPhp(): void
     {
         // Create existing translations in destination
         $existingTranslations = [
@@ -341,7 +341,7 @@ class SyncPhpTranslationsTest extends TestCase
     /**
      * Test no backup creation when no changes are made to PHP files
      */
-    public function testNoBackupCreationWhenNoPhpChanges()
+    public function testNoBackupCreationWhenNoPhpChanges(): void
     {
         // Create existing translations in destination
         $existingTranslations = [
@@ -368,7 +368,7 @@ class SyncPhpTranslationsTest extends TestCase
     /**
      * Test backup rotation for PHP files (keeping only 3 most recent backups)
      */
-    public function testBackupRotationForPhpFiles()
+    public function testBackupRotationForPhpFiles(): void
     {
         // Create existing translations in destination
         $existingTranslations = [
@@ -408,7 +408,7 @@ class SyncPhpTranslationsTest extends TestCase
     /**
      * Test no backup creation when copying new PHP files
      */
-    public function testNoBackupCreationWhenCopyingPhp()
+    public function testNoBackupCreationWhenCopyingPhp(): void
     {
         // Create test PHP files in resources-core
         $this->createTestPhpFile('en/auth.php', [

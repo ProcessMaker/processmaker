@@ -18,7 +18,7 @@ class FixBpmnSchemaServiceTest extends TestCase
      *
      * @return void
      */
-    public function testExceptionInIncompleteProcess()
+    public function testExceptionInIncompleteProcess(): void
     {
         $bpmn = file_get_contents(
             __DIR__ .
@@ -39,7 +39,7 @@ class FixBpmnSchemaServiceTest extends TestCase
      *
      * @return void
      */
-    public function testFixIncompleteProcess()
+    public function testFixIncompleteProcess(): void
     {
         $bpmn = file_get_contents(
             __DIR__ .
@@ -63,7 +63,7 @@ class FixBpmnSchemaServiceTest extends TestCase
      *
      * @return void
      */
-    public function testFixPm4Process()
+    public function testFixPm4Process(): void
     {
         $bpmn = file_get_contents(
             __DIR__ .

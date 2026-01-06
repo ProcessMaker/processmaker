@@ -10,7 +10,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('scripts', function (Blueprint $table) {
             $table->unsignedInteger('script_executor_id')->nullable();
@@ -26,7 +26,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('scripts', function (Blueprint $table) {
             $table->dropColumn('script_executor_id');

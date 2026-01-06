@@ -13,7 +13,7 @@ use Tests\TestCase;
 
 class ProcessTest extends TestCase
 {
-    public function testGetConsolidatedUsers()
+    public function testGetConsolidatedUsers(): void
     {
         $process = Process::factory()->create();
 
@@ -38,7 +38,7 @@ class ProcessTest extends TestCase
     /**
      * Test getAssignableUsersByAssignmentType with manager-only rules
      */
-    public function testGetAssignableUsersByAssignmentTypeWithManagerOnlyRules()
+    public function testGetAssignableUsersByAssignmentTypeWithManagerOnlyRules(): void
     {
         $manager1 = User::factory()->create(['status' => 'ACTIVE']);
         $manager2 = User::factory()->create(['status' => 'ACTIVE']);
@@ -75,7 +75,7 @@ class ProcessTest extends TestCase
     /**
      * Test getAssignableUsersByAssignmentType with single manager
      */
-    public function testGetAssignableUsersByAssignmentTypeWithSingleManager()
+    public function testGetAssignableUsersByAssignmentTypeWithSingleManager(): void
     {
         $manager = User::factory()->create(['status' => 'ACTIVE']);
 
@@ -103,7 +103,7 @@ class ProcessTest extends TestCase
     /**
      * Test getAssignableUsersByAssignmentType with group-based rules
      */
-    public function testGetAssignableUsersByAssignmentTypeWithGroupBasedRules()
+    public function testGetAssignableUsersByAssignmentTypeWithGroupBasedRules(): void
     {
         $manager = User::factory()->create(['status' => 'ACTIVE']);
         $assignableUser1 = User::factory()->create(['status' => 'ACTIVE']);
@@ -157,7 +157,7 @@ class ProcessTest extends TestCase
     /**
      * Test getAssignableUsersByAssignmentType with empty element_id
      */
-    public function testGetAssignableUsersByAssignmentTypeWithEmptyElementId()
+    public function testGetAssignableUsersByAssignmentTypeWithEmptyElementId(): void
     {
         $manager = User::factory()->create(['status' => 'ACTIVE']);
 
@@ -186,7 +186,7 @@ class ProcessTest extends TestCase
     /**
      * Test getAssignableUsersByAssignmentType with null manager_id
      */
-    public function testGetAssignableUsersByAssignmentTypeWithNullManager()
+    public function testGetAssignableUsersByAssignmentTypeWithNullManager(): void
     {
         $process = Process::factory()->create([
             'properties' => ['manager_id' => null],
@@ -211,7 +211,7 @@ class ProcessTest extends TestCase
     /**
      * Test getAssignableUsersByAssignmentType with unknown rule
      */
-    public function testGetAssignableUsersByAssignmentTypeWithUnknownRule()
+    public function testGetAssignableUsersByAssignmentTypeWithUnknownRule(): void
     {
         $manager = User::factory()->create(['status' => 'ACTIVE']);
 
@@ -238,7 +238,7 @@ class ProcessTest extends TestCase
     /**
      * Test getAssignableUsersByAssignmentType handles nested arrays correctly
      */
-    public function testGetAssignableUsersByAssignmentTypeHandlesNestedArrays()
+    public function testGetAssignableUsersByAssignmentTypeHandlesNestedArrays(): void
     {
         $manager1 = User::factory()->create(['status' => 'ACTIVE']);
         $manager2 = User::factory()->create(['status' => 'ACTIVE']);
@@ -274,7 +274,7 @@ class ProcessTest extends TestCase
     /**
      * Test getAssignableUsersByAssignmentType removes duplicates
      */
-    public function testGetAssignableUsersByAssignmentTypeRemovesDuplicates()
+    public function testGetAssignableUsersByAssignmentTypeRemovesDuplicates(): void
     {
         $manager = User::factory()->create(['status' => 'ACTIVE']);
         $assignableUser = User::factory()->create(['status' => 'ACTIVE']);

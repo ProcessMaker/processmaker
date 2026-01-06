@@ -22,7 +22,7 @@ class LegacyScreenCacheAdapterTest extends TestCase
     }
 
     /** @test */
-    public function test_it_creates_correct_cache_key()
+    public function test_it_creates_correct_cache_key(): void
     {
         $this->compiledManager->shouldReceive('createKey')
             ->once()
@@ -41,7 +41,7 @@ class LegacyScreenCacheAdapterTest extends TestCase
     }
 
     /** @test */
-    public function test_it_throws_exception_when_missing_required_parameters()
+    public function test_it_throws_exception_when_missing_required_parameters(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Missing required parameters for screen cache key');
@@ -56,7 +56,7 @@ class LegacyScreenCacheAdapterTest extends TestCase
     }
 
     /** @test */
-    public function test_it_gets_content_from_compiled_manager()
+    public function test_it_gets_content_from_compiled_manager(): void
     {
         $key = 'test_key';
         $expectedValue = ['content' => 'test'];
@@ -72,7 +72,7 @@ class LegacyScreenCacheAdapterTest extends TestCase
     }
 
     /** @test */
-    public function test_it_returns_default_value_when_content_missing()
+    public function test_it_returns_default_value_when_content_missing(): void
     {
         $key = 'missing_key';
         $default = ['default' => 'value'];
@@ -88,7 +88,7 @@ class LegacyScreenCacheAdapterTest extends TestCase
     }
 
     /** @test */
-    public function test_it_stores_content_in_compiled_manager()
+    public function test_it_stores_content_in_compiled_manager(): void
     {
         $key = 'test_key';
         $value = ['content' => 'test'];
@@ -104,7 +104,7 @@ class LegacyScreenCacheAdapterTest extends TestCase
     }
 
     /** @test */
-    public function test_it_checks_existence_in_compiled_manager()
+    public function test_it_checks_existence_in_compiled_manager(): void
     {
         $key = 'test_key';
 
@@ -119,7 +119,7 @@ class LegacyScreenCacheAdapterTest extends TestCase
     }
 
     /** @test */
-    public function test_it_returns_false_when_checking_missing_content()
+    public function test_it_returns_false_when_checking_missing_content(): void
     {
         $key = 'missing_key';
 
@@ -134,7 +134,7 @@ class LegacyScreenCacheAdapterTest extends TestCase
     }
 
     /** @test */
-    public function test_it_invalidates_successfully()
+    public function test_it_invalidates_successfully(): void
     {
         // Test parameters
         $screenId = 5;
@@ -152,7 +152,7 @@ class LegacyScreenCacheAdapterTest extends TestCase
     }
 
     /** @test */
-    public function test_it_invalidates_with_failure()
+    public function test_it_invalidates_with_failure(): void
     {
         // Test parameters
         $screenId = 5;
@@ -170,7 +170,7 @@ class LegacyScreenCacheAdapterTest extends TestCase
     }
 
     /** @test */
-    public function testInvalidateWithSpecialLanguageCode()
+    public function testInvalidateWithSpecialLanguageCode(): void
     {
         // Test parameters with special language code
         $screenId = 5;
@@ -188,7 +188,7 @@ class LegacyScreenCacheAdapterTest extends TestCase
     }
 
     /** @test */
-    public function testInvalidateWithEmptyResults()
+    public function testInvalidateWithEmptyResults(): void
     {
         // Test parameters
         $screenId = 999; // Non-existent screen ID

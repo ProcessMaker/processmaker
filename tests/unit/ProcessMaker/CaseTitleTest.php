@@ -8,7 +8,7 @@ class CaseTitleTest extends TestCase
 {
     const MUSTACHE_VARIABLE = '{{name}}';
 
-    public function testEvaluateCaseTitleWithoutFormatting()
+    public function testEvaluateCaseTitleWithoutFormatting(): void
     {
         $processRequest = new ProcessRequest();
         $title = $processRequest->evaluateCaseTitle('Hello, {{name}}!', ['name' => 'World'], false);
@@ -16,7 +16,7 @@ class CaseTitleTest extends TestCase
         $this->assertEquals('Hello, World!', $title);
     }
 
-    public function testEvaluateCaseTitleWithFormatting()
+    public function testEvaluateCaseTitleWithFormatting(): void
     {
         $processRequest = new ProcessRequest();
         $title = $processRequest->evaluateCaseTitle('Hello, {{name}}!', ['name' => 'World'], true);
@@ -24,7 +24,7 @@ class CaseTitleTest extends TestCase
         $this->assertEquals('Hello, <b>World</b>!', $title);
     }
 
-    public function testEvaluateCaseTitleWithCharacterLimit()
+    public function testEvaluateCaseTitleWithCharacterLimit(): void
     {
         $processRequest = new ProcessRequest();
         $longString = str_repeat('a', 300);
@@ -33,7 +33,7 @@ class CaseTitleTest extends TestCase
         $this->assertEquals(200, mb_strlen($title));
     }
 
-    public function testEvaluateCaseTitleWithHtmlTagsNotCountedInCharacterLimit()
+    public function testEvaluateCaseTitleWithHtmlTagsNotCountedInCharacterLimit(): void
     {
         $processRequest = new ProcessRequest();
         $longString = str_repeat('a', 195) . self::MUSTACHE_VARIABLE;
@@ -43,7 +43,7 @@ class CaseTitleTest extends TestCase
         $this->assertEquals(str_repeat('a', 195) . '<b>World</b>', $title);
     }
 
-    public function testEvaluateCaseTitleWithHtmlTagsNotCountedTwoCharactersMoreThanLimit()
+    public function testEvaluateCaseTitleWithHtmlTagsNotCountedTwoCharactersMoreThanLimit(): void
     {
         $processRequest = new ProcessRequest();
         $longString = str_repeat('a', 197) . self::MUSTACHE_VARIABLE;
@@ -53,7 +53,7 @@ class CaseTitleTest extends TestCase
         $this->assertEquals(str_repeat('a', 197) . '<b>Wor</b>', $title);
     }
 
-    public function testEvaluateCaseTitleWithoutHtmlTagsThatExceededTheLimit()
+    public function testEvaluateCaseTitleWithoutHtmlTagsThatExceededTheLimit(): void
     {
         $processRequest = new ProcessRequest();
         $longString = str_repeat('a', 200) . self::MUSTACHE_VARIABLE;

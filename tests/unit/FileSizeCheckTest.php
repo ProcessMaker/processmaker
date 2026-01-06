@@ -42,14 +42,14 @@ class FileSizeCheckTest extends TestCase
         $this->app->instance(FileSizeCheck::class, $middlewareMock);
     }
 
-    public function testNoFilesPassesThrough()
+    public function testNoFilesPassesThrough(): void
     {
         $response = $this->postJson(self::TEST_ROUTE);
         $response->assertStatus(200);
         $response->assertJson(['message' => $this->response]);
     }
 
-    public function testValidFileUpload()
+    public function testValidFileUpload(): void
     {
         $file = UploadedFile::fake()->create('test.pdf', 500); // 500 KB
         $response = $this->postJson(self::TEST_ROUTE, [
@@ -60,7 +60,7 @@ class FileSizeCheckTest extends TestCase
         $response->assertJson(['message' => $this->response]);
     }
 
-    public function testLargeFileRejected()
+    public function testLargeFileRejected(): void
     {
         // Arrange.
         $mockFile = $this->createMock(UploadedFile::class);
@@ -79,7 +79,7 @@ class FileSizeCheckTest extends TestCase
         ]);
     }
 
-    public function testInvalidFileUpload()
+    public function testInvalidFileUpload(): void
     {
         // Mock of an invalid file using PHPUnit.
         $mockFile = $this->createMock(UploadedFile::class);
@@ -99,7 +99,7 @@ class FileSizeCheckTest extends TestCase
         ]);
     }
 
-    public function testTotalSizeExceedsLimit()
+    public function testTotalSizeExceedsLimit(): void
     {
         $file1 = UploadedFile::fake()->create('file1.pdf', 5000); // 5 MB.
         $file2 = UploadedFile::fake()->create('file2.pdf', 6000); // 6 MB.
@@ -117,7 +117,7 @@ class FileSizeCheckTest extends TestCase
         ]);
     }
 
-    public function testTotalSizeWithinLimit()
+    public function testTotalSizeWithinLimit(): void
     {
         ini_set('upload_max_filesize', '5M'); // 5 MB
 
@@ -137,7 +137,7 @@ class FileSizeCheckTest extends TestCase
     /**
      * Test if the middleware is applied to API routes.
      */
-    public function testFileSizeCheckMiddlewareIsAppliedToApiRoutes()
+    public function testFileSizeCheckMiddlewareIsAppliedToApiRoutes(): void
     {
         $processRequest = ProcessRequest::factory()->create();
 
@@ -155,7 +155,7 @@ class FileSizeCheckTest extends TestCase
     /**
      * Test if the middleware is applied to Web routes.
      */
-    public function testFileSizeCheckMiddlewareIsAppliedToWebRoutes()
+    public function testFileSizeCheckMiddlewareIsAppliedToWebRoutes(): void
     {
         $response = $this->webCall('GET', route('processes.index'));
 
@@ -166,7 +166,7 @@ class FileSizeCheckTest extends TestCase
     /**
      * Test if the middleware is applied to package routes.
      */
-    public function testFileSizeCheckMiddlewareIsAppliedToPackageRoutes()
+    public function testFileSizeCheckMiddlewareIsAppliedToPackageRoutes(): void
     {
         $hasPackage = \hasPackage('package-files');
 

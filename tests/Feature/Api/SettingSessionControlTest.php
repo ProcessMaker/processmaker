@@ -16,7 +16,7 @@ class SettingSessionControlTest extends TestCase
         $upgrade->up();
     }
 
-    public function testDefaultSessionControlSettings()
+    public function testDefaultSessionControlSettings(): void
     {
         $this->upgrade();
 
@@ -31,7 +31,7 @@ class SettingSessionControlTest extends TestCase
         $this->assertDatabaseCount('security_logs', 0);
     }
 
-    public function testUpdateIPRestrictionSetting()
+    public function testUpdateIPRestrictionSetting(): void
     {
         $this->upgrade();
 
@@ -60,7 +60,7 @@ class SettingSessionControlTest extends TestCase
         $this->assertDatabaseHas('security_logs', ['event' => 'SettingsUpdated', 'changes->setting_id' => $ipRestriction['id']]);
     }
 
-    public function testUpdateDeviceRestrictionSetting()
+    public function testUpdateDeviceRestrictionSetting(): void
     {
         $this->upgrade();
 
@@ -89,7 +89,7 @@ class SettingSessionControlTest extends TestCase
         $this->assertDatabaseHas('security_logs', ['event' => 'SettingsUpdated', 'changes->setting_id' => $deviceRestriction['id']]);
     }
 
-    public function testUpdateSessionLifetimeSetting()
+    public function testUpdateSessionLifetimeSetting(): void
     {
         $this->upgrade();
 

@@ -12,7 +12,7 @@ class ScreenEmailSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         return Screen::getScreenByKeyPerDefault('default-email-task-notification');
     }

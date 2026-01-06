@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class CategoryAssignment extends Pivot
@@ -34,12 +35,12 @@ class CategoryAssignment extends Pivot
         });
     }
 
-    public function assignable()
+    public function assignable(): MorphTo
     {
         return $this->morphTo('assignable');
     }
 
-    public function category()
+    public function category(): MorphTo
     {
         return $this->morphTo('category');
     }

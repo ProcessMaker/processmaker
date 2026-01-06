@@ -14,7 +14,7 @@ class AuthTest extends TestCase
      *
      * @return void
      */
-    public function testAuthLoginAndLogout()
+    public function testAuthLoginAndLogout(): void
     {
         $user = User::factory()->create();
         Auth::login($user);
@@ -27,7 +27,7 @@ class AuthTest extends TestCase
      * Tests the manual login functionality to support logging in with credentials passed from some external
      * source.
      */
-    public function testAuthManualLogin()
+    public function testAuthManualLogin(): void
     {
         // Build a user with a specified password
         $user = User::factory()->create([
@@ -47,7 +47,7 @@ class AuthTest extends TestCase
         $this->assertEquals($user->id, Auth::id());
     }
 
-    public function testLoginWithUnknownUser()
+    public function testLoginWithUnknownUser(): void
     {
         $response = $this->post('login', [
             'username' => 'foobar',
@@ -76,7 +76,7 @@ class AuthTest extends TestCase
     /**
      * Test logout flow
      */
-    public function testLogoutStandard()
+    public function testLogoutStandard(): void
     {
         $user = User::factory()->create();
         $this->actingAs($user, 'web');

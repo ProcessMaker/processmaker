@@ -34,7 +34,7 @@ class TenantsTransition extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         // Check if multitenancy is enabled
         if (!config('app.multitenancy')) {

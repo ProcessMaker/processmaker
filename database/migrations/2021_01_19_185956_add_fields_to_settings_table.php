@@ -11,7 +11,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('settings', function (Blueprint $table) {
             $table->string('name', 32)->after('config')->nullable();
@@ -45,7 +45,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('settings', function (Blueprint $table) {
             $table->dropColumn(['name', 'helper', 'group', 'format', 'hidden', 'readonly', 'ui']);

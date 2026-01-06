@@ -12,7 +12,7 @@ use Tests\DuskTestCase;
 
 class RequestsSearchTest extends DuskTestCase
 {
-    public function testPmqlErrors()
+    public function testPmqlErrors(): void
     {
         $this->markTestSkipped('Skipping due to Dusk issues...');
 

@@ -30,7 +30,7 @@ class HandleEtagCacheInvalidationTest extends TestCase
             ->defaults('etag_tables', 'processes');
     }
 
-    public function testEtagInvalidatesOnDatabaseUpdate()
+    public function testEtagInvalidatesOnDatabaseUpdate(): void
     {
         $user = User::factory()->create();
         $this->actingAs($user);

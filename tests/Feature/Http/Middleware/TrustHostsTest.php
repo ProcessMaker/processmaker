@@ -17,7 +17,7 @@ class TrustHostsTest extends TestCase
         $this->middleware = new TrustHosts($this->app);
     }
 
-    public function test_valid_trusted_host()
+    public function test_valid_trusted_host(): void
     {
         // Set app URL for testing
         Config::set('app.url', 'https://example.processmaker.net');
@@ -32,7 +32,7 @@ class TrustHostsTest extends TestCase
         $this->assertEquals(200, $response->status());
     }
 
-    public function test_invalid_trusted_host()
+    public function test_invalid_trusted_host(): void
     {
         // Set app URL for testing
         Config::set('app.url', 'https://example.processmaker.net');
@@ -48,7 +48,7 @@ class TrustHostsTest extends TestCase
         });
     }
 
-    public function test_missing_forwarded_host()
+    public function test_missing_forwarded_host(): void
     {
         $request = Request::create('https://example.processmaker.net');
 

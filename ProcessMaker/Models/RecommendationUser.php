@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 class RecommendationUser extends ProcessMakerModel
@@ -18,12 +19,12 @@ class RecommendationUser extends ProcessMakerModel
         ];
     }
 
-    public function recommendation()
+    public function recommendation(): BelongsTo
     {
         return $this->belongsTo(Recommendation::class);
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

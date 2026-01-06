@@ -40,7 +40,7 @@ class HandleEndEventRedirectTest extends TestCase
         ], $attributes));
     }
 
-    public function test_handleRedirect_handles_valid_process_request()
+    public function test_handleRedirect_handles_valid_process_request(): void
     {
         // Create a process with asset_type
         $process = Process::factory()->create(['asset_type' => 'Process']);
@@ -61,7 +61,7 @@ class HandleEndEventRedirectTest extends TestCase
         $this->assertNull($request->getElementDestination(), 'Element destination should be null for a valid process request');
     }
 
-    public function test_handleRedirect_skips_subprocess()
+    public function test_handleRedirect_skips_subprocess(): void
     {
         // Create a process with asset_type
         $process = Process::factory()->create(['asset_type' => 'Process']);
@@ -87,7 +87,7 @@ class HandleEndEventRedirectTest extends TestCase
         $this->assertNull($subprocess->getElementDestination(), 'Element destination should be null for a subprocess request');
     }
 
-    public function test_handleRedirect_with_empty_request()
+    public function test_handleRedirect_with_empty_request(): void
     {
         // Create an empty request object
         $emptyRequest = ProcessRequest::factory()->create();
@@ -105,7 +105,7 @@ class HandleEndEventRedirectTest extends TestCase
         $this->assertNull($event->getProcessRequest(), 'Process request should be null when empty request is passed');
     }
 
-    public function test_handleRedirect_handles_exception_when_process_not_found()
+    public function test_handleRedirect_handles_exception_when_process_not_found(): void
     {
         // Create request without process relation
         $request = ProcessRequest::factory()->create();
@@ -119,7 +119,7 @@ class HandleEndEventRedirectTest extends TestCase
         $this->assertTrue(true);
     }
 
-    public function test_handleRedirect_handles_exception_when_user_not_authenticated()
+    public function test_handleRedirect_handles_exception_when_user_not_authenticated(): void
     {
         Auth::logout();
 
@@ -138,7 +138,7 @@ class HandleEndEventRedirectTest extends TestCase
         $this->assertTrue(true);
     }
 
-    public function test_handleRedirect_handles_invalid_request_data()
+    public function test_handleRedirect_handles_invalid_request_data(): void
     {
         // Mock the ProcessCompleted event
         $event = Mockery::mock(ProcessCompleted::class);
@@ -161,7 +161,7 @@ class HandleEndEventRedirectTest extends TestCase
         $this->assertTrue(true);
     }
 
-    public function test_handleRedirect_handles_missing_process_relation()
+    public function test_handleRedirect_handles_missing_process_relation(): void
     {
         // Create a process for the relation
         $process = Process::factory()->create(['asset_type' => 'Process']);
@@ -188,7 +188,7 @@ class HandleEndEventRedirectTest extends TestCase
         $this->assertTrue(true);
     }
 
-    public function test_handleRedirect_with_multiple_subprocesses()
+    public function test_handleRedirect_with_multiple_subprocesses(): void
     {
         // Create main process
         $mainProcess = Process::factory()->create(['asset_type' => 'Process']);
@@ -238,7 +238,7 @@ class HandleEndEventRedirectTest extends TestCase
             'Handler should return null for subprocess2');
     }
 
-    public function test_handleRedirect_with_nested_subprocesses()
+    public function test_handleRedirect_with_nested_subprocesses(): void
     {
         // Create main process
         $mainProcess = Process::factory()->create(['asset_type' => 'Process']);
@@ -291,7 +291,7 @@ class HandleEndEventRedirectTest extends TestCase
             'Handler should return null for nested subprocess');
     }
 
-    public function test_handleRedirect_with_deleted_parent_request()
+    public function test_handleRedirect_with_deleted_parent_request(): void
     {
         // Create main process
         $mainProcess = Process::factory()->create(['asset_type' => 'Process']);
@@ -335,7 +335,7 @@ class HandleEndEventRedirectTest extends TestCase
             'Subprocess should maintain correct process relationship');
     }
 
-    public function test_handleRedirect_with_concurrent_subprocess_completion()
+    public function test_handleRedirect_with_concurrent_subprocess_completion(): void
     {
         // Test behavior when multiple subprocesses complete simultaneously
         $mainProcess = Process::factory()->create(['asset_type' => 'Process']);

@@ -34,7 +34,7 @@ class TwoFactorAuthNotification extends Notification
      * @param mixed $notifiable
      * @return array
      */
-    public function via($notifiable)
+    public function via($notifiable): array
     {
         return ['mail'];
     }
@@ -45,7 +45,7 @@ class TwoFactorAuthNotification extends Notification
      * @param mixed $notifiable
      * @return MailMessage
      */
-    public function toMail($notifiable)
+    public function toMail($notifiable): MailMessage
     {
         return (new MailMessage)
             ->subject(_('Security Code'))
@@ -70,7 +70,7 @@ class TwoFactorAuthNotification extends Notification
      * @param mixed $notifiable
      * @return array
      */
-    public function toArray($notifiable)
+    public function toArray($notifiable): array
     {
         return [
             'username' => $this->user->username,

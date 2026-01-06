@@ -14,7 +14,7 @@ class ProcessControllerTest extends TestCase
 {
     use RequestHelper;
 
-    public function testStartProcessesReturnsActiveProcesses()
+    public function testStartProcessesReturnsActiveProcesses(): void
     {
         $file = Process::getProcessTemplatesPath() . '/SingleTask.bpmn';
         $bpmn = file_get_contents($file);
@@ -49,7 +49,7 @@ class ProcessControllerTest extends TestCase
         $response->assertJsonMissing(['name' => 'CProcess']);
     }
 
-    public function testStartProcessesFiltersByName()
+    public function testStartProcessesFiltersByName(): void
     {
         $file = Process::getProcessTemplatesPath() . '/SingleTask.bpmn';
         $bpmn = file_get_contents($file);
@@ -101,7 +101,7 @@ class ProcessControllerTest extends TestCase
         $response->assertJsonFragment(['name' => 'Another Process']);
     }
 
-    public function testStartProcessesFiltersByCategory()
+    public function testStartProcessesFiltersByCategory(): void
     {
         $file = Process::getProcessTemplatesPath() . '/SingleTask.bpmn';
         $bpmn = file_get_contents($file);
@@ -150,7 +150,7 @@ class ProcessControllerTest extends TestCase
     /**
      * Test saving and retrieving stages in the Process model.
      */
-    public function testSaveAndRetrieveStages()
+    public function testSaveAndRetrieveStages(): void
     {
         // Define stages
         $stages = [
@@ -187,7 +187,7 @@ class ProcessControllerTest extends TestCase
      *
      * @return void
      */
-    public function test_can_get_process_stages()
+    public function test_can_get_process_stages(): void
     {
         $stages = [
             ['id' => 1, 'order' => 1, 'name' => 'Start', 'selected' => false],
@@ -217,7 +217,7 @@ class ProcessControllerTest extends TestCase
      *
      * @return void
      */
-    public function test_can_save_process_stages()
+    public function test_can_save_process_stages(): void
     {
         $process = Process::factory()->create();
 
@@ -239,7 +239,7 @@ class ProcessControllerTest extends TestCase
         $this->assertEquals($newStages, $process->fresh()->stages);
     }
 
-    public function testCanSaveProcessWithoutStages()
+    public function testCanSaveProcessWithoutStages(): void
     {
         $process = Process::factory()->create([
             'description' => 'Test Process Without Stages',
@@ -260,7 +260,7 @@ class ProcessControllerTest extends TestCase
     /**
      * Test that a process returns its stages correctly.
      */
-    public function testCanGetAggregation()
+    public function testCanGetAggregation(): void
     {
         $process = Process::factory()->create([
             'aggregation' => 'var_amount',
@@ -273,7 +273,7 @@ class ProcessControllerTest extends TestCase
     /**
      * Test that stages can be saved for a process.
      */
-    public function testSaveAggregation()
+    public function testSaveAggregation(): void
     {
         $process = Process::factory()->create();
 
@@ -301,7 +301,7 @@ class ProcessControllerTest extends TestCase
     /**
      * Test getting default stages for a process with statistics
      */
-    public function testGetDefaultStagesPerProcess()
+    public function testGetDefaultStagesPerProcess(): void
     {
         $process = Process::factory()->create([
             'name' => 'Test Process Stages',
@@ -374,7 +374,7 @@ class ProcessControllerTest extends TestCase
     /**
      * Test getting custom stages for a process with stages and return aggregation amount
      */
-    public function testGetStagesPerProcessWithDefaultAggregation()
+    public function testGetStagesPerProcessWithDefaultAggregation(): void
     {
         $stages = [
             ['id' => 101, 'order' => 1, 'name' => 'Custom Stage 1', 'selected' => false],
@@ -458,7 +458,7 @@ class ProcessControllerTest extends TestCase
     /**
      * Test getting custom stages for a process with stages and return custom aggregation
      */
-    public function testGetStagesPerProcessWithCustomAggregation()
+    public function testGetStagesPerProcessWithCustomAggregation(): void
     {
         $stages = [
             ['id' => 101, 'order' => 1, 'name' => 'Custom Stage 1', 'selected' => false],
@@ -542,7 +542,7 @@ class ProcessControllerTest extends TestCase
     /**
      * Test getting metrics for a process
      */
-    public function testGetMetricsPerProcess()
+    public function testGetMetricsPerProcess(): void
     {
         $process = Process::factory()->create([
             'name' => 'Test Process Metrics',
@@ -571,7 +571,7 @@ class ProcessControllerTest extends TestCase
         $this->assertCount(3, $data);
     }
 
-    public function testMetricsApiEndpointConfigurationIsAccessible()
+    public function testMetricsApiEndpointConfigurationIsAccessible(): void
     {
         $process = Process::factory()->create([
             'status' => 'ACTIVE',

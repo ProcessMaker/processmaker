@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up()
+    public function up(): void
     {
         // Add the names of the tables you want to modify here
         $tables_to_modify = ['processes', 'screens', 'scripts', 'data_sources', 'collections', 'saved_searches'];
@@ -19,7 +19,7 @@ return new class extends Migration {
         }
     }
 
-    public function down()
+    public function down(): void
     {
         // Add the names of the tables you want to modify here
         $tables_to_modify = ['processes', 'screens', 'scripts', 'data_sources', 'collections', 'saved_searches'];

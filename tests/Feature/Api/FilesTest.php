@@ -37,7 +37,7 @@ class FilesTest extends TestCase
     /**
      * Get a list of Files
      */
-    public function testListFiles()
+    public function testListFiles(): void
     {
         // We create a fake file to upload
         Storage::fake('public');
@@ -79,7 +79,7 @@ class FilesTest extends TestCase
     /**
      * A file can be get successfully
      */
-    public function testGetFile()
+    public function testGetFile(): void
     {
         // We create a fake file to upload
         $testFileName = 'test.txt';
@@ -102,7 +102,7 @@ class FilesTest extends TestCase
     /**
      * Upload a file and associate it to a model
      */
-    public function testCreateFile()
+    public function testCreateFile(): void
     {
         // We create a fake file to upload
         Storage::fake('public');
@@ -137,7 +137,7 @@ class FilesTest extends TestCase
     /**
      * Update a media with a new file
      */
-    public function testUpdateFile()
+    public function testUpdateFile(): void
     {
         // We create a fake file to upload
         Storage::fake('public');
@@ -170,7 +170,7 @@ class FilesTest extends TestCase
     /**
      * Remove a file and its model associations
      */
-    public function testDestroyFile()
+    public function testDestroyFile(): void
     {
         // We create a fake file to upload
         Storage::fake('public');
@@ -189,7 +189,7 @@ class FilesTest extends TestCase
         $this->assertEquals(0, $model->getMedia()->count());
     }
 
-    public function testUserWithoutPermission()
+    public function testUserWithoutPermission(): void
     {
         // We create a fake file to upload
         Storage::fake('public');

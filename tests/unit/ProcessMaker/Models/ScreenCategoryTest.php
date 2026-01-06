@@ -12,7 +12,7 @@ class ScreenCategoryTest extends TestCase
      *
      * @return void
      */
-    public function testGetNamesByIds()
+    public function testGetNamesByIds(): void
     {
         //Case 1: one Id
         $category = ScreenCategory::factory()->create([

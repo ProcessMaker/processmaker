@@ -47,7 +47,7 @@ class BpmnActionFindInstanceWithRetryTest extends TestCase
             }
 
             // Expose the private method for testing using reflection
-            public function testFindInstanceWithRetry($instanceId)
+            public function testFindInstanceWithRetry($instanceId): void
             {
                 $reflection = new \ReflectionClass($this);
                 $method = $reflection->getMethod('findInstanceWithRetry');
@@ -61,7 +61,7 @@ class BpmnActionFindInstanceWithRetryTest extends TestCase
     /**
      * Test successful instance retrieval on first attempt
      */
-    public function testFindInstanceWithRetrySuccessOnFirstAttempt()
+    public function testFindInstanceWithRetrySuccessOnFirstAttempt(): void
     {
         // Create a ProcessRequest
         $processRequest = ProcessRequest::factory()->create([
@@ -83,7 +83,7 @@ class BpmnActionFindInstanceWithRetryTest extends TestCase
     /**
      * Test failure after maximum retries with non-existent ID
      */
-    public function testFindInstanceWithRetryFailureAfterMaxRetries()
+    public function testFindInstanceWithRetryFailureAfterMaxRetries(): void
     {
         $nonExistentId = 99999;
 
@@ -109,7 +109,7 @@ class BpmnActionFindInstanceWithRetryTest extends TestCase
     /**
      * Test with custom configuration values
      */
-    public function testFindInstanceWithRetryWithCustomConfig()
+    public function testFindInstanceWithRetryWithCustomConfig(): void
     {
         // Set custom configuration
         Config::set('app.bpmn_actions_find_retries', 3);
@@ -133,7 +133,7 @@ class BpmnActionFindInstanceWithRetryTest extends TestCase
     /**
      * Test exponential backoff delay calculation
      */
-    public function testExponentialBackoffDelayCalculation()
+    public function testExponentialBackoffDelayCalculation(): void
     {
         $nonExistentId = 77777;
 
@@ -158,7 +158,7 @@ class BpmnActionFindInstanceWithRetryTest extends TestCase
     /**
      * Test with zero retries configuration
      */
-    public function testFindInstanceWithRetryWithZeroRetries()
+    public function testFindInstanceWithRetryWithZeroRetries(): void
     {
         // Clear any cached configuration first
         Config::clearResolvedInstances();
@@ -183,7 +183,7 @@ class BpmnActionFindInstanceWithRetryTest extends TestCase
     /**
      * Test with very high retry configuration
      */
-    public function testFindInstanceWithRetryWithHighRetries()
+    public function testFindInstanceWithRetryWithHighRetries(): void
     {
         // Set high retries
         Config::set('app.bpmn_actions_find_retries', 10);
@@ -201,7 +201,7 @@ class BpmnActionFindInstanceWithRetryTest extends TestCase
     /**
      * Test that the method works with different ProcessRequest IDs
      */
-    public function testFindInstanceWithRetryWithDifferentIds()
+    public function testFindInstanceWithRetryWithDifferentIds(): void
     {
         // Create multiple ProcessRequests
         $processRequest1 = ProcessRequest::factory()->create([
@@ -228,7 +228,7 @@ class BpmnActionFindInstanceWithRetryTest extends TestCase
     /**
      * Test performance with multiple retries
      */
-    public function testFindInstanceWithRetryPerformance()
+    public function testFindInstanceWithRetryPerformance(): void
     {
         $nonExistentId = 33333;
 
@@ -252,7 +252,7 @@ class BpmnActionFindInstanceWithRetryTest extends TestCase
     /**
      * Test that the method respects the maximum retry limit exactly
      */
-    public function testFindInstanceWithRetryRespectsMaxRetriesExactly()
+    public function testFindInstanceWithRetryRespectsMaxRetriesExactly(): void
     {
         // Set custom retries
         Config::set('app.bpmn_actions_find_retries', 3);
@@ -270,7 +270,7 @@ class BpmnActionFindInstanceWithRetryTest extends TestCase
     /**
      * Test that the method handles configuration edge cases
      */
-    public function testFindInstanceWithRetryConfigurationEdgeCases()
+    public function testFindInstanceWithRetryConfigurationEdgeCases(): void
     {
         // Test with very small delay
         Config::set('app.bpmn_actions_find_retries', 2);
@@ -290,7 +290,7 @@ class BpmnActionFindInstanceWithRetryTest extends TestCase
     /**
      * Test that the method works correctly with existing ProcessRequest
      */
-    public function testFindInstanceWithRetryWithExistingProcessRequest()
+    public function testFindInstanceWithRetryWithExistingProcessRequest(): void
     {
         // Create a ProcessRequest
         $processRequest = ProcessRequest::factory()->create([

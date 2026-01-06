@@ -69,7 +69,7 @@ class ProcessScriptsTest extends TestCase
     /**
      * Execute a process
      */
-    public function testExecuteAProcess()
+    public function testExecuteAProcess(): void
     {
         if (!file_exists(config('app.processmaker_scripts_home')) || !file_exists(config('app.processmaker_scripts_docker'))) {
             $this->markTestSkipped(

@@ -26,7 +26,7 @@ class BpmnTimer extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $scheduleManager = new TaskSchedulerManager();
         $scheduleManager->scheduleTasks();

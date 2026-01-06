@@ -12,7 +12,7 @@ class ScreenEmailSeederTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_seeder_creates_screen_without_system_flag()
+    public function test_seeder_creates_screen_without_system_flag(): void
     {
         $seeder = new ScreenEmailSeeder();
         $seeder->run();
@@ -30,7 +30,7 @@ class ScreenEmailSeederTest extends TestCase
         $this->assertNull($screen->screen_category_id);
     }
 
-    public function test_get_screen_by_key_non_system_method()
+    public function test_get_screen_by_key_non_system_method(): void
     {
         $screen = Screen::getScreenByKeyPerDefault('default-email-task-notification');
 

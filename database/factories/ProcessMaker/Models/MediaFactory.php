@@ -16,7 +16,7 @@ class MediaFactory extends Factory
      *
      * @return array
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             'model_id' => 1,

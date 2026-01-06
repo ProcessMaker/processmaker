@@ -31,7 +31,7 @@ class GroupMembersTest extends TestCase
     /**
      * List group memberships
      */
-    public function testGetGroupMemberList()
+    public function testGetGroupMemberList(): void
     {
         // Seed our tables.
         Artisan::call('db:seed', ['--class' => 'PermissionSeeder']);
@@ -71,7 +71,7 @@ class GroupMembersTest extends TestCase
     /**
      * Test verify the parameter required for create form
      */
-    public function testNotCreatedForParameterRequired()
+    public function testNotCreatedForParameterRequired(): void
     {
         //Post should have the parameter required
         $response = $this->apiCall('POST', self::API_TEST_URL, []);
@@ -84,7 +84,7 @@ class GroupMembersTest extends TestCase
     /**
      * Create new group successfully
      */
-    public function testCreateGroupMembershipForUser()
+    public function testCreateGroupMembershipForUser(): void
     {
         $user = User::factory()->create();
         $group = Group::factory()->create();
@@ -106,7 +106,7 @@ class GroupMembersTest extends TestCase
         $this->assertTrue($member_user->is($user));
     }
 
-    public function testCreateGroupMembershipForGroup()
+    public function testCreateGroupMembershipForGroup(): void
     {
         $this->withoutExceptionHandling();
         $group1 = Group::factory()->create();
@@ -132,7 +132,7 @@ class GroupMembersTest extends TestCase
     /**
      * Get a group
      */
-    public function testGetGroupMember()
+    public function testGetGroupMember(): void
     {
         //get the id from the factory
         $group = GroupMember::factory()->create()->id;
@@ -150,7 +150,7 @@ class GroupMembersTest extends TestCase
     /**
      * Delete group in process
      */
-    public function testDeleteGroupMember()
+    public function testDeleteGroupMember(): void
     {
         //Remove group
         $url = self::API_TEST_URL . '/' . GroupMember::factory()->create()->id;
@@ -163,7 +163,7 @@ class GroupMembersTest extends TestCase
     /**
      * The group does not exist in process
      */
-    public function testDeleteGroupMemberNotExist()
+    public function testDeleteGroupMemberNotExist(): void
     {
         //GroupMember not exist
         $url = self::API_TEST_URL . '/' . GroupMember::factory()->make()->id;
@@ -176,7 +176,7 @@ class GroupMembersTest extends TestCase
     /**
      * List group available to assigned
      */
-    public function testMembersAllGroupAvailable()
+    public function testMembersAllGroupAvailable(): void
     {
         //The new user does not have groups assigned.
         Group::factory()->count(15)->create(['status' => 'ACTIVE']);
@@ -192,7 +192,7 @@ class GroupMembersTest extends TestCase
     /**
      * List group available to assigned
      */
-    public function testMembersOnlyGroupAvailable()
+    public function testMembersOnlyGroupAvailable(): void
     {
         $user = User::factory()->create(['status' => 'ACTIVE']);
         GroupMember::factory()->count(10)->create(['member_id' => $user->id, 'member_type' => User::class]);
@@ -208,7 +208,7 @@ class GroupMembersTest extends TestCase
     /**
      * List group available to assigned
      */
-    public function testMembersAllUsersAvailable()
+    public function testMembersAllUsersAvailable(): void
     {
         //The new group does not have groups assigned.
         User::factory()->count(15)->create(['status' => 'ACTIVE']);
@@ -224,7 +224,7 @@ class GroupMembersTest extends TestCase
     /**
      * List group available to assigned
      */
-    public function testMembersOnlyUsersAvailable()
+    public function testMembersOnlyUsersAvailable(): void
     {
         //The new group does not have groups assigned.
         $group = Group::factory()->create(['status' => 'ACTIVE']);

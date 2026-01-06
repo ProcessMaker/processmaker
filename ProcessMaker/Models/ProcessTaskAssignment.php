@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+
 /**
  * Represents a business process task assignment definition.
  *
@@ -67,7 +69,7 @@ class ProcessTaskAssignment extends ProcessMakerModel
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphOne
      */
-    public function assigned()
+    public function assigned(): MorphTo
     {
         return $this->morphTo('assigned', 'assignment_type', 'assignment_id');
     }

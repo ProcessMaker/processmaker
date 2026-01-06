@@ -16,7 +16,7 @@ use Tests\TestCase;
 
 class SignalEventTest extends TestCase
 {
-    public function testSignalEventMustTriggeredWhenProcessActive()
+    public function testSignalEventMustTriggeredWhenProcessActive(): void
     {
         Bus::fake([
             RefreshArtisanCaches::class,
@@ -49,7 +49,7 @@ class SignalEventTest extends TestCase
         Bus::assertDispatched(CatchSignalEventProcess::class);
     }
 
-    public function testSignalEventMustNotTriggeredWhenProcessInactive()
+    public function testSignalEventMustNotTriggeredWhenProcessInactive(): void
     {
         Bus::fake([
             RefreshArtisanCaches::class,
@@ -95,7 +95,7 @@ class SignalEventTest extends TestCase
      * if payload={var1:1, var2:2}  and request data {req1:'a', req2:'b'}
      * request data should be {req1:'a', req2:'b'... request_var:{var1:1, var2:2}}
      */
-    public function testSignalStarEventWithPayloadToRequestVariable()
+    public function testSignalStarEventWithPayloadToRequestVariable(): void
     {
         // The process used for the tests
         ImportProcess::dispatchSync(
@@ -119,7 +119,7 @@ class SignalEventTest extends TestCase
      * if payload={var1:1, var2:2}  and request data {req1:'a', req2:'b'}
      * request data should be {req1:'a', req2:'b'... var1:1, var2:2}
      */
-    public function testSignalStarEventWithPayloadToRequestData()
+    public function testSignalStarEventWithPayloadToRequestData(): void
     {
         // The process used for the tests
         ImportProcess::dispatchSync(

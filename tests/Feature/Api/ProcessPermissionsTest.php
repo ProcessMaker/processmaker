@@ -31,7 +31,7 @@ class ProcessPermissionsTest extends TestCase
         (new PermissionSeeder)->run($this->user);
     }
 
-    public function testUpdateProcessPermissionRequestCancelTypeUser()
+    public function testUpdateProcessPermissionRequestCancelTypeUser(): void
     {
         // Create a process
         $process = Process::factory()->create();

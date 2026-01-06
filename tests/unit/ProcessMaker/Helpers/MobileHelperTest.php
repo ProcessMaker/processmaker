@@ -27,7 +27,7 @@ class MobileHelperTest extends TestCase
         return $this->faker->randomElement($agent);
     }
 
-    public function testIsMobileWithoutCookie()
+    public function testIsMobileWithoutCookie(): void
     {
         $result = MobileHelper::isMobile($this->getUserAgent());
         $this->assertFalse($result);

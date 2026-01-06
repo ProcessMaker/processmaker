@@ -31,7 +31,7 @@ class TranslateEmptyStrings extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         if (env('OPENAI_API_KEY') === null) {
             $this->error('OPENAI_API_KEY is not set');

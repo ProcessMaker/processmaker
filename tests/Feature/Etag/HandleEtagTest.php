@@ -23,20 +23,20 @@ class HandleEtagTest extends TestCase
         });
     }
 
-    public function testMiddlewareSetsEtagHeader()
+    public function testMiddlewareSetsEtagHeader(): void
     {
         $response = $this->get(self::TEST_ROUTE);
         $response->assertHeader('ETag');
     }
 
-    public function testEtagHeaderHasCorrectValue()
+    public function testEtagHeaderHasCorrectValue(): void
     {
         $expectedEtag = '"' . md5($this->response) . '"';
         $response = $this->get(self::TEST_ROUTE);
         $response->assertHeader('ETag', $expectedEtag);
     }
 
-    public function testRequestReturns200WhenIfNoneMatchDoesNotMatch()
+    public function testRequestReturns200WhenIfNoneMatchDoesNotMatch(): void
     {
         $noneMatch = '"' . md5($this->response . 'NoneMatch') . '"';
         $response = $this
@@ -47,7 +47,7 @@ class HandleEtagTest extends TestCase
         $response->assertHeader('ETag');
     }
 
-    public function testRequestReturns304WhenIfNoneMatchMatches()
+    public function testRequestReturns304WhenIfNoneMatchMatches(): void
     {
         $matchingEtag = '"' . md5($this->response) . '"';
         $response = $this
@@ -58,7 +58,7 @@ class HandleEtagTest extends TestCase
         $response->assertHeader('ETag', $matchingEtag);
     }
 
-    public function testRequestIgnoresWeakEtagsInIfNoneMatch()
+    public function testRequestIgnoresWeakEtagsInIfNoneMatch(): void
     {
         $weakEtag = 'W/"' . md5($this->response) . '"';
         $response = $this
@@ -69,7 +69,7 @@ class HandleEtagTest extends TestCase
         $response->assertHeader('ETag', '"' . md5($this->response) . '"');
     }
 
-    public function testDefaultGetEtagGeneratesCorrectEtagWithUser()
+    public function testDefaultGetEtagGeneratesCorrectEtagWithUser(): void
     {
         $user = User::factory()->create();
         $this->actingAs($user);
@@ -84,7 +84,7 @@ class HandleEtagTest extends TestCase
         $response->assertHeader('ETag', $expectedEtag);
     }
 
-    public function testReturns304NotModifiedWhenEtagMatchesTables()
+    public function testReturns304NotModifiedWhenEtagMatchesTables(): void
     {
         $user = User::factory()->create();
         $this->actingAs($user);

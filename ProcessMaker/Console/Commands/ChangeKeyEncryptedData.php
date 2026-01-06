@@ -38,7 +38,7 @@ class ChangeKeyEncryptedData extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         try {
             if ($this->confirm(self::message, false)) {

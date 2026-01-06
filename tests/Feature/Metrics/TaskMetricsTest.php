@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 class TaskMetricsTest extends TestCase
 {
-    public function test_task_metric_was_stored()
+    public function test_task_metric_was_stored(): void
     {
         $user = User::factory()->create([
             'is_administrator' => true,

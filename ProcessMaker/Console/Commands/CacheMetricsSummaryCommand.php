@@ -25,7 +25,7 @@ class CacheMetricsSummaryCommand extends Command
         $this->metrics = $metrics;
     }
 
-    public function handle()
+    public function handle(): void
     {
         $days = (int) $this->option('days');
         $type = $this->option('type');

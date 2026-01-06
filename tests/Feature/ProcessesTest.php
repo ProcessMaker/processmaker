@@ -31,7 +31,7 @@ class ProcessesTest extends TestCase
         $asp->boot();
     }
 
-    public function testIndex()
+    public function testIndex(): void
     {
         $this->user = User::factory()->create([
             'is_administrator' => false,
@@ -56,7 +56,7 @@ class ProcessesTest extends TestCase
         $response->assertSee('Processes');
     }
 
-    public function testEdit()
+    public function testEdit(): void
     {
         $process = Process::factory()->create(['name' => 'Test Edit']);
 
@@ -83,7 +83,7 @@ class ProcessesTest extends TestCase
         $response->assertSee('Test Edit');
     }
 
-    public function testCreate()
+    public function testCreate(): void
     {
         $process = Process::factory()->create(['name' => 'Test Create']);
 
@@ -109,7 +109,7 @@ class ProcessesTest extends TestCase
         $response->assertViewIs('processes.create');
     }
 
-    public function testStore()
+    public function testStore(): void
     {
         $process = Process::factory()->create(['name' => 'Test Edit']);
 
@@ -140,7 +140,7 @@ class ProcessesTest extends TestCase
         $this->assertDatabaseHas('processes', ['name' => 'Stored new process']);
     }
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $process = Process::factory()->create(['name' => 'Test Update']);
 
@@ -170,7 +170,7 @@ class ProcessesTest extends TestCase
         $this->assertDatabaseHas('processes', ['name' => 'Updated Name']);
     }
 
-    public function testArchive()
+    public function testArchive(): void
     {
         $process = Process::factory()->create(['name' => 'Test Archive']);
 
@@ -196,7 +196,7 @@ class ProcessesTest extends TestCase
         $this->assertDatabaseMissing('processes', ['id' => $process->id, 'deleted_at' => null]);
     }
 
-    public function testIndexPermissionRedirect()
+    public function testIndexPermissionRedirect(): void
     {
         $this->user = User::factory()->create();
         $response = $this->webCall('GET', '/processes');

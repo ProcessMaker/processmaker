@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 class ProcessRequestTokenTest extends TestCase
 {
-    public function testSetStagePropertiesInRecord()
+    public function testSetStagePropertiesInRecord(): void
     {
         // Create a partial mock of the token
         $token = $this->getMockBuilder(ProcessRequestToken::class)

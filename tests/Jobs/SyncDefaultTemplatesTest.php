@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 class SyncDefaultTemplatesTest extends TestCase
 {
-    public function test_job_skips_failed_template_fetches_and_logs_warning()
+    public function test_job_skips_failed_template_fetches_and_logs_warning(): void
     {
         // Mock GitHub config.
         Config::set('services.github', [

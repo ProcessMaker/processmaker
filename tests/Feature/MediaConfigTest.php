@@ -13,7 +13,7 @@ class MediaConfigTest extends TestCase
 {
     use RequestHelper;
 
-    public function testMediaMaxFileSize()
+    public function testMediaMaxFileSize(): void
     {
         // Set a small max file size for testing (1MB)
         Config::set('media-library.max_file_size', 1024 * 1024); // 1MB
@@ -74,7 +74,7 @@ class MediaConfigTest extends TestCase
         $this->assertEquals(1, $processRequest->fresh()->getMedia()->count());
     }
 
-    public function testMediaMaxFileSizeFromEnv()
+    public function testMediaMaxFileSizeFromEnv(): void
     {
         // Test that the config reads from environment variable
         $maxSize = 5 * 1024 * 1024; // 5MB

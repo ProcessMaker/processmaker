@@ -11,7 +11,7 @@ class DefaultColumnsTest extends TestCase
     /**
      * Test verifyDefaultColumns with null savedColumns
      */
-    public function testVerifyDefaultColumnsWithNull()
+    public function testVerifyDefaultColumnsWithNull(): void
     {
         $result = DefaultColumns::verifyDefaultColumns(null, SavedSearch::KEY_TASKS);
         $this->assertTrue($result);
@@ -20,7 +20,7 @@ class DefaultColumnsTest extends TestCase
     /**
      * Test verifyDefaultColumns with non-array savedColumns
      */
-    public function testVerifyDefaultColumnsWithNonArray()
+    public function testVerifyDefaultColumnsWithNonArray(): void
     {
         $result = DefaultColumns::verifyDefaultColumns('not_an_array', SavedSearch::KEY_TASKS);
         $this->assertTrue($result);
@@ -29,7 +29,7 @@ class DefaultColumnsTest extends TestCase
     /**
      * Test verifyDefaultColumns with invalid key
      */
-    public function testVerifyDefaultColumnsWithInvalidKey()
+    public function testVerifyDefaultColumnsWithInvalidKey(): void
     {
         $savedColumns = [
             ['field' => 'case_number', 'label' => 'Case #'],
@@ -43,7 +43,7 @@ class DefaultColumnsTest extends TestCase
     /**
      * Test verifyDefaultColumns with empty array
      */
-    public function testVerifyDefaultColumnsWithEmptyArray()
+    public function testVerifyDefaultColumnsWithEmptyArray(): void
     {
         $result = DefaultColumns::verifyDefaultColumns([], SavedSearch::KEY_TASKS);
         $this->assertTrue($result);
@@ -52,7 +52,7 @@ class DefaultColumnsTest extends TestCase
     /**
      * Test verifyDefaultColumns with exact default columns for tasks (array format)
      */
-    public function testVerifyDefaultColumnsWithExactDefaultColumnsForTasks()
+    public function testVerifyDefaultColumnsWithExactDefaultColumnsForTasks(): void
     {
         $savedColumns = [
             ['field' => 'case_number', 'label' => 'Case #'],
@@ -70,7 +70,7 @@ class DefaultColumnsTest extends TestCase
     /**
      * Test verifyDefaultColumns with default columns in different order
      */
-    public function testVerifyDefaultColumnsWithDifferentOrder()
+    public function testVerifyDefaultColumnsWithDifferentOrder(): void
     {
         $savedColumns = [
             ['field' => 'status', 'label' => 'Status'],
@@ -88,7 +88,7 @@ class DefaultColumnsTest extends TestCase
     /**
      * Test verifyDefaultColumns with object format columns
      */
-    public function testVerifyDefaultColumnsWithObjectFormat()
+    public function testVerifyDefaultColumnsWithObjectFormat(): void
     {
         $savedColumns = [
             (object) ['field' => 'case_number', 'label' => 'Case #'],
@@ -106,7 +106,7 @@ class DefaultColumnsTest extends TestCase
     /**
      * Test verifyDefaultColumns with missing default columns
      */
-    public function testVerifyDefaultColumnsWithMissingColumns()
+    public function testVerifyDefaultColumnsWithMissingColumns(): void
     {
         $savedColumns = [
             ['field' => 'case_number', 'label' => 'Case #'],
@@ -122,7 +122,7 @@ class DefaultColumnsTest extends TestCase
     /**
      * Test verifyDefaultColumns with extra columns
      */
-    public function testVerifyDefaultColumnsWithExtraColumns()
+    public function testVerifyDefaultColumnsWithExtraColumns(): void
     {
         $savedColumns = [
             ['field' => 'case_number', 'label' => 'Case #'],
@@ -141,7 +141,7 @@ class DefaultColumnsTest extends TestCase
     /**
      * Test verifyDefaultColumns with different field names
      */
-    public function testVerifyDefaultColumnsWithDifferentFieldNames()
+    public function testVerifyDefaultColumnsWithDifferentFieldNames(): void
     {
         $savedColumns = [
             ['field' => 'case_number', 'label' => 'Case #'],
@@ -159,7 +159,7 @@ class DefaultColumnsTest extends TestCase
     /**
      * Test verifyDefaultColumns with columns missing field property
      */
-    public function testVerifyDefaultColumnsWithMissingFieldProperty()
+    public function testVerifyDefaultColumnsWithMissingFieldProperty(): void
     {
         $savedColumns = [
             ['field' => 'case_number', 'label' => 'Case #'],
@@ -177,7 +177,7 @@ class DefaultColumnsTest extends TestCase
     /**
      * Test verifyDefaultColumns with additional properties in columns
      */
-    public function testVerifyDefaultColumnsWithAdditionalProperties()
+    public function testVerifyDefaultColumnsWithAdditionalProperties(): void
     {
         $savedColumns = [
             ['field' => 'case_number', 'label' => 'Case #', 'sortable' => true, 'width' => 100],

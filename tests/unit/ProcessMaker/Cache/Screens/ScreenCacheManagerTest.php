@@ -41,7 +41,7 @@ class ScreenCacheManagerTest extends TestCase
     }
 
     /** @test */
-    public function testCreatesCorrectCacheKey()
+    public function testCreatesCorrectCacheKey(): void
     {
         $languages = ['en', 'es', 'fr', 'de'];
 
@@ -61,7 +61,7 @@ class ScreenCacheManagerTest extends TestCase
     }
 
     /** @test */
-    public function testStoresAndRetrievesFromMemoryCache()
+    public function testStoresAndRetrievesFromMemoryCache(): void
     {
         $key = 'test_screen';
         $value = ['content' => 'test'];
@@ -86,7 +86,7 @@ class ScreenCacheManagerTest extends TestCase
     }
 
     /** @test */
-    public function testHandlesTranslations()
+    public function testHandlesTranslations(): void
     {
         $key = 'test_screen';
         $value = ['content' => 'test', 'title' => 'Original Title'];
@@ -112,7 +112,7 @@ class ScreenCacheManagerTest extends TestCase
     }
 
     /** @test */
-    public function testHandlesNestedScreens()
+    public function testHandlesNestedScreens(): void
     {
         $key = 'test_screen';
         $nestedKey = 'nested_screen';
@@ -155,7 +155,7 @@ class ScreenCacheManagerTest extends TestCase
     }
 
     /** @test */
-    public function testTracksCacheStatistics()
+    public function testTracksCacheStatistics(): void
     {
         $key = 'test_stats';
         $value = ['data' => 'test'];
@@ -194,7 +194,7 @@ class ScreenCacheManagerTest extends TestCase
     }
 
     /** @test */
-    public function testDeletesFromCache()
+    public function testDeletesFromCache(): void
     {
         $key = 'test_delete';
 
@@ -215,7 +215,7 @@ class ScreenCacheManagerTest extends TestCase
     }
 
     /** @test */
-    public function testClearsEntireCache()
+    public function testClearsEntireCache(): void
     {
         // Set up expectations
         $this->cacheManager->shouldReceive('flush')
@@ -233,7 +233,7 @@ class ScreenCacheManagerTest extends TestCase
     }
 
     /** @test */
-    public function testChecksIfKeyExists()
+    public function testChecksIfKeyExists(): void
     {
         $key = 'test_exists';
 
@@ -255,7 +255,7 @@ class ScreenCacheManagerTest extends TestCase
     }
 
     /** @test */
-    public function testChecksIfKeyIsMissing()
+    public function testChecksIfKeyIsMissing(): void
     {
         $key = 'test_missing';
 
@@ -277,7 +277,7 @@ class ScreenCacheManagerTest extends TestCase
     }
 
     /** @test */
-    public function testInvalidateSuccess()
+    public function testInvalidateSuccess(): void
     {
         // Test parameters
         $screenId = 3;
@@ -300,7 +300,7 @@ class ScreenCacheManagerTest extends TestCase
     }
 
     /** @test */
-    public function testInvalidateFailure()
+    public function testInvalidateFailure(): void
     {
         // Test parameters
         $screenId = 3;

@@ -27,7 +27,7 @@ class DockerFacadeTest extends TestCase
         config(['app.processmaker_scripts_timeout' => self::DEFAULT_TIMEOUT_COMMAND]);
     }
 
-    public function testValidateDockerDefaultEnvironmentVariables()
+    public function testValidateDockerDefaultEnvironmentVariables(): void
     {
         $dockerHost = Docker::getDockerHost();
         $this->assertEquals($dockerHost, '');
@@ -46,7 +46,7 @@ class DockerFacadeTest extends TestCase
         ]));
     }
 
-    public function testEvaluateWhenRemoteDockerHostEnabled()
+    public function testEvaluateWhenRemoteDockerHostEnabled(): void
     {
         $dockerHost = 'tcp://127.0.0.1:2375';
         $timeout = 12;
@@ -74,7 +74,7 @@ class DockerFacadeTest extends TestCase
         );
     }
 
-    public function testValidateCustomTimeoutEnvironmentVariable()
+    public function testValidateCustomTimeoutEnvironmentVariable(): void
     {
         // Set custom timeout command
         $customTimeoutCmd = '/usr/local/bin/gtimeout';
@@ -92,7 +92,7 @@ class DockerFacadeTest extends TestCase
         ]));
     }
 
-    public function testValidateCustomDockerEnvironmentVariable()
+    public function testValidateCustomDockerEnvironmentVariable(): void
     {
         // Set custom docker command
         $customDockerCmd = '/usr/local/bin/docker';
@@ -102,7 +102,7 @@ class DockerFacadeTest extends TestCase
         $this->assertEquals($command, $customDockerCmd);
     }
 
-    public function testTimeoutZeroDoesNotBeIncluded()
+    public function testTimeoutZeroDoesNotBeIncluded(): void
     {
         // Define No Timeout
         $timeout = 0;

@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Traits\Exportable;
@@ -63,7 +64,7 @@ class ScriptCategory extends ProcessMakerModel
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function scripts()
+    public function scripts(): MorphToMany
     {
         return $this->morphedByMany(Script::class, 'assignable', 'category_assignments', 'category_id');
     }

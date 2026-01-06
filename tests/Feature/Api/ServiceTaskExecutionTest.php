@@ -75,7 +75,7 @@ class ServiceTaskExecutionTest extends TestCase
     /**
      * Execute a process with service task
      */
-    public function testExecuteAProcess()
+    public function testExecuteAProcess(): void
     {
         //Start a process request
         $route = route('api.process_events.trigger',
@@ -99,7 +99,7 @@ class ServiceTaskExecutionTest extends TestCase
         $this->assertEquals($request->data['pong'], $ping);
     }
 
-    public function testWithUserWithoutAuthorization()
+    public function testWithUserWithoutAuthorization(): void
     {
         // We'll test executing a process with someone that is not authenticated
         $url = route('api.process_events.trigger',

@@ -13,7 +13,7 @@ class ProcessLaunchpadFactory extends Factory
     /**
      * Define the model's default state.
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             'uuid' => $this->faker->uuid(),

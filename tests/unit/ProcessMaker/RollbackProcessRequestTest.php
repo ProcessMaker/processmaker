@@ -48,7 +48,7 @@ class RollbackProcessRequestTest extends TestCase
         return $task;
     }
 
-    public function testRollbackToFormTask()
+    public function testRollbackToFormTask(): void
     {
         $task = $this->createTasks('task');
 
@@ -61,7 +61,7 @@ class RollbackProcessRequestTest extends TestCase
         $this->assertEquals($comment->body, "The System rolled back {$task->element_name} to {$newTask->element_name}");
     }
 
-    public function testRollbackToScriptTask()
+    public function testRollbackToScriptTask(): void
     {
         $task = $this->createTasks('scriptTask');
         $mockProcessDefinitions = $this->mockRunScriptTask();
@@ -71,7 +71,7 @@ class RollbackProcessRequestTest extends TestCase
         $this->assertEquals('ACTIVE', $newTask->status);
     }
 
-    public function testRollbackToServiceTask()
+    public function testRollbackToServiceTask(): void
     {
         $task = $this->createTasks('serviceTask');
         $mockProcessDefinitions = $this->mockRunServiceTask();

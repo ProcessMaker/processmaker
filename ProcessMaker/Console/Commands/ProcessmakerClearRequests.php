@@ -36,7 +36,7 @@ class ProcessmakerClearRequests extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         if ($this->confirm(self::message, false)) {
             ScheduledTask::query()->truncate();

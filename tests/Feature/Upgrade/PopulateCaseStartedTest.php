@@ -27,7 +27,7 @@ class PopulateCaseStartedTest extends TestCase
         parent::tearDown();
     }
 
-    public function testUp()
+    public function testUp(): void
     {
         // Instantiate PopulateCaseStarted
         $populateCaseStarted = new PopulateCaseStarted();
@@ -63,7 +63,7 @@ class PopulateCaseStartedTest extends TestCase
         }
     }
 
-    public function testTokensColumn()
+    public function testTokensColumn(): void
     {
         // Instantiate PopulateCaseStarted
         $populateCaseStarted = new PopulateCaseStarted();
@@ -103,7 +103,7 @@ class PopulateCaseStartedTest extends TestCase
         $this->assertEqualsCanonicalizing($tokensArray, $processRequestTokenIds);
     }
 
-    public function testParticipatedColumn()
+    public function testParticipatedColumn(): void
     {
         // Instantiate PopulateCaseStarted
         $populateCaseStarted = new PopulateCaseStarted();
@@ -162,7 +162,7 @@ class PopulateCaseStartedTest extends TestCase
         $this->assertEqualsCanonicalizing($tokensArray, $uniqueParticipantIds);
     }
 
-    public function testCasesStartedProcessColumn()
+    public function testCasesStartedProcessColumn(): void
     {
         // Instantiate the migration class
         $populateCaseStarted = new PopulateCaseStarted();
@@ -271,7 +271,7 @@ class PopulateCaseStartedTest extends TestCase
         $this->assertEqualsCanonicalizing($expectedData, $processesArray, 'The processes data in cases_started should match the expected data');
     }
 
-    public function testCasesStartedRequestsColumn()
+    public function testCasesStartedRequestsColumn(): void
     {
         // Instantiate the migration class
         $populateCaseStarted = new PopulateCaseStarted();

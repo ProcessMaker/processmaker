@@ -65,7 +65,7 @@ class ApiCollection extends ResourceCollection
      * @param  Request  $request
      * @return array
      */
-    public function toArray($request)
+    public function toArray($request): array
     {
         UserResourceView::addToResourceCollection($this->collection, $request->user());
 

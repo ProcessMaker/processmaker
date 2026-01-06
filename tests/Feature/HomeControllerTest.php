@@ -22,14 +22,14 @@ class HomeControllerTest extends TestCase
     }
 
     /** @test */
-    public function testRedirectsToLoginWhenNotAuthenticated()
+    public function testRedirectsToLoginWhenNotAuthenticated(): void
     {
         $response = $this->get('/');
         $response->assertRedirect('/login');
     }
 
     /** @test */
-    public function testRedirectsToCustomDashboardWhenUserHasDashboard()
+    public function testRedirectsToCustomDashboardWhenUserHasDashboard(): void
     {
         $user = User::factory()->create();
 
@@ -46,7 +46,7 @@ class HomeControllerTest extends TestCase
     }
 
     /** @test */
-    public function testRedirectsToCustomDashboardWhenGroupHasDashboard()
+    public function testRedirectsToCustomDashboardWhenGroupHasDashboard(): void
     {
         $user = User::factory()->create();
         $group = Group::factory()->create();
@@ -65,7 +65,7 @@ class HomeControllerTest extends TestCase
     }
 
     /** @test */
-    public function testRedirectsToTasksOnMobileWithoutCustomDashboard()
+    public function testRedirectsToTasksOnMobileWithoutCustomDashboard(): void
     {
         $user = User::factory()->create();
 
@@ -81,7 +81,7 @@ class HomeControllerTest extends TestCase
     }
 
     /** @test */
-    public function testRedirectsToInboxOnDesktopWithoutCustomDashboard()
+    public function testRedirectsToInboxOnDesktopWithoutCustomDashboard(): void
     {
         $user = User::factory()->create();
 
@@ -97,7 +97,7 @@ class HomeControllerTest extends TestCase
     }
 
     /** @test */
-    public function testRedirectsToUserUrlRedirect()
+    public function testRedirectsToUserUrlRedirect(): void
     {
         $user = User::factory()->create();
 
@@ -114,7 +114,7 @@ class HomeControllerTest extends TestCase
     }
 
     /** @test */
-    public function testRedirectsToGroupUrlRedirect()
+    public function testRedirectsToGroupUrlRedirect(): void
     {
         $user = User::factory()->create();
         $group = Group::factory()->create();

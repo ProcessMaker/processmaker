@@ -28,7 +28,7 @@ class UpdateCommentsCaseNumber extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): int
     {
         // Update the case_number with the corresponding value in the table comments
         $chunkSize = self::CHUNK_SIZE;

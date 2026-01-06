@@ -10,7 +10,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('process_requests', function (Blueprint $table) {
             $table->json('do_not_sanitize')->after('name')->nullable();
@@ -22,7 +22,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('process_requests', function (Blueprint $table) {
             $table->dropColumn('do_not_sanitize');

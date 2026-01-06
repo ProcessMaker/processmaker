@@ -51,7 +51,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Get a list of Requests without query parameters.
      */
-    public function testListRequest()
+    public function testListRequest(): void
     {
         ProcessRequest::query()->delete();
 
@@ -75,7 +75,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Count the total of request per process
      */
-    public function testCountRequest()
+    public function testCountRequest(): void
     {
         ProcessRequest::query()->delete();
         $process = Process::factory()->create();
@@ -100,7 +100,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
      */
-    public function testScreenListDates()
+    public function testScreenListDates(): void
     {
         $name = 'testRequestTimezone';
         $newEntity = ProcessRequest::factory()->create(['name' => $name]);
@@ -121,7 +121,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Get a list of Request with parameters
      */
-    public function testListRequestIncludingData()
+    public function testListRequestIncludingData(): void
     {
         $requestname = 'mytestrequestnameincludesdata';
 
@@ -142,7 +142,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Get a list of Request with parameters
      */
-    public function testListRequestOrderByData()
+    public function testListRequestOrderByData(): void
     {
         $requestname = 'mytestrequestnameorderbydata';
 
@@ -177,7 +177,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Get a list of Request with parameters
      */
-    public function testListRequestWithQueryParameter()
+    public function testListRequestWithQueryParameter(): void
     {
         $requestname = 'mytestrequestname';
 
@@ -208,7 +208,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Test that we can filter by participant
      */
-    public function testFilterByParticipant()
+    public function testFilterByParticipant(): void
     {
         $participant = User::factory()->create();
         $otherUser = User::factory()->create();
@@ -234,7 +234,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Test that paged values are returned as expected
      */
-    public function testWithPagination()
+    public function testWithPagination(): void
     {
         $process = Process::factory()->create();
         ProcessRequest::factory()->count(5)->create([
@@ -260,7 +260,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Get a list of Request by type
      */
-    public function testListRequestWithType()
+    public function testListRequestWithType(): void
     {
         $in_progress = ProcessRequest::factory()->create([
             'status' => 'ACTIVE',
@@ -286,7 +286,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Get a list of Request with assocations included
      */
-    public function testListRequestWithIncludes()
+    public function testListRequestWithIncludes(): void
     {
         $process = Process::factory()->create();
 
@@ -302,7 +302,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Get a list of requests with a user that has view all permission
      */
-    public function testListRequestViewAllPermission()
+    public function testListRequestViewAllPermission(): void
     {
         $this->user = User::factory()->create(['status'=>'ACTIVE']);
         $processRequest = ProcessRequest::factory()->create([]);
@@ -323,7 +323,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Get a request
      */
-    public function testGetRequest()
+    public function testGetRequest(): void
     {
         //get the id from the factory
         $request = ProcessRequest::factory()->create()->id;
@@ -341,7 +341,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Parameters required for update of request
      */
-    public function testUpdateProcessRequestParametersRequired()
+    public function testUpdateProcessRequestParametersRequired(): void
     {
         $id = ProcessRequest::factory()->create(['name' => 'mytestrequestname'])->id;
         //The post must have the required parameters
@@ -358,7 +358,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Update request in process
      */
-    public function testUpdateProcessRequest()
+    public function testUpdateProcessRequest(): void
     {
         $faker = Faker::create();
 
@@ -397,7 +397,7 @@ class ProcessRequestsTest extends TestCase
      *
      * Each transition should return a 204 status code indicating success
      */
-    public function testUpdateProcessRequestStatus()
+    public function testUpdateProcessRequestStatus(): void
     {
         $process = Process::factory()->create();
         $request1 = ProcessRequest::factory()->create([
@@ -469,7 +469,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * test to be sure that you cannot cancel a request until you have been given permission
      */
-    public function testCancelRequestWithPermissions()
+    public function testCancelRequestWithPermissions(): void
     {
         // We need an admin user and a non-admin user
         $admin = $this->user;
@@ -527,7 +527,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Test ability to complete a request if it has the status: ERROR
      */
-    public function testCompleteRequest()
+    public function testCompleteRequest(): void
     {
         $this->user->is_administrator = false;
         $this->user->saveOrFail();
@@ -582,7 +582,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Delete request and request tokens in parent process, and children processes
      */
-    public function testDeleteParentProcessRequestShouldRemoveRequestAndTokensForParentAndChildren()
+    public function testDeleteParentProcessRequestShouldRemoveRequestAndTokensForParentAndChildren(): void
     {
         $user = User::factory()->create();
         // Prepare data
@@ -641,7 +641,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Delete request and request tokens in subprocess and child process
      */
-    public function testDeleteChildProcessRequestShouldRemoveRequestAndTokensForChildren()
+    public function testDeleteChildProcessRequestShouldRemoveRequestAndTokensForChildren(): void
     {
         $user = User::factory()->create();
         // Prepare data
@@ -700,7 +700,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * The request does not exist in process
      */
-    public function testDeleteProcessRequestNotExist()
+    public function testDeleteProcessRequestNotExist(): void
     {
         //ProcessRequest not exist
         $url = self::API_TEST_URL . '/' . ProcessRequest::factory()->make()->id;
@@ -710,7 +710,7 @@ class ProcessRequestsTest extends TestCase
         $response->assertStatus(405);
     }
 
-    public function testListCanceledProcessRequests()
+    public function testListCanceledProcessRequests(): void
     {
         ProcessRequest::query()->delete();
 
@@ -734,7 +734,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Verifies that a file uploaded in a request can be downloaded
      */
-    public function testFileDownload()
+    public function testFileDownload(): void
     {
         // We create a fake file to upload
         $testFileName = 'test.txt';
@@ -766,7 +766,7 @@ class ProcessRequestsTest extends TestCase
         $this->assertEquals($testFileName, $response->getFile()->getFileName());
     }
 
-    public function testParticipantPermissionsToView()
+    public function testParticipantPermissionsToView(): void
     {
         $participant = User::factory()->create();
         $otherUser = User::factory()->create();
@@ -794,7 +794,7 @@ class ProcessRequestsTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testUserCanEditCompletedData()
+    public function testUserCanEditCompletedData(): void
     {
         $this->user = User::factory()->create();
         $process = Process::factory()->create();
@@ -863,7 +863,7 @@ class ProcessRequestsTest extends TestCase
      *
      * @return void
      */
-    public function testGetProcessRequestListAndPermissions()
+    public function testGetProcessRequestListAndPermissions(): void
     {
         // Setup user as non administrator
         $this->user->is_administrator = false;
@@ -927,7 +927,7 @@ class ProcessRequestsTest extends TestCase
         $this->assertEquals(20, $response->json()['meta']['total']);
     }
 
-    public function testGetRequestToken()
+    public function testGetRequestToken(): void
     {
         $expectedResponse = [
             'advanceStatus',
@@ -991,7 +991,7 @@ class ProcessRequestsTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testAdvancedFilter()
+    public function testAdvancedFilter(): void
     {
         $hit = ProcessRequest::factory()->create([
             'data' => ['foo' => 'bar'],
@@ -1015,7 +1015,7 @@ class ProcessRequestsTest extends TestCase
     }
 
     // Test enableIsActionbyemail function
-    public function testEnableIsActionbyemail()
+    public function testEnableIsActionbyemail(): void
     {
         //create a token
         $token = ProcessRequestToken::factory()->create([
@@ -1031,7 +1031,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Test the screenRequested method of ProcessRequestController.
      */
-    public function testScreenRequested()
+    public function testScreenRequested(): void
     {
         $request = ProcessRequest::factory()->create();
         ProcessRequestToken::factory()->create([
@@ -1059,7 +1059,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Get a list of Requests by Cases.
      */
-    public function testRequestByCase()
+    public function testRequestByCase(): void
     {
         ProcessRequest::query()->delete();
         $request = ProcessRequest::factory()->create();
@@ -1088,7 +1088,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Get a list of Requests by Cases.
      */
-    public function testRequestByCaseWithoutCaseNumber()
+    public function testRequestByCaseWithoutCaseNumber(): void
     {
         $response = $this->apiCall('GET', self::API_REQUESTS_BY_CASE);
 
@@ -1100,7 +1100,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Get task list with data
      */
-    public function testGetTaskListWithData()
+    public function testGetTaskListWithData(): void
     {
         // Create a request with a token
         $request = ProcessRequest::factory()->create([
@@ -1131,7 +1131,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Get a list of Requests by Cases pagination
      */
-    public function testRequestByCasePagination()
+    public function testRequestByCasePagination(): void
     {
         ProcessRequest::query()->delete();
         $request = ProcessRequest::factory()->create();
