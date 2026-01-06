@@ -2,6 +2,9 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use ProcessMaker\Observers\ProcessRequestTokenObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Carbon\Carbon;
 use DB;
 use DOMXPath;
@@ -89,6 +92,7 @@ use Throwable;
  *
  * @method ProcessRequest getInstance()
  */
+#[ObservedBy([Observers\ProcessRequestTokenObserver::class])]
 class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 {
     use ExtendedPMQL;
@@ -301,7 +305,8 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     /**
      * Scope to filter by case_number through the processRequest relationship
      */
-    public function scopeFilterByCaseNumber($query, $request)
+    #[Scope]
+    protected function filterByCaseNumber($query, $request)
     {
         $caseNumber = $request->input('case_number');
 
@@ -313,7 +318,8 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     /**
      * Scope to filter by status
      */
-    public function scopeFilterByStatus($query, $request)
+    #[Scope]
+    protected function filterByStatus($query, $request)
     {
         $status = $request->input('status', 'ACTIVE');
 
@@ -323,7 +329,8 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     /**
      * Scope get process information
      */
-    public function scopeGetProcess($query)
+    #[Scope]
+    protected function getProcess($query)
     {
         return $query->with(['process' => function ($query) {
             $query->select('id', 'name');
@@ -333,7 +340,8 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     /**
      * Scope get user information
      */
-    public function scopeGetUser($query)
+    #[Scope]
+    protected function getUser($query)
     {
         return $query->with(['user' => function ($query) {
             $query->select('id', 'firstname', 'lastname', 'username', 'avatar');
@@ -343,7 +351,8 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     /**
      * Scope apply order
      */
-    public function scopeApplyOrdering($query, $request)
+    #[Scope]
+    protected function applyOrdering($query, $request)
     {
         $orderBy = $request->input('order_by', 'due_at');
         $orderDirection = $request->input('order_direction', 'asc');
@@ -354,7 +363,8 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     /**
      * Scope apply pagination
      */
-    public function scopeApplyPagination($query, $request)
+    #[Scope]
+    protected function applyPagination($query, $request)
     {
         $page = $request->input('page', 1);
         $perPage = $request->input('per_page', 10);
@@ -618,7 +628,8 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
      *
      * @var Builder
      */
-    public function scopeOverdue($query, $overdue = '')
+    #[Scope]
+    protected function overdue($query, $overdue = '')
     {
         if (!empty($overdue)) {
             return $query->where('due_at', '<', Carbon::now());
@@ -632,7 +643,8 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
      *
      * @param $filter string
      */
-    public function scopeFilter($query, $filter)
+    #[Scope]
+    protected function filter($query, $filter)
     {
         $setting = Setting::byKey('indexed-search');
         if ($setting && $setting->config['enabled'] === true) {
@@ -1471,7 +1483,8 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
      * @param mixed $userId ID of the user
      * @return mixed
      */
-    public static function scopeWhereUserAssigned($query, $userId)
+    #[Scope]
+    public static function whereUserAssigned($query, $userId)
     {
         $userColumn = 'user_id';
         $query->where(function ($query) use ($userColumn, $userId) {

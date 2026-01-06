@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -28,7 +29,8 @@ class ProcessMakerModel extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
-    public function scopeExclude($query, array $columns)
+    #[Scope]
+    protected function exclude($query, array $columns)
     {
         if (empty($columns)) {
             return $query;

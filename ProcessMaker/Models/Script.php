@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Contracts\ScriptInterface;
 use ProcessMaker\Exception\ConfigurationException;
@@ -407,7 +408,8 @@ class Script extends ProcessMakerModel implements ScriptInterface
      *
      * @param $filter string
      */
-    public function scopeFilter($query, $filterStr)
+    #[Scope]
+    protected function filter($query, $filterStr)
     {
         $filter = '%' . mb_strtolower($filterStr) . '%';
         $query->where(function ($query) use ($filter, $filterStr) {

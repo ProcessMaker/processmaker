@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\Traits\ExtendedPMQL;
 
@@ -103,7 +104,8 @@ class SecurityLog extends ProcessMakerModel
      *
      * @param $filter string
      */
-    public function scopeFilter($query, $filter)
+    #[Scope]
+    protected function filter($query, $filter)
     {
         $filter = '%' . mb_strtolower($filter) . '%';
 

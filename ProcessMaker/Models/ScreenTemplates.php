@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Exception\PmqlMethodException;
 use ProcessMaker\Traits\ExtendedPMQL;
@@ -164,7 +165,8 @@ class ScreenTemplates extends Template implements HasMedia
      *
      * @param $filter string
      */
-    public function scopeFilter($query, $filterStr)
+    #[Scope]
+    protected function filter($query, $filterStr)
     {
         $filter = '%' . mb_strtolower($filterStr) . '%';
         $query->where(function ($query) use ($filter) {

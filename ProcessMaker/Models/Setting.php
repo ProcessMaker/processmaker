@@ -2,6 +2,9 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use ProcessMaker\Observers\SettingObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -51,6 +54,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  *   },
  * )
  */
+#[ObservedBy([Observers\SettingObserver::class])]
 class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInterface
 {
     use ExtendedPMQL;
@@ -194,12 +198,14 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
         return $setting instanceof self ? $setting->config : null;
     }
 
-    public function scopeHidden($query)
+    #[Scope]
+    protected function hidden($query)
     {
         return $query->where('hidden', true);
     }
 
-    public function scopeNotHidden($query)
+    #[Scope]
+    protected function notHidden($query)
     {
         return $query->where('hidden', false);
     }
@@ -262,7 +268,8 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
      *
      * @param $filter string
      */
-    public function scopeFilter($query, $filter)
+    #[Scope]
+    protected function filter($query, $filter)
     {
         $filter = '%' . mb_strtolower($filter) . '%';
 

@@ -2,6 +2,9 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use ProcessMaker\Observers\UserObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -24,6 +27,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
+#[ObservedBy([Observers\UserObserver::class])]
 class User extends Authenticatable implements HasMedia
 {
     use PMQL;
@@ -245,7 +249,8 @@ class User extends Authenticatable implements HasMedia
      *
      * @var Builder
      */
-    public function scopeActive($query)
+    #[Scope]
+    protected function active($query)
     {
         return $query->where('status', 'ACTIVE');
     }

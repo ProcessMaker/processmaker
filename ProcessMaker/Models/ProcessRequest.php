@@ -2,6 +2,9 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use ProcessMaker\Observers\ProcessRequestObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Support\Collection;
@@ -95,6 +98,7 @@ use Throwable;
  *   },
  * )
  */
+#[ObservedBy([Observers\ProcessRequestObserver::class])]
 class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInterface, HasMedia
 {
     use ExecutionInstanceTrait;
@@ -446,7 +450,8 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      *
      * @param $filter string
      */
-    public function scopeFilter($query, $filter)
+    #[Scope]
+    protected function filter($query, $filter)
     {
         $setting = Setting::byKey('indexed-search');
         if ($setting && $setting->config['enabled'] === true) {
@@ -479,7 +484,8 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      *
      * @param $id User id
      */
-    public function scopeStartedMe($query, $id)
+    #[Scope]
+    protected function startedMe($query, $id)
     {
         $query->where('user_id', '=', $id);
     }
@@ -489,7 +495,8 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      *
      * @param $query
      */
-    public function scopeInProgress($query)
+    #[Scope]
+    protected function inProgress($query)
     {
         $query->where('status', '=', 'ACTIVE');
     }
@@ -499,7 +506,8 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      *
      * @param $query
      */
-    public function scopeCompleted($query)
+    #[Scope]
+    protected function completed($query)
     {
         $query->where(function ($query) {
             $query->where('status', '=', 'COMPLETED');
@@ -511,7 +519,8 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      *
      * @param $query
      */
-    public function scopeNotCompleted($query)
+    #[Scope]
+    protected function notCompleted($query)
     {
         $query->where('status', '!=', 'COMPLETED');
         $query->where('status', '!=', 'CANCELED');
@@ -1106,7 +1115,8 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Scope apply order
      */
-    public function scopeApplyOrdering($query, $request)
+    #[Scope]
+    protected function applyOrdering($query, $request)
     {
         $orderBy = $request->input('order_by', 'name');
         $orderDirection = $request->input('order_direction', 'asc');
@@ -1117,7 +1127,8 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Scope apply pagination
      */
-    public function scopeApplyPagination($query, $request)
+    #[Scope]
+    protected function applyPagination($query, $request)
     {
         $page = $request->input('page', 1);
         $perPage = $request->input('per_page', 10);
@@ -1128,7 +1139,8 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Scope to filter by case_number
      */
-    public function scopeFilterByCaseNumber($query, $request)
+    #[Scope]
+    protected function filterByCaseNumber($query, $request)
     {
         $caseNumber = $request->input('case_number');
 

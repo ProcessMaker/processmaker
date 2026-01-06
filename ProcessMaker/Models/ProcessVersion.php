@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use ProcessMaker\Contracts\ProcessModelInterface;
 use ProcessMaker\Traits\HasCategories;
@@ -140,7 +141,8 @@ class ProcessVersion extends ProcessMakerModel implements ProcessModelInterface
     /**
      * Scope to only return draft versions.
      */
-    public function scopeDraft(Builder $query)
+    #[Scope]
+    protected function draft(Builder $query)
     {
         return $query->where('draft', true);
     }
@@ -148,7 +150,8 @@ class ProcessVersion extends ProcessMakerModel implements ProcessModelInterface
     /**
      * Scope to only return published versions.
      */
-    public function scopePublished(Builder $query)
+    #[Scope]
+    protected function published(Builder $query)
     {
         return $query->where('draft', false);
     }

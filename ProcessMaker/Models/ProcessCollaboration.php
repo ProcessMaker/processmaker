@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Models;
 
+use ProcessMaker\Observers\ProcessCollaborationObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use ProcessMaker\Traits\HasUuids;
 
 /**
@@ -12,6 +14,7 @@ use ProcessMaker\Traits\HasUuids;
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  */
+#[ObservedBy([Observers\ProcessCollaborationObserver::class])]
 class ProcessCollaboration extends ProcessMakerModel
 {
     use HasUuids;

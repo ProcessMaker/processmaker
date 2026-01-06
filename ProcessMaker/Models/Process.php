@@ -2,6 +2,9 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use ProcessMaker\Observers\ProcessObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use DOMElement;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -143,6 +146,7 @@ use Throwable;
  *     @OA\Property(property="edit_data", type="object"),
  * )
  */
+#[ObservedBy([Observers\ProcessObserver::class])]
 class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterface
 {
     use InteractsWithMedia;
@@ -473,7 +477,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     /**
      * Scope a query to include only active and inactive but not archived processes
      */
-    public function scopeNotArchived($query)
+    #[Scope]
+    protected function notArchived($query)
     {
         return $query->whereIn('processes.status', ['ACTIVE', 'INACTIVE']);
     }
@@ -481,7 +486,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     /**
      * Scope a query to include only active processes
      */
-    public function scopeActive($query)
+    #[Scope]
+    protected function active($query)
     {
         return $query->where('processes.status', 'ACTIVE');
     }
@@ -489,7 +495,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     /**
      * Scope a query to include only inactive processes
      */
-    public function scopeInactive($query)
+    #[Scope]
+    protected function inactive($query)
     {
         return $query->where('processes.status', 'INACTIVE');
     }
@@ -497,7 +504,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     /**
      * Scope a query to include only archived processes
      */
-    public function scopeArchived($query)
+    #[Scope]
+    protected function archived($query)
     {
         return $query->where('processes.status', 'ARCHIVED');
     }
@@ -505,7 +513,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     /**
      * Scope a query to include a specific category
      */
-    public function scopeProcessCategory($query, int $id)
+    #[Scope]
+    protected function processCategory($query, int $id)
     {
         return $query->whereHas('categories', function ($query) use ($id) {
             $query->where('process_categories.id', $id);
@@ -516,7 +525,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      * Scope a query to include a specific category
      * @param string $status
      */
-    public function scopeCategoryStatus($query, $status)
+    #[Scope]
+    protected function categoryStatus($query, $status)
     {
         if (!empty($status)) {
             return $query->whereHas('categories', function ($query) use ($status) {
@@ -1876,7 +1886,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      *
      * @param $filter string
      */
-    public function scopeFilter($query, $filterStr)
+    #[Scope]
+    protected function filter($query, $filterStr)
     {
         $filter = '%' . mb_strtolower($filterStr) . '%';
         $query->where(function ($query) use ($filter, $filterStr) {
@@ -2159,7 +2170,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         return $metrics;
     }
 
-    public function scopeOrderByRecentRequests($query)
+    #[Scope]
+    protected function orderByRecentRequests($query)
     {
         return $query->orderByDesc(
             ProcessRequest::select('id')

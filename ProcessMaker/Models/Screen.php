@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -263,7 +264,8 @@ class Screen extends ProcessMakerModel implements ScreenInterface, PrometheusMet
      *
      * @param $filter string
      */
-    public function scopeFilter($query, $filterStr)
+    #[Scope]
+    protected function filter($query, $filterStr)
     {
         $filter = '%' . mb_strtolower($filterStr) . '%';
         $query->where(function ($query) use ($filter, $filterStr) {

@@ -9,26 +9,17 @@ use Illuminate\Foundation\PackageManifest;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
-use Illuminate\Queue\Events\JobAttempted;
-use Illuminate\Queue\Events\JobProcessing;
-use Illuminate\Queue\Events\JobRetryRequested;
-use Illuminate\Queue\Listener;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Env;
 use Illuminate\Support\Facades;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
-use Laravel\Horizon\SystemProcessCounter;
-use Laravel\Horizon\WorkerCommandString;
 use Lavary\Menu\Menu;
 use ProcessMaker\Cache\Settings\SettingCacheManager;
-use ProcessMaker\Console\Commands\HorizonListen;
 use ProcessMaker\Console\Migration\ExtendedMigrateCommand;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ScreenBuilderStarting;
@@ -48,12 +39,10 @@ use ProcessMaker\Models;
 use ProcessMaker\Multitenancy\Tenant;
 use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
-use ProcessMaker\Providers\PermissionServiceProvider;
 use ProcessMaker\Repositories\SettingsConfigRepository;
 use RuntimeException;
 use Spatie\Multitenancy\Events\MadeTenantCurrentEvent;
 use Spatie\Multitenancy\Events\TenantNotFoundForRequestEvent;
-use Spatie\Multitenancy\TenantCollection;
 
 /**
  * Provide our ProcessMaker specific services.
@@ -330,17 +319,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
      */
     protected static function bootObservers(): void
     {
-        Models\User::observe(Observers\UserObserver::class);
 
-        Models\Setting::observe(Observers\SettingObserver::class);
-
-        Models\Process::observe(Observers\ProcessObserver::class);
-
-        Models\ProcessRequest::observe(Observers\ProcessRequestObserver::class);
-
-        Models\ProcessRequestToken::observe(Observers\ProcessRequestTokenObserver::class);
-
-        Models\ProcessCollaboration::observe(Observers\ProcessCollaborationObserver::class);
     }
 
     /**

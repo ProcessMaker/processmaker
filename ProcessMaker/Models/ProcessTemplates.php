@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Traits\HasCategories;
@@ -54,7 +55,8 @@ class ProcessTemplates extends Template
     /**
      * Apply filters to the query based on the given filter string.
      */
-    public function scopeWithFilters(Builder $query, $filter): void
+    #[Scope]
+    protected function withFilters(Builder $query, $filter): void
     {
         $query->where(function ($query) use ($filter) {
             $query->where('process_templates.name', 'like', '%' . $filter . '%')

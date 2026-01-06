@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\SqlsrvSupportTrait;
@@ -88,7 +89,8 @@ class Comment extends ProcessMakerModel
      *
      * @return mixed
      */
-    public function scopeHidden($query, $parameter)
+    #[Scope]
+    protected function hidden($query, $parameter)
     {
         switch ($parameter) {
             case 'visible':

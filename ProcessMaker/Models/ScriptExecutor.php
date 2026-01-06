@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
@@ -77,7 +78,8 @@ class ScriptExecutor extends ProcessMakerModel
 
     // Lua and R are deprecated. This scope can be removed
     // when they are removed permanently.
-    public function scopeActive($query)
+    #[Scope]
+    protected function active($query)
     {
         return $query->whereNotIn('language', Script::deprecatedLanguages);
     }

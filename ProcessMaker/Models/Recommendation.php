@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use ProcessMaker\Filters\Filter;
 
@@ -44,7 +45,8 @@ class Recommendation extends ProcessMakerModel
         return $this->hasMany(RecommendationUser::class, 'recommendation_id');
     }
 
-    public function scopeActive(Builder $query): void
+    #[Scope]
+    protected function active(Builder $query): void
     {
         $query->where('status', '=', 'ACTIVE');
     }

@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Http;
 use ProcessMaker\Exception\ExporterNotSupported;
@@ -29,7 +30,8 @@ class Bundle extends ProcessMakerModel implements HasMedia
         'webhook_token' => 'encrypted',
     ];
 
-    public function scopePublished($query)
+    #[Scope]
+    protected function published($query)
     {
         return $query->where('published', true);
     }

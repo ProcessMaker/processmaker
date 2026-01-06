@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\EmptyModel;
 use ProcessMaker\Query\Traits\PMQL;
@@ -142,7 +143,8 @@ class Group extends ProcessMakerModel
      *
      * @var Builder
      */
-    public function scopeActive($query)
+    #[Scope]
+    protected function active($query)
     {
         return $query->where('status', 'ACTIVE');
     }
