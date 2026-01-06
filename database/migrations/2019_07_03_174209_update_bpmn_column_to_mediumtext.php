@@ -8,7 +8,6 @@ use ProcessMaker\Models\Process;
 return new class extends Migration {
     public function __construct()
     {
-
     }
 
     /**
@@ -16,7 +15,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         $model = new Process;
         Schema::connection($model->getConnectionName())->table('processes', function (Blueprint $table) {
@@ -31,7 +30,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         $model = new Process;
         Schema::connection($model->getConnectionName())->table('processes', function (Blueprint $table) {

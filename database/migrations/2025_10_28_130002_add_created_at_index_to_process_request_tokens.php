@@ -8,7 +8,7 @@ return new class extends Migration {
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
         // Create descending index on created_at for optimized queries
         DB::statement('CREATE INDEX idx_process_request_tokens_created_at_desc ON process_request_tokens (created_at DESC)');

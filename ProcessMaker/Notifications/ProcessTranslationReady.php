@@ -34,7 +34,7 @@ class ProcessTranslationReady extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
-    public function via($notifiable)
+    public function via($notifiable): array
     {
         return ['broadcast', 'database'];
     }
@@ -45,7 +45,7 @@ class ProcessTranslationReady extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
-    public function toArray($notifiable)
+    public function toArray($notifiable): array
     {
         $data = [
             'humanLanguage' => $this->targetLanguage['humanLanguage'],
@@ -68,7 +68,7 @@ class ProcessTranslationReady extends Notification
      *
      * @param mixed $notifiable
      *
-     * @return \Illuminate\Notifications\Messages\BroadcastMessage
+     * @return BroadcastMessage
      */
     public function toBroadcast($notifiable)
     {

@@ -3,6 +3,10 @@
 namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Assets\ScreensInScreen;
@@ -85,13 +89,6 @@ class Screen extends ProcessMakerModel implements ScreenInterface, PrometheusMet
      */
     protected $table = 'screens';
 
-    protected $casts = [
-        'config' => 'array',
-        'computed' => 'array',
-        'watchers' => 'array',
-        'translations' => 'array',
-    ];
-
     protected $appends = [
         'projects',
     ];
@@ -119,6 +116,16 @@ class Screen extends ProcessMakerModel implements ScreenInterface, PrometheusMet
         static::deleting($clearCacheCallback);
     }
 
+    protected function casts(): array
+    {
+        return [
+            'config' => 'array',
+            'computed' => 'array',
+            'watchers' => 'array',
+            'translations' => 'array',
+        ];
+    }
+
     /**
      * Validation rules
      *
@@ -141,7 +148,7 @@ class Screen extends ProcessMakerModel implements ScreenInterface, PrometheusMet
     /**
      * Get the associated versions
      */
-    public function versions()
+    public function versions(): HasMany
     {
         return $this->hasMany(ScreenVersion::class);
     }
@@ -149,7 +156,7 @@ class Screen extends ProcessMakerModel implements ScreenInterface, PrometheusMet
     /**
      * Get the associated category
      */
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(ScreenCategory::class, 'screen_category_id');
     }
@@ -157,7 +164,7 @@ class Screen extends ProcessMakerModel implements ScreenInterface, PrometheusMet
     /**
      * Get the associated projects
      */
-    public function projects()
+    public function projects(): BelongsToMany
     {
         return $this->belongsToMany('ProcessMaker\Package\Projects\Models\Project',
             'project_assets',
@@ -169,7 +176,7 @@ class Screen extends ProcessMakerModel implements ScreenInterface, PrometheusMet
     }
 
     // Define the relationship with the ProjectAsset model
-    public function projectAssets()
+    public function projectAssets(): BelongsToMany
     {
         return $this->belongsToMany('ProcessMaker\Package\Projects\Models\ProjectAsset',
             'project_assets', 'asset_id', 'project_id')
@@ -263,7 +270,8 @@ class Screen extends ProcessMakerModel implements ScreenInterface, PrometheusMet
      *
      * @param $filter string
      */
-    public function scopeFilter($query, $filterStr)
+    #[Scope]
+    protected function filter($query, $filterStr)
     {
         $filter = '%' . mb_strtolower($filterStr) . '%';
         $query->where(function ($query) use ($filter, $filterStr) {

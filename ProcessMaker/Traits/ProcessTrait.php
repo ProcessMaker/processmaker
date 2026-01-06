@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Traits;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessVersion;
@@ -120,9 +121,9 @@ trait ProcessTrait
      * Note: This returns the first manager from the JSON properties->manager_id array
      * For multiple managers, use getManagers() method instead
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function manager()
+    public function manager(): BelongsTo
     {
         $managerIds = $this->getManagerIdAttribute();
 

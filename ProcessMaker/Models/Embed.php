@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use ProcessMaker\Models\ProcessMakerModel;
 use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HasUuids;
@@ -51,7 +52,7 @@ class Embed extends ProcessMakerModel
         ];
     }
 
-    public function process()
+    public function process(): HasMany
     {
         return $this->hasMany(Process::class, 'id');
     }

@@ -32,7 +32,7 @@ class DownloadSecurityLogTest extends TestCase
         SecurityLog::factory()->create(['event' => 'attempt']);
     }
 
-    public function testCreateTemporaryFilename()
+    public function testCreateTemporaryFilename(): void
     {
         $job = new DownloadSecurityLog($this->user, DownloadSecurityLog::FORMAT_CSV);
         $method = new ReflectionMethod($job, 'createTemporaryFilename');
@@ -45,7 +45,7 @@ class DownloadSecurityLogTest extends TestCase
         $this->assertStringContainsString('.xml', $filename);
     }
 
-    public function testExpires()
+    public function testExpires(): void
     {
         $job = new DownloadSecurityLog($this->user, DownloadSecurityLog::FORMAT_CSV);
         $method = new ReflectionMethod($job, 'getExpires');
@@ -61,7 +61,7 @@ class DownloadSecurityLogTest extends TestCase
     /**
      * @covers DownloadSecurityLog::toCSV
      */
-    public function testWriteContentCSV()
+    public function testWriteContentCSV(): void
     {
         $stream = fopen('php://temp', 'w+');
         $job = new DownloadSecurityLog($this->user, DownloadSecurityLog::FORMAT_CSV);
@@ -76,7 +76,7 @@ class DownloadSecurityLogTest extends TestCase
      * @covers DownloadSecurityLog::toXML
      * @covers DownloadSecurityLog::endTagsXML
      */
-    public function testWriteContentXML()
+    public function testWriteContentXML(): void
     {
         $stream = fopen('php://temp', 'w+');
         $job = new DownloadSecurityLog($this->user, DownloadSecurityLog::FORMAT_XML);
@@ -86,7 +86,7 @@ class DownloadSecurityLogTest extends TestCase
         $this->assertTrue(fclose($stream));
     }
 
-    public function testHandleWithSuccess()
+    public function testHandleWithSuccess(): void
     {
         if (
             !config('filesystems.disks.s3.key')
@@ -108,7 +108,7 @@ class DownloadSecurityLogTest extends TestCase
         }
     }
 
-    public function testExport()
+    public function testExport(): void
     {
         if (
             !config('filesystems.disks.s3.key')

@@ -16,7 +16,7 @@ class InitializeScriptMicroserviceTest extends TestCase
         ScriptExecutor::where('id', '>', 0)->delete();
     }
 
-    public function testInitializeScriptMicroserviceEnabled()
+    public function testInitializeScriptMicroserviceEnabled(): void
     {
         config(['script-runner-microservice.enabled' => true]);
 
@@ -48,7 +48,7 @@ class InitializeScriptMicroserviceTest extends TestCase
         ], ScriptExecutor::where('is_system', false)->pluck('language')->toArray());
     }
 
-    public function testInitializeScriptMicroserviceDisabled()
+    public function testInitializeScriptMicroserviceDisabled(): void
     {
         config(['script-runner-microservice.enabled' => false]);
 

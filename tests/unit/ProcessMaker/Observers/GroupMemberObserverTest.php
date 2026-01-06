@@ -43,7 +43,7 @@ class GroupMemberObserverTest extends TestCase
     /**
      * Test that GroupMembershipChanged event is dispatched when a group is added to another group
      */
-    public function test_dispatches_event_when_group_added_to_group()
+    public function test_dispatches_event_when_group_added_to_group(): void
     {
         // Create a group member relationship (group added to parent group)
         $groupMember = new GroupMember([
@@ -67,7 +67,7 @@ class GroupMemberObserverTest extends TestCase
     /**
      * Test that GroupMembershipChanged event is dispatched when a group is removed from another group
      */
-    public function test_dispatches_event_when_group_removed_from_group()
+    public function test_dispatches_event_when_group_removed_from_group(): void
     {
         // Create a group member relationship
         $groupMember = GroupMember::factory()->create([
@@ -90,7 +90,7 @@ class GroupMemberObserverTest extends TestCase
     /**
      * Test that GroupMembershipChanged event is dispatched when a group membership is updated
      */
-    public function test_dispatches_event_when_group_membership_updated()
+    public function test_dispatches_event_when_group_membership_updated(): void
     {
         // Create a group member relationship
         $groupMember = GroupMember::factory()->create([
@@ -113,7 +113,7 @@ class GroupMemberObserverTest extends TestCase
     /**
      * Test that event is not dispatched for user memberships (only group memberships)
      */
-    public function test_does_not_dispatch_event_for_user_memberships()
+    public function test_does_not_dispatch_event_for_user_memberships(): void
     {
         // Create a user member relationship
         $userMember = new GroupMember([
@@ -132,7 +132,7 @@ class GroupMemberObserverTest extends TestCase
     /**
      * Test that event is not dispatched for invalid group relationships
      */
-    public function test_does_not_dispatch_event_for_invalid_group_relationships()
+    public function test_does_not_dispatch_event_for_invalid_group_relationships(): void
     {
         // Create a group member with non-existent group
         $groupMember = new GroupMember([
@@ -151,7 +151,7 @@ class GroupMemberObserverTest extends TestCase
     /**
      * Test that event is not dispatched for invalid member groups
      */
-    public function test_does_not_dispatch_event_for_invalid_member_groups()
+    public function test_does_not_dispatch_event_for_invalid_member_groups(): void
     {
         // Create a group member with non-existent member group
         $groupMember = new GroupMember([
@@ -170,7 +170,7 @@ class GroupMemberObserverTest extends TestCase
     /**
      * Test that multiple events can be dispatched for different actions
      */
-    public function test_can_dispatch_multiple_events_for_different_actions()
+    public function test_can_dispatch_multiple_events_for_different_actions(): void
     {
         // Create a group member relationship
         $groupMember = GroupMember::factory()->create([

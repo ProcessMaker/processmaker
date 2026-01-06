@@ -11,14 +11,14 @@ use Tests\TestCase;
 
 class SmartInboxExistingTasksTest extends TestCase
 {
-    public function testJobIsCalledToExistingTasksFromInboxRule()
+    public function testJobIsCalledToExistingTasksFromInboxRule(): void
     {
         $task = ProcessRequestToken::factory()->create();
         $inboxRule = InboxRule::factory()->create();
 
         MatchingTasks::shouldReceive('get')
         ->once()
-        ->with(\Mockery::on(fn ($arg) => $arg instanceof InboxRule && optional($arg)->id === $inboxRule->id))
+        ->with(\Mockery::on(fn ($arg) => $arg instanceof InboxRule && $arg?->id === $inboxRule->id))
         ->andReturn(collect([$task]));
 
         ApplyAction::shouldReceive('applyActionOnTask')

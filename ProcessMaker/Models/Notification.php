@@ -2,7 +2,7 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\Scopes\NotificationWithValidJson;
 use ProcessMaker\Traits\SerializeToIso8601;
@@ -46,6 +46,7 @@ use Ramsey\Uuid\Uuid;
  *   },
  * )
  */
+#[ScopedBy([NotificationWithValidJson::class])]
 class Notification extends ProcessMakerModel
 {
     use SerializeToIso8601;
@@ -76,7 +77,6 @@ class Notification extends ProcessMakerModel
 
         // The rest of the app expects that data is a json string, all notification uses this format.
         // We need to exclude any spurious notification that does not have a valid json data
-        static::addGlobalScope(new NotificationWithValidJson);
     }
 
     public static function rules($existing = null)

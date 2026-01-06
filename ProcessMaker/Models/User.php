@@ -4,8 +4,13 @@ namespace ProcessMaker\Models;
 
 use Exception;
 use Illuminate\Container\Container;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -15,6 +20,7 @@ use Illuminate\Validation\Rules\Password;
 use Laravel\Passport\HasApiTokens;
 use ProcessMaker\Models\EmptyModel;
 use ProcessMaker\Notifications\ResetPassword as ResetPasswordNotification;
+use ProcessMaker\Observers\UserObserver;
 use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Rules\StringHasAtLeastOneUpperCaseCharacter;
 use ProcessMaker\Traits\Exportable;
@@ -24,6 +30,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
+#[ObservedBy([Observers\UserObserver::class])]
 class User extends Authenticatable implements HasMedia
 {
     use PMQL;
@@ -136,15 +143,6 @@ class User extends Authenticatable implements HasMedia
         'fullname',
     ];
 
-    protected $casts = [
-        'is_administrator' => 'bool',
-        'meta' => 'object',
-        'active_at' => 'datetime',
-        'loggedin_at' => 'datetime',
-        'schedule' => 'array',
-        'preferences_2fa' => 'array',
-    ];
-
     /**
      * Register any model events
      *
@@ -168,6 +166,18 @@ class User extends Authenticatable implements HasMedia
             $user->status = 'INACTIVE';
             $user->removeFromGroups();
         });
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'is_administrator' => 'bool',
+            'meta' => 'object',
+            'active_at' => 'datetime',
+            'loggedin_at' => 'datetime',
+            'schedule' => 'array',
+            'preferences_2fa' => 'array',
+        ];
     }
 
     /**
@@ -245,7 +255,8 @@ class User extends Authenticatable implements HasMedia
      *
      * @var Builder
      */
-    public function scopeActive($query)
+    #[Scope]
+    protected function active($query)
     {
         return $query->where('status', 'ACTIVE');
     }
@@ -288,17 +299,17 @@ class User extends Authenticatable implements HasMedia
         return $filtered->values();
     }
 
-    public function groupMembersFromMemberable()
+    public function groupMembersFromMemberable(): MorphMany
     {
         return $this->morphMany(GroupMember::class, 'member', null, 'member_id');
     }
 
-    public function groups()
+    public function groups(): MorphToMany
     {
         return $this->morphToMany('ProcessMaker\Models\Group', 'member', 'group_members');
     }
 
-    public function projectMembers()
+    public function projectMembers(): HasMany
     {
         if (class_exists('ProcessMaker\Package\Projects\Models\ProjectMember')) {
             return $this->hasMany('ProcessMaker\Package\Projects\Models\ProjectMember', 'member_id', 'id')->where('member_type', self::class);
@@ -308,12 +319,12 @@ class User extends Authenticatable implements HasMedia
         }
     }
 
-    public function permissions()
+    public function permissions(): MorphToMany
     {
         return $this->morphToMany('ProcessMaker\Models\Permission', 'assignable');
     }
 
-    public function processesFromProcessable()
+    public function processesFromProcessable(): MorphToMany
     {
         return $this->morphToMany('ProcessMaker\Models\Process', 'processable');
     }
@@ -391,9 +402,9 @@ class User extends Authenticatable implements HasMedia
     /**
      * User as assigned.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     * @return MorphMany
      */
-    public function assigned()
+    public function assigned(): MorphMany
     {
         return $this->morphMany(ProcessTaskAssignment::class, 'assigned', 'assignment_type', 'assignment_id');
     }
@@ -498,7 +509,7 @@ class User extends Authenticatable implements HasMedia
      *
      * @return User
      */
-    public function delegationUser()
+    public function delegationUser(): BelongsTo
     {
         return $this->belongsTo(self::class);
     }
@@ -508,7 +519,7 @@ class User extends Authenticatable implements HasMedia
      *
      * @return User
      */
-    public function manager()
+    public function manager(): BelongsTo
     {
         return $this->belongsTo(self::class);
     }
@@ -592,7 +603,7 @@ class User extends Authenticatable implements HasMedia
         return $this;
     }
 
-    public function activeTasks()
+    public function activeTasks(): HasMany
     {
         return $this->hasMany(ProcessRequestToken::class, 'user_id')
                     ->where('status', 'ACTIVE')

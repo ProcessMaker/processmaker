@@ -28,7 +28,7 @@ class ScriptMicroserviceServiceTest extends TestCase
         $this->user = User::factory()->create();
     }
 
-    public function testHandlePreviewSuccess()
+    public function testHandlePreviewSuccess(): void
     {
         Event::fake();
 
@@ -52,7 +52,7 @@ class ScriptMicroserviceServiceTest extends TestCase
         });
     }
 
-    public function testHandlePreviewError()
+    public function testHandlePreviewError(): void
     {
         Event::fake();
 
@@ -76,7 +76,7 @@ class ScriptMicroserviceServiceTest extends TestCase
         });
     }
 
-    public function testHandleScriptTaskSuccess()
+    public function testHandleScriptTaskSuccess(): void
     {
         Queue::fake();
 
@@ -114,7 +114,7 @@ class ScriptMicroserviceServiceTest extends TestCase
         });
     }
 
-    public function testHandleScriptTaskError()
+    public function testHandleScriptTaskError(): void
     {
         Queue::fake();
 

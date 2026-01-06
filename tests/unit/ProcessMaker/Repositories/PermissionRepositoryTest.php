@@ -53,7 +53,7 @@ class PermissionRepositoryTest extends TestCase
     /**
      * Test that user permissions include direct permissions
      */
-    public function test_user_permissions_include_direct_permissions()
+    public function test_user_permissions_include_direct_permissions(): void
     {
         // Add direct permission to user
         $this->user->permissions()->attach($this->permission1->id);
@@ -68,7 +68,7 @@ class PermissionRepositoryTest extends TestCase
     /**
      * Test that user permissions include group permissions
      */
-    public function test_user_permissions_include_group_permissions()
+    public function test_user_permissions_include_group_permissions(): void
     {
         // Add user to group
         $this->user->groupMembersFromMemberable()->create([
@@ -90,7 +90,7 @@ class PermissionRepositoryTest extends TestCase
     /**
      * Test hierarchical inheritance: User → Group1 → Group2
      */
-    public function test_hierarchical_inheritance_two_levels()
+    public function test_hierarchical_inheritance_two_levels(): void
     {
         // Set up hierarchy: User → Group1 → Group2
         $this->user->groupMembersFromMemberable()->create([
@@ -120,7 +120,7 @@ class PermissionRepositoryTest extends TestCase
     /**
      * Test hierarchical inheritance: User → Group1 → Group2 → Group3
      */
-    public function test_hierarchical_inheritance_three_levels()
+    public function test_hierarchical_inheritance_three_levels(): void
     {
         // Set up hierarchy: User → Group1 → Group2 → Group3
         $this->user->groupMembersFromMemberable()->create([
@@ -158,7 +158,7 @@ class PermissionRepositoryTest extends TestCase
     /**
      * Test that userHasPermission works with hierarchical inheritance
      */
-    public function test_user_has_permission_with_hierarchical_inheritance()
+    public function test_user_has_permission_with_hierarchical_inheritance(): void
     {
         // Set up hierarchy: User → Group1 → Group2
         $this->user->groupMembersFromMemberable()->create([
@@ -184,7 +184,7 @@ class PermissionRepositoryTest extends TestCase
     /**
      * Test that getNestedGroupPermissions includes nested group permissions
      */
-    public function test_get_group_permissions_includes_nested_permissions()
+    public function test_get_group_permissions_includes_nested_permissions(): void
     {
         // Set up hierarchy: Group1 → Group2 → Group3
         $this->group1->groupMembersFromMemberable()->create([
@@ -216,7 +216,7 @@ class PermissionRepositoryTest extends TestCase
     /**
      * Test that permissions are not duplicated in inheritance
      */
-    public function test_permissions_are_not_duplicated_in_inheritance()
+    public function test_permissions_are_not_duplicated_in_inheritance(): void
     {
         // Set up hierarchy: User → Group1 → Group2
         $this->user->groupMembersFromMemberable()->create([
@@ -245,7 +245,7 @@ class PermissionRepositoryTest extends TestCase
     /**
      * Test that complex hierarchies work correctly
      */
-    public function test_complex_hierarchies_work_correctly()
+    public function test_complex_hierarchies_work_correctly(): void
     {
         // Create additional groups for complex hierarchy
         $group4 = Group::factory()->create(['name' => 'Group 4']);

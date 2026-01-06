@@ -12,7 +12,7 @@ class CacheTest extends TestCase
      *
      * @return void
      */
-    public function testCache()
+    public function testCache(): void
     {
         Cache::put('foo', 'bar', 5);
         $this->assertEquals('bar', (Cache::get('foo')));

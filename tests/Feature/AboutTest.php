@@ -24,7 +24,7 @@ class AboutTest extends TestCase
      *
      * @return void
      */
-    public function testIndexRoute()
+    public function testIndexRoute(): void
     {
         // user without any permissions
         $this->user = User::factory()->create();

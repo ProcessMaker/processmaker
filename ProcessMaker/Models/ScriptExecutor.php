@@ -2,7 +2,9 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
@@ -71,13 +73,17 @@ class ScriptExecutor extends ProcessMakerModel
         'title', 'description', 'language', 'config', 'is_system', 'type',
     ];
 
-    protected $casts = [
-        'type' => ScriptExecutorType::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            'type' => ScriptExecutorType::class,
+        ];
+    }
 
     // Lua and R are deprecated. This scope can be removed
     // when they are removed permanently.
-    public function scopeActive($query)
+    #[Scope]
+    protected function active($query)
     {
         return $query->whereNotIn('language', Script::deprecatedLanguages);
     }
@@ -120,7 +126,7 @@ class ScriptExecutor extends ProcessMakerModel
         return $initialExecutor;
     }
 
-    public function versions()
+    public function versions(): HasMany
     {
         return $this->hasMany(ScriptExecutorVersion::class);
     }
@@ -243,7 +249,7 @@ class ScriptExecutor extends ProcessMakerModel
         return $tag;
     }
 
-    public function scripts()
+    public function scripts(): HasMany
     {
         return $this->hasMany(Script::class);
     }

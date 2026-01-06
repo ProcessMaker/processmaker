@@ -115,7 +115,7 @@ class SettingCacheTest extends TestCase
         $this->assertEquals($setting->config, 0);
     }
 
-    public function testGetSettingByNotExistingKey()
+    public function testGetSettingByNotExistingKey(): void
     {
         $this->withoutExceptionHandling();
         $key = 'non-existing-key';
@@ -128,7 +128,7 @@ class SettingCacheTest extends TestCase
         $this->assertNull($setting);
     }
 
-    public function testClearByPattern()
+    public function testClearByPattern(): void
     {
         Cache::store('cache_settings')->put('password-policies.users_can_change', 1);
         Cache::store('cache_settings')->put('password-policies.numbers', 2);
@@ -148,7 +148,7 @@ class SettingCacheTest extends TestCase
         $this->assertNull(Cache::store('cache_settings')->get('password-policies.uppercase'));
     }
 
-    public function testClearByPatternRemainUnmatched()
+    public function testClearByPatternRemainUnmatched(): void
     {
         Cache::store('cache_settings')->put('session-control.ip_restriction', 0);
         Cache::store('cache_settings')->put('password-policies.users_can_change', 1);
@@ -170,7 +170,7 @@ class SettingCacheTest extends TestCase
         $this->assertNull(Cache::store('cache_settings')->get('password-policies.uppercase'));
     }
 
-    public function testClearByPatternWithFailedDeletion()
+    public function testClearByPatternWithFailedDeletion(): void
     {
         $tennat = app('currentTenant');
         $tennatPrefix = '';
@@ -205,7 +205,7 @@ class SettingCacheTest extends TestCase
         \SettingCache::clearBy($pattern);
     }
 
-    public function testClearByPatternWithRedisPrefix()
+    public function testClearByPatternWithRedisPrefix(): void
     {
         Cache::store('cache_settings')->put('password-policies.users_can_change', 1);
 
@@ -218,7 +218,7 @@ class SettingCacheTest extends TestCase
         $this->assertNull(Cache::store('cache_settings')->get('password-policies.users_can_change'));
     }
 
-    public function testClearAllSettings()
+    public function testClearAllSettings(): void
     {
         \SettingCache::set('password-policies.users_can_change', 1);
         \SettingCache::set('password-policies.numbers', 2);
@@ -235,7 +235,7 @@ class SettingCacheTest extends TestCase
         $this->assertNull(\SettingCache::get('password-policies.uppercase'));
     }
 
-    public function testClearOnlySettings()
+    public function testClearOnlySettings(): void
     {
         \SettingCache::set('password-policies.users_can_change', 1);
         \SettingCache::set('password-policies.numbers', 2);
@@ -255,7 +255,7 @@ class SettingCacheTest extends TestCase
         $this->assertEquals(3, Cache::store('file')->get('password-policies.uppercase'));
     }
 
-    public function testInvalidateOnSaved()
+    public function testInvalidateOnSaved(): void
     {
         $settingKey = 'password-policies.users_can_change';
 
@@ -286,7 +286,7 @@ class SettingCacheTest extends TestCase
         $this->assertNull($settingFromCache);
     }
 
-    public function testInvalidateOnDeleted()
+    public function testInvalidateOnDeleted(): void
     {
         $settingKey = 'password-policies.users_can_change';
 
@@ -316,7 +316,7 @@ class SettingCacheTest extends TestCase
         $this->assertNull($settingFromCache);
     }
 
-    public function testInvalidateWithException()
+    public function testInvalidateWithException(): void
     {
         $setting = Setting::factory()->create([
             'key' => 'password-policies.numbers',
@@ -341,7 +341,7 @@ class SettingCacheTest extends TestCase
         $setting->delete();
     }
 
-    public function testDoNotQueryDatabaseForNullValues()
+    public function testDoNotQueryDatabaseForNullValues(): void
     {
         $key = 'password-policies.users_can_change';
         $cacheKey = 'setting_' . $key;
@@ -356,7 +356,7 @@ class SettingCacheTest extends TestCase
         $this->assertNull($setting);
     }
 
-    public function testQueryDatabaseIfKeyIsNotCached()
+    public function testQueryDatabaseIfKeyIsNotCached(): void
     {
         $setting = Setting::factory()->create([
             'key' => 'key_not_cached',

@@ -39,7 +39,7 @@ class SettingAuthTest extends TestCase
         \Artisan::call('db:seed', ['--class' => LdapSeeder::class, '--force' => true]);
     }
 
-    public function testDefaultLdapSettings()
+    public function testDefaultLdapSettings(): void
     {
         $this->seedLDAPSettings();
 
@@ -72,7 +72,7 @@ class SettingAuthTest extends TestCase
         $this->assertDatabaseCount('security_logs', 0);
     }
 
-    public function testUpdateLdapSettings()
+    public function testUpdateLdapSettings(): void
     {
         $this->seedLDAPSettings();
 
@@ -165,7 +165,7 @@ class SettingAuthTest extends TestCase
         $this->assertDatabaseHas('security_logs', ['event' => 'SettingsUpdated', 'changes->setting_id' => $enabled['id']]);
     }
 
-    public function testDefaultSsoSettings()
+    public function testDefaultSsoSettings(): void
     {
         $response = $this->apiCall('GET', route('api.settings.index', ['group' => 'SSO', 'order_by' => 'name', 'order_direction' => 'ASC']));
         $response->assertStatus(200);
@@ -232,7 +232,7 @@ class SettingAuthTest extends TestCase
         $this->assertDatabaseCount('security_logs', 0);
     }
 
-    public function testUpdateSsoSettings()
+    public function testUpdateSsoSettings(): void
     {
         \Artisan::call('db:seed', ['--class' => AuthSeeder::class, '--force' => true]);
 
@@ -278,7 +278,7 @@ class SettingAuthTest extends TestCase
         $this->assertDatabaseCount('security_logs', 4);
     }
 
-    public function testConfigCacheUpdatedAfterSettingEdit()
+    public function testConfigCacheUpdatedAfterSettingEdit(): void
     {
         $setting = Setting::factory()->create([
             'name' => 'Allow Standard Login',

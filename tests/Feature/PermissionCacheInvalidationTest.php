@@ -37,7 +37,7 @@ class PermissionCacheInvalidationTest extends TestCase
         $this->permissionService = app(PermissionServiceManager::class);
     }
 
-    public function test_permission_cache_is_invalidated_when_permissions_updated()
+    public function test_permission_cache_is_invalidated_when_permissions_updated(): void
     {
         // Create test permissions
         $permission1 = Permission::factory()->create([
@@ -79,7 +79,7 @@ class PermissionCacheInvalidationTest extends TestCase
         $this->assertContains('another-permission', $freshPermissions);
     }
 
-    public function test_permission_cache_is_invalidated_when_user_permissions_removed()
+    public function test_permission_cache_is_invalidated_when_user_permissions_removed(): void
     {
         // Create test permissions
         $permission1 = Permission::factory()->create(['name' => 'permission-1']);

@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use ProcessMaker\Traits\SqlsrvSupportTrait;
 
 /**
@@ -31,10 +32,13 @@ class ProcessRequestLock extends ProcessMakerModel
         'due_at',
     ];
 
-    protected $casts = [
-        'due_at' => 'datetime',
-        'request_ids' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'due_at' => 'datetime',
+            'request_ids' => 'array',
+        ];
+    }
 
     /**
      * Active block that did not overcome.
@@ -42,7 +46,8 @@ class ProcessRequestLock extends ProcessMakerModel
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeWhereNotDue($query)
+    #[Scope]
+    protected function whereNotDue($query)
     {
         return $query->where(function ($query) {
             return $query->whereNull('due_at')

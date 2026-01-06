@@ -37,7 +37,7 @@ class SyncScreenTemplate extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         if ($this->option('queue')) {
             $randomDelay = random_int(10, 120);

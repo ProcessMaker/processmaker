@@ -16,7 +16,7 @@ class BuildSdkTest extends TestCase
         return base_path('storage/api-docs/api-docs.json');
     }
 
-    public function testWithUnsupportedLanguage()
+    public function testWithUnsupportedLanguage(): void
     {
         $this->markTestSkipped('FOUR-6653');
 
@@ -29,7 +29,7 @@ class BuildSdkTest extends TestCase
         }
     }
 
-    public function testBuildPhp()
+    public function testBuildPhp(): void
     {
         $this->markTestSkipped('FOUR-6653');
 

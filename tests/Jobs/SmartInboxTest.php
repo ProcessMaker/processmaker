@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class SmartInboxTest extends TestCase
 {
-    public function testJobIsCalledWhenTaskIsAssigned()
+    public function testJobIsCalledWhenTaskIsAssigned(): void
     {
         $task = ProcessRequestToken::factory()->create();
         $inboxRule = InboxRule::factory()->create();

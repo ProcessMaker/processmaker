@@ -17,7 +17,7 @@ class UpgradeCreator extends MigrationCreator
      *
      * @return string
      *
-     * @throws \ProcessMaker\Exception\InvalidSemanticVersion
+     * @throws InvalidSemanticVersion
      */
     public function createUpgrade($name, $path)
     {

@@ -27,7 +27,7 @@ class WebServiceSoapTest extends TestCase
         $this->app = $this->createApplication();
     }
 
-    public function testExecution()
+    public function testExecution(): void
     {
         $mockedDataSource = Mockery::mock(Model::class, function ($mock) {
             $mock->shouldReceive('getAttribute')->with('credentials')->andReturn([

@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use ProcessMaker\Enums\ExporterMap;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\GroupExporter;
@@ -27,11 +28,14 @@ class BundleSetting extends ProcessMakerModel
         'config',
     ];
 
-    protected $casts = [
-        'config' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'config' => 'array',
+        ];
+    }
 
-    public function bundle()
+    public function bundle(): BelongsTo
     {
         return $this->belongsTo(Bundle::class);
     }

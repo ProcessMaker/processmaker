@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Comment as GlobalComment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Comment as CommentResource;
@@ -138,7 +139,7 @@ class CommentController extends Controller
         $commentable_id = $request->input('commentable_id');
         $commentable_type = $request->input('commentable_type');
         $commentable = $commentable_type::findOrFail($commentable_id);
-        $this->authorize('view', $commentable);
+        Gate::authorize('view', $commentable);
     }
 
     /**
@@ -180,7 +181,7 @@ class CommentController extends Controller
      */
     public function show(Comment $comment)
     {
-        $this->authorize('view', $comment->commentable);
+        Gate::authorize('view', $comment->commentable);
 
         return new CommentResource($comment);
     }

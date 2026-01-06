@@ -3,6 +3,8 @@
 namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
@@ -11,6 +13,7 @@ use Illuminate\Validation\Rule;
 use Log;
 use ProcessMaker\Cache\Settings\SettingCacheFactory;
 use ProcessMaker\Contracts\PrometheusMetricInterface;
+use ProcessMaker\Observers\SettingObserver;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia;
@@ -51,6 +54,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  *   },
  * )
  */
+#[ObservedBy([Observers\SettingObserver::class])]
 class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInterface
 {
     use ExtendedPMQL;
@@ -110,15 +114,18 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
     ];
 
     /**
-     * The attributes that should be cast to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array
+     * @return array<string, string>
      */
-    protected $casts = [
-        'hidden' => 'boolean',
-        'readonly' => 'boolean',
-        'ui' => 'object',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'hidden' => 'boolean',
+            'readonly' => 'boolean',
+            'ui' => 'object',
+        ];
+    }
 
     /**
      * Validation rules
@@ -194,12 +201,14 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
         return $setting instanceof self ? $setting->config : null;
     }
 
-    public function scopeHidden($query)
+    #[Scope]
+    protected function hidden($query)
     {
         return $query->where('hidden', true);
     }
 
-    public function scopeNotHidden($query)
+    #[Scope]
+    protected function notHidden($query)
     {
         return $query->where('hidden', false);
     }
@@ -262,7 +271,8 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
      *
      * @param $filter string
      */
-    public function scopeFilter($query, $filter)
+    #[Scope]
+    protected function filter($query, $filter)
     {
         $filter = '%' . mb_strtolower($filter) . '%';
 

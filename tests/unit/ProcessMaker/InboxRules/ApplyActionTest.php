@@ -13,7 +13,7 @@ use Tests\TestCase;
 
 class ApplyActionTest extends TestCase
 {
-    public function testCompleteTaskWithData()
+    public function testCompleteTaskWithData(): void
     {
         $user = User::factory()->create();
 
@@ -52,7 +52,7 @@ class ApplyActionTest extends TestCase
         $this->assertEquals($inboxRuleLog->inbox_rule_id, $inboxRule->id);
     }
 
-    public function testMarkAsPriority()
+    public function testMarkAsPriority(): void
     {
         $user = User::factory()->create();
 
@@ -82,7 +82,7 @@ class ApplyActionTest extends TestCase
         $this->assertTrue($activeTask->is_priority);
     }
 
-    public function testReassignToUserID()
+    public function testReassignToUserID(): void
     {
         $user = User::factory()->create([
             'is_administrator' => true,
@@ -119,7 +119,7 @@ class ApplyActionTest extends TestCase
         ApplyAction::applyActionOnTask($activeTask, $inboxRule);
     }
 
-    public function testSaveAsDraft()
+    public function testSaveAsDraft(): void
     {
         $user = User::factory()->create();
 

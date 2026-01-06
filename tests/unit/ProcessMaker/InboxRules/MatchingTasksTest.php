@@ -13,7 +13,7 @@ use Tests\TestCase;
 
 class MatchingTasksTest extends TestCase
 {
-    public function testMatchingInboxRulesForTaskType()
+    public function testMatchingInboxRulesForTaskType(): void
     {
         $this->markTestSkipped('We are not longer matching task type in inbox rules. Must use saved search.');
 
@@ -41,7 +41,7 @@ class MatchingTasksTest extends TestCase
         $this->assertEquals($inboxRule->id, $matchingTasks[0]->id);
     }
 
-    public function testMatchingInboxRulesForSavedSearch()
+    public function testMatchingInboxRulesForSavedSearch(): void
     {
         ProcessCategory::factory()->create(['is_system' => true, 'name' => 'System']);
 
@@ -77,7 +77,7 @@ class MatchingTasksTest extends TestCase
         $this->assertEquals($inboxRule->id, $matchingInboxRules[0]->id);
     }
 
-    public function testMatchingInboxRulesForAdvancedFilter()
+    public function testMatchingInboxRulesForAdvancedFilter(): void
     {
         ProcessCategory::factory()->create(['is_system' => true, 'name' => 'System']);
 
@@ -140,7 +140,7 @@ class MatchingTasksTest extends TestCase
         $this->assertEquals($inboxRule->id, $matchingInboxRules[0]->id);
     }
 
-    public function testInboxRuleEndDate()
+    public function testInboxRuleEndDate(): void
     {
         ProcessCategory::factory()->create(['is_system' => true, 'name' => 'System']);
 
@@ -200,7 +200,7 @@ class MatchingTasksTest extends TestCase
         $this->assertNotEmpty($matchingRules);
     }
 
-    public function testGetForTypeTask()
+    public function testGetForTypeTask(): void
     {
         $this->markTestSkipped('We are not longer matching task type in inbox rules. Must use saved search.');
 
@@ -228,7 +228,7 @@ class MatchingTasksTest extends TestCase
         $this->assertEquals($task->process_id, $matchingTasks[0]['process_id']);
     }
 
-    public function testGetForTypeSavedSearch()
+    public function testGetForTypeSavedSearch(): void
     {
         $user = User::factory()->create();
         ProcessCategory::factory()->create(['is_system' => true, 'name' => 'System']);

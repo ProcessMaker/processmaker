@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\Traits\ExtendedPMQL;
 
@@ -57,17 +59,6 @@ class SecurityLog extends ProcessMakerModel
     ];
 
     /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'data' => 'object',
-        'changes' => 'object',
-        'meta' => 'object',
-    ];
-
-    /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
@@ -75,9 +66,23 @@ class SecurityLog extends ProcessMakerModel
     protected $hidden = ['changes'];
 
     /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'data' => 'object',
+            'changes' => 'object',
+            'meta' => 'object',
+        ];
+    }
+
+    /**
      * Get the associated user, if any.
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo('ProcessMaker\Models\User');
     }
@@ -103,7 +108,8 @@ class SecurityLog extends ProcessMakerModel
      *
      * @param $filter string
      */
-    public function scopeFilter($query, $filter)
+    #[Scope]
+    protected function filter($query, $filter)
     {
         $filter = '%' . mb_strtolower($filter) . '%';
 

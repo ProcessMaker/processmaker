@@ -19,7 +19,7 @@ class RequestControllerShowTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create([
             'is_administrator' => true,
         ]);
@@ -30,7 +30,7 @@ class RequestControllerShowTest extends TestCase
      *
      * @return void
      */
-    public function testShowPageRendersManagerModelerScripts()
+    public function testShowPageRendersManagerModelerScripts(): void
     {
         // Create a process
         $process = Process::factory()->create([
@@ -87,10 +87,10 @@ class RequestControllerShowTest extends TestCase
 
         // Get the filtered scripts (should exclude the disabled ones)
         $managerModelerScripts = $response->viewData('managerModelerScripts');
-        
+
         // Assert that the filtered scripts contain only the allowed scripts
         $this->assertCount(2, $managerModelerScripts);
-        
+
         // Check that the disabled scripts are filtered out
         $scriptSources = array_column($managerModelerScripts, 'src');
         $this->assertContains('/js/test-script-1.js', $scriptSources);
@@ -104,7 +104,7 @@ class RequestControllerShowTest extends TestCase
         $response->assertSee('type="module"', false);
         $response->assertSee('async');
         $response->assertSee('defer');
-        
+
         // Assert that disabled scripts are not rendered
         $response->assertDontSee('/js/package-slideshow.js');
         $response->assertDontSee('/js/package-process-optimization.js');

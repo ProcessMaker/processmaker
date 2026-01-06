@@ -44,7 +44,7 @@ class SignalPermissionsTest extends TestCase
         $this->flushSession();
     }
 
-    public function testViewPermission()
+    public function testViewPermission(): void
     {
         $this->createUser();
         $indexRoute = route('api.signals.index');
@@ -56,7 +56,7 @@ class SignalPermissionsTest extends TestCase
         $this->assertSuccess('GET', $showRoute);
     }
 
-    public function testCreatePermission()
+    public function testCreatePermission(): void
     {
         $this->createUser();
         $storeRoute = route('api.signals.store');
@@ -69,7 +69,7 @@ class SignalPermissionsTest extends TestCase
         $this->assertSuccess('POST', $storeRoute, $data);
     }
 
-    public function testEditPermission()
+    public function testEditPermission(): void
     {
         $this->createUser();
         $this->givePermission('create-signals');
@@ -87,7 +87,7 @@ class SignalPermissionsTest extends TestCase
         $this->assertSuccess('PUT', $updateRoute, $data);
     }
 
-    public function testDeletePermission()
+    public function testDeletePermission(): void
     {
         $this->createUser();
         $this->givePermission('create-signals');
@@ -109,7 +109,7 @@ class SignalPermissionsTest extends TestCase
         $response->assertStatus(201);
     }
 
-    public function testWebViewPermission()
+    public function testWebViewPermission(): void
     {
         $this->createUser();
         $indexRoute = route('signals.index');
@@ -120,7 +120,7 @@ class SignalPermissionsTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testWebEditPermission()
+    public function testWebEditPermission(): void
     {
         $storeRoute = route('api.signals.store');
         $data = [

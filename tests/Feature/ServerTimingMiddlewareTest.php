@@ -20,7 +20,7 @@ class ServerTimingMiddlewareTest extends TestCase
         return $headers[$header];
     }
 
-    public function testServerTimingHeaderIncludesAllMetrics()
+    public function testServerTimingHeaderIncludesAllMetrics(): void
     {
         Route::middleware(ServerTimingMiddleware::class)->get('/test', function () {
             // Simulate a query
@@ -41,7 +41,7 @@ class ServerTimingMiddlewareTest extends TestCase
         $this->assertStringContainsString('db;dur=', $serverTiming[2]);
     }
 
-    public function testQueryTimeIsMeasured()
+    public function testQueryTimeIsMeasured(): void
     {
         // Mock a route with a query
         Route::middleware(ServerTimingMiddleware::class)->get('/query-test', function () {
@@ -61,7 +61,7 @@ class ServerTimingMiddlewareTest extends TestCase
         $this->assertGreaterThanOrEqual(200, (float) $dbTime);
     }
 
-    public function testServiceProviderTimeIsMeasured()
+    public function testServiceProviderTimeIsMeasured(): void
     {
         // Mock a route
         Route::middleware(ServerTimingMiddleware::class)->get('/providers-test', function () {
@@ -81,7 +81,7 @@ class ServerTimingMiddlewareTest extends TestCase
         $this->assertGreaterThanOrEqual(0, (float) $providersTime);
     }
 
-    public function testControllerTimingIsMeasuredCorrectly()
+    public function testControllerTimingIsMeasuredCorrectly(): void
     {
         // Mock a route
         Route::middleware(ServerTimingMiddleware::class)->get('/controller-test', function () {
@@ -102,7 +102,7 @@ class ServerTimingMiddlewareTest extends TestCase
         $this->assertGreaterThanOrEqual(300, (float) $controllerTime);
     }
 
-    public function testProvidersTimingIsMeasuredCorrectly()
+    public function testProvidersTimingIsMeasuredCorrectly(): void
     {
         // Mock a route
         Route::middleware(ServerTimingMiddleware::class)->get('/providers-test', function () {
@@ -122,7 +122,7 @@ class ServerTimingMiddlewareTest extends TestCase
         $this->assertGreaterThanOrEqual(0, (float) $providersTime);
     }
 
-    public function testServerTimingOnLogin()
+    public function testServerTimingOnLogin(): void
     {
         $user = User::factory()->create([
             'username' =>'john',
@@ -138,7 +138,7 @@ class ServerTimingMiddlewareTest extends TestCase
         $this->assertStringContainsString('db;dur=', $serverTiming[2]);
     }
 
-    public function testServerTimingIfIsDisabled()
+    public function testServerTimingIfIsDisabled(): void
     {
         config(['app.server_timing.enabled' => false]);
 

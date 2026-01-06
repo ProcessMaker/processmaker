@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers;
 use Facades\ProcessMaker\RollbackProcessRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use ProcessMaker\Cache\CacheRemember;
 use ProcessMaker\Events\FilesDownloaded;
@@ -49,7 +50,7 @@ class RequestController extends Controller
     public function index($type = null)
     {
         if ($type === 'all') {
-            $this->authorize('view-all_requests');
+            Gate::authorize('view-all_requests');
         }
 
         $title = 'My Request';
@@ -136,7 +137,7 @@ class RequestController extends Controller
                 ->count() > 0;
 
         if (!$userHasCommentsForMedia && !$userHasCommentsForRequest) {
-            $this->authorize('view', $request);
+            Gate::authorize('view', $request);
         }
         // Get the case number of parent request if the case number is null
         // The case_number is null when the subprocess is related to the system like [ActionByEmail]
@@ -257,7 +258,7 @@ class RequestController extends Controller
 
     public function screenPreview(ProcessRequest $request, ProcessRequestToken $task, ScreenVersion $screen)
     {
-        $this->authorize('view', $request);
+        Gate::authorize('view', $request);
         if (!$this->canUserPrintScreen($request)) {
             //user without permissions
             return redirect('403');

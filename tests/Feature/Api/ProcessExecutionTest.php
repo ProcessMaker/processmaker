@@ -69,7 +69,7 @@ class ProcessExecutionTest extends TestCase
     /**
      * Execute a process
      */
-    public function testExecuteAProcess()
+    public function testExecuteAProcess(): void
     {
         //Start a process request
         $route = route('api.process_events.trigger', [$this->process->id, 'event' => 'StartEventUID']);
@@ -118,7 +118,7 @@ class ProcessExecutionTest extends TestCase
     /**
      * Test to get the list of available start events of the process.
      */
-    public function testGetListOfStartEvents()
+    public function testGetListOfStartEvents(): void
     {
         $route = route('api.processes.show', [$this->process->id, 'include' => 'events']);
         $response = $this->apiCall('GET', $route);
@@ -129,7 +129,7 @@ class ProcessExecutionTest extends TestCase
     /**
      * Test to start a process without sending an event identifier.
      */
-    public function testStartProcessEmptyEventId()
+    public function testStartProcessEmptyEventId(): void
     {
         $route = route('api.process_events.trigger', [$this->process->id]);
         $data = [];
@@ -140,7 +140,7 @@ class ProcessExecutionTest extends TestCase
     /**
      * Test to start a process without sending an non-existent event.
      */
-    public function testStartProcessWithNonExistingEventId()
+    public function testStartProcessWithNonExistingEventId(): void
     {
         $route = route('api.process_events.trigger', [$this->process->id, 'event' => 'non-existent']);
         $data = [];
@@ -151,7 +151,7 @@ class ProcessExecutionTest extends TestCase
     /**
      * Try to close an already closed task
      */
-    public function testCloseAClosedTask()
+    public function testCloseAClosedTask(): void
     {
         //Start a process request
         $route = route('api.process_events.trigger', [$this->process->id, 'event' => 'StartEventUID']);
@@ -183,7 +183,7 @@ class ProcessExecutionTest extends TestCase
     /**
      * Try to update a task status
      */
-    public function testUpdateTaskInvalidStatus()
+    public function testUpdateTaskInvalidStatus(): void
     {
         //Start a process request
         $route = route('api.process_events.trigger', [$this->process->id, 'event' => 'StartEventUID']);
@@ -211,7 +211,7 @@ class ProcessExecutionTest extends TestCase
     /**
      * Get the list of processes to start with categories and start events.
      */
-    public function testGetListProcessesToStart()
+    public function testGetListProcessesToStart(): void
     {
         $this->actingAs($this->user);
         //Create two additional processes
@@ -246,7 +246,7 @@ class ProcessExecutionTest extends TestCase
     /**
      * Test to get the status information of a task
      */
-    public function testGetTaskStatusPage()
+    public function testGetTaskStatusPage(): void
     {
         $this->withoutExceptionHandling();
         //Start a process request
@@ -281,7 +281,7 @@ class ProcessExecutionTest extends TestCase
     /**
      * Test that the task gets assigned to the correct person in a group
      */
-    public function testTaskAssignedToGroup()
+    public function testTaskAssignedToGroup(): void
     {
         $foo = User::factory()->create(
             ['firstname' => 'Foo', 'status' => 'ACTIVE']

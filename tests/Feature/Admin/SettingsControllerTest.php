@@ -26,7 +26,7 @@ class SettingsControllerTest extends TestCase
     /**
      * Test storing a valid white_list setting with a valid URL
      */
-    public function testStoreValidWhiteListUrl()
+    public function testStoreValidWhiteListUrl(): void
     {
         $setting = Setting::create([
             'key' => 'white_list.google',
@@ -55,7 +55,7 @@ class SettingsControllerTest extends TestCase
     /**
      * Test storing a white_list setting with an invalid URL
      */
-    public function testStoreInvalidWhiteListUrl()
+    public function testStoreInvalidWhiteListUrl(): void
     {
         $setting = Setting::create([
             'key' => 'white_list.invalid',
@@ -84,7 +84,7 @@ class SettingsControllerTest extends TestCase
     /**
      * Test storing a white_list setting with a non-https URL
      */
-    public function testStoreNonHttpsWhiteListUrl()
+    public function testStoreNonHttpsWhiteListUrl(): void
     {
         $setting = Setting::create([
             'key' => 'white_list.ftp',
@@ -113,7 +113,7 @@ class SettingsControllerTest extends TestCase
     /**
      * Test storing a non-white_list setting (should not validate URL)
      */
-    public function testStoreNonWhiteListSetting()
+    public function testStoreNonWhiteListSetting(): void
     {
         $setting = Setting::create([
             'key' => 'other.setting',
@@ -142,7 +142,7 @@ class SettingsControllerTest extends TestCase
     /**
      * Test storing a duplicate white_list setting
      */
-    public function testStoreDuplicateWhiteListSetting()
+    public function testStoreDuplicateWhiteListSetting(): void
     {
         Setting::create([
             'key' => 'white_list.duplicate',
@@ -179,7 +179,7 @@ class SettingsControllerTest extends TestCase
     /**
      * Test storing a white_list setting with a valid URL including port
      */
-    public function testStoreWhiteListUrlWithPort()
+    public function testStoreWhiteListUrlWithPort(): void
     {
         $setting = Setting::create([
             'key' => 'white_list.local',
@@ -208,7 +208,7 @@ class SettingsControllerTest extends TestCase
     /**
      * Test storing a white_list setting with a valid URL including subdomain
      */
-    public function testStoreWhiteListUrlWithSubdomain()
+    public function testStoreWhiteListUrlWithSubdomain(): void
     {
         $setting = Setting::create([
             'key' => 'white_list.api',
@@ -237,7 +237,7 @@ class SettingsControllerTest extends TestCase
     /**
      * Test storing a white_list setting with a URL containing special characters
      */
-    public function testStoreWhiteListUrlWithSpecialCharacters()
+    public function testStoreWhiteListUrlWithSpecialCharacters(): void
     {
         $setting = Setting::create([
             'key' => 'white_list.special',
@@ -266,7 +266,7 @@ class SettingsControllerTest extends TestCase
     /**
      * Test storing a white_list setting with a URL containing query parameters
      */
-    public function testStoreWhiteListUrlWithQueryParams()
+    public function testStoreWhiteListUrlWithQueryParams(): void
     {
         $setting = Setting::create([
             'key' => 'white_list.query',
@@ -295,7 +295,7 @@ class SettingsControllerTest extends TestCase
     /**
      * Test storing a white_list setting with a URL containing wildcard subdomain
      */
-    public function testStoreWhiteListUrlWithWildcardSubdomain()
+    public function testStoreWhiteListUrlWithWildcardSubdomain(): void
     {
         $setting = Setting::create([
             'key' => 'white_list.wildcard',
@@ -324,7 +324,7 @@ class SettingsControllerTest extends TestCase
     /**
      * Test storing a white_list setting with an empty URL
      */
-    public function testStoreWhiteListUrlWithEmptyValue()
+    public function testStoreWhiteListUrlWithEmptyValue(): void
     {
         $setting = Setting::create([
             'key' => 'white_list.empty',
@@ -353,7 +353,7 @@ class SettingsControllerTest extends TestCase
     /**
      * Test storing a white_list setting with a URL containing uppercase letters
      */
-    public function testStoreWhiteListUrlWithUppercase()
+    public function testStoreWhiteListUrlWithUppercase(): void
     {
         $setting = Setting::create([
             'key' => 'white_list.uppercase',
@@ -382,7 +382,7 @@ class SettingsControllerTest extends TestCase
     /**
      * Test storing a white_list setting with a URL containing IP address
      */
-    public function testStoreWhiteListUrlWithIpAddress()
+    public function testStoreWhiteListUrlWithIpAddress(): void
     {
         $this->actingAs($this->admin);
 
@@ -413,7 +413,7 @@ class SettingsControllerTest extends TestCase
     /**
      * Test storing a white_list setting with a URL containing IP address
      */
-    public function testStoreWhiteListUrlWithString()
+    public function testStoreWhiteListUrlWithString(): void
     {
         $this->actingAs($this->admin);
 

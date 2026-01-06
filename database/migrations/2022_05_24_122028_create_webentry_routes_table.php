@@ -10,7 +10,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('webentry_routes', function (Blueprint $table) {
             $table->bigIncrements('id');
@@ -31,7 +31,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('webentry_routes');
         Schema::table('process_request_tokens', function (Blueprint $table) {

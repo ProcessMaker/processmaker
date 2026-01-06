@@ -21,7 +21,7 @@ class CacheMetricsPopulateCommand extends Command
         $this->metrics = $metrics;
     }
 
-    public function handle()
+    public function handle(): void
     {
         $numKeys = (int) $this->option('keys');
         $type = $this->option('type');

@@ -6,7 +6,7 @@ use Tests\TestCase;
 
 class SettingCacheManagerTest extends TestCase
 {
-    public function testGet()
+    public function testGet(): void
     {
         $key = 'test_key';
         $default = 'default_value';
@@ -21,7 +21,7 @@ class SettingCacheManagerTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testSet()
+    public function testSet(): void
     {
         $key = 'test_key';
         $value = 'test_value';
@@ -36,7 +36,7 @@ class SettingCacheManagerTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testDelete()
+    public function testDelete(): void
     {
         $key = 'test_key';
 
@@ -49,7 +49,7 @@ class SettingCacheManagerTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testClear()
+    public function testClear(): void
     {
         \SettingCache::shouldReceive('clear')
             ->andReturn(true);
@@ -59,7 +59,7 @@ class SettingCacheManagerTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testHas()
+    public function testHas(): void
     {
         $key = 'test_key';
 
@@ -72,7 +72,7 @@ class SettingCacheManagerTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testMissing()
+    public function testMissing(): void
     {
         $key = 'test_key';
 
@@ -85,7 +85,7 @@ class SettingCacheManagerTest extends TestCase
         $this->assertFalse($result);
     }
 
-    public function testCall()
+    public function testCall(): void
     {
         $method = 'add';
         $arguments = ['arg1', 'arg2'];

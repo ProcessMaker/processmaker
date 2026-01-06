@@ -26,7 +26,7 @@ class ConvertBPMNTest extends TestCase
     /**
      * Test convert subProcess to callActivity
      */
-    public function testConvertSubProcess()
+    public function testConvertSubProcess(): void
     {
         $process = Process::factory()->create([
             'status' => 'ACTIVE',
@@ -39,7 +39,7 @@ class ConvertBPMNTest extends TestCase
     /**
      * Test convert sendTask to scriptTask
      */
-    public function testConvertSendTask()
+    public function testConvertSendTask(): void
     {
         $process = Process::factory()->create([
             'status' => 'ACTIVE',

@@ -10,7 +10,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('script_versions', function (Blueprint $table) {
             $table->unsignedSmallInteger('retry_attempts')->after('code')->default(0);
@@ -23,7 +23,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('script_versions', function (Blueprint $table) {
             $table->dropColumn('retry_attempts');

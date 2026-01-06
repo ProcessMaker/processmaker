@@ -37,7 +37,7 @@ class GroupMembershipChangedTest extends TestCase
     /**
      * Test event creation with all parameters
      */
-    public function test_event_creation_with_all_parameters()
+    public function test_event_creation_with_all_parameters(): void
     {
         $event = new GroupMembershipChanged(
             $this->group,
@@ -56,7 +56,7 @@ class GroupMembershipChangedTest extends TestCase
     /**
      * Test event creation without group member
      */
-    public function test_event_creation_without_group_member()
+    public function test_event_creation_without_group_member(): void
     {
         $event = new GroupMembershipChanged(
             $this->group,
@@ -74,7 +74,7 @@ class GroupMembershipChangedTest extends TestCase
     /**
      * Test event creation with null parent group
      */
-    public function test_event_creation_with_null_parent_group()
+    public function test_event_creation_with_null_parent_group(): void
     {
         $event = new GroupMembershipChanged(
             $this->group,
@@ -91,7 +91,7 @@ class GroupMembershipChangedTest extends TestCase
     /**
      * Test action checking methods
      */
-    public function test_action_checking_methods()
+    public function test_action_checking_methods(): void
     {
         $addedEvent = new GroupMembershipChanged($this->group, $this->parentGroup, 'added');
         $removedEvent = new GroupMembershipChanged($this->group, $this->parentGroup, 'removed');
@@ -116,7 +116,7 @@ class GroupMembershipChangedTest extends TestCase
     /**
      * Test event serialization
      */
-    public function test_event_serialization()
+    public function test_event_serialization(): void
     {
         $event = new GroupMembershipChanged(
             $this->group,
@@ -138,7 +138,7 @@ class GroupMembershipChangedTest extends TestCase
     /**
      * Test event with different action types
      */
-    public function test_event_with_different_action_types()
+    public function test_event_with_different_action_types(): void
     {
         $actions = ['added', 'removed', 'updated', 'restored'];
 
@@ -154,7 +154,7 @@ class GroupMembershipChangedTest extends TestCase
     /**
      * Test event properties are accessible
      */
-    public function test_event_properties_are_accessible()
+    public function test_event_properties_are_accessible(): void
     {
         $event = new GroupMembershipChanged(
             $this->group,

@@ -40,7 +40,7 @@ class PermissionCacheServiceTest extends TestCase
     /**
      * Test that cacheUserPermissions stores user permissions correctly
      */
-    public function test_cache_user_permissions_stores_correctly()
+    public function test_cache_user_permissions_stores_correctly(): void
     {
         // Cache user permissions
         $this->cacheService->cacheUserPermissions($this->userId, $this->userPermissions);
@@ -54,7 +54,7 @@ class PermissionCacheServiceTest extends TestCase
     /**
      * Test that cacheGroupPermissions stores group permissions correctly
      */
-    public function test_cache_group_permissions_stores_correctly()
+    public function test_cache_group_permissions_stores_correctly(): void
     {
         // Cache group permissions
         $this->cacheService->cacheGroupPermissions($this->groupId, $this->groupPermissions);
@@ -68,7 +68,7 @@ class PermissionCacheServiceTest extends TestCase
     /**
      * Test that getUserPermissions retrieves cached user permissions
      */
-    public function test_get_user_permissions_retrieves_cached_permissions()
+    public function test_get_user_permissions_retrieves_cached_permissions(): void
     {
         // Cache user permissions
         $this->cacheService->cacheUserPermissions($this->userId, $this->userPermissions);
@@ -83,7 +83,7 @@ class PermissionCacheServiceTest extends TestCase
     /**
      * Test that getGroupPermissions retrieves cached group permissions
      */
-    public function test_get_group_permissions_retrieves_cached_permissions()
+    public function test_get_group_permissions_retrieves_cached_permissions(): void
     {
         // Cache group permissions
         $this->cacheService->cacheGroupPermissions($this->groupId, $this->groupPermissions);
@@ -98,7 +98,7 @@ class PermissionCacheServiceTest extends TestCase
     /**
      * Test that getUserPermissions returns null when cache is empty
      */
-    public function test_get_user_permissions_returns_null_when_cache_empty()
+    public function test_get_user_permissions_returns_null_when_cache_empty(): void
     {
         // Try to retrieve permissions without caching
         $retrievedPermissions = $this->cacheService->getUserPermissions($this->userId);
@@ -110,7 +110,7 @@ class PermissionCacheServiceTest extends TestCase
     /**
      * Test that getGroupPermissions returns null when cache is empty
      */
-    public function test_get_group_permissions_returns_null_when_cache_empty()
+    public function test_get_group_permissions_returns_null_when_cache_empty(): void
     {
         // Try to retrieve permissions without caching
         $retrievedPermissions = $this->cacheService->getGroupPermissions($this->groupId);
@@ -122,7 +122,7 @@ class PermissionCacheServiceTest extends TestCase
     /**
      * Test that invalidateUserPermissions clears user cache correctly
      */
-    public function test_invalidate_user_permissions_clears_cache_correctly()
+    public function test_invalidate_user_permissions_clears_cache_correctly(): void
     {
         // Cache user permissions
         $this->cacheService->cacheUserPermissions($this->userId, $this->userPermissions);
@@ -140,7 +140,7 @@ class PermissionCacheServiceTest extends TestCase
     /**
      * Test that invalidateGroupPermissions clears group cache correctly
      */
-    public function test_invalidate_group_permissions_clears_cache_correctly()
+    public function test_invalidate_group_permissions_clears_cache_correctly(): void
     {
         // Cache group permissions
         $this->cacheService->cacheGroupPermissions($this->groupId, $this->groupPermissions);
@@ -158,7 +158,7 @@ class PermissionCacheServiceTest extends TestCase
     /**
      * Test that clearAll clears all permission caches
      */
-    public function test_clear_all_clears_all_permission_caches()
+    public function test_clear_all_clears_all_permission_caches(): void
     {
         // Cache both user and group permissions
         $this->cacheService->cacheUserPermissions($this->userId, $this->userPermissions);
@@ -179,7 +179,7 @@ class PermissionCacheServiceTest extends TestCase
     /**
      * Test that cache keys are generated correctly
      */
-    public function test_cache_keys_are_generated_correctly()
+    public function test_cache_keys_are_generated_correctly(): void
     {
         // Test that cache keys follow the expected pattern
         $userKey = "user_permissions:{$this->userId}";
@@ -192,7 +192,7 @@ class PermissionCacheServiceTest extends TestCase
     /**
      * Test that cache TTL is respected
      */
-    public function test_cache_ttl_is_respected()
+    public function test_cache_ttl_is_respected(): void
     {
         // Cache user permissions
         $this->cacheService->cacheUserPermissions($this->userId, $this->userPermissions);
@@ -208,7 +208,7 @@ class PermissionCacheServiceTest extends TestCase
     /**
      * Test that multiple users can have separate caches
      */
-    public function test_multiple_users_can_have_separate_caches()
+    public function test_multiple_users_can_have_separate_caches(): void
     {
         $userId2 = 789;
         $userPermissions2 = ['permission-4', 'permission-5'];
@@ -233,7 +233,7 @@ class PermissionCacheServiceTest extends TestCase
     /**
      * Test that multiple groups can have separate caches
      */
-    public function test_multiple_groups_can_have_separate_caches()
+    public function test_multiple_groups_can_have_separate_caches(): void
     {
         $groupId2 = 789;
         $groupPermissions2 = ['group-permission-3', 'group-permission-4'];
@@ -258,7 +258,7 @@ class PermissionCacheServiceTest extends TestCase
     /**
      * Test that cache service handles empty permission arrays gracefully
      */
-    public function test_handles_empty_permission_arrays_gracefully()
+    public function test_handles_empty_permission_arrays_gracefully(): void
     {
         // Cache empty permissions
         $this->cacheService->cacheUserPermissions($this->userId, []);

@@ -26,7 +26,7 @@ class TaskControllerTest extends TestCase
         ScreenCacheFactory::setTestInstance(null);
     }
 
-    public function testShow()
+    public function testShow(): void
     {
         $task = ProcessRequestToken::factory()->create();
         $response = $this->apiCall('GET', route('api.1.1.tasks.show', $task->id));
@@ -34,7 +34,7 @@ class TaskControllerTest extends TestCase
             ->assertJson(['id' => $task->id]);
     }
 
-    public function testShowScreen()
+    public function testShowScreen(): void
     {
         $content = file_get_contents(
             __DIR__ . '/Fixtures/nested_screen_process.json'
@@ -88,7 +88,7 @@ class TaskControllerTest extends TestCase
         $this->assertNull($response->headers->get('Expires'));
     }
 
-    public function testShowScreenCache()
+    public function testShowScreenCache(): void
     {
         // Create test data
         $content = file_get_contents(
@@ -173,7 +173,7 @@ class TaskControllerTest extends TestCase
         $response->assertJson($cachedContent);
     }
 
-    public function testIncludeSubprocessTasks()
+    public function testIncludeSubprocessTasks(): void
     {
         $mainRequest = ProcessRequest::factory()->create();
         $subprocessRequest1 = ProcessRequest::factory()->create([
@@ -203,7 +203,7 @@ class TaskControllerTest extends TestCase
         $this->assertEquals($subTask2->id, $tasks[2]['id']);
     }
 
-    public function testResponseTaskWithTokenProperties()
+    public function testResponseTaskWithTokenProperties(): void
     {
         $content = file_get_contents(
             __DIR__ . '/Fixtures/nested_screen_process.json'

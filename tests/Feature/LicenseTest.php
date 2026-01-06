@@ -44,7 +44,7 @@ class LicenseTest extends TestCase
         parent::tearDown();
     }
 
-    public function testLicense()
+    public function testLicense(): void
     {
         $license = [
             'expires_at' => Carbon::now()->addDays(30)->toIso8601String(),
@@ -65,7 +65,7 @@ class LicenseTest extends TestCase
         $this->assertFalse($packagesToIgnore->contains('processmaker/packages'));
     }
 
-    public function testNoLicense()
+    public function testNoLicense(): void
     {
         $packageManifest = $this->app->make(PackageManifest::class);
         $packagesToIgnore = $packageManifest->loadPackagesToIgnore();
@@ -74,7 +74,7 @@ class LicenseTest extends TestCase
         $this->assertEmpty($packagesToIgnore);
     }
 
-    public function testExpiredLicense()
+    public function testExpiredLicense(): void
     {
         $license = [
             'expires_at' => Carbon::now()->addDays(30)->toIso8601String(),
@@ -96,7 +96,7 @@ class LicenseTest extends TestCase
         $this->assertTrue($packagesToIgnore->contains('processmaker/package-projects'));
     }
 
-    public function testProviderNoLicense()
+    public function testProviderNoLicense(): void
     {
         $provider = $this->app->make(LicenseServiceProvider::class, [
             'app' => $this->app,
@@ -109,7 +109,7 @@ class LicenseTest extends TestCase
         $this->skipPackageDiscover = true;
     }
 
-    public function testProviderWithLicense()
+    public function testProviderWithLicense(): void
     {
         $date = Carbon::now()->addDays(30);
         $license = [
@@ -132,7 +132,7 @@ class LicenseTest extends TestCase
         $provider->boot();
     }
 
-    public function testProviderWithExpiredLicense()
+    public function testProviderWithExpiredLicense(): void
     {
         $date = Carbon::now()->addDays(30);
         $license = [

@@ -2,6 +2,9 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use ProcessMaker\Observers\ProcessCollaborationObserver;
 use ProcessMaker\Traits\HasUuids;
 
 /**
@@ -12,6 +15,7 @@ use ProcessMaker\Traits\HasUuids;
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  */
+#[ObservedBy([Observers\ProcessCollaborationObserver::class])]
 class ProcessCollaboration extends ProcessMakerModel
 {
     use HasUuids;
@@ -51,7 +55,7 @@ class ProcessCollaboration extends ProcessMakerModel
     /**
      * Get requests in the collaboration.
      */
-    public function requests()
+    public function requests(): HasMany
     {
         return $this->hasMany(ProcessRequest::class);
     }

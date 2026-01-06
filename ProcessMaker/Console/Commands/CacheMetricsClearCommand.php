@@ -19,7 +19,7 @@ class CacheMetricsClearCommand extends Command
         $this->metrics = $metrics;
     }
 
-    public function handle()
+    public function handle(): int
     {
         if (!$this->confirm('Are you sure you want to clear all cache metrics? This action cannot be undone.')) {
             $this->info('Operation cancelled.');

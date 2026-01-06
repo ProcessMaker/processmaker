@@ -4,6 +4,12 @@ namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
 use DB;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -21,6 +27,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\SignalEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
+use ProcessMaker\Observers\ProcessRequestObserver;
 use ProcessMaker\Query\Expression;
 use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Traits\ExtendedPMQL;
@@ -95,6 +102,7 @@ use Throwable;
  *   },
  * )
  */
+#[ObservedBy([Observers\ProcessRequestObserver::class])]
 class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInterface, HasMedia
 {
     use ExecutionInstanceTrait;
@@ -143,21 +151,6 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     ];
 
     /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'completed_at' => 'datetime:c',
-        'initiated_at' => 'datetime:c',
-        'data' => 'array',
-        'errors' => 'array',
-        'do_not_sanitize' => 'array',
-        'signal_events' => 'array',
-        'locked_at' => 'datetime:c',
-    ];
-
-    /**
      * Associated records that can be included with this model
      *
      * @var array
@@ -167,6 +160,24 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         'process',
         'participants',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'completed_at' => 'datetime:c',
+            'initiated_at' => 'datetime:c',
+            'data' => 'array',
+            'errors' => 'array',
+            'do_not_sanitize' => 'array',
+            'signal_events' => 'array',
+            'locked_at' => 'datetime:c',
+        ];
+    }
 
     /**
      * Determine whether the item should be indexed.
@@ -397,7 +408,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Get tokens of the request.
      */
-    public function tokens()
+    public function tokens(): HasMany
     {
         return $this->hasMany(ProcessRequestToken::class);
     }
@@ -405,7 +416,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Get the creator/author of this request.
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
@@ -413,7 +424,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Get collaboration of this request.
      */
-    public function collaboration()
+    public function collaboration(): BelongsTo
     {
         return $this->belongsTo(
             ProcessCollaboration::class,
@@ -424,7 +435,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Get the creator/author of this request.
      */
-    public function process()
+    public function process(): BelongsTo
     {
         return $this->belongsTo(Process::class, 'process_id');
     }
@@ -432,7 +443,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Get users of the request.
      */
-    public function assigned()
+    public function assigned(): HasMany
     {
         return $this->hasMany(ProcessRequestToken::class)
                 ->with('user')
@@ -446,7 +457,8 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      *
      * @param $filter string
      */
-    public function scopeFilter($query, $filter)
+    #[Scope]
+    protected function filter($query, $filter)
     {
         $setting = Setting::byKey('indexed-search');
         if ($setting && $setting->config['enabled'] === true) {
@@ -479,7 +491,8 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      *
      * @param $id User id
      */
-    public function scopeStartedMe($query, $id)
+    #[Scope]
+    protected function startedMe($query, $id)
     {
         $query->where('user_id', '=', $id);
     }
@@ -489,7 +502,8 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      *
      * @param $query
      */
-    public function scopeInProgress($query)
+    #[Scope]
+    protected function inProgress($query)
     {
         $query->where('status', '=', 'ACTIVE');
     }
@@ -499,7 +513,8 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      *
      * @param $query
      */
-    public function scopeCompleted($query)
+    #[Scope]
+    protected function completed($query)
     {
         $query->where(function ($query) {
             $query->where('status', '=', 'COMPLETED');
@@ -511,7 +526,8 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      *
      * @param $query
      */
-    public function scopeNotCompleted($query)
+    #[Scope]
+    protected function notCompleted($query)
     {
         $query->where('status', '!=', 'COMPLETED');
         $query->where('status', '!=', 'CANCELED');
@@ -520,9 +536,9 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Returns the list of users that have participated in the request
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     * @return HasManyThrough
      */
-    public function participants()
+    public function participants(): HasManyThrough
     {
         return $this->hasManyThrough(
             User::class,
@@ -594,12 +610,12 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         }
     }
 
-    public function childRequests()
+    public function childRequests(): HasMany
     {
         return $this->hasMany(self::class, 'parent_request_id');
     }
 
-    public function parentRequest()
+    public function parentRequest(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_request_id');
     }
@@ -607,9 +623,9 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Scheduled task of the request.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function scheduledTasks()
+    public function scheduledTasks(): HasMany
     {
         return $this->hasMany(ScheduledTask::class, 'process_request_id');
     }
@@ -795,7 +811,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      *
      * @return ProcessVersion
      */
-    public function processVersion()
+    public function processVersion(): BelongsTo
     {
         return $this->belongsTo(ProcessVersion::class, 'process_version_id');
     }
@@ -926,9 +942,9 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Owner task of the sub process
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
-    public function ownerTask()
+    public function ownerTask(): HasOne
     {
         return $this->hasOne(ProcessRequestToken::class, 'subprocess_request_id', 'id');
     }
@@ -1106,7 +1122,8 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Scope apply order
      */
-    public function scopeApplyOrdering($query, $request)
+    #[Scope]
+    protected function applyOrdering($query, $request)
     {
         $orderBy = $request->input('order_by', 'name');
         $orderDirection = $request->input('order_direction', 'asc');
@@ -1117,7 +1134,8 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Scope apply pagination
      */
-    public function scopeApplyPagination($query, $request)
+    #[Scope]
+    protected function applyPagination($query, $request)
     {
         $page = $request->input('page', 1);
         $perPage = $request->input('per_page', 10);
@@ -1128,7 +1146,8 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Scope to filter by case_number
      */
-    public function scopeFilterByCaseNumber($query, $request)
+    #[Scope]
+    protected function filterByCaseNumber($query, $request)
     {
         $caseNumber = $request->input('case_number');
 

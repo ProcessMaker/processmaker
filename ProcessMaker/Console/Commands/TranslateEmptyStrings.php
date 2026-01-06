@@ -31,7 +31,7 @@ class TranslateEmptyStrings extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         if (env('OPENAI_API_KEY') === null) {
             $this->error('OPENAI_API_KEY is not set');
@@ -55,7 +55,7 @@ class TranslateEmptyStrings extends Command
     private function translateCoreEmptyStrings($langCode)
     {
         $this->files = [];
-        $translationsCore = app()->basePath() . '/resources/lang';
+        $translationsCore = app()->basePath() . '/lang';
         $this->listFiles($translationsCore);
         $filesIgnore = ['/en/', '.gitignore', '/en.json', '.php', '.DS_Store'];
 

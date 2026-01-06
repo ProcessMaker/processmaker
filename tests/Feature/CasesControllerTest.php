@@ -37,7 +37,7 @@ class CasesControllerTest extends TestCase
         ],
     ];
 
-    public function testShowCaseWithUserWithoutParticipation()
+    public function testShowCaseWithUserWithoutParticipation(): void
     {
         // Create user admin
         $user = User::factory()->create();
@@ -60,7 +60,7 @@ class CasesControllerTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function testShowCaseWithUserAdmin()
+    public function testShowCaseWithUserAdmin(): void
     {
         // Create user admin
         $user = User::factory()->create([
@@ -85,7 +85,7 @@ class CasesControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testShowCaseWithProcessVersion()
+    public function testShowCaseWithProcessVersion(): void
     {
         // Create user admin
         $user = User::factory()->create([
@@ -128,7 +128,7 @@ class CasesControllerTest extends TestCase
         $this->assertEquals($newBpmn, $response->viewData('bpmn'));
     }
 
-    public function testShowCaseWithParticipateUser()
+    public function testShowCaseWithParticipateUser(): void
     {
         // Create user
         $user = User::factory()->create();
@@ -161,7 +161,7 @@ class CasesControllerTest extends TestCase
      * Test show default summary tab when the status is Error
      * @return void
      */
-    public function testCaseErrorWithDataDefaultSummary()
+    public function testCaseErrorWithDataDefaultSummary(): void
     {
         $process = Process::factory()->create();
         $requestCanceled = ProcessRequest::factory()->create([
@@ -182,7 +182,7 @@ class CasesControllerTest extends TestCase
      * Without custom screen "Request Detail Screen"
      * @return void
      */
-    public function testCaseInProgressWithDataDefaultSummary()
+    public function testCaseInProgressWithDataDefaultSummary(): void
     {
         $process = Process::factory()->create();
         $requestCanceled = ProcessRequest::factory()->create([
@@ -204,7 +204,7 @@ class CasesControllerTest extends TestCase
      * Without custom screen "Cancel Screen"
      * @return void
      */
-    public function testRequestCanceledDefaultSummary()
+    public function testRequestCanceledDefaultSummary(): void
     {
         $process = Process::factory()->create();
         $requestCompleted = ProcessRequest::factory()->create([
@@ -227,7 +227,7 @@ class CasesControllerTest extends TestCase
      * Without end event custom screen "Summary screen"
      * @return void
      */
-    public function testRequestCompletedDefaultSummary()
+    public function testRequestCompletedDefaultSummary(): void
     {
         $process = Process::factory()->create();
         $requestCompleted = ProcessRequest::factory()->create([
@@ -250,7 +250,7 @@ class CasesControllerTest extends TestCase
      * Without end event custom screen "Summary screen"
      * @return void
      */
-    public function testRequestCompletedWithDataDefaultSummary()
+    public function testRequestCompletedWithDataDefaultSummary(): void
     {
         $process = Process::factory()->create();
         $requestCompleted = ProcessRequest::factory()->create([
@@ -273,7 +273,7 @@ class CasesControllerTest extends TestCase
      * With custom screen "Request Detail Screen"
      * @return void
      */
-    public function testRequestInprogressWithCustomScreenSummaryTab()
+    public function testRequestInprogressWithCustomScreenSummaryTab(): void
     {
         $screen = Screen::factory()->create([
             'type' => 'DISPLAY',
@@ -303,7 +303,7 @@ class CasesControllerTest extends TestCase
      * With custom screen "Cancel Screen"
      * @return void
      */
-    public function testRequestCanceledWithCustomScreenSummaryTab()
+    public function testRequestCanceledWithCustomScreenSummaryTab(): void
     {
         $screen = Screen::factory()->create([
             'type' => 'DISPLAY',
@@ -333,7 +333,7 @@ class CasesControllerTest extends TestCase
      *
      * @return void
      */
-    public function testGetStageCaseWithInvalidCaseNumber()
+    public function testGetStageCaseWithInvalidCaseNumber(): void
     {
         // Call the API endpoint with a case number that does not exist
         $response = $this->apiCall('GET', '/cases' . '/stages_bar');
@@ -377,7 +377,7 @@ class CasesControllerTest extends TestCase
      *
      * @return void
      */
-    public function testGetStageCaseWithValidCaseNumberWithProcessStages()
+    public function testGetStageCaseWithValidCaseNumberWithProcessStages(): void
     {
         $stagesData = [
             ['id' => 1, 'name' => 'Request Send', 'order' => 1],
@@ -481,7 +481,7 @@ class CasesControllerTest extends TestCase
      *
      * @return void
      */
-    public function testGetStageCaseWithValidCaseNumberInProgressWithoutProcessStages()
+    public function testGetStageCaseWithValidCaseNumberInProgressWithoutProcessStages(): void
     {
         // Create a new process and save stages as JSON
         $process = Process::factory()->create([
@@ -560,7 +560,7 @@ class CasesControllerTest extends TestCase
      *
      * @return void
      */
-    public function testGetStageCaseWithValidCaseNumberCompletedWithoutProcessStages()
+    public function testGetStageCaseWithValidCaseNumberCompletedWithoutProcessStages(): void
     {
         // Create a new process and save stages as JSON
         $process = Process::factory()->create([
@@ -617,7 +617,7 @@ class CasesControllerTest extends TestCase
      *
      * @return void
      */
-    public function testGetStageCaseWithValidCaseNumberWithoutTask()
+    public function testGetStageCaseWithValidCaseNumberWithoutTask(): void
     {
         $stagesData = [
             ['id' => 1, 'name' => 'Request Send', 'order' => 1],

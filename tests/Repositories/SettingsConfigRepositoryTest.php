@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class SettingsConfigRepositoryTest extends TestCase
 {
-    public function testDotNotation()
+    public function testDotNotation(): void
     {
         Setting::create([
             'key' => 'test',
@@ -22,7 +22,7 @@ class SettingsConfigRepositoryTest extends TestCase
         $this->assertEquals('the value', config('test.dot.notation'));
     }
 
-    public function testCachesValueSimple()
+    public function testCachesValueSimple(): void
     {
         // "collections.<id>.obfuscate" is a key generated in "Records" model in collection package
         Setting::create([

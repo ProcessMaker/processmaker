@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Http\Middleware;
 
-use Tests\TestCase;
-use ProcessMaker\Http\Middleware\TrustHosts;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use ProcessMaker\Http\Middleware\TrustHosts;
+use Tests\TestCase;
 
 class TrustHostsTest extends TestCase
 {
@@ -17,7 +17,7 @@ class TrustHostsTest extends TestCase
         $this->middleware = new TrustHosts($this->app);
     }
 
-    public function test_valid_trusted_host()
+    public function test_valid_trusted_host(): void
     {
         // Set app URL for testing
         Config::set('app.url', 'https://example.processmaker.net');
@@ -32,7 +32,7 @@ class TrustHostsTest extends TestCase
         $this->assertEquals(200, $response->status());
     }
 
-    public function test_invalid_trusted_host()
+    public function test_invalid_trusted_host(): void
     {
         // Set app URL for testing
         Config::set('app.url', 'https://example.processmaker.net');
@@ -48,14 +48,14 @@ class TrustHostsTest extends TestCase
         });
     }
 
-    public function test_missing_forwarded_host()
+    public function test_missing_forwarded_host(): void
     {
         $request = Request::create('https://example.processmaker.net');
-        
+
         $response = $this->middleware->handle($request, function ($req) {
             return response()->json(['status' => 'success']);
         });
 
         $this->assertEquals(200, $response->status());
     }
-} 
+}

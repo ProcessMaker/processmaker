@@ -128,7 +128,7 @@ class ProcessRequestFileControllerValidationTest extends TestCase
     /**
      * Test the main validateFile method with valid file
      */
-    public function testValidateFileWithValidFile()
+    public function testValidateFileWithValidFile(): void
     {
         $file = UploadedFile::fake()->create('document.pdf', 100, 'application/pdf');
 
@@ -141,7 +141,7 @@ class ProcessRequestFileControllerValidationTest extends TestCase
     /**
      * Test validateFile with archive file (should be rejected)
      */
-    public function testValidateFileWithArchiveFile()
+    public function testValidateFileWithArchiveFile(): void
     {
         $file = UploadedFile::fake()->create('archive.zip', 100, 'application/zip');
 
@@ -154,7 +154,7 @@ class ProcessRequestFileControllerValidationTest extends TestCase
     /**
      * Test validateFile with extension not in allowed list
      */
-    public function testValidateFileWithUnallowedExtension()
+    public function testValidateFileWithUnallowedExtension(): void
     {
         $file = UploadedFile::fake()->create('document.xyz', 100, 'application/octet-stream');
 
@@ -168,7 +168,7 @@ class ProcessRequestFileControllerValidationTest extends TestCase
     /**
      * Test validateFile with extension vs MIME type mismatch
      */
-    public function testValidateFileWithExtensionMimeTypeMismatch()
+    public function testValidateFileWithExtensionMimeTypeMismatch(): void
     {
         $file = UploadedFile::fake()->create('document.pdf', 100, 'text/plain');
 
@@ -182,7 +182,7 @@ class ProcessRequestFileControllerValidationTest extends TestCase
     /**
      * Test validateFile with dangerous PDF content
      */
-    public function testValidateFileWithDangerousPDFContent()
+    public function testValidateFileWithDangerousPDFContent(): void
     {
         // Create a PDF file with JavaScript content
         $pdfContent = '%PDF-1.4
@@ -247,7 +247,7 @@ startxref
     /**
      * Test validateFile with extension validation disabled
      */
-    public function testDisableMimeAndExtensionValidation()
+    public function testDisableMimeAndExtensionValidation(): void
     {
         Config::set('files.enable_extension_validation', false);
         Config::set('files.enable_mime_validation', false);
@@ -267,7 +267,7 @@ startxref
     /**
      * Test validateFile with extension validation disabled
      */
-    public function testValidateFileWithExtensionValidationDisabled()
+    public function testValidateFileWithExtensionValidationDisabled(): void
     {
         Config::set('files.enable_extension_validation', false);
 
@@ -286,7 +286,7 @@ startxref
     /**
      * Test validateFile with MIME validation disabled
      */
-    public function testValidateFileWithMimeValidationDisabled()
+    public function testValidateFileWithMimeValidationDisabled(): void
     {
         Config::set('files.enable_mime_validation', false);
 
@@ -306,7 +306,7 @@ startxref
     /**
      * Test rejectArchiveFiles method specifically
      */
-    public function testRejectArchiveFiles()
+    public function testRejectArchiveFiles(): void
     {
         $file = UploadedFile::fake()->create('archive.zip', 100, 'application/zip');
 
@@ -320,7 +320,7 @@ startxref
     /**
      * Test validateFileExtension method specifically
      */
-    public function testValidateFileExtension()
+    public function testValidateFileExtension(): void
     {
         $file = UploadedFile::fake()->create('document.xyz', 100, 'application/octet-stream');
 
@@ -334,7 +334,7 @@ startxref
     /**
      * Test validateExtensionMimeTypeMatch method specifically
      */
-    public function testValidateExtensionMimeTypeMatch()
+    public function testValidateExtensionMimeTypeMatch(): void
     {
         $file = UploadedFile::fake()->create('document.pdf', 100, 'text/plain');
 
@@ -348,7 +348,7 @@ startxref
     /**
      * Test validatePDFFile method specifically
      */
-    public function testValidatePDFFile()
+    public function testValidatePDFFile(): void
     {
         $pdfContent = '%PDF-1.4
 1 0 obj
@@ -411,7 +411,7 @@ startxref
     /**
      * Test multiple validation errors at once
      */
-    public function testValidateFileWithMultipleErrors()
+    public function testValidateFileWithMultipleErrors(): void
     {
         // Create a file that violates multiple rules
         $file = UploadedFile::fake()->create('archive.xyz', 100, 'application/octet-stream');

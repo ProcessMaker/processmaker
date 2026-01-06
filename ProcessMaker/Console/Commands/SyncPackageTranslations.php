@@ -29,7 +29,7 @@ class SyncPackageTranslations extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         $this->info('Synchronize translations of packages to CORE');
         // get All packages installed

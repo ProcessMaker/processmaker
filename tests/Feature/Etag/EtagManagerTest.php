@@ -16,7 +16,7 @@ class EtagManagerTest extends TestCase
         EtagManager::etagGenerateUsing(null);
     }
 
-    public function testGetDefaultEtag()
+    public function testGetDefaultEtag(): void
     {
         $request = Request::create('/', 'GET');
         $response = response($this->response, 200);
@@ -24,7 +24,7 @@ class EtagManagerTest extends TestCase
         $this->assertEquals('"e0aa021e21dddbd6d8cecec71e9cf564"', EtagManager::getEtag($request, $response));
     }
 
-    public function testGetEtagWithCallbackMd5()
+    public function testGetEtagWithCallbackMd5(): void
     {
         $request = Request::create('/', 'GET');
         $response = response($this->response, 200);
@@ -36,7 +36,7 @@ class EtagManagerTest extends TestCase
         $this->assertEquals('"e0aa021e21dddbd6d8cecec71e9cf564"', EtagManager::getEtag($request, $response));
     }
 
-    public function testGetEtagWithCallbackSha256()
+    public function testGetEtagWithCallbackSha256(): void
     {
         $request = Request::create('/', 'GET');
         $response = response($this->response, 200);

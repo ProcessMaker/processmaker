@@ -57,7 +57,7 @@ class ProcessCompleted implements ShouldBroadcastNow
     /**
      * Return the process request.
      *
-     * @return \ProcessMaker\Models\ProcessRequest
+     * @return ProcessRequest
      */
     public function getProcessRequest()
     {

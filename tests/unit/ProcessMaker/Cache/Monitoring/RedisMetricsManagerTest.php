@@ -29,7 +29,7 @@ class RedisMetricsManagerTest extends TestCase
         $this->metrics->resetMetrics();
     }
 
-    public function testRecordHit()
+    public function testRecordHit(): void
     {
         $time = 0.1;
         $this->metrics->recordHit($this->testKey, $time);
@@ -43,7 +43,7 @@ class RedisMetricsManagerTest extends TestCase
         $this->assertEquals($time, (float) $times[0]);
     }
 
-    public function testRecordMiss()
+    public function testRecordMiss(): void
     {
         $time = 0.2;
         $this->metrics->recordMiss($this->testKey, $time);
@@ -57,7 +57,7 @@ class RedisMetricsManagerTest extends TestCase
         $this->assertEquals($time, (float) $times[0]);
     }
 
-    public function testRecordWrite()
+    public function testRecordWrite(): void
     {
         $size = 1024;
         $this->metrics->recordWrite($this->testKey, $size);
@@ -71,7 +71,7 @@ class RedisMetricsManagerTest extends TestCase
         $this->assertIsNumeric($lastWrite);
     }
 
-    public function testGetHitRate()
+    public function testGetHitRate(): void
     {
         // Record 2 hits and 1 miss
         $this->metrics->recordHit($this->testKey, 0.1);
@@ -82,7 +82,7 @@ class RedisMetricsManagerTest extends TestCase
         $this->assertEqualsWithDelta(2 / 3, $hitRate, 0.0001);
     }
 
-    public function testGetMissRate()
+    public function testGetMissRate(): void
     {
         // Record 2 hits and 1 miss
         $this->metrics->recordHit($this->testKey, 0.1);
@@ -93,7 +93,7 @@ class RedisMetricsManagerTest extends TestCase
         $this->assertEqualsWithDelta(1 / 3, $missRate, 0.0001);
     }
 
-    public function testGetHitAvgTime()
+    public function testGetHitAvgTime(): void
     {
         $this->metrics->recordHit($this->testKey, 0.1);
         $this->metrics->recordHit($this->testKey, 0.3);
@@ -102,7 +102,7 @@ class RedisMetricsManagerTest extends TestCase
         $this->assertEqualsWithDelta(0.2, $avgTime, 0.0001);
     }
 
-    public function testGetMissAvgTime()
+    public function testGetMissAvgTime(): void
     {
         $this->metrics->recordMiss($this->testKey, 0.2);
         $this->metrics->recordMiss($this->testKey, 0.4);
@@ -111,7 +111,7 @@ class RedisMetricsManagerTest extends TestCase
         $this->assertEqualsWithDelta(0.3, $avgTime, 0.0001);
     }
 
-    public function testGetTopKeys()
+    public function testGetTopKeys(): void
     {
         // Setup test data
         $this->metrics->recordHit('key1', 0.1);
@@ -130,7 +130,7 @@ class RedisMetricsManagerTest extends TestCase
         $this->assertEquals(1000, $topKeys['key1']['memory_usage']);
     }
 
-    public function testGetMemoryUsage()
+    public function testGetMemoryUsage(): void
     {
         $size = 2048;
         $this->metrics->recordWrite($this->testKey, $size);
@@ -142,7 +142,7 @@ class RedisMetricsManagerTest extends TestCase
         $this->assertIsFloat($usage['last_write']);
     }
 
-    public function testResetMetrics()
+    public function testResetMetrics(): void
     {
         // Add some test data
         $this->metrics->recordHit($this->testKey, 0.1);
@@ -157,7 +157,7 @@ class RedisMetricsManagerTest extends TestCase
         $this->assertEmpty($keys);
     }
 
-    public function testGetSummary()
+    public function testGetSummary(): void
     {
         // Setup test data
         $this->metrics->recordHit('key1', 0.1);

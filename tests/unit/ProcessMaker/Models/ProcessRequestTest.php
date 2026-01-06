@@ -14,7 +14,7 @@ class ProcessRequestTest extends TestCase
      * Test that getActiveTokens correctly returns active tokens for a process request
      * with and without process_collaboration_id
      */
-    public function testGetActiveTokens()
+    public function testGetActiveTokens(): void
     {
         // Test scenario 1: Process request without collaboration ID
         $process = Process::factory()->create();

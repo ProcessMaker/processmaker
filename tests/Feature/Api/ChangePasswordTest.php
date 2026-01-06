@@ -13,7 +13,7 @@ class ChangePasswordTest extends TestCase
 
     const API_TEST_URL = '/password/change';
 
-    public function testUserPasswordChangeWithInvalidPassword()
+    public function testUserPasswordChangeWithInvalidPassword(): void
     {
         $this->actingAs($this->user);
 
@@ -64,7 +64,7 @@ class ChangePasswordTest extends TestCase
     /**
      * Once the user changes their password, the flag must set to false
      */
-    public function testUserChangePasswordMustSetFlagToFalse()
+    public function testUserChangePasswordMustSetFlagToFalse(): void
     {
         $this->actingAs($this->user);
 
@@ -95,7 +95,7 @@ class ChangePasswordTest extends TestCase
     /**
      * When no password is sent, the flag must be set to true
      */
-    public function testUserChangePasswordWithoutSendingPasswordMustKeepFlagInTrue()
+    public function testUserChangePasswordWithoutSendingPasswordMustKeepFlagInTrue(): void
     {
         $this->actingAs($this->user);
 

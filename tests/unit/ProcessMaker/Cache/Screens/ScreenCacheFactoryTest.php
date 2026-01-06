@@ -25,7 +25,7 @@ class ScreenCacheFactoryTest extends TestCase
         $this->app->singleton(RedisMetricsManager::class);
     }
 
-    public function testCreateNewCacheManager()
+    public function testCreateNewCacheManager(): void
     {
         Config::set('screens.cache.manager', 'new');
 
@@ -48,7 +48,7 @@ class ScreenCacheFactoryTest extends TestCase
         $this->assertInstanceOf(ScreenCacheManager::class, $underlyingCache);
     }
 
-    public function testCreateLegacyCacheAdapter()
+    public function testCreateLegacyCacheAdapter(): void
     {
         Config::set('screens.cache.manager', 'legacy');
 
@@ -67,7 +67,7 @@ class ScreenCacheFactoryTest extends TestCase
         $this->assertInstanceOf(LegacyScreenCacheAdapter::class, $underlyingCache);
     }
 
-    public function testMetricsIntegrationWithBothAdapters()
+    public function testMetricsIntegrationWithBothAdapters(): void
     {
         // Test with new cache manager
         Config::set('screens.cache.manager', 'new');
@@ -109,7 +109,7 @@ class ScreenCacheFactoryTest extends TestCase
      *
      * @test
      */
-    public function testInvalidateWithNewCacheManager()
+    public function testInvalidateWithNewCacheManager(): void
     {
         Config::set('screens.cache.manager', 'new');
 
@@ -136,7 +136,7 @@ class ScreenCacheFactoryTest extends TestCase
      *
      * @test
      */
-    public function testInvalidateWithLegacyCache()
+    public function testInvalidateWithLegacyCache(): void
     {
         Config::set('screens.cache.manager', 'legacy');
 
@@ -160,7 +160,7 @@ class ScreenCacheFactoryTest extends TestCase
      *
      * @test
      */
-    public function testGetScreenCacheReturnsSameInstanceAsCreate()
+    public function testGetScreenCacheReturnsSameInstanceAsCreate(): void
     {
         // Get instances using both methods
         $instance1 = ScreenCacheFactory::create(app('cache'), app(RedisMetricsManager::class));
@@ -187,7 +187,7 @@ class ScreenCacheFactoryTest extends TestCase
      *
      * @test
      */
-    public function testFactoryRespectsTestInstance()
+    public function testFactoryRespectsTestInstance(): void
     {
         // Create a mock for ScreenCacheInterface
         $mockInterface = $this->createMock(CacheInterface::class);
@@ -207,7 +207,7 @@ class ScreenCacheFactoryTest extends TestCase
      *
      * @test
      */
-    public function testMetricsDecorationIsAppliedCorrectly()
+    public function testMetricsDecorationIsAppliedCorrectly(): void
     {
         // Test with both cache types
         $cacheTypes = ['new', 'legacy'];
@@ -235,7 +235,7 @@ class ScreenCacheFactoryTest extends TestCase
      *
      * @test
      */
-    public function testFactoryWithInvalidConfiguration()
+    public function testFactoryWithInvalidConfiguration(): void
     {
         Config::set('screens.cache.manager', 'invalid');
 

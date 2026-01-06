@@ -2,7 +2,9 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HasUuids;
 
@@ -42,7 +44,7 @@ class UserConfiguration extends ProcessMakerModel
         ];
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
@@ -50,7 +52,8 @@ class UserConfiguration extends ProcessMakerModel
     /**
      * Get the launchpad related
      */
-    public function scopeUserConfiguration($query, $userId)
+    #[Scope]
+    protected function userConfiguration($query, $userId)
     {
         return $query->where('user_id', $userId);
     }

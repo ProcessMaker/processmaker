@@ -25,7 +25,7 @@ class ProcessLaunchpadTest extends TestCase
     /**
      * Test get process launchpad
      */
-    public function testGetProcessLaunchpad()
+    public function testGetProcessLaunchpad(): void
     {
         // Create data
         $process = Process::factory()->create();
@@ -52,7 +52,7 @@ class ProcessLaunchpadTest extends TestCase
     /**
      * Test store process launchpad
      */
-    public function testStoreProcessLaunchpad()
+    public function testStoreProcessLaunchpad(): void
     {
         // Create data
         $process = Process::factory()->create();
@@ -69,7 +69,7 @@ class ProcessLaunchpadTest extends TestCase
     /**
      * Test delete process launchpad
      */
-    public function testDeleteProcessLaunchpad()
+    public function testDeleteProcessLaunchpad(): void
     {
         // Create data
         $launchpad = ProcessLaunchpad::factory()->create();
@@ -82,7 +82,7 @@ class ProcessLaunchpadTest extends TestCase
     /**
      * Test get stages count per process when stages are null.
      */
-    public function testGetStagesCountPerProcessWhenStagesIsNull()
+    public function testGetStagesCountPerProcessWhenStagesIsNull(): void
     {
         // Create data
         $process = Process::factory()->create();
@@ -112,7 +112,7 @@ class ProcessLaunchpadTest extends TestCase
     /**
      * Test get stages count per process when there are stages but no ProcessRequests.
      */
-    public function testGetStagesCountPerProcessWithStagesAndNoRequests()
+    public function testGetStagesCountPerProcessWithStagesAndNoRequests(): void
     {
         // Create stages for the process
         $stages = [
@@ -141,7 +141,7 @@ class ProcessLaunchpadTest extends TestCase
     /**
      * Test get stages count per process.
      */
-    public function testGetStagesCountPerProcess()
+    public function testGetStagesCountPerProcess(): void
     {
         // Create stages for the process
         $stages = [

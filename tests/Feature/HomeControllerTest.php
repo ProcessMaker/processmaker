@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
+use ProcessMaker\Models\User;
 use ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class HomeControllerTest extends TestCase
 {
@@ -22,17 +22,17 @@ class HomeControllerTest extends TestCase
     }
 
     /** @test */
-    public function testRedirectsToLoginWhenNotAuthenticated()
+    public function testRedirectsToLoginWhenNotAuthenticated(): void
     {
         $response = $this->get('/');
         $response->assertRedirect('/login');
     }
 
     /** @test */
-    public function testRedirectsToCustomDashboardWhenUserHasDashboard()
+    public function testRedirectsToCustomDashboardWhenUserHasDashboard(): void
     {
         $user = User::factory()->create();
-        
+
         // Create a custom dashboard for the user
         DynamicUI::create([
             'type' => 'DASHBOARD',
@@ -46,7 +46,7 @@ class HomeControllerTest extends TestCase
     }
 
     /** @test */
-    public function testRedirectsToCustomDashboardWhenGroupHasDashboard()
+    public function testRedirectsToCustomDashboardWhenGroupHasDashboard(): void
     {
         $user = User::factory()->create();
         $group = Group::factory()->create();
@@ -65,10 +65,10 @@ class HomeControllerTest extends TestCase
     }
 
     /** @test */
-    public function testRedirectsToTasksOnMobileWithoutCustomDashboard()
+    public function testRedirectsToTasksOnMobileWithoutCustomDashboard(): void
     {
         $user = User::factory()->create();
-        
+
         // Mock MobileHelper to return true
         $_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Mobile/15E148 Safari/604.1';
         $_COOKIE['isMobile'] = 'true';
@@ -81,10 +81,10 @@ class HomeControllerTest extends TestCase
     }
 
     /** @test */
-    public function testRedirectsToInboxOnDesktopWithoutCustomDashboard()
+    public function testRedirectsToInboxOnDesktopWithoutCustomDashboard(): void
     {
         $user = User::factory()->create();
-        
+
         // Mock MobileHelper to return false
         $_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36';
         $_COOKIE['isMobile'] = 'false';
@@ -97,7 +97,7 @@ class HomeControllerTest extends TestCase
     }
 
     /** @test */
-    public function testRedirectsToUserUrlRedirect()
+    public function testRedirectsToUserUrlRedirect(): void
     {
         $user = User::factory()->create();
 
@@ -114,7 +114,7 @@ class HomeControllerTest extends TestCase
     }
 
     /** @test */
-    public function testRedirectsToGroupUrlRedirect()
+    public function testRedirectsToGroupUrlRedirect(): void
     {
         $user = User::factory()->create();
         $group = Group::factory()->create();

@@ -2,7 +2,9 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use ProcessMaker\Contracts\PrometheusMetricInterface;
 use ProcessMaker\Contracts\ScreenInterface;
 use ProcessMaker\Events\TranslationChanged;
@@ -28,19 +30,22 @@ class ScreenVersion extends ProcessMakerModel implements ScreenInterface, Promet
         'updated_at',
     ];
 
-    protected $casts = [
-        'config' => 'array',
-        'computed' => 'array',
-        'watchers' => 'array',
-        'translations' => 'array',
-    ];
-
     /**
      * Boot the model and its events
      */
     public static function boot()
     {
         parent::boot();
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'config' => 'array',
+            'computed' => 'array',
+            'watchers' => 'array',
+            'translations' => 'array',
+        ];
     }
 
     /**
@@ -56,9 +61,9 @@ class ScreenVersion extends ProcessMakerModel implements ScreenInterface, Promet
     /**
      * Get the associated screen
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function parent()
+    public function parent(): BelongsTo
     {
         return $this->belongsTo(Screen::class, 'screen_id', 'id');
     }
@@ -66,7 +71,8 @@ class ScreenVersion extends ProcessMakerModel implements ScreenInterface, Promet
     /**
      * Scope to only return draft versions.
      */
-    public function scopeDraft(Builder $query)
+    #[Scope]
+    protected function draft(Builder $query)
     {
         return $query->where('draft', true);
     }
@@ -74,7 +80,8 @@ class ScreenVersion extends ProcessMakerModel implements ScreenInterface, Promet
     /**
      * Scope to only return published versions.
      */
-    public function scopePublished(Builder $query)
+    #[Scope]
+    protected function published(Builder $query)
     {
         return $query->where('draft', false);
     }

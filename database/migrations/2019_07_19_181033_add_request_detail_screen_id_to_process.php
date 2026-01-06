@@ -10,7 +10,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('processes', function (Blueprint $table) {
             $table->unsignedInteger('request_detail_screen_id')->nullable()->after('cancel_screen_id');
@@ -27,7 +27,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('process_versions', function (Blueprint $table) {
             $table->dropColumn('request_detail_screen_id');

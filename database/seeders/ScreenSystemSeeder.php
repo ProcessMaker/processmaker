@@ -13,7 +13,7 @@ class ScreenSystemSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         return Screen::getScreenByKey('interstitial');
     }

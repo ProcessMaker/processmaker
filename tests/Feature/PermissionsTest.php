@@ -32,7 +32,7 @@ class PermissionsTest extends TestCase
         $asp->boot();
     }
 
-    public function testSetPermissionsForUser()
+    public function testSetPermissionsForUser(): void
     {
         $this->user = User::factory()->create([
             'is_administrator' => false,
@@ -54,7 +54,7 @@ class PermissionsTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testSetPermissionsForGroup()
+    public function testSetPermissionsForGroup(): void
     {
         $this->user = User::factory()->create([
             'is_administrator' => false,
@@ -89,7 +89,7 @@ class PermissionsTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testAdminPermissions()
+    public function testAdminPermissions(): void
     {
         $this->user = User::factory()->create([
             'is_administrator' => false,
@@ -110,7 +110,7 @@ class PermissionsTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testCreatePermission()
+    public function testCreatePermission(): void
     {
         $attributes = [
             'name' => 'create-package_permissions',
@@ -125,7 +125,7 @@ class PermissionsTest extends TestCase
         $this->assertDatabaseHas('permissions', $attributes);
     }
 
-    public function testLoadsGroupPermissions()
+    public function testLoadsGroupPermissions(): void
     {
         // Create group and assign permission
         $group = Group::factory()->create();
@@ -144,7 +144,7 @@ class PermissionsTest extends TestCase
         $this->assertContains('test-permission', $permissions);
     }
 
-    public function testLoadsNestedGroupPermissions()
+    public function testLoadsNestedGroupPermissions(): void
     {
         // Create groups
         $groupA = Group::factory()->create();
@@ -175,7 +175,7 @@ class PermissionsTest extends TestCase
         $this->assertContains('permission-b', $permissions);
     }
 
-    public function testItHandlesCircularGroupPermissionsReferences()
+    public function testItHandlesCircularGroupPermissionsReferences(): void
     {
         // Create groups
         $groupA = Group::factory()->create();

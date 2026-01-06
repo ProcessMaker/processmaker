@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -111,12 +112,12 @@ class Permission extends ProcessMakerModel
         }
     }
 
-    public function users()
+    public function users(): MorphToMany
     {
         return $this->morphedByMany('ProcessMaker\Models\User', 'assignable');
     }
 
-    public function groups()
+    public function groups(): MorphToMany
     {
         return $this->morphedByMany('ProcessMaker\Models\Group', 'assignable');
     }
@@ -139,7 +140,7 @@ class Permission extends ProcessMakerModel
                     ->on('assignables.assignable_id', '=', 'users.id');
                 })
                 ->select('users.*')
-                ->union(\ProcessMaker\Models\User::where('is_administrator', '=', true))
+                ->union(User::where('is_administrator', '=', true))
                 ->groupBy('users.id')
                 ->get();
 

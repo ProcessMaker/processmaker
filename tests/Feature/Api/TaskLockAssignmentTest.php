@@ -17,12 +17,12 @@ class TaskLockAssignmentTest extends TestCase
     use RequestHelper;
 
     /**
-     * @var \ProcessMaker\Models\User
+     * @var User
      */
     protected $user1;
 
     /**
-     * @var \ProcessMaker\Models\User
+     * @var User
      */
     protected $user2;
 
@@ -63,7 +63,7 @@ class TaskLockAssignmentTest extends TestCase
      * Validates that when the assignmentLock attribute is set to true, when the flow returns to the task
      * the user that was assigned to the task the first time, is assigned again.
      */
-    public function testWithLockAssignment()
+    public function testWithLockAssignment(): void
     {
         $this->loadProcess('LockAssignment.bpmn');
 
@@ -113,7 +113,7 @@ class TaskLockAssignmentTest extends TestCase
      *
      * @throws \Throwable
      */
-    public function testWithNoLockAssignment()
+    public function testWithNoLockAssignment(): void
     {
         $this->loadProcess('NoLockAssignment.bpmn');
 
@@ -160,10 +160,10 @@ class TaskLockAssignmentTest extends TestCase
     /**
      * Complete task
      *
-     * @param \ProcessMaker\Models\ProcessRequestToken $task
+     * @param ProcessRequestToken $task
      * @param array $data
      *
-     * @return \ProcessMaker\Models\ProcessRequestToken
+     * @return ProcessRequestToken
      */
     private function completeTask(ProcessRequestToken $task, $data = [])
     {

@@ -65,7 +65,7 @@ class SignalTest extends TestCase
     /**
      * Get a list of Signals on first page.
      */
-    public function testListSignalOnFirstPage()
+    public function testListSignalOnFirstPage(): void
     {
         // Create some signals
         $countSignals = 20;
@@ -98,7 +98,7 @@ class SignalTest extends TestCase
     /**
      * Get a list of Signals on second page.
      */
-    public function testListSignalOnSecondPage()
+    public function testListSignalOnSecondPage(): void
     {
         // Create some signals
         $countSignals = 20;
@@ -131,7 +131,7 @@ class SignalTest extends TestCase
     /**
      * Get a list of Signals first page with ten records should return one total_pages.
      */
-    public function testListSignalOnPageWithTenRecordsShouldReturnOneTotalPages()
+    public function testListSignalOnPageWithTenRecordsShouldReturnOneTotalPages(): void
     {
         // Create some signals
         $countSignals = 10;
@@ -164,7 +164,7 @@ class SignalTest extends TestCase
     /**
      * Delete signal that is not present in a process or a system process.
      */
-    public function testDeleteSignal()
+    public function testDeleteSignal(): void
     {
         // Create signal
         $signal = $this->createSignal()[0];
@@ -187,7 +187,7 @@ class SignalTest extends TestCase
     /**
      * Delete signal that is present in a process or a system process should return a error.
      */
-    public function testDeleteSignalPresentInProcessShouldNotBeDeleted()
+    public function testDeleteSignalPresentInProcessShouldNotBeDeleted(): void
     {
         // Create signal
         $signal = $this->createSignal()[0];
@@ -222,7 +222,7 @@ class SignalTest extends TestCase
     /**
      * Update signal that is not a system signal.
      */
-    public function testUpdateNotSystemSignal()
+    public function testUpdateNotSystemSignal(): void
     {
         // Create signal
         $signal = $this->createSignal()[0];
@@ -250,7 +250,7 @@ class SignalTest extends TestCase
     /**
      * Update signal that is a system signal should not be modified.
      */
-    public function testUpdateSystemSignalShouldNotBeModified()
+    public function testUpdateSystemSignalShouldNotBeModified(): void
     {
         // Create signal
         $signal = $this->createSignal()[0];

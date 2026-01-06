@@ -52,7 +52,7 @@ class BundleUpdatedNotification extends Notification
      *
      * @return array<string, mixed>
      */
-    public function toArray($notifiable)
+    public function toArray($notifiable): array
     {
         $bundle = Bundle::find($this->bundleUid);
 

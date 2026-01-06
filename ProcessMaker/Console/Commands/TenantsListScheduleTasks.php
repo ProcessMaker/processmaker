@@ -26,7 +26,7 @@ class TenantsListScheduleTasks extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         $tenantId = $this->option('tenant');
 

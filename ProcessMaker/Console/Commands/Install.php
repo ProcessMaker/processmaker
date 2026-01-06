@@ -95,7 +95,7 @@ class Install extends Command
      *
      * @return mixed If the command succeeds, true
      */
-    public function handle()
+    public function handle(): int
     {
         // Setup our initial encryption key and set our running laravel app key to it
         $this->key = 'base64:' . base64_encode(Encrypter::generateKey($this->laravel['config']['app.cipher']));

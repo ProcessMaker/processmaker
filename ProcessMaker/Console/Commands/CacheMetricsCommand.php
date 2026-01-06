@@ -23,7 +23,7 @@ class CacheMetricsCommand extends Command
         $this->metrics = $metrics;
     }
 
-    public function handle()
+    public function handle(): int
     {
         $key = $this->option('key');
         $type = $this->option('type');

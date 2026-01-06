@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 class RecommendationUser extends ProcessMakerModel
@@ -10,17 +11,20 @@ class RecommendationUser extends ProcessMakerModel
 
     protected $guarded = [];
 
-    protected $casts = [
-        'dismissed_until' => 'datetime',
-        'count' => 'integer',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'dismissed_until' => 'datetime',
+            'count' => 'integer',
+        ];
+    }
 
-    public function recommendation()
+    public function recommendation(): BelongsTo
     {
         return $this->belongsTo(Recommendation::class);
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

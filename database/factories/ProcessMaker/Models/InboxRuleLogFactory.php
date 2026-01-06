@@ -2,8 +2,8 @@
 
 namespace Database\Factories\ProcessMaker\Models;
 
-use ProcessMaker\Models\InboxRuleLog;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use ProcessMaker\Models\InboxRuleLog;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\ProcessMaker\Models\InboxRule>
@@ -12,7 +12,7 @@ class InboxRuleLogFactory extends Factory
 {
     protected $model = InboxRuleLog::class;
 
-    public function definition()
+    public function definition(): array
     {
         return [
             'inbox_rule_id' => null,

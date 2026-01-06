@@ -31,7 +31,7 @@ class HasAuthorizationTest extends TestCase
     /**
      * Test that hasPermission delegates to PermissionServiceManager
      */
-    public function test_has_permission_delegates_to_permission_service_manager()
+    public function test_has_permission_delegates_to_permission_service_manager(): void
     {
         // Add user to group with permission
         $this->user->groupMembersFromMemberable()->create([
@@ -49,7 +49,7 @@ class HasAuthorizationTest extends TestCase
     /**
      * Test that loadPermissions works correctly
      */
-    public function test_load_permissions_works_correctly()
+    public function test_load_permissions_works_correctly(): void
     {
         // Add user to group with permission
         $this->user->groupMembersFromMemberable()->create([
@@ -69,7 +69,7 @@ class HasAuthorizationTest extends TestCase
     /**
      * Test that invalidatePermissionCache works correctly
      */
-    public function test_invalidate_permission_cache_works_correctly()
+    public function test_invalidate_permission_cache_works_correctly(): void
     {
         // Add user to group with permission
         $this->user->groupMembersFromMemberable()->create([
@@ -92,7 +92,7 @@ class HasAuthorizationTest extends TestCase
     /**
      * Test that cache invalidation actually works when permissions change
      */
-    public function test_cache_invalidation_works_when_permissions_change()
+    public function test_cache_invalidation_works_when_permissions_change(): void
     {
         // Add user to group with permission
         $this->user->groupMembersFromMemberable()->create([
@@ -121,7 +121,7 @@ class HasAuthorizationTest extends TestCase
     /**
      * Test that hierarchical inheritance works through the trait
      */
-    public function test_hierarchical_inheritance_works_through_trait()
+    public function test_hierarchical_inheritance_works_through_trait(): void
     {
         // Create nested groups
         $parentGroup = Group::factory()->create(['name' => 'Parent Group']);
@@ -150,7 +150,7 @@ class HasAuthorizationTest extends TestCase
     /**
      * Test that the trait handles users with no permissions gracefully
      */
-    public function test_handles_users_with_no_permissions_gracefully()
+    public function test_handles_users_with_no_permissions_gracefully(): void
     {
         // User has no groups or permissions
 
@@ -167,7 +167,7 @@ class HasAuthorizationTest extends TestCase
     /**
      * Test that the trait works with multiple permissions
      */
-    public function test_works_with_multiple_permissions()
+    public function test_works_with_multiple_permissions(): void
     {
         // Create additional permissions
         $permission2 = Permission::factory()->create(['name' => 'permission-2']);
@@ -196,7 +196,7 @@ class HasAuthorizationTest extends TestCase
     /**
      * Test that the trait works with direct user permissions
      */
-    public function test_works_with_direct_user_permissions()
+    public function test_works_with_direct_user_permissions(): void
     {
         // Add permission directly to user
         $this->user->permissions()->attach($this->permission->id);
@@ -212,7 +212,7 @@ class HasAuthorizationTest extends TestCase
     /**
      * Test that the trait works with both direct and group permissions
      */
-    public function test_works_with_both_direct_and_group_permissions()
+    public function test_works_with_both_direct_and_group_permissions(): void
     {
         // Create additional permission
         $permission2 = Permission::factory()->create(['name' => 'permission-2']);

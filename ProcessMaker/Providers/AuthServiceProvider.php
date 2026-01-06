@@ -57,7 +57,7 @@ class AuthServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         $this->registerPolicies();
 
@@ -106,7 +106,7 @@ class AuthServiceProvider extends ServiceProvider
         }
     }
 
-    public function register()
+    public function register(): void
     {
         Event::listen(TenantResolved::class, function ($tenant) {
             $this->defineGates();

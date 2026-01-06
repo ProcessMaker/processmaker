@@ -25,7 +25,7 @@ class InitializeScriptMicroservice extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         if (config('script-runner-microservice.enabled')) {
             // Start with an array of all microservice languages

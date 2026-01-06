@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Http\Request as HttpRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Request;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Facades\WorkflowManager;
@@ -114,7 +115,7 @@ class TaskController extends Controller
                                     ->count() > 0;
 
         if (!\Auth::user()->can('update', $task) && !$userHasComments) {
-            $this->authorize('update', $task);
+            Gate::authorize('update', $task);
         }
 
         //Mark notification as read

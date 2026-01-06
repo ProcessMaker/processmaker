@@ -4,10 +4,12 @@
 /public/js
 /public/css
 /storage/*.key
+/storage/pail
 /storage/*.index
 /storage/tenant_*
 /vendor
 /.idea
+/.nova
 /.vscode
 /.vagrant
 npm-debug.log

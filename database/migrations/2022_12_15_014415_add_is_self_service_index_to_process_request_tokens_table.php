@@ -20,10 +20,9 @@ return new class extends Migration {
 
     public function __construct()
     {
-
     }
 
-    public function up()
+    public function up(): void
     {
         Schema::table($this->table, function (Blueprint $table) {
             if (!Schema::hasIndex($this->table, $this->indexName)) {
@@ -37,7 +36,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('process_request_tokens', function (Blueprint $table) {
             if (Schema::hasIndex($this->table, $this->indexName)) {

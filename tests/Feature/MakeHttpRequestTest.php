@@ -24,7 +24,7 @@ class MakeHttpRequestTest extends TestCase
     /**
      * Tests the prepareRequestWithOutboundConfig function
      */
-    public function testRequestConstruction()
+    public function testRequestConstruction(): void
     {
         // Prepare the object that will use the trait
         $testStub = new class {
@@ -76,7 +76,7 @@ class MakeHttpRequestTest extends TestCase
      * Tests the prepareRequestWithOutboundConfig function with no standard parameters
      * (See comments in code for details)
      */
-    public function testRequestConstructionWithoutCommonParams()
+    public function testRequestConstructionWithoutCommonParams(): void
     {
         // Prepare the object that will use the trait
         $testStub = new class {
@@ -131,7 +131,7 @@ class MakeHttpRequestTest extends TestCase
     /**
      * Verifies that different Guzzle Http Responses are mapped correctly calling the function responseWithHeaderData
      */
-    public function testResponseMapping()
+    public function testResponseMapping(): void
     {
         // Prepare the object that will use the trait
         $testStub = new class {
@@ -199,7 +199,7 @@ class MakeHttpRequestTest extends TestCase
         $this->assertEquals(['user' =>['id' => 11, 'name' => 'testName'], 'responseCode' => 99], $mapped);
     }
 
-    public function testCallRest()
+    public function testCallRest(): void
     {
         // Prepare the object that will use the trait
         $testStub = new class {
@@ -254,7 +254,7 @@ class MakeHttpRequestTest extends TestCase
         $this->assertEquals(json_decode('{"id": 1}'), json_decode($body));
     }
 
-    public function testRequestCall()
+    public function testRequestCall(): void
     {
         // Prepare the object that will use the trait
         $testStub = new class {
@@ -333,7 +333,7 @@ class MakeHttpRequestTest extends TestCase
         $this->assertEquals(['pmRequestId' => 11], $result);
     }
 
-    public function testRequestCallsWhenEndPointReturnErrors()
+    public function testRequestCallsWhenEndPointReturnErrors(): void
     {
         // Prepare the object that will use the trait
         $testStub = new class {

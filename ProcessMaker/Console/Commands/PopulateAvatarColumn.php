@@ -36,7 +36,7 @@ class PopulateAvatarColumn extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         // Fetch all users
         $users = User::cursor();

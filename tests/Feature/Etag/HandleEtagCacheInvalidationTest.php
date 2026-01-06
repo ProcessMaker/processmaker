@@ -18,7 +18,7 @@ class HandleEtagCacheInvalidationTest extends TestCase
 
     private const TEST_ROUTE = '/_test/etag-cache-invalidation';
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -30,7 +30,7 @@ class HandleEtagCacheInvalidationTest extends TestCase
             ->defaults('etag_tables', 'processes');
     }
 
-    public function testEtagInvalidatesOnDatabaseUpdate()
+    public function testEtagInvalidatesOnDatabaseUpdate(): void
     {
         $user = User::factory()->create();
         $this->actingAs($user);
@@ -46,7 +46,7 @@ class HandleEtagCacheInvalidationTest extends TestCase
         $this->assertNotNull($initialEtag, 'Initial ETag was set');
 
         // Simulate a database update by changing `updated_at`.
-        $process->update(['name' => $this->faker->name]);
+        $process->update(['name' => $this->faker->name()]);
 
         // Second request: ETag should change due to the database update.
         $responseAfterUpdate = $this->get(self::TEST_ROUTE);

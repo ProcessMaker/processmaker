@@ -30,7 +30,7 @@ class TaskControllerTest extends TestCase
      *
      * @return void
      */
-    public function testIndexCaseRequiresCaseNumber()
+    public function testIndexCaseRequiresCaseNumber(): void
     {
         // Simulate an authenticated user
         $user = User::factory()->create();
@@ -49,7 +49,7 @@ class TaskControllerTest extends TestCase
      *
      * @return void
      */
-    public function testIndexCaseReturnsActiveTasksForCaseNumberPagination()
+    public function testIndexCaseReturnsActiveTasksForCaseNumberPagination(): void
     {
         // Simulate an authenticated user
         $user = User::factory()->create();
@@ -93,7 +93,7 @@ class TaskControllerTest extends TestCase
      *
      * @return void
      */
-    public function testIndexCaseReturnsInactiveTasksForCaseNumber()
+    public function testIndexCaseReturnsInactiveTasksForCaseNumber(): void
     {
         // Simulate an authenticated user
         $user = User::factory()->create();
@@ -125,7 +125,7 @@ class TaskControllerTest extends TestCase
      *
      * @return void
      */
-    public function testIndexCaseReturnsInactiveTasksForCaseNumberPagination()
+    public function testIndexCaseReturnsInactiveTasksForCaseNumberPagination(): void
     {
         // Simulate an authenticated user
         $user = User::factory()->create();
@@ -169,7 +169,7 @@ class TaskControllerTest extends TestCase
      *
      * @return void
      */
-    public function testIndexCaseReturnsWithData()
+    public function testIndexCaseReturnsWithData(): void
     {
         // Simulate an authenticated user
         $user = User::factory()->create();
@@ -201,7 +201,7 @@ class TaskControllerTest extends TestCase
      *
      * @return void
      */
-    public function testTasksByCaseReturnsCorrectData()
+    public function testTasksByCaseReturnsCorrectData(): void
     {
         // Simulate an authenticated user
         $user = User::factory()->create();
@@ -249,15 +249,15 @@ class TaskControllerTest extends TestCase
         $this->assertEquals($data2['form_text_area_1'], $responseData[1]['taskData']['form_text_area_1']);
     }
 
-    public function testShowTaskIncludesNewProperty()
+    public function testShowTaskIncludesNewProperty(): void
     {
         $user = User::factory()->create();
         $this->actingAs($user);
 
-        $comments = "This is a comment";
+        $comments = 'This is a comment';
 
         $task = ProcessRequestToken::factory()->create([
-            "comments" => $comments
+            'comments' => $comments,
         ]);
 
         $this->assertEquals($comments, $task->comments);

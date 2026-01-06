@@ -15,12 +15,13 @@ class EncryptedDataFactory extends Factory
      *
      * @return array
      */
-    public function definition()
+    public function definition(): array
     {
         // Get configured driver for encrypted data
         $driver = config('app.encrypted_data.driver');
 
         $cipherText = EncryptedData::driver($driver)->encryptText($this->faker->sentence(3));
+
         return [
             'field_name' => $this->faker->word(),
             'iv' => base64_encode(EncryptedData::driver($driver)->getIv()),

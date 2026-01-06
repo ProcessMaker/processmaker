@@ -4,14 +4,13 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDevLinksTable extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('dev_links', function (Blueprint $table) {
             $table->id();
@@ -32,8 +31,8 @@ class CreateDevLinksTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('dev_links');
     }
-}
+};

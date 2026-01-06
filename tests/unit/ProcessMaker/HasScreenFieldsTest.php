@@ -6,7 +6,7 @@ use Tests\TestCase;
 
 class HasScreenFieldsTest extends TestCase
 {
-    public function testLoadScreenFields()
+    public function testLoadScreenFields(): void
     {
         $screenCache = ScreenCacheFactory::getScreenCache();
         $screen = Screen::factory()->create([
@@ -73,7 +73,7 @@ class HasScreenFieldsTest extends TestCase
         $this->assertEquals($expectedFields, $cacheFields);
     }
 
-    public function testLoadScreenFieldsFromCache()
+    public function testLoadScreenFieldsFromCache(): void
     {
         $screenCache = ScreenCacheFactory::getScreenCache();
         $screen = Screen::factory()->create([

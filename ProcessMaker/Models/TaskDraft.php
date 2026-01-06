@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Arr;
 use ProcessMaker\Models\ProcessMakerModel;
 use Spatie\MediaLibrary\HasMedia;
@@ -24,11 +25,14 @@ class TaskDraft extends ProcessMakerModel implements HasMedia
         'data',
     ];
 
-    protected $casts = [
-        'data' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'data' => 'array',
+        ];
+    }
 
-    public function processRequestToken()
+    public function processRequestToken(): BelongsTo
     {
         return $this->belongsTo(ProcessRequestToken::class, 'task_id');
     }

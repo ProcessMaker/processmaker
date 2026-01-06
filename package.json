@@ -48,7 +48,8 @@
         "tailwindcss": "^3.4.10",
         "vue-loader": "^15.10.0",
         "vue-template-compiler": "^2.7.16",
-        "webpack-bundle-analyzer": "^4.10.2"
+        "webpack-bundle-analyzer": "^4.10.2",
+        "concurrently": "^9.0.1"
     },
     "dependencies": {
         "@babel/runtime": "^7.23.8",
@@ -67,7 +68,7 @@
         "@processmaker/vue-form-elements": "0.65.5",
         "@processmaker/vue-multiselect": "2.3.0",
         "@tinymce/tinymce-vue": "2.0.0",
-        "axios": "^0.27.2",
+        "axios": "^1.11.0",
         "bootstrap": "^4.5.3",
         "bootstrap-vue": "^2.18.1",
         "bpmn-font": "^0.10.0",

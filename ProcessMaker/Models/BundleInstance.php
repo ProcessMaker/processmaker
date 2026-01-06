@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use ProcessMaker\Models\ProcessMakerModel;
 
 class BundleInstance extends ProcessMakerModel
@@ -14,7 +15,7 @@ class BundleInstance extends ProcessMakerModel
         'instance_url',
     ];
 
-    public function bundle()
+    public function bundle(): BelongsTo
     {
         return $this->belongsTo(Bundle::class);
     }

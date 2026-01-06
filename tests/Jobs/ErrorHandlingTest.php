@@ -49,7 +49,7 @@ class ErrorHandlingTest extends TestCase
         }
     }
 
-    public function testRetry()
+    public function testRetry(): void
     {
         $this->runAssertions([
             'attempt' => 3,
@@ -66,7 +66,7 @@ class ErrorHandlingTest extends TestCase
         ]);
     }
 
-    public function testRetryUseModelSettings()
+    public function testRetryUseModelSettings(): void
     {
         $this->runAssertions([
             'attempt' => 3,
@@ -83,7 +83,7 @@ class ErrorHandlingTest extends TestCase
         ]);
     }
 
-    public function testDoNotRetry()
+    public function testDoNotRetry(): void
     {
         $this->runAssertions([
             'attempt' => 4,
@@ -100,7 +100,7 @@ class ErrorHandlingTest extends TestCase
         ]);
     }
 
-    public function testRetryWaitFromModel()
+    public function testRetryWaitFromModel(): void
     {
         $this->runAssertions([
             'attempt' => 3,
@@ -117,7 +117,7 @@ class ErrorHandlingTest extends TestCase
         ]);
     }
 
-    public function testTimeoutFromModel()
+    public function testTimeoutFromModel(): void
     {
         $this->runAssertions([
             'attempt' => 3,

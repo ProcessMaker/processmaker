@@ -15,10 +15,13 @@ class Tenant extends SpatieTenant
     // Non-persistent
     public $originalValues = null;
 
-    protected $casts = [
-        'config' => 'array',
-        'password' => 'encrypted',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'config' => 'array',
+            'password' => 'encrypted',
+        ];
+    }
 
     public static function setBootstrappedTenant(Application $app, ?array $tenantData)
     {

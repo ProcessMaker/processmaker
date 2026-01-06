@@ -2,7 +2,10 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Http;
 use ProcessMaker\Exception\ExporterNotSupported;
 use ProcessMaker\Exception\ValidationException;
@@ -24,12 +27,16 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
     protected $appends = ['asset_count'];
 
-    protected $casts = [
-        'published' => 'boolean',
-        'webhook_token' => 'encrypted',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'published' => 'boolean',
+            'webhook_token' => 'encrypted',
+        ];
+    }
 
-    public function scopePublished($query)
+    #[Scope]
+    protected function published($query)
     {
         return $query->where('published', true);
     }
@@ -44,22 +51,22 @@ class Bundle extends ProcessMakerModel implements HasMedia
         return $this->dev_link_id === null;
     }
 
-    public function assets()
+    public function assets(): HasMany
     {
         return $this->hasMany(BundleAsset::class);
     }
 
-    public function settings()
+    public function settings(): HasMany
     {
         return $this->hasMany(BundleSetting::class);
     }
 
-    public function instances()
+    public function instances(): HasMany
     {
         return $this->hasMany(BundleInstance::class);
     }
 
-    public function devLink()
+    public function devLink(): BelongsTo
     {
         return $this->belongsTo(DevLink::class, 'dev_link_id');
     }

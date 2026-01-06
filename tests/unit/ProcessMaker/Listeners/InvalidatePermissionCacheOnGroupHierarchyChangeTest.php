@@ -75,7 +75,7 @@ class InvalidatePermissionCacheOnGroupHierarchyChangeTest extends TestCase
     /**
      * Test that the listener can handle events without throwing type errors
      */
-    public function test_listener_handles_events_without_type_errors()
+    public function test_listener_handles_events_without_type_errors(): void
     {
         // Test all action types
         $actions = ['added', 'removed', 'updated', 'restored'];
@@ -93,7 +93,7 @@ class InvalidatePermissionCacheOnGroupHierarchyChangeTest extends TestCase
     /**
      * Test that circular references are handled safely
      */
-    public function test_handles_circular_references_safely()
+    public function test_handles_circular_references_safely(): void
     {
         // Create a circular reference: Group A → Group B → Group A
         $groupA = Group::factory()->create(['name' => 'Group A']);
@@ -123,7 +123,7 @@ class InvalidatePermissionCacheOnGroupHierarchyChangeTest extends TestCase
     /**
      * Test that deep hierarchies are handled safely
      */
-    public function test_handles_deep_hierarchies_safely()
+    public function test_handles_deep_hierarchies_safely(): void
     {
         // Create a deep hierarchy: Group1 → Group2 → Group3 → Group4 → Group5
         $groups = [];
@@ -151,7 +151,7 @@ class InvalidatePermissionCacheOnGroupHierarchyChangeTest extends TestCase
     /**
      * Test that the listener handles missing groups gracefully
      */
-    public function test_handles_missing_groups_gracefully()
+    public function test_handles_missing_groups_gracefully(): void
     {
         // Create an event with a non-existent group
         $nonExistentGroup = new Group(['id' => 99999, 'name' => 'Non-existent Group']);
@@ -165,7 +165,7 @@ class InvalidatePermissionCacheOnGroupHierarchyChangeTest extends TestCase
     /**
      * Test that the listener can handle events with null parent group
      */
-    public function test_handles_events_with_null_parent_group()
+    public function test_handles_events_with_null_parent_group(): void
     {
         // Create the event with null parent group
         $event = new GroupMembershipChanged($this->group, null, 'updated');

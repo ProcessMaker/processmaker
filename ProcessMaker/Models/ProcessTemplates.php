@@ -2,8 +2,10 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\ProcessTrait;
@@ -26,7 +28,7 @@ class ProcessTemplates extends Template
      *
      * @return BelongsTo
      */
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(ProcessCategory::class, 'process_category_id')->withDefault();
     }
@@ -54,7 +56,8 @@ class ProcessTemplates extends Template
     /**
      * Apply filters to the query based on the given filter string.
      */
-    public function scopeWithFilters(Builder $query, $filter): void
+    #[Scope]
+    protected function withFilters(Builder $query, $filter): void
     {
         $query->where(function ($query) use ($filter) {
             $query->where('process_templates.name', 'like', '%' . $filter . '%')

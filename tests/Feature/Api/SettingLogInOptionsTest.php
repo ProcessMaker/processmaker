@@ -16,7 +16,7 @@ class SettingLogInOptionsTest extends TestCase
         $upgrade->up();
     }
 
-    public function testDefaultLogInOptionsSettings()
+    public function testDefaultLogInOptionsSettings(): void
     {
         $this->upgrade();
 
@@ -37,7 +37,7 @@ class SettingLogInOptionsTest extends TestCase
         $this->assertDatabaseCount('security_logs', 0);
     }
 
-    public function testUpdatePasswordSetByUserSetting()
+    public function testUpdatePasswordSetByUserSetting(): void
     {
         $this->upgrade();
 
@@ -57,7 +57,7 @@ class SettingLogInOptionsTest extends TestCase
         $this->assertDatabaseHas('security_logs', ['event' => 'SettingsUpdated', 'changes->setting_id' => $passwordSetByUser['id']]);
     }
 
-    public function testUpdateNumericCharactersSetting()
+    public function testUpdateNumericCharactersSetting(): void
     {
         $this->upgrade();
 
@@ -77,7 +77,7 @@ class SettingLogInOptionsTest extends TestCase
         $this->assertDatabaseHas('security_logs', ['event' => 'SettingsUpdated', 'changes->setting_id' => $numericCharacters['id']]);
     }
 
-    public function testUpdateUppercaseCharactersSetting()
+    public function testUpdateUppercaseCharactersSetting(): void
     {
         $this->upgrade();
 
@@ -97,7 +97,7 @@ class SettingLogInOptionsTest extends TestCase
         $this->assertDatabaseHas('security_logs', ['event' => 'SettingsUpdated', 'changes->setting_id' => $uppercaseCharacters['id']]);
     }
 
-    public function testUpdateSpecialCharactersSetting()
+    public function testUpdateSpecialCharactersSetting(): void
     {
         $this->upgrade();
 
@@ -117,7 +117,7 @@ class SettingLogInOptionsTest extends TestCase
         $this->assertDatabaseHas('security_logs', ['event' => 'SettingsUpdated', 'changes->setting_id' => $specialCharacters['id']]);
     }
 
-    public function testUpdateMaximumLengthSetting()
+    public function testUpdateMaximumLengthSetting(): void
     {
         $this->upgrade();
 
@@ -137,7 +137,7 @@ class SettingLogInOptionsTest extends TestCase
         $this->assertDatabaseHas('security_logs', ['event' => 'SettingsUpdated', 'changes->setting_id' => $maximumLength['id']]);
     }
 
-    public function testUpdateMinimumLengthSetting()
+    public function testUpdateMinimumLengthSetting(): void
     {
         $this->upgrade();
 
@@ -157,7 +157,7 @@ class SettingLogInOptionsTest extends TestCase
         $this->assertDatabaseHas('security_logs', ['event' => 'SettingsUpdated', 'changes->setting_id' => $minimumLength['id']]);
     }
 
-    public function testUpdatePasswordExpirationSetting()
+    public function testUpdatePasswordExpirationSetting(): void
     {
         $this->upgrade();
 
@@ -177,7 +177,7 @@ class SettingLogInOptionsTest extends TestCase
         $this->assertDatabaseHas('security_logs', ['event' => 'SettingsUpdated', 'changes->setting_id' => $passwordExpiration['id']]);
     }
 
-    public function testUpdateLoginFailedSetting()
+    public function testUpdateLoginFailedSetting(): void
     {
         $this->upgrade();
 
@@ -197,7 +197,7 @@ class SettingLogInOptionsTest extends TestCase
         $this->assertDatabaseHas('security_logs', ['event' => 'SettingsUpdated', 'changes->setting_id' => $loginFailed['id']]);
     }
 
-    public function testUpdateRequireTwoStepAuthenticationSetting()
+    public function testUpdateRequireTwoStepAuthenticationSetting(): void
     {
         $this->upgrade();
 
@@ -217,7 +217,7 @@ class SettingLogInOptionsTest extends TestCase
         $this->assertDatabaseHas('security_logs', ['event' => 'SettingsUpdated', 'changes->setting_id' => $requireTwoStepAuthentication['id']]);
     }
 
-    public function testUpdateTwoStepAuthenticationMethodSetting()
+    public function testUpdateTwoStepAuthenticationMethodSetting(): void
     {
         $this->upgrade();
 

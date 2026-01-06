@@ -41,7 +41,7 @@ class PermissionServiceManagerTest extends TestCase
     /**
      * Test that getUserPermissions returns cached permissions when available
      */
-    public function test_get_user_permissions_returns_cached_permissions()
+    public function test_get_user_permissions_returns_cached_permissions(): void
     {
         // Add user to group with permission
         $this->user->groupMembersFromMemberable()->create([
@@ -67,7 +67,7 @@ class PermissionServiceManagerTest extends TestCase
     /**
      * Test that getUserPermissions fetches from repository when cache is empty
      */
-    public function test_get_user_permissions_fetches_from_repository_when_cache_empty()
+    public function test_get_user_permissions_fetches_from_repository_when_cache_empty(): void
     {
         // Add user to group with permission
         $this->user->groupMembersFromMemberable()->create([
@@ -93,7 +93,7 @@ class PermissionServiceManagerTest extends TestCase
     /**
      * Test that userHasPermission works correctly
      */
-    public function test_user_has_permission_works_correctly()
+    public function test_user_has_permission_works_correctly(): void
     {
         // Add user to group with permission
         $this->user->groupMembersFromMemberable()->create([
@@ -111,7 +111,7 @@ class PermissionServiceManagerTest extends TestCase
     /**
      * Test that warmUpUserCache populates cache correctly
      */
-    public function test_warm_up_user_cache_populates_cache_correctly()
+    public function test_warm_up_user_cache_populates_cache_correctly(): void
     {
         // Add user to group with permission
         $this->user->groupMembersFromMemberable()->create([
@@ -138,7 +138,7 @@ class PermissionServiceManagerTest extends TestCase
     /**
      * Test that invalidateUserCache clears cache correctly
      */
-    public function test_invalidate_user_cache_clears_cache_correctly()
+    public function test_invalidate_user_cache_clears_cache_correctly(): void
     {
         // Add user to group with permission
         $this->user->groupMembersFromMemberable()->create([
@@ -164,7 +164,7 @@ class PermissionServiceManagerTest extends TestCase
     /**
      * Test that hierarchical inheritance works through the service manager
      */
-    public function test_hierarchical_inheritance_works_through_service_manager()
+    public function test_hierarchical_inheritance_works_through_service_manager(): void
     {
         // Create nested groups
         $parentGroup = Group::factory()->create(['name' => 'Parent Group']);
@@ -197,7 +197,7 @@ class PermissionServiceManagerTest extends TestCase
     /**
      * Test that cache is properly managed for multiple users
      */
-    public function test_cache_is_properly_managed_for_multiple_users()
+    public function test_cache_is_properly_managed_for_multiple_users(): void
     {
         // Create second user
         $user2 = User::factory()->create(['username' => 'testuser2']);
@@ -236,7 +236,7 @@ class PermissionServiceManagerTest extends TestCase
     /**
      * Test that the service manager handles users with no permissions gracefully
      */
-    public function test_handles_users_with_no_permissions_gracefully()
+    public function test_handles_users_with_no_permissions_gracefully(): void
     {
         // User has no groups or permissions
 

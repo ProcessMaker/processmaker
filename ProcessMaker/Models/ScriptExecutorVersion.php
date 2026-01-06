@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use ProcessMaker\Enums\ScriptExecutorType;
 
@@ -11,14 +12,18 @@ class ScriptExecutorVersion extends ProcessMakerModel
         'title', 'description', 'language', 'config', 'draft', 'is_system', 'type',
     ];
 
-    protected $casts = [
-        'type' => ScriptExecutorType::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            'type' => ScriptExecutorType::class,
+        ];
+    }
 
     /**
      * Scope to only return draft versions.
      */
-    public function scopeDraft(Builder $query)
+    #[Scope]
+    protected function draft(Builder $query)
     {
         return $query->where('draft', true);
     }
@@ -26,7 +31,8 @@ class ScriptExecutorVersion extends ProcessMakerModel
     /**
      * Scope to only return published versions.
      */
-    public function scopePublished(Builder $query)
+    #[Scope]
+    protected function published(Builder $query)
     {
         return $query->where('draft', false);
     }

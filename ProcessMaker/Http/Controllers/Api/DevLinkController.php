@@ -447,23 +447,23 @@ class DevLinkController extends Controller
     private function compileSass($userId)
     {
         // Compile the Sass files
-        $this->dispatch(new CompileSass([
+        CompileSass::dispatch([
             'tag' => 'sidebar',
             'origin' => 'resources/sass/sidebar/sidebar.scss',
             'target' => 'public/css/sidebar.css',
             'user' => $userId,
-        ]));
-        $this->dispatch(new CompileSass([
+        ]);
+        CompileSass::dispatch([
             'tag' => 'app',
             'origin' => 'resources/sass/app.scss',
             'target' => 'public/css/app.css',
             'user' => $userId,
-        ]));
-        $this->dispatch(new CompileSass([
+        ]);
+        CompileSass::dispatch([
             'tag' => 'queues',
             'origin' => 'resources/sass/admin/queues.scss',
             'target' => 'public/css/admin/queues.css',
             'user' => $userId,
-        ]));
+        ]);
     }
 }

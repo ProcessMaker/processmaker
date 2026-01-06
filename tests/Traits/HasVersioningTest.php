@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 class HasVersioningTest extends TestCase
 {
-    public function testVersionFor()
+    public function testVersionFor(): void
     {
         $this->markTestSkipped('Skip version locking for now');
 

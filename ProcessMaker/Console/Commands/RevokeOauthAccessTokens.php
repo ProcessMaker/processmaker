@@ -28,7 +28,7 @@ class RevokeOauthAccessTokens extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $name = $this->option('name');
         $after = $this->option('after');

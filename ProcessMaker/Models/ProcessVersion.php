@@ -2,7 +2,9 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use ProcessMaker\Contracts\ProcessModelInterface;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasSelfServiceTasks;
@@ -42,16 +44,6 @@ class ProcessVersion extends ProcessMakerModel implements ProcessModelInterface
         'updated_at',
     ];
 
-    protected $casts = [
-        'start_events' => 'array',
-        'warnings' => 'array',
-        'self_service_tasks' => 'array',
-        'signal_events' => 'array',
-        'conditional_events' => 'array',
-        'properties' => 'array',
-        'stages' => 'array',
-    ];
-
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -71,6 +63,19 @@ class ProcessVersion extends ProcessMakerModel implements ProcessModelInterface
         });
 
         parent::boot();
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'start_events' => 'array',
+            'warnings' => 'array',
+            'self_service_tasks' => 'array',
+            'signal_events' => 'array',
+            'conditional_events' => 'array',
+            'properties' => 'array',
+            'stages' => 'array',
+        ];
     }
 
     /**
@@ -122,7 +127,7 @@ class ProcessVersion extends ProcessMakerModel implements ProcessModelInterface
      *
      * @return Process
      */
-    public function process()
+    public function process(): BelongsTo
     {
         return $this->belongsTo(Process::class);
     }
@@ -130,9 +135,9 @@ class ProcessVersion extends ProcessMakerModel implements ProcessModelInterface
     /**
      * Get the associated process
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function parent()
+    public function parent(): BelongsTo
     {
         return $this->belongsTo(Process::class, 'process_id', 'id');
     }
@@ -140,7 +145,8 @@ class ProcessVersion extends ProcessMakerModel implements ProcessModelInterface
     /**
      * Scope to only return draft versions.
      */
-    public function scopeDraft(Builder $query)
+    #[Scope]
+    protected function draft(Builder $query)
     {
         return $query->where('draft', true);
     }
@@ -148,7 +154,8 @@ class ProcessVersion extends ProcessMakerModel implements ProcessModelInterface
     /**
      * Scope to only return published versions.
      */
-    public function scopePublished(Builder $query)
+    #[Scope]
+    protected function published(Builder $query)
     {
         return $query->where('draft', false);
     }

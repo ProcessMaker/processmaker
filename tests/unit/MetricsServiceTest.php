@@ -14,7 +14,6 @@ use Prometheus\Storage\InMemory;
 use ReflectionClass;
 use Tests\TestCase;
 
-
 class MetricsServiceTest extends TestCase
 {
     /**
@@ -44,7 +43,7 @@ class MetricsServiceTest extends TestCase
         $counter = $this->metricsService->counter('test_counter', 'Test Counter', ['label1']);
 
         // Assert the counter is registered
-        $this->assertInstanceOf(\Prometheus\Counter::class, $counter);
+        $this->assertInstanceOf(Counter::class, $counter);
 
         // Increment the counter and assert the value
         $counter->inc(['value1']);
@@ -83,7 +82,7 @@ class MetricsServiceTest extends TestCase
         );
 
         // Assert the histogram is registered
-        $this->assertInstanceOf(\Prometheus\Histogram::class, $histogram);
+        $this->assertInstanceOf(Histogram::class, $histogram);
 
         // Observe a value and assert it is recorded
         $histogram->observe(0.5, ['value1']);
@@ -112,7 +111,7 @@ class MetricsServiceTest extends TestCase
         $counter = $this->metricsService->counter('namespace_test');
 
         // Assert default namespace is applied
-        $this->assertInstanceOf(\Prometheus\Counter::class, $counter);
+        $this->assertInstanceOf(Counter::class, $counter);
         $counter->inc();
 
         $samples = $this->metricsService->renderMetrics();
@@ -131,10 +130,11 @@ class MetricsServiceTest extends TestCase
         $this->assertStringContainsString('test_set_gauge', $samples);
         $this->assertStringContainsString('5', $samples);
     }
+
     /**
      * Test that counterInc calls Metrics::counter() and then inc() with the correct labels.
      */
-    public function testCounterInc()
+    public function testCounterInc(): void
     {
         // Set configuration values used by addSystemLabels()
         Config::set('app.name', 'TestApp');
@@ -178,7 +178,7 @@ class MetricsServiceTest extends TestCase
     /**
      * Test that histogramObserve calls Metrics::histogram() and then observe() with the correct values.
      */
-    public function testHistogramObserve()
+    public function testHistogramObserve(): void
     {
         // Set configuration values used by addSystemLabels()
         Config::set('app.name', 'TestApp');
@@ -221,7 +221,7 @@ class MetricsServiceTest extends TestCase
     /**
      * Test that addSystemLabels returns the input labels plus the system labels.
      */
-    public function testAddSystemLabels()
+    public function testAddSystemLabels(): void
     {
         // Set configuration values used by addSystemLabels()
         Config::set('app.name', 'TestApp');
@@ -247,7 +247,7 @@ class MetricsServiceTest extends TestCase
     /**
      * Test that clearMetrics calls wipeStorage on the collection registry.
      */
-    public function testClearMetrics()
+    public function testClearMetrics(): void
     {
         $service = new MetricsService();
 

@@ -17,7 +17,7 @@ class SignalSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         if ($this->signalProcessExists()) {
             return;

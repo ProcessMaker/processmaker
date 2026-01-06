@@ -33,7 +33,7 @@ class LicenseCommandsTest extends TestCase
         parent::tearDown();
     }
 
-    public function testLicenseUpdateFromLocalPath()
+    public function testLicenseUpdateFromLocalPath(): void
     {
         // Create a sample license file for testing.
         $sampleLicense = '{"expires_at": "2023-12-31", "packages": ["package-translations", "package-projects"]}';
@@ -46,7 +46,7 @@ class LicenseCommandsTest extends TestCase
         $this->assertTrue(Storage::disk('local')->exists('license.json'));
     }
 
-    public function testLicenseUpdateWithInvalidContent()
+    public function testLicenseUpdateWithInvalidContent(): void
     {
         $invalidLicense = '"invalid": "data"';
         $licenseFilePath = tempnam(sys_get_temp_dir(), 'license_');
@@ -57,7 +57,7 @@ class LicenseCommandsTest extends TestCase
             ->assertExitCode(1);
     }
 
-    public function testLicenseRemoveConfirmation()
+    public function testLicenseRemoveConfirmation(): void
     {
         Storage::disk('local')->put('license.json', 'sample content');
 
@@ -69,7 +69,7 @@ class LicenseCommandsTest extends TestCase
         $this->assertTrue(Storage::disk('local')->exists('license.json'));
     }
 
-    public function testLicenseRemove()
+    public function testLicenseRemove(): void
     {
         Storage::disk('local')->put('license.json', '{"expires_at": "2023-12-31", "packages": []}');
 
@@ -81,7 +81,7 @@ class LicenseCommandsTest extends TestCase
         $this->assertFalse(Storage::disk('local')->exists('license.json'));
     }
 
-    public function testLicenseRemoveNonExistent()
+    public function testLicenseRemoveNonExistent(): void
     {
         $this->artisan('processmaker:license-remove')
             ->expectsOutput('license.json does not exist on the local disk.')

@@ -153,7 +153,7 @@ class TwoFactorAuthController extends Controller
         if (count($enabled) === 0) {
             $message = [
                 'status' => 'error',
-                'message' => __('The two-step method must be selected.')
+                'message' => __('The two-step method must be selected.'),
             ];
             $status = 500;
         }
@@ -237,6 +237,7 @@ class TwoFactorAuthController extends Controller
     {
         try {
             $user = Auth::user();
+
             return $user->in2FAGroupOrIndependent();
         } catch (Exception $e) {
             session()->put(self::TFA_ERROR, $e->getMessage());
