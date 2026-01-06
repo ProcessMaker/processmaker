@@ -191,17 +191,17 @@ class TaskController extends Controller
             ]);
             $userConfiguration = (new UserConfigurationController())->index();
             $hitlEnabled = config('smart-extract.hitl_enabled', false) && $isSmartExtractTask;
-            
+
             // Build the iframe source
             $iframeSrc = null;
             if ($hitlEnabled) {
                 $dashboardUrl = config('smart-extract.dashboard_url');
                 $requestData = $task->processRequest->data ?? [];
-   
+
                 $documentToken = $requestData['documentToken'] ?? null;
                 $fileId = $requestData['fileId'] ?? null;
-                
-                if ($documentToken && $fileId) {
+
+                if ($documentToken && $fileId && !empty($dashboardUrl)) {
                     $queryParams = http_build_query([
                         'documentToken' => $documentToken,
                         'fileId' => $fileId,
