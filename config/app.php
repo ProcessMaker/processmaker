@@ -111,7 +111,6 @@ return [
 
     'login_view' => env('LOGIN_VIEW', 'auth.newLogin'),
 
-
     'aliases' => Facade::defaultAliases()->merge([
         'Agent' => Jenssegers\Agent\Facades\Agent::class,
         'Docker' => ProcessMaker\Facades\Docker::class,
