@@ -130,7 +130,7 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
-    'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+    'encryption' => env('MAIL_SCHEME', 'tls'),
 
     'username' => env('MAIL_USERNAME'),
 

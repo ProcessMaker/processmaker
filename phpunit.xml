@@ -23,6 +23,7 @@
         </include>
     </source>
     <php>
+        <env name="BROADCAST_CONNECTION" value="null"/>
       <env name="APP_DEBUG" value="true" />
       <env name="APP_ENV" value="testing" />
       <env name="APP_URL" value="http://localhost" />
@@ -80,5 +81,6 @@
 
       <env name="MULTITENANCY" value="false" />
 
+        <env name="NIGHTWATCH_ENABLED" value="false"/>
     </php>
 </phpunit>
