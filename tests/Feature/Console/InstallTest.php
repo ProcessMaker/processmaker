@@ -56,7 +56,7 @@ class InstallTest extends TestCase
         $params->push(new Param('--redis-prefix', 'REDIS_PREFIX', "{$faker->word()}:"));
         $params->push(new Param('--horizon-prefix', 'HORIZON_PREFIX', "{$faker->word()}:"));
         $params->push(new Param('--broadcast-debug', 'LARAVEL_ECHO_SERVER_DEBUG', $faker->boolean()));
-        $params->push(new Param('--broadcast-driver', 'BROADCAST_DRIVER', $faker->randomElement(['pusher', 'redis'])));
+        $params->push(new Param('--broadcast-driver', 'BROADCAST_CONNECTION', $faker->randomElement(['pusher', 'redis'])));
         $params->push(new Param('--broadcast-host', 'BROADCASTER_HOST', "https://{$faker->domainName()}"));
         $params->push(new Param('--broadcast-key', 'BROADCASTER_KEY', $faker->md5()));
         $params->push(new Param('--echo-host', 'LARAVEL_ECHO_SERVER_AUTH_HOST', "https://{$faker->domainName()}"));
