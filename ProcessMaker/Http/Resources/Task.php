@@ -131,7 +131,7 @@ class Task extends ApiResource
                 ->whereNotIn('status', Process::NOT_ASSIGNABLE_USER_STATUS)
                 ->whereIn('id', $chunk)
                 ->pluck('id')->toArray();
-            $assignedUsers = array_merge($assignedUsers,$activeUsers);
+            $assignedUsers = array_merge($assignedUsers, $activeUsers);
         }
 
         return $assignedUsers;

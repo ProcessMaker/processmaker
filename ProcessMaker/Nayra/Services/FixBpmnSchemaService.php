@@ -13,7 +13,7 @@ class FixBpmnSchemaService
      *
      * @param string $bpmn
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public static function fix(string $bpmn): string
     {
@@ -47,7 +47,7 @@ class FixBpmnSchemaService
             $taskNodes = $xpath->query('//*[local-name()="task"]');
 
             foreach ($taskNodes as $task) {
-                $taskId = $task->getAttribute("id");
+                $taskId = $task->getAttribute('id');
                 $taskPrefix = !empty($task->prefix) ? "$task->prefix:" : '';
                 $taskNS = $task->namespaceURI;
 
@@ -72,22 +72,22 @@ class FixBpmnSchemaService
                 // Create ioSpecification and children
                 $ioSpec = $document->createElementNS($taskNS, "{$taskPrefix}ioSpecification");
                 $ioSpecId = "{$taskId}_inner_" . round(microtime(true) * 1000);
-                $ioSpec->setAttribute("id", $ioSpecId);
+                $ioSpec->setAttribute('id', $ioSpecId);
 
                 $dataInputId = "data_input_{$sourceId}";
                 $dataInput = $document->createElementNS($taskNS, "{$taskPrefix}dataInput");
-                $dataInput->setAttribute("id", $dataInputId);
-                $dataInput->setAttribute("name", "Template for protocol");
+                $dataInput->setAttribute('id', $dataInputId);
+                $dataInput->setAttribute('name', 'Template for protocol');
                 $ioSpec->appendChild($dataInput);
 
                 $inputSet = $document->createElementNS($taskNS, "{$taskPrefix}inputSet");
-                $inputSet->setAttribute("id", "{$taskId}_inner_" . (round(microtime(true) * 1000) + 2));
+                $inputSet->setAttribute('id', "{$taskId}_inner_" . (round(microtime(true) * 1000) + 2));
                 $dataInputRefs = $document->createElementNS($taskNS, "{$taskPrefix}dataInputRefs", $dataInputId);
                 $inputSet->appendChild($dataInputRefs);
                 $ioSpec->appendChild($inputSet);
 
                 $outputSet = $document->createElementNS($taskNS, "{$taskPrefix}outputSet");
-                $outputSet->setAttribute("id", "{$taskId}_inner_" . (round(microtime(true) * 1000) + 3));
+                $outputSet->setAttribute('id', "{$taskId}_inner_" . (round(microtime(true) * 1000) + 3));
                 $ioSpec->appendChild($outputSet);
 
                 $task->insertBefore($ioSpec, $dataInputAssociation);
@@ -99,7 +99,7 @@ class FixBpmnSchemaService
                 // Add BPMNEdge to BPMNDiagram
                 $diagramNodes = $xpath->query('//*[local-name() = "BPMNDiagram"]');
                 if ($diagramNodes->length === 0) {
-                    throw new Exception("No BPMNDiagram node found in the BPMN file.");
+                    throw new Exception('No BPMNDiagram node found in the BPMN file.');
                 }
                 $bpmnDiagram = $diagramNodes->item(0);
                 $diagramPrefix = $bpmnDiagram->prefix;
@@ -107,23 +107,23 @@ class FixBpmnSchemaService
 
                 $bpmnPlaneNodes = $xpath->query('.//*[local-name() = "BPMNPlane"]', $bpmnDiagram);
                 if ($bpmnPlaneNodes->length === 0) {
-                    throw new Exception("No BPMNPlane found inside BPMNDiagram.");
+                    throw new Exception('No BPMNPlane found inside BPMNDiagram.');
                 }
                 $bpmnPlane = $bpmnPlaneNodes->item(0);
 
-                $edgeId = 'BPMNEdge_' . $dataInputAssociation->getAttribute("id");
+                $edgeId = 'BPMNEdge_' . $dataInputAssociation->getAttribute('id');
                 $bpmnEdge = $document->createElementNS($diagramNS, "{$diagramPrefix}:BPMNEdge");
-                $bpmnEdge->setAttribute("id", $edgeId);
-                $bpmnEdge->setAttribute("bpmnElement", $dataInputAssociation->getAttribute("id"));
+                $bpmnEdge->setAttribute('id', $edgeId);
+                $bpmnEdge->setAttribute('bpmnElement', $dataInputAssociation->getAttribute('id'));
 
                 $diNS = 'http://www.omg.org/spec/DD/20100524/DI';
-                $waypoint1 = $document->createElementNS($diNS, "di:waypoint");
-                $waypoint1->setAttribute("x", "100");
-                $waypoint1->setAttribute("y", "100");
+                $waypoint1 = $document->createElementNS($diNS, 'di:waypoint');
+                $waypoint1->setAttribute('x', '100');
+                $waypoint1->setAttribute('y', '100');
 
-                $waypoint2 = $document->createElementNS($diNS, "di:waypoint");
-                $waypoint2->setAttribute("x", "200");
-                $waypoint2->setAttribute("y", "200");
+                $waypoint2 = $document->createElementNS($diNS, 'di:waypoint');
+                $waypoint2->setAttribute('x', '200');
+                $waypoint2->setAttribute('y', '200');
 
                 $bpmnEdge->appendChild($waypoint1);
                 $bpmnEdge->appendChild($waypoint2);

@@ -518,6 +518,7 @@ class ImportProcess implements ShouldQueue
             return $new;
         } catch (\Exception $e) {
             Log::error('Import Screen: ' . $e->getMessage());
+
             return false;
         }
     }

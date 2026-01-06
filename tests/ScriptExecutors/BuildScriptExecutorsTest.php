@@ -8,7 +8,6 @@ use Tests\TestCase;
 
 class BuildScriptExecutorsTest extends TestCase
 {
-
     public function testBuildScriptExecutorsDockerfile()
     {
         $scriptExecutor = ScriptExecutor::factory()->create([
@@ -19,7 +18,7 @@ class BuildScriptExecutorsTest extends TestCase
         $code = $builder->getDockerfileContent($scriptExecutor);
 
         // Check the $code contains 'WORKDIR /opt/executor/src'
-        $expectedCode = <<<EOF
+        $expectedCode = <<<'EOF'
         WORKDIR /opt/executor/src
         RUN apt-get update && apt-get install -y libxml2-dev
         WORKDIR /app
