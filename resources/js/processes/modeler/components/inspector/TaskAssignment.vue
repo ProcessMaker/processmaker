@@ -127,14 +127,14 @@
       },
       assignmentLockGetter () {
         if (this.node.$type === 'bpmn:CallActivity') {
-          return _.get(this.node.config && JSON.parse(this.node.config), "assignmentLock") || false;
+          return _.get(this.node.config && this.safeJsonParse(this.node.config), "assignmentLock") || false;
         } else {
           return _.get(this.node, "assignmentLock") || false;
         }
       },
       allowReassignmentGetter () {
         if (this.node.$type === 'bpmn:CallActivity') {
-          return _.get(this.node.config && JSON.parse(this.node.config), "allowReassignment") || false;
+          return _.get(this.node.config && this.safeJsonParse(this.node.config), "allowReassignment") || false;
         } else {
           return _.get(this.node, "allowReassignment") || false;
         }
@@ -257,6 +257,22 @@
       },
     },
     methods: {
+      /**
+       * Safely parse JSON string, returning empty object on error
+       * @param {string} jsonString - The JSON string to parse
+       * @returns {object} - Parsed object or empty object if parsing fails
+       */
+      safeJsonParse(jsonString) {
+        if (!jsonString) {
+          return {};
+        }
+        try {
+          return JSON.parse(jsonString);
+        } catch (e) {
+          console.warn('Failed to parse JSON:', e);
+          return {};
+        }
+      },
       getConfigurableValue(configurable) {
         switch (configurable) {
           case 'LOCK_TASK_ASSIGNMENT':
@@ -264,7 +280,7 @@
           case 'ALLOW_REASSIGNMENT':
             return this.allowReassignmentGetter;
           default:
-            const config = this.node.config && JSON.parse(this.node.config) || {};
+            const config = this.node.config && this.safeJsonParse(this.node.config) || {};
             return config[window._.camelCase(configurable)] || false;
         }
       },
@@ -275,7 +291,7 @@
           case 'ALLOW_REASSIGNMENT':
             return this.allowReassignmentSetter(value);
           default:
-            const config = this.node.config && JSON.parse(this.node.config) || {};
+            const config = this.node.config && this.safeJsonParse(this.node.config) || {};
             config[window._.camelCase(configurable)] = value;
             this.$set(this.node, "config", JSON.stringify(config));
         }
@@ -303,9 +319,8 @@
        * Update assignmentLock property
        */
       assignmentLockSetter (value) {
-        console.log('assignmentLockSetter', value, this.node.$type);
         if (this.node.$type === 'bpmn:CallActivity') {
-          const config = this.node.config && JSON.parse(this.node.config) || {};
+          const config = this.node.config && this.safeJsonParse(this.node.config) || {};
           config.assignmentLock = value;
           this.$set(this.node, "config", JSON.stringify(config));
         } else {
@@ -317,7 +332,7 @@
        */
       allowReassignmentSetter (value) {
         if (this.node.$type === 'bpmn:CallActivity') {
-          const config = this.node.config && JSON.parse(this.node.config) || {};
+          const config = this.node.config && this.safeJsonParse(this.node.config) || {};
           config.allowReassignment = value;
           this.$set(this.node, "config", JSON.stringify(config));
         } else {
