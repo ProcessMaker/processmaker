@@ -44,18 +44,18 @@ export default {
   },
   methods: {
     getItemValue(item, column) {
-      // if key is a dot-separated string, get the nested value from the item
-      if (column.key.includes('.')) {
-        return column.key.split('.').reduce((val, part) => (val != null ? val[part] : undefined), item);
+      // Get value - handle dot-separated keys for nested properties
+      const value = column.key.includes(".")
+        ? column.key.split(".").reduce((val, part) => (val == null ? undefined : val[part]), item)
+        : item[column.key];
+
+      // Apply format function if provided
+      if (typeof column.format === "function") {
+        return column.format(value);
       }
 
-      if (typeof column.format === 'function') {
-        return column.format(item[column.key]);
-      }
-
-      return item[column.key];
+      return value;
     },
   },
 };
 </script>
-
