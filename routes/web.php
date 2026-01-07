@@ -86,6 +86,12 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
         // Logs - available when package-email-start-event or package-ai is installed
         if (hasPackage('package-email-start-event') || hasPackage('package-ai')) {
             Route::get('logs', [LogsController::class, 'index'])->name('admin.logs')->middleware('can:view-settings');
+            // Export route must be before the wildcard route
+            if (hasPackage('package-email-start-event')) {
+                Route::get('logs/export/csv', [ProcessMaker\Package\PackageEmailStartEvent\Http\Controllers\EmailListenerLogController::class, 'exportToCsv'])
+                    ->name('admin.logs.export.csv')
+                    ->middleware('can:view-settings');
+            }
             Route::get('logs/{any}', [LogsController::class, 'index'])->name('admin.logs-any')->middleware('can:view-settings')->where('any', '.*');
         }
     });
