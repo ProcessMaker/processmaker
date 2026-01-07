@@ -10,21 +10,21 @@
         class="tw-rounded-lg tw-px-3 tw-py-2 tw-text-base"
         :class="tabClasses('errors')"
       >
-        Error Logs
+        {{ $t('Error Logs') }}
       </RouterLink>
       <RouterLink
         to="/email/matched"
         class="tw-rounded-lg tw-px-3 tw-py-2 tw-text-base"
         :class="tabClasses('matched')"
       >
-        Matched Logs
+        {{ $t('Matched Logs') }}
       </RouterLink>
       <RouterLink
         to="/email/total"
         class="tw-rounded-lg tw-px-3 tw-py-2 tw-text-base"
         :class="tabClasses('total')"
       >
-        Total Logs
+        {{ $t('Total Logs') }}
       </RouterLink>
     </div>
 
@@ -38,14 +38,14 @@
         class="tw-rounded-lg tw-px-3 tw-py-2 tw-text-base"
         :class="tabClasses('design')"
       >
-        Design Mode Logs
+        {{ $t('Design Mode Logs') }}
       </RouterLink>
       <RouterLink
         to="/agents/execution"
         class="tw-rounded-lg tw-px-3 tw-py-2 tw-text-base"
         :class="tabClasses('execution')"
       >
-        Execution Logs
+        {{ $t('Execution Logs') }}
       </RouterLink>
     </div>
 
@@ -68,7 +68,7 @@
             tw-ring-0
             placeholder:tw-text-zinc-400
           "
-          placeholder="Search here"
+          :placeholder="$t('Search here')"
           :value="value"
           @input="onInput"
           @keypress="onKeypress"

@@ -12,7 +12,7 @@
         <div class="tw-flex tw-flex-col tw-flex-1 tw-min-h-0">
           <div class="tw-flex tw-items-center tw-justify-between tw-my-8 tw-shrink-0">
             <h2 class="tw-text-2xl tw-font-semibold tw-text-zinc-900">
-              {{ title }}
+              {{ $t(title) }}
             </h2>
             <div v-if="showExportButton">
               <a
