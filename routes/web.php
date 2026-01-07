@@ -8,6 +8,7 @@ use ProcessMaker\Http\Controllers\Admin\CssOverrideController;
 use ProcessMaker\Http\Controllers\Admin\DevLinkController;
 use ProcessMaker\Http\Controllers\Admin\GroupController;
 use ProcessMaker\Http\Controllers\Admin\LdapLogsController;
+use ProcessMaker\Http\Controllers\Admin\LogsController;
 use ProcessMaker\Http\Controllers\Admin\QueuesController;
 use ProcessMaker\Http\Controllers\Admin\ScriptExecutorController;
 use ProcessMaker\Http\Controllers\Admin\SettingsController;
@@ -81,6 +82,12 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
         // temporary, should be removed
         Route::get('security-logs/download/all', [ProcessMaker\Http\Controllers\Api\SecurityLogController::class, 'downloadForAllUsers'])->middleware('can:view-security-logs');
         Route::get('security-logs/download/{user}', [ProcessMaker\Http\Controllers\Api\SecurityLogController::class, 'downloadForUser'])->middleware('can:view-security-logs');
+
+        // Logs - available when package-email-start-event or package-ai is installed
+        if (hasPackage('package-email-start-event') || hasPackage('package-ai')) {
+            Route::get('logs', [LogsController::class, 'index'])->name('admin.logs')->middleware('can:view-settings');
+            Route::get('logs/{any}', [LogsController::class, 'index'])->name('admin.logs-any')->middleware('can:view-settings')->where('any', '.*');
+        }
     });
 
     Route::get('admin', [AdminController::class, 'index'])->name('admin.index');
