@@ -111,6 +111,14 @@ class SwitchTenant implements SwitchTenantTask
                     $config['root']
                 ));
             }
+            // URLs
+            if (isset($config['url'])) {
+                $this->setConfig('filesystems.disks.' . $disk . '.url', str_replace(
+                    $this->landlordConfig('app.url'),
+                    $tenant->config['app.url'],
+                    $config['url']
+                ));
+            }
         }
         $app->useStoragePath($newStoragePath);
 
