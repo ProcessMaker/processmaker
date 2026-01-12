@@ -1,8 +1,7 @@
 <template>
   <div
     class="
-      tw-flex-1 tw-overflow-auto tw-rounded-xl tw-border tw-border-gray-200
-      tw-shadow-md tw-shadow-zinc-200
+      tw-flex-1 tw-overflow-auto tw-rounded-xl tw-border tw-border-gray-200 tw-shadow-zinc-200
     "
   >
     <table class="tw-w-full tw-text-left tw-text-sm">
@@ -28,7 +27,14 @@
             :key="column.key"
             class="tw-px-6 tw-py-4 tw-text-gray-600 tw-border-b tw-border-gray-200 tw-whitespace-nowrap"
           >
-            {{ getItemValue(item, column) }}
+            <slot
+              :name="`cell-${column.key}`"
+              :value="getRawValue(item, column)"
+              :item="item"
+              :column="column"
+            >
+              {{ getItemValue(item, column) }}
+            </slot>
           </td>
         </tr>
       </tbody>
@@ -43,11 +49,14 @@ export default {
     data: { type: Array, required: true },
   },
   methods: {
-    getItemValue(item, column) {
-      // Get value - handle dot-separated keys for nested properties
-      const value = column.key.includes(".")
+    getRawValue(item, column) {
+      // Get raw value - handle dot-separated keys for nested properties
+      return column.key.includes(".")
         ? column.key.split(".").reduce((val, part) => (val == null ? undefined : val[part]), item)
         : item[column.key];
+    },
+    getItemValue(item, column) {
+      const value = this.getRawValue(item, column);
 
       // Apply format function if provided
       if (typeof column.format === "function") {

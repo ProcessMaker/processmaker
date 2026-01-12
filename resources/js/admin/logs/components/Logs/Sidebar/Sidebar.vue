@@ -1,6 +1,6 @@
 <template>
-  <aside class="tw-w-72 tw-shrink-0">
-    <div class="tw-rounded-xl tw-border tw-border-zinc-200 tw-p-3 tw-bg-white tw-h-screen">
+  <aside class="tw-w-72 tw-shrink-0 tw-h-full">
+    <div class="tw-rounded-xl tw-border tw-border-zinc-200 tw-p-3 tw-bg-white tw-h-full tw-overflow-y-auto">
       <div class="tw-px-2 tw-py-1 tw-text-xs tw-font-semibold tw-uppercase tw-text-zinc-500">
         Logs
       </div>

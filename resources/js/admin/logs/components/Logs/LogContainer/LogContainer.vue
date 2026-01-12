@@ -1,9 +1,9 @@
 <template>
-  <div class="tw-flex tw-gap-6">
-    <sidebar />
+  <div class="tw-flex tw-gap-3 tw-px-4 tw-h-full tw-min-h-0 tw-overflow-hidden">
+    <sidebar class="tw-shrink-0" />
 
-    <section class="tw-flex-1 tw-overflow-hidden">
-      <div class="tw-flex tw-flex-col tw-rounded-xl tw-border tw-border-zinc-200 tw-p-4 tw-bg-white tw-h-screen">
+    <section class="tw-flex-1 tw-min-w-0 tw-min-h-0 tw-overflow-hidden">
+      <div class="tw-flex tw-flex-col tw-rounded-xl tw-border tw-border-zinc-200 tw-p-4 tw-bg-white tw-h-full">
         <header-bar
           v-model="search"
           @search="onHandleSearch"
