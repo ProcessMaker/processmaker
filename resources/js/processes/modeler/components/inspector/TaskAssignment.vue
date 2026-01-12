@@ -126,18 +126,10 @@
         return this.$root.$children[0].process;
       },
       assignmentLockGetter () {
-        if (this.node.$type === 'bpmn:CallActivity') {
-          return _.get(this.node.config && this.safeJsonParse(this.node.config), "assignmentLock") || false;
-        } else {
-          return _.get(this.node, "assignmentLock") || false;
-        }
+        return _.get(this.node, "assignmentLock") || false;
       },
       allowReassignmentGetter () {
-        if (this.node.$type === 'bpmn:CallActivity') {
-          return _.get(this.node.config && this.safeJsonParse(this.node.config), "allowReassignment") || false;
-        } else {
-          return _.get(this.node, "allowReassignment") || false;
-        }
+        return _.get(this.node, "allowReassignment") || false;
       },
       assignedUserGetter () {
         let value = _.get(this.node, "assignedUsers");
@@ -280,7 +272,7 @@
           case 'ALLOW_REASSIGNMENT':
             return this.allowReassignmentGetter;
           default:
-            const config = this.node.config && this.safeJsonParse(this.node.config) || {};
+            const config = this.node.config && JSON.parse(this.node.config) || {};
             return config[window._.camelCase(configurable)] || false;
         }
       },
@@ -291,7 +283,7 @@
           case 'ALLOW_REASSIGNMENT':
             return this.allowReassignmentSetter(value);
           default:
-            const config = this.node.config && this.safeJsonParse(this.node.config) || {};
+            const config = this.node.config && JSON.parse(this.node.config) || {};
             config[window._.camelCase(configurable)] = value;
             this.$set(this.node, "config", JSON.stringify(config));
         }
@@ -319,25 +311,13 @@
        * Update assignmentLock property
        */
       assignmentLockSetter (value) {
-        if (this.node.$type === 'bpmn:CallActivity') {
-          const config = this.node.config && this.safeJsonParse(this.node.config) || {};
-          config.assignmentLock = value;
-          this.$set(this.node, "config", JSON.stringify(config));
-        } else {
-          this.$set(this.node, "assignmentLock", value);
-        }
+        this.$set(this.node, "assignmentLock", value);
       },
       /**
        * Update allowReassignment property
        */
       allowReassignmentSetter (value) {
-        if (this.node.$type === 'bpmn:CallActivity') {
-          const config = this.node.config && this.safeJsonParse(this.node.config) || {};
-          config.allowReassignment = value;
-          this.$set(this.node, "config", JSON.stringify(config));
-        } else {
-          this.$set(this.node, "allowReassignment", value);
-        }
+        this.$set(this.node, "allowReassignment", value);
       },
       /**
        * Update the event of the editer property
