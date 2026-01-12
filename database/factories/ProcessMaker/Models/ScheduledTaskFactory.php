@@ -38,4 +38,13 @@ class ScheduledTaskFactory extends Factory
             'configuration' => '{}',
         ];
     }
+
+    public function forToken(ProcessRequestToken $token): self
+    {
+        return $this->state([
+            'process_id' => $token->process_id,
+            'process_request_id' => $token->process_request_id,
+            'process_request_token_id' => $token->getKey(),
+        ]);
+    }
 }

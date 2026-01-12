@@ -35,7 +35,9 @@ class InboxRule extends ProcessMakerModel
     protected static function booted()
     {
         static::deleting(function (InboxRule $inboxRule) {
-            $inboxRule->savedSearch()->delete();
+            if (class_exists(SavedSearch::class)) {
+                $inboxRule->savedSearch()->delete();
+            }
         });
     }
 
