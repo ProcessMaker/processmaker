@@ -115,6 +115,8 @@ class DeleteCase
 
         ProcessRequest::query()
             ->whereIn('id', $requestIds)
+            ->get()
+            ->each
             ->delete();
     }
 
@@ -176,6 +178,8 @@ class DeleteCase
 
         InboxRule::query()
             ->whereIn('process_request_token_id', $tokenIds)
+            ->get()
+            ->each
             ->delete();
     }
 
