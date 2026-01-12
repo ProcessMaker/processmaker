@@ -55,7 +55,19 @@ class CaseController extends Controller
      *         response=204,
      *         description="success"
      *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
      *     @OA\Response(response=404, ref="#/components/responses/404"),
+     *     @OA\Response(
+     *         response=409,
+     *         description="Conflict"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     ),
      * )
      */
     public function destroy(string $case_number): JsonResponse
