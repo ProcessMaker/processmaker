@@ -35,7 +35,7 @@ class CaseDeleted implements SecurityLogEventInterface
     public function getData(): array
     {
         return [
-            'case_title' => $this->caseTitle,
+            'name' => $this->caseTitle,
             'case_number' => $this->caseNumber,
             'deleted_at' => Carbon::now(),
         ];
