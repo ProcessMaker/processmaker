@@ -21,9 +21,7 @@ class DeleteCase
             abort(404);
         }
 
-        // Get case title before deletion for event logging
         $caseTitle = $this->getCaseTitle($caseNumber);
-
         $tokenIds = $this->getRequestTokenIds($requestIds);
 
         DB::transaction(function () use ($caseNumber, $requestIds, $tokenIds) {
@@ -68,7 +66,7 @@ class DeleteCase
             return $caseStarted->case_title;
         }
 
-        // Get case title from the first ProcessRequest if CaseStarted doesn't exist
+        // If CaseStarted doesn't exist, get case title from the first ProcessRequest
         $firstRequest = ProcessRequest::query()
             ->where('case_number', $caseNumber)
             ->whereNull('parent_request_id')
