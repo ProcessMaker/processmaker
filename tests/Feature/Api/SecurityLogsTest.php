@@ -43,12 +43,14 @@ use ProcessMaker\Events\UserCreated;
 use ProcessMaker\Events\UserDeleted;
 use ProcessMaker\Events\UserRestored;
 use ProcessMaker\Events\UserUpdated;
+use ProcessMaker\Http\Controllers\Api\Actions\Cases\DeleteCase;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
@@ -246,6 +248,24 @@ class SecurityLogsTest extends TestCase
         } else {
             $this->assertCount(0, $collection);
         }
+    }
+
+    /**
+     * This tests Case Deleted
+     */
+    public function testCaseDeleted()
+    {
+        $caseNumber = 12345;
+
+        // Create a ProcessRequest with a case number
+        ProcessRequest::factory()
+            ->withCaseNumber($caseNumber)
+            ->create();
+
+        // Use the DeleteCase action to delete the case and dispatch the CaseDeleted event
+        (new DeleteCase)($caseNumber);
+
+        $this->checkAssertsSegurityLog('CaseDeleted', 'deleted_at');
     }
 
     /**
