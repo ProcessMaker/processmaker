@@ -9,6 +9,7 @@ use ProcessMaker\Events\ActivityReassignment;
 use ProcessMaker\Events\AuthClientCreated;
 use ProcessMaker\Events\AuthClientDeleted;
 use ProcessMaker\Events\AuthClientUpdated;
+use ProcessMaker\Events\CaseDeleted;
 use ProcessMaker\Events\CategoryCreated;
 use ProcessMaker\Events\CategoryDeleted;
 use ProcessMaker\Events\CategoryUpdated;
@@ -139,6 +140,7 @@ class EventServiceProvider extends ServiceProvider
             $this->app['events']->listen(AuthClientCreated::class, SecurityLogger::class);
             $this->app['events']->listen(AuthClientDeleted::class, SecurityLogger::class);
             $this->app['events']->listen(AuthClientUpdated::class, SecurityLogger::class);
+            $this->app['events']->listen(CaseDeleted::class, SecurityLogger::class);
             $this->app['events']->listen(CategoryCreated::class, SecurityLogger::class);
             $this->app['events']->listen(CategoryDeleted::class, SecurityLogger::class);
             $this->app['events']->listen(CategoryUpdated::class, SecurityLogger::class);
