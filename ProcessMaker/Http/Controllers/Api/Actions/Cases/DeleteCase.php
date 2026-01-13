@@ -48,6 +48,8 @@ class DeleteCase
             $this->deleteProcessRequestTokens($requestIds);
             $this->deleteProcessRequests($requestIds);
         });
+
+        $this->dispatchSavedSearchRecount();
     }
 
     private function getRequestIds(string $caseNumber): array
@@ -260,5 +262,21 @@ class DeleteCase
                 }
             })
             ->delete();
+    }
+
+    private function dispatchSavedSearchRecount(): void
+    {
+        if (!config('savedsearch.count', false)) {
+            return;
+        }
+
+        $jobClass = 'ProcessMaker\\Package\\SavedSearch\\Jobs\\RecountAllSavedSearches';
+        if (!class_exists($jobClass)) {
+            return;
+        }
+
+        DB::afterCommit(static function () use ($jobClass): void {
+            $jobClass::dispatch(['request', 'task']);
+        });
     }
 }
