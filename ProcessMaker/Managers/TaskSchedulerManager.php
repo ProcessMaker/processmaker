@@ -238,7 +238,6 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
             // Execute the task
             $this->executeTask($task, $config, $todayFormatted);
-
         } catch (\Throwable $ex) {
             Log::error('Failed Scheduled Task: ', [
                 'Task data' => print_r($task->getAttributes(), true),
