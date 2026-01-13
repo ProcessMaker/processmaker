@@ -134,9 +134,9 @@ trait ScriptDockerNayraTrait
             exec($docker . " stop {$instanceName}_nayra 2>&1 || true");
             exec($docker . " rm {$instanceName}_nayra 2>&1 || true");
             exec(
-                $docker . ' run -d --name '
-                . '-p ' . $this->getNayraPort() . ':8080 '
-                . $instanceName . '_nayra '
+                $docker . ' run -d '
+                . ($this->getNayraPort() !== 8080 ? '-p ' . $this->getNayraPort() . ':8080 ' : '')
+                . '--name ' . $instanceName . '_nayra '
                 . (config('app.nayra_docker_network')
                     ? '--network=' . config('app.nayra_docker_network') . ' '
                     : '')
