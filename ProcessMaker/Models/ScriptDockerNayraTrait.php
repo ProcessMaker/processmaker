@@ -130,12 +130,13 @@ trait ScriptDockerNayraTrait
         if ($status) {
             $this->bringUpNayraContainer();
         } else {
-
+            $isHost = config('app.nayra_docker_network') === 'host';
+            $portMapping = $isHost ? '-e PORT=' . $this->getNayraPort() . ' ' : '-p ' . $this->getNayraPort() . ':8080 ';
             exec($docker . " stop {$instanceName}_nayra 2>&1 || true");
             exec($docker . " rm {$instanceName}_nayra 2>&1 || true");
             exec(
                 $docker . ' run -d '
-                . ($this->getNayraPort() !== 8080 ? '-p ' . $this->getNayraPort() . ':8080 ' : '')
+                . ($this->getNayraPort() !== 8080 ? $portMapping : '')
                 . '--name ' . $instanceName . '_nayra '
                 . (config('app.nayra_docker_network')
                     ? '--network=' . config('app.nayra_docker_network') . ' '
