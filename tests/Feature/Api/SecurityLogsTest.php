@@ -49,6 +49,7 @@ use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
@@ -246,6 +247,24 @@ class SecurityLogsTest extends TestCase
         } else {
             $this->assertCount(0, $collection);
         }
+    }
+
+    /**
+     * This tests Case Deleted
+     */
+    public function testCaseDeleted()
+    {
+        $caseNumber = 12345;
+
+        ProcessRequest::factory()
+            ->withCaseNumber($caseNumber)
+            ->create();
+
+        $response = $this->apiCall('DELETE', route('api.cases.destroy', ['case_number' => $caseNumber]));
+
+        $response->assertStatus(204);
+
+        $this->checkAssertsSegurityLog('CaseDeleted', 'deleted_at');
     }
 
     /**
