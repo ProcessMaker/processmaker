@@ -18,6 +18,7 @@
       :total="dataPagination.total"
       :page="dataPagination.page"
       :pages="dataPagination.pages"
+      :per-page="dataPagination.perPage"
       @perPage="onPerPage"
       @go="onGo" />
   </div>
