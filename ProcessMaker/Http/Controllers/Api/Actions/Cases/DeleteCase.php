@@ -64,15 +64,15 @@ class DeleteCase
 
         if ($caseStarted) {
             return $caseStarted->case_title ?? "Case #{$caseNumber}";
-        }
-
-        // If CaseStarted doesn't exist, get case title from the first ProcessRequest
-        $firstRequest = ProcessRequest::query()
+        } else {
+            // If CaseStarted doesn't exist, get case title from the first ProcessRequest
+            $firstRequest = ProcessRequest::query()
             ->where('case_number', $caseNumber)
             ->whereNull('parent_request_id')
             ->first();
 
-        return $firstRequest?->case_title ?? "Case #{$caseNumber}";
+            return $firstRequest?->case_title ?? "Case #{$caseNumber}";
+        }
     }
 
     private function getRequestTokenIds(array $requestIds): array
