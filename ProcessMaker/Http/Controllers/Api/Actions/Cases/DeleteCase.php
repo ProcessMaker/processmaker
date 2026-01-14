@@ -63,7 +63,7 @@ class DeleteCase
             ->first();
 
         if ($caseStarted) {
-            return $caseStarted->case_title;
+            return $caseStarted->case_title ?? "Case #{$caseNumber}";
         }
 
         // If CaseStarted doesn't exist, get case title from the first ProcessRequest
