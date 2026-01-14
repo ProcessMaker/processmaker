@@ -12,7 +12,7 @@ class CaseDeleted implements SecurityLogEventInterface
     use Dispatchable;
     use FormatSecurityLogChanges;
 
-    private int $caseNumber;
+    private string $caseNumber;
 
     private string $caseTitle;
 
@@ -21,7 +21,7 @@ class CaseDeleted implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct(int $caseNumber, string $caseTitle)
+    public function __construct(string $caseNumber, string $caseTitle)
     {
         $this->caseNumber = $caseNumber;
         $this->caseTitle = $caseTitle;
