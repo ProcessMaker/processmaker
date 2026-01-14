@@ -23,7 +23,6 @@ trait ScriptDockerNayraTrait
 {
 
     private $schema = 'http';
-    public static $nayraPort = 8080;
 
     /**
      * Execute the script task using Nayra Docker.
@@ -82,7 +81,7 @@ trait ScriptDockerNayraTrait
     private function getNayraInstanceUrl()
     {
         $servers = self::getNayraAddresses();
-        return $this->schema . '://' . $servers[0] . ':' . static::$nayraPort;
+        return $this->schema . '://' . $servers[0] . ':' . $this->getNayraPort();
     }
 
     private function getDockerLogs($instanceName)
@@ -131,11 +130,14 @@ trait ScriptDockerNayraTrait
         if ($status) {
             $this->bringUpNayraContainer();
         } else {
-
+            $isHost = config('app.nayra_docker_network') === 'host';
+            $portMapping = $isHost ? '-e PORT=' . $this->getNayraPort() . ' ' : '-p ' . $this->getNayraPort() . ':8080 ';
             exec($docker . " stop {$instanceName}_nayra 2>&1 || true");
             exec($docker . " rm {$instanceName}_nayra 2>&1 || true");
             exec(
-                $docker . ' run -d --name ' . $instanceName . '_nayra '
+                $docker . ' run -d '
+                . ($this->getNayraPort() !== 8080 ? $portMapping : '')
+                . '--name ' . $instanceName . '_nayra '
                 . (config('app.nayra_docker_network')
                     ? '--network=' . config('app.nayra_docker_network') . ' '
                     : '')
@@ -321,5 +323,10 @@ trait ScriptDockerNayraTrait
                 throw new UnexpectedValueException('Could not create docker network');
             }
         }
+    }
+
+    private function getNayraPort()
+    {
+        return config('app.nayra_port', 8080);
     }
 }
