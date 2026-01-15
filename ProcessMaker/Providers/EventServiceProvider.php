@@ -64,6 +64,7 @@ use ProcessMaker\Events\UserDeleted;
 use ProcessMaker\Events\UserGroupMembershipUpdated;
 use ProcessMaker\Events\UserRestored;
 use ProcessMaker\Events\UserUpdated;
+use ProcessMaker\Listeners\CleanupNotificationsOnCaseDeleted;
 use ProcessMaker\Listeners\HandleActivityAssignedInterstitialRedirect;
 use ProcessMaker\Listeners\HandleActivityCompletedRedirect;
 use ProcessMaker\Listeners\HandleEndEventRedirect;
@@ -123,6 +124,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         GroupMembershipChanged::class => [
             InvalidatePermissionCacheOnGroupHierarchyChange::class,
+        ],
+        CaseDeleted::class => [
+            CleanupNotificationsOnCaseDeleted::class,
         ],
     ];
 
