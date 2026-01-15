@@ -38,14 +38,14 @@
         class="tw-rounded-lg tw-px-3 tw-py-2 tw-text-base"
         :class="tabClasses('design')"
       >
-        {{ $t('Design Mode Logs') }}
+        {{ $t('FlowGenie Studio Logs') }}
       </RouterLink>
       <RouterLink
         to="/agents/execution"
         class="tw-rounded-lg tw-px-3 tw-py-2 tw-text-base"
         :class="tabClasses('execution')"
       >
-        {{ $t('Execution Logs') }}
+        {{ $t('Runtime Logs') }}
       </RouterLink>
     </div>
 
@@ -83,6 +83,11 @@ export default {
   props: {
     value: { type: String, default: '' },
   },
+  data() {
+    return {
+      debounceTimer: null,
+    };
+  },
   computed: {
     isEmailCategory() {
       return this.$route.path.startsWith('/email');
@@ -100,6 +105,12 @@ export default {
       immediate: true,
     },
   },
+  beforeDestroy() {
+    // Clear debounce timer when component is destroyed
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+  },
   methods: {
     tabClasses(tab) {
       const currentRoute = this.$route.params.logType;
@@ -110,9 +121,24 @@ export default {
     },
     onInput(event) {
       this.$emit('input', event.target.value);
+      this.debouncedSearch();
+    },
+    debouncedSearch() {
+      // Clear existing timer
+      if (this.debounceTimer) {
+        clearTimeout(this.debounceTimer);
+      }
+      // Set new timer - wait 300ms after user stops typing
+      this.debounceTimer = setTimeout(() => {
+        this.$emit('search');
+      }, 300);
     },
     onKeypress(event) {
+      // Allow immediate search on Enter key
       if (event.charCode === 13) {
+        if (this.debounceTimer) {
+          clearTimeout(this.debounceTimer);
+        }
         this.$emit('search');
       }
     },
