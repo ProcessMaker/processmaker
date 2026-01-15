@@ -16,15 +16,38 @@ class CaseDeleted implements SecurityLogEventInterface
 
     private string $caseTitle;
 
+    private array $fileIds;
+
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(string $caseNumber, string $caseTitle)
+    public function __construct(string $caseNumber, string $caseTitle, array $fileIds = [])
     {
         $this->caseNumber = $caseNumber;
         $this->caseTitle = $caseTitle;
+        $this->fileIds = $fileIds;
+    }
+
+    /**
+     * Get the case number
+     *
+     * @return string
+     */
+    public function getCaseNumber(): string
+    {
+        return $this->caseNumber;
+    }
+
+    /**
+     * Get the file IDs associated with the deleted case
+     *
+     * @return array
+     */
+    public function getFileIds(): array
+    {
+        return $this->fileIds;
     }
 
     /**

@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers\Api\Actions\Cases;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\Events\CaseDeleted;
 use ProcessMaker\Models\CaseStarted;
+use ProcessMaker\Models\Media;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\TaskDraft;
@@ -23,6 +24,7 @@ class DeleteCase
 
         $caseTitle = $this->getCaseTitle($caseNumber);
         $tokenIds = $this->getRequestTokenIds($requestIds);
+        $fileIds = $this->getFileIdsForRequests($requestIds);
 
         DB::transaction(function () use ($caseNumber, $requestIds, $tokenIds) {
             $this->deleteInboxRuleLogs($tokenIds);
@@ -43,7 +45,7 @@ class DeleteCase
             $this->deleteProcessRequests($requestIds);
         });
 
-        CaseDeleted::dispatch($caseNumber, $caseTitle);
+        CaseDeleted::dispatch($caseNumber, $caseTitle, $fileIds);
 
         $this->dispatchSavedSearchRecount();
     }
@@ -95,6 +97,19 @@ class DeleteCase
 
         return TaskDraft::query()
             ->whereIn('task_id', $tokenIds)
+            ->pluck('id')
+            ->all();
+    }
+
+    private function getFileIdsForRequests(array $requestIds): array
+    {
+        if ($requestIds === []) {
+            return [];
+        }
+
+        return Media::query()
+            ->where('model_type', ProcessRequest::class)
+            ->whereIn('model_id', $requestIds)
             ->pluck('id')
             ->all();
     }
