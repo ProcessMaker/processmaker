@@ -20,7 +20,12 @@
         <tr
           v-for="(item, idx) in data"
           :key="idx"
-          class="tw-border-t tw-border-zinc-200"
+          class="tw-border-t tw-border-zinc-200 tw-transition-colors"
+          :class="[
+            clickable ? 'tw-cursor-pointer hover:tw-bg-blue-50' : '',
+            isSelected(item) ? 'tw-bg-blue-50' : ''
+          ]"
+          @click="handleRowClick(item, idx)"
         >
           <td
             v-for="column in columns"
@@ -47,6 +52,9 @@ export default {
   props: {
     columns: { type: Array, required: true },
     data: { type: Array, required: true },
+    clickable: { type: Boolean, default: false },
+    selectedItem: { type: Object, default: null },
+    itemKey: { type: String, default: 'id' },
   },
   methods: {
     getRawValue(item, column) {
@@ -64,6 +72,15 @@ export default {
       }
 
       return value;
+    },
+    handleRowClick(item, index) {
+      if (this.clickable) {
+        this.$emit('row-click', item, index);
+      }
+    },
+    isSelected(item) {
+      if (!this.selectedItem) return false;
+      return item[this.itemKey] === this.selectedItem[this.itemKey];
     },
   },
 };

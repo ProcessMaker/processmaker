@@ -35,6 +35,10 @@
       v-else
       :columns="columns"
       :data="data"
+      :clickable="isAgentCategory"
+      :selected-item="selectedSession"
+      item-key="session_id"
+      @row-click="handleRowClick"
     >
       <!-- Custom case_number cell with link to case -->
       <template #cell-case_number="{ value }">
@@ -131,6 +135,8 @@ export default {
       totalPages: 1,
       perPage: 15,
       loading: false,
+      selectedSession: null,
+      currentSearch: '',
     };
   },
   computed: {
@@ -215,15 +221,20 @@ export default {
       }
       return `/api/1.1/email-start-event/logs/${this.logType}`;
     },
+    isAgentCategory() {
+      return this.category === 'agents';
+    },
   },
   watch: {
     category: {
       handler() {
+        this.clearSelection();
         this.resetAndFetch();
       },
     },
     logType: {
       handler() {
+        this.clearSelection();
         this.resetAndFetch();
       },
       immediate: true,
@@ -234,6 +245,7 @@ export default {
       this.page = 1;
       this.perPage = 15;
       this.totalPages = 1;
+      this.currentSearch = '';
       this.fetchData();
     },
     async fetchData(params = {}) {
@@ -263,10 +275,14 @@ export default {
     },
     handlePageChange(newPage) {
       this.page = newPage;
-      this.fetchData();
+      this.fetchData({ search: this.currentSearch });
     },
     refresh(params = {}) {
       this.page = 1;
+      // Store search for pagination
+      if (params.search !== undefined) {
+        this.currentSearch = params.search;
+      }
       this.fetchData(params);
     },
     getStatusClasses(status) {
@@ -284,6 +300,16 @@ export default {
         processing: this.$t('Processing'),
       };
       return statusLabels[status] || status;
+    },
+    handleRowClick(item) {
+      if (this.isAgentCategory) {
+        this.selectedSession = item;
+        this.$emit('session-selected', item);
+      }
+    },
+    clearSelection() {
+      this.selectedSession = null;
+      this.$emit('session-selected', null);
     },
   },
 };
