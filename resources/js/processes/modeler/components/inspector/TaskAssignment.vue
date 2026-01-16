@@ -249,22 +249,6 @@
       },
     },
     methods: {
-      /**
-       * Safely parse JSON string, returning empty object on error
-       * @param {string} jsonString - The JSON string to parse
-       * @returns {object} - Parsed object or empty object if parsing fails
-       */
-      safeJsonParse(jsonString) {
-        if (!jsonString) {
-          return {};
-        }
-        try {
-          return JSON.parse(jsonString);
-        } catch (e) {
-          console.warn('Failed to parse JSON:', e);
-          return {};
-        }
-      },
       getConfigurableValue(configurable) {
         switch (configurable) {
           case 'LOCK_TASK_ASSIGNMENT':
