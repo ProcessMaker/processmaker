@@ -28,7 +28,7 @@ export default {
         const response = await getReassignUsersApi(
           filter,
           this.task?.id,
-          this?.formData,
+          this.task?.request_data,
           this.currentTaskUserId
         );
 

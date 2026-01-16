@@ -126,10 +126,10 @@
         return this.$root.$children[0].process;
       },
       assignmentLockGetter () {
-        return _.get(this.node, "assignmentLock");
+        return _.get(this.node, "assignmentLock") || false;
       },
       allowReassignmentGetter () {
-        return _.get(this.node, "allowReassignment");
+        return _.get(this.node, "allowReassignment") || false;
       },
       assignedUserGetter () {
         let value = _.get(this.node, "assignedUsers");

@@ -133,6 +133,7 @@
 @endif
 
 @yield('js')
+@stack('scripts')
 
 @isset($addons)
   @foreach ($addons as $addon)

@@ -254,10 +254,10 @@ class TaskControllerTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user);
 
-        $comments = "This is a comment";
+        $comments = 'This is a comment';
 
         $task = ProcessRequestToken::factory()->create([
-            "comments" => $comments
+            'comments' => $comments,
         ]);
 
         $this->assertEquals($comments, $task->comments);
