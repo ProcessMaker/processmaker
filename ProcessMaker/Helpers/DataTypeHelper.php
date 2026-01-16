@@ -10,6 +10,9 @@ class DataTypeHelper
     {
         if (is_string($value)) {
             if (strlen($value) > 5) {
+                if (!preg_match('/\d{4}-\d{2}-\d{2}/', $value)) {
+                    return false;
+                }
                 try {
                     $parsed = Carbon::parse($value);
                     if ($parsed->isMidnight()) {
