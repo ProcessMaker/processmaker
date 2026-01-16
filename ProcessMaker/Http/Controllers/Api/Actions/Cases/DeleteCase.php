@@ -35,6 +35,7 @@ class DeleteCase
             $this->deleteTaskDraftMedia($draftIds);
             $this->deleteTaskDrafts($tokenIds);
             $this->deleteComments($caseNumber, $requestIds, $tokenIds);
+            $this->deleteNotifications($requestIds);
             $this->deleteRequestMedia($requestIds);
             $this->deleteCaseNumbers($requestIds);
             $this->deleteCasesStarted($caseNumber);

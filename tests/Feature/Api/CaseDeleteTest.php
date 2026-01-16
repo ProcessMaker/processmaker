@@ -12,6 +12,7 @@ use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\InboxRule;
 use ProcessMaker\Models\InboxRuleLog;
 use ProcessMaker\Models\Media;
+use ProcessMaker\Models\Notification;
 use ProcessMaker\Models\ProcessAbeRequestToken;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestLock;
@@ -150,6 +151,70 @@ class CaseDeleteTest extends TestCase
         if (Schema::hasTable('ellucian_ethos_sync_global_task_list')) {
             $this->assertDatabaseMissing('ellucian_ethos_sync_global_task_list', ['process_request_token_id' => $token->id]);
         }
+    }
+
+    public function testDeleteCaseRemovesCaseNotifications(): void
+    {
+        $caseNumber = 13579;
+        $request = ProcessRequest::factory()
+            ->withCaseNumber($caseNumber)
+            ->create();
+        $otherRequest = ProcessRequest::factory()
+            ->withCaseNumber($caseNumber + 1)
+            ->create();
+
+        $notificationTypes = [
+            'COMMENT',
+            'FILE_SHARED',
+            'TASK_CREATED',
+            'TASK_COMPLETED',
+            'TASK_REASSIGNED',
+        ];
+
+        $deletedNotificationIds = [];
+        foreach ($notificationTypes as $type) {
+            $deletedNotificationIds[] = Notification::factory()->create([
+                'notifiable_type' => get_class($this->user),
+                'notifiable_id' => $this->user->getKey(),
+                'data' => json_encode([
+                    'type' => $type,
+                    'request_id' => $request->id,
+                    'url' => "/requests/{$request->id}",
+                ]),
+                'url' => "/requests/{$request->id}",
+            ])->id;
+        }
+
+        $keptDifferentRequest = Notification::factory()->create([
+            'notifiable_type' => get_class($this->user),
+            'notifiable_id' => $this->user->getKey(),
+            'data' => json_encode([
+                'type' => 'TASK_CREATED',
+                'request_id' => $otherRequest->id,
+                'url' => "/requests/{$otherRequest->id}",
+            ]),
+            'url' => "/requests/{$otherRequest->id}",
+        ]);
+
+        $keptDifferentType = Notification::factory()->create([
+            'notifiable_type' => get_class($this->user),
+            'notifiable_id' => $this->user->getKey(),
+            'data' => json_encode([
+                'type' => 'MESSAGE',
+                'request_id' => $request->id,
+                'url' => "/requests/{$request->id}",
+            ]),
+            'url' => "/requests/{$request->id}",
+        ]);
+
+        $response = $this->apiCall('DELETE', route('api.cases.destroy', ['case_number' => $caseNumber]));
+
+        $response->assertStatus(204);
+        foreach ($deletedNotificationIds as $notificationId) {
+            $this->assertDatabaseMissing('notifications', ['id' => $notificationId]);
+        }
+        $this->assertDatabaseHas('notifications', ['id' => $keptDifferentRequest->id]);
+        $this->assertDatabaseHas('notifications', ['id' => $keptDifferentType->id]);
     }
 
     public function testDeleteCaseReturnsNotFoundWhenMissing(): void
