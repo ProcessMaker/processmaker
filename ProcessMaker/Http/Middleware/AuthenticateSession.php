@@ -12,7 +12,7 @@ class AuthenticateSession extends BaseAuthenticateSession
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param  Closure  $next
      *
      * @return mixed
      * @throws \Illuminate\Auth\AuthenticationException
@@ -42,7 +42,7 @@ class AuthenticateSession extends BaseAuthenticateSession
             $this->storePasswordHashInSession($request);
         }
 
-        if ($request->session()->get('password_hash_' . $this->auth->getDefaultDriver()) !== $request->user()->getAuthPassword()) {
+        if ($request->session()->get('password_hash_' . $this->auth->getDefaultDriver()) !== $this->guard()->hashPasswordForCookie($request->user()->getAuthPassword())) {
             $this->logout($request);
         }
 
