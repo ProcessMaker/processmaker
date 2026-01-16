@@ -11,6 +11,7 @@ use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\InboxRule;
 use ProcessMaker\Models\InboxRuleLog;
 use ProcessMaker\Models\Media;
+use ProcessMaker\Models\Notification;
 use ProcessMaker\Models\ProcessAbeRequestToken;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestLock;
@@ -197,6 +198,26 @@ trait DeletesCaseRecords
                     });
                 }
             })
+            ->delete();
+    }
+
+    private function deleteNotifications(array $requestIds): void
+    {
+        if ($requestIds === []) {
+            return;
+        }
+
+        $notificationTypes = [
+            'COMMENT',
+            'FILE_SHARED',
+            'TASK_CREATED',
+            'TASK_COMPLETED',
+            'TASK_REASSIGNED',
+        ];
+
+        Notification::query()
+            ->whereIn('data->request_id', $requestIds)
+            ->whereIn('data->type', $notificationTypes)
             ->delete();
     }
 }
