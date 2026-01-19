@@ -992,6 +992,60 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     }
 
     /**
+     * Get user IDs from process variables for task assignment.
+     *
+     * Extracts user IDs and group IDs from form data based on the activity's
+     * assignedUsers and assignedGroups properties. Retrieves all users from
+     * specified groups (including subgroups recursively) and combines them
+     * with directly assigned users.
+     *
+     * Used when assignment rule is 'process_variable'.
+     *
+     * @param array $form_data Form data containing process variable values.
+     *                         Keys must match activity's assignedUsers and
+     *                         assignedGroups properties. Values must be arrays.
+     *
+     * @return array Unique numeric user IDs (direct users + users from groups).
+     */
+    public function getUsersFromProcessVariable(array $form_data)
+    {
+        $activity = $this->getBpmnDefinition()->getBpmnElementInstance();
+        $assignedUsers = $activity->getProperty('assignedUsers', null);
+        $assignedGroups = $activity->getProperty('assignedGroups', null);
+
+        $usersIds = [];
+        $groupsIds = [];
+
+        // Validate and get user IDs from form_data
+        if ($assignedUsers && isset($form_data[$assignedUsers]) && is_array($form_data[$assignedUsers])) {
+            $usersIds = $form_data[$assignedUsers];
+        }
+
+        // Validate and get group IDs from form_data
+        if ($assignedGroups && isset($form_data[$assignedGroups]) && is_array($form_data[$assignedGroups])) {
+            $groupsIds = $form_data[$assignedGroups];
+        }
+
+        // Get users from groups using the Process model method
+        $usersFromGroups = [];
+        if (!empty($groupsIds) && $this->process) {
+            // Use the getConsolidatedUsers method from the Process model
+            // This method gets users from groups including subgroups recursively
+            $this->process->getConsolidatedUsers($groupsIds, $usersFromGroups);
+        }
+
+        // Combine direct users with users from groups
+        $allUserIds = array_unique(array_merge($usersIds, $usersFromGroups));
+
+        // Convert to numeric array and filter valid values
+        $allUserIds = array_values(array_filter($allUserIds, function ($id) {
+            return !empty($id) && is_numeric($id) && $id > 0;
+        }));
+
+        return $allUserIds;
+    }
+
+    /**
      * Get the assignees for the token.
      *
      * @param array $assignments
