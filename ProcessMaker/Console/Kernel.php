@@ -25,7 +25,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('bpmn:timer')
                  ->everyMinute()
                  ->onOneServer()
-                 ->withoutOverlapping(5);
+                 ->withoutOverlapping(config('app.scheduler.bpmn_timer_overlap_minutes', 5));
 
         $schedule->command('processmaker:sync-recommendations --queue')
                  ->daily()

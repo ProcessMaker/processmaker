@@ -41,6 +41,17 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
     protected $registerStartEvents = false;
 
     /**
+     * Timeout in minutes for stale claimed tasks.
+     * If a task has been claimed for longer than this, it will be released.
+     */
+    private int $claimTimeoutMinutes;
+
+    public function __construct()
+    {
+        $this->claimTimeoutMinutes = (int) config('app.scheduler.claim_timeout_minutes', 5);
+    }
+
+    /**
      * Removes from the process_request_lock table all locks that are active more
      * time that the threshold configured with BPMN_ACTIONS_MAX_LOCK_TIME env. variable
      */
@@ -134,12 +145,6 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
     }
 
     /**
-     * Timeout in minutes for stale claimed tasks.
-     * If a task has been claimed for longer than this, it will be released.
-     */
-    const CLAIM_TIMEOUT_MINUTES = 5;
-
-    /**
      * Checks the schedule_tasks table to execute jobs.
      * Uses atomic claim per task to prevent duplicate executions while maintaining
      * the original selection logic (nextDate calculation).
@@ -173,7 +178,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      */
     private function releaseStaleClaimedTasks(): void
     {
-        $staleThreshold = Carbon::now()->subMinutes(self::CLAIM_TIMEOUT_MINUTES);
+        $staleThreshold = Carbon::now()->subMinutes($this->claimTimeoutMinutes);
 
         ScheduledTask::whereNotNull('claimed_by')
             ->where('claimed_at', '<', $staleThreshold)
