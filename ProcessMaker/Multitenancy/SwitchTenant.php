@@ -45,6 +45,11 @@ class SwitchTenant implements SwitchTenantTask
         $app->extend(BroadcastManager::class, function ($manager, $app) use ($tenant) {
             return new TenantAwareBroadcastManager($app, $tenant->id);
         });
+
+        // Setup tenant-specific route cache. This is needed for plugins.
+        if ($app->routesAreCached()) {
+            Env::getRepository()->set('APP_ROUTES_CACHE', storage_path('routes-v7.php'));
+        }
     }
 
     /**

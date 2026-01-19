@@ -33,6 +33,10 @@ class PluginServiceProvider extends ServiceProvider
         $pluginPaths = glob($pluginsFolder . '/*', GLOB_ONLYDIR);
 
         foreach ($pluginPaths as $pluginPath) {
+            // Ignore plugins that start with _
+            if (str_starts_with(basename($pluginPath), '_')) {
+                continue;
+            }
             $this->loadPlugin($pluginPath);
         }
     }
@@ -90,6 +94,11 @@ class PluginServiceProvider extends ServiceProvider
         }
 
         $loader = require_once $autoloadPath;
+        if ($loader === true) {
+            // Already loaded and presumably registered
+            return;
+        }
+
         $psr4Namespaces = Arr::get($composerJson, 'autoload.psr-4', []);
 
         foreach ($psr4Namespaces as $namespace => $path) {
