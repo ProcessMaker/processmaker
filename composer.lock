@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "788c34146e8d9316685e88e3c7b882fb",
+    "content-hash": "1bcdd3e96542db6e22debb48e1edffb0",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -604,25 +604,26 @@
         },
         {
             "name": "darkaonline/l5-swagger",
-            "version": "10.0.0",
+            "version": "9.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DarkaOnLine/L5-Swagger.git",
-                "reference": "51c1f6b0cc27ec2250caa6126ccf332a970cda0a"
+                "reference": "2c26427f8c41db8e72232415e7287313e6b6a2e2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DarkaOnLine/L5-Swagger/zipball/51c1f6b0cc27ec2250caa6126ccf332a970cda0a",
-                "reference": "51c1f6b0cc27ec2250caa6126ccf332a970cda0a",
+                "url": "https://api.github.com/repos/DarkaOnLine/L5-Swagger/zipball/2c26427f8c41db8e72232415e7287313e6b6a2e2",
+                "reference": "2c26427f8c41db8e72232415e7287313e6b6a2e2",
                 "shasum": ""
             },
             "require": {
+                "doctrine/annotations": "^1.0 || ^2.0",
                 "ext-json": "*",
-                "laravel/framework": "^12.1 || ^11.44",
+                "laravel/framework": "^12.0 || ^11.0",
                 "php": "^8.2",
                 "swagger-api/swagger-ui": ">=5.18.3",
                 "symfony/yaml": "^5.0 || ^6.0 || ^7.0",
-                "zircote/swagger-php": "^5.7"
+                "zircote/swagger-php": "^5.0.0"
             },
             "require-dev": {
                 "mockery/mockery": "1.*",
@@ -672,7 +673,7 @@
             ],
             "support": {
                 "issues": "https://github.com/DarkaOnLine/L5-Swagger/issues",
-                "source": "https://github.com/DarkaOnLine/L5-Swagger/tree/10.0.0"
+                "source": "https://github.com/DarkaOnLine/L5-Swagger/tree/9.0.1"
             },
             "funding": [
                 {
@@ -680,7 +681,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-01-05T10:05:11+00:00"
+            "time": "2025-02-28T06:25:02+00:00"
         },
         {
             "name": "dasprid/enum",
@@ -873,6 +874,83 @@
                 "source": "https://github.com/dflydev/dflydev-dot-access-data/tree/v3.0.3"
             },
             "time": "2024-07-08T12:26:09+00:00"
+        },
+        {
+            "name": "doctrine/annotations",
+            "version": "2.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/doctrine/annotations.git",
+                "reference": "901c2ee5d26eb64ff43c47976e114bf00843acf7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/doctrine/annotations/zipball/901c2ee5d26eb64ff43c47976e114bf00843acf7",
+                "reference": "901c2ee5d26eb64ff43c47976e114bf00843acf7",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/lexer": "^2 || ^3",
+                "ext-tokenizer": "*",
+                "php": "^7.2 || ^8.0",
+                "psr/cache": "^1 || ^2 || ^3"
+            },
+            "require-dev": {
+                "doctrine/cache": "^2.0",
+                "doctrine/coding-standard": "^10",
+                "phpstan/phpstan": "^1.10.28",
+                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5",
+                "symfony/cache": "^5.4 || ^6.4 || ^7",
+                "vimeo/psalm": "^4.30 || ^5.14"
+            },
+            "suggest": {
+                "php": "PHP 8.0 or higher comes with attributes, a native replacement for annotations"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Doctrine\\Common\\Annotations\\": "lib/Doctrine/Common/Annotations"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Guilherme Blanco",
+                    "email": "guilhermeblanco@gmail.com"
+                },
+                {
+                    "name": "Roman Borschel",
+                    "email": "roman@code-factory.org"
+                },
+                {
+                    "name": "Benjamin Eberlei",
+                    "email": "kontakt@beberlei.de"
+                },
+                {
+                    "name": "Jonathan Wage",
+                    "email": "jonwage@gmail.com"
+                },
+                {
+                    "name": "Johannes Schmitt",
+                    "email": "schmittjoh@gmail.com"
+                }
+            ],
+            "description": "Docblock Annotations Parser",
+            "homepage": "https://www.doctrine-project.org/projects/annotations.html",
+            "keywords": [
+                "annotations",
+                "docblock",
+                "parser"
+            ],
+            "support": {
+                "issues": "https://github.com/doctrine/annotations/issues",
+                "source": "https://github.com/doctrine/annotations/tree/2.0.2"
+            },
+            "abandoned": true,
+            "time": "2024-09-05T10:17:24+00:00"
         },
         {
             "name": "doctrine/dbal",
@@ -15208,7 +15286,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.5"
+        "php": "^8.4"
     },
     "platform-dev": {},
     "plugin-api-version": "2.9.0"
