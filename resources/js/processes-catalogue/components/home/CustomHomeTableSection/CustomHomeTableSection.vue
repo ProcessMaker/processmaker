@@ -112,6 +112,7 @@ const hookData = async () => {
 
 const onPerPage = async (perPage) => {
   dataPagination.value.perPage = perPage;
+  dataPagination.value.page = 1;
   await hookData();
 };
 
