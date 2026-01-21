@@ -351,36 +351,361 @@ if (window.Processmaker && window.Processmaker.broadcasting) {
 
 if (userID) {
   // Session timeout
+  const sessionChannelName = "pm-session-sync";
+  const sessionLeaderKey = "pm:session:leader";
+  const sessionStateKey = "pm:session:state";
+  const sessionWarningKey = "pm:session:warning";
+  const sessionMessageKey = "pm:session:message";
+  const sessionTabId = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  const leaderHeartbeatMs = 4000;
+  const leaderTtlMs = 8000;
+  const sessionDebugEnabled = localStorage.getItem("pm:session:debug") === "1";
+  const sessionDebugLog = (...args) => {
+    if (sessionDebugEnabled && !isProd) {
+      console.info("[SessionSync]", `[tab:${sessionTabId}]`, ...args);
+    }
+  };
+
   const timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]")?.content;
   window.ProcessMaker.AccountTimeoutLength = parseInt(eval(document.head.querySelector("meta[name=\"timeout-length\"]")?.content));
-  window.ProcessMaker.AccountTimeoutWarnSeconds = parseInt(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]")?.content);
+  const warnSeconds = parseInt(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]")?.content);
+  window.ProcessMaker.AccountTimeoutWarnSeconds = Number.isNaN(warnSeconds) ? 0 : warnSeconds;
+  window.ProcessMaker.AccountTimeoutWarnMinutes = window.ProcessMaker.AccountTimeoutWarnSeconds / 60;
   window.ProcessMaker.AccountTimeoutEnabled = document.head.querySelector("meta[name=\"timeout-enabled\"]") ? parseInt(document.head.querySelector("meta[name=\"timeout-enabled\"]")?.content) : 1;
+  sessionDebugLog("worker:init", { timeoutScript });
   window.ProcessMaker.AccountTimeoutWorker = new Worker(timeoutScript);
+  sessionDebugLog("worker:created");
 
-  const payloadAccountTimeoutWorker = {
+  const readStorageJson = (key) => {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : null;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const writeStorageJson = (key, value) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      // ignore storage failures (private mode or disabled)
+    }
+  };
+
+  const removeStorageKey = (key) => {
+    try {
+      localStorage.removeItem(key);
+    } catch (error) {
+      // ignore storage failures (private mode or disabled)
+    }
+  };
+
+  let sessionState = {
     timeout: window.ProcessMaker.AccountTimeoutLength,
-    warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds,
-    enabled: window.ProcessMaker.AccountTimeoutEnabled,
+    startedAt: Date.now(),
+  };
+
+  const refreshSessionStateFromStorage = () => {
+    const storedSessionState = readStorageJson(sessionStateKey);
+    if (storedSessionState?.timeout && storedSessionState?.startedAt) {
+      const storedTimeout = Number(storedSessionState.timeout);
+      const storedStartedAt = Number(storedSessionState.startedAt);
+      const elapsedMinutes = (Date.now() - storedStartedAt) / 60000;
+      if (storedTimeout > 0 && elapsedMinutes < storedTimeout) {
+        sessionState = storedSessionState;
+      } else {
+        sessionDebugLog("session-state:stale", { storedSessionState, elapsedMinutes });
+        writeStorageJson(sessionStateKey, sessionState);
+      }
+    } else {
+      writeStorageJson(sessionStateKey, sessionState);
+    }
+    sessionDebugLog("session-state:refresh", sessionState);
+    return sessionState;
+  };
+
+  refreshSessionStateFromStorage();
+
+  const setSessionState = (timeoutSeconds) => {
+    sessionState = {
+      timeout: timeoutSeconds,
+      startedAt: Date.now(),
+    };
+    writeStorageJson(sessionStateKey, sessionState);
+    sessionDebugLog("session-state", sessionState);
+  };
+
+  let warningState = readStorageJson(sessionWarningKey);
+
+  const refreshWarningStateFromStorage = () => {
+    const storedWarningState = readStorageJson(sessionWarningKey);
+    if (storedWarningState?.time && storedWarningState?.ts) {
+      warningState = storedWarningState;
+    } else {
+      warningState = null;
+    }
+    sessionDebugLog("warning-state:refresh", warningState);
+    return warningState;
+  };
+
+  const setWarningState = (timeSeconds) => {
+    warningState = {
+      time: timeSeconds,
+      ts: Date.now(),
+    };
+    writeStorageJson(sessionWarningKey, warningState);
+    sessionDebugLog("warning-state:set", warningState);
+  };
+
+  const clearWarningState = () => {
+    warningState = null;
+    removeStorageKey(sessionWarningKey);
+    sessionDebugLog("warning-state:clear");
+  };
+
+  const sessionChannel = "BroadcastChannel" in window ? new BroadcastChannel(sessionChannelName) : null;
+
+  const broadcastSessionEvent = (type, data = {}) => {
+    const message = {
+      id: `${sessionTabId}-${Date.now()}`,
+      type,
+      data,
+      from: sessionTabId,
+      ts: Date.now(),
+    };
+
+    sessionDebugLog("broadcast", message);
+    writeStorageJson(sessionMessageKey, message);
+    if (sessionChannel) {
+      sessionChannel.postMessage(message);
+    } else {
+      // storage already written above
+    }
+  };
+
+  const getLeader = () => readStorageJson(sessionLeaderKey);
+
+  const writeLeader = () => {
+    writeStorageJson(sessionLeaderKey, {
+      tabId: sessionTabId,
+      ts: Date.now(),
+    });
+    sessionDebugLog("leader:claim", { tabId: sessionTabId });
+  };
+
+  const isLeader = () => {
+    const leader = getLeader();
+    return document.visibilityState === "visible"
+      && !!leader
+      && leader.tabId === sessionTabId
+      && Date.now() - leader.ts < leaderTtlMs;
+  };
+
+  let workerStarted = false;
+  const ensureWorkerRunning = (reason) => {
+    if (workerStarted) {
+      return;
+    }
+    workerStarted = true;
+    refreshSessionStateFromStorage();
+    refreshWarningStateFromStorage();
+    sessionDebugLog("worker:ensure", { reason, sessionState });
+    startTimeoutWorker(sessionState.timeout);
+    showWarningIfActive();
+  };
+
+  const markActivity = (source) => {
+    const timeout = window.ProcessMaker.AccountTimeoutLength;
+    setSessionState(timeout);
+    clearWarningState();
+    broadcastSessionEvent("activity", { timeout, source });
+    sessionDebugLog("activity", { source, timeout });
+    if (isLeader()) {
+      ensureWorkerRunning(`activity:${source}`);
+    }
+  };
+
+  const getRemainingTimeout = (timeoutMinutes) => {
+    const elapsedMinutes = (Date.now() - sessionState.startedAt) / 60000;
+    const remaining = timeoutMinutes - elapsedMinutes;
+    return Math.max(0, remaining);
+  };
+
+  const getRemainingWarningTime = () => {
+    if (!warningState?.time || !warningState?.ts) {
+      return 0;
+    }
+    const elapsedSeconds = Math.floor((Date.now() - warningState.ts) / 1000);
+    return Math.max(0, warningState.time - elapsedSeconds);
+  };
+
+  const startTimeoutWorker = (timeoutSeconds) => {
+    const remaining = getRemainingTimeout(timeoutSeconds);
+    sessionDebugLog("worker:start", { timeoutSeconds, remaining });
+    if (remaining <= 0) {
+      broadcastSessionEvent("expired");
+      window.location = "/logout?timeout=true";
+      return;
+    }
+
+    window.ProcessMaker.AccountTimeoutWorker.postMessage({
+      method: "start",
+      data: {
+        timeout: remaining,
+        warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds,
+        enabled: window.ProcessMaker.AccountTimeoutEnabled,
+      },
+    });
+  };
+
+  const handleSessionMessage = (message) => {
+    if (!message || message.from === sessionTabId) {
+      return;
+    }
+
+    sessionDebugLog("receive", message);
+    if (message.type === "warning") {
+      const time = Number(message.data?.time);
+      if (time) {
+        setWarningState(time);
+      }
+      if (!isLeader() && window.ProcessMaker.closeSessionModal) {
+        window.ProcessMaker.closeSessionModal();
+      }
+      return;
+    }
+
+    if (message.type === "renewed" || message.type === "started" || message.type === "activity") {
+      const timeout = Number(message.data?.timeout) || window.ProcessMaker.AccountTimeoutLength;
+      clearWarningState();
+      setSessionState(timeout);
+      if (window.ProcessMaker.closeSessionModal) {
+        window.ProcessMaker.closeSessionModal();
+      }
+      if (isLeader()) {
+        startTimeoutWorker(timeout);
+      }
+      return;
+    }
+
+    if (message.type === "expired") {
+      clearWarningState();
+      window.location = "/logout?timeout=true";
+    }
+  };
+
+  if (sessionChannel) {
+    sessionChannel.onmessage = (event) => handleSessionMessage(event.data);
+  }
+
+  window.addEventListener("storage", (event) => {
+    if (event.key !== sessionMessageKey || !event.newValue) {
+      return;
+    }
+
+    handleSessionMessage(readStorageJson(sessionMessageKey));
+  });
+
+  window.ProcessMaker.sessionSync = {
+    broadcast: broadcastSessionEvent,
+    isLeader,
+    setSessionState,
+    clearWarningState,
   };
 
   window.ProcessMaker.AccountTimeoutWorker.onmessage = (e) => {
+    if (!isLeader()) {
+      return;
+    }
+
     if (e.data.method === "countdown") {
+      sessionDebugLog("worker:countdown", e.data.data);
+      setWarningState(e.data.data.time);
       window.ProcessMaker.sessionModal(
         "Session Warning",
         "<p>Your user session is expiring. If your session expires, all of your unsaved data will be lost.</p><p>Would you like to stay connected?</p>",
         e.data.data.time,
         window.ProcessMaker.AccountTimeoutWarnSeconds,
       );
+      broadcastSessionEvent("warning", { time: e.data.data.time });
     }
     if (e.data.method === "timedOut") {
+      sessionDebugLog("worker:timedOut");
+      refreshSessionStateFromStorage();
+      const remaining = getRemainingTimeout(sessionState.timeout);
+      sessionDebugLog("worker:timedOut:check", { remaining, sessionState });
+      if (remaining > 0) {
+        startTimeoutWorker(sessionState.timeout);
+        return;
+      }
+      clearWarningState();
+      broadcastSessionEvent("expired");
       window.location = "/logout?timeout=true";
     }
   };
 
+  const showWarningIfActive = () => {
+    const remainingTime = getRemainingWarningTime();
+    if (remainingTime <= 0) {
+      sessionDebugLog("warning:skip", { remainingTime });
+      clearWarningState();
+      return;
+    }
+    sessionDebugLog("warning:show", { remainingTime });
+    window.ProcessMaker.sessionModal(
+      "Session Warning",
+      "<p>Your user session is expiring. If your session expires, all of your unsaved data will be lost.</p><p>Would you like to stay connected?</p>",
+      remainingTime,
+      window.ProcessMaker.AccountTimeoutWarnSeconds,
+    );
+  };
+
   // in some cases it's necessary to start manually
-  window.ProcessMaker.AccountTimeoutWorker.postMessage({
-    method: "start",
-    data: payloadAccountTimeoutWorker,
+  let wasLeader = false;
+  const updateLeadership = () => {
+    const leader = getLeader();
+    const now = Date.now();
+    const isVisible = document.visibilityState === "visible";
+    sessionDebugLog("leader:check", {
+      isVisible,
+      leader,
+      now,
+    });
+    if (isVisible) {
+      writeLeader();
+    }
+
+    const leaderNow = isLeader();
+    if (leaderNow) {
+      ensureWorkerRunning("leadership");
+    }
+    if (leaderNow !== wasLeader) {
+      wasLeader = leaderNow;
+      sessionDebugLog("leader:changed", { isLeader: leaderNow });
+      if (leaderNow) {
+        ensureWorkerRunning("leadership-change");
+      } else if (window.ProcessMaker.closeSessionModal) {
+        workerStarted = false;
+        window.ProcessMaker.closeSessionModal();
+      }
+    }
+  };
+
+  updateLeadership();
+  if (isLeader()) {
+    markActivity("load");
+    ensureWorkerRunning("load");
+  }
+  setInterval(updateLeadership, leaderHeartbeatMs);
+  window.addEventListener("visibilitychange", () => {
+    updateLeadership();
+    if (isLeader()) {
+      refreshSessionStateFromStorage();
+      refreshWarningStateFromStorage();
+      startTimeoutWorker(sessionState.timeout);
+      showWarningIfActive();
+    }
   });
 
   // Restart the timeout worker (when the user interacts with the page)
@@ -388,9 +713,13 @@ if (userID) {
 
   eventsTimeoutWorker.forEach((event) => {
     document.addEventListener(event, () => {
-      window.ProcessMaker.AccountTimeoutWorker.postMessage({
-        method: "restart",
-      });
+      if (!isLeader()) {
+        sessionDebugLog("worker:restart:skip", { event });
+        return;
+      }
+      markActivity(event);
+      sessionDebugLog("worker:restart", { event });
+      window.ProcessMaker.AccountTimeoutWorker.postMessage({ method: "restart" });
     });
   });
 
@@ -408,18 +737,18 @@ if (userID) {
     })
     .listen(".SessionStarted", (e) => {
       const lifetime = parseInt(eval(e.lifetime));
-      if (isSameDevice(e)) {
-        window.ProcessMaker.AccountTimeoutWorker.postMessage({
-          method: "start",
-          data: {
-            timeout: lifetime,
-            warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds,
-            enabled: window.ProcessMaker.AccountTimeoutEnabled,
-          },
-        });
-        if (window.ProcessMaker.closeSessionModal) {
-          window.ProcessMaker.closeSessionModal();
-        }
+      if (!isSameDevice(e)) {
+        return;
+      }
+
+      sessionDebugLog("event:session-started", { lifetime });
+      setSessionState(lifetime);
+      broadcastSessionEvent("started", { timeout: lifetime });
+      if (window.ProcessMaker.closeSessionModal) {
+        window.ProcessMaker.closeSessionModal();
+      }
+      if (isLeader()) {
+        startTimeoutWorker(lifetime);
       }
     })
     .listen(".Logout", (e) => {
