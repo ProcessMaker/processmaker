@@ -20,7 +20,8 @@ export default () => {
   if (user) {
   // Session timeout
     const AccountTimeoutLength = parseInt(eval(document.head.querySelector("meta[name=\"timeout-length\"]")?.content));
-    const AccountTimeoutWarnSeconds = parseInt(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]")?.content);
+    const warnSeconds = parseInt(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]")?.content);
+    const AccountTimeoutWarnSeconds = Number.isNaN(warnSeconds) ? 0 : warnSeconds;
     const AccountTimeoutEnabled = document.head.querySelector("meta[name=\"timeout-enabled\"]") ? parseInt(document.head.querySelector("meta[name=\"timeout-enabled\"]")?.content) : 1;
     const AccountTimeoutWorker = new Worker(timeoutScript);
 

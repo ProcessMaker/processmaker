@@ -742,6 +742,7 @@ if (userID) {
 
       sessionDebugLog("event:session-started", { lifetime });
       setSessionState(lifetime);
+      clearWarningState();
       broadcastSessionEvent("started", { timeout: lifetime });
       if (window.ProcessMaker.closeSessionModal) {
         window.ProcessMaker.closeSessionModal();
