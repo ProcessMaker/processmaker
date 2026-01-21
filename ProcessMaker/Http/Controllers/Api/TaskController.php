@@ -134,6 +134,14 @@ class TaskController extends Controller
 
         $query = $this->indexBaseQuery($request);
 
+        // Get fields from request (sent by frontend)
+        // If not provided, don't apply select() to maintain backward compatibility (returns all columns)
+        $fields = $request->input('fields', '');
+        if ($fields) {
+            $selectedFields = explode(',', $fields);
+            $query = $query->select($selectedFields);
+        }
+
         $this->applyFilters($query, $request);
 
         $this->excludeNonVisibleTasks($query, $request);
