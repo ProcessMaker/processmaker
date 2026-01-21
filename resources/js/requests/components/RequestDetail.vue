@@ -207,6 +207,7 @@ export default {
         'due_at',
         'is_self_service',
         'is_actionbyemail',
+        'self_service_groups',  // Required by Task resource's addAssignableUsers() method when recalculating assignable users
       ];
       return `&fields=${fields.join(',')}`;
     },

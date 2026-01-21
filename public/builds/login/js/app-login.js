@@ -2944,13 +2944,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_lang_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./modules/lang.js */ "./resources/js/modules/lang.js");
 /* harmony import */ var _components_common_mixins_accessibility__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./components/common/mixins/accessibility */ "./resources/js/components/common/mixins/accessibility.js");
 var _document$head$queryS;
-function cov_2337h25edu() {
-  var path = "/Users/sanjacornelius/Documents/processmaker/resources/js/app-login.js";
-  var hash = "195e5558a5d99dbe9490879ad07aabe07e89bf1c";
+function cov_uea4ftz59() {
+  var path = "/Users/rodrigoquelca/Herd/processmaker/resources/js/app-login.js";
+  var hash = "a1fb3675012b262c56bd713cf2e624ea3fc864f6";
   var global = new Function("return this")();
   var gcv = "__coverage__";
   var coverageData = {
-    path: "/Users/sanjacornelius/Documents/processmaker/resources/js/app-login.js",
+    path: "/Users/rodrigoquelca/Herd/processmaker/resources/js/app-login.js",
     statementMap: {
       "0": {
         start: {
@@ -3928,7 +3928,7 @@ function cov_2337h25edu() {
       "7": [0, 0]
     },
     _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
-    hash: "195e5558a5d99dbe9490879ad07aabe07e89bf1c"
+    hash: "a1fb3675012b262c56bd713cf2e624ea3fc864f6"
   };
   var coverage = global[gcv] || (global[gcv] = {});
   if (!coverage[path] || coverage[path].hash !== hash) {
@@ -3937,13 +3937,13 @@ function cov_2337h25edu() {
   var actualCoverage = coverage[path];
   {
     // @ts-ignore
-    cov_2337h25edu = function () {
+    cov_uea4ftz59 = function () {
       return actualCoverage;
     };
   }
   return actualCoverage;
 }
-cov_2337h25edu();
+cov_uea4ftz59();
 
 
 
@@ -3959,35 +3959,35 @@ cov_2337h25edu();
 
 
 
-cov_2337h25edu().s[0]++;
+cov_uea4ftz59().s[0]++;
 window.__ = _modules_lang_js__WEBPACK_IMPORTED_MODULE_7__["default"];
-cov_2337h25edu().s[1]++;
+cov_uea4ftz59().s[1]++;
 window._ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
-cov_2337h25edu().s[2]++;
+cov_uea4ftz59().s[2]++;
 window.Popper = (__webpack_require__(/*! popper.js */ "./node_modules/popper.js/dist/esm/popper.js")["default"]);
-cov_2337h25edu().s[3]++;
+cov_uea4ftz59().s[3]++;
 window.$ = window.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
-cov_2337h25edu().s[4]++;
+cov_uea4ftz59().s[4]++;
 window.Vue = vue__WEBPACK_IMPORTED_MODULE_9__["default"];
-cov_2337h25edu().s[5]++;
+cov_uea4ftz59().s[5]++;
 window.vue = vue__WEBPACK_IMPORTED_MODULE_9__;
-cov_2337h25edu().s[6]++;
+cov_uea4ftz59().s[6]++;
 window.bootstrap = bootstrap__WEBPACK_IMPORTED_MODULE_0__;
-cov_2337h25edu().s[7]++;
+cov_uea4ftz59().s[7]++;
 window.Vue.use((vue_cookies__WEBPACK_IMPORTED_MODULE_6___default()));
-cov_2337h25edu().s[8]++;
+cov_uea4ftz59().s[8]++;
 window.Vue.use(_panter_vue_i18next__WEBPACK_IMPORTED_MODULE_5__["default"]);
-var translationsLoaded = (cov_2337h25edu().s[9]++, false);
-var mdates = (cov_2337h25edu().s[10]++, JSON.parse((_document$head$queryS = document.head.querySelector("meta[name=\"i18n-mdate\"]")) === null || _document$head$queryS === void 0 ? void 0 : _document$head$queryS.content));
+var translationsLoaded = (cov_uea4ftz59().s[9]++, false);
+var mdates = (cov_uea4ftz59().s[10]++, JSON.parse((_document$head$queryS = document.head.querySelector("meta[name=\"i18n-mdate\"]")) === null || _document$head$queryS === void 0 ? void 0 : _document$head$queryS.content));
 
 // Make $t available to all vue instances
-cov_2337h25edu().s[11]++;
+cov_uea4ftz59().s[11]++;
 vue__WEBPACK_IMPORTED_MODULE_9__["default"].mixin({
   i18n: new _panter_vue_i18next__WEBPACK_IMPORTED_MODULE_5__["default"](i18next__WEBPACK_IMPORTED_MODULE_1__["default"])
 });
-cov_2337h25edu().s[12]++;
+cov_uea4ftz59().s[12]++;
 vue__WEBPACK_IMPORTED_MODULE_9__["default"].mixin(_components_common_mixins_accessibility__WEBPACK_IMPORTED_MODULE_8__["default"]);
-cov_2337h25edu().s[13]++;
+cov_uea4ftz59().s[13]++;
 window.ProcessMaker = {
   i18n: i18next__WEBPACK_IMPORTED_MODULE_1__["default"],
   /**
@@ -3997,25 +3997,25 @@ window.ProcessMaker = {
   packages: [],
   missingTranslations: new Set(),
   missingTranslation: function missingTranslation(value) {
-    cov_2337h25edu().f[0]++;
-    cov_2337h25edu().s[14]++;
+    cov_uea4ftz59().f[0]++;
+    cov_uea4ftz59().s[14]++;
     if (this.missingTranslations.has(value)) {
-      cov_2337h25edu().b[0][0]++;
-      cov_2337h25edu().s[15]++;
+      cov_uea4ftz59().b[0][0]++;
+      cov_uea4ftz59().s[15]++;
       return;
     } else {
-      cov_2337h25edu().b[0][1]++;
+      cov_uea4ftz59().b[0][1]++;
     }
-    cov_2337h25edu().s[16]++;
+    cov_uea4ftz59().s[16]++;
     this.missingTranslations.add(value);
-    cov_2337h25edu().s[17]++;
+    cov_uea4ftz59().s[17]++;
     console.warn("Missing Translation:", value);
   },
   $notifications: {
     icons: {}
   }
 };
-cov_2337h25edu().s[18]++;
+cov_uea4ftz59().s[18]++;
 window.ProcessMaker.i18nPromise = i18next__WEBPACK_IMPORTED_MODULE_1__["default"].use((i18next_chained_backend__WEBPACK_IMPORTED_MODULE_2___default())).init({
   lng: document.documentElement.lang,
   fallbackLng: "en",
@@ -4025,20 +4025,20 @@ window.ProcessMaker.i18nPromise = i18next__WEBPACK_IMPORTED_MODULE_1__["default"
   nsSeparator: false,
   keySeparator: false,
   parseMissingKeyHandler: function parseMissingKeyHandler(value) {
-    cov_2337h25edu().f[1]++;
-    cov_2337h25edu().s[19]++;
+    cov_uea4ftz59().f[1]++;
+    cov_uea4ftz59().s[19]++;
     if (!translationsLoaded) {
-      cov_2337h25edu().b[1][0]++;
-      cov_2337h25edu().s[20]++;
+      cov_uea4ftz59().b[1][0]++;
+      cov_uea4ftz59().s[20]++;
       return value;
     } else {
-      cov_2337h25edu().b[1][1]++;
+      cov_uea4ftz59().b[1][1]++;
     }
     // Report that a translation is missing
-    cov_2337h25edu().s[21]++;
+    cov_uea4ftz59().s[21]++;
     window.ProcessMaker.missingTranslation(value);
     // Fallback to showing the english version
-    cov_2337h25edu().s[22]++;
+    cov_uea4ftz59().s[22]++;
     return value;
   },
   backend: {
@@ -4052,10 +4052,10 @@ window.ProcessMaker.i18nPromise = i18next__WEBPACK_IMPORTED_MODULE_1__["default"
     }]
   }
 });
-cov_2337h25edu().s[23]++;
+cov_uea4ftz59().s[23]++;
 window.ProcessMaker.i18nPromise.then(function () {
-  cov_2337h25edu().f[2]++;
-  cov_2337h25edu().s[24]++;
+  cov_uea4ftz59().f[2]++;
+  cov_uea4ftz59().s[24]++;
   translationsLoaded = true;
 });
 
@@ -4064,85 +4064,85 @@ window.ProcessMaker.i18nPromise.then(function () {
  * REST api endpoints through oauth authentication
  *
  */
-cov_2337h25edu().s[25]++;
+cov_uea4ftz59().s[25]++;
 window.ProcessMaker.apiClient = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-cov_2337h25edu().s[26]++;
+cov_uea4ftz59().s[26]++;
 window.ProcessMaker.apiClient.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
 // Setup api versions
-var apiVersionConfig = (cov_2337h25edu().s[27]++, [{
+var apiVersionConfig = (cov_uea4ftz59().s[27]++, [{
   version: "1.0",
   baseURL: "/api/1.0/"
 }, {
   version: "1.1",
   baseURL: "/api/1.1/"
 }]);
-cov_2337h25edu().s[28]++;
+cov_uea4ftz59().s[28]++;
 window.ProcessMaker.apiClient.defaults.baseURL = apiVersionConfig[0].baseURL;
-cov_2337h25edu().s[29]++;
+cov_uea4ftz59().s[29]++;
 window.ProcessMaker.apiClient.interceptors.request.use(function (config) {
-  cov_2337h25edu().f[3]++;
-  cov_2337h25edu().s[30]++;
-  if ((cov_2337h25edu().b[3][0]++, typeof config.url !== "string") || (cov_2337h25edu().b[3][1]++, !config.url)) {
-    cov_2337h25edu().b[2][0]++;
-    cov_2337h25edu().s[31]++;
+  cov_uea4ftz59().f[3]++;
+  cov_uea4ftz59().s[30]++;
+  if ((cov_uea4ftz59().b[3][0]++, typeof config.url !== "string") || (cov_uea4ftz59().b[3][1]++, !config.url)) {
+    cov_uea4ftz59().b[2][0]++;
+    cov_uea4ftz59().s[31]++;
     throw new Error("Invalid URL in the request configuration");
   } else {
-    cov_2337h25edu().b[2][1]++;
+    cov_uea4ftz59().b[2][1]++;
   }
-  cov_2337h25edu().s[32]++;
+  cov_uea4ftz59().s[32]++;
   apiVersionConfig.forEach(function (_ref) {
     var version = _ref.version,
       baseURL = _ref.baseURL;
-    cov_2337h25edu().f[4]++;
-    var versionPrefix = (cov_2337h25edu().s[33]++, "/api/".concat(version, "/"));
-    cov_2337h25edu().s[34]++;
+    cov_uea4ftz59().f[4]++;
+    var versionPrefix = (cov_uea4ftz59().s[33]++, "/api/".concat(version, "/"));
+    cov_uea4ftz59().s[34]++;
     if (config.url.startsWith(versionPrefix)) {
-      cov_2337h25edu().b[4][0]++;
-      cov_2337h25edu().s[35]++;
+      cov_uea4ftz59().b[4][0]++;
+      cov_uea4ftz59().s[35]++;
       // eslint-disable-next-line no-param-reassign
       config.baseURL = baseURL;
       // eslint-disable-next-line no-param-reassign
-      cov_2337h25edu().s[36]++;
+      cov_uea4ftz59().s[36]++;
       config.url = config.url.replace(versionPrefix, "");
     } else {
-      cov_2337h25edu().b[4][1]++;
+      cov_uea4ftz59().b[4][1]++;
     }
   });
-  cov_2337h25edu().s[37]++;
+  cov_uea4ftz59().s[37]++;
   return config;
 });
 
 // Set the default API timeout
-var apiTimeout = (cov_2337h25edu().s[38]++, 5000);
-cov_2337h25edu().s[39]++;
-if ((cov_2337h25edu().b[6][0]++, window.Processmaker) && (cov_2337h25edu().b[6][1]++, window.Processmaker.apiTimeout !== undefined)) {
-  cov_2337h25edu().b[5][0]++;
-  cov_2337h25edu().s[40]++;
+var apiTimeout = (cov_uea4ftz59().s[38]++, 5000);
+cov_uea4ftz59().s[39]++;
+if ((cov_uea4ftz59().b[6][0]++, window.Processmaker) && (cov_uea4ftz59().b[6][1]++, window.Processmaker.apiTimeout !== undefined)) {
+  cov_uea4ftz59().b[5][0]++;
+  cov_uea4ftz59().s[40]++;
   apiTimeout = window.Processmaker.apiTimeout;
 } else {
-  cov_2337h25edu().b[5][1]++;
+  cov_uea4ftz59().b[5][1]++;
 }
-cov_2337h25edu().s[41]++;
+cov_uea4ftz59().s[41]++;
 window.ProcessMaker.apiClient.defaults.timeout = apiTimeout;
 
 // click an active tab after all components have mounted
-cov_2337h25edu().s[42]++;
+cov_uea4ftz59().s[42]++;
 vue__WEBPACK_IMPORTED_MODULE_9__["default"].use({
   install: function install(vue) {
-    cov_2337h25edu().f[5]++;
-    cov_2337h25edu().s[43]++;
+    cov_uea4ftz59().f[5]++;
+    cov_uea4ftz59().s[43]++;
     vue.mixin({
       mounted: function mounted() {
-        cov_2337h25edu().f[6]++;
-        cov_2337h25edu().s[44]++;
+        cov_uea4ftz59().f[6]++;
+        cov_uea4ftz59().s[44]++;
         if (this.$parent) {
-          cov_2337h25edu().b[7][0]++;
-          cov_2337h25edu().s[45]++;
+          cov_uea4ftz59().b[7][0]++;
+          cov_uea4ftz59().s[45]++;
           // only run on root
           return;
         } else {
-          cov_2337h25edu().b[7][1]++;
+          cov_uea4ftz59().b[7][1]++;
         }
       }
     });
@@ -4150,7 +4150,7 @@ vue__WEBPACK_IMPORTED_MODULE_9__["default"].use({
 });
 
 // Send an event when the global Vue and ProcessMaker instance is available
-cov_2337h25edu().s[46]++;
+cov_uea4ftz59().s[46]++;
 window.dispatchEvent(new Event("app-bootstrapped"));
 
 /***/ }),
@@ -4168,13 +4168,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ "./node_modules/@babel/runtime/helpers/esm/slicedToArray.js");
 
-function cov_20gejcf4ab() {
-  var path = "/Users/sanjacornelius/Documents/processmaker/resources/js/components/common/mixins/accessibility.js";
-  var hash = "32ff012b53571eb61942410b27f8a8c856256151";
+function cov_1m92uxlif6() {
+  var path = "/Users/rodrigoquelca/Herd/processmaker/resources/js/components/common/mixins/accessibility.js";
+  var hash = "0e9d2f7988eca41f690710783b46356cf01e01f4";
   var global = new Function("return this")();
   var gcv = "__coverage__";
   var coverageData = {
-    path: "/Users/sanjacornelius/Documents/processmaker/resources/js/components/common/mixins/accessibility.js",
+    path: "/Users/rodrigoquelca/Herd/processmaker/resources/js/components/common/mixins/accessibility.js",
     statementMap: {
       "0": {
         start: {
@@ -5413,7 +5413,7 @@ function cov_20gejcf4ab() {
       "14": [0, 0]
     },
     _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
-    hash: "32ff012b53571eb61942410b27f8a8c856256151"
+    hash: "0e9d2f7988eca41f690710783b46356cf01e01f4"
   };
   var coverage = global[gcv] || (global[gcv] = {});
   if (!coverage[path] || coverage[path].hash !== hash) {
@@ -5422,48 +5422,48 @@ function cov_20gejcf4ab() {
   var actualCoverage = coverage[path];
   {
     // @ts-ignore
-    cov_20gejcf4ab = function () {
+    cov_1m92uxlif6 = function () {
       return actualCoverage;
     };
   }
   return actualCoverage;
 }
-cov_20gejcf4ab();
+cov_1m92uxlif6();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
-    cov_20gejcf4ab().f[0]++;
-    cov_20gejcf4ab().s[0]++;
+    cov_1m92uxlif6().f[0]++;
+    cov_1m92uxlif6().s[0]++;
     return {
       focusErrors: null
     };
   },
   mounted: function mounted() {
-    cov_20gejcf4ab().f[1]++;
-    cov_20gejcf4ab().s[1]++;
+    cov_1m92uxlif6().f[1]++;
+    cov_1m92uxlif6().s[1]++;
     // Listen only on the root Vue instance
     if (!this.$parent) {
-      cov_20gejcf4ab().b[0][0]++;
-      cov_20gejcf4ab().s[2]++;
+      cov_1m92uxlif6().b[0][0]++;
+      cov_1m92uxlif6().s[2]++;
       // Set the focus within any modal or popover that is instantiated
       this.$root.$on("bv::modal::shown", this.setFocusWithin);
-      cov_20gejcf4ab().s[3]++;
+      cov_1m92uxlif6().s[3]++;
       this.$root.$on("bv::popover::shown", this.setFocusWithin);
     } else {
-      cov_20gejcf4ab().b[0][1]++;
+      cov_1m92uxlif6().b[0][1]++;
     }
-    cov_20gejcf4ab().s[4]++;
+    cov_1m92uxlif6().s[4]++;
     if (this.focusErrors) {
-      cov_20gejcf4ab().b[1][0]++;
-      cov_20gejcf4ab().s[5]++;
+      cov_1m92uxlif6().b[1][0]++;
+      cov_1m92uxlif6().s[5]++;
       // watch an object for form errors
       this.$watch(this.focusErrors, this.focusErrorsChanged, {
         deep: true
       });
-      cov_20gejcf4ab().s[6]++;
+      cov_1m92uxlif6().s[6]++;
       this.dontListenForApiClientError();
     } else {
-      cov_20gejcf4ab().b[1][1]++;
-      cov_20gejcf4ab().s[7]++;
+      cov_1m92uxlif6().b[1][1]++;
+      cov_1m92uxlif6().s[7]++;
       // default api error focusing
       this.listenForApiClientError();
     }
@@ -5476,144 +5476,144 @@ cov_20gejcf4ab();
      * @param modalId
      */
     setFocusWithin: function setFocusWithin(shownEvent, modalId) {
-      cov_20gejcf4ab().f[2]++;
-      cov_20gejcf4ab().s[8]++;
-      if ((cov_20gejcf4ab().b[3][0]++, !(shownEvent.target instanceof HTMLElement)) && (cov_20gejcf4ab().b[3][1]++, !(shownEvent.relatedTarget instanceof HTMLElement))) {
-        cov_20gejcf4ab().b[2][0]++;
-        cov_20gejcf4ab().s[9]++;
+      cov_1m92uxlif6().f[2]++;
+      cov_1m92uxlif6().s[8]++;
+      if ((cov_1m92uxlif6().b[3][0]++, !(shownEvent.target instanceof HTMLElement)) && (cov_1m92uxlif6().b[3][1]++, !(shownEvent.relatedTarget instanceof HTMLElement))) {
+        cov_1m92uxlif6().b[2][0]++;
+        cov_1m92uxlif6().s[9]++;
         return;
       } else {
-        cov_20gejcf4ab().b[2][1]++;
+        cov_1m92uxlif6().b[2][1]++;
       }
 
       // If relatedTarget is present and an HTMLElement,
       // then we know we're working with a popover,
       // otherwise it's a modal
-      var target = (cov_20gejcf4ab().s[10]++, shownEvent.relatedTarget instanceof HTMLElement ? (cov_20gejcf4ab().b[4][0]++, shownEvent.relatedTarget) : (cov_20gejcf4ab().b[4][1]++, shownEvent.target));
+      var target = (cov_1m92uxlif6().s[10]++, shownEvent.relatedTarget instanceof HTMLElement ? (cov_1m92uxlif6().b[4][0]++, shownEvent.relatedTarget) : (cov_1m92uxlif6().b[4][1]++, shownEvent.target));
 
       // Find the first focusable element that isn't the
       // modal/popover close button
-      var focusableElement = (cov_20gejcf4ab().s[11]++, target.querySelector("input, select, textarea, button:not(.close), a"));
+      var focusableElement = (cov_1m92uxlif6().s[11]++, target.querySelector("input, select, textarea, button:not(.close), a"));
 
       // If there is an element to focus on, then do so
-      cov_20gejcf4ab().s[12]++;
+      cov_1m92uxlif6().s[12]++;
       if (focusableElement instanceof HTMLElement) {
-        cov_20gejcf4ab().b[5][0]++;
+        cov_1m92uxlif6().b[5][0]++;
         //do not set focus() if it is a vue-multiselect
-        var parentVue = (cov_20gejcf4ab().s[13]++, this.findHtmlElementParentVueComponent(focusableElement));
-        cov_20gejcf4ab().s[14]++;
-        if ((cov_20gejcf4ab().b[7][0]++, parentVue !== null) && (cov_20gejcf4ab().b[7][1]++, parentVue.$options.name == 'vue-multiselect')) {
-          cov_20gejcf4ab().b[6][0]++;
-          cov_20gejcf4ab().s[15]++;
+        var parentVue = (cov_1m92uxlif6().s[13]++, this.findHtmlElementParentVueComponent(focusableElement));
+        cov_1m92uxlif6().s[14]++;
+        if ((cov_1m92uxlif6().b[7][0]++, parentVue !== null) && (cov_1m92uxlif6().b[7][1]++, parentVue.$options.name == 'vue-multiselect')) {
+          cov_1m92uxlif6().b[6][0]++;
+          cov_1m92uxlif6().s[15]++;
           return;
         } else {
-          cov_20gejcf4ab().b[6][1]++;
+          cov_1m92uxlif6().b[6][1]++;
         }
-        cov_20gejcf4ab().s[16]++;
+        cov_1m92uxlif6().s[16]++;
         focusableElement.focus();
       } else {
-        cov_20gejcf4ab().b[5][1]++;
+        cov_1m92uxlif6().b[5][1]++;
       }
     },
     findHtmlElementParentVueComponent: function findHtmlElementParentVueComponent(element) {
-      cov_20gejcf4ab().f[3]++;
-      cov_20gejcf4ab().s[17]++;
+      cov_1m92uxlif6().f[3]++;
+      cov_1m92uxlif6().s[17]++;
       if (element === undefined) {
-        cov_20gejcf4ab().b[8][0]++;
-        cov_20gejcf4ab().s[18]++;
+        cov_1m92uxlif6().b[8][0]++;
+        cov_1m92uxlif6().s[18]++;
         return null;
       } else {
-        cov_20gejcf4ab().b[8][1]++;
+        cov_1m92uxlif6().b[8][1]++;
       }
-      cov_20gejcf4ab().s[19]++;
+      cov_1m92uxlif6().s[19]++;
       if ('__vue__' in element) {
-        cov_20gejcf4ab().b[9][0]++;
-        cov_20gejcf4ab().s[20]++;
+        cov_1m92uxlif6().b[9][0]++;
+        cov_1m92uxlif6().s[20]++;
         return element.__vue__;
       } else {
-        cov_20gejcf4ab().b[9][1]++;
-        cov_20gejcf4ab().s[21]++;
+        cov_1m92uxlif6().b[9][1]++;
+        cov_1m92uxlif6().s[21]++;
         return this.findHtmlElementParentVueComponent(element.parentNode);
       }
     },
     hasCustomFocusErrors: function hasCustomFocusErrors() {
-      cov_20gejcf4ab().f[4]++;
-      cov_20gejcf4ab().s[22]++;
+      cov_1m92uxlif6().f[4]++;
+      cov_1m92uxlif6().s[22]++;
       if (this.$root._hasCustomFocusErrors) {
-        cov_20gejcf4ab().b[10][0]++;
-        cov_20gejcf4ab().s[23]++;
+        cov_1m92uxlif6().b[10][0]++;
+        cov_1m92uxlif6().s[23]++;
         this.$off;
       } else {
-        cov_20gejcf4ab().b[10][1]++;
+        cov_1m92uxlif6().b[10][1]++;
       }
     },
     listenForApiClientError: function listenForApiClientError() {
-      cov_20gejcf4ab().f[5]++;
-      cov_20gejcf4ab().s[24]++;
+      cov_1m92uxlif6().f[5]++;
+      cov_1m92uxlif6().s[24]++;
       if (typeof window.ProcessMaker._focusErrorsIntitalized === "undefined") {
-        cov_20gejcf4ab().b[11][0]++;
-        cov_20gejcf4ab().s[25]++;
+        cov_1m92uxlif6().b[11][0]++;
+        cov_1m92uxlif6().s[25]++;
         window.ProcessMaker.EventBus.$on("api-client-error", this.onApiClientError);
-        cov_20gejcf4ab().s[26]++;
+        cov_1m92uxlif6().s[26]++;
         window.ProcessMaker._focusErrorsIntitalized = true;
       } else {
-        cov_20gejcf4ab().b[11][1]++;
+        cov_1m92uxlif6().b[11][1]++;
       }
     },
     dontListenForApiClientError: function dontListenForApiClientError() {
-      cov_20gejcf4ab().f[6]++;
-      cov_20gejcf4ab().s[27]++;
+      cov_1m92uxlif6().f[6]++;
+      cov_1m92uxlif6().s[27]++;
       window.ProcessMaker.EventBus.$off("api-client-error", this.onApiClientError);
-      cov_20gejcf4ab().s[28]++;
+      cov_1m92uxlif6().s[28]++;
       window.ProcessMaker._focusErrorsIntitalized = true;
     },
     onApiClientError: function onApiClientError(error) {
-      cov_20gejcf4ab().f[7]++;
-      var errors = (cov_20gejcf4ab().s[29]++, _.get(error, "response.data.errors", false));
-      cov_20gejcf4ab().s[30]++;
+      cov_1m92uxlif6().f[7]++;
+      var errors = (cov_1m92uxlif6().s[29]++, _.get(error, "response.data.errors", false));
+      cov_1m92uxlif6().s[30]++;
       if (errors) {
-        cov_20gejcf4ab().b[12][0]++;
-        cov_20gejcf4ab().s[31]++;
+        cov_1m92uxlif6().b[12][0]++;
+        cov_1m92uxlif6().s[31]++;
         this.focusErrorsChanged(errors);
       } else {
-        cov_20gejcf4ab().b[12][1]++;
+        cov_1m92uxlif6().b[12][1]++;
       }
     },
     focusErrorsChanged: function focusErrorsChanged(newValue) {
-      cov_20gejcf4ab().f[8]++;
-      var selector = (cov_20gejcf4ab().s[32]++, Object.entries(newValue).filter(function (_ref) {
+      cov_1m92uxlif6().f[8]++;
+      var selector = (cov_1m92uxlif6().s[32]++, Object.entries(newValue).filter(function (_ref) {
         var _ref2 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0__["default"])(_ref, 2),
           _ = _ref2[0],
           value = _ref2[1];
-        cov_20gejcf4ab().f[9]++;
-        cov_20gejcf4ab().s[33]++;
+        cov_1m92uxlif6().f[9]++;
+        cov_1m92uxlif6().s[33]++;
         return value !== null;
       }) // Filter out null values
       .map(function (_ref3) {
         var _ref4 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0__["default"])(_ref3, 2),
           field = _ref4[0],
           _ = _ref4[1];
-        cov_20gejcf4ab().f[10]++;
-        cov_20gejcf4ab().s[34]++;
+        cov_1m92uxlif6().f[10]++;
+        cov_1m92uxlif6().s[34]++;
         return "[name='".concat(field, "']");
       }) // Select elements matching the name attribute
       .join(", "));
-      cov_20gejcf4ab().s[35]++;
+      cov_1m92uxlif6().s[35]++;
       if (!selector) {
-        cov_20gejcf4ab().b[13][0]++;
-        cov_20gejcf4ab().s[36]++;
+        cov_1m92uxlif6().b[13][0]++;
+        cov_1m92uxlif6().s[36]++;
         return;
       } else {
-        cov_20gejcf4ab().b[13][1]++;
+        cov_1m92uxlif6().b[13][1]++;
       }
-      var firstInput = (cov_20gejcf4ab().s[37]++, document.querySelector(selector)); // Find the first match
-      cov_20gejcf4ab().s[38]++;
+      var firstInput = (cov_1m92uxlif6().s[37]++, document.querySelector(selector)); // Find the first match
+      cov_1m92uxlif6().s[38]++;
       if (firstInput) {
-        cov_20gejcf4ab().b[14][0]++;
-        cov_20gejcf4ab().s[39]++;
+        cov_1m92uxlif6().b[14][0]++;
+        cov_1m92uxlif6().s[39]++;
         firstInput.focus();
       } else {
-        cov_20gejcf4ab().b[14][1]++;
+        cov_1m92uxlif6().b[14][1]++;
       }
     }
   }
@@ -5632,13 +5632,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ translate)
 /* harmony export */ });
-function cov_kcsn6du19() {
-  var path = "/Users/sanjacornelius/Documents/processmaker/resources/js/modules/lang.js";
-  var hash = "2cc2f52cbb98903a23b86bcdba9de5ccc6934daa";
+function cov_2rmq8yqjks() {
+  var path = "/Users/rodrigoquelca/Herd/processmaker/resources/js/modules/lang.js";
+  var hash = "60dd3571884a36549a21e4082aea36122067deab";
   var global = new Function("return this")();
   var gcv = "__coverage__";
   var coverageData = {
-    path: "/Users/sanjacornelius/Documents/processmaker/resources/js/modules/lang.js",
+    path: "/Users/rodrigoquelca/Herd/processmaker/resources/js/modules/lang.js",
     statementMap: {
       "0": {
         start: {
@@ -5686,7 +5686,7 @@ function cov_kcsn6du19() {
     },
     b: {},
     _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
-    hash: "2cc2f52cbb98903a23b86bcdba9de5ccc6934daa"
+    hash: "60dd3571884a36549a21e4082aea36122067deab"
   };
   var coverage = global[gcv] || (global[gcv] = {});
   if (!coverage[path] || coverage[path].hash !== hash) {
@@ -5695,16 +5695,16 @@ function cov_kcsn6du19() {
   var actualCoverage = coverage[path];
   {
     // @ts-ignore
-    cov_kcsn6du19 = function () {
+    cov_2rmq8yqjks = function () {
       return actualCoverage;
     };
   }
   return actualCoverage;
 }
-cov_kcsn6du19();
+cov_2rmq8yqjks();
 function translate(value) {
-  cov_kcsn6du19().f[0]++;
-  cov_kcsn6du19().s[0]++;
+  cov_2rmq8yqjks().f[0]++;
+  cov_2rmq8yqjks().s[0]++;
   return value;
 }
 
