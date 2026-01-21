@@ -198,6 +198,7 @@ export default {
     getColumnsParam() {
       const fields = [
         'id',
+        'element_id',           // Required by assignableUsers relationship (TokenAssignableUsers::match uses element_id)
         'element_name',
         'user_id',
         'process_id',
