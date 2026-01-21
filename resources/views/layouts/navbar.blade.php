@@ -30,7 +30,7 @@
                             :variant="messageVariant" :callback="messageCallback"
                             @close="messageShow=false">
         </message-modal>
-        <session-modal id="sessionModal" :shown="sessionShow" :title="sessionTitle" :message="sessionMessage" :time="sessionTime" :warn-seconds="sessionWarnSeconds"
+        <session-modal id="sessionModal" :shown="sessionShow" :title="sessionTitle" :message="sessionMessage" :time="sessionTime" :warn-seconds="sessionWarnSeconds" :is-renewing="sessionIsRenewing"
                 @close="sessionShow=false">
         </session-modal>
         <div v-if="alerts.length > 0" class="alert-wrapper">

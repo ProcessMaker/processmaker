@@ -354,6 +354,8 @@ if (userID) {
   const sessionLeaderKey = "pm:session:leader";
   const sessionStateKey = "pm:session:state";
   const sessionWarningKey = "pm:session:warning";
+  // Track keep-alive progress across tabs.
+  const sessionRenewingKey = "pm:session:renewing";
   const sessionMessageKey = "pm:session:message";
   const sessionTabId = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
   const leaderHeartbeatMs = 4000;
@@ -437,6 +439,7 @@ if (userID) {
   };
 
   let warningState = readStorageJson(sessionWarningKey);
+  let renewingState = readStorageJson(sessionRenewingKey);
 
   const refreshWarningStateFromStorage = () => {
     const storedWarningState = readStorageJson(sessionWarningKey);
@@ -462,6 +465,34 @@ if (userID) {
     warningState = null;
     removeStorageKey(sessionWarningKey);
     sessionDebugLog("warning-state:clear");
+  };
+
+  const syncRenewingUi = () => {
+    // Only update if the navbar component exists in this layout.
+    if (window.ProcessMaker.navbar) {
+      window.ProcessMaker.navbar.sessionIsRenewing = !!renewingState;
+    }
+  };
+
+  const refreshRenewingStateFromStorage = () => {
+    const storedRenewingState = readStorageJson(sessionRenewingKey);
+    renewingState = storedRenewingState?.isRenewing ? storedRenewingState : null;
+    syncRenewingUi();
+    return renewingState;
+  };
+
+  const setRenewingState = (isRenewing) => {
+    if (isRenewing) {
+      renewingState = {
+        isRenewing: true,
+        ts: Date.now(),
+      };
+      writeStorageJson(sessionRenewingKey, renewingState);
+    } else {
+      renewingState = null;
+      removeStorageKey(sessionRenewingKey);
+    }
+    syncRenewingUi();
   };
 
   const sessionChannel = "BroadcastChannel" in window ? new BroadcastChannel(sessionChannelName) : null;
@@ -576,9 +607,15 @@ if (userID) {
       return;
     }
 
+    if (message.type === "renewing") {
+      setRenewingState(!!message.data?.isRenewing);
+      return;
+    }
+
     if (message.type === "renewed" || message.type === "started" || message.type === "activity") {
       const timeout = Number(message.data?.timeout) || window.ProcessMaker.AccountTimeoutLength;
       clearWarningState();
+      setRenewingState(false);
       setSessionState(timeout);
       if (window.ProcessMaker.closeSessionModal) {
         window.ProcessMaker.closeSessionModal();
@@ -591,6 +628,7 @@ if (userID) {
 
     if (message.type === "expired") {
       clearWarningState();
+      setRenewingState(false);
       window.location = "/logout?timeout=true";
     }
   };
@@ -653,8 +691,10 @@ if (userID) {
     if (remainingTime <= 0) {
       sessionDebugLog("warning:skip", { remainingTime });
       clearWarningState();
+      setRenewingState(false);
       return;
     }
+    refreshRenewingStateFromStorage();
     sessionDebugLog("warning:show", { remainingTime });
     // Guard for layouts that don't include the session modal.
     if (typeof window.ProcessMaker.sessionModal === "function") {
