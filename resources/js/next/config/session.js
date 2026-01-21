@@ -19,6 +19,7 @@ export default () => {
 
   if (user) {
   // Session timeout
+    // Backend provides minutes for lifetime and seconds for warnings.
     const AccountTimeoutLength = parseInt(eval(document.head.querySelector("meta[name=\"timeout-length\"]")?.content));
     const warnSeconds = parseInt(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]")?.content);
     const AccountTimeoutWarnSeconds = Number.isNaN(warnSeconds) ? 0 : warnSeconds;
@@ -28,6 +29,7 @@ export default () => {
     AccountTimeoutWorker.addEventListener("message", (e) => {
       const sessionModal = getGlobalPMVariable("sessionModal");
       if (e.data.method === "countdown") {
+        // Show countdown modal when the worker hits the warning threshold.
         sessionModal(
           "Session Warning",
           "<p>Your user session is expiring. If your session expires, all of your unsaved data will be lost.</p><p>Would you like to stay connected?</p>",
@@ -40,7 +42,7 @@ export default () => {
       }
     });
 
-    // in some cases it's necessary to start manually
+    // Start the timer for the initial page load.
     AccountTimeoutWorker.postMessage({
       method: "start",
       data: {
@@ -57,6 +59,7 @@ export default () => {
       .listen(".SessionStarted", (e) => {
         const lifetime = parseInt(eval(e.lifetime));
         if (isSameDevice(e)) {
+          // Reset the worker when the server renews the session.
           AccountTimeoutWorker.postMessage({
             method: "start",
             data: {
