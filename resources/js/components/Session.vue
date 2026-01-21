@@ -25,12 +25,14 @@
       </div>
     </div>
     <template #modal-footer>
-      <a
-        role="button"
+      <button
+        type="button"
         class="btn btn-outline-secondary ml-2"
-        href="/logout"
         :disabled="disabled"
-      >{{ ('LogOut') }}</a>
+        @click="logoutNow"
+      >
+        {{ ('LogOut') }}
+      </button>
       <button
         type="button"
         class="btn btn-secondary ml-2"
@@ -108,9 +110,28 @@ export default {
           this.onClose();
         })
         .catch((error) => {
+          const status = error?.response?.status;
+          if (status === 401 || status === 419) {
+            this.broadcastExpired();
+            window.location.href = "/logout";
+            return;
+          }
           this.disabled = false;
           this.errors = error.response.data.errors;
         });
+    },
+    broadcastExpired() {
+      if (window.ProcessMaker.sessionSync?.clearWarningState) {
+        window.ProcessMaker.sessionSync.clearWarningState();
+      }
+      if (window.ProcessMaker.sessionSync?.broadcast) {
+        window.ProcessMaker.sessionSync.broadcast("expired");
+      }
+    },
+    logoutNow() {
+      this.disabled = true;
+      this.broadcastExpired();
+      window.location.href = "/logout";
     },
   },
 };
