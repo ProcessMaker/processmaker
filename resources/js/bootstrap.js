@@ -622,12 +622,14 @@ if (userID) {
     if (e.data.method === "countdown") {
       sessionDebugLog("worker:countdown", e.data.data);
       setWarningState(e.data.data.time);
-      window.ProcessMaker.sessionModal(
-        "Session Warning",
-        "<p>Your user session is expiring. If your session expires, all of your unsaved data will be lost.</p><p>Would you like to stay connected?</p>",
-        e.data.data.time,
-        window.ProcessMaker.AccountTimeoutWarnSeconds,
-      );
+      if (typeof window.ProcessMaker.sessionModal === "function") {
+        window.ProcessMaker.sessionModal(
+          "Session Warning",
+          "<p>Your user session is expiring. If your session expires, all of your unsaved data will be lost.</p><p>Would you like to stay connected?</p>",
+          e.data.data.time,
+          window.ProcessMaker.AccountTimeoutWarnSeconds,
+        );
+      }
       broadcastSessionEvent("warning", { time: e.data.data.time });
     }
     if (e.data.method === "timedOut") {
@@ -653,12 +655,14 @@ if (userID) {
       return;
     }
     sessionDebugLog("warning:show", { remainingTime });
-    window.ProcessMaker.sessionModal(
-      "Session Warning",
-      "<p>Your user session is expiring. If your session expires, all of your unsaved data will be lost.</p><p>Would you like to stay connected?</p>",
-      remainingTime,
-      window.ProcessMaker.AccountTimeoutWarnSeconds,
-    );
+    if (typeof window.ProcessMaker.sessionModal === "function") {
+      window.ProcessMaker.sessionModal(
+        "Session Warning",
+        "<p>Your user session is expiring. If your session expires, all of your unsaved data will be lost.</p><p>Would you like to stay connected?</p>",
+        remainingTime,
+        window.ProcessMaker.AccountTimeoutWarnSeconds,
+      );
+    }
   };
 
   // in some cases it's necessary to start manually
@@ -705,6 +709,20 @@ if (userID) {
       refreshWarningStateFromStorage();
       startTimeoutWorker(sessionState.timeout);
       showWarningIfActive();
+    }
+  });
+
+  // Broadcast logout so all tabs close warning and redirect.
+  document.addEventListener("click", (event) => {
+    const logoutLink = event.target.closest('a[href="/logout"], a[href^="/logout?"]');
+    if (!logoutLink) {
+      return;
+    }
+    if (window.ProcessMaker.sessionSync?.clearWarningState) {
+      window.ProcessMaker.sessionSync.clearWarningState();
+    }
+    if (window.ProcessMaker.sessionSync?.broadcast) {
+      window.ProcessMaker.sessionSync.broadcast("expired");
     }
   });
 
