@@ -139,6 +139,10 @@ class TaskController extends Controller
         $fields = $request->input('fields', '');
         if ($fields) {
             $selectedFields = explode(',', $fields);
+            // Ensure 'id' is always included for internal logic (e.g., inOverdueQuery at line ~186)
+            if (!in_array('id', $selectedFields)) {
+                $selectedFields[] = 'id';
+            }
             $query = $query->select($selectedFields);
         }
 
