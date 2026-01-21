@@ -112,6 +112,7 @@ export default {
         .catch((error) => {
           const status = error?.response?.status;
           if (status === 401 || status === 419) {
+            // Session expired server-side; broadcast and redirect.
             this.broadcastExpired();
             window.location.href = "/logout";
             return;
@@ -121,6 +122,7 @@ export default {
         });
     },
     broadcastExpired() {
+      // Sync logout state across tabs.
       if (window.ProcessMaker.sessionSync?.clearWarningState) {
         window.ProcessMaker.sessionSync.clearWarningState();
       }
@@ -129,6 +131,7 @@ export default {
       }
     },
     logoutNow() {
+      // Ensure other tabs close warning before redirect.
       this.disabled = true;
       this.broadcastExpired();
       window.location.href = "/logout";

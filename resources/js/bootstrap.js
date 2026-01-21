@@ -368,6 +368,7 @@ if (userID) {
 
   const timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]")?.content;
   window.ProcessMaker.AccountTimeoutLength = parseInt(eval(document.head.querySelector("meta[name=\"timeout-length\"]")?.content));
+  // Server config provides warn seconds; convert to minutes for session math.
   const warnSeconds = parseInt(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]")?.content);
   window.ProcessMaker.AccountTimeoutWarnSeconds = Number.isNaN(warnSeconds) ? 0 : warnSeconds;
   window.ProcessMaker.AccountTimeoutWarnMinutes = window.ProcessMaker.AccountTimeoutWarnSeconds / 60;
@@ -622,6 +623,7 @@ if (userID) {
     if (e.data.method === "countdown") {
       sessionDebugLog("worker:countdown", e.data.data);
       setWarningState(e.data.data.time);
+      // Guard for layouts that don't include the session modal.
       if (typeof window.ProcessMaker.sessionModal === "function") {
         window.ProcessMaker.sessionModal(
           "Session Warning",
@@ -655,6 +657,7 @@ if (userID) {
       return;
     }
     sessionDebugLog("warning:show", { remainingTime });
+    // Guard for layouts that don't include the session modal.
     if (typeof window.ProcessMaker.sessionModal === "function") {
       window.ProcessMaker.sessionModal(
         "Session Warning",
@@ -705,6 +708,7 @@ if (userID) {
   window.addEventListener("visibilitychange", () => {
     updateLeadership();
     if (isLeader()) {
+      // Keep warning/timer state in sync when switching tabs.
       refreshSessionStateFromStorage();
       refreshWarningStateFromStorage();
       startTimeoutWorker(sessionState.timeout);
@@ -761,6 +765,7 @@ if (userID) {
 
       sessionDebugLog("event:session-started", { lifetime });
       setSessionState(lifetime);
+      // Clear any stale warning on new login/session.
       clearWarningState();
       broadcastSessionEvent("started", { timeout: lifetime });
       if (window.ProcessMaker.closeSessionModal) {
