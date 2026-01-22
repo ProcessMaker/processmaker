@@ -497,6 +497,32 @@ if (userID) {
   };
 
   const sessionChannel = "BroadcastChannel" in window ? new BroadcastChannel(sessionChannelName) : null;
+  const recentMessageIds = new Map();
+  const recentMessageTtlMs = 5000;
+  const maxRecentMessageIds = 100;
+
+  const shouldSkipMessage = (message) => {
+    if (!message?.id) {
+      return false;
+    }
+    const now = Date.now();
+    const lastSeen = recentMessageIds.get(message.id);
+    if (lastSeen && now - lastSeen < recentMessageTtlMs) {
+      return true;
+    }
+    recentMessageIds.set(message.id, now);
+    if (recentMessageIds.size > maxRecentMessageIds) {
+      for (const [id, ts] of recentMessageIds) {
+        if (now - ts > recentMessageTtlMs) {
+          recentMessageIds.delete(id);
+        }
+        if (recentMessageIds.size <= maxRecentMessageIds) {
+          break;
+        }
+      }
+    }
+    return false;
+  };
 
   const broadcastSessionEvent = (type, data = {}) => {
     const message = {
@@ -595,21 +621,31 @@ if (userID) {
     if (!message || message.from === sessionTabId) {
       return;
     }
+    if (shouldSkipMessage(message)) {
+      return;
+    }
 
     sessionDebugLog("receive", message);
     if (message.type === "warning") {
       const time = Number(message.data?.time);
       if (time) {
         setWarningState(time);
-      }
-      if (!isLeader() && window.ProcessMaker.closeSessionModal) {
-        window.ProcessMaker.closeSessionModal();
+        if (document.visibilityState === "visible") {
+          showWarningIfActive();
+        }
       }
       return;
     }
 
     if (message.type === "renewing") {
-      setRenewingState(!!message.data?.isRenewing);
+      const isRenewing = !!message.data?.isRenewing;
+      setRenewingState(isRenewing);
+      if (isRenewing) {
+        clearWarningState();
+        if (window.ProcessMaker.closeSessionModal) {
+          window.ProcessMaker.closeSessionModal();
+        }
+      }
       return;
     }
 
@@ -692,10 +728,16 @@ if (userID) {
     if (remainingTime <= 0) {
       sessionDebugLog("warning:skip", { remainingTime });
       clearWarningState();
+      if (window.ProcessMaker.closeSessionModal) {
+        window.ProcessMaker.closeSessionModal();
+      }
       setRenewingState(false);
       return;
     }
     refreshRenewingStateFromStorage();
+    if (renewingState?.isRenewing) {
+      return;
+    }
     sessionDebugLog("warning:show", { remainingTime });
     // Guard for layouts that don't include the session modal.
     if (typeof window.ProcessMaker.sessionModal === "function") {
@@ -720,7 +762,12 @@ if (userID) {
       now,
     });
     if (isVisible) {
-      writeLeader();
+      const leaderExpired = !leader || (now - leader.ts >= leaderTtlMs);
+      if (leaderExpired || leader?.tabId === sessionTabId) {
+        writeLeader();
+      }
+      refreshWarningStateFromStorage();
+      showWarningIfActive();
     }
 
     const leaderNow = isLeader();
@@ -747,12 +794,13 @@ if (userID) {
   setInterval(updateLeadership, leaderHeartbeatMs);
   window.addEventListener("visibilitychange", () => {
     updateLeadership();
+    // Keep warning state in sync when switching tabs.
+    refreshWarningStateFromStorage();
+    showWarningIfActive();
     if (isLeader()) {
-      // Keep warning/timer state in sync when switching tabs.
+      // Only the leader drives the worker countdown.
       refreshSessionStateFromStorage();
-      refreshWarningStateFromStorage();
       startTimeoutWorker(sessionState.timeout);
-      showWarningIfActive();
     }
   });
 
