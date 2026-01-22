@@ -157,7 +157,7 @@ export default {
       }
     },
     broadcastExpired() {
-      // Sync logout state across tabs.
+      // Sync timeout state across tabs.
       if (window.ProcessMaker.sessionSync?.clearWarningState) {
         window.ProcessMaker.sessionSync.clearWarningState();
       }
@@ -165,11 +165,20 @@ export default {
         window.ProcessMaker.sessionSync.broadcast("expired");
       }
     },
+    broadcastLogout() {
+      // Sync manual logout state across tabs.
+      if (window.ProcessMaker.sessionSync?.clearWarningState) {
+        window.ProcessMaker.sessionSync.clearWarningState();
+      }
+      if (window.ProcessMaker.sessionSync?.broadcast) {
+        window.ProcessMaker.sessionSync.broadcast("logout");
+      }
+    },
     logoutNow() {
       // Ensure other tabs close warning before redirect.
       this.disabled = true;
       this.setRenewingState(true);
-      this.broadcastExpired();
+      this.broadcastLogout();
       window.location.href = "/logout";
     },
   },
