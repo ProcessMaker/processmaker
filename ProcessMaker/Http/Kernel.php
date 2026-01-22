@@ -96,19 +96,4 @@ class Kernel extends HttpKernel
         'etag' => Middleware\Etag\HandleEtag::class,
         'file_size_check' => Middleware\FileSizeCheck::class,
     ];
-
-    /**
-     * The auth:anon middleware must run after a session is set up to
-     * check if there is a user logged in before implying the user is
-     * anonymous.
-     *
-     * The auth:anon middleware is only used for the laravel echo
-     * server route: broadcasting/auth
-     *
-     * @var array
-     */
-    protected $middlewarePriority = [
-        \Illuminate\Session\Middleware\AuthenticateSession::class,
-        Middleware\ProcessMakerAuthenticate::class,
-    ];
 }
