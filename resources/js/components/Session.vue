@@ -163,6 +163,9 @@ export default {
       if (window.ProcessMaker.sessionSync?.broadcast) {
         window.ProcessMaker.sessionSync.broadcast("renewing", { isRenewing });
       }
+      if (window.ProcessMaker.sessionSync?.setRenewingState) {
+        window.ProcessMaker.sessionSync.setRenewingState(isRenewing);
+      }
     },
     broadcastExpired() {
       // Sync timeout state across tabs.

@@ -23,6 +23,7 @@ export const initSessionSync = ({
   const sessionWarningKey = "pm:session:warning";
   // Track keep-alive progress across tabs.
   const sessionRenewingKey = "pm:session:renewing";
+  const sessionSuppressKey = "pm:session:suppress-warning";
   const sessionMessageKey = "pm:session:message";
   const sessionTabId = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
   const leaderHeartbeatMs = 4000;
@@ -103,11 +104,18 @@ export const initSessionSync = ({
 
   let warningState = readStorageJson(sessionWarningKey);
   let renewingState = readStorageJson(sessionRenewingKey);
+  let suppressWarningState = readStorageJson(sessionSuppressKey);
 
   const refreshWarningStateFromStorage = () => {
     const storedWarningState = readStorageJson(sessionWarningKey);
     if (storedWarningState?.time && storedWarningState?.ts) {
-      warningState = storedWarningState;
+      // Clear stale warning from previous session.
+      if (sessionState?.startedAt && storedWarningState.ts < sessionState.startedAt) {
+        warningState = null;
+        removeStorageKey(sessionWarningKey);
+      } else {
+        warningState = storedWarningState;
+      }
     } else {
       warningState = null;
     }
@@ -154,8 +162,22 @@ export const initSessionSync = ({
     } else {
       renewingState = null;
       removeStorageKey(sessionRenewingKey);
+      setSuppressWarning(1000);
     }
     syncRenewingUi();
+  };
+
+  const refreshSuppressWarningState = () => {
+    const storedSuppressState = readStorageJson(sessionSuppressKey);
+    suppressWarningState = storedSuppressState?.until ? storedSuppressState : null;
+    return suppressWarningState;
+  };
+
+  const setSuppressWarning = (durationMs) => {
+    suppressWarningState = {
+      until: Date.now() + durationMs,
+    };
+    writeStorageJson(sessionSuppressKey, suppressWarningState);
   };
 
   const sessionChannel = "BroadcastChannel" in window ? new BroadcastChannel(sessionChannelName) : null;
@@ -294,6 +316,10 @@ export const initSessionSync = ({
     if (renewingState?.isRenewing) {
       return;
     }
+    refreshSuppressWarningState();
+    if (suppressWarningState?.until && Date.now() < suppressWarningState.until) {
+      return;
+    }
     sessionDebugLog("warning:show", { remainingTime });
     const sessionModal = resolveSessionModal();
     // Guard for layouts that don't include the session modal.
@@ -344,6 +370,7 @@ export const initSessionSync = ({
       const timeout = Number(message.data?.timeout) || accountTimeoutLength;
       clearWarningState();
       setRenewingState(false);
+      setSuppressWarning(1000);
       setSessionState(timeout);
       const closeSessionModal = resolveCloseSessionModal();
       if (closeSessionModal) {
@@ -555,6 +582,7 @@ export const initSessionSync = ({
       isLeader,
       setSessionState,
       clearWarningState,
+      setRenewingState,
     },
   };
 };
