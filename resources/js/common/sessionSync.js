@@ -188,7 +188,7 @@ export const initSessionSync = ({
 
   const broadcastSessionEvent = (type, data = {}) => {
     const message = {
-      id: `${sessionTabId}-${Date.now()}`,
+      id: `${sessionTabId}-${Date.now()}-${Math.random().toString(16).slice(2)}`,
       type,
       data,
       from: sessionTabId,
