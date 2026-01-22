@@ -663,6 +663,12 @@ if (userID) {
       return;
     }
 
+    if (message.type === "logout") {
+      clearWarningState();
+      setRenewingState(false);
+      window.location = "/logout";
+    }
+
     if (message.type === "expired") {
       clearWarningState();
       setRenewingState(false);
@@ -804,7 +810,7 @@ if (userID) {
     }
   });
 
-  // Broadcast logout so all tabs close warning and redirect.
+  // Broadcast manual logout so all tabs close warning and redirect.
   document.addEventListener("click", (event) => {
     const logoutLink = event.target.closest('a[href="/logout"], a[href^="/logout?"]');
     if (!logoutLink) {
@@ -814,7 +820,7 @@ if (userID) {
       window.ProcessMaker.sessionSync.clearWarningState();
     }
     if (window.ProcessMaker.sessionSync?.broadcast) {
-      window.ProcessMaker.sessionSync.broadcast("expired");
+      window.ProcessMaker.sessionSync.broadcast("logout");
     }
   });
 
