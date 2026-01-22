@@ -46,6 +46,8 @@ class ProcessLaunchpadExporter extends ExporterBase
         foreach ($this->getDependents('screen') as $dependent) {
             $properties = json_decode($this->model->properties, true);
             $properties['screen_uuid'] = $dependent->model->uuid;
+            $properties['screen_id'] = $dependent->model->id;
+            $properties['screen_title'] = $dependent->model->title;
             $this->model->properties = json_encode($properties);
         }
 
