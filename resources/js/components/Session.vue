@@ -90,6 +90,9 @@ export default {
   watch: {
     shown(value) {
       if (value) {
+        this.resetProcessingState();
+      }
+      if (value) {
         this.$refs.sessionModal.show();
       } else {
         this.$refs.sessionModal.hide();
@@ -100,6 +103,11 @@ export default {
     this.$emit("show");
   },
   methods: {
+    resetProcessingState() {
+      this.localRenewing = false;
+      this.disabled = false;
+      this.errors = {};
+    },
     onClose() {
       this.$emit("close");
     },
