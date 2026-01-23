@@ -65,6 +65,10 @@
         type: Boolean,
         default: false
       },
+      usersEndpoint: {
+        type: String,
+        default: "users_task_count"
+      },
       error: String,
       helper: String,
       placeholder: String,
@@ -232,7 +236,7 @@
       },
       loadUsers (filter) {
         ProcessMaker.apiClient
-          .get("users_task_count" + (typeof filter === "string" ? "?filter=" + filter : ""))
+          .get(this.usersEndpoint + (typeof filter === "string" ? "?filter=" + filter : ""))
           .then(response => {
             const users = response.data.data.map(user => this.addUsernameToFullName(user));
             this.users = users;

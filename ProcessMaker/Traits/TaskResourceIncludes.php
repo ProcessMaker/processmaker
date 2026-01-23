@@ -64,6 +64,10 @@ trait TaskResourceIncludes
             // but drafts are disabled so we need to delete it now that
             // it's been accessed.
             $draft->delete();
+
+            // Return null to prevent the frontend from trying to load
+            // files from the deleted draft
+            return ['draft' => null];
         }
 
         return ['draft' => $draft];
