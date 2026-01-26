@@ -70,7 +70,7 @@ class UserSeeder extends Seeder
         $clients->createPasswordGrantClient(
             'Password Grant',
             null, // provider
-            false // confidential
+            true // confidential (must be true as database requires secret to be NOT NULL)
         );
     }
 }
