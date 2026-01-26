@@ -46,16 +46,14 @@ class ClientController
 
         // Use ClientRepository methods based on type
         if ($personalAccess) {
-            $client = $this->clients->createPersonalAccessClient(
-                $request->user()->getKey(),
-                $request->name,
-                $redirect
+            $client = $this->clients->createPersonalAccessGrantClient(
+                $request->name
             );
         } elseif ($password) {
             $client = $this->clients->createPasswordGrantClient(
-                $request->user()->getKey(),
                 $request->name,
-                $redirect
+                null, // provider
+                false // confidential
             );
         } else {
             // Authorization code grant

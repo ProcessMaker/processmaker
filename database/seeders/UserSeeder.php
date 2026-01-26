@@ -55,22 +55,22 @@ class UserSeeder extends Seeder
         ]);
 
         // Create client so we can generate tokens
-        $clients->createPersonalAccessClient(
-            null,
-            'PmApi',
-            'http://localhost'
-        );
+        $clients->createPersonalAccessGrantClient('PmApi');
 
-        // Create client OAuth (for 3-legged auth)
-        $clients->create(
-            null,
+        // Create client OAuth (for 3-legged auth) - Authorization Code Grant for Swagger UI
+        $clients->createAuthorizationCodeGrantClient(
             'Swagger UI Auth',
-            env('APP_URL', 'http://localhost') . '/api/oauth2-callback'
+            [env('APP_URL', 'http://localhost') . '/api/oauth2-callback'],
+            true, // confidential
+            null, // user (system client)
+            false // enableDeviceFlow
         );
 
         // Allow users get at token using the password grant flow
         $clients->createPasswordGrantClient(
-            null, 'Password Grant', 'http://localhost'
+            'Password Grant',
+            null, // provider
+            false // confidential
         );
     }
 }
