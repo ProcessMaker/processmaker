@@ -234,7 +234,7 @@ abstract class TestCase extends BaseTestCase
         $filename = 'snapshot_' . $id . '.db';
 
         $snapshotFile = base_path($filename);
-        $command = 'mysqldump --ssl=false ' . $this->mysqlConnectionString();
+        $command = $this->getDumpCommand() . $this->mysqlConnectionString();
         $command .= ' ' . env('DB_DATABASE') . ' > ' . $snapshotFile;
         exec($command, $output, $return);
         if ($return !== 0) {
@@ -281,5 +281,18 @@ abstract class TestCase extends BaseTestCase
         }
 
         return $command;
+    }
+
+    private function getDumpCommand()
+    {
+        // Check if mariadb-dump is available (common in Alpine environments)
+        $result = \Illuminate\Support\Facades\Process::run('command -v mariadb-dump');
+
+        if ($result->successful()) {
+            return 'mariadb-dump ';
+        }
+
+        // Fall back to mysqldump
+        return 'mysqldump ';
     }
 }
