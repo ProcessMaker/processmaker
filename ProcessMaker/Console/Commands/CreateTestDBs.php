@@ -46,7 +46,7 @@ class CreateTestDBs extends Command
 
         $dbConnectionArgs = '-h ' . env('DB_HOSTNAME') . ' -P ' . env('DB_PORT') . ' -u ' . env('DB_USERNAME') . " -p'" . env('DB_PASSWORD') . "'";
         $file = tempnam(sys_get_temp_dir(), 'dump');
-        $cmd = "mysqldump --ssl-mode=DISABLED $dbConnectionArgs " . env('DB_DATABASE') . " > $file";
+        $cmd = "mysqldump --ssl=false $dbConnectionArgs " . env('DB_DATABASE') . " > $file";
         (new Process($cmd))->mustRun();
 
         foreach (range(1, $processes) as $process) {
