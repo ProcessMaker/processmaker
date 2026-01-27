@@ -7,18 +7,21 @@
       :process="selectedProcess ? selectedProcess.name : ''"
       :template="guidedTemplates ? 'Guided Templates' : ''"
     />
-    <div class="tw-flex tw-h-full">
-      <CollapsableContainer
+    <div class="tw-flex tw-h-full tw-relative">
+      <component :is="isMobile ? 'mobile-drawer' : 'collapsable-container'"
         v-model="showMenu"
-        class="tw-w-80"
-        position="right"
-        @change="hideMenu"
+        :class="{
+          'tw-w-80': !isMobile,
+          'tw-w-full tw-h-full': isMobile && showMenu,
+          'tw-w-0 tw-h-full': isMobile && !showMenu,
+        }"
+        :position="isMobile ? 'left' : 'right'"
       >
         <MenuCatologue
           ref="categoryList"
           title="Available Processes"
           preicon="fas fa-play-circle"
-          class="pt-3 menu-catalog"
+          class="pt-3 menu-catalog tw-bg-white tw-h-full tw-w-full"
           show-bookmark="true"
           :category-count="categoryCount"
           :data="listCategories"
@@ -27,7 +30,7 @@
           @categorySelected="selectCategory"
           @addCategories="addCategories"
         />
-      </CollapsableContainer>
+      </component>
 
       <div
         ref="processInfo"
@@ -69,6 +72,7 @@ import MenuCatologue from "./menuCatologue.vue";
 import CatalogueEmpty from "./CatalogueEmpty.vue";
 import Breadcrumbs from "./Breadcrumbs.vue";
 import CollapsableContainer from "../../../jscomposition/base/ui/CollapsableContainer.vue";
+import MobileDrawer from "../../../jscomposition/base/ui/MobileDrawer.vue";
 
 export default {
   components: {
@@ -76,6 +80,7 @@ export default {
     CatalogueEmpty,
     Breadcrumbs,
     CollapsableContainer,
+    MobileDrawer,
   },
   props: ["currentUserId", "process", "currentUser", "userConfig"],
   data() {
@@ -152,15 +157,17 @@ export default {
   },
   methods: {
     defineUserConfiguration() {
-      this.showMenu = this.userConfiguration.launchpad.isMenuCollapse;
+      this.showMenu = this.userConfiguration?.launchpad?.isMenuCollapse;
     },
     hideMenu(value) { // value is the new value of the menu
-      this.showMenu = value;
+      this.showMenu = !this.showMenu;
       this.$root.$emit("sizeChanged", value);
       this.updateUserConfiguration();
     },
     updateUserConfiguration() {
-      this.userConfiguration.launchpad.isMenuCollapse = this.showMenu;
+      if(this.userConfiguration?.launchpad) {
+        this.userConfiguration.launchpad.isMenuCollapse = this.showMenu;
+      }
       ProcessMaker.apiClient
         .put(this.urlConfiguration, {
           ui_configuration: this.userConfiguration,

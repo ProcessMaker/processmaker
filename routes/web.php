@@ -252,6 +252,10 @@ Route::get('/not-authorized', function () {
     return view('errors.not-authorized');
 })->name('errors.not-authorized');
 
+Route::get('/task-is-not-assigned', function () {
+    return view('errors.task-is-not-assigned');
+})->name('errors.task-is-not-assigned');
+
 // SAML Metadata Route
 Route::resource('/saml/metadata', MetadataController::class)->only('index');
 
