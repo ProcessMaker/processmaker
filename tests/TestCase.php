@@ -234,7 +234,7 @@ abstract class TestCase extends BaseTestCase
         $filename = 'snapshot_' . $id . '.db';
 
         $snapshotFile = base_path($filename);
-        $command = 'mysqldump ' . $this->mysqlConnectionString();
+        $command = 'mysqldump --ssl-mode=DISABLED ' . $this->mysqlConnectionString();
         $command .= ' ' . env('DB_DATABASE') . ' > ' . $snapshotFile;
         exec($command, $output, $return);
         if ($return !== 0) {
