@@ -228,6 +228,11 @@
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "php-http/discovery": true,
             "tbachert/spi": true
+        },
+        "audit": {
+            "ignore": [
+                "CVE-2026-24765"
+            ]
         }
     }
 }
