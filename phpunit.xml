@@ -5,6 +5,12 @@
          colors="true"
          testdox="true"
          extensionsDirectory="tests/Extensions"
+
+         failOnWarning="false"
+         failOnDeprecation="false"
+         failOnRisky="false"
+         failOnIncomplete="false"
+         failOnSkipped="false"
 >
   <testsuites>
       <testsuite name="Features">
