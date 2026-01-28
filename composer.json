@@ -74,7 +74,7 @@
         "laravel/dusk": "^8.2",
         "laravel/homestead": "^15.0",
         "mockery/mockery": "^1.6",
-        "phpunit/phpunit": "^12",
+        "phpunit/phpunit": "^11.5.50",
         "spatie/laravel-ignition": "^2.9",
         "squizlabs/php_codesniffer": "^3.11",
         "symfony/dom-crawler": "^7.2"
