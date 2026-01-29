@@ -53,7 +53,7 @@ class ClientController
             $client = $this->clients->createPasswordGrantClient(
                 $request->name,
                 null, // provider
-                false // confidential
+                true // confidential
             );
         } else {
             // Authorization code grant
@@ -79,7 +79,6 @@ class ClientController
             return new Response('', 404);
         }
 
-        $originalValues = $client->getAttributes();
         $this->validate($request);
 
         $personalAccess = in_array('personal_access_client', $request->types);
