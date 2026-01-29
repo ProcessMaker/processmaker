@@ -55,7 +55,6 @@ export default {
     });
     this.receiveEvent("formSubmit", (data) => {
       // Use buttonInfo from event if it's a valid object, otherwise use lastClickedButton
-      // Note: There's a bug in screen-builder where buttonInfo arrives as `false` instead of the object
       let submitData = null;
       if (data && typeof data === "object" && !Array.isArray(data)) {
         submitData = data;
