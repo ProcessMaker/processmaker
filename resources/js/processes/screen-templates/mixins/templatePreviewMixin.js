@@ -4,6 +4,10 @@ const templatePreviewMixin = {
       showPreview: false,
       showRight: true,
       template: {},
+      prevTemplate: {},
+      nextTemplate: {},
+      existPrev: false,
+      existNext: false,
       data: [],
       templateTitle: "",
       loading: true,
@@ -28,6 +32,9 @@ const templatePreviewMixin = {
       this.template = info;
       this.showPreview = true;
       this.data = data;
+      this.existPrev = false;
+      this.existNext = false;
+      this.defineNextPrevTemplate();
     },
     showButton() {
       this.isMouseOver = true;
@@ -99,6 +106,56 @@ const templatePreviewMixin = {
       this.isLoading = "";
       this.stopFrame = false;
       this.size = 50;
+      this.prevTemplate = {};
+      this.nextTemplate = {};
+      this.existPrev = false;
+      this.existNext = false;
+    },
+    defineNextPrevTemplate() {
+      if (!Array.isArray(this.data)) {
+        this.prevTemplate = {};
+        this.nextTemplate = {};
+        this.existPrev = false;
+        this.existNext = false;
+        return;
+      }
+
+      let prevTemplate = {};
+      let nextTemplate = {};
+      let seeNextTemplate = false;
+      for (const templateIndex in this.data) {
+        if (!seeNextTemplate) {
+          if (this.data[templateIndex] === this.template) {
+            seeNextTemplate = true;
+          } else {
+            prevTemplate = this.data[templateIndex];
+            this.existPrev = true;
+          }
+        } else {
+          nextTemplate = this.data[templateIndex];
+          this.existNext = true;
+          break;
+        }
+      }
+      this.prevTemplate = prevTemplate;
+      this.nextTemplate = nextTemplate;
+    },
+    goPrevNext(action) {
+      let targetTemplate = null;
+      if (action === "Next" && this.existNext) {
+        targetTemplate = this.nextTemplate;
+      }
+      if (action === "Prev" && this.existPrev) {
+        targetTemplate = this.prevTemplate;
+      }
+
+      if (!targetTemplate) {
+        return;
+      }
+
+      this.$emit("select-template", targetTemplate);
+      this.$emit("mark-selected-row", targetTemplate.id);
+      this.showSideBar(targetTemplate, this.data);
     },
   },
 };
