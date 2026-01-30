@@ -45,12 +45,9 @@ trait ScriptDockerNayraTrait
             'timeout' => $timeout,
         ];
         $body = json_encode($params);
-        $servers = self::getNayraAddresses();
-        if (!$servers) {
-            $this->bringUpNayra();
-        }
-        $baseUrl = $this->getNayraInstanceUrl();
-        $url = $baseUrl . '/run_script';
+
+        $baseUrl = $this->getNayraBaseUrl();
+        $url = rtrim($baseUrl, '/') . '/run_script';
         $this->ensureNayraServerIsRunning($baseUrl);
 
         $ch = curl_init($url);
@@ -78,9 +75,28 @@ trait ScriptDockerNayraTrait
         return $result;
     }
 
-    private function getNayraInstanceUrl()
+    /**
+     * Get the base URL for the Nayra service.
+     * Uses NAYRA_REST_API_HOST if set, otherwise Docker discovery.
+     */
+    private function getNayraBaseUrl(): string
+    {
+        $restApiHost = config('app.nayra_rest_api_host');
+        if (!empty($restApiHost)) {
+            return rtrim($restApiHost, '/');
+        }
+
+        return $this->getNayraInstanceUrl();
+    }
+
+    private function getNayraInstanceUrl(): string
     {
         $servers = self::getNayraAddresses();
+        if (!$servers) {
+            $this->bringUpNayra();
+            $servers = self::getNayraAddresses();
+        }
+
         return $this->schema . '://' . $servers[0] . ':' . $this->getNayraPort();
     }
 
@@ -106,6 +122,9 @@ trait ScriptDockerNayraTrait
     {
         $header = @get_headers($url);
         if (!$header) {
+            if (!empty(config('app.nayra_rest_api_host'))) {
+                throw new ScriptException('Could not connect to the nayra container');
+            }
             $this->bringUpNayra(true);
         }
     }
