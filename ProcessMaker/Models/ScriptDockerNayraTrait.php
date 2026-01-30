@@ -11,9 +11,9 @@ use ProcessMaker\Console\Commands\BuildScriptExecutors;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Facades\Docker;
 use ProcessMaker\ScriptRunners\Base;
-use RuntimeException;
-use Psr\Container\NotFoundExceptionInterface;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use RuntimeException;
 use UnexpectedValueException;
 
 /**
@@ -21,7 +21,6 @@ use UnexpectedValueException;
  */
 trait ScriptDockerNayraTrait
 {
-
     private $schema = 'http';
 
     /**
@@ -72,6 +71,7 @@ trait ScriptDockerNayraTrait
             ]);
             throw new ScriptException($result);
         }
+
         return $result;
     }
 
@@ -108,6 +108,7 @@ trait ScriptDockerNayraTrait
         if ($status) {
             return 'Error getting logs from Nayra Docker: ' . implode("\n", $logs);
         }
+
         return implode("\n", $logs);
     }
 
@@ -225,7 +226,7 @@ trait ScriptDockerNayraTrait
                     . ($nayraDockerNetwork
                         ? "'{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'"
                         : "'{{ .NetworkSettings.IPAddress }}'"
-                        )
+                    )
                     . " {$instanceName}_nayra 2>/dev/null",
                     $output,
                     $status
@@ -236,6 +237,7 @@ trait ScriptDockerNayraTrait
             }
             if ($ip) {
                 self::setNayraAddresses([$ip]);
+
                 return true;
             }
         }
@@ -299,6 +301,7 @@ trait ScriptDockerNayraTrait
     private static function isCacheArrayStore(): bool
     {
         $cacheDriver = Cache::getFacadeRoot()->getStore();
+
         return $cacheDriver instanceof ArrayStore;
     }
 
