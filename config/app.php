@@ -120,7 +120,6 @@ return [
     // Microservice AI Host
     'ai_microservice_host' => env('AI_MICROSERVICE_HOST'),
     'ai_microservice_host_ws' => env('AI_MICROSERVICE_HOST_WS'),
-    'ai_microservice_hosta' => env('AI_MICROSERVICE_HOSTa'),
 
     // Security log
     'security_log' => env('SECURITY_LOG', 'true'),
