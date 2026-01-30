@@ -30,6 +30,7 @@ use Lavary\Menu\Menu;
 use ProcessMaker\Cache\Settings\SettingCacheManager;
 use ProcessMaker\Console\Commands\HorizonListen;
 use ProcessMaker\Console\Migration\ExtendedMigrateCommand;
+use ProcessMaker\Contracts\ConditionalRedirectServiceInterface;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Events\TenantResolved;
@@ -50,6 +51,7 @@ use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
 use ProcessMaker\Providers\PermissionServiceProvider;
 use ProcessMaker\Repositories\SettingsConfigRepository;
+use ProcessMaker\Services\ConditionalRedirectService;
 use RuntimeException;
 use Spatie\Multitenancy\Events\MadeTenantCurrentEvent;
 use Spatie\Multitenancy\Events\TenantNotFoundForRequestEvent;
@@ -245,6 +247,12 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         $this->app->instance('tenant-resolved', false);
+
+        /**
+         * Conditional Redirect Service
+         * This service is used to evaluate the conditional redirect property of a process request token.
+         */
+        $this->app->bind(ConditionalRedirectServiceInterface::class, ConditionalRedirectService::class);
     }
 
     /**
