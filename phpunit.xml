@@ -5,11 +5,7 @@
          colors="true"
          testdox="true"
          extensionsDirectory="tests/Extensions"
-         displayDetailsOnTestsThatTriggerDeprecations="true"
-         displayDetailsOnTestsThatTriggerErrors="true"
-         displayDetailsOnTestsThatTriggerNotices="true"
-         displayDetailsOnTestsThatTriggerWarnings="true"
-         displayDetailsOnPhpunitDeprecations="true"
+         displayDetailsOnAllIssues="true"
 >
   <testsuites>
       <testsuite name="Features">
