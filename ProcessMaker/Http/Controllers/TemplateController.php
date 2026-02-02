@@ -93,14 +93,12 @@ class TemplateController extends Controller
             abort(404);
         }
 
-        // If template has an editing process, show template modeler with that process id
+        // If template has an editing process, show template modeler with that process id (resuming existing session)
         if ($template->editing_process_uuid) {
             $editingProcess = Process::where('uuid', $template->editing_process_uuid)
                 ->where('is_template', 1)
                 ->first();
             if ($editingProcess) {
-                Session::flash('_alert', json_encode(['success', __('The template was created.')]));
-
                 return view('processes.modeler.showTemplate')->with('id', $editingProcess->id);
             }
         }
