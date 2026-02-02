@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use ProcessMaker\Http\Controllers\Api\TemplateController as TemplateApiController;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\Template;
 use ProcessMaker\Templates\ProcessTemplate;
@@ -76,6 +77,34 @@ class TemplateController extends Controller
 
     public function show(Request $request)
     {
+        $id = $request->route('id');
+
+        $template = ProcessTemplates::find($id);
+
+        if (!$template) {
+            // id might be a process id
+            $editingProcess = Process::where('id', $id)->where('is_template', 1)->first();
+            if ($editingProcess && $editingProcess->uuid) {
+                $template = ProcessTemplates::where('editing_process_uuid', $editingProcess->uuid)->first();
+                if ($template) {
+                    return redirect()->route('modeler.template.show', ['id' => $template->id]);
+                }
+            }
+            abort(404);
+        }
+
+        // If template has an editing process, show template modeler with that process id
+        if ($template->editing_process_uuid) {
+            $editingProcess = Process::where('uuid', $template->editing_process_uuid)
+                ->where('is_template', 1)
+                ->first();
+            if ($editingProcess) {
+                Session::flash('_alert', json_encode(['success', __('The template was created.')]));
+
+                return view('processes.modeler.showTemplate')->with('id', $editingProcess->id);
+            }
+        }
+
         $templateApiController = new TemplateApiController(new Template);
         $response = $templateApiController->show('process', $request);
         Session::flash('_alert', json_encode(['success', __('The template was created.')]));
