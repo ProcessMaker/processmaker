@@ -74,7 +74,7 @@ class ProcessTemplate implements TemplateInterface
     public function show($request) : array
     {
         $template = ProcessTemplates::find($request->id);
-        $process = Process::where('uuid', $template->editing_process_uuid)->where('is_template', 1)->first();
+        $process = $template->editingProcess;
 
         // If a process exists with the template editing process uuid delete that process and create a new process
         // this ensures any updates to the template manifest will be reflected

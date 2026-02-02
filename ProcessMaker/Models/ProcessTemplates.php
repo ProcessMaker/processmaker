@@ -22,6 +22,17 @@ class ProcessTemplates extends Template
     public $process_category_id;
 
     /**
+     * The process currently being used to edit this template (if any).
+     *
+     * @return BelongsTo
+     */
+    public function editingProcess()
+    {
+        return $this->belongsTo(Process::class, 'editing_process_uuid', 'uuid')
+            ->where('processes.is_template', 1);
+    }
+
+    /**
      * Category of the process.
      *
      * @return BelongsTo

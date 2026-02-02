@@ -94,13 +94,9 @@ class TemplateController extends Controller
         }
 
         // If template has an editing process, show template modeler with that process id (resuming existing session)
-        if ($template->editing_process_uuid) {
-            $editingProcess = Process::where('uuid', $template->editing_process_uuid)
-                ->where('is_template', 1)
-                ->first();
-            if ($editingProcess) {
-                return view('processes.modeler.showTemplate')->with('id', $editingProcess->id);
-            }
+        $editingProcess = $template->editingProcess;
+        if ($editingProcess) {
+            return view('processes.modeler.showTemplate')->with('id', $editingProcess->id);
         }
 
         $templateApiController = new TemplateApiController(new Template);
