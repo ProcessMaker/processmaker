@@ -347,6 +347,7 @@
                                 </div>
                             </div>
 
+                            @if(config('app.case_retention_policy_enabled'))
                             <div class="card card-custom-info">
                               <div class="card-header"
                                    id="headingCasesRetention">
@@ -406,6 +407,7 @@
                                 </div>
                               </div>
                             </div>
+                            @endif
 
                             <div class="d-flex justify-content-end mt-2">
                                 {{ html()->button(__('Cancel'), 'button')->class('btn btn-outline-secondary button-custom')->attribute('@click', 'onClose') }}
