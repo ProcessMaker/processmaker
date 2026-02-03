@@ -383,7 +383,7 @@ trait TaskControllerIndexMethods
 
         $query->where(function ($query) use ($user) {
             $query->where('user_id', $user->id)
-                ->orWhereIn('id', $user->availableSelfServiceTaskIds());
+                ->orWhereIn('id', $user->availableSelfServiceTasksQuery());
         });
     }
 
