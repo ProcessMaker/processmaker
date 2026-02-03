@@ -2,6 +2,7 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 import * as bootstrap from "bootstrap";
 import TenantAwareEcho from "./common/TenantAwareEcho";
+import { initSessionSync } from "./common/sessionSync";
 import Router from "vue-router";
 import ScreenBuilder, { initializeScreenCache } from "@processmaker/screen-builder";
 import * as VueDeepSet from "vue-deepset";
@@ -350,99 +351,36 @@ if (window.Processmaker && window.Processmaker.broadcasting) {
 }
 
 if (userID) {
-  // Session timeout
   const timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]")?.content;
-  window.ProcessMaker.AccountTimeoutLength = parseInt(eval(document.head.querySelector("meta[name=\"timeout-length\"]")?.content));
-  window.ProcessMaker.AccountTimeoutWarnSeconds = parseInt(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]")?.content);
-  window.ProcessMaker.AccountTimeoutEnabled = document.head.querySelector("meta[name=\"timeout-enabled\"]") ? parseInt(document.head.querySelector("meta[name=\"timeout-enabled\"]")?.content) : 1;
-  window.ProcessMaker.AccountTimeoutWorker = new Worker(timeoutScript);
+  const accountTimeoutLength = parseInt(eval(document.head.querySelector("meta[name=\"timeout-length\"]")?.content));
+  const warnSeconds = parseInt(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]")?.content);
+  const accountTimeoutWarnSeconds = Number.isNaN(warnSeconds) ? 0 : warnSeconds;
+  const accountTimeoutEnabled = document.head.querySelector("meta[name=\"timeout-enabled\"]") ? parseInt(document.head.querySelector("meta[name=\"timeout-enabled\"]")?.content) : 1;
 
-  const payloadAccountTimeoutWorker = {
-    timeout: window.ProcessMaker.AccountTimeoutLength,
-    warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds,
-    enabled: window.ProcessMaker.AccountTimeoutEnabled,
-  };
-
-  window.ProcessMaker.AccountTimeoutWorker.onmessage = (e) => {
-    if (e.data.method === "countdown") {
-      window.ProcessMaker.sessionModal(
-        "Session Warning",
-        "<p>Your user session is expiring. If your session expires, all of your unsaved data will be lost.</p><p>Would you like to stay connected?</p>",
-        e.data.data.time,
-        window.ProcessMaker.AccountTimeoutWarnSeconds,
-      );
-    }
-    if (e.data.method === "timedOut") {
-      window.location = "/logout?timeout=true";
-    }
-  };
-
-  // in some cases it's necessary to start manually
-  window.ProcessMaker.AccountTimeoutWorker.postMessage({
-    method: "start",
-    data: payloadAccountTimeoutWorker,
+  const sessionSyncState = initSessionSync({
+    userId: userID.content,
+    isProd,
+    timeoutScript,
+    accountTimeoutLength,
+    accountTimeoutWarnSeconds,
+    accountTimeoutEnabled,
+    Vue,
+    Echo: window.Echo,
+    pushNotification: window.ProcessMaker.pushNotification,
+    alert: window.ProcessMaker.alert,
+    getSessionModal: () => window.ProcessMaker.sessionModal,
+    getCloseSessionModal: () => window.ProcessMaker.closeSessionModal,
+    getNavbar: () => window.ProcessMaker.navbar,
   });
 
-  // Restart the timeout worker (when the user interacts with the page)
-  const eventsTimeoutWorker = ["click", "keypress"];
-
-  eventsTimeoutWorker.forEach((event) => {
-    document.addEventListener(event, () => {
-      window.ProcessMaker.AccountTimeoutWorker.postMessage({
-        method: "restart",
-      });
-    });
-  });
-
-  // End -> Restart the timeout worker (when the user interacts with the page)
-
-  const isSameDevice = (e) => {
-    const localDeviceId = Vue.$cookies.get(e.device_variable);
-    const remoteDeviceId = e.device_id;
-    return localDeviceId && localDeviceId === remoteDeviceId;
-  };
-
-  window.Echo.private(`ProcessMaker.Models.User.${userID.content}`)
-    .notification((token) => {
-      ProcessMaker.pushNotification(token);
-    })
-    .listen(".SessionStarted", (e) => {
-      const lifetime = parseInt(eval(e.lifetime));
-      if (isSameDevice(e)) {
-        window.ProcessMaker.AccountTimeoutWorker.postMessage({
-          method: "start",
-          data: {
-            timeout: lifetime,
-            warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds,
-            enabled: window.ProcessMaker.AccountTimeoutEnabled,
-          },
-        });
-        if (window.ProcessMaker.closeSessionModal) {
-          window.ProcessMaker.closeSessionModal();
-        }
-      }
-    })
-    .listen(".Logout", (e) => {
-      if (isSameDevice(e) && window.location.pathname.indexOf("/logout") === -1) {
-        const localDeviceId = Vue.$cookies.get(e.device_variable);
-        const redirectLogoutinterval = setInterval(() => {
-          const newDeviceId = Vue.$cookies.get(e.device_variable);
-          if (localDeviceId !== newDeviceId) {
-            clearInterval(redirectLogoutinterval);
-            window.location.href = "/logout";
-          }
-        }, 100);
-      }
-    })
-    .listen(".SecurityLogDownloadJobCompleted", (e) => {
-      if (e.success) {
-        const { link } = e;
-        const { message } = e;
-        window.ProcessMaker.alert(message, "success", 0, false, false, link);
-      } else {
-        window.ProcessMaker.alert(e.message, "warning");
-      }
-    });
+  if (sessionSyncState) {
+    window.ProcessMaker.AccountTimeoutLength = sessionSyncState.AccountTimeoutLength;
+    window.ProcessMaker.AccountTimeoutWarnSeconds = sessionSyncState.AccountTimeoutWarnSeconds;
+    window.ProcessMaker.AccountTimeoutWarnMinutes = sessionSyncState.AccountTimeoutWarnMinutes;
+    window.ProcessMaker.AccountTimeoutEnabled = sessionSyncState.AccountTimeoutEnabled;
+    window.ProcessMaker.AccountTimeoutWorker = sessionSyncState.AccountTimeoutWorker;
+    window.ProcessMaker.sessionSync = sessionSyncState.sessionSync;
+  }
 }
 
 // Configuration Global object used by ScreenBuilder
