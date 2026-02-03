@@ -257,6 +257,7 @@ class ProcessTemplate implements TemplateInterface
                 $payload['export'][$key]['attributes']['name'] = $requestData['name'];
                 $payload['export'][$key]['attributes']['description'] = $requestData['description'];
                 $payload['export'][$key]['attributes']['process_category_id'] = $requestData['process_category_id'];
+                $payload['export'][$key]['attributes']['user_id'] = Auth::id();
                 // Store the wizard template uuid on the process to rerun the helper process
                 if (isset($requestData['wizardTemplateUuid'])) {
                     $properties = json_decode($payload['export'][$key]['attributes']['properties'], true);
