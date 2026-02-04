@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "85571b50a82f31468735ad7f850fd372",
+    "content-hash": "5f13adc31487ee2dbcd1f855f5d78e80",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
