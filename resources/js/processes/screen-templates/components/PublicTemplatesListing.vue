@@ -261,6 +261,12 @@ export default {
       this.apiNoResults = false;
     });
   },
+  mounted() {
+    this.bindPreviewTabClose("#nav-publicTemplates-tab");
+  },
+  beforeDestroy() {
+    this.unbindPreviewTabClose();
+  },
   methods: {
     handleSelectTemplate(template) {
       this.selectedTemplate = template;

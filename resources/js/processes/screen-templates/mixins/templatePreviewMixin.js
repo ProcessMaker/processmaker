@@ -92,6 +92,33 @@ const templatePreviewMixin = {
       this.showTemplatePreview = false;
       this.selectedTemplate = null;
     },
+    closePreviewFrame() {
+      if (this.$refs?.preview?.onClose) {
+        this.$refs.preview.onClose();
+        return;
+      }
+      if (typeof this.onClose === "function") {
+        this.onClose();
+      }
+    },
+    bindPreviewTabClose(tabSelector) {
+      if (!tabSelector || typeof $ === "undefined") {
+        return;
+      }
+      this._previewTabSelector = tabSelector;
+      this._previewTabHandler = () => {
+        this.closePreviewFrame();
+      };
+      $(tabSelector).on("hide.bs.tab.templatePreview", this._previewTabHandler);
+    },
+    unbindPreviewTabClose() {
+      if (!this._previewTabSelector || typeof $ === "undefined") {
+        return;
+      }
+      $(this._previewTabSelector).off("hide.bs.tab.templatePreview", this._previewTabHandler);
+      this._previewTabSelector = null;
+      this._previewTabHandler = null;
+    },
     onClose() {
       this.$emit('mark-selected-row', 0);
       this.showPreview = false;
