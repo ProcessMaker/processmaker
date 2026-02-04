@@ -483,6 +483,10 @@ trait MakeHttpRequests
             $url = url($url);
         }
 
+        if (strpos($url, '{{__api_base_url__}}') !== false) {
+            $url = str_replace('{{__api_base_url__}}', $this->api_base_url, $url);
+        }
+
         // validate url have host
         if (!parse_url($url, PHP_URL_HOST)) {
             $host = $this->api_base_url ?? config('app.url');
