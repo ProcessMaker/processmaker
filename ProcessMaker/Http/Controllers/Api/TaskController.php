@@ -134,6 +134,18 @@ class TaskController extends Controller
 
         $query = $this->indexBaseQuery($request);
 
+        // Get fields from request (sent by frontend)
+        // If not provided, don't apply select() to maintain backward compatibility (returns all columns)
+        $fields = $request->input('fields', '');
+        if ($fields) {
+            $selectedFields = explode(',', $fields);
+            // Ensure 'id' is always included for internal logic (e.g., inOverdueQuery at line ~186)
+            if (!in_array('id', $selectedFields)) {
+                $selectedFields[] = 'id';
+            }
+            $query = $query->select($selectedFields);
+        }
+
         $this->applyFilters($query, $request);
 
         $this->excludeNonVisibleTasks($query, $request);

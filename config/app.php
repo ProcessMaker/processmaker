@@ -303,4 +303,8 @@ return [
 
     'reassign_restrict_to_assignable_users' => env('REASSIGN_RESTRICT_TO_ASSIGNABLE_USERS', true),
     'resources_core_path' => base_path('resources-core'),
+    'scheduler' => [
+        'claim_timeout_minutes' => env('SCHEDULER_CLAIM_TIMEOUT_MINUTES', 5),
+        'bpmn_timer_overlap_minutes' => env('SCHEDULER_BPMN_TIMER_OVERLAP_MINUTES', 5),
+    ],
 ];

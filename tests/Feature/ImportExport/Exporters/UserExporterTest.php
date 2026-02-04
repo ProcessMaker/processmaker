@@ -71,8 +71,8 @@ class UserExporterTest extends TestCase
         $user = User::where('username', 'admin')->firstOrFail();
 
         $this->assertEquals($originalUserCount, User::count());
-        // Added to original users group
-        $this->assertEquals(['test group', 'test group 2'], $user->groups()->pluck('name')->toArray());
+        // Group memberships are no longer copied; original memberships remain
+        $this->assertEquals(['test group'], $user->groups()->pluck('name')->toArray());
 
         // Test importing on new instance
         DB::rollBack(); // Delete all created items since DB::beginTransaction

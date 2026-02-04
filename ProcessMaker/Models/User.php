@@ -466,11 +466,11 @@ class User extends Authenticatable implements HasMedia
         $this->groups()->detach();
     }
 
-    public function availableSelfServiceTaskIds()
+    public function availableSelfServiceTasksQuery()
     {
         $groupIds = $this->groups()->pluck('groups.id');
 
-        $taskQuery = ProcessRequestToken::select(['id'])
+        $taskQuery = ProcessRequestToken::select(['process_request_tokens.id'])
         ->where([
             'is_self_service' => true,
             'status' => 'ACTIVE',
@@ -490,7 +490,12 @@ class User extends Authenticatable implements HasMedia
             $query->orWhereJsonContains('self_service_groups->users', (string) $this->id);
         });
 
-        return $taskQuery->pluck('id');
+        return $taskQuery;
+    }
+
+    public function availableSelfServiceTaskIds()
+    {
+        return $this->availableSelfServiceTasksQuery()->pluck('id');
     }
 
     /**

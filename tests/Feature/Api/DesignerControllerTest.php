@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Api;
 
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 
@@ -23,5 +23,18 @@ class DesignerControllerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertViewIs('designer.index');
+    }
+
+    public function testIndexIsForbiddenWithoutDesignerPermissions(): void
+    {
+        $user = User::factory()->create([
+            'is_administrator' => false,
+        ]);
+
+        Auth::login($user);
+
+        $response = $this->get('/designer');
+
+        $response->assertForbidden();
     }
 }
