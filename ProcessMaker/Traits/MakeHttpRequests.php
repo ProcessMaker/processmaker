@@ -195,6 +195,12 @@ trait MakeHttpRequests
         $method = $this->evalMustache($endpoint['method'], $requestData);
         $url = $this->addQueryStringsParamsToUrl($endpoint, $config, $requestData, $params);
 
+        // validate url have host
+        if (!parse_url($url, PHP_URL_HOST)) {
+            $host = $this->api_base_url ?? config('app.url');
+            $url = $host . $url;
+        }
+
         // Prepare Headers
         $headers = $this->addHeaders($endpoint, $config, $requestData);
 
