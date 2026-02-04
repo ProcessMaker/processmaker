@@ -195,12 +195,6 @@ trait MakeHttpRequests
         $method = $this->evalMustache($endpoint['method'], $requestData);
         $url = $this->addQueryStringsParamsToUrl($endpoint, $config, $requestData, $params);
 
-        // validate url have host
-        if (!parse_url($url, PHP_URL_HOST)) {
-            $host = $this->api_base_url ?? config('app.url');
-            $url = $host . $url;
-        }
-
         // Prepare Headers
         $headers = $this->addHeaders($endpoint, $config, $requestData);
 
@@ -487,6 +481,12 @@ trait MakeHttpRequests
         // If url does not include the protocol and server name complete it with the local server
         if (substr($url, 0, 1) === '/') {
             $url = url($url);
+        }
+
+        // validate url have host
+        if (!parse_url($url, PHP_URL_HOST)) {
+            $host = $this->api_base_url ?? config('app.url');
+            $url = $host . $url;
         }
 
         // Evaluate mustache expressions in URL
