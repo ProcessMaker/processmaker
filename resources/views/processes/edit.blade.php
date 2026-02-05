@@ -347,6 +347,68 @@
                                 </div>
                             </div>
 
+                            @if(config('app.case_retention_policy_enabled'))
+                            <div class="card card-custom-info">
+                              <div class="card-header"
+                                   id="headingCasesRetention">
+                                <button
+                                  class="btn btn-custom-info"
+                                  type="button"
+                                  data-toggle="collapse"
+                                  data-target="#collapseCasesRetention"
+                                  aria-expanded="true"
+                                  aria-controls="collapseCasesRetention"
+                                  >
+                                  <span>
+                                    {{__('Cases Retention')}}
+                                  </span>
+                                </button>
+                              </div>
+                              <div id="collapseCasesRetention"
+                                   class="collapse show"
+                                   aria-labelledby="headingCasesRetention">
+                                <div class="card-body">
+                                  <b-row>
+                                    <b-col>
+                                      <div class="retention-body retention-policy p-4">
+                                        <h5 class="retention-header pb-1">{{ __('Retention Policy') }}</h5>
+                                        <p class="retention-text">{{ __('Each case in this process is retained from the moment it is created for the period defined in this section.')}}</p>
+                                        <p class="retention-text mb-0">{{ __('After this period expires, the case is automatically and permanently deleted, regardless of its status.
+                                        This deletion includes all files and all data associated with the case and cannot be undone.')}}</p>
+                                      </div>
+                                    </b-col>
+                                    <b-col>
+                                        <div class="retention-body retention-period">
+                                            <h5 class="retention-header pb-1">{{__('Retention Period')}}<h5>
+                                            <p class="retention-text">{{ __('Retention periods over one year must be handled by Technical Support. Please contact Technical Support for assistance.')}}</p>
+                                        </div>
+                                        <div class="form-group p-0 mb-4">
+                                            {{ html()->label(__('Select a Retention Period'), 'selectRetentionPeriod') }}
+                                            <multiselect
+                                                id="selectRetentionPeriod"
+                                                v-model="canSelectRetentionPeriod"
+                                                :options="retentionPeriodOptions"
+                                                :multiple="false"
+                                                :show-labels="false"
+                                                placeholder="{{__('Select a Retention Period')}}"
+                                                track-by="id"
+                                                label="fullname"
+                                            >
+                                                <template slot="option" slot-scope="props">
+                                                    <span :class="{ 'font-italic': props.option.id === 'two_years' || props.option.id === 'three_years' }">@{{ props.option.fullname }}</span>
+                                                </template>
+                                            </multiselect>
+                                        </div>
+                                        <div class="retention-text retention-body default-retention p-2">
+                                            <span class="d-flex align-items-center"><i class="fp-check-circle-outline default-retention-icon"></i><span class="ml-1">{{ __('The default retention period is in effect.')}}</span></span>
+                                        </div>
+                                    </b-col>
+                                  </b-row>
+                                </div>
+                              </div>
+                            </div>
+                            @endif
+
                             <div class="d-flex justify-content-end mt-2">
                                 {{ html()->button(__('Cancel'), 'button')->class('btn btn-outline-secondary button-custom')->attribute('@click', 'onClose') }}
                                 {{ html()->button(__('Save'), 'button')->class('btn btn-secondary ml-3 button-custom')->attribute('@click', 'onUpdate') }}
@@ -559,6 +621,12 @@
                         groups: []
                     },
                     maxManagers: 10,
+                    retentionPeriodOptions: [
+                        { id: 'one_year', fullname: 'One year after case creation' },
+                        { id: 'two_years', fullname: 'Two years after case creation (Available on Support request)' },
+                        { id: 'three_years', fullname: 'Three years after case creation (Available on Support request)' }
+                    ],
+                    canSelectRetentionPeriod: { id: 'one_year', fullname: 'One year after case creation' }
                 }
                 },
                 mounted() {
@@ -874,6 +942,35 @@
             line-height: 24px;
             letter-spacing: -0.02em;
             text-align: center;
+        }
+
+        .retention-body {
+            color: #556271;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .retention-header {
+            font-weight: 600;
+        }
+
+        .retention-text {
+            font-size: 16px;
+        }
+
+        .retention-policy {
+            border-radius: 16px;
+            background-color: #FFFCF2;
+        }
+
+        .default-retention {
+            font-style: italic;
+            background-color: #F1F2F4;
+            border-radius: 8px;
+        }
+
+        .default-retention-icon {
+            font-size: 20px;
+            color: #039838;
         }
     </style>
 @endsection

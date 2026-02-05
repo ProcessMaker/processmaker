@@ -302,5 +302,9 @@ return [
     'multitenancy' => env('MULTITENANCY', false),
 
     'reassign_restrict_to_assignable_users' => env('REASSIGN_RESTRICT_TO_ASSIGNABLE_USERS', true),
+
+    // When true, shows the Cases Retention section on process configuration
+    'case_retention_policy_enabled' => filter_var(env('CASE_RETENTION_POLICY_ENABLED', false), FILTER_VALIDATE_BOOLEAN),
+
     'resources_core_path' => base_path('resources-core'),
 ];
