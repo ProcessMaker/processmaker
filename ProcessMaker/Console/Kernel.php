@@ -89,6 +89,13 @@ class Kernel extends ConsoleKernel
                 break;
         }
 
+        // evaluate cases retention policy
+        $schedule->command('cases:retention:evaluate')
+            ->daily()
+            ->onOneServer()
+            ->withoutOverlapping()
+            ->runInBackground();
+
         // 5 minutes is recommended in https://laravel.com/docs/12.x/horizon#metrics
         $schedule->command('horizon:snapshot')->everyFiveMinutes();
     }
