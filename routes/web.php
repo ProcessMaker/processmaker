@@ -111,7 +111,7 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('designer/screens/categories', [ScreenController::class, 'index'])->name('screen-categories.index')->middleware('can:view-screen-categories');
 
     Route::get('designer/scripts/categories', [ScriptController::class, 'index'])->name('script-categories.index')->middleware('can:view-script-categories');
-    Route::get('designer', [DesignerController::class, 'index'])->name('designer.index');
+    Route::get('designer', [DesignerController::class, 'index'])->name('designer.index')->middleware('can:view-designer');
 
     Route::get('process-browser/{process?}', [ProcessesCatalogueController::class, 'index'])
        ->name('process.browser.index')
@@ -251,6 +251,10 @@ Route::get('/unavailable', [UnavailableController::class, 'show'])->name('error.
 Route::get('/not-authorized', function () {
     return view('errors.not-authorized');
 })->name('errors.not-authorized');
+
+Route::get('/task-is-not-assigned', function () {
+    return view('errors.task-is-not-assigned');
+})->name('errors.task-is-not-assigned');
 
 // SAML Metadata Route
 Route::resource('/saml/metadata', MetadataController::class)->only('index');

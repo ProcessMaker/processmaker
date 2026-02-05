@@ -257,6 +257,7 @@ return [
     'force_https' => env('FORCE_HTTPS', true),
 
     'nayra_docker_network' => env('NAYRA_DOCKER_NETWORK', 'host'),
+    'nayra_port' => env('NAYRA_PORT', 8080),
 
     // Process Request security log rate limit: 1 per day (86400 seconds)
     'process_request_errors_rate_limit' => env('PROCESS_REQUEST_ERRORS_RATE_LIMIT', 1),
@@ -302,4 +303,8 @@ return [
 
     'reassign_restrict_to_assignable_users' => env('REASSIGN_RESTRICT_TO_ASSIGNABLE_USERS', true),
     'resources_core_path' => base_path('resources-core'),
+    'scheduler' => [
+        'claim_timeout_minutes' => env('SCHEDULER_CLAIM_TIMEOUT_MINUTES', 5),
+        'bpmn_timer_overlap_minutes' => env('SCHEDULER_BPMN_TIMER_OVERLAP_MINUTES', 5),
+    ],
 ];
