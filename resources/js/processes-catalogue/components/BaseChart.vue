@@ -172,7 +172,8 @@ export default {
      * Both packages go always together
      */
     fetchChart() {
-      if (!ProcessMaker.packages.includes("package-collections") && this.chartId === null && this.chartId === 0) {
+      const hasCollections = ProcessMaker.packages.includes("package-collections");
+      if (!hasCollections || !this.chartId) {
         this.getDefaultData();
         return;
       }
@@ -297,7 +298,7 @@ export default {
           const launchpadProperties = unparseProperties
             ? JSON.parse(unparseProperties)
             : "";
-          this.chartId = launchpadProperties.saved_chart_id;
+          this.chartId = launchpadProperties?.saved_chart_id || 0;
           this.fetchChart();
         })
         .catch((error) => {
