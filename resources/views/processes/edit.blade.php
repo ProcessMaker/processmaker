@@ -386,7 +386,8 @@
                                             {{ html()->label(__('Select a Retention Period'), 'selectRetentionPeriod') }}
                                             <multiselect
                                                 id="selectRetentionPeriod"
-                                                v-model="canSelectRetentionPeriod"
+                                                :value="canSelectRetentionPeriod"
+                                                @input="onRetentionPeriodSelect"
                                                 :options="retentionPeriodOptions"
                                                 :multiple="false"
                                                 :show-labels="false"
@@ -402,6 +403,49 @@
                                         <div class="retention-text retention-body default-retention p-2">
                                             <span class="d-flex align-items-center"><i class="fp-check-circle-outline default-retention-icon"></i><span class="ml-1">{{ __('The default retention period is in effect.')}}</span></span>
                                         </div>
+                                        <b-modal
+                                            v-model="showRetentionConfirmModal"
+                                            :title="null"
+                                            centered
+                                            no-close-on-backdrop
+                                            hide-header
+                                            hide-footer
+                                            @hide="onRetentionModalHide"
+                                        >
+                                            <template v-if="retentionModalStep === 'confirm'">
+                                                <div class="icon-container mb-4">
+                                                    <i class="fp-exclamation-triangle warning-icon"></i>
+                                                </div>
+                                                <div class="retention-modal-text">
+                                                    <h5 class="retention-header">
+                                                        {{ __('Impact on Existing Cases') }}
+                                                    </h5>
+                                                    <p class="mb-0">{{ __('Changing the retention period affects how long cases are stored. Are you sure you want to change the retention period?') }}</p>
+                                                    <div class="retention-modal-footer pt-4">
+                                                        <div class="d-flex flex-column gap-2">
+                                                            <b-button variant="danger" class="px-4 retention-modal-footer-btn confirm-period-btn" @click="confirmRetentionChange">
+                                                                {{ __('Confirm New Period and Delete Old Cases') }}
+                                                            </b-button>
+                                                            <b-button variant="outline-secondary" class="px-4 retention-modal-footer-btn" @click="cancelRetentionChange">
+                                                                {{ __('Cancel and Go Back') }}
+                                                            </b-button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                            <template v-else>
+                                                <h5 class="retention-modal-text retention-header">
+                                                    {{ __('New Retention Period Applied') }}
+                                                </h5>
+                                                <p class="mb-0 text-success">{{ __('Your retention period change has been saved.') }}</p>
+                                            </template>
+                                            <template #modal-footer>
+            
+                                                <template v-else>
+                                                    <b-button variant="primary" @click="closeRetentionSuccessModal">{{ __('Close') }}</b-button>
+                                                </template>
+                                            </template>
+                                        </b-modal>
                                     </b-col>
                                   </b-row>
                                 </div>
@@ -626,7 +670,11 @@
                         { id: 'two_years', fullname: 'Two years after case creation (Available on Support request)' },
                         { id: 'three_years', fullname: 'Three years after case creation (Available on Support request)' }
                     ],
-                    canSelectRetentionPeriod: { id: 'one_year', fullname: 'One year after case creation' }
+                    canSelectRetentionPeriod: { id: 'one_year', fullname: 'One year after case creation' },
+                    showRetentionConfirmModal: false,
+                    retentionModalStep: 'confirm',
+                    pendingRetentionPeriod: null,
+                    caseRetentionPolicyEnabled: @json(config('app.case_retention_policy_enabled'))
                 }
                 },
                 mounted() {
@@ -647,6 +695,14 @@
 
                     if (target[1] !== undefined) {
                         this.activeTab = target[1];
+                    }
+
+                    if (this.caseRetentionPolicyEnabled && _.get(this.formData, 'properties.retention_period')) {
+                        const id = this.formData.properties.retention_period;
+                        const option = this.retentionPeriodOptions.find(opt => opt.id === id);
+                        if (option) {
+                            this.canSelectRetentionPeriod = option;
+                        }
                     }
 
                 },
@@ -747,6 +803,10 @@
                     this.formData.manager_id = this.formatManagerId(this.manager);
                     this.formData.user_id = this.formatValueScreen(this.owner);
                     this.formData.reassignment_permissions = this.reassignmentPermissions;
+                    if (this.caseRetentionPolicyEnabled) {
+                        this.formData.properties = this.formData.properties || {};
+                        this.formData.properties.retention_period = this.canSelectRetentionPeriod ? this.canSelectRetentionPeriod.id : null;
+                    }
                     
                     ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
                     .then(response => {
@@ -776,6 +836,37 @@
                 },
                 reassignmentClicked() {
                     this.$refs["listReassignment"].add();
+                },
+                onRetentionPeriodSelect(newVal) {
+                    if (!newVal || (this.canSelectRetentionPeriod && newVal.id === this.canSelectRetentionPeriod.id)) {
+                        return;
+                    }
+                    this.pendingRetentionPeriod = newVal;
+                    this.retentionModalStep = 'confirm';
+                    this.showRetentionConfirmModal = true;
+                },
+                confirmRetentionChange() {
+                    if (this.pendingRetentionPeriod) {
+                        this.canSelectRetentionPeriod = this.pendingRetentionPeriod;
+                        this.formData.properties = this.formData.properties || {};
+                        this.formData.properties.retention_period = this.pendingRetentionPeriod.id;
+                    }
+                    this.retentionModalStep = 'success';
+                },
+                cancelRetentionChange() {
+                    this.showRetentionConfirmModal = false;
+                    this.pendingRetentionPeriod = null;
+                    this.retentionModalStep = 'confirm';
+                },
+                closeRetentionSuccessModal() {
+                    this.showRetentionConfirmModal = false;
+                    this.pendingRetentionPeriod = null;
+                    this.retentionModalStep = 'confirm';
+                },
+                onRetentionModalHide() {
+                    if (this.retentionModalStep === 'confirm') {
+                        this.cancelRetentionChange();
+                    }
                 }
                 },
             });
@@ -971,6 +1062,53 @@
         .default-retention-icon {
             font-size: 20px;
             color: #039838;
+        }
+
+        .icon-container {
+            background: linear-gradient(180deg, #FEE6E5 0%, #FBD0D0 100%);
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+        }
+
+        .warning-icon {
+            font-size: 30px;
+            color: #E51523;
+        }
+
+        .retention-modal-text {
+            color: #464646;
+            font-family: 'Inter', sans-serif !important;
+        }
+
+        .retention-modal-footer-btn {
+            text-transform: none !important;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif !important;
+            border-radius: 8px;
+        }
+        
+        .confirm-period-btn {
+            background-color: #E51523 !important;
+            border-color: #E51523 !important;
+            color: white !important;
+
+            &:hover {
+                background-color: #d54a52 !important;
+                border-color: #d54a52 !important;
+            }
+
+            &:focus {
+                box-shadow: 0 0 0 0.2rem rgba(236, 89, 98, 0.25) !important;
+            }
+        }
+
+        .gap-2 {
+            gap: .5rem;
         }
     </style>
 @endsection
