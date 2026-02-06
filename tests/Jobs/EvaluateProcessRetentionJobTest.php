@@ -19,6 +19,7 @@ class EvaluateProcessRetentionJobTest extends TestCase
     public function testItDeletesCasesThatExceedRetentionPeriod()
     {
         // Create a process with a 6 month retention period
+        // retention_updated_at is 6 months ago, so old cases cutoff is 12 months ago (6 months ago - 6 months)
         $retentionUpdatedAt = Carbon::now()->subMonths(6)->toIso8601String();
         $process = Process::factory()->create([
             'properties' => [
@@ -39,8 +40,10 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $processRequest->refresh();
         $this->assertEquals($process->id, $processRequest->process_id);
 
-        // Create a case number with a creation date that is past the retention period
-        $oldCaseCreatedAt = Carbon::now()->subMonths(7)->toIso8601String();
+        // Create a case number created 13 months ago (before retention_updated_at)
+        // Old cases cutoff = 6 months ago - 6 months = 12 months ago
+        // 13 months ago < 12 months ago, so it should be deleted
+        $oldCaseCreatedAt = Carbon::now()->subMonths(13)->toIso8601String();
         $caseOld = CaseNumber::factory()->create([
             'created_at' => $oldCaseCreatedAt,
             'process_request_id' => $processRequest->id,
@@ -58,6 +61,7 @@ class EvaluateProcessRetentionJobTest extends TestCase
     public function testItDoesNotDeleteCasesThatAreWithinRetentionPeriod()
     {
         // Create a process with a 6 month retention period
+        // retention_updated_at is 6 months ago, so old cases cutoff is 12 months ago (6 months ago - 6 months)
         $retentionUpdatedAt = Carbon::now()->subMonths(6)->toIso8601String();
         $process = Process::factory()->create([
             'properties' => [
@@ -77,7 +81,8 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $processRequest->refresh();
         $this->assertEquals($process->id, $processRequest->process_id);
 
-        // Create a case number with a creation date that is within the retention period
+        // Create a case number created 5 months ago (before retention_updated_at)
+        // This case is NOT older than the old cases cutoff (12 months ago), so it should NOT be deleted
         $caseCreatedAt = Carbon::now()->subMonths(5)->toIso8601String();
         $case = CaseNumber::factory()->create([
             'created_at' => $caseCreatedAt,
@@ -115,22 +120,118 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $this->assertEquals($process->id, $processRequest->process_id);
 
         // Create 1200 cases (to test chunking/batch deletion)
-        // These cases should be deleted because they're older than the retention period
-        // retention_updated_at is 6 months ago, so cases created 7+ months ago should be deleted
+        // These cases are created 13 months ago (before retention_updated_at)
+        // Old cases cutoff = 6 months ago - 6 months = 12 months ago
+        // 13 months ago < 12 months ago, so these should be deleted
         $cases = CaseNumber::factory()->count(1200)->create([
             'process_request_id' => $processRequest->id,
-            'created_at' => Carbon::now()->subMonths(7)->toIso8601String(),
+            'created_at' => Carbon::now()->subMonths(13)->toIso8601String(),
         ]);
         $this->assertEquals($processRequest->id, $cases->first()->process_request_id);
-        $this->assertEquals(Carbon::now()->subMonths(7)->toIso8601String(), $cases->first()->created_at->toIso8601String());
+        $this->assertEquals(Carbon::now()->subMonths(13)->toIso8601String(), $cases->first()->created_at->toIso8601String());
 
         // Dispatch the job to evaluate the retention period
         EvaluateProcessRetentionJob::dispatchSync($process->id);
 
         // Assert all old cases are deleted
-        // There should be 1 case left (due to the creation of the process request) because the new case is within the retention period
+        // There should be 1 case left (the auto-created case from ProcessRequestObserver)
+        // because it was created after retention_updated_at and is within the retention period
         $this->assertDatabaseCount('case_numbers', 1);
 
         // TODO: Assert log entry is created
+    }
+
+    public function testItHandlesRetentionPolicyUpdate()
+    {
+        // Create a process with retention updated 6 months ago (was 6 months, now 1 year)
+        $retentionUpdatedAt = Carbon::now()->subMonths(6)->toIso8601String();
+        $process = Process::factory()->create([
+            'properties' => [
+                'retention_period' => '1_year', // Updated to 1 year
+                'retention_updated_at' => $retentionUpdatedAt,
+            ],
+        ]);
+        $process->save();
+        $process->refresh();
+
+        // Create a process request
+        $processRequest = ProcessRequest::factory()->create();
+        $processRequest->process_id = $process->id;
+        $processRequest->save();
+        $processRequest->refresh();
+
+        // Create an old case (7 months ago, before retention_updated_at)
+        // Old cases cutoff = 6 months ago - 1 year = 18 months ago
+        // 7 months ago is NOT < 18 months ago, so it should NOT be deleted
+        $oldCase = CaseNumber::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'created_at' => Carbon::now()->subMonths(7)->toIso8601String(),
+        ]);
+
+        // Create a new case (1 month ago, after retention_updated_at)
+        // New cases cutoff = now - 1 year = 12 months ago
+        // 1 month ago is NOT < 12 months ago, so it should NOT be deleted
+        $newCase = CaseNumber::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'created_at' => Carbon::now()->subMonths(1)->toIso8601String(),
+        ]);
+
+        // Dispatch the job
+        EvaluateProcessRetentionJob::dispatchSync($process->id);
+
+        // Both cases should still exist (plus the auto-created one = 3 total)
+        $this->assertNotNull(CaseNumber::find($oldCase->id));
+        $this->assertNotNull(CaseNumber::find($newCase->id));
+        $this->assertDatabaseCount('case_numbers', 3);
+    }
+
+    public function testItDeletesOldCasesAfterRetentionPolicyUpdate()
+    {
+        // Create a process with retention updated 6 months ago (was 6 months, now 1 year)
+        $retentionUpdatedAt = Carbon::now()->subMonths(6)->toIso8601String();
+        $process = Process::factory()->create([
+            'properties' => [
+                'retention_period' => '1_year', // Updated to 1 year
+                'retention_updated_at' => $retentionUpdatedAt,
+            ],
+        ]);
+        $process->save();
+        $process->refresh();
+
+        // Create a process request
+        $processRequest = ProcessRequest::factory()->create();
+        $processRequest->process_id = $process->id;
+        $processRequest->save();
+        $processRequest->refresh();
+
+        // Create an old case (20 months ago, before retention_updated_at which is 6 months ago)
+        // Old cases cutoff = 6 months ago - 1 year = 18 months ago
+        // 20 months ago < 18 months ago (earlier date), so it SHOULD be deleted
+        $oldCaseDate = Carbon::now()->subMonths(20);
+        $oldCase = CaseNumber::factory()->create([
+            'process_request_id' => $processRequest->id,
+        ]);
+        $oldCase->created_at = $oldCaseDate;
+        $oldCase->save();
+
+        // Create a case 7 months ago (before retention_updated_at) that should NOT be deleted
+        // Old cases cutoff = 6 months ago - 1 year = 18 months ago
+        // 7 months ago is NOT < 18 months ago (7 months ago is more recent), so it should NOT be deleted
+        $oldCaseNotDeletedDate = Carbon::now()->subMonths(7);
+        $oldCaseNotDeleted = CaseNumber::factory()->create([
+            'process_request_id' => $processRequest->id,
+        ]);
+        $oldCaseNotDeleted->created_at = $oldCaseNotDeletedDate;
+        $oldCaseNotDeleted->save();
+
+        // Dispatch the job
+        EvaluateProcessRetentionJob::dispatchSync($process->id);
+
+        // The 20-month-old case should be deleted (older than 18 months cutoff)
+        // The 7-month-old case should NOT be deleted (newer than 18 months cutoff)
+        // Plus the auto-created case = 2 total
+        $this->assertNull(CaseNumber::find($oldCase->id), 'The 20-month-old case should be deleted');
+        $this->assertNotNull(CaseNumber::find($oldCaseNotDeleted->id), 'The 7-month-old case should NOT be deleted');
+        $this->assertDatabaseCount('case_numbers', 2);
     }
 }
