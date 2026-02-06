@@ -29,7 +29,9 @@ class EvaluateCaseRetention extends Command
     {
         $this->info('Evaluating and deleting cases past their retention period');
 
-        Process::whereNotNull('properties->retention_period')->chunkById(100, function ($processes) {
+        // Process all processes when retention policy is enabled
+        // Processes without retention_period will default to 6 months
+        Process::chunkById(100, function ($processes) {
             foreach ($processes as $process) {
                 dispatch(new EvaluateProcessRetentionJob($process->id));
             }

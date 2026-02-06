@@ -296,4 +296,49 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $_ENV['CASE_RETENTION_POLICY_ENABLED'] = 'true';
         $_SERVER['CASE_RETENTION_POLICY_ENABLED'] = 'true';
     }
+
+    public function testItDefaultsToSixMonthsForProcessesWithoutRetentionPeriod()
+    {
+        // Create a process WITHOUT retention_period property (should default to 6 months)
+        $process = Process::factory()->create([
+            'properties' => [], // No retention_period set
+        ]);
+        $process->save();
+        $process->refresh();
+
+        // Create a process request
+        $processRequest = ProcessRequest::factory()->create();
+        $processRequest->process_id = $process->id;
+        $processRequest->save();
+        $processRequest->refresh();
+
+        // Create a case created 7 months ago (older than default 6 months retention)
+        // Since retention_updated_at defaults to now, old cases cutoff = now - 6 months
+        // 7 months ago < (now - 6 months), so it should be deleted
+        $oldCaseDate = Carbon::now()->subMonths(7);
+        $oldCase = CaseNumber::factory()->create([
+            'process_request_id' => $processRequest->id,
+        ]);
+        $oldCase->created_at = $oldCaseDate;
+        $oldCase->save();
+
+        // Create a case created 5 months ago (within default 6 months retention)
+        // 5 months ago is NOT < (now - 6 months), so it should NOT be deleted
+        $newCaseDate = Carbon::now()->subMonths(5);
+        $newCase = CaseNumber::factory()->create([
+            'process_request_id' => $processRequest->id,
+        ]);
+        $newCase->created_at = $newCaseDate;
+        $newCase->save();
+
+        // Dispatch the job
+        EvaluateProcessRetentionJob::dispatchSync($process->id);
+
+        // The 7-month-old case should be deleted (older than 6 months default)
+        // The 5-month-old case should NOT be deleted (within 6 months default)
+        // Plus the auto-created case = 2 total
+        $this->assertNull(CaseNumber::find($oldCase->id), 'The 7-month-old case should be deleted with default 6-month retention');
+        $this->assertNotNull(CaseNumber::find($newCase->id), 'The 5-month-old case should NOT be deleted with default 6-month retention');
+        $this->assertDatabaseCount('case_numbers', 2);
+    }
 }

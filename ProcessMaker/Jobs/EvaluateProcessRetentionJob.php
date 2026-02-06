@@ -40,14 +40,21 @@ class EvaluateProcessRetentionJob implements ShouldQueue
             return;
         }
 
-        $retentionMonths = match ($process->properties['retention_period']) {
+        // Default to 6 months if retention_period is not set
+        $retentionPeriod = $process->properties['retention_period'] ?? '6_months';
+        $retentionMonths = match ($retentionPeriod) {
             '6_months' => 6,
             '1_year' => 12,
             '3_years' => 36,
             '5_years' => 60,
+            default => 6, // Default to 6 months
         };
 
-        $retentionUpdatedAt = Carbon::parse($process->properties['retention_updated_at']);
+        // Default retention_updated_at to now if not set
+        // This means the retention policy applies from now for processes without explicit retention settings
+        $retentionUpdatedAt = isset($process->properties['retention_updated_at'])
+            ? Carbon::parse($process->properties['retention_updated_at'])
+            : Carbon::now();
 
         // Get all process request IDs for this process
         $processRequestIds = ProcessRequest::where('process_id', $this->processId)->pluck('id');
