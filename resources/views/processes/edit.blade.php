@@ -373,8 +373,7 @@
                                       <div class="retention-body retention-policy p-4">
                                         <h5 class="retention-header pb-1">{{ __('Retention Policy') }}</h5>
                                         <p class="retention-text">{{ __('Each case in this process is retained from the moment it is created for the period defined in this section.')}}</p>
-                                        <p class="retention-text mb-0">{{ __('After this period expires, the case is automatically and permanently deleted, regardless of its status.
-                                        This deletion includes all files and all data associated with the case and cannot be undone.')}}</p>
+                                        <p class="retention-text mb-0">{{ __('After this period expires, the case is automatically and ') }}<strong>{{ __('permanently deleted') }}</strong>{{ __(', regardless of its status. This deletion includes all files and all data associated with the case and cannot be undone.') }}</p>
                                       </div>
                                     </b-col>
                                     <b-col>
@@ -413,14 +412,16 @@
                                             @hide="onRetentionModalHide"
                                         >
                                             <template v-if="retentionModalStep === 'confirm'">
-                                                <div class="icon-container mb-4">
+                                                <div class="warning-icon-container mb-4">
                                                     <i class="fp-exclamation-triangle warning-icon"></i>
                                                 </div>
                                                 <div class="retention-modal-text">
                                                     <h5 class="retention-header">
                                                         {{ __('Impact on Existing Cases') }}
                                                     </h5>
-                                                    <p class="mb-0">{{ __('Changing the retention period affects how long cases are stored. Are you sure you want to change the retention period?') }}</p>
+                                                    <p class="mb-0">
+                                                        {{ __('If you reduce the current retention period, cases older than the new period will be ') }}<strong>{{ __('permanently deleted') }}</strong>{{ __('. Only cases that meet the new retention period will be kept.') }}
+                                                    </p>
                                                     <div class="retention-modal-footer pt-4">
                                                         <div class="d-flex flex-column gap-2">
                                                             <b-button variant="danger" class="px-4 retention-modal-footer-btn confirm-period-btn" @click="confirmRetentionChange">
@@ -434,16 +435,20 @@
                                                 </div>
                                             </template>
                                             <template v-else>
+                                                <div class="success-icon-container mb-4">
+                                                    <i class="fp-check-circle-outline success-icon"></i>
+                                                </div>
                                                 <h5 class="retention-modal-text retention-header">
                                                     {{ __('New Retention Period Applied') }}
                                                 </h5>
-                                                <p class="mb-0 text-success">{{ __('Your retention period change has been saved.') }}</p>
-                                            </template>
-                                            <template #modal-footer>
-            
-                                                <template v-else>
-                                                    <b-button variant="primary" @click="closeRetentionSuccessModal">{{ __('Close') }}</b-button>
-                                                </template>
+                                                <p class="mb-0">{{ __('Cases older than the retention period will be automatically deleted during the previously set retention time.') }}</p>
+                                                <div class="retention-modal-footer pt-4">
+                                                    <div class="d-flex flex-column">
+                                                        <b-button variant="outline-secondary" class="px-4 retention-modal-footer-btn" @click="closeRetentionSuccessModal">
+                                                            {{ __('Close') }}
+                                                        </b-button>
+                                                    </div>
+                                                </div>
                                             </template>
                                         </b-modal>
                                     </b-col>
@@ -1064,7 +1069,7 @@
             color: #039838;
         }
 
-        .icon-container {
+        .warning-icon-container {
             background: linear-gradient(180deg, #FEE6E5 0%, #FBD0D0 100%);
             border-radius: 8px;
             display: inline-flex;
@@ -1109,6 +1114,21 @@
 
         .gap-2 {
             gap: .5rem;
+        }
+
+        .success-icon {
+            font-size: 30px;
+            color: #039838;
+        }
+
+        .success-icon-container {
+            background: linear-gradient(180deg, #E6F9EB 0%, #D0F2E1 100%);
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
         }
     </style>
 @endsection
