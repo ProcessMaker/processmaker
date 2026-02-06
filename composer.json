@@ -36,6 +36,7 @@
         "mateusjunges/laravel-kafka": "^2.10",
         "mittwald/vault-php": "^2.1",
         "mustache/mustache": "^2.14",
+        "open-telemetry/api": "^1.8",
         "open-telemetry/exporter-otlp": "^1.3",
         "open-telemetry/opentelemetry-auto-laravel": "^1.4",
         "open-telemetry/transport-grpc": "^1.1",
