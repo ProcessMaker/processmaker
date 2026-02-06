@@ -142,7 +142,7 @@ window.ProcessMaker = {
      * @returns {void}
      */
   pushNotification(notification) {
-    if (this.notifications.filter((x) => x.id === notification).length === 0) {
+    if (this.notifications.filter((x) => x.id === notification.id).length === 0) {
       this.notifications.push(notification);
     }
   },
@@ -366,7 +366,7 @@ if (userID) {
     accountTimeoutEnabled,
     Vue,
     Echo: window.Echo,
-    pushNotification: window.ProcessMaker.pushNotification,
+    pushNotification: window.ProcessMaker.pushNotification.bind(window.ProcessMaker),
     alert: window.ProcessMaker.alert,
     getSessionModal: () => window.ProcessMaker.sessionModal,
     getCloseSessionModal: () => window.ProcessMaker.closeSessionModal,

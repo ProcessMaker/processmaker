@@ -6,7 +6,7 @@ export default () => {
   const notifications = [];
 
   const pushNotification = (notification) => {
-    if (notifications.filter((x) => x.id === notification).length === 0) {
+    if (notifications.filter((x) => x.id === notification.id).length === 0) {
       notifications.push(notification);
     }
   };

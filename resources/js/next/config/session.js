@@ -7,7 +7,7 @@ export default () => {
   const Vue = getGlobalVariable("Vue");
   const Echo = getGlobalVariable("Echo");
 
-  const pushNotification = getGlobalPMVariable("pushNotification");
+  const pushNotification = getGlobalPMVariable("pushNotification")?.bind(window.ProcessMaker);
   const alert = getGlobalPMVariable("alert");
   const user = getGlobalPMVariable("user");
   const isProd = document.head.querySelector("meta[name=\"is-prod\"]")?.content === "true";
