@@ -16,6 +16,24 @@ class EvaluateProcessRetentionJobTest extends TestCase
 
     const RETENTION_PERIOD = '6_months';
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // Enable case retention policy for all tests
+        putenv('CASE_RETENTION_POLICY_ENABLED=true');
+        $_ENV['CASE_RETENTION_POLICY_ENABLED'] = 'true';
+        $_SERVER['CASE_RETENTION_POLICY_ENABLED'] = 'true';
+    }
+
+    protected function tearDown(): void
+    {
+        // Clean up environment variable
+        putenv('CASE_RETENTION_POLICY_ENABLED');
+        unset($_ENV['CASE_RETENTION_POLICY_ENABLED']);
+        unset($_SERVER['CASE_RETENTION_POLICY_ENABLED']);
+        parent::tearDown();
+    }
+
     public function testItDeletesCasesThatExceedRetentionPeriod()
     {
         // Create a process with a 6 month retention period
@@ -231,5 +249,51 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $this->assertNull(CaseNumber::find($oldCase->id), 'The 20-month-old case should be deleted');
         $this->assertNotNull(CaseNumber::find($oldCaseNotDeleted->id), 'The 7-month-old case should NOT be deleted');
         $this->assertDatabaseCount('case_numbers', 2);
+    }
+
+    public function testItDoesNotRunWhenRetentionPolicyIsDisabled()
+    {
+        // Disable case retention policy
+        putenv('CASE_RETENTION_POLICY_ENABLED=false');
+        $_ENV['CASE_RETENTION_POLICY_ENABLED'] = 'false';
+        $_SERVER['CASE_RETENTION_POLICY_ENABLED'] = 'false';
+
+        // Create a process with a 6 month retention period
+        $retentionUpdatedAt = Carbon::now()->subMonths(6)->toIso8601String();
+        $process = Process::factory()->create([
+            'properties' => [
+                'retention_period' => self::RETENTION_PERIOD,
+                'retention_updated_at' => $retentionUpdatedAt,
+            ],
+        ]);
+        $process->save();
+        $process->refresh();
+
+        // Create a process request
+        $processRequest = ProcessRequest::factory()->create();
+        $processRequest->process_id = $process->id;
+        $processRequest->save();
+        $processRequest->refresh();
+
+        // Create an old case that should be deleted if retention was enabled
+        $oldCaseDate = Carbon::now()->subMonths(13);
+        $oldCase = CaseNumber::factory()->create([
+            'process_request_id' => $processRequest->id,
+        ]);
+        $oldCase->created_at = $oldCaseDate;
+        $oldCase->save();
+
+        // Dispatch the job
+        EvaluateProcessRetentionJob::dispatchSync($process->id);
+
+        // The case should NOT be deleted because retention policy is disabled
+        // Plus the auto-created case = 2 total
+        $this->assertNotNull(CaseNumber::find($oldCase->id), 'The case should NOT be deleted when retention policy is disabled');
+        $this->assertDatabaseCount('case_numbers', 2);
+
+        // Re-enable for other tests
+        putenv('CASE_RETENTION_POLICY_ENABLED=true');
+        $_ENV['CASE_RETENTION_POLICY_ENABLED'] = 'true';
+        $_SERVER['CASE_RETENTION_POLICY_ENABLED'] = 'true';
     }
 }

@@ -26,6 +26,13 @@ class EvaluateProcessRetentionJob implements ShouldQueue
      */
     public function handle(): void
     {
+        // Only run if case retention policy is enabled
+        // Use getenv() to read directly from environment (works better in tests)
+        $enabled = getenv('CASE_RETENTION_POLICY_ENABLED');
+        if ($enabled === false || $enabled === 'false' || $enabled === '0' || $enabled === '') {
+            return;
+        }
+
         $process = Process::find($this->processId);
         if (!$process) {
             Log::error('CaseRetentionJob: Process not found', ['process_id' => $this->processId]);
