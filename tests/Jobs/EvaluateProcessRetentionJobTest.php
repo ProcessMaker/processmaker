@@ -137,8 +137,6 @@ class EvaluateProcessRetentionJobTest extends TestCase
         // There should be 1 case left (the auto-created case from ProcessRequestObserver)
         // because it was created after retention_updated_at and is within the retention period
         $this->assertDatabaseCount('case_numbers', 1);
-
-        // TODO: Assert log entry is created
     }
 
     public function testItHandlesRetentionPolicyUpdate()
