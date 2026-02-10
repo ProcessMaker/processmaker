@@ -27,9 +27,8 @@ class EvaluateProcessRetentionJob implements ShouldQueue
     public function handle(): void
     {
         // Only run if case retention policy is enabled
-        // Use getenv() to read directly from environment (works better in tests)
-        $enabled = getenv('CASE_RETENTION_POLICY_ENABLED');
-        if ($enabled === false || $enabled === 'false' || $enabled === '0' || $enabled === '') {
+        $enabled = config('app.case_retention_policy_enabled');
+        if (!$enabled) {
             return;
         }
 
@@ -40,14 +39,14 @@ class EvaluateProcessRetentionJob implements ShouldQueue
             return;
         }
 
-        // Default to 6 months if retention_period is not set
-        $retentionPeriod = $process->properties['retention_period'] ?? '6_months';
+        // Default to 1_year if retention_period is not set
+        $retentionPeriod = $process->properties['retention_period'] ?? '1_year';
         $retentionMonths = match ($retentionPeriod) {
             '6_months' => 6,
             '1_year' => 12,
             '3_years' => 36,
             '5_years' => 60,
-            default => 6, // Default to 6 months
+            default => 12, // Default to 1_year
         };
 
         // Default retention_updated_at to now if not set
