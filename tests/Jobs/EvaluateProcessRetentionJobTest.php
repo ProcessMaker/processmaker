@@ -4,6 +4,7 @@ namespace Tests\Jobs;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Config;
 use ProcessMaker\Jobs\EvaluateProcessRetentionJob;
 use ProcessMaker\Models\CaseNumber;
 use ProcessMaker\Models\Process;
@@ -20,17 +21,13 @@ class EvaluateProcessRetentionJobTest extends TestCase
     {
         parent::setUp();
         // Enable case retention policy for all tests
-        putenv('CASE_RETENTION_POLICY_ENABLED=true');
-        $_ENV['CASE_RETENTION_POLICY_ENABLED'] = 'true';
-        $_SERVER['CASE_RETENTION_POLICY_ENABLED'] = 'true';
+        Config::set('app.case_retention_policy_enabled', true);
     }
 
     protected function tearDown(): void
     {
-        // Clean up environment variable
-        putenv('CASE_RETENTION_POLICY_ENABLED');
-        unset($_ENV['CASE_RETENTION_POLICY_ENABLED']);
-        unset($_SERVER['CASE_RETENTION_POLICY_ENABLED']);
+        // Clean up config
+        Config::set('app.case_retention_policy_enabled', false);
         parent::tearDown();
     }
 
@@ -254,9 +251,7 @@ class EvaluateProcessRetentionJobTest extends TestCase
     public function testItDoesNotRunWhenRetentionPolicyIsDisabled()
     {
         // Disable case retention policy
-        putenv('CASE_RETENTION_POLICY_ENABLED=false');
-        $_ENV['CASE_RETENTION_POLICY_ENABLED'] = 'false';
-        $_SERVER['CASE_RETENTION_POLICY_ENABLED'] = 'false';
+        Config::set('app.case_retention_policy_enabled', false);
 
         // Create a process with a 6 month retention period
         $retentionUpdatedAt = Carbon::now()->subMonths(6)->toIso8601String();
@@ -292,9 +287,7 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $this->assertDatabaseCount('case_numbers', 2);
 
         // Re-enable for other tests
-        putenv('CASE_RETENTION_POLICY_ENABLED=true');
-        $_ENV['CASE_RETENTION_POLICY_ENABLED'] = 'true';
-        $_SERVER['CASE_RETENTION_POLICY_ENABLED'] = 'true';
+        Config::set('app.case_retention_policy_enabled', true);
     }
 
     public function testItDefaultsToOneYearForProcessesWithoutRetentionPeriod()
