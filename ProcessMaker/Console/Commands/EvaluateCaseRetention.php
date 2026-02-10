@@ -27,6 +27,16 @@ class EvaluateCaseRetention extends Command
      */
     public function handle()
     {
+        // Only run if case retention policy is enabled
+        $enabled = getenv('CASE_RETENTION_POLICY_ENABLED');
+        if (!$enabled) {
+            $this->info('Case retention policy is disabled');
+            $this->error('Skipping case retention evaluation');
+
+            return;
+        }
+
+        $this->info('Case retention policy is enabled');
         $this->info('Evaluating and deleting cases past their retention period');
 
         // Process all processes when retention policy is enabled
