@@ -27,7 +27,7 @@ class EvaluateProcessRetentionJob implements ShouldQueue
     public function handle(): void
     {
         // Only run if case retention policy is enabled
-        $enabled = getenv('CASE_RETENTION_POLICY_ENABLED');
+        $enabled = env('CASE_RETENTION_POLICY_ENABLED', false);
         if (!$enabled) {
             return;
         }

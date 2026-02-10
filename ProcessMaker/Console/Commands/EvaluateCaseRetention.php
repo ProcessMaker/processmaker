@@ -28,7 +28,7 @@ class EvaluateCaseRetention extends Command
     public function handle()
     {
         // Only run if case retention policy is enabled
-        $enabled = getenv('CASE_RETENTION_POLICY_ENABLED');
+        $enabled = env('CASE_RETENTION_POLICY_ENABLED', false);
         if (!$enabled) {
             $this->info('Case retention policy is disabled');
             $this->error('Skipping case retention evaluation');
