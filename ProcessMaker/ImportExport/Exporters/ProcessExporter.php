@@ -487,6 +487,11 @@ class ProcessExporter extends ExporterBase
             // Get current config
             $config = json_decode(Utils::getAttributeAtXPath($this->model, $path, 'pm:config'), true);
 
+            // Skip if config is not valid or does not have the expected structure
+            if (!is_array($config) || !isset($config['resource'])) {
+                continue;
+            }
+
             // Update resource ID in config
             $config['resource']['id'] = $dependent->model->id;
 
