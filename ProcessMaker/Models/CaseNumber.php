@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use Database\Factories\ProcessMaker\Models\CaseNumberFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
