@@ -378,24 +378,29 @@
                                     </b-col>
                                     <b-col>
                                         <div class="retention-body retention-period">
-                                            <h5 class="retention-header pb-1">{{__('Retention Period')}}<h5>
+                                            <h5 class="retention-header pb-1">{{ __('Retention Period') }}</h5>
                                             <p class="retention-text">{{ __('Retention periods over one year must be handled by Technical Support. Please contact Technical Support for assistance.')}}</p>
                                         </div>
                                         <div class="form-group p-0 mb-4">
                                             {{ html()->label(__('Select a Retention Period'), 'selectRetentionPeriod') }}
                                             <multiselect
                                                 id="selectRetentionPeriod"
-                                                :value="canSelectRetentionPeriod"
-                                                @input="onRetentionPeriodSelect"
-                                                :options="retentionPeriodOptions"
+                                                v-model="canSelectRetentionPeriod"
+                                                :options="retentionPeriodSelectOptions"
+                                                @input="onRetentionPeriodSelect($event)"
                                                 :multiple="false"
                                                 :show-labels="false"
                                                 placeholder="{{__('Select a Retention Period')}}"
                                                 track-by="id"
                                                 label="fullname"
                                             >
-                                                <template slot="option" slot-scope="props">
-                                                    <span :class="{ 'font-italic': props.option.id === 'two_years' || props.option.id === 'three_years' }">@{{ props.option.fullname }}</span>
+                                                <template slot="option" slot-scope="{ option }">
+                                                    <span v-if="!option.$isDisabled">
+                                                        @{{ option.fullname }}
+                                                    </span>
+                                                    <span v-else>
+                                                        @{{ option.fullname }} ({{ __('Available on Support request') }})
+                                                    </span>
                                                 </template>
                                             </multiselect>
                                         </div>
@@ -671,15 +676,18 @@
                     },
                     maxManagers: 10,
                     retentionPeriodOptions: [
+                        { id: 'six_months', fullname: 'Six months after case creation' },
                         { id: 'one_year', fullname: 'One year after case creation' },
-                        { id: 'two_years', fullname: 'Two years after case creation (Available on Support request)' },
-                        { id: 'three_years', fullname: 'Three years after case creation (Available on Support request)' }
+                        { id: 'three_years', fullname: 'Three years after case creation' },
+                        { id: 'five_years', fullname: 'Five years after case creation' }
                     ],
                     canSelectRetentionPeriod: { id: 'one_year', fullname: 'One year after case creation' },
+                    allowedRetentionPeriods: @json(config('app.case_retention_tier_options')[config('app.case_retention_tier')] ?? ['six_months', 'one_year']),
                     showRetentionConfirmModal: false,
                     retentionModalStep: 'confirm',
                     pendingRetentionPeriod: null,
-                    caseRetentionPolicyEnabled: @json(config('app.case_retention_policy_enabled'))
+                    caseRetentionPolicyEnabled: @json(config('app.case_retention_policy_enabled')),
+                    lastConfirmedRetentionPeriod: null,
                 }
                 },
                 mounted() {
@@ -702,16 +710,29 @@
                         this.activeTab = target[1];
                     }
 
-                    if (this.caseRetentionPolicyEnabled && _.get(this.formData, 'properties.retention_period')) {
-                        const id = this.formData.properties.retention_period;
-                        const option = this.retentionPeriodOptions.find(opt => opt.id === id);
-                        if (option) {
+                    if (this.caseRetentionPolicyEnabled) {
+                        const savedId = _.get(this.formData, 'properties.retention_period');
+                        const allowed = this.allowedRetentionPeriods || [];
+                        const option = this.retentionPeriodOptions.find(opt => opt.id === savedId);
+                        if (option && allowed.includes(savedId)) {
                             this.canSelectRetentionPeriod = option;
+                        } else {
+                            const defaultId = allowed.includes('one_year') ? 'one_year' : allowed[0];
+                            this.canSelectRetentionPeriod = this.retentionPeriodOptions.find(opt => opt.id === defaultId) || null;
                         }
                     }
 
+                    this.lastConfirmedRetentionPeriod = this.canSelectRetentionPeriod;
                 },
                 computed: {
+                    retentionPeriodSelectOptions() {
+                        const allowed = this.allowedRetentionPeriods || [];
+
+                        return this.retentionPeriodOptions.map(opt => ({
+                        ...opt,
+                        $isDisabled: !allowed.includes(opt.id)
+                        }));
+                    },
                     activeUsersAndGroupsWithManager() {
                         const usersAndGroups = _.cloneDeep(this.activeUsersAndGroups);
                         usersAndGroups[0]['items'].unshift(this.processManagerOption());
@@ -843,25 +864,34 @@
                     this.$refs["listReassignment"].add();
                 },
                 onRetentionPeriodSelect(newVal) {
-                    if (!newVal || (this.canSelectRetentionPeriod && newVal.id === this.canSelectRetentionPeriod.id)) {
+                        if (!newVal || !this.lastConfirmedRetentionPeriod) {
                         return;
                     }
+
+                    if (newVal.id === this.lastConfirmedRetentionPeriod.id) {
+                        return;
+                    }
+
                     this.pendingRetentionPeriod = newVal;
                     this.retentionModalStep = 'confirm';
                     this.showRetentionConfirmModal = true;
                 },
                 confirmRetentionChange() {
-                    if (this.pendingRetentionPeriod) {
-                        this.canSelectRetentionPeriod = this.pendingRetentionPeriod;
-                        this.formData.properties = this.formData.properties || {};
-                        this.formData.properties.retention_period = this.pendingRetentionPeriod.id;
-                    }
-                    this.retentionModalStep = 'success';
+                if (this.pendingRetentionPeriod) {
+                    this.canSelectRetentionPeriod = this.pendingRetentionPeriod;
+                    this.lastConfirmedRetentionPeriod = this.pendingRetentionPeriod;
+
+                    this.formData.properties = this.formData.properties || {};
+                    this.formData.properties.retention_period = this.pendingRetentionPeriod.id;
+                }
+
+                this.retentionModalStep = 'success';
                 },
                 cancelRetentionChange() {
-                    this.showRetentionConfirmModal = false;
+                    this.canSelectRetentionPeriod = this.lastConfirmedRetentionPeriod;
                     this.pendingRetentionPeriod = null;
                     this.retentionModalStep = 'confirm';
+                    this.showRetentionConfirmModal = false;
                 },
                 closeRetentionSuccessModal() {
                     this.showRetentionConfirmModal = false;
