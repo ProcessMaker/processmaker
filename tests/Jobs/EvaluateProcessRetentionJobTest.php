@@ -14,7 +14,7 @@ class EvaluateProcessRetentionJobTest extends TestCase
 {
     use RefreshDatabase;
 
-    const RETENTION_PERIOD = '6_months';
+    const RETENTION_PERIOD = '1_year';
 
     protected function setUp(): void
     {
@@ -297,9 +297,9 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $_SERVER['CASE_RETENTION_POLICY_ENABLED'] = 'true';
     }
 
-    public function testItDefaultsToSixMonthsForProcessesWithoutRetentionPeriod()
+    public function testItDefaultsToOneYearForProcessesWithoutRetentionPeriod()
     {
-        // Create a process WITHOUT retention_period property (should default to 6 months)
+        // Create a process WITHOUT retention_period property (should default to 1 year)
         $process = Process::factory()->create([
             'properties' => [], // No retention_period set
         ]);
@@ -312,18 +312,18 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $processRequest->save();
         $processRequest->refresh();
 
-        // Create a case created 7 months ago (older than default 6 months retention)
-        // Since retention_updated_at defaults to now, old cases cutoff = now - 6 months
-        // 7 months ago < (now - 6 months), so it should be deleted
-        $oldCaseDate = Carbon::now()->subMonths(7);
+        // Create a case created 13 months ago (older than default 1 year retention)
+        // Since retention_updated_at defaults to now, old cases cutoff = now - 1 year
+        // 13 months ago < (now - 1 year), so it should be deleted
+        $oldCaseDate = Carbon::now()->subMonths(13);
         $oldCase = CaseNumber::factory()->create([
             'process_request_id' => $processRequest->id,
         ]);
         $oldCase->created_at = $oldCaseDate;
         $oldCase->save();
 
-        // Create a case created 5 months ago (within default 6 months retention)
-        // 5 months ago is NOT < (now - 6 months), so it should NOT be deleted
+        // Create a case created 5 months ago (within default 1 year retention)
+        // 5 months ago is NOT < (now - 1 year), so it should NOT be deleted
         $newCaseDate = Carbon::now()->subMonths(5);
         $newCase = CaseNumber::factory()->create([
             'process_request_id' => $processRequest->id,
@@ -334,11 +334,11 @@ class EvaluateProcessRetentionJobTest extends TestCase
         // Dispatch the job
         EvaluateProcessRetentionJob::dispatchSync($process->id);
 
-        // The 7-month-old case should be deleted (older than 6 months default)
-        // The 5-month-old case should NOT be deleted (within 6 months default)
+        // The 13-month-old case should be deleted (older than 1 year default)
+        // The 5-month-old case should NOT be deleted (within 1 year default)
         // Plus the auto-created case = 2 total
-        $this->assertNull(CaseNumber::find($oldCase->id), 'The 7-month-old case should be deleted with default 6-month retention');
-        $this->assertNotNull(CaseNumber::find($newCase->id), 'The 5-month-old case should NOT be deleted with default 6-month retention');
+        $this->assertNull(CaseNumber::find($oldCase->id), 'The 13-month-old case should be deleted with default 1 year retention');
+        $this->assertNotNull(CaseNumber::find($newCase->id), 'The 5-month-old case should NOT be deleted with default 1 year retention');
         $this->assertDatabaseCount('case_numbers', 2);
     }
 }
