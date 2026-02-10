@@ -24,6 +24,8 @@ use ProcessMaker\Nayra\Contracts\Bpmn\MultiInstanceLoopCharacteristicsInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Managers\WorkflowManagerDefault;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
+use ProcessMaker\Managers\DataManager;
+use ProcessMaker\Models\MustacheExpressionEvaluator;
 use ProcessMaker\Notifications\ActivityActivatedNotification;
 use ProcessMaker\Notifications\TaskReassignmentNotification;
 use ProcessMaker\Query\Expression;
@@ -1441,6 +1443,49 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     }
 
     /**
+     * Build context for Mustache (end event external URL). Same as scripts/screens: _user, _request, process data, APP_URL.
+     */
+    private function getElementDestinationMustacheContext(): array
+    {
+        try {
+            $context = (new DataManager())->getData($this);
+        } catch (Throwable $e) {
+            $request = $this->processRequest;
+            $context = array_merge($request->data ?? [], $request ? (new DataManager())->updateRequestMagicVariable([], $request) : []);
+            $user = $this->user ?? \Illuminate\Support\Facades\Auth::user();
+            if ($user) {
+                $userData = $user->attributesToArray();
+                unset($userData['remember_token']);
+                $context['_user'] = $userData;
+            }
+        }
+
+        $context['APP_URL'] = config('app.url');
+
+        // Normalize to plain arrays/scalars so Mustache resolves all keys (common PHP idiom)
+        $normalized = json_decode(json_encode($context), true);
+
+        return is_array($normalized) ? $normalized : [];
+    }
+
+    /**
+     * Resolve Mustache in end event external URL. FEEL is not supported here; use Mustache only.
+     * Context: APP_URL, _request, _user, process variables (same as getElementDestinationMustacheContext).
+     *
+     * Example (Mustache):
+     *   {{APP_URL}}/admin/users/{{_request.id}}/edit     -> https://example.com/admin/users/123/edit
+     *   {{APP_URL}}/webentry/{{_request.id}}             -> https://example.com/webentry/123
+     *   {{APP_URL}}/path/{{my_process_var}}               -> uses process variable my_process_var
+     */
+    private function resolveElementDestinationUrl(string $url): string
+    {
+        $url = html_entity_decode($url, ENT_QUOTES | ENT_HTML401, 'UTF-8');
+        $context = $this->getElementDestinationMustacheContext();
+
+        return (new MustacheExpressionEvaluator())->render($url, $context);
+    }
+
+    /**
      * Determines the destination based on the type of element destination property
      *
      * @param elementDestinationType Used to determine the type of destination for an element.
@@ -1480,6 +1525,9 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                     } else {
                         $elementDestination = $elementDestinationProp['value']['url'] ?? null;
                     }
+                }
+                if ($elementDestinationType === 'externalURL' && is_string($elementDestination) && $elementDestination !== '') {
+                    $elementDestination = $this->resolveElementDestinationUrl($elementDestination);
                 }
                 break;
             case 'taskList':
