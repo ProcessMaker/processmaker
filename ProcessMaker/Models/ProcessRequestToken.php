@@ -1468,7 +1468,8 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         $context['APP_URL'] = config('app.url');
 
         // Normalize to plain arrays/scalars so Mustache resolves all keys (common PHP idiom)
-        $normalized = json_decode(json_encode($context), true);
+        $json = json_encode($context, JSON_THROW_ON_ERROR);
+        $normalized = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
 
         return is_array($normalized) ? $normalized : [];
     }
