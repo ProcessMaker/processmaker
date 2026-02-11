@@ -33,20 +33,17 @@ class EvaluateProcessRetentionJobTest extends TestCase
 
     public function testItDeletesCasesThatExceedRetentionPeriod()
     {
-        // Create a process with a 6 month retention period
-        // retention_updated_at is 6 months ago, so old cases cutoff is 12 months ago (6 months ago - 6 months)
-        $retentionUpdatedAt = Carbon::now()->subMonths(6)->toIso8601String();
+        // Create a process with a 1 year retention period
+        // retention_updated_at defaults to now, so cutoff is 12 months ago (now - 12 months)
         $process = Process::factory()->create([
             'properties' => [
                 'retention_period' => self::RETENTION_PERIOD,
-                'retention_updated_at' => $retentionUpdatedAt,
             ],
         ]);
 
         $process->save();
         $process->refresh();
         $this->assertEquals(self::RETENTION_PERIOD, $process->properties['retention_period']);
-        $this->assertEquals($retentionUpdatedAt, $process->properties['retention_updated_at']);
 
         // Create a process request
         $processRequest = ProcessRequest::factory()->create();
@@ -55,8 +52,8 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $processRequest->refresh();
         $this->assertEquals($process->id, $processRequest->process_id);
 
-        // Create a case number created 13 months ago (before retention_updated_at)
-        // Old cases cutoff = 6 months ago - 6 months = 12 months ago
+        // Create a case number created 13 months ago
+        // Cutoff = now - 12 months = 12 months ago
         // 13 months ago < 12 months ago, so it should be deleted
         $oldCaseCreatedAt = Carbon::now()->subMonths(13)->toIso8601String();
         $caseOld = CaseNumber::factory()->create([
@@ -75,19 +72,16 @@ class EvaluateProcessRetentionJobTest extends TestCase
 
     public function testItDoesNotDeleteCasesThatAreWithinRetentionPeriod()
     {
-        // Create a process with a 6 month retention period
-        // retention_updated_at is 6 months ago, so old cases cutoff is 12 months ago (6 months ago - 6 months)
-        $retentionUpdatedAt = Carbon::now()->subMonths(6)->toIso8601String();
+        // Create a process with a 1 year retention period
+        // retention_updated_at defaults to now, so cutoff is 12 months ago (now - 12 months)
         $process = Process::factory()->create([
             'properties' => [
                 'retention_period' => self::RETENTION_PERIOD,
-                'retention_updated_at' => $retentionUpdatedAt,
             ],
         ]);
         $process->save();
         $process->refresh();
         $this->assertEquals(self::RETENTION_PERIOD, $process->properties['retention_period']);
-        $this->assertEquals($retentionUpdatedAt, $process->properties['retention_updated_at']);
 
         // Create a process request
         $processRequest = ProcessRequest::factory()->create();
@@ -96,8 +90,9 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $processRequest->refresh();
         $this->assertEquals($process->id, $processRequest->process_id);
 
-        // Create a case number created 5 months ago (before retention_updated_at)
-        // This case is NOT older than the old cases cutoff (12 months ago), so it should NOT be deleted
+        // Create a case number created 5 months ago
+        // Cutoff = now - 12 months = 12 months ago
+        // 5 months ago is NOT < 12 months ago, so it should NOT be deleted
         $caseCreatedAt = Carbon::now()->subMonths(5)->toIso8601String();
         $case = CaseNumber::factory()->create([
             'created_at' => $caseCreatedAt,
@@ -115,17 +110,16 @@ class EvaluateProcessRetentionJobTest extends TestCase
 
     public function testItHandlesMultipleCasesInBatches()
     {
-        // Create a process with a 6 month retention period
+        // Create a process with a 1 year retention period
+        // retention_updated_at defaults to now, so cutoff is 12 months ago (now - 12 months)
         $process = Process::factory()->create([
             'properties' => [
                 'retention_period' => self::RETENTION_PERIOD,
-                'retention_updated_at' => Carbon::now()->subMonths(6)->toIso8601String(),
             ],
         ]);
         $process->save();
         $process->refresh();
         $this->assertEquals(self::RETENTION_PERIOD, $process->properties['retention_period']);
-        $this->assertEquals(Carbon::now()->subMonths(6)->toIso8601String(), $process->properties['retention_updated_at']);
 
         // Create a process request
         $processRequest = ProcessRequest::factory()->create();
@@ -135,8 +129,8 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $this->assertEquals($process->id, $processRequest->process_id);
 
         // Create 1200 cases (to test chunking/batch deletion)
-        // These cases are created 13 months ago (before retention_updated_at)
-        // Old cases cutoff = 6 months ago - 6 months = 12 months ago
+        // These cases are created 13 months ago
+        // Cutoff = now - 12 months = 12 months ago
         // 13 months ago < 12 months ago, so these should be deleted
         $cases = CaseNumber::factory()->count(1200)->create([
             'process_request_id' => $processRequest->id,
@@ -150,7 +144,7 @@ class EvaluateProcessRetentionJobTest extends TestCase
 
         // Assert all old cases are deleted
         // There should be 1 case left (the auto-created case from ProcessRequestObserver)
-        // because it was created after retention_updated_at and is within the retention period
+        // because it was created recently and is within the retention period
         $this->assertDatabaseCount('case_numbers', 1);
     }
 
