@@ -55,11 +55,9 @@ class EvaluateProcessRetentionJob implements ShouldQueue
             ? Carbon::parse($process->properties['retention_updated_at'])
             : Carbon::now();
 
-        // Get all process request IDs for this process
-        $processRequestIds = ProcessRequest::where('process_id', $this->processId)->pluck('id');
-
-        // If there are no process requests, nothing to delete
-        if ($processRequestIds->isEmpty()) {
+        // Check if there are any process requests for this process
+        // If not, nothing to delete
+        if (!ProcessRequest::where('process_id', $this->processId)->exists()) {
             return;
         }
 
@@ -77,7 +75,10 @@ class EvaluateProcessRetentionJob implements ShouldQueue
         // For cases created after retention_updated_at: cutoff is now - retention_period
         $newCasesCutoff = $now->copy()->subMonths($retentionMonths);
 
-        CaseNumber::whereIn('process_request_id', $processRequestIds)
+        // Use subquery to get process request IDs
+        $processRequestSubquery = ProcessRequest::where('process_id', $this->processId)->select('id');
+
+        CaseNumber::whereIn('process_request_id', $processRequestSubquery)
             ->where(function ($query) use ($retentionUpdatedAt, $oldCasesCutoff, $newCasesCutoff) {
                 // Cases created before retention_updated_at: delete if created before (retention_updated_at - retention_period)
                 $query->where(function ($q) use ($retentionUpdatedAt, $oldCasesCutoff) {
