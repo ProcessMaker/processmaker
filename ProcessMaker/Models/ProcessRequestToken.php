@@ -17,6 +17,8 @@ use ProcessMaker\Contracts\ConditionalRedirectServiceInterface;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityReassignment;
 use ProcessMaker\Facades\WorkflowUserManager;
+use ProcessMaker\Managers\DataManager;
+use ProcessMaker\Models\MustacheExpressionEvaluator;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
@@ -24,8 +26,6 @@ use ProcessMaker\Nayra\Contracts\Bpmn\MultiInstanceLoopCharacteristicsInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Managers\WorkflowManagerDefault;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
-use ProcessMaker\Managers\DataManager;
-use ProcessMaker\Models\MustacheExpressionEvaluator;
 use ProcessMaker\Notifications\ActivityActivatedNotification;
 use ProcessMaker\Notifications\TaskReassignmentNotification;
 use ProcessMaker\Query\Expression;
@@ -1457,7 +1457,6 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             $request = $this->processRequest;
             $context = array_merge($request->data ?? [], $request ? (new DataManager())->updateRequestMagicVariable([], $request) : []);
             $user = $this->user ?? auth()->user();
-
             if ($user) {
                 $userData = $user->attributesToArray();
                 unset($userData['remember_token']);
