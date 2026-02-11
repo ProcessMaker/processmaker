@@ -1450,6 +1450,10 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         try {
             $context = (new DataManager())->getData($this);
         } catch (Throwable $e) {
+            Log::warning('Failed to load Mustache context via DataManager, falling back to request data', [
+                'token_id' => $this->id,
+                'error' => $e->getMessage(),
+            ]);
             $request = $this->processRequest;
             $context = array_merge($request->data ?? [], $request ? (new DataManager())->updateRequestMagicVariable([], $request) : []);
             $user = $this->user ?? \Illuminate\Support\Facades\Auth::user();
