@@ -3,7 +3,12 @@
       <a :href="item.url" class="nav-link"  @click="toggle" :target="item.attributes.target" :aria-label="ariaLabel">
         <i v-if="item.attributes.icon" class="fas nav-icon" :class="item.attributes.icon" ></i>
         <i v-if="item.attributes.customicon" :class="item.attributes.customicon" ></i>
-        <img v-if="item.attributes.file" :src="item.attributes.file" class="nav-icon" id="custom_icon">
+        <span
+          v-if="item.attributes.file"
+          class="nav-icon custom-icon"
+          :style="maskStyle(item.attributes.file)"
+          id="custom_icon"
+        />
         <span class="nav-text" v-show="expanded()" v-cloak >
           {{item.title}}
           <i v-if="item.children && item.children.length" class="float-right fas" :class="{'fa-caret-right': !isOpen, 'fa-caret-down': isOpen}"></i>
@@ -19,7 +24,12 @@
                 </span>
             </a>
             <a :href="item.url" class="nav-link" v-show="item.attributes.file">
-              <img :src="item.attributes.file" class="nav-icon" id="custom_icon"><span class="nav-text" v-if="expanded()" v-cloak>{{item.title}}<span v-if="count !== null" class="nav-badge float-right">{{ count }}</span></span>
+              <span
+                :style="maskStyle(item.attributes.file)"
+                class="nav-icon custom-icon"
+                id="custom_icon"
+              />
+              <span class="nav-text" v-if="expanded()" v-cloak>{{item.title}}<span v-if="count !== null" class="nav-badge float-right">{{ count }}</span></span>
                 <span class="nav-text" v-if="expanded()" v-cloak>{{item.title}}
                   <span v-if="count !== null" class="nav-badge float-right" :aria-label="ariaLabel">{{ count }}</span>
                 </span>
@@ -73,7 +83,20 @@
       },
       expanded() {
         return this.$parent.expanded
-     }
+     },
+      maskStyle(file) {
+        return {
+          backgroundColor: 'currentColor',
+          WebkitMaskImage: `url(${file})`,
+          maskImage: `url(${file})`,
+          WebkitMaskRepeat: 'no-repeat',
+          maskRepeat: 'no-repeat',
+          WebkitMaskPosition: 'center',
+          maskPosition: 'center',
+          WebkitMaskSize: 'contain',
+          maskSize: 'contain',
+        };
+      }
     }
   }
 </script>

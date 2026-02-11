@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Notification;
 use Laravel\Scout\Searchable;
 use Log;
 use ProcessMaker\Casts\MillisecondsToDateCast;
+use ProcessMaker\Contracts\ConditionalRedirectServiceInterface;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityReassignment;
 use ProcessMaker\Facades\WorkflowUserManager;
@@ -782,8 +783,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
                     $query->whereIn('process_request_tokens.id', $selfServiceTaskIds);
                 } elseif ($user) {
-                    $taskIds = $user->availableSelfServiceTaskIds();
-                    $query->whereIn('process_request_tokens.id', $taskIds);
+                    $query->whereIn('process_request_tokens.id', $user->availableSelfServiceTasksQuery());
                 } else {
                     $query->where('process_request_tokens.is_self_service', 1);
                 }
@@ -1448,10 +1448,28 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
      *
      * @return array|null Returns the destination URL.
      */
-    private function getElementDestination($elementDestinationType, $elementDestinationProp): ?array
+    private function getElementDestination($elementDestinationType, $elementDestinationProp, array $conditionalRedirectProp): ?array
     {
         $elementDestination = null;
 
+        if (!empty($conditionalRedirectProp['isEnabled']) && !empty($conditionalRedirectProp['conditions'])) {
+            $result = $this->evaluateConditionalRedirect(app(ConditionalRedirectServiceInterface::class), $conditionalRedirectProp);
+            if ($result) {
+                $elementDestinationType = $result['taskDestination']['value'];
+
+                $url = match ($elementDestinationType) {
+                    'customDashboard' => $result['customDashboard']['url'] ?? null,
+                    'externalURL' => $result['externalUrl'] ?? null,
+                    default => null,
+                };
+
+                $elementDestinationProp = [
+                    'value' => [
+                        'url' => $url,
+                    ],
+                ];
+            }
+        }
         switch ($elementDestinationType) {
             case 'anotherProcess':
             case 'customDashboard':
@@ -1495,6 +1513,15 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         ];
     }
 
+    private function evaluateConditionalRedirect(ConditionalRedirectServiceInterface $conditionalRedirectService, array $conditionalRedirectProp): ?array
+    {
+        if (!$conditionalRedirectProp['isEnabled']) {
+            return null;
+        }
+
+        return $conditionalRedirectService->resolveForToken($conditionalRedirectProp['conditions'], $this);
+    }
+
     /**
      * Determines the destination URL based on the element destination type specified in the definition.
      *
@@ -1505,6 +1532,8 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         $definition = $this->getDefinition();
         $elementDestinationProp = $definition['elementDestination'] ?? null;
         $elementDestinationType = null;
+        $conditionalRedirectProp = $definition['conditionalRedirect'] ?? '[]';
+        $conditionalRedirectProp = json_decode($conditionalRedirectProp, true);
 
         try {
             $elementDestinationProp = json_decode($elementDestinationProp, true);
@@ -1515,7 +1544,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             return null;
         }
 
-        return $this->getElementDestination($elementDestinationType, $elementDestinationProp);
+        return $this->getElementDestination($elementDestinationType, $elementDestinationProp, $conditionalRedirectProp);
     }
 
     /**

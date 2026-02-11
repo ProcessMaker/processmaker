@@ -227,10 +227,10 @@ class FilterTest extends TestCase
             ],
         ], ProcessRequestToken::class);
 
-        $this->assertEquals(
-            "select * from `process_request_tokens` where ((`process_request_tokens`.`id` in ({$selfServiceTask->id})))",
-            $sql
-        );
+        $this->assertStringContainsString('select * from `process_request_tokens` where ((`process_request_tokens`.`id` in (select `process_request_tokens`.`id` from `process_request_tokens` where', $sql);
+        $this->assertStringContainsString('`is_self_service` = 1', $sql);
+        $this->assertStringContainsString("`status` = 'ACTIVE'", $sql);
+        $this->assertStringContainsString('json_contains(`self_service_groups`', $sql);
     }
 
     public function testTaskStatusActive()
