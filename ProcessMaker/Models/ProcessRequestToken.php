@@ -1456,7 +1456,8 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             ]);
             $request = $this->processRequest;
             $context = array_merge($request->data ?? [], $request ? (new DataManager())->updateRequestMagicVariable([], $request) : []);
-            $user = $this->user ?? \Illuminate\Support\Facades\Auth::user();
+            $user = $this->user ?? auth()->user();
+
             if ($user) {
                 $userData = $user->attributesToArray();
                 unset($userData['remember_token']);
