@@ -896,7 +896,6 @@
                 closeRetentionSuccessModal() {
                     this.showRetentionConfirmModal = false;
                     this.pendingRetentionPeriod = null;
-                    this.retentionModalStep = 'confirm';
                 },
                 onRetentionModalHide() {
                     if (this.retentionModalStep === 'confirm') {
