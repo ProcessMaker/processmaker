@@ -75,6 +75,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Job Batching
+    |--------------------------------------------------------------------------
+    |
+    | The following options configure the database and table that store job
+    | batching information. Uses the same database connection as the app
+    | so we do not fall back to Laravel's default 'sqlite'.
+    |
+    */
+
+    'batching' => [
+        'database' => env('DB_CONNECTION', 'processmaker'),
+        'table' => 'job_batches',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Failed Queue Jobs
     |--------------------------------------------------------------------------
     |
