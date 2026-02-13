@@ -111,7 +111,7 @@
             "build": "174e152b",
             "cicd-enabled": true,
             "custom": {
-                "package-ellucian-ethos": "1.19.9",
+                "package-ellucian-ethos": "1.19.10",
                 "paypal-package": "dev-fall",
                 "pps-adsync": "dev-fall",
                 "ps_ethos": "dev-main",
