@@ -127,7 +127,7 @@
   </div>
 </template>
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { t } from "i18next";
 import { Dropdown } from "../../base/form";
 
@@ -144,6 +144,10 @@ const props = defineProps({
     type: Number,
     default: () => (0),
   },
+  perPage: {
+    type: Number,
+    default: () => (15),
+  },
   options: {
     type: Array,
     default: () => [],
@@ -159,7 +163,7 @@ const totalModelLabel = computed(() => {
   return `${t("{{count}} Items", { count: props.total })}`;
 });
 
-const pageModel = ref(props.page);
+const pageModel = ref(props.page || 1);
 const optionsPerPage = [
   {
     value: 15,
@@ -177,10 +181,12 @@ const optionsPerPage = [
 
 const optionsModel = ref(props.options.length ? props.options : optionsPerPage);
 
-const selectedOption = ref({
-  value: 15,
-  label: "15 items",
-});
+const resolveOption = (value) => {
+  const matched = optionsModel.value.find((option) => option.value === value);
+  return matched || { value, label: `${value} ${t("Per page")}` };
+};
+
+const selectedOption = ref(resolveOption(props.perPage || 15));
 
 const first = () => {
   if (pageModel.value > 1) {
@@ -226,6 +232,24 @@ const setPerPage = (value) => {
 defineExpose({
   setPerPage,
 });
+
+watch(
+  () => props.page,
+  (value) => {
+    if (value && value !== pageModel.value) {
+      pageModel.value = value;
+    }
+  }
+);
+
+watch(
+  () => props.perPage,
+  (value) => {
+    if (value && value !== selectedOption.value?.value) {
+      selectedOption.value = resolveOption(value);
+    }
+  }
+);
 </script>
 <style scoped>
 /* Chrome, Safari, Edge, Opera */

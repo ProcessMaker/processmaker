@@ -288,6 +288,9 @@ return [
     // Enable or disable TCE customization feature
     'tce_customization_enable' => env('TCE_CUSTOMIZATION_ENABLED', false),
 
+    // Enable or disable case retention policy
+    'case_retention_policy_enabled' => env('CASE_RETENTION_POLICY_ENABLED', false),
+
     'prometheus_namespace' => env('PROMETHEUS_NAMESPACE', strtolower(preg_replace('/[^a-zA-Z0-9_]+/', '_', env('APP_NAME', 'processmaker')))),
 
     'server_timing' => [
@@ -315,4 +318,8 @@ return [
     ],
 
     'resources_core_path' => base_path('resources-core'),
+    'scheduler' => [
+        'claim_timeout_minutes' => env('SCHEDULER_CLAIM_TIMEOUT_MINUTES', 5),
+        'bpmn_timer_overlap_minutes' => env('SCHEDULER_BPMN_TIMER_OVERLAP_MINUTES', 5),
+    ],
 ];

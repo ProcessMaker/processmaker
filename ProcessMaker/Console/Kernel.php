@@ -24,7 +24,8 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('bpmn:timer')
                  ->everyMinute()
-                 ->onOneServer();
+                 ->onOneServer()
+                 ->withoutOverlapping(config('app.scheduler.bpmn_timer_overlap_minutes', 5));
 
         $schedule->command('processmaker:sync-recommendations --queue')
                  ->daily()
@@ -88,6 +89,13 @@ class Kernel extends ConsoleKernel
                 $schedule->command('metrics:clear')->cron("*/{$clearInterval} * * * *");
                 break;
         }
+
+        // evaluate cases retention policy
+        $schedule->command('cases:retention:evaluate')
+            ->daily()
+            ->onOneServer()
+            ->withoutOverlapping()
+            ->runInBackground();
 
         // 5 minutes is recommended in https://laravel.com/docs/12.x/horizon#metrics
         $schedule->command('horizon:snapshot')->everyFiveMinutes();
