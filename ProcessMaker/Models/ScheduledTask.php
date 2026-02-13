@@ -15,6 +15,11 @@ class ScheduledTask extends ProcessMakerModel
 
     protected $fillable = [
         'process_id', 'process_request_id', 'process_request_token_id', 'configuration',
+        'type', 'last_execution', 'claimed_by', 'claimed_at',
+    ];
+
+    protected $casts = [
+        'claimed_at' => 'datetime',
     ];
 
     public static function rules()

@@ -65,6 +65,9 @@ class CasesController extends Controller
 
         // Get all the request related to this case number
         $allRequests = ProcessRequest::where('case_number', $case_number)->get();
+        if ($allRequests->isEmpty()) {
+            abort(404);
+        }
         $parentRequest = null;
         $requestCount = $allRequests->count();
         // Search the parent request parent_request_id and load $request
@@ -74,6 +77,7 @@ class CasesController extends Controller
                 break;
             }
         }
+        $request = $parentRequest ?: $allRequests->first();
         $request->participants;
         $request->user;
         // Load the data and key values

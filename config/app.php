@@ -310,4 +310,8 @@ return [
     'case_retention_policy_enabled' => filter_var(env('CASE_RETENTION_POLICY_ENABLED', false), FILTER_VALIDATE_BOOLEAN),
 
     'resources_core_path' => base_path('resources-core'),
+    'scheduler' => [
+        'claim_timeout_minutes' => env('SCHEDULER_CLAIM_TIMEOUT_MINUTES', 5),
+        'bpmn_timer_overlap_minutes' => env('SCHEDULER_BPMN_TIMER_OVERLAP_MINUTES', 5),
+    ],
 ];

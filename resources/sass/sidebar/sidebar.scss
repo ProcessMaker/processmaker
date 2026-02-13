@@ -43,6 +43,24 @@
     font-size: 14px;
     color: $light;
     height: 43px;
+
+    .nav-icon {
+      color: inherit;
+
+      &.custom-icon {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        background-color: currentColor;
+      }
+
+      svg {
+        width: 1em;
+        height: 1em;
+        fill: currentColor;
+        stroke: currentColor;
+      }
+    }
   }
 
   .logo {

@@ -14,7 +14,7 @@ class CaseNumberFactory extends Factory
     {
         return [
             'process_request_id' => function () {
-                return ProcessRequest::factory()->create()->getKey();
+                return ProcessRequest::factory()->create()->id;
             },
         ];
     }
