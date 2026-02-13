@@ -143,4 +143,176 @@ class ProcessRequestTokenElementDestinationTest extends TestCase
         $this->assertStringContainsString((string) $request->id, $resolved);
         $this->assertStringContainsString('https://example.com/', $resolved);
     }
+
+    /**
+     * Test getElementDestinationMustacheContext excludes remember_token from _user.
+     */
+    public function testGetElementDestinationMustacheContextExcludesRememberTokenFromUser(): void
+    {
+        $user = User::factory()->create([
+            'status' => 'ACTIVE',
+            'remember_token' => 'secret-token',
+        ]);
+        $process = Process::factory()->create();
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'user_id' => $user->id,
+            'data' => [],
+        ]);
+
+        $token = ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'user_id' => $user->id,
+            'element_id' => 'end_1',
+            'element_type' => 'end_event',
+        ]);
+
+        $context = $this->invokePrivateMethod($token, 'getElementDestinationMustacheContext');
+
+        $this->assertArrayHasKey('_user', $context);
+        $this->assertIsArray($context['_user']);
+        $this->assertArrayNotHasKey('remember_token', $context['_user']);
+    }
+
+    /**
+     * Test getElementDestinationMustacheContext returns normalized context (arrays and scalars only).
+     */
+    public function testGetElementDestinationMustacheContextReturnsNormalizedArray(): void
+    {
+        $user = User::factory()->create(['status' => 'ACTIVE']);
+        $process = Process::factory()->create();
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'user_id' => $user->id,
+            'data' => ['nested' => ['a' => 1, 'b' => 'two']],
+        ]);
+
+        $token = ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'user_id' => $user->id,
+            'element_id' => 'end_1',
+            'element_type' => 'end_event',
+        ]);
+
+        $context = $this->invokePrivateMethod($token, 'getElementDestinationMustacheContext');
+
+        $this->assertIsArray($context);
+        $this->assertArrayHasKey('APP_URL', $context);
+        $this->assertIsString($context['APP_URL']);
+        $this->assertArrayHasKey('nested', $context);
+        $this->assertIsArray($context['nested']);
+        $this->assertSame(1, $context['nested']['a']);
+        $this->assertSame('two', $context['nested']['b']);
+    }
+
+    /**
+     * Test getElementDestinationMustacheContext includes APP_URL when token has no user.
+     */
+    public function testGetElementDestinationMustacheContextWhenTokenHasNoUser(): void
+    {
+        $process = Process::factory()->create();
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'user_id' => null,
+            'data' => ['foo' => 'bar'],
+        ]);
+
+        $token = ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'user_id' => null,
+            'element_id' => 'end_1',
+            'element_type' => 'end_event',
+        ]);
+
+        $context = $this->invokePrivateMethod($token, 'getElementDestinationMustacheContext');
+
+        $this->assertIsArray($context);
+        $this->assertSame(config('app.url'), $context['APP_URL']);
+        $this->assertArrayHasKey('_request', $context);
+        $this->assertSame('bar', $context['foo']);
+    }
+
+    /**
+     * Test resolveElementDestinationUrl resolves _user placeholder.
+     */
+    public function testResolveElementDestinationUrlResolvesUserPlaceholder(): void
+    {
+        $user = User::factory()->create(['status' => 'ACTIVE', 'username' => 'johndoe']);
+        $process = Process::factory()->create();
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'user_id' => $user->id,
+            'data' => [],
+        ]);
+
+        $token = ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'user_id' => $user->id,
+            'element_id' => 'end_1',
+            'element_type' => 'end_event',
+        ]);
+
+        $urlTemplate = '{{APP_URL}}/users/{{_user.id}}/{{_user.username}}';
+        $resolved = $this->invokePrivateMethod($token, 'resolveElementDestinationUrl', [$urlTemplate]);
+
+        $expectedUrl = config('app.url') . '/users/' . $user->id . '/johndoe';
+        $this->assertSame($expectedUrl, $resolved);
+    }
+
+    /**
+     * Test resolveElementDestinationUrl with empty string returns empty string.
+     */
+    public function testResolveElementDestinationUrlWithEmptyString(): void
+    {
+        $user = User::factory()->create(['status' => 'ACTIVE']);
+        $process = Process::factory()->create();
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'user_id' => $user->id,
+            'data' => [],
+        ]);
+
+        $token = ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'user_id' => $user->id,
+            'element_id' => 'end_1',
+            'element_type' => 'end_event',
+        ]);
+
+        $resolved = $this->invokePrivateMethod($token, 'resolveElementDestinationUrl', ['']);
+
+        $this->assertSame('', $resolved);
+    }
+
+    /**
+     * Test resolveElementDestinationUrl with no placeholders returns URL unchanged (after entity decode).
+     */
+    public function testResolveElementDestinationUrlWithNoPlaceholders(): void
+    {
+        $user = User::factory()->create(['status' => 'ACTIVE']);
+        $process = Process::factory()->create();
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'user_id' => $user->id,
+            'data' => [],
+        ]);
+
+        $token = ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'user_id' => $user->id,
+            'element_id' => 'end_1',
+            'element_type' => 'end_event',
+        ]);
+
+        $plainUrl = 'https://example.com/static/path';
+        $resolved = $this->invokePrivateMethod($token, 'resolveElementDestinationUrl', [$plainUrl]);
+
+        $this->assertSame($plainUrl, $resolved);
+    }
 }
