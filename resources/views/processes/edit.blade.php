@@ -831,7 +831,10 @@
                     this.formData.reassignment_permissions = this.reassignmentPermissions;
                     if (this.caseRetentionPolicyEnabled) {
                         this.formData.properties = this.formData.properties || {};
-                        this.formData.properties.retention_period = this.canSelectRetentionPeriod ? this.canSelectRetentionPeriod.id : null;
+                        const retentionPeriod = this.canSelectRetentionPeriod
+                            ? this.canSelectRetentionPeriod.id
+                            : this.getDefaultRetentionPeriodId();
+                        this.formData.properties.retention_period = retentionPeriod;
                     }
                     
                     ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
@@ -862,6 +865,10 @@
                 },
                 reassignmentClicked() {
                     this.$refs["listReassignment"].add();
+                },
+                getDefaultRetentionPeriodId() {
+                    const allowed = this.allowedRetentionPeriods || [];
+                    return allowed.includes('one_year') ? 'one_year' : (allowed[0] || null);
                 },
                 onRetentionPeriodSelect(newVal) {
                         if (!newVal || !this.lastConfirmedRetentionPeriod) {
