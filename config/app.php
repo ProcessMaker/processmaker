@@ -309,6 +309,14 @@ return [
     // When true, shows the Cases Retention section on process configuration
     'case_retention_policy_enabled' => filter_var(env('CASE_RETENTION_POLICY_ENABLED', false), FILTER_VALIDATE_BOOLEAN),
 
+    // Controls which retention periods are available in the UI for the current tier.
+    'case_retention_tier' => env('CASE_RETENTION_TIER', '1'),
+    'case_retention_tier_options' => [
+        '1' => ['six_months', 'one_year'],
+        '2' => ['six_months', 'one_year', 'three_years'],
+        '3' => ['six_months', 'one_year', 'three_years', 'five_years'],
+    ],
+
     'resources_core_path' => base_path('resources-core'),
     'scheduler' => [
         'claim_timeout_minutes' => env('SCHEDULER_CLAIM_TIMEOUT_MINUTES', 5),
