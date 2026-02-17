@@ -142,8 +142,8 @@ window.ProcessMaker = {
      * @returns {void}
      */
   pushNotification(notification) {
-    if (this.notifications.filter((x) => x.id === notification).length === 0) {
-      this.notifications.push(notification);
+    if (window.ProcessMaker.notifications.filter((x) => x.id === notification).length === 0) {
+      window.ProcessMaker.notifications.push(notification);
     }
   },
 

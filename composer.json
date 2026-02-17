@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "2026.3.1",
+    "version": "2026.3.5",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -49,7 +49,7 @@
         "predis/predis": "^2.3",
         "processmaker/docker-executor-lua": "^1.0",
         "processmaker/docker-executor-node": "1.1.0",
-        "processmaker/docker-executor-php": "1.4.0",
+        "processmaker/docker-executor-php": "1.4.1",
         "processmaker/laravel-i18next": "dev-master",
         "processmaker/nayra": "1.12.4",
         "processmaker/pmql": "1.13.2",
@@ -112,10 +112,10 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "9db1c28b",
+            "build": "f1211b6d",
             "cicd-enabled": true,
             "custom": {
-                "package-ellucian-ethos": "1.19.9",
+                "package-ellucian-ethos": "1.19.10",
                 "paypal-package": "dev-fall",
                 "pps-adsync": "dev-fall",
                 "ps_ethos": "dev-main",
@@ -159,7 +159,7 @@
                 "package-advanced-user-manager": "1.13.2",
                 "package-ai": "1.16.13",
                 "package-analytics-reporting": "1.11.3",
-                "package-auth": "1.24.11",
+                "package-auth": "1.24.12",
                 "package-collections": "2.27.3",
                 "package-comments": "1.16.2",
                 "package-conversational-forms": "1.15.0",
@@ -235,9 +235,9 @@
             "tbachert/spi": true
         },
         "audit": {
-            "ignore": [
-                "CVE-2026-24765"
-            ]
+            "ignore": {
+                "PKSA-z3gr-8qht-p93v": "Vulnerability is only in isolated CI environment where tests are run"
+            }
         }
     }
 }
