@@ -4,6 +4,7 @@ namespace ProcessMaker\Providers;
 
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\ServiceProvider;
+use ProcessMaker\Http\Middleware\BroadcastAuthDebug;
 
 class BroadcastServiceProvider extends ServiceProvider
 {
@@ -14,7 +15,8 @@ class BroadcastServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Broadcast::routes(['middleware'=>['web', 'auth:anon']]);
+        //auth:web,anon is needed to allow anonymous users to listen to channels
+        Broadcast::routes(['middleware' => ['web', 'auth:web,anon', BroadcastAuthDebug::class]]);
         require base_path('routes/channels.php');
     }
 }

@@ -348,6 +348,26 @@ if (window.Processmaker && window.Processmaker.broadcasting) {
   }
 
   window.Echo = new TenantAwareEcho(config);
+
+  // Option 3: Prevent private channel subscription when no user (avoids 403 on /broadcasting/auth)
+  const noOpChannel = {
+    listen: () => noOpChannel,
+    notification: () => noOpChannel,
+    stopListening: () => noOpChannel,
+    listenForWhisper: () => noOpChannel,
+  };
+  const originalPrivate = window.Echo.private.bind(window.Echo);
+  const getUserId = () =>
+    window.Processmaker?.userId ||
+    window.ProcessMaker?.user?.id ||
+    document.head.querySelector('meta[name="user-id"]')?.content;
+
+  window.Echo.private = (channel, ...args) => {
+    if (!getUserId()) {
+      return noOpChannel;
+    }
+    return originalPrivate(channel, ...args);
+  };
 }
 
 if (userID) {

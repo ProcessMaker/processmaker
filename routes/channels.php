@@ -11,16 +11,25 @@
 |
 */
 
+use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 
 Broadcast::channel('ProcessMaker.Models.User.{id}', function ($user, $id) {
+    if (!$user || $user instanceof AnonymousUser) {
+        return false;
+    }
+
     return (int) $user->id === (int) $id;
 });
 
 Broadcast::channel('ProcessMaker.Models.ProcessRequest.{id}', function ($user, $id) {
+    if (!$user || $user instanceof AnonymousUser) {
+        return false;
+    }
+
     if ($id === 'undefined' || $user === 'undefined') {
-        return;
+        return false;
     }
 
     if ($user->is_administrator) {
@@ -35,6 +44,10 @@ Broadcast::channel('ProcessMaker.Models.ProcessRequest.{id}', function ($user, $
 });
 
 Broadcast::channel('ProcessMaker.Models.ProcessRequestToken.{id}', function ($user, $id) {
+    if (!$user || $user instanceof AnonymousUser) {
+        return false;
+    }
+
     if ($user->is_administrator) {
         return true;
     }
@@ -45,9 +58,17 @@ Broadcast::channel('ProcessMaker.Models.ProcessRequestToken.{id}', function ($us
 });
 
 Broadcast::channel('test.status', function ($user) {
+    if (!$user || $user instanceof AnonymousUser) {
+        return false;
+    }
+
     return true;
 });
 
 Broadcast::channel('ProcessMaker.Models.Process.{processId}.Language.{language}', function ($user, $processId, $language) {
+    if (!$user || $user instanceof AnonymousUser) {
+        return false;
+    }
+
     return true;
 });
