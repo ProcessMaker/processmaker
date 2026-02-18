@@ -688,6 +688,7 @@
                     pendingRetentionPeriod: null,
                     caseRetentionPolicyEnabled: @json(config('app.case_retention_policy_enabled')),
                     lastConfirmedRetentionPeriod: null,
+                    originalRetentionPeriodId: null,
                 }
                 },
                 mounted() {
@@ -723,6 +724,7 @@
                     }
 
                     this.lastConfirmedRetentionPeriod = this.canSelectRetentionPeriod;
+                    this.originalRetentionPeriodId = this.canSelectRetentionPeriod ? this.canSelectRetentionPeriod.id : null;
                 },
                 computed: {
                     retentionPeriodSelectOptions() {
@@ -835,6 +837,17 @@
                             ? this.canSelectRetentionPeriod.id
                             : this.getDefaultRetentionPeriodId();
                         this.formData.properties.retention_period = retentionPeriod;
+                        // Log retention period update only if the retention period is changed from the original value
+                        if (this.formData.properties.retention_period !== this.originalRetentionPeriodId) {
+                            // The logged in user is the one who updated the retention period
+                            const userID = document.head.querySelector("meta[name=\"user-id\"]");
+                            const userFullName = document.head.querySelector("meta[name=\"user-full-name\"]");
+                            this.formData.properties.retention_updated_by = {
+                                id: userID.content,
+                                fullname: userFullName.content,
+                            };
+                            this.formData.properties.retention_updated_at = new Date().toISOString();
+                        }
                     }
                     
                     ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
