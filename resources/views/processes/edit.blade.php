@@ -405,7 +405,9 @@
                                             </multiselect>
                                         </div>
                                         <div class="retention-text retention-body default-retention p-2">
-                                            <span class="d-flex align-items-center"><i class="fp-check-circle-outline default-retention-icon"></i><span class="ml-1">{{ __('The default retention period is in effect.')}}</span></span>
+                                            <span v-if="!retentionUpdatedBy.id && !retentionUpdatedBy.fullname" class="d-flex align-items-center font-italic"><i class="fp-check-circle-outline default-retention-icon"></i><span class="ml-1">{{ __('The default retention period is in effect.')}}</span></span>
+                                            <!-- This should display the retention updated by and the retention updated at in the format of "Updated by <fullname> on <date>" -->
+                                            <span v-if="retentionUpdatedBy.id && retentionUpdatedBy.fullname" class="d-flex align-items-center"><strong class="mr-1">{{ __('Last modified by: ') }}</strong>@{{ retentionUpdatedBy.fullname.trim() }}{{ __(', at') }} @{{ retentionUpdatedBy.date | formatDate('datetime') }}</strong></span>
                                         </div>
                                         <b-modal
                                             v-model="showRetentionConfirmModal"
@@ -689,6 +691,11 @@
                     caseRetentionPolicyEnabled: @json(config('app.case_retention_policy_enabled')),
                     lastConfirmedRetentionPeriod: null,
                     originalRetentionPeriodId: null,
+                    retentionUpdatedBy: {
+                        id: null,
+                        fullname: null,
+                        date: null,
+                    },
                 }
                 },
                 mounted() {
@@ -725,6 +732,11 @@
 
                     this.lastConfirmedRetentionPeriod = this.canSelectRetentionPeriod;
                     this.originalRetentionPeriodId = this.canSelectRetentionPeriod ? this.canSelectRetentionPeriod.id : null;
+                    this.retentionUpdatedBy = {
+                        id: _.get(this.formData, 'properties.retention_updated_by.id'),
+                        fullname: _.get(this.formData, 'properties.retention_updated_by.fullname'),
+                        date: _.get(this.formData, 'properties.retention_updated_at'),
+                    };
                 },
                 computed: {
                     retentionPeriodSelectOptions() {
@@ -846,7 +858,13 @@
                                 id: userID.content,
                                 fullname: userFullName.content,
                             };
-                            this.formData.properties.retention_updated_at = new Date().toISOString();
+                            const updatedAt = new Date().toISOString();
+                            this.formData.properties.retention_updated_at = updatedAt;
+                            this.retentionUpdatedBy = {
+                                id: parseInt(userID?.content ?? 0),
+                                fullname: userFullName?.content ?? '',
+                                date: updatedAt,
+                            };
                         }
                     }
                     
@@ -1108,7 +1126,6 @@
         }
 
         .default-retention {
-            font-style: italic;
             background-color: #F1F2F4;
             border-radius: 8px;
         }
