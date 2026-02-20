@@ -59,7 +59,7 @@ class EvaluateCaseRetention extends Command
             })
             ->whereDoesntHave('categories', function ($q) use ($systemCategoryIds) {
                 // Exclude processes with any category assignment to system categories
-                $q->whereIn('id', $systemCategoryIds);
+                $q->whereIn('process_categories.id', $systemCategoryIds);
             });
         }
 
