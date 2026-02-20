@@ -37,16 +37,19 @@ class EvaluateCaseRetention extends Command
         }
 
         $this->info('Case retention policy is enabled');
-        $this->info('Evaluating and deleting cases past their retention period');
+        $this->info('Dispatching retention evaluation jobs for all processes');
 
         // Process all processes when retention policy is enabled
         // Processes without retention_period will default to 1_year
-        Process::chunkById(100, function ($processes) {
+        $jobCount = 0;
+        Process::chunkById(100, function ($processes) use (&$jobCount) {
             foreach ($processes as $process) {
                 dispatch(new EvaluateProcessRetentionJob($process->id));
+                $jobCount++;
             }
         });
 
-        $this->info('Cases retention evaluation complete');
+        $this->info("Dispatched {$jobCount} retention evaluation job(s) to the queue");
+        $this->info('Jobs will be processed asynchronously by queue workers');
     }
 }
