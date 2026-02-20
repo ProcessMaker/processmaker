@@ -8,9 +8,6 @@ export default defineConfig({
         laravel([
             '../../resources/js/admin/script-executors/index.js',
         ], {
-            // hotFile: 'public/hottt',
-            // publicDirectory: '../../public',
-            // buildsDirectory: '../../public/builds',
         }),
         vue({
             template: {
@@ -19,11 +16,6 @@ export default defineConfig({
                     includeAbsolute: false,
                 },
             },
-            // compilerOptions: {
-            //     compatConfig: {
-            //         MODE: 2, // Vue 2 compatibility mode
-            //     },
-            // },
         }),
     ],
     build: {
@@ -36,7 +28,7 @@ export default defineConfig({
             // Force Vite to use Vue from this folder's node_modules, not the root
             // 'vue': path.resolve(__dirname, 'node_modules/vue'),
             'vue': path.resolve(__dirname, 'node_modules/@vue/compat'),
-            'vue-i18n': path.resolve(__dirname, 'node_modules/vue-i18n'),
+            'i18next-vue': path.resolve(__dirname, 'node_modules/i18next-vue'),
         },
         // Prefer resolving from this directory's node_modules
         dedupe: ['vue'],
