@@ -499,18 +499,27 @@ trait MakeHttpRequests
         $parsedUrl = $this->parseUrl($url);
         $query = [];
         parse_str($parsedUrl['query'] ?? '', $query);
-        if (array_key_exists('params', $endpoint)) {
+        $hasEndpointParams = array_key_exists('params', $endpoint) && is_array($endpoint['params']);
+        if ($hasEndpointParams) {
             foreach ($endpoint['params'] as $param) {
+                if (!array_key_exists('key', $param)) {
+                    continue;
+                }
+
                 $key = $this->evalMustache($param['key'], $data);
                 // Get value from outbound configuration, if not defined get the default value
-                $value = $params[$key] ?? $this->evalMustache($param['value'], $data);
-                if ($value !== '' || $param['required']) {
+                $value = $params[$key] ?? $this->evalMustache($param['value'] ?? '', $data);
+                if ($value !== '' || ($param['required'] ?? false)) {
                     $query[$key] = $value;
                 }
             }
-        } else {
+        }
+
+        // Preserve legacy behavior for configured endpoint params, but when params are
+        // missing/empty allow dynamic PARAM values (e.g. pmql from screen select-list).
+        if (!$hasEndpointParams || empty($endpoint['params'])) {
             foreach ($params as $key => $value) {
-                if ($value !== '') {
+                if ($value !== '' && !array_key_exists($key, $query)) {
                     $query[$key] = $value;
                 }
             }
