@@ -5,13 +5,18 @@ namespace ProcessMaker\Jobs;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Http\Controllers\Api\Actions\Cases\DeletesCaseRecords;
 use ProcessMaker\Models\CaseNumber;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\TaskDraft;
 
 class EvaluateProcessRetentionJob implements ShouldQueue
 {
+    use DeletesCaseRecords;
     use Queueable;
 
     /**
@@ -42,10 +47,10 @@ class EvaluateProcessRetentionJob implements ShouldQueue
         // Default to 1_year if retention_period is not set
         $retentionPeriod = $process->properties['retention_period'] ?? '1_year';
         $retentionMonths = match ($retentionPeriod) {
-            '6_months' => 6,
-            '1_year' => 12,
-            '3_years' => 36,
-            '5_years' => 60,
+            'six_months' => 6,
+            'one_year' => 12,
+            'three_years' => 36,
+            'five_years' => 60,
             default => 12, // Default to 1_year
         };
 
@@ -92,14 +97,46 @@ class EvaluateProcessRetentionJob implements ShouldQueue
                 });
             })
             ->chunkById(100, function ($cases) {
-                $caseIds = $cases->pluck('id');
-                // Delete the cases
-                CaseNumber::whereIn('id', $caseIds)->delete();
+                $caseNumbers = $cases->pluck('id')->all();
+                $requestIds = ProcessRequest::query()
+                    ->whereIn('case_number', $caseNumbers)
+                    ->pluck('id')
+                    ->all();
 
-                // TODO: Add logs to track the number of cases deleted
-                // Get deleted timestamp
-                // $deletedAt = Carbon::now();
-                // RetentionPolicyLog::record($process->id, $caseIds, $deletedAt);
+                if ($requestIds === []) {
+                    return;
+                }
+
+                $tokenIds = ProcessRequestToken::query()
+                    ->whereIn('process_request_id', $requestIds)
+                    ->pluck('id')
+                    ->all();
+                $draftIds = $tokenIds !== []
+                    ? TaskDraft::query()->whereIn('task_id', $tokenIds)->pluck('id')->all()
+                    : [];
+
+                DB::transaction(function () use ($requestIds, $tokenIds, $caseNumbers, $draftIds) {
+                    $this->deleteInboxRuleLogs($tokenIds);
+                    $this->deleteInboxRules($tokenIds);
+                    $this->deleteProcessRequestLocks($requestIds, $tokenIds);
+                    $this->deleteProcessAbeRequestTokens($requestIds, $tokenIds);
+                    $this->deleteScheduledTasks($requestIds, $tokenIds);
+                    $this->deleteEllucianEthosSyncTasks($tokenIds);
+                    $this->deleteTaskDraftMedia($draftIds);
+                    $this->deleteTaskDrafts($tokenIds);
+                    foreach ($caseNumbers as $caseNumber) {
+                        $this->deleteComments((string) $caseNumber, $requestIds, $tokenIds);
+                    }
+                    $this->deleteNotifications($requestIds);
+                    $this->deleteRequestMedia($requestIds);
+                    $this->deleteCaseNumbers($requestIds);
+                    foreach ($caseNumbers as $caseNumber) {
+                        $this->deleteCasesStarted((string) $caseNumber);
+                        $this->deleteCasesParticipated((string) $caseNumber);
+                    }
+                    $this->deleteProcessRequestTokens($requestIds);
+                    $this->deleteProcessRequests($requestIds);
+                });
             });
     }
 }
