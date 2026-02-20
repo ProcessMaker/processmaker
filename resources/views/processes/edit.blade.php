@@ -405,7 +405,9 @@
                                             </multiselect>
                                         </div>
                                         <div class="retention-text retention-body default-retention p-2">
-                                            <span class="d-flex align-items-center"><i class="fp-check-circle-outline default-retention-icon"></i><span class="ml-1">{{ __('The default retention period is in effect.')}}</span></span>
+                                            <span v-if="!retentionUpdatedBy.id && !retentionUpdatedBy.fullname" class="d-flex align-items-center font-italic"><i class="fp-check-circle-outline default-retention-icon"></i><span class="ml-1">{{ __('The default retention period is in effect.')}}</span></span>
+                                            <!-- This should display the retention updated by and the retention updated at in the format of "Updated by <fullname> on <date>" -->
+                                            <span v-if="retentionUpdatedBy.id && retentionUpdatedBy.fullname" class="d-flex align-items-center"><strong class="mr-1">{{ __('Last modified by: ') }}</strong>@{{ retentionUpdatedBy.fullname.trim() }}{{ __(', at') }} @{{formatDateUser(retentionUpdatedBy.date) }}</span>
                                         </div>
                                         <b-modal
                                             v-model="showRetentionConfirmModal"
@@ -688,6 +690,12 @@
                     pendingRetentionPeriod: null,
                     caseRetentionPolicyEnabled: @json(config('app.case_retention_policy_enabled')),
                     lastConfirmedRetentionPeriod: null,
+                    originalRetentionPeriodId: null,
+                    retentionUpdatedBy: {
+                        id: null,
+                        fullname: null,
+                        date: null,
+                    },
                 }
                 },
                 mounted() {
@@ -723,6 +731,12 @@
                     }
 
                     this.lastConfirmedRetentionPeriod = this.canSelectRetentionPeriod;
+                    this.originalRetentionPeriodId = this.canSelectRetentionPeriod ? this.canSelectRetentionPeriod.id : null;
+                    this.retentionUpdatedBy = {
+                        id: _.get(this.formData, 'properties.retention_updated_by.id'),
+                        fullname: _.get(this.formData, 'properties.retention_updated_by.fullname'),
+                        date: _.get(this.formData, 'properties.retention_updated_at'),
+                    };
                 },
                 computed: {
                     retentionPeriodSelectOptions() {
@@ -835,6 +849,23 @@
                             ? this.canSelectRetentionPeriod.id
                             : this.getDefaultRetentionPeriodId();
                         this.formData.properties.retention_period = retentionPeriod;
+                        // Log retention period update only if the retention period is changed from the original value
+                        if (this.formData.properties.retention_period !== this.originalRetentionPeriodId) {
+                            // The logged in user is the one who updated the retention period
+                            const userID = document.head.querySelector("meta[name=\"user-id\"]");
+                            const userFullName = document.head.querySelector("meta[name=\"user-full-name\"]");
+                            this.formData.properties.retention_updated_by = {
+                                id: userID.content,
+                                fullname: userFullName.content,
+                            };
+                            const updatedAt = new Date().toISOString();
+                            this.formData.properties.retention_updated_at = updatedAt;
+                            this.retentionUpdatedBy = {
+                                id: parseInt(userID?.content ?? 0),
+                                fullname: userFullName?.content ?? '',
+                                date: updatedAt,
+                            };
+                        }
                     }
                     
                     ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
@@ -871,7 +902,7 @@
                     return allowed.includes('one_year') ? 'one_year' : (allowed[0] || null);
                 },
                 onRetentionPeriodSelect(newVal) {
-                        if (!newVal || !this.lastConfirmedRetentionPeriod) {
+                    if (!newVal || !this.lastConfirmedRetentionPeriod) {
                         return;
                     }
 
@@ -884,15 +915,15 @@
                     this.showRetentionConfirmModal = true;
                 },
                 confirmRetentionChange() {
-                if (this.pendingRetentionPeriod) {
-                    this.canSelectRetentionPeriod = this.pendingRetentionPeriod;
-                    this.lastConfirmedRetentionPeriod = this.pendingRetentionPeriod;
+                    if (this.pendingRetentionPeriod) {
+                        this.canSelectRetentionPeriod = this.pendingRetentionPeriod;
+                        this.lastConfirmedRetentionPeriod = this.pendingRetentionPeriod;
 
-                    this.formData.properties = this.formData.properties || {};
-                    this.formData.properties.retention_period = this.pendingRetentionPeriod.id;
-                }
+                        this.formData.properties = this.formData.properties || {};
+                        this.formData.properties.retention_period = this.pendingRetentionPeriod.id;
+                    }
 
-                this.retentionModalStep = 'success';
+                    this.retentionModalStep = 'success';
                 },
                 cancelRetentionChange() {
                     this.canSelectRetentionPeriod = this.lastConfirmedRetentionPeriod;
@@ -908,11 +939,26 @@
                     if (this.retentionModalStep === 'confirm') {
                         this.cancelRetentionChange();
                     }
+                },
+                formatDateUser(value) {
+                    let config = "";
+                    if (typeof ProcessMaker !== "undefined" && ProcessMaker.user && ProcessMaker.user.datetime_format) {
+                        config = ProcessMaker.user.datetime_format;
+                    }
+
+                    if (value) {
+                        if (moment(value).isValid()) {
+                            return window.moment(value)
+                                .format(config);
+                        }
+                        return value;
+                    }
+                    return "n/a";
                 }
                 },
+               
             });
         });
-
     </script>
 @endsection
 
@@ -1095,7 +1141,6 @@
         }
 
         .default-retention {
-            font-style: italic;
             background-color: #F1F2F4;
             border-radius: 8px;
         }
