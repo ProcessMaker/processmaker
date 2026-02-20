@@ -340,7 +340,16 @@ if (userID) {
 }
 
 if (window.Processmaker && window.Processmaker.broadcasting) {
-  const config = window.Processmaker.broadcasting;
+  const config = { ...window.Processmaker.broadcasting };
+
+  // Ensure auth request goes to Laravel app with cookies (reduces 403 from CORS/cookie issues)
+  if (!config.authEndpoint) {
+    config.authEndpoint = `${window.location.origin}/broadcasting/auth`;
+  }
+  config.auth = config.auth || {};
+  if (config.auth.withCredentials === undefined) {
+    config.auth.withCredentials = true;
+  }
 
   if (config.broadcaster == "pusher") {
     window.Pusher = require("pusher-js");
@@ -349,12 +358,13 @@ if (window.Processmaker && window.Processmaker.broadcasting) {
 
   window.Echo = new TenantAwareEcho(config);
 
-  // Option 3: Prevent private channel subscription when no user (avoids 403 on /broadcasting/auth)
+  // Prevent private channel subscription when no user or wrong user (avoids 403 on /broadcasting/auth)
   const noOpChannel = {
     listen: () => noOpChannel,
     notification: () => noOpChannel,
     stopListening: () => noOpChannel,
     listenForWhisper: () => noOpChannel,
+    error: () => noOpChannel,
   };
   const originalPrivate = window.Echo.private.bind(window.Echo);
   const getUserId = () =>
@@ -362,8 +372,20 @@ if (window.Processmaker && window.Processmaker.broadcasting) {
     window.ProcessMaker?.user?.id ||
     document.head.querySelector('meta[name="user-id"]')?.content;
 
+  // Extract user id from ProcessMaker.Models.User.{id} channel (with optional tenant prefix)
+  const getUserIdFromChannel = (ch) => {
+    const match = ch.match(/ProcessMaker\.Models\.User\.(\d+)/);
+    return match ? match[1] : null;
+  };
+
   window.Echo.private = (channel, ...args) => {
-    if (!getUserId()) {
+    const currentUserId = String(getUserId() || "");
+    if (!currentUserId) {
+      return noOpChannel;
+    }
+    // Block subscription to another user's channel (would always 403)
+    const channelUserId = getUserIdFromChannel(channel);
+    if (channelUserId && channelUserId !== currentUserId) {
       return noOpChannel;
     }
     return originalPrivate(channel, ...args);
