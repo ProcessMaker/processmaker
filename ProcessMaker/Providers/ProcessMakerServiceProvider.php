@@ -106,8 +106,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         $this->checkConfigCache();
 
-        Vite::useBuildDirectory('builds');
-        Vite::useHotFile('resources/vite/public/hot');
+        Vite::useBuildDirectory('vite-builds'); // Tell laravel where the manifest file is located
+        Vite::useHotFile(base_path('resources/vite/public/hot')); // Tell @vite directive to use the HMR server
 
         // Hook after service providers boot
         self::$bootTime = (microtime(true) - self::$bootStart) * 1000; // Convert to milliseconds

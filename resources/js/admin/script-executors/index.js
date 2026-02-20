@@ -1,15 +1,6 @@
 import { createApp } from 'vue';
-import { createI18n } from 'vue-i18n'
-import ScriptExecutors from "./ScriptExecutors";
-
-const i18n = createI18n({
-  locale: 'en',
-  messages: {
-    en: {
-      hello: 'Hello, world!'
-    }
-  }
-})
+import ScriptExecutorsNew from "./ScriptExecutorsNew";
+import I18NextVue from "i18next-vue";
 
 const App = {
   data() {
@@ -17,12 +8,12 @@ const App = {
     }
   },
   components: {
-    ScriptExecutors
+    ScriptExecutorsNew
   },
   template: `
     <div class="card card-body">
-        <script-executors/>
+        <script-executors-new/>
     </div>
   `
 }
-createApp(App).use(i18n).mount('#script-executors');
+createApp(App).use(I18NextVue, { i18next: window.ProcessMaker.i18n }).mount('#script-executors');
