@@ -26,15 +26,27 @@ class EvaluateProcessRetentionJob implements ShouldQueue
      */
     public function handle(): void
     {
+        $startTime = microtime(true);
+
+        Log::info('EvaluateProcessRetentionJob: Starting evaluation', [
+            'process_id' => $this->processId,
+        ]);
+
         // Only run if case retention policy is enabled
         $enabled = config('app.case_retention_policy_enabled', false);
         if (!$enabled) {
+            Log::info('EvaluateProcessRetentionJob: Case retention policy is disabled, skipping', [
+                'process_id' => $this->processId,
+            ]);
+
             return;
         }
 
         $process = Process::find($this->processId);
         if (!$process) {
-            Log::error('CaseRetentionJob: Process not found', ['process_id' => $this->processId]);
+            Log::error('EvaluateProcessRetentionJob: Process not found', [
+                'process_id' => $this->processId,
+            ]);
 
             return;
         }
@@ -49,6 +61,13 @@ class EvaluateProcessRetentionJob implements ShouldQueue
             default => 12, // Default to 1_year
         };
 
+        Log::info('EvaluateProcessRetentionJob: Retention configuration loaded', [
+            'process_id' => $this->processId,
+            'process_name' => $process->name,
+            'retention_period' => $retentionPeriod,
+            'retention_months' => $retentionMonths,
+        ]);
+
         // Default retention_updated_at to now if not set
         // This means the retention policy applies from now for processes without explicit retention settings
         $retentionUpdatedAt = isset($process->properties['retention_updated_at'])
@@ -56,10 +75,19 @@ class EvaluateProcessRetentionJob implements ShouldQueue
             : Carbon::now();
 
         // Check if there are any process requests for this process
-        // If not, nothing to delete
-        if (!ProcessRequest::where('process_id', $this->processId)->exists()) {
+        $processRequestCount = ProcessRequest::where('process_id', $this->processId)->count();
+        if ($processRequestCount === 0) {
+            Log::info('EvaluateProcessRetentionJob: No process requests found, nothing to evaluate', [
+                'process_id' => $this->processId,
+            ]);
+
             return;
         }
+
+        Log::info('EvaluateProcessRetentionJob: Process request count', [
+            'process_id' => $this->processId,
+            'total_process_requests' => $processRequestCount,
+        ]);
 
         // Handle two scenarios:
         // 1. Cases created BEFORE retention_updated_at: Delete if older than retention period from retention_updated_at
@@ -75,8 +103,20 @@ class EvaluateProcessRetentionJob implements ShouldQueue
         // For cases created after retention_updated_at: cutoff is now - retention_period
         $newCasesCutoff = $now->copy()->subMonths($retentionMonths);
 
+        Log::info('EvaluateProcessRetentionJob: Retention cutoff dates calculated', [
+            'process_id' => $this->processId,
+            'retention_updated_at' => $retentionUpdatedAt->toIso8601String(),
+            'old_cases_cutoff' => $oldCasesCutoff->toIso8601String(),
+            'new_cases_cutoff' => $newCasesCutoff->toIso8601String(),
+            'current_time' => $now->toIso8601String(),
+        ]);
+
         // Use subquery to get process request IDs
         $processRequestSubquery = ProcessRequest::where('process_id', $this->processId)->select('id');
+
+        $totalDeleted = 0;
+        $chunkCount = 0;
+        $processId = $this->processId;
 
         CaseNumber::whereIn('process_request_id', $processRequestSubquery)
             ->where(function ($query) use ($retentionUpdatedAt, $oldCasesCutoff, $newCasesCutoff) {
@@ -91,15 +131,30 @@ class EvaluateProcessRetentionJob implements ShouldQueue
                     ->where('created_at', '<', $newCasesCutoff);
                 });
             })
-            ->chunkById(100, function ($cases) {
+            ->chunkById(100, function ($cases) use (&$totalDeleted, &$chunkCount, $processId) {
                 $caseIds = $cases->pluck('id');
+                $chunkSize = $caseIds->count();
+
                 // Delete the cases
                 CaseNumber::whereIn('id', $caseIds)->delete();
 
-                // TODO: Add logs to track the number of cases deleted
-                // Get deleted timestamp
-                // $deletedAt = Carbon::now();
-                // RetentionPolicyLog::record($process->id, $caseIds, $deletedAt);
+                $totalDeleted += $chunkSize;
+                $chunkCount++;
+
+                Log::info('EvaluateProcessRetentionJob: Deleted chunk of cases', [
+                    'process_id' => $processId,
+                    'chunk_number' => $chunkCount,
+                    'cases_deleted' => $chunkSize,
+                ]);
             });
+
+        $executionTime = round((microtime(true) - $startTime) * 1000, 2);
+
+        Log::info('EvaluateProcessRetentionJob: Evaluation completed', [
+            'process_id' => $this->processId,
+            'total_cases_deleted' => $totalDeleted,
+            'total_chunks_processed' => $chunkCount,
+            'execution_time_ms' => $executionTime,
+        ]);
     }
 }
