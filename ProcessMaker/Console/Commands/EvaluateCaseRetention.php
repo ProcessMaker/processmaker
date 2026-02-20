@@ -5,6 +5,7 @@ namespace ProcessMaker\Console\Commands;
 use Illuminate\Console\Command;
 use ProcessMaker\Jobs\EvaluateProcessRetentionJob;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
 
 class EvaluateCaseRetention extends Command
 {
@@ -39,10 +40,30 @@ class EvaluateCaseRetention extends Command
         $this->info('Case retention policy is enabled');
         $this->info('Dispatching retention evaluation jobs for all processes');
 
+        // Get system category IDs to exclude
+        $systemCategoryIds = ProcessCategory::where('is_system', true)->pluck('id');
+
         // Process all processes when retention policy is enabled
+        // Exclude processes that are templates or in system categories
         // Processes without retention_period will default to 1_year
         $jobCount = 0;
-        Process::chunkById(100, function ($processes) use (&$jobCount) {
+        $query = Process::where('is_template', '!=', 1);
+
+        // Exclude processes in system categories
+        if ($systemCategoryIds->isNotEmpty()) {
+            $query->where(function ($q) use ($systemCategoryIds) {
+                $q->where(function ($subQuery) use ($systemCategoryIds) {
+                    $subQuery->whereNotIn('process_category_id', $systemCategoryIds)
+                        ->orWhereNull('process_category_id');
+                });
+            })
+            ->whereDoesntHave('categories', function ($q) use ($systemCategoryIds) {
+                // Exclude processes with any category assignment to system categories
+                $q->whereIn('id', $systemCategoryIds);
+            });
+        }
+
+        $query->chunkById(100, function ($processes) use (&$jobCount) {
             foreach ($processes as $process) {
                 dispatch(new EvaluateProcessRetentionJob($process->id));
                 $jobCount++;
