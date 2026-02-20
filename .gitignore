@@ -21,6 +21,7 @@ yarn-error.log
 /public/fonts
 /public/mix-manifest.json
 /public/stats.json
+/public/build
 tests/js/coverage
 tests/coverage-report
 tests/coverage-report/*
@@ -52,3 +53,4 @@ test-db-snapshot.db
 snapshot_*.db
 storage/transitions
 .envrc
+public/vite-hot

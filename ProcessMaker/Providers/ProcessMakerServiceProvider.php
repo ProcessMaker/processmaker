@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\PackageManifest;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Illuminate\Foundation\Vite;
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Queue\Events\JobAttempted;
@@ -107,6 +108,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         // Hook after service providers boot
         self::$bootTime = (microtime(true) - self::$bootStart) * 1000; // Convert to milliseconds
+
+        // Use the vite-hot file to differentiate it from laravel mix's hot file
+        $this->app->make(Vite::class)->useHotFile(base_path('public/vite-hot'));
     }
 
     public function register(): void

@@ -8,12 +8,12 @@
     "private": true,
     "scripts": {
         "postinstall": "mkdir -p public/css/precompiled && cp -rf node_modules/npm-font-open-sans public/css/precompiled/npm-font-open-sans && cp -rf node_modules/bootstrap/scss public/css/precompiled/bootstrap && cp -rf node_modules/@fortawesome/fontawesome-free public/css/precompiled/fontawesome-free && cp -rf node_modules/@fontsource/poppins public/css/precompiled/poppins && cp -rf node_modules/@processmaker/vue-multiselect/dist/vue-multiselect.min.css public/css/precompiled",
-        "dev": "npm run development && mix --mix-config=webpack-login.mix.js",
+        "dev": "npm run development && mix --mix-config=webpack-login.mix.js && npm run vite:build",
         "development": "mix",
         "watch": "mix watch",
         "watch-poll": "mix watch -- --watch-options-poll=1000",
         "hot": "mix watch --hot",
-        "prod": "npm run production",
+        "prod": "npm run production && npm run vite:build",
         "production": "mix --production && mix --mix-config=webpack-login.mix.js --production",
         "test": "cross-env NODE_ENV=test jest",
         "test-submission": "cross-env NODE_ENV=test jest tests/js/SubmissionDataFilter.test.js tests/js/SubmitMethod.test.js",
@@ -21,7 +21,10 @@
         "lint": "eslint --fix --ignore-path .eslintignore resources/",
         "font": "node ./devhub/pm-font/svgtofont.js && cp -f ./devhub/pm-font/dist/*.* ./resources/fonts/pm-font",
         "dev-font": "node ./devhub/pm-font/svgtofont.js && http-server ./devhub/pm-font/dist -p 7771 && cp -f ./devhub/pm-font/dist/*.* ./resources/fonts/pm-font ",
-        "stats": "STATS=1 NODE_OPTIONS=\"--max-old-space-size=8000\" mix"
+        "stats": "STATS=1 NODE_OPTIONS=\"--max-old-space-size=8000\" mix",
+        "vite:dev": "vite build --mode development",
+        "vite:hot": "vite",
+        "vite:build": "vite build"
     },
     "devDependencies": {
         "@babel/eslint-parser": "^7.15.8",
@@ -39,6 +42,7 @@
         "expr-eval": "^2.0.2",
         "js-yaml-loader": "^1.2.2",
         "laravel-mix": "^6.0.49",
+        "laravel-vite-plugin": "^2",
         "moment": "^2.30.1",
         "moment-timezone": "^0.5.45",
         "postcss": "^8.4.45",
@@ -48,6 +52,8 @@
         "tailwindcss": "^3.4.10",
         "vue-loader": "^15.10.0",
         "vue-template-compiler": "^2.7.16",
+        "vite": "^7.0.0",
+        "@vitejs/plugin-vue2": "^2.3.4",
         "webpack-bundle-analyzer": "^4.10.2"
     },
     "dependencies": {

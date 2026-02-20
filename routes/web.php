@@ -72,6 +72,9 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
         // Tenant Jobs Dashboard
         Route::get('tenant-queues', [TenantQueueController::class, 'index'])->name('tenant-queue.index');
 
+        // Vite example (test page for Vite-built JS)
+        Route::get('vite-example', fn () => view('vite-example'))->name('vite-example');
+
         // DevLink
         Route::middleware('admin')->group(function () {
             Route::get('devlink/oauth-client', [DevLinkController::class, 'getOauthClient'])->name('devlink.oauth-client');
