@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Config;
 use ProcessMaker\Jobs\EvaluateProcessRetentionJob;
 use ProcessMaker\Models\CaseNumber;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessRequest;
 use Tests\TestCase;
 
@@ -327,5 +328,46 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $this->assertNull(CaseNumber::find($oldCase->id), 'The 13-month-old case should be deleted with default 1 year retention');
         $this->assertNotNull(CaseNumber::find($newCase->id), 'The 5-month-old case should NOT be deleted with default 1 year retention');
         $this->assertDatabaseCount('case_numbers', 2);
+    }
+
+    public function testItDoesNotRunForTemplates()
+    {
+        // Create a template process
+        $process = Process::factory()->create([
+            'is_template' => 1,
+        ]);
+        $process->save();
+        $process->refresh();
+
+        // Dispatch the job
+        EvaluateProcessRetentionJob::dispatchSync($process->id);
+
+        // The case should NOT be deleted because the process is a template
+        $this->assertDatabaseCount('case_numbers', 0);
+
+        // Create a process request
+        $processRequest = ProcessRequest::factory()->create();
+        $processRequest->process_id = $process->id;
+        $processRequest->save();
+        $processRequest->refresh();
+    }
+
+    public function testItDoesNotRunForProcessesInSystemCategories()
+    {
+        $category = ProcessCategory::factory()->create([
+            'is_system' => 1,
+        ]);
+        // Create a process in a system category
+        $process = Process::factory()->create([
+            'process_category_id' => $category->id,
+        ]);
+        $process->save();
+        $process->refresh();
+
+        // Dispatch the job
+        EvaluateProcessRetentionJob::dispatchSync($process->id);
+
+        // The case should NOT be deleted because the process is in a system category
+        $this->assertDatabaseCount('case_numbers', 0);
     }
 }
