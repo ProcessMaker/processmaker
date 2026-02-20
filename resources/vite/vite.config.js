@@ -19,8 +19,14 @@ export default defineConfig({
         }),
     ],
     build: {
-        // Output to the root public/build directory
         outDir: 'public/vite-builds',
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    'vendor-vue': ['vue', 'i18next-vue'],
+                },
+            },
+        },
     },
     root: path.resolve(__dirname, '../../'),
     resolve: {

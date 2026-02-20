@@ -52,3 +52,4 @@ test-db-snapshot.db
 snapshot_*.db
 storage/transitions
 resources/vite/node_modules
+public/vite-builds
