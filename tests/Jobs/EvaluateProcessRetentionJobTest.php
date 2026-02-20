@@ -63,6 +63,10 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $this->assertEquals($processRequest->id, $caseOld->process_request_id);
         $this->assertEquals($oldCaseCreatedAt, $caseOld->created_at->toIso8601String());
 
+        // Link process request to this case number so the job can resolve request IDs for full delete
+        $processRequest->case_number = $caseOld->id;
+        $processRequest->save();
+
         // Dispatch the job to evaluate the retention period
         EvaluateProcessRetentionJob::dispatchSync($process->id);
 
@@ -139,13 +143,15 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $this->assertEquals($processRequest->id, $cases->first()->process_request_id);
         $this->assertEquals(Carbon::now()->subMonths(13)->toIso8601String(), $cases->first()->created_at->toIso8601String());
 
+        // Link process request to one of the case numbers so the job can resolve request IDs for full delete
+        $processRequest->case_number = $cases->first()->id;
+        $processRequest->save();
+
         // Dispatch the job to evaluate the retention period
         EvaluateProcessRetentionJob::dispatchSync($process->id);
 
-        // Assert all old cases are deleted
-        // There should be 1 case left (the auto-created case from ProcessRequestObserver)
-        // because it was created recently and is within the retention period
-        $this->assertDatabaseCount('case_numbers', 1);
+        // Assert all old cases are deleted (full delete removes the process request and all its case numbers)
+        $this->assertDatabaseCount('case_numbers', 0);
     }
 
     public function testItHandlesRetentionPolicyUpdate()
@@ -205,38 +211,48 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $process->save();
         $process->refresh();
 
-        // Create a process request
-        $processRequest = ProcessRequest::factory()->create();
-        $processRequest->process_id = $process->id;
-        $processRequest->save();
-        $processRequest->refresh();
+        // Create first process request for the case that should be deleted (20 months old)
+        $processRequestOld = ProcessRequest::factory()->create();
+        $processRequestOld->process_id = $process->id;
+        $processRequestOld->save();
+        $processRequestOld->refresh();
 
         // Create an old case (20 months ago, before retention_updated_at which is 6 months ago)
         // Old cases cutoff = 6 months ago - 1 year = 18 months ago
         // 20 months ago < 18 months ago (earlier date), so it SHOULD be deleted
         $oldCaseDate = Carbon::now()->subMonths(20);
         $oldCase = CaseNumber::factory()->create([
-            'process_request_id' => $processRequest->id,
+            'process_request_id' => $processRequestOld->id,
         ]);
         $oldCase->created_at = $oldCaseDate;
         $oldCase->save();
+        $processRequestOld->case_number = $oldCase->id;
+        $processRequestOld->save();
 
         // Create a case 7 months ago (before retention_updated_at) that should NOT be deleted
         // Old cases cutoff = 6 months ago - 1 year = 18 months ago
         // 7 months ago is NOT < 18 months ago (7 months ago is more recent), so it should NOT be deleted
+        $processRequestKept = ProcessRequest::factory()->create();
+        $processRequestKept->process_id = $process->id;
+        $processRequestKept->save();
+        $processRequestKept->refresh();
+
+        // Create a case 7 months ago that should NOT be deleted
         $oldCaseNotDeletedDate = Carbon::now()->subMonths(7);
         $oldCaseNotDeleted = CaseNumber::factory()->create([
-            'process_request_id' => $processRequest->id,
+            'process_request_id' => $processRequestKept->id,
         ]);
         $oldCaseNotDeleted->created_at = $oldCaseNotDeletedDate;
         $oldCaseNotDeleted->save();
+        $processRequestKept->case_number = $oldCaseNotDeleted->id;
+        $processRequestKept->save();
 
         // Dispatch the job
         EvaluateProcessRetentionJob::dispatchSync($process->id);
 
         // The 20-month-old case should be deleted (older than 18 months cutoff)
         // The 7-month-old case should NOT be deleted (newer than 18 months cutoff)
-        // Plus the auto-created case = 2 total
+        // Plus the auto-created case for processRequestKept = 2 total
         $this->assertNull(CaseNumber::find($oldCase->id), 'The 20-month-old case should be deleted');
         $this->assertNotNull(CaseNumber::find($oldCaseNotDeleted->id), 'The 7-month-old case should NOT be deleted');
         $this->assertDatabaseCount('case_numbers', 2);
@@ -293,37 +309,47 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $process->save();
         $process->refresh();
 
-        // Create a process request
-        $processRequest = ProcessRequest::factory()->create();
-        $processRequest->process_id = $process->id;
-        $processRequest->save();
-        $processRequest->refresh();
+        // Create a process request for the case that should be deleted (13 months old)
+        $processRequestOld = ProcessRequest::factory()->create();
+        $processRequestOld->process_id = $process->id;
+        $processRequestOld->save();
+        $processRequestOld->refresh();
 
         // Create a case created 13 months ago (older than default 1 year retention)
         // Since retention_updated_at defaults to now, old cases cutoff = now - 1 year
         // 13 months ago < (now - 1 year), so it should be deleted
         $oldCaseDate = Carbon::now()->subMonths(13);
         $oldCase = CaseNumber::factory()->create([
-            'process_request_id' => $processRequest->id,
+            'process_request_id' => $processRequestOld->id,
         ]);
         $oldCase->created_at = $oldCaseDate;
         $oldCase->save();
+        $processRequestOld->case_number = $oldCase->id;
+        $processRequestOld->save();
+
+        // Create second process request for the case that should NOT be deleted (5 months old)
+        $processRequestNew = ProcessRequest::factory()->create();
+        $processRequestNew->process_id = $process->id;
+        $processRequestNew->save();
+        $processRequestNew->refresh();
 
         // Create a case created 5 months ago (within default 1 year retention)
         // 5 months ago is NOT < (now - 1 year), so it should NOT be deleted
         $newCaseDate = Carbon::now()->subMonths(5);
         $newCase = CaseNumber::factory()->create([
-            'process_request_id' => $processRequest->id,
+            'process_request_id' => $processRequestNew->id,
         ]);
         $newCase->created_at = $newCaseDate;
         $newCase->save();
+        $processRequestNew->case_number = $newCase->id;
+        $processRequestNew->save();
 
         // Dispatch the job
         EvaluateProcessRetentionJob::dispatchSync($process->id);
 
         // The 13-month-old case should be deleted (older than 1 year default)
         // The 5-month-old case should NOT be deleted (within 1 year default)
-        // Plus the auto-created case = 2 total
+        // Plus the auto-created case for processRequestNew = 2 total
         $this->assertNull(CaseNumber::find($oldCase->id), 'The 13-month-old case should be deleted with default 1 year retention');
         $this->assertNotNull(CaseNumber::find($newCase->id), 'The 5-month-old case should NOT be deleted with default 1 year retention');
         $this->assertDatabaseCount('case_numbers', 2);
