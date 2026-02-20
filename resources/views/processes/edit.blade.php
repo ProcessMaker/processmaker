@@ -407,7 +407,7 @@
                                         <div class="retention-text retention-body default-retention p-2">
                                             <span v-if="!retentionUpdatedBy.id && !retentionUpdatedBy.fullname" class="d-flex align-items-center font-italic"><i class="fp-check-circle-outline default-retention-icon"></i><span class="ml-1">{{ __('The default retention period is in effect.')}}</span></span>
                                             <!-- This should display the retention updated by and the retention updated at in the format of "Updated by <fullname> on <date>" -->
-                                            <span v-if="retentionUpdatedBy.id && retentionUpdatedBy.fullname" class="d-flex align-items-center"><strong class="mr-1">{{ __('Last modified by: ') }}</strong>@{{ retentionUpdatedBy.fullname.trim() }}{{ __(', at') }} @{{ retentionUpdatedBy.date | formatDate('datetime') }}</strong></span>
+                                            <span v-if="retentionUpdatedBy.id && retentionUpdatedBy.fullname" class="d-flex align-items-center"><strong class="mr-1">{{ __('Last modified by: ') }}</strong>@{{ retentionUpdatedBy.fullname.trim() }}{{ __(', at') }} @{{formatDateUser(retentionUpdatedBy.date) }}</span>
                                         </div>
                                         <b-modal
                                             v-model="showRetentionConfirmModal"
@@ -902,7 +902,7 @@
                     return allowed.includes('one_year') ? 'one_year' : (allowed[0] || null);
                 },
                 onRetentionPeriodSelect(newVal) {
-                        if (!newVal || !this.lastConfirmedRetentionPeriod) {
+                    if (!newVal || !this.lastConfirmedRetentionPeriod) {
                         return;
                     }
 
@@ -915,15 +915,15 @@
                     this.showRetentionConfirmModal = true;
                 },
                 confirmRetentionChange() {
-                if (this.pendingRetentionPeriod) {
-                    this.canSelectRetentionPeriod = this.pendingRetentionPeriod;
-                    this.lastConfirmedRetentionPeriod = this.pendingRetentionPeriod;
+                    if (this.pendingRetentionPeriod) {
+                        this.canSelectRetentionPeriod = this.pendingRetentionPeriod;
+                        this.lastConfirmedRetentionPeriod = this.pendingRetentionPeriod;
 
-                    this.formData.properties = this.formData.properties || {};
-                    this.formData.properties.retention_period = this.pendingRetentionPeriod.id;
-                }
+                        this.formData.properties = this.formData.properties || {};
+                        this.formData.properties.retention_period = this.pendingRetentionPeriod.id;
+                    }
 
-                this.retentionModalStep = 'success';
+                    this.retentionModalStep = 'success';
                 },
                 cancelRetentionChange() {
                     this.canSelectRetentionPeriod = this.lastConfirmedRetentionPeriod;
@@ -939,11 +939,26 @@
                     if (this.retentionModalStep === 'confirm') {
                         this.cancelRetentionChange();
                     }
+                },
+                formatDateUser(value) {
+                    let config = "";
+                    if (typeof ProcessMaker !== "undefined" && ProcessMaker.user && ProcessMaker.user.datetime_format) {
+                        config = ProcessMaker.user.datetime_format;
+                    }
+
+                    if (value) {
+                        if (moment(value).isValid()) {
+                            return window.moment(value)
+                                .format(config);
+                        }
+                        return value;
+                    }
+                    return "n/a";
                 }
                 },
+               
             });
         });
-
     </script>
 @endsection
 
