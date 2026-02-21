@@ -215,9 +215,6 @@ Route::group([
     Route::get('tasks/update_variable/{token_abe}', [TaskController::class, 'updateVariable'])->name('tasks.abe.update');
 });
 
-// Add our broadcasting routes
-Broadcast::routes();
-
 // Authentication Routes...
 Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('login', [LoginController::class, 'loginWithIntendedCheck']);

@@ -15,7 +15,6 @@ class BroadcastServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //auth:web,anon is needed to allow anonymous users to listen to channels
         Broadcast::routes(['middleware' => ['web', 'auth:web,anon', BroadcastAuthDebug::class]]);
         require base_path('routes/channels.php');
     }

@@ -347,6 +347,7 @@ if (window.Processmaker && window.Processmaker.broadcasting) {
     config.authEndpoint = `${window.location.origin}/broadcasting/auth`;
   }
   config.auth = config.auth || {};
+  config.auth.headers = config.auth.headers || {};
   if (config.auth.withCredentials === undefined) {
     config.auth.withCredentials = true;
   }
