@@ -103,6 +103,8 @@ class ConditionalRedirectService implements ConditionalRedirectServiceInterface
     public function resolve(array $conditionalRedirect, array $data): ?array
     {
         $this->errors = [];
+        $data = $this->normalizeDataForFeel($data);
+
         foreach ($conditionalRedirect as $item) {
             if (!isset($item['condition'])) {
                 throw new InvalidArgumentException('Condition is required');
@@ -123,6 +125,29 @@ class ConditionalRedirectService implements ConditionalRedirectServiceInterface
         }
 
         return null;
+    }
+
+    /**
+     * Normalize data so FEEL comparisons like form_input_1==0 work when form sends string "0".
+     * Converts numeric strings to int/float so that the first matching condition is the intended one.
+     *
+     * @param array $data
+     * @return array
+     */
+    private function normalizeDataForFeel(array $data): array
+    {
+        $normalized = [];
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $normalized[$key] = $this->normalizeDataForFeel($value);
+            } elseif (is_string($value) && is_numeric($value)) {
+                $normalized[$key] = str_contains($value, '.') ? (float) $value : (int) $value;
+            } else {
+                $normalized[$key] = $value;
+            }
+        }
+
+        return $normalized;
     }
 
     /**
