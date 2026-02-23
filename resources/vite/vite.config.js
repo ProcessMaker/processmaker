@@ -35,6 +35,7 @@ export default defineConfig({
             // 'vue': path.resolve(__dirname, 'node_modules/vue'),
             'vue': path.resolve(__dirname, 'node_modules/@vue/compat'),
             'i18next-vue': path.resolve(__dirname, 'node_modules/i18next-vue'),
+            'bootstrap-vue-next': path.resolve(__dirname, 'node_modules/bootstrap-vue-next'),
         },
         // Prefer resolving from this directory's node_modules
         dedupe: ['vue'],

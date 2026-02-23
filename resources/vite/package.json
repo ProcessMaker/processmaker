@@ -18,6 +18,8 @@
   "type": "module",
   "dependencies": {
     "@vue/compat": "^3.5.26",
+    "bootstrap": "^5.3.8",
+    "bootstrap-vue-next": "^0.43.6",
     "i18next-vue": "^5.4.0"
   }
 }

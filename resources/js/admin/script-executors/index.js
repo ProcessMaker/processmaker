@@ -1,6 +1,7 @@
 import { createApp } from 'vue';
 import ScriptExecutorsNew from "./ScriptExecutorsNew";
 import I18NextVue from "i18next-vue";
+// import {BApp} from 'bootstrap-vue-next'
 
 const App = {
   data() {
@@ -8,11 +9,12 @@ const App = {
     }
   },
   components: {
+    BApp,
     ScriptExecutorsNew
   },
   template: `
-    <div class="card card-body">
-        <script-executors-new/>
+    <div>
+      <script-executors-new/>
     </div>
   `
 }
