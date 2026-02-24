@@ -5,15 +5,20 @@ namespace Tests\Jobs;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Jobs\EvaluateProcessRetentionJob;
 use ProcessMaker\Models\CaseNumber;
+use ProcessMaker\Models\CaseStarted;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\User;
+use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
 class EvaluateProcessRetentionJobTest extends TestCase
 {
     use RefreshDatabase;
+    use RequestHelper;
 
     const RETENTION_PERIOD = '1_year';
 
@@ -22,6 +27,11 @@ class EvaluateProcessRetentionJobTest extends TestCase
         parent::setUp();
         // Enable case retention policy for all tests
         Config::set('app.case_retention_policy_enabled', true);
+        // RequestHelper expects $this->user for apiCall (used in integration test)
+        $this->user = User::factory()->create([
+            'password' => Hash::make('password'),
+            'is_administrator' => true,
+        ]);
     }
 
     protected function tearDown(): void
@@ -136,12 +146,13 @@ class EvaluateProcessRetentionJobTest extends TestCase
         // These cases are created 13 months ago
         // Cutoff = now - 12 months = 12 months ago
         // 13 months ago < 12 months ago, so these should be deleted
+        $oldCaseCreatedAt = Carbon::now()->subMonths(13)->toIso8601String();
         $cases = CaseNumber::factory()->count(1200)->create([
             'process_request_id' => $processRequest->id,
-            'created_at' => Carbon::now()->subMonths(13)->toIso8601String(),
+            'created_at' => $oldCaseCreatedAt,
         ]);
         $this->assertEquals($processRequest->id, $cases->first()->process_request_id);
-        $this->assertEquals(Carbon::now()->subMonths(13)->toIso8601String(), $cases->first()->created_at->toIso8601String());
+        $this->assertEquals($oldCaseCreatedAt, $cases->first()->created_at->toIso8601String());
 
         // Link process request to one of the case numbers so the job can resolve request IDs for full delete
         $processRequest->case_number = $cases->first()->id;
@@ -353,5 +364,52 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $this->assertNull(CaseNumber::find($oldCase->id), 'The 13-month-old case should be deleted with default 1 year retention');
         $this->assertNotNull(CaseNumber::find($newCase->id), 'The 5-month-old case should NOT be deleted with default 1 year retention');
         $this->assertDatabaseCount('case_numbers', 2);
+    }
+
+    public function testDeletedCaseIsFullyInaccessibleViaApi(): void
+    {
+        $process = Process::factory()->create([
+            'properties' => [
+                'retention_period' => self::RETENTION_PERIOD,
+            ],
+        ]);
+        $process->save();
+        $process->refresh();
+
+        $processRequest = ProcessRequest::factory()->create();
+        $processRequest->process_id = $process->id;
+        $processRequest->save();
+        $processRequest->refresh();
+
+        $oldCaseCreatedAt = Carbon::now()->subMonths(13)->toIso8601String();
+        $caseOld = CaseNumber::factory()->create([
+            'created_at' => $oldCaseCreatedAt,
+            'process_request_id' => $processRequest->id,
+        ]);
+        $processRequest->case_number = $caseOld->id;
+        $processRequest->save();
+
+        CaseStarted::factory()->create([
+            'case_number' => $caseOld->id,
+            'user_id' => $this->user->id,
+        ]);
+
+        // Case should appear in the list before retention runs
+        $listBefore = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['userId' => $this->user->id]));
+        $listBefore->assertStatus(200);
+        $caseNumbersBefore = collect($listBefore->json('data'))->pluck('case_number')->all();
+        $this->assertContains($caseOld->id, $caseNumbersBefore, 'Case should appear in list before retention job runs');
+
+        EvaluateProcessRetentionJob::dispatchSync($process->id);
+
+        // DELETE case by number should return 404 (case already removed)
+        $deleteResponse = $this->apiCall('DELETE', route('api.cases.destroy', ['case_number' => $caseOld->id]));
+        $deleteResponse->assertStatus(404);
+
+        // GET all_cases should not include the deleted case
+        $listAfter = $this->apiCall('GET', route('api.1.1.cases.all_cases', ['userId' => $this->user->id]));
+        $listAfter->assertStatus(200);
+        $caseNumbersAfter = collect($listAfter->json('data'))->pluck('case_number')->all();
+        $this->assertNotContains($caseOld->id, $caseNumbersAfter, 'Deleted case must not appear in All Cases API');
     }
 }
