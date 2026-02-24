@@ -138,5 +138,7 @@ class EvaluateProcessRetentionJob implements ShouldQueue
                     $this->deleteProcessRequests($requestIds);
                 });
             });
+
+        $this->dispatchSavedSearchRecount();
     }
 }
