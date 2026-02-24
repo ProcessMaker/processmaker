@@ -76,7 +76,7 @@ const getData = async () => {
   const response = await getDataTask({
     params: {
       case_number: getCaseNumber(),
-      status: "CLOSED",
+      status: "CLOSED,TRIGGERED",
       includeScreen: 1,
       order_by: filter.value?.field,
       order_direction: filter.value?.filter,

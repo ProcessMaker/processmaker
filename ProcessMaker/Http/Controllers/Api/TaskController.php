@@ -208,9 +208,27 @@ class TaskController extends Controller
         }
 
         // Validate the inputs, including optional ones
+        $allowedStatuses = ['ACTIVE', 'CLOSED', 'TRIGGERED'];
         $request->validate([
             'case_number' => 'required|integer',
-            'status' => 'nullable|string|in:ACTIVE,CLOSED',
+            'status' => [
+                'nullable',
+                'string',
+                function ($attribute, $value, $fail) use ($allowedStatuses) {
+                    $statuses = array_map(fn ($v) => mb_strtoupper(trim($v)), explode(',', $value));
+                    $statuses = array_filter($statuses);
+                    foreach ($statuses as $status) {
+                        if (!in_array($status, $allowedStatuses)) {
+                            $fail(__('The :attribute must contain only valid statuses: :values. Multiple statuses can be comma-separated.', [
+                                'attribute' => $attribute,
+                                'values' => implode(', ', $allowedStatuses),
+                            ]));
+
+                            return;
+                        }
+                    }
+                },
+            ],
             'order_by' => 'nullable|string|in:id,element_name,due_at,user.lastname,process.name',
             'order_direction' => 'nullable|string|in:asc,desc',
             'page' => 'nullable|integer|min:1',

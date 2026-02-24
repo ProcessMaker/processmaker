@@ -135,8 +135,12 @@ trait TaskControllerIndexMethods
     private function applyDefaultFiltering($query, $column, $filterByFields, $fieldFilter)
     {
         $key = array_search($column, $filterByFields);
-        $operator = is_numeric($fieldFilter) ? '=' : 'like';
-        $query->where(is_string($key) ? $key : $column, $operator, $fieldFilter);
+        if (str_contains($fieldFilter, ',')) {
+            $query->whereIn(is_string($key) ? $key : $column, explode(',', $fieldFilter));
+        } else {
+            $operator = is_numeric($fieldFilter) ? '=' : 'like';
+            $query->where(is_string($key) ? $key : $column, $operator, $fieldFilter);
+        }
     }
 
     private function addTaskData($response)
@@ -158,7 +162,8 @@ trait TaskControllerIndexMethods
         $hitlEnabled = filter_var(config('smart-extract.hitl_enabled'), FILTER_VALIDATE_BOOLEAN);
         $query->when(!$allTasks, function ($query) {
             $query->where(function ($query) {
-                $query->where('element_type', '=', 'task');
+                $query->orWhere('element_type', '=', 'task');
+                $query->orWhere('element_type', '=', 'startEvent');
                 $query->orWhere(function ($query) {
                     $query->where('element_type', '=', 'serviceTask');
                     $query->where('element_name', '=', 'AI Assistant');
