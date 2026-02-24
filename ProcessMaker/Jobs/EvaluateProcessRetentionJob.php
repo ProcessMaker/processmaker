@@ -51,6 +51,24 @@ class EvaluateProcessRetentionJob implements ShouldQueue
             return;
         }
 
+        // Skip template processes
+        if ($process->is_template) {
+            Log::info('EvaluateProcessRetentionJob: Skipping template process', [
+                'process_id' => $this->processId,
+            ]);
+
+            return;
+        }
+
+        // Skip processes in system categories
+        if ($process->categories()->where('is_system', true)->exists()) {
+            Log::info('EvaluateProcessRetentionJob: Skipping process in system category', [
+                'process_id' => $this->processId,
+            ]);
+
+            return;
+        }
+
         // Default to 1_year if retention_period is not set
         $retentionPeriod = $process->properties['retention_period'] ?? '1_year';
         $retentionMonths = match ($retentionPeriod) {
