@@ -44,14 +44,14 @@ class EvaluateProcessRetentionJob implements ShouldQueue
             return;
         }
 
-        // Default to 1_year if retention_period is not set
-        $retentionPeriod = $process->properties['retention_period'] ?? '1_year';
+        // Default to one_year if retention_period is not set
+        $retentionPeriod = $process->properties['retention_period'] ?? 'one_year';
         $retentionMonths = match ($retentionPeriod) {
             'six_months' => 6,
             'one_year' => 12,
             'three_years' => 36,
             'five_years' => 60,
-            default => 12, // Default to 1_year
+            default => 12, // Default to one_year
         };
 
         // Default retention_updated_at to now if not set
@@ -104,6 +104,19 @@ class EvaluateProcessRetentionJob implements ShouldQueue
                     ->all();
 
                 if ($requestIds === []) {
+                    // If no ProcessRequest has case_number matching these CaseNumber ids, still remove case_numbers and UI entries
+                    Log::warning('CaseRetentionJob: No process requests found for case numbers, removing case_numbers and cases_started/participated', [
+                        'case_numbers' => $caseNumbers,
+                        'process_id' => $this->processId,
+                    ]);
+                    DB::transaction(function () use ($caseNumbers) {
+                        CaseNumber::whereIn('id', $caseNumbers)->delete();
+                        foreach ($caseNumbers as $caseNumber) {
+                            $this->deleteCasesStarted((string) $caseNumber);
+                            $this->deleteCasesParticipated((string) $caseNumber);
+                        }
+                    });
+
                     return;
                 }
 
