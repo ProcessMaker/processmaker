@@ -75,19 +75,13 @@ class EvaluateProcessRetentionJob implements ShouldQueue
             : Carbon::now();
 
         // Check if there are any process requests for this process
-        $processRequestCount = ProcessRequest::where('process_id', $this->processId)->count();
-        if ($processRequestCount === 0) {
+        if (!ProcessRequest::where('process_id', $this->processId)->exists()) {
             Log::info('EvaluateProcessRetentionJob: No process requests found, nothing to evaluate', [
                 'process_id' => $this->processId,
             ]);
 
             return;
         }
-
-        Log::info('EvaluateProcessRetentionJob: Process request count', [
-            'process_id' => $this->processId,
-            'total_process_requests' => $processRequestCount,
-        ]);
 
         // Handle two scenarios:
         // 1. Cases created BEFORE retention_updated_at: Delete if older than retention period from retention_updated_at
