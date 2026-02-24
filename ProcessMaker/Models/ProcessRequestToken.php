@@ -312,13 +312,20 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     }
 
     /**
-     * Scope to filter by status
+     * Scope to filter by status.
+     * Supports single value (e.g. ACTIVE) or comma-separated values (e.g. CLOSED,TRIGGERED).
      */
     public function scopeFilterByStatus($query, $request)
     {
         $status = $request->input('status', 'ACTIVE');
+        $statuses = array_map(fn ($v) => mb_strtoupper(trim($v)), explode(',', $status));
+        $statuses = array_filter($statuses);
 
-        return $query->where('status', $status);
+        if (count($statuses) === 1) {
+            return $query->where('status', $statuses[0]);
+        }
+
+        return $query->whereIn('status', $statuses);
     }
 
     /**
@@ -441,7 +448,14 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     public function getScreen(): ?Screen
     {
         $definition = $this->getDefinition();
-        $screenRef = $definition['screenRef'] ?? null;
+
+        $config = json_decode($definition['config']);
+        if (isset($config) and isset($config->web_entry)) {
+            $screenRef = $config->web_entry->screen_id ?? null;
+        } else {
+            $screenRef = $definition['screenRef'] ?? null;
+        }
+
         $screen = Screen::find($screenRef);
 
         if ($screen === null) {

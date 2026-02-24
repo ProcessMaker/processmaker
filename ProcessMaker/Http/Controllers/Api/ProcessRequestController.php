@@ -31,6 +31,7 @@ use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
@@ -779,8 +780,8 @@ class ProcessRequestController extends Controller
         $query = ProcessRequestToken::query();
         $query->select('id', 'element_id', 'process_id', 'process_request_id', 'data')
             ->where('process_request_id', $request->id)
-            ->whereNotIn('element_type', ['startEvent', 'end_event', 'scriptTask'])
-            ->where('status', 'CLOSED')
+            ->whereNotIn('element_type', ['end_event', 'scriptTask'])
+            ->whereIn('status', ['CLOSED', 'TRIGGERED'])
             ->orderBy('completed_at');
 
         $response =
@@ -792,16 +793,24 @@ class ProcessRequestController extends Controller
         $collection = $response->getCollection()
             ->transform(function ($token): ?object {
                 $definition = $token->getDefinition();
+                $screen = null;
                 if (array_key_exists('screenRef', $definition)) {
                     $screen = $token->getScreenVersion();
-                    if ($screen) {
-                        $dataManager = new DataManager();
-                        $screen->data = $dataManager->getData($token, true);
-                        $screen->screen_id = $screen->id;
-                        $screen->id = $token->id;
-
-                        return $screen;
+                } else {
+                    $config = json_decode($definition['config']);
+                    // verify the object config has a web_entry property
+                    if (isset($config->web_entry)) {
+                        $screen = Screen::find($config->web_entry->screen_id);
                     }
+                }
+
+                if ($screen) {
+                    $dataManager = new DataManager();
+                    $screen->data = $dataManager->getData($token, true);
+                    $screen->screen_id = $screen->id;
+                    $screen->id = $token->id;
+
+                    return $screen;
                 }
 
                 return null;
