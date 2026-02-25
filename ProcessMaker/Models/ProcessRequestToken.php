@@ -452,10 +452,11 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         if (isset($definition['config'])) {
             $config = json_decode($definition['config']);
         }
-        if (isset($config) and isset($config->web_entry)) {
+
+        $screenRef = $definition['screenRef'] ?? null;
+
+        if (!$screenRef && isset($config) && isset($config->web_entry)) {
             $screenRef = $config->web_entry->screen_id ?? null;
-        } else {
-            $screenRef = $definition['screenRef'] ?? null;
         }
 
         $screen = Screen::find($screenRef);
