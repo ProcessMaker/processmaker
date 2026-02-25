@@ -1531,8 +1531,10 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                         $elementDestination = $elementDestinationProp['value']['url'] ?? null;
                     }
                 }
-                if ($elementDestinationType === 'externalURL' && is_string($elementDestination) && $elementDestination !== '') {
-                    $elementDestination = $this->resolveElementDestinationUrl($elementDestination);
+                if (is_string($elementDestination) && $elementDestination !== '') {
+                    if ($elementDestinationType === 'externalURL' || $elementDestinationType === 'customDashboard') {
+                        $elementDestination = $this->resolveElementDestinationUrl($elementDestination);
+                    }
                 }
                 break;
             case 'taskList':
