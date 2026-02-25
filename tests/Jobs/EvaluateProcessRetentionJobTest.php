@@ -7,6 +7,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use ProcessMaker\Jobs\EvaluateProcessRetentionJob;
 use ProcessMaker\Models\CaseNumber;
+use ProcessMaker\Models\CaseParticipated;
+use ProcessMaker\Models\CaseStarted;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use Tests\TestCase;
@@ -60,6 +62,12 @@ class EvaluateProcessRetentionJobTest extends TestCase
             'created_at' => $oldCaseCreatedAt,
             'process_request_id' => $processRequest->id,
         ]);
+        $casesStartedOld = CaseStarted::factory()->create([
+            'case_number' => $caseOld->id,
+        ]);
+        $casesParticipatedOld = CaseParticipated::factory()->create([
+            'case_number' => $caseOld->id,
+        ]);
         $this->assertEquals($processRequest->id, $caseOld->process_request_id);
         $this->assertEquals($oldCaseCreatedAt, $caseOld->created_at->toIso8601String());
 
@@ -67,7 +75,9 @@ class EvaluateProcessRetentionJobTest extends TestCase
         EvaluateProcessRetentionJob::dispatchSync($process->id);
 
         // Check that the case old has been deleted
-        $this->assertNull(CaseNumber::find($caseOld->id));
+        $this->assertNull(CaseNumber::find($caseOld->id), 'The case number should be deleted');
+        $this->assertNull(CaseStarted::find($casesStartedOld->id), 'The cases_started should be deleted');
+        $this->assertNull(CaseParticipated::find($casesParticipatedOld->id), 'The cases_participated should be deleted');
     }
 
     public function testItDoesNotDeleteCasesThatAreWithinRetentionPeriod()
@@ -98,6 +108,15 @@ class EvaluateProcessRetentionJobTest extends TestCase
             'created_at' => $caseCreatedAt,
             'process_request_id' => $processRequest->id,
         ]);
+        // Create a cases_started for the case
+        $casesStarted = CaseStarted::factory()->create([
+            'case_number' => $case->id,
+        ]);
+        // Create a cases_participated for the case
+        $casesParticipated = CaseParticipated::factory()->create([
+            'case_number' => $case->id,
+        ]);
+        // Assert the case, cases_started, and cases_participated are created
         $this->assertEquals($processRequest->id, $case->process_request_id);
         $this->assertEquals($caseCreatedAt, $case->created_at->toIso8601String());
 
@@ -105,7 +124,9 @@ class EvaluateProcessRetentionJobTest extends TestCase
         EvaluateProcessRetentionJob::dispatchSync($process->id);
 
         // Check that the case has not been deleted
-        $this->assertNotNull(CaseNumber::find($case->id));
+        $this->assertNotNull(CaseNumber::find($case->id), 'The case should not be deleted');
+        $this->assertNotNull(CaseStarted::find($casesStarted->id), 'The cases_started should not be deleted');
+        $this->assertNotNull(CaseParticipated::find($casesParticipated->id), 'The cases_participated should not be deleted');
     }
 
     public function testItHandlesMultipleCasesInBatches()
@@ -132,12 +153,20 @@ class EvaluateProcessRetentionJobTest extends TestCase
         // These cases are created 13 months ago
         // Cutoff = now - 12 months = 12 months ago
         // 13 months ago < 12 months ago, so these should be deleted
-        $cases = CaseNumber::factory()->count(1200)->create([
-            'process_request_id' => $processRequest->id,
-            'created_at' => Carbon::now()->subMonths(13)->toIso8601String(),
-        ]);
+        $cases = CaseNumber::factory()->count(1200)->sequence(function () use ($processRequest) {
+            return ['process_request_id' => $processRequest->id, 'created_at' => Carbon::now()->subMonths(13)->toIso8601String()];
+        })->create();
+        $cases->each(function ($case) {
+            // Create one CaseStarted per CaseNumber
+            CaseStarted::factory()->create([
+                'case_number' => $case->id,
+            ]);
+            // Create one CaseParticipated per CaseNumber
+            CaseParticipated::factory()->create([
+                'case_number' => $case->id,
+            ]);
+        });
         $this->assertEquals($processRequest->id, $cases->first()->process_request_id);
-        $this->assertEquals(Carbon::now()->subMonths(13)->toIso8601String(), $cases->first()->created_at->toIso8601String());
 
         // Dispatch the job to evaluate the retention period
         EvaluateProcessRetentionJob::dispatchSync($process->id);
@@ -146,6 +175,10 @@ class EvaluateProcessRetentionJobTest extends TestCase
         // There should be 1 case left (the auto-created case from ProcessRequestObserver)
         // because it was created recently and is within the retention period
         $this->assertDatabaseCount('case_numbers', 1);
+        // Assert all case_started are deleted
+        $this->assertDatabaseCount('cases_started', 0);
+        // Assert all case_participated are deleted
+        $this->assertDatabaseCount('cases_participated', 0);
     }
 
     public function testItHandlesRetentionPolicyUpdate()
@@ -220,6 +253,12 @@ class EvaluateProcessRetentionJobTest extends TestCase
         ]);
         $oldCase->created_at = $oldCaseDate;
         $oldCase->save();
+        $casesStartedOld = CaseStarted::factory()->create([
+            'case_number' => $oldCase->id,
+        ]);
+        $casesParticipatedOld = CaseParticipated::factory()->create([
+            'case_number' => $oldCase->id,
+        ]);
 
         // Create a case 7 months ago (before retention_updated_at) that should NOT be deleted
         // Old cases cutoff = 6 months ago - 1 year = 18 months ago
@@ -230,6 +269,12 @@ class EvaluateProcessRetentionJobTest extends TestCase
         ]);
         $oldCaseNotDeleted->created_at = $oldCaseNotDeletedDate;
         $oldCaseNotDeleted->save();
+        $casesStartedNotDeleted = CaseStarted::factory()->create([
+            'case_number' => $oldCaseNotDeleted->id,
+        ]);
+        $casesParticipatedNotDeleted = CaseParticipated::factory()->create([
+            'case_number' => $oldCaseNotDeleted->id,
+        ]);
 
         // Dispatch the job
         EvaluateProcessRetentionJob::dispatchSync($process->id);
@@ -238,8 +283,16 @@ class EvaluateProcessRetentionJobTest extends TestCase
         // The 7-month-old case should NOT be deleted (newer than 18 months cutoff)
         // Plus the auto-created case = 2 total
         $this->assertNull(CaseNumber::find($oldCase->id), 'The 20-month-old case should be deleted');
+        $this->assertNull(CaseStarted::find($casesStartedOld->id), 'The cases_started should be deleted');
+        $this->assertNull(CaseParticipated::find($casesParticipatedOld->id), 'The cases_participated should be deleted');
+
         $this->assertNotNull(CaseNumber::find($oldCaseNotDeleted->id), 'The 7-month-old case should NOT be deleted');
+        $this->assertNotNull(CaseStarted::find($casesStartedNotDeleted->id), 'The cases_started should NOT be deleted');
+        $this->assertNotNull(CaseParticipated::find($casesParticipatedNotDeleted->id), 'The cases_participated should NOT be deleted');
+
         $this->assertDatabaseCount('case_numbers', 2);
+        $this->assertDatabaseCount('cases_started', 1);
+        $this->assertDatabaseCount('cases_participated', 1);
     }
 
     public function testItDoesNotRunWhenRetentionPolicyIsDisabled()
@@ -271,14 +324,22 @@ class EvaluateProcessRetentionJobTest extends TestCase
         ]);
         $oldCase->created_at = $oldCaseDate;
         $oldCase->save();
-
+        $casesStartedOld = CaseStarted::factory()->create([
+            'case_number' => $oldCase->id,
+        ]);
+        $casesParticipatedOld = CaseParticipated::factory()->create([
+            'case_number' => $oldCase->id,
+        ]);
         // Dispatch the job
         EvaluateProcessRetentionJob::dispatchSync($process->id);
 
         // The case should NOT be deleted because retention policy is disabled
         // Plus the auto-created case = 2 total
         $this->assertNotNull(CaseNumber::find($oldCase->id), 'The case should NOT be deleted when retention policy is disabled');
+        $this->assertNotNull(CaseStarted::find($casesStartedOld->id), 'The cases_started should NOT be deleted');
+        $this->assertNotNull(CaseParticipated::find($casesParticipatedOld->id), 'The cases_participated should NOT be deleted');
         $this->assertDatabaseCount('case_numbers', 2);
+        $this->assertDatabaseCount('cases_started', 1);
 
         // Re-enable for other tests
         Config::set('app.case_retention_policy_enabled', true);
@@ -308,7 +369,12 @@ class EvaluateProcessRetentionJobTest extends TestCase
         ]);
         $oldCase->created_at = $oldCaseDate;
         $oldCase->save();
-
+        $casesStartedOld = CaseStarted::factory()->create([
+            'case_number' => $oldCase->id,
+        ]);
+        $casesParticipatedOld = CaseParticipated::factory()->create([
+            'case_number' => $oldCase->id,
+        ]);
         // Create a case created 5 months ago (within default 1 year retention)
         // 5 months ago is NOT < (now - 1 year), so it should NOT be deleted
         $newCaseDate = Carbon::now()->subMonths(5);
@@ -317,7 +383,12 @@ class EvaluateProcessRetentionJobTest extends TestCase
         ]);
         $newCase->created_at = $newCaseDate;
         $newCase->save();
-
+        $casesStartedNew = CaseStarted::factory()->create([
+            'case_number' => $newCase->id,
+        ]);
+        $casesParticipatedNew = CaseParticipated::factory()->create([
+            'case_number' => $newCase->id,
+        ]);
         // Dispatch the job
         EvaluateProcessRetentionJob::dispatchSync($process->id);
 
@@ -325,7 +396,13 @@ class EvaluateProcessRetentionJobTest extends TestCase
         // The 5-month-old case should NOT be deleted (within 1 year default)
         // Plus the auto-created case = 2 total
         $this->assertNull(CaseNumber::find($oldCase->id), 'The 13-month-old case should be deleted with default 1 year retention');
+        $this->assertNull(CaseStarted::find($casesStartedOld->id), 'The cases_started should be deleted');
+        $this->assertNull(CaseParticipated::find($casesParticipatedOld->id), 'The cases_participated should be deleted');
         $this->assertNotNull(CaseNumber::find($newCase->id), 'The 5-month-old case should NOT be deleted with default 1 year retention');
+        $this->assertNotNull(CaseStarted::find($casesStartedNew->id), 'The cases_started should NOT be deleted');
+        $this->assertNotNull(CaseParticipated::find($casesParticipatedNew->id), 'The cases_participated should NOT be deleted');
         $this->assertDatabaseCount('case_numbers', 2);
+        $this->assertDatabaseCount('cases_started', 1);
+        $this->assertDatabaseCount('cases_participated', 1);
     }
 }
