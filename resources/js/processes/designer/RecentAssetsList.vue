@@ -316,7 +316,7 @@ export default {
      * open modal to PM Block
      */
     showPmBlockModal(name, id) {
-      this.processId = id;
+      this.assetId = id;
       this.pmBlockName = name;
       this.$refs["create-pm-block-modal"].show();
     },
