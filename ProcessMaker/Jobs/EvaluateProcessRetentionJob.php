@@ -7,6 +7,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\CaseNumber;
+use ProcessMaker\Models\CaseParticipated;
+use ProcessMaker\Models\CaseStarted;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 
@@ -93,6 +95,10 @@ class EvaluateProcessRetentionJob implements ShouldQueue
             })
             ->chunkById(100, function ($cases) {
                 $caseIds = $cases->pluck('id');
+                // Delete the cases_started associated with the case_number
+                CaseStarted::whereIn('case_number', $caseIds)->delete();
+                // Delete the cases_participated associated with the case_number
+                CaseParticipated::whereIn('case_number', $caseIds)->delete();
                 // Delete the cases
                 CaseNumber::whereIn('id', $caseIds)->delete();
 
