@@ -448,15 +448,12 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     public function getScreen(): ?Screen
     {
         $definition = $this->getDefinition();
-        $config = null;
-        if (isset($definition['config'])) {
-            $config = json_decode($definition['config']);
-        }
+        $screenRef = isset($definition['screenRef']) ? $definition['screenRef'] : null;
 
-        $screenRef = $definition['screenRef'] ?? null;
+        if (!$screenRef) {
+            $config = isset($definition['config']) ? json_decode($definition['config']) : null;
 
-        if (!$screenRef && isset($config) && isset($config->web_entry)) {
-            $screenRef = $config->web_entry->screen_id ?? null;
+            $screenRef = (isset($config) && isset($config->web_entry)) ? $config->web_entry->screen_id ?? null : null;
         }
 
         $screen = Screen::find($screenRef);
