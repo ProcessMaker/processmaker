@@ -792,6 +792,14 @@ class ProcessRequestController extends Controller
 
         $collection = $response->getCollection()
             ->transform(function ($token): ?object {
+                $definition = $token->getDefinition();
+                if (!array_key_exists('screenRef', $definition)) {
+                    $config = isset($definition['config']) ? json_decode($definition['config']) : null;
+                    $screenRef = (isset($config) && isset($config->web_entry)) ? $config->web_entry->screen_id ?? null : null;
+                    if (!$screenRef) {
+                        return null;
+                    }
+                }
                 $screen = $token->getScreenVersion() ?? null;
 
                 if ($screen) {
