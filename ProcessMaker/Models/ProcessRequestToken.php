@@ -1466,6 +1466,11 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
         $context['APP_URL'] = config('app.url');
 
+        // Never expose remember_token to Mustache (defense in depth; DataManager/fallback may already strip it)
+        if (isset($context['_user']) && is_array($context['_user'])) {
+            unset($context['_user']['remember_token']);
+        }
+
         // Normalize to plain arrays/scalars so Mustache resolves all keys (common PHP idiom)
         $json = json_encode($context, JSON_THROW_ON_ERROR);
         $normalized = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
