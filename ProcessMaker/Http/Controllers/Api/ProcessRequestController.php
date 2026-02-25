@@ -792,28 +792,16 @@ class ProcessRequestController extends Controller
 
         $collection = $response->getCollection()
             ->transform(function ($token): ?object {
-                $definition = $token->getDefinition();
-                $screen = null;
-                if (array_key_exists('screenRef', $definition)) {
-                    $screen = $token->getScreenVersion();
-                } else {
-                    $config = json_decode($definition['config']);
-                    // verify the object config has a web_entry property
-                    if (isset($config->web_entry)) {
-                        $screen = Screen::find($config->web_entry->screen_id);
-                    }
-                }
+                $screen = $token->getScreenVersion() ?? null;
 
                 if ($screen) {
                     $dataManager = new DataManager();
                     $screen->data = $dataManager->getData($token, true);
                     $screen->screen_id = $screen->id;
                     $screen->id = $token->id;
-
-                    return $screen;
                 }
 
-                return null;
+                return $screen;
             })
             ->reject(fn ($item) => $item === null)
             ->values();

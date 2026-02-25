@@ -160,10 +160,15 @@ trait TaskControllerIndexMethods
         $nonSystem = filter_var($request->input('non_system'), FILTER_VALIDATE_BOOLEAN);
         $allTasks = filter_var($request->input('all_tasks'), FILTER_VALIDATE_BOOLEAN);
         $hitlEnabled = filter_var(config('smart-extract.hitl_enabled'), FILTER_VALIDATE_BOOLEAN);
-        $query->when(!$allTasks, function ($query) {
-            $query->where(function ($query) {
-                $query->orWhere('element_type', '=', 'task');
-                $query->orWhere('element_type', '=', 'startEvent');
+        $includeScreen = filter_var($request->input('includeScreen'), FILTER_VALIDATE_BOOLEAN);
+        $query->when(!$allTasks, function ($query) use ($includeScreen) {
+            $query->where(function ($query) use ($includeScreen) {
+                if ($includeScreen) {
+                    $query->orWhere('element_type', '=', 'task');
+                    $query->orWhere('element_type', '=', 'startEvent');
+                } else {
+                    $query->where('element_type', '=', 'task');
+                }
                 $query->orWhere(function ($query) {
                     $query->where('element_type', '=', 'serviceTask');
                     $query->where('element_name', '=', 'AI Assistant');
