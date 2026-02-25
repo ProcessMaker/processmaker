@@ -4,7 +4,7 @@
       <img
         class="image"
         src="/img/recent_assets.svg"
-        alt="resent assets"
+        alt="Recent assets"
       >
       <div class="content-text">
         <span class="title">
@@ -15,8 +15,7 @@
     </div>
   </div>
   <div v-else class="data-table">
-    <div class="data-table">
-      <data-loading
+    <data-loading
         v-if="shouldShowLoader"
         :for="/projects\{project_id}?/"
         :empty="'No Data Available'"
@@ -92,7 +91,6 @@
           :assetName="assetName"
         />
       </div>
-    </div>
   </div>
 </template>
 
@@ -177,32 +175,31 @@ export default {
      * get data for Recent Assets
      */
     fetch(pmql = "") {
-      if (this.project) {
-        this.loading = true;
-        this.apiDataLoading = true;
-        let url = "projects/assets/recent?";
-        // Load from our api client
-        window.ProcessMaker.apiClient
-          .get(
-              url +
-              "asset_types=" +
-              this.types +
-              "&pmql=" +
-              encodeURIComponent(pmql) +
-              "&order_by=" +
-              this.orderBy +
-              "&order_direction=" +
-              this.orderDirection,
-            )
-          .then((response) => {
-            this.data = this.transform(response.data);
-            this.apiDataLoading = false;
-            this.loading = false;
-          }).catch((error) => {
-            ProcessMaker.alert(error.response?.data?.message, "danger");
-            this.data = [];
-          });
-      }
+      if (!this.project) return;
+
+      this.loading = true;
+      this.apiDataLoading = true;
+
+      const params = new URLSearchParams({
+        asset_types: this.types,
+        pmql,
+        order_by: this.orderBy,
+        order_direction: this.orderDirection,
+      });
+
+      window.ProcessMaker.apiClient
+        .get(`projects/assets/recent?${params}`)
+        .then((response) => {
+          this.data = this.transform(response.data);
+        })
+        .catch((error) => {
+          ProcessMaker.alert(error.response?.data?.message, "danger");
+          this.data = [];
+        })
+        .finally(() => {
+          this.apiDataLoading = false;
+          this.loading = false;
+        });
     },
     /**
      * reload page
