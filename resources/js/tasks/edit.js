@@ -217,11 +217,6 @@ const main = new Vue({
       if (this.task.component && this.task.component === "AdvancedScreenFrame") {
         return;
       }
-      // Conditional redirect: use external URL (Mustache already resolved by API) when present
-      if (elementDestination && elementDestination.type === "externalURL" && elementDestination.value) {
-        this.redirect(elementDestination.value);
-        return;
-      }
       this.redirect("/tasks");
     },
     claimTask() {
@@ -378,13 +373,9 @@ const main = new Vue({
         const taskId = task.id;
         this.submitting = true;
         ProcessMaker.apiClient
-          .put(`tasks/${taskId}?include=elementDestination`, { status: "COMPLETED", data: dataToSubmit })
-          .then((response) => {
+          .put(`tasks/${taskId}`, { status: "COMPLETED", data: dataToSubmit })
+          .then(() => {
             window.ProcessMaker.alert(message, "success", 5, true);
-            // Redirect using conditional redirect (e.g. external URL with Mustache resolved by API)
-            if (response.data && response.data.elementDestination) {
-              this.closed(taskId, response.data.elementDestination);
-            }
           })
           .catch((error) => {
           // If there are errors, the user will be redirected to the request page
