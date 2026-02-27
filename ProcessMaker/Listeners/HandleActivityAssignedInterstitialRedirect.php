@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Listeners;
 
+use Auth;
 use ProcessMaker\Events\ActivityAssigned;
 
 class HandleActivityAssignedInterstitialRedirect extends HandleRedirectListener
@@ -33,6 +34,7 @@ class HandleActivityAssignedInterstitialRedirect extends HandleRedirectListener
                 'nodeId' => $event->getProcessRequestToken()->element_id,
                 'userId' => $event->getProcessRequestToken()->user_id,
                 'allowInterstitial' => $event->getProcessRequestToken()->getInterstitial()['allow_interstitial'],
+                'userCanClaim' => $event->getProcessRequest()->canUserClaimASelfServiceTask(Auth::user()),
             ]
         );
     }
