@@ -123,6 +123,13 @@ class GenerateMenus
                     ]);
                 }
 
+                if (config('app.case_retention_policy_enabled')) {
+                    $submenu->add(__('Case Retention'), [
+                        'route' => 'cases-retention.index',
+                        'icon' => 'fa-clock',
+                    ]);
+                }
+
                 $devlinkIcon = base64_encode(file_get_contents(base_path('resources/img/devlink.svg')));
                 $submenu->add(__('DevLink'), [
                     'route' => 'devlink.index',

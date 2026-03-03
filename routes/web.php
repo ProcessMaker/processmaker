@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use ProcessMaker\Facades\Metrics;
 use ProcessMaker\Http\Controllers\AboutController;
 use ProcessMaker\Http\Controllers\Admin\AuthClientController;
+use ProcessMaker\Http\Controllers\Admin\CasesRetentionController;
 use ProcessMaker\Http\Controllers\Admin\CssOverrideController;
 use ProcessMaker\Http\Controllers\Admin\DevLinkController;
 use ProcessMaker\Http\Controllers\Admin\GroupController;
@@ -77,6 +78,9 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
             Route::get('devlink/oauth-client', [DevLinkController::class, 'getOauthClient'])->name('devlink.oauth-client');
             Route::get('devlink/{router?}', [DevLinkController::class, 'index'])->where(['router' => '.*'])->name('devlink.index');
         });
+
+        // Cases Retention
+        Route::get('cases-retention', [CasesRetentionController::class, 'index'])->where(['router' => '.*'])->name('cases-retention.index');
 
         // temporary, should be removed
         Route::get('security-logs/download/all', [ProcessMaker\Http\Controllers\Api\SecurityLogController::class, 'downloadForAllUsers'])->middleware('can:view-security-logs');
