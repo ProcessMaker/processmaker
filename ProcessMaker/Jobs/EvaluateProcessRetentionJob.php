@@ -138,6 +138,8 @@ class EvaluateProcessRetentionJob implements ShouldQueue
                 // Delete any remaining related records
                 $this->deleteRequestMedia($processRequestIdsWithNoCases);
                 $this->deleteNotifications($processRequestIdsWithNoCases);
+
+                $this->dispatchSavedSearchRecount();
             }
         }
     }
