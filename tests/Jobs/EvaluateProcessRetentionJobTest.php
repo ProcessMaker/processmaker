@@ -21,7 +21,7 @@ class EvaluateProcessRetentionJobTest extends TestCase
 {
     use RefreshDatabase;
 
-    const RETENTION_PERIOD = '1_year';
+    const RETENTION_PERIOD = 'one_year';
 
     protected function setUp(): void
     {
@@ -203,7 +203,7 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $retentionUpdatedAt = Carbon::now()->subMonths(6)->toIso8601String();
         $process = Process::factory()->create([
             'properties' => [
-                'retention_period' => '1_year', // Updated to 1 year
+                'retention_period' => 'one_year', // Updated to 1 year
                 'retention_updated_at' => $retentionUpdatedAt,
             ],
         ]);
@@ -249,7 +249,7 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $retentionUpdatedAt = Carbon::now()->subMonths(6)->toIso8601String();
         $process = Process::factory()->create([
             'properties' => [
-                'retention_period' => '1_year', // Updated to 1 year
+                'retention_period' => 'one_year', // Updated to 1 year
                 'retention_updated_at' => $retentionUpdatedAt,
             ],
         ]);

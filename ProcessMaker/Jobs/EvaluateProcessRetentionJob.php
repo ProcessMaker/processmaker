@@ -44,14 +44,14 @@ class EvaluateProcessRetentionJob implements ShouldQueue
             return;
         }
 
-        // Default to 1_year if retention_period is not set
-        $retentionPeriod = $process->properties['retention_period'] ?? '1_year';
+        // Default to one_year if retention_period is not set
+        $retentionPeriod = $process->properties['retention_period'] ?? 'one_year';
         $retentionMonths = match ($retentionPeriod) {
-            '6_months' => 6,
-            '1_year' => 12,
-            '3_years' => 36,
-            '5_years' => 60,
-            default => 12, // Default to 1_year
+            'six_months' => 6,
+            'one_year' => 12,
+            'three_years' => 36,
+            'five_years' => 60,
+            default => 12, // Default to one_year
         };
 
         // Default retention_updated_at to now if not set
