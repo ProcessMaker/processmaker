@@ -9,8 +9,12 @@ use ProcessMaker\Jobs\EvaluateProcessRetentionJob;
 use ProcessMaker\Models\CaseNumber;
 use ProcessMaker\Models\CaseParticipated;
 use ProcessMaker\Models\CaseStarted;
+use ProcessMaker\Models\Comment;
+use ProcessMaker\Models\Media;
+use ProcessMaker\Models\Notification;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use Tests\TestCase;
 
 class EvaluateProcessRetentionJobTest extends TestCase
@@ -54,6 +58,10 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $processRequest->refresh();
         $this->assertEquals($process->id, $processRequest->process_id);
 
+        // Delete the auto-created CaseNumber from ProcessRequestObserver
+        // so we can test ProcessRequest deletion when all cases are removed
+        CaseNumber::where('process_request_id', $processRequest->id)->delete();
+
         // Create a case number created 13 months ago
         // Cutoff = now - 12 months = 12 months ago
         // 13 months ago < 12 months ago, so it should be deleted
@@ -78,6 +86,8 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $this->assertNull(CaseNumber::find($caseOld->id), 'The case number should be deleted');
         $this->assertNull(CaseStarted::find($casesStartedOld->id), 'The cases_started should be deleted');
         $this->assertNull(CaseParticipated::find($casesParticipatedOld->id), 'The cases_participated should be deleted');
+        // Check that the ProcessRequest has been deleted
+        $this->assertNull(ProcessRequest::find($processRequest->id), 'The process request should be deleted');
     }
 
     public function testItDoesNotDeleteCasesThatAreWithinRetentionPeriod()
@@ -127,6 +137,8 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $this->assertNotNull(CaseNumber::find($case->id), 'The case should not be deleted');
         $this->assertNotNull(CaseStarted::find($casesStarted->id), 'The cases_started should not be deleted');
         $this->assertNotNull(CaseParticipated::find($casesParticipated->id), 'The cases_participated should not be deleted');
+        // Check that the ProcessRequest has not been deleted (cases still exist)
+        $this->assertNotNull(ProcessRequest::find($processRequest->id), 'The process request should not be deleted when cases still exist');
     }
 
     public function testItHandlesMultipleCasesInBatches()
@@ -148,6 +160,10 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $processRequest->save();
         $processRequest->refresh();
         $this->assertEquals($process->id, $processRequest->process_id);
+
+        // Delete the auto-created CaseNumber from ProcessRequestObserver
+        // so we can test ProcessRequest deletion when all cases are removed
+        CaseNumber::where('process_request_id', $processRequest->id)->delete();
 
         // Create 1200 cases (to test chunking/batch deletion)
         // These cases are created 13 months ago
@@ -172,13 +188,13 @@ class EvaluateProcessRetentionJobTest extends TestCase
         EvaluateProcessRetentionJob::dispatchSync($process->id);
 
         // Assert all old cases are deleted
-        // There should be 1 case left (the auto-created case from ProcessRequestObserver)
-        // because it was created recently and is within the retention period
-        $this->assertDatabaseCount('case_numbers', 1);
+        $this->assertDatabaseCount('case_numbers', 0);
         // Assert all case_started are deleted
         $this->assertDatabaseCount('cases_started', 0);
         // Assert all case_participated are deleted
         $this->assertDatabaseCount('cases_participated', 0);
+        // Assert the ProcessRequest has been deleted (all its cases were deleted)
+        $this->assertNull(ProcessRequest::find($processRequest->id), 'The process request should be deleted');
     }
 
     public function testItHandlesRetentionPolicyUpdate()
@@ -223,6 +239,8 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $this->assertNotNull(CaseNumber::find($oldCase->id));
         $this->assertNotNull(CaseNumber::find($newCase->id));
         $this->assertDatabaseCount('case_numbers', 3);
+        // ProcessRequest should not be deleted (cases still exist)
+        $this->assertNotNull(ProcessRequest::find($processRequest->id), 'The process request should not be deleted when cases still exist');
     }
 
     public function testItDeletesOldCasesAfterRetentionPolicyUpdate()
@@ -293,6 +311,8 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $this->assertDatabaseCount('case_numbers', 2);
         $this->assertDatabaseCount('cases_started', 1);
         $this->assertDatabaseCount('cases_participated', 1);
+        // ProcessRequest should not be deleted (some cases still exist)
+        $this->assertNotNull(ProcessRequest::find($processRequest->id), 'The process request should not be deleted when some cases still exist');
     }
 
     public function testItDoesNotRunWhenRetentionPolicyIsDisabled()
@@ -340,6 +360,8 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $this->assertNotNull(CaseParticipated::find($casesParticipatedOld->id), 'The cases_participated should NOT be deleted');
         $this->assertDatabaseCount('case_numbers', 2);
         $this->assertDatabaseCount('cases_started', 1);
+        // ProcessRequest should not be deleted (retention policy is disabled)
+        $this->assertNotNull(ProcessRequest::find($processRequest->id), 'The process request should not be deleted when retention policy is disabled');
 
         // Re-enable for other tests
         Config::set('app.case_retention_policy_enabled', true);
@@ -404,5 +426,100 @@ class EvaluateProcessRetentionJobTest extends TestCase
         $this->assertDatabaseCount('case_numbers', 2);
         $this->assertDatabaseCount('cases_started', 1);
         $this->assertDatabaseCount('cases_participated', 1);
+        // ProcessRequest should not be deleted (some cases still exist)
+        $this->assertNotNull(ProcessRequest::find($processRequest->id), 'The process request should not be deleted when some cases still exist');
+    }
+
+    public function testItDeletesAllRelatedRecordsWhenCasesExceedRetentionPeriod()
+    {
+        // Create a process with a 1 year retention period
+        $process = Process::factory()->create([
+            'properties' => [
+                'retention_period' => self::RETENTION_PERIOD,
+            ],
+        ]);
+        $process->save();
+        $process->refresh();
+
+        // Create a process request
+        $processRequest = ProcessRequest::factory()->create();
+        $processRequest->process_id = $process->id;
+        $processRequest->save();
+        $processRequest->refresh();
+
+        // Delete the auto-created CaseNumber from ProcessRequestObserver
+        // so we can test ProcessRequest deletion when all cases are removed
+        CaseNumber::where('process_request_id', $processRequest->id)->delete();
+
+        // Create a process request token
+        $token = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'process_id' => $process->id,
+        ]);
+
+        // Create a case number created 13 months ago (should be deleted)
+        $oldCaseCreatedAt = Carbon::now()->subMonths(13)->toIso8601String();
+        $caseOld = CaseNumber::factory()->create([
+            'created_at' => $oldCaseCreatedAt,
+            'process_request_id' => $processRequest->id,
+        ]);
+
+        // Create related records
+        $casesStartedOld = CaseStarted::factory()->create([
+            'case_number' => $caseOld->id,
+        ]);
+        $casesParticipatedOld = CaseParticipated::factory()->create([
+            'case_number' => $caseOld->id,
+        ]);
+
+        // Create comments
+        $commentOnRequest = Comment::factory()->create([
+            'commentable_type' => ProcessRequest::class,
+            'commentable_id' => $processRequest->id,
+            'case_number' => $caseOld->id,
+        ]);
+        $commentOnToken = Comment::factory()->create([
+            'commentable_type' => ProcessRequestToken::class,
+            'commentable_id' => $token->id,
+            'case_number' => $caseOld->id,
+        ]);
+
+        // Create media
+        $requestMedia = Media::factory()->create([
+            'model_type' => ProcessRequest::class,
+            'model_id' => $processRequest->id,
+            'custom_properties' => [
+                'data_name' => 'case/file.txt',
+            ],
+        ]);
+
+        // Create notification
+        $notification = Notification::factory()->create([
+            'data' => json_encode([
+                'request_id' => $processRequest->id,
+                'type' => 'TASK_CREATED',
+            ]),
+        ]);
+
+        // Dispatch the job to evaluate the retention period
+        EvaluateProcessRetentionJob::dispatchSync($process->id);
+
+        // Check that all case-related records have been deleted
+        $this->assertNull(CaseNumber::find($caseOld->id), 'The case number should be deleted');
+        $this->assertNull(CaseStarted::find($casesStartedOld->id), 'The cases_started should be deleted');
+        $this->assertNull(CaseParticipated::find($casesParticipatedOld->id), 'The cases_participated should be deleted');
+
+        // Check that ProcessRequest has been deleted
+        $this->assertNull(ProcessRequest::find($processRequest->id), 'The process request should be deleted');
+
+        // Check that comments have been deleted
+        $this->assertNull(Comment::find($commentOnRequest->id), 'The comment on ProcessRequest should be deleted');
+        $this->assertNull(Comment::find($commentOnToken->id), 'The comment on ProcessRequestToken should be deleted');
+
+        // Check that media has been deleted
+        $this->assertNull(Media::find($requestMedia->id), 'The request media should be deleted');
+
+        // Check that notification has been deleted
+        $this->assertNull(Notification::find($notification->id), 'The notification should be deleted');
     }
 }
