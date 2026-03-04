@@ -6,15 +6,18 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Http\Controllers\Api\Actions\Cases\DeletesCaseRecords;
 use ProcessMaker\Models\CaseNumber;
 use ProcessMaker\Models\CaseParticipated;
 use ProcessMaker\Models\CaseStarted;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\TaskDraft;
 
 class EvaluateProcessRetentionJob implements ShouldQueue
 {
-    use Queueable;
+    use Queueable, DeletesCaseRecords;
 
     /**
      * Create a new job instance.
@@ -80,32 +83,102 @@ class EvaluateProcessRetentionJob implements ShouldQueue
         // Use subquery to get process request IDs
         $processRequestSubquery = ProcessRequest::where('process_id', $this->processId)->select('id');
 
+        // Collect all ProcessRequest IDs that will be deleted (to delete them after all chunks are processed)
+        $processRequestIdsToDelete = [];
+
         CaseNumber::whereIn('process_request_id', $processRequestSubquery)
-            ->where(function ($query) use ($retentionUpdatedAt, $oldCasesCutoff, $newCasesCutoff) {
-                // Cases created before retention_updated_at: delete if created before (retention_updated_at - retention_period)
-                $query->where(function ($q) use ($retentionUpdatedAt, $oldCasesCutoff) {
-                    $q->where('created_at', '<', $retentionUpdatedAt)
-                    ->where('created_at', '<', $oldCasesCutoff);
-                })
-                // Cases created after retention_updated_at: delete if created before (now - retention_period)
-                ->orWhere(function ($q) use ($retentionUpdatedAt, $newCasesCutoff) {
-                    $q->where('created_at', '>=', $retentionUpdatedAt)
-                    ->where('created_at', '<', $newCasesCutoff);
-                });
-            })
-            ->chunkById(100, function ($cases) {
-                $caseIds = $cases->pluck('id');
-                // Delete the cases_started associated with the case_number
-                CaseStarted::whereIn('case_number', $caseIds)->delete();
-                // Delete the cases_participated associated with the case_number
-                CaseParticipated::whereIn('case_number', $caseIds)->delete();
-                // Delete the cases
+            ->where($this->buildRetentionQuery($retentionUpdatedAt, $oldCasesCutoff, $newCasesCutoff))
+            ->chunkById(100, function ($cases) use (&$processRequestIdsToDelete) {
+                $caseIds = $cases->pluck('id')->all();
+                $processRequestIds = $cases->pluck('process_request_id')->unique()->all();
+
+                // Collect ProcessRequest IDs for deletion after all chunks are processed
+                $processRequestIdsToDelete = array_merge($processRequestIdsToDelete, $processRequestIds);
+
+                $processRequestTokenIds = ProcessRequestToken::whereIn('process_request_id', $processRequestIds)->pluck('id')->all();
+                $draftIds = $this->getTaskDraftIds($processRequestTokenIds);
+
+                // uses case_number to delete
+                $this->deleteCasesStarted($caseIds);
+                $this->deleteCasesParticipated($caseIds);
+                $this->deleteComments($caseIds, $processRequestIds, $processRequestTokenIds);
+
+                // Delete the CaseNumber records that were returned by the query (by their IDs)
                 CaseNumber::whereIn('id', $caseIds)->delete();
+
+                $this->deleteProcessRequestLocks($processRequestIds, $processRequestTokenIds);
+                $this->deleteInboxRuleLogs($processRequestTokenIds);
+                $this->deleteInboxRules($processRequestTokenIds);
+                $this->deleteProcessAbeRequestTokens($processRequestIds, $processRequestTokenIds);
+                $this->deleteScheduledTasks($processRequestIds, $processRequestTokenIds);
+                $this->deleteEllucianEthosSyncTasks($processRequestTokenIds);
+
+                $this->deleteTaskDraftMedia($draftIds);
+                $this->deleteTaskDrafts($processRequestTokenIds);
 
                 // TODO: Add logs to track the number of cases deleted
                 // Get deleted timestamp
                 // $deletedAt = Carbon::now();
                 // RetentionPolicyLog::record($process->id, $caseIds, $deletedAt);
             });
+
+        // Delete ProcessRequests after all chunks are processed
+        // Only delete ProcessRequests that have no remaining cases
+        if (!empty($processRequestIdsToDelete)) {
+            $processRequestIdsToDelete = array_unique($processRequestIdsToDelete);
+
+            // Filter to only ProcessRequests that have no remaining CaseNumbers
+            $processRequestIdsWithNoCases = array_filter($processRequestIdsToDelete, function ($requestId) {
+                return !CaseNumber::where('process_request_id', $requestId)->exists();
+            });
+
+            if (!empty($processRequestIdsWithNoCases)) {
+                $this->deleteProcessRequests($processRequestIdsWithNoCases);
+
+                // Delete any remaining related records
+                $this->deleteRequestMedia($processRequestIdsWithNoCases);
+                $this->deleteNotifications($processRequestIdsWithNoCases);
+            }
+        }
+    }
+
+    /**
+     * Build a retention query closure that can be applied to any query builder.
+     *
+     * This method encapsulates the retention evaluation logic:
+     * - Cases created before retention_updated_at: delete if created before (retention_updated_at - retention_period)
+     * - Cases created after retention_updated_at: delete if created before (now - retention_period)
+     *
+     * @param Carbon $retentionUpdatedAt The date when the retention policy was updated
+     * @param Carbon $oldCasesCutoff The cutoff date for cases created before retention_updated_at
+     * @param Carbon $newCasesCutoff The cutoff date for cases created after retention_updated_at
+     * @return \Closure A closure that applies the retention query to a query builder
+     */
+    private function buildRetentionQuery(Carbon $retentionUpdatedAt, Carbon $oldCasesCutoff, Carbon $newCasesCutoff): \Closure
+    {
+        return function ($query) use ($retentionUpdatedAt, $oldCasesCutoff, $newCasesCutoff) {
+            // Cases created before retention_updated_at: delete if created before (retention_updated_at - retention_period)
+            $query->where(function ($q) use ($retentionUpdatedAt, $oldCasesCutoff) {
+                $q->where('created_at', '<', $retentionUpdatedAt)
+                    ->where('created_at', '<', $oldCasesCutoff);
+            })
+            // Cases created after retention_updated_at: delete if created before (now - retention_period)
+            ->orWhere(function ($q) use ($retentionUpdatedAt, $newCasesCutoff) {
+                $q->where('created_at', '>=', $retentionUpdatedAt)
+                    ->where('created_at', '<', $newCasesCutoff);
+            });
+        };
+    }
+
+    private function getTaskDraftIds(array $tokenIds): array
+    {
+        if ($tokenIds === []) {
+            return [];
+        }
+
+        return TaskDraft::query()
+            ->whereIn('task_id', $tokenIds)
+            ->pluck('id')
+            ->all();
     }
 }
