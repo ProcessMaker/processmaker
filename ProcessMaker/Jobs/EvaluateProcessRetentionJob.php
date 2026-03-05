@@ -165,7 +165,6 @@ class EvaluateProcessRetentionJob implements ShouldQueue
 
                 $this->deleteTaskDraftMedia($draftIds);
                 $this->deleteTaskDrafts($processRequestTokenIds);
-                
 
                 $chunkCount++;
                 $chunkSize = count($caseIds);
