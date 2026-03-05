@@ -43,9 +43,8 @@ class EvaluateCaseRetention extends Command
         // Get system category IDs to exclude
         $systemCategoryIds = ProcessCategory::where('is_system', true)->pluck('id');
 
-        // Process all processes when retention policy is enabled
         // Exclude processes that are templates or in system categories
-        // Processes without retention_period will default to 1_year
+        // Processes without retention_period will default to one_year
         $jobCount = 0;
         $query = Process::where('is_template', '!=', 1);
 
@@ -63,6 +62,7 @@ class EvaluateCaseRetention extends Command
             });
         }
 
+        // Processes without retention_period will default to one_year
         $query->chunkById(100, function ($processes) use (&$jobCount) {
             foreach ($processes as $process) {
                 dispatch(new EvaluateProcessRetentionJob($process->id));
