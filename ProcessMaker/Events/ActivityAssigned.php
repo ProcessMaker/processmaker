@@ -54,6 +54,16 @@ class ActivityAssigned implements ShouldBroadcastNow
     /**
      * Return the process request.
      *
+     * @return \ProcessMaker\Models\ProcessRequest
+     */
+    public function getProcessRequest()
+    {
+        return $this->processRequest;
+    }
+
+    /**
+     * Return the process request token.
+     *
      * @return \ProcessMaker\Models\ProcessRequestToken
      */
     public function getProcessRequestToken()
