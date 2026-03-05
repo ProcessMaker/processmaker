@@ -13,6 +13,7 @@ use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Notification;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use Tests\TestCase;
@@ -521,5 +522,78 @@ class EvaluateProcessRetentionJobTest extends TestCase
 
         // Check that notification has been deleted
         $this->assertNull(Notification::find($notification->id), 'The notification should be deleted');
+    }
+
+    public function testItDoesNotRunForTemplates()
+    {
+        // Create a template process
+        $process = Process::factory()->create([
+            'is_template' => 1,
+            'properties' => [
+                'retention_period' => self::RETENTION_PERIOD,
+            ],
+        ]);
+        $process->save();
+        $process->refresh();
+
+        // Create a process request
+        $processRequest = ProcessRequest::factory()->create();
+        $processRequest->process_id = $process->id;
+        $processRequest->save();
+        $processRequest->refresh();
+
+        // Create an old case that should be deleted if this wasn't a template
+        // 13 months ago is older than 1 year retention period
+        $oldCaseDate = Carbon::now()->subMonths(13);
+        $oldCase = CaseNumber::factory()->create([
+            'process_request_id' => $processRequest->id,
+        ]);
+        $oldCase->created_at = $oldCaseDate;
+        $oldCase->save();
+
+        // Dispatch the job
+        EvaluateProcessRetentionJob::dispatchSync($process->id);
+
+        // The case should NOT be deleted because the process is a template
+        $this->assertNotNull(CaseNumber::find($oldCase->id), 'The case should NOT be deleted because the process is a template');
+        $this->assertDatabaseCount('case_numbers', 2);
+    }
+
+    public function testItDoesNotRunForProcessesInSystemCategories()
+    {
+        $category = ProcessCategory::factory()->create([
+            'is_system' => 1,
+        ]);
+        // Create a process in a system category
+        $process = Process::factory()->create([
+            'process_category_id' => $category->id,
+            'properties' => [
+                'retention_period' => self::RETENTION_PERIOD,
+            ],
+        ]);
+        $process->save();
+        $process->refresh();
+
+        // Create a process request
+        $processRequest = ProcessRequest::factory()->create();
+        $processRequest->process_id = $process->id;
+        $processRequest->save();
+        $processRequest->refresh();
+
+        // Create an old case that should be deleted if this wasn't in a system category
+        // 13 months ago is older than 1 year retention period
+        $oldCaseDate = Carbon::now()->subMonths(13);
+        $oldCase = CaseNumber::factory()->create([
+            'process_request_id' => $processRequest->id,
+        ]);
+        $oldCase->created_at = $oldCaseDate;
+        $oldCase->save();
+
+        // Dispatch the job
+        EvaluateProcessRetentionJob::dispatchSync($process->id);
+
+        // The case should NOT be deleted because the process is in a system category
+        $this->assertNotNull(CaseNumber::find($oldCase->id), 'The case should NOT be deleted because the process is in a system category');
+        $this->assertDatabaseCount('case_numbers', 2);
     }
 }
