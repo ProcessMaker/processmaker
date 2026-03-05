@@ -10,7 +10,7 @@ class BroadcastAuthDebug
 {
     /**
      * Log broadcast auth requests that fail (403, 401, 500) for debugging intermittent issues.
-     * Enable with BROADCAST_AUTH_DEBUG=true in .env
+     * Enable with BROADCAST_AUTH_DEBUG=true in .env (config/broadcasting.php)
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  Closure  $next
@@ -20,7 +20,7 @@ class BroadcastAuthDebug
     {
         $response = $next($request);
 
-        if (!env('BROADCAST_AUTH_DEBUG', false)) {
+        if (!config('broadcasting.auth_debug', false)) {
             return $response;
         }
 
