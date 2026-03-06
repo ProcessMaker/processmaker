@@ -80,7 +80,7 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
         });
 
         // Cases Retention
-        Route::get('cases-retention', [CasesRetentionController::class, 'index'])->where(['router' => '.*'])->name('cases-retention.index');
+        Route::get('cases-retention', [CasesRetentionController::class, 'index'])->name('cases-retention.index');
 
         // temporary, should be removed
         Route::get('security-logs/download/all', [ProcessMaker\Http\Controllers\Api\SecurityLogController::class, 'downloadForAllUsers'])->middleware('can:view-security-logs');
