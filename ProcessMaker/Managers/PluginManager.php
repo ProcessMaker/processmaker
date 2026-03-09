@@ -150,7 +150,134 @@ class PluginManager
     }
 
     /**
-     * List all installed plugins.
+     * Install a plugin from a zip file path.
+     *
+     * @param string $zipPath Full path to the uploaded zip file
+     * @return void
+     * @throws RuntimeException
+     */
+    public function installFromZip(string $zipPath): void
+    {
+        if (!file_exists($zipPath)) {
+            throw new RuntimeException("Zip file not found: {$zipPath}");
+        }
+
+        $zip = new \ZipArchive();
+        $openResult = $zip->open($zipPath);
+
+        if ($openResult !== true) {
+            throw new RuntimeException("Failed to open zip file: {$zipPath} (error code: {$openResult})");
+        }
+
+        $tmpExtractDir = sys_get_temp_dir() . '/pm-plugin-' . uniqid();
+
+        if (!mkdir($tmpExtractDir, 0755, true)) {
+            throw new RuntimeException("Failed to create temp directory: {$tmpExtractDir}");
+        }
+
+        try {
+            $zip->extractTo($tmpExtractDir);
+            $zip->close();
+
+            // Find the actual plugin directory (zip may have a top-level folder)
+            $entries = array_diff(scandir($tmpExtractDir), ['.', '..']);
+            $pluginSourceDir = $tmpExtractDir;
+
+            if (count($entries) === 1) {
+                $singleEntry = $tmpExtractDir . '/' . reset($entries);
+                if (is_dir($singleEntry)) {
+                    $pluginSourceDir = $singleEntry;
+                }
+            }
+
+            // Validate before copying
+            $this->validatePlugin($pluginSourceDir);
+
+            $repoName = basename($pluginSourceDir);
+            $pluginPath = storage_path('plugins') . '/' . $repoName;
+
+            $this->logRunning("Installing plugin from zip: {$repoName}", $repoName);
+
+            // Ensure plugins directory exists
+            if (!is_dir(storage_path('plugins'))) {
+                mkdir(storage_path('plugins'), 0755, true);
+            }
+
+            // Remove existing plugin directory if present
+            if (is_dir($pluginPath)) {
+                $this->deleteDirectory($pluginPath);
+            }
+
+            // Copy extracted directory to plugins folder
+            $this->copyDirectory($pluginSourceDir, $pluginPath);
+
+            // Run composer install
+            $this->logRunning('Installing dependencies...', $repoName);
+            $this->runComposerInstall($pluginPath);
+
+            // Run plugin install command if it exists
+            $installCommand = "{$repoName}:install";
+            $this->logRunning('Running plugin install command...', $repoName);
+            $this->runCommand($installCommand, $repoName);
+
+            // Rebuild route cache
+            $this->logRunning('Rebuilding route cache...', $repoName);
+            $this->runCommand('route:cache', $repoName);
+
+            $this->logDone('Plugin installed successfully', $repoName);
+        } finally {
+            // Always clean up temp directory and zip file
+            if (is_dir($tmpExtractDir)) {
+                $this->deleteDirectory($tmpExtractDir);
+            }
+            if (file_exists($zipPath)) {
+                unlink($zipPath);
+            }
+        }
+    }
+
+    /**
+     * Toggle a plugin enabled/disabled by renaming its directory.
+     * Disabled plugins have a `_` prefix on their folder name.
+     *
+     * @param string $pluginName
+     * @return bool True if now enabled, false if now disabled
+     * @throws RuntimeException
+     */
+    public function toggle(string $pluginName): bool
+    {
+        $pluginsFolder = storage_path('plugins');
+
+        // Check if currently enabled (no underscore prefix)
+        $enabledPath = $pluginsFolder . '/' . $pluginName;
+        $disabledName = '_' . ltrim($pluginName, '_');
+        $disabledPath = $pluginsFolder . '/' . $disabledName;
+
+        if (is_dir($enabledPath)) {
+            // Disable it
+            if (!rename($enabledPath, $disabledPath)) {
+                throw new RuntimeException("Failed to disable plugin: {$pluginName}");
+            }
+
+            return false;
+        }
+
+        if (is_dir($disabledPath)) {
+            // Enable it
+            $enabledName = ltrim($pluginName, '_');
+            $enabledPath = $pluginsFolder . '/' . $enabledName;
+            if (!rename($disabledPath, $enabledPath)) {
+                throw new RuntimeException("Failed to enable plugin: {$pluginName}");
+            }
+
+            return true;
+        }
+
+        throw new RuntimeException("Plugin not found: {$pluginName}");
+    }
+
+    /**
+     * List all installed plugins, including disabled ones.
      *
      * @return array
      */
@@ -166,20 +293,21 @@ class PluginManager
         $pluginPaths = glob($pluginsFolder . '/*', GLOB_ONLYDIR);
 
         foreach ($pluginPaths as $pluginPath) {
-            // Ignore plugins that start with _
-            if (str_starts_with(basename($pluginPath), '_')) {
-                continue;
-            }
+            $dirName = basename($pluginPath);
+            $isDisabled = str_starts_with($dirName, '_');
 
             try {
                 $plugin = Plugin::fromPath($pluginPath);
-                $composerJson = $plugin->getComposerJson();
                 $reference = $plugin->getReference();
+                $composerJson = $plugin->getComposerJson();
 
                 $plugins[] = [
-                    'name' => $plugin->getName(),
+                    'name' => $isDisabled ? ltrim($dirName, '_') : $dirName,
+                    'folder' => $dirName,
                     'description' => $plugin->getDescription() ?? 'No description',
+                    'version' => $composerJson['version'] ?? null,
                     'branch' => $reference,
+                    'enabled' => !$isDisabled,
                 ];
             } catch (\Exception $e) {
                 // Skip invalid plugins
@@ -317,6 +445,10 @@ class PluginManager
                 $valid = true;
                 break;
             }
+            if (str_starts_with($namespace, 'ProcessMaker\\Package\\')) {
+                $valid = true;
+                break;
+            }
         }
 
         if (!$valid) {
@@ -340,6 +472,36 @@ class PluginManager
 
         if (!$process->successful()) {
             throw new RuntimeException('Failed to run composer install: ' . $process->errorOutput());
+        }
+    }
+
+    /**
+     * Copy a directory recursively.
+     *
+     * @param string $source
+     * @param string $destination
+     * @return void
+     * @throws RuntimeException
+     */
+    protected function copyDirectory(string $source, string $destination): void
+    {
+        if (!is_dir($destination)) {
+            mkdir($destination, 0755, true);
+        }
+
+        $files = array_diff(scandir($source), ['.', '..']);
+
+        foreach ($files as $file) {
+            $srcPath = $source . '/' . $file;
+            $destPath = $destination . '/' . $file;
+
+            if (is_dir($srcPath)) {
+                $this->copyDirectory($srcPath, $destPath);
+            } else {
+                if (!copy($srcPath, $destPath)) {
+                    throw new RuntimeException("Failed to copy file: {$srcPath} to {$destPath}");
+                }
+            }
         }
     }
 

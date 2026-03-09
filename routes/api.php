@@ -20,6 +20,7 @@ use ProcessMaker\Http\Controllers\Api\InboxRulesController;
 use ProcessMaker\Http\Controllers\Api\NotificationController;
 use ProcessMaker\Http\Controllers\Api\OpenAIController;
 use ProcessMaker\Http\Controllers\Api\PermissionController;
+use ProcessMaker\Http\Controllers\Api\PluginController;
 use ProcessMaker\Http\Controllers\Api\ProcessCategoryController;
 use ProcessMaker\Http\Controllers\Api\ProcessController;
 use ProcessMaker\Http\Controllers\Api\ProcessLaunchpadController;
@@ -46,6 +47,12 @@ use ProcessMaker\Http\Controllers\Auth\TwoFactorAuthController;
 use ProcessMaker\Http\Controllers\TestStatusController;
 
 Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize', 'manager')->prefix('api/1.0')->name('api.')->group(function () {
+    // Plugins
+    Route::get('plugins', [PluginController::class, 'index'])->name('plugins.index')->middleware('can:manage-plugins');
+    Route::post('plugins/install', [PluginController::class, 'install'])->name('plugins.install')->middleware('can:manage-plugins');
+    Route::delete('plugins/{name}', [PluginController::class, 'destroy'])->name('plugins.destroy')->middleware('can:manage-plugins');
+    Route::patch('plugins/{name}/toggle', [PluginController::class, 'toggle'])->name('plugins.toggle')->middleware('can:manage-plugins');
+
     // Users
     Route::get('users', [UserController::class, 'index'])->name('users.index'); // Permissions handled in the controller
     Route::get('users/{user}', [UserController::class, 'show'])->name('users.show'); // Permissions handled in the controller
